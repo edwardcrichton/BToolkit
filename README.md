@@ -4,8 +4,8 @@ BToolkit
 The BToolkit is a toolkit supporting software development with the B-method.
 
 The B-Method was initially devised by Jean-Raymond Abrial during his time at the Programming Research Group
-at the University of Oxford. Then the makings of the B tools were developed at BP Research. BP granted the rights
-to B-Core (UK) Ltd. The B-Toolkit was developed at B-Core by Ib Sorensen and David Neilson from 1992.
+at the University of Oxford. Then the B tools were developed at BP Research. BP granted the rights
+to these tools to B-Core (UK) Ltd. The B-Toolkit was developed at B-Core by Ib Sorensen and David Neilson from 1992.
 
 The source code to the B-Toolkit has been posted in memory of Ib Sorensen by B-Core. [Ib Sorensen - In memoriam](http://www.cs.ox.ac.uk/news/448-full.html)
 
