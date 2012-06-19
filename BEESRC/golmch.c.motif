@@ -1,0 +1,409 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#include "golmch.h"
+
+/*   
+   frm_g:  formula of goal
+   rul_g:  rule of goal (if any)
+   niv_g:  level of goal (for proof presentation)
+   hso_g:  son hypotheses of goal (if any)
+   hyp_g:  goal is exactly that hypothesis (if any:HYP_gol)
+   spe_g:  special goal (list on top)
+   tac_g:  tactic of goal (for backtracking)
+   tpt_g:  tactic pointer of goal (for backtracking)
+   ftac_g: forward tactic of goal (for backtracking)
+   ftpt_g: forward tactic pointer of goal (for backtracking)
+   alt_g:  current alternative number (if any:CAL_gol)
+   tcl_g:  tactic called (if any:CAL_gol)
+   fcl_g:  fwd tactic called (if any:CAL_gol)
+   gbreade: encoded formulae (one to a digit, up to max 9)
+     so 0000000719 would be 9th, 1st then 7th
+ */
+
+def_hyp_gol(g)
+{register int def_hyp_gol_res ;
+  if( hyp_gol(g)!=0 ){
+    if( def_spe_gol(g)==TRUE ){
+      if( spe_gol(g)==HYP_gol ){
+        def_hyp_gol_res=FALSE;
+      } else {
+        def_hyp_gol_res=TRUE;
+      };
+    } else {
+      def_hyp_gol_res=TRUE;
+    };
+  } else {
+    def_hyp_gol_res=FALSE;
+  }
+; return def_hyp_gol_res;
+}
+
+mak_golfunc()
+#define mak_gol mak_golfunc()
+{register int g ;
+  if( gttm!=0 ){
+    g=gtmb[gttm];
+    gttm=gttm-1;
+  } else if( gol<max_gol ){
+    gol=gol+1;
+    g=gol;
+  } else {
+            if ( ! exit_flag ) {
+              exit_flag = 1;
+              max_toolfunc();
+              Popup_Info ( "     Goal memory full!    " );
+	    }
+            else {
+              static int count = 0;
+              XmUpdateDisplay ( top_level );
+              sleep ( 1 );
+              count++;
+              if ( count == 5 ) exit___( 1 );
+	    }
+  }
+; return g;
+}
+
+sup_gol(g)
+{
+  gttm=gttm+1;
+  gtmb[gttm]=g;
+}
+
+cre_gol(f)
+{register int g ;
+  g=mak_gol;
+  frm_gol(g)=f;
+  rul_gol(g)=0;
+  niv_gol(g)=0;
+  hso_gol(g)=0;
+  hyp_gol(g)=0;
+  spe_gol(g)=0;
+  is_frm_gol(g)=0;
+  tac_gol(g)=0;
+  tpt_gol(g)=0;
+  ftac_gol(g)=0;
+  ftpt_gol(g)=0;
+  alt_gol(g)=0;
+  tcl_gol(g)=0;
+  fcl_gol(g)=0;
+  gbreade[g]=0;
+  return g;
+}
+
+#define val_alt_gol(g)   alt_gol(g)
+inc_alt_gol(g)
+{
+  alt_gol(g)=alt_gol(g)+1;
+}
+
+dec_alt_gol(g)
+{
+  if( val_alt_gol(g)!=0 ){
+    alt_gol(g)=alt_gol(g)-1;
+  };
+}
+
+ini_alt_gol(g)
+{
+  alt_gol(g)=1;
+}
+
+#define def_tac_gol(g) ((tac_gol(g)!=0)!=0)
+mod_tac_gol(g,t,tp,ft,ftp)
+{
+  tac_gol(g)=t;
+  tpt_gol(g)=tp;
+  ftac_gol(g)=ft;
+  ftpt_gol(g)=ftp;
+}
+
+clean_gol(g)
+{
+  rul_gol(g)=0;
+  hyp_gol(g)=0;            
+  is_frm_gol(g)=0;
+/*  TO BE DONE: decr. counter in hyp  */;
+}
+
+is_cal_gol(g)
+{register int is_cal_gol_res ;
+  if( def_spe_gol(g)==TRUE ){
+    is_cal_gol_res=((spe_gol(g)==CAL_gol)!=0);
+  } else {
+    is_cal_gol_res=FALSE;
+  }
+; return is_cal_gol_res;
+}
+
+clean_spe_gol(g)
+{
+  if( is_cal_gol(g)==TRUE ){
+    dec_alt_gol(g);
+  };
+  spe_gol(g)=0;
+}
+
+kil_tac_gol(g)
+{register int ta,i,t ;
+  if( def_tcl_gol(g) ){
+    ta=tcl_gol(g);
+    itr_nod(ta,i,t,kil_tac(t),{},{});
+    kil_nod(ta);
+    rem_tcl_gol(g);
+  };
+  if( def_fcl_gol(g) ){
+    ta=fcl_gol(g);
+    itr_nod(ta,i,t,kil_tac(t),{},{});
+    kil_nod(ta);
+    rem_fcl_gol(g);
+  };
+}
+
+kil_gol(g)
+{register int i,h ;
+  kil_tac_gol(g);
+  sup_gol(g);
+  kil_tree(frm_gol(g));
+  if( def_hso_gol(g)==TRUE ){
+    itr(hso_gol(g),i,h,kil_hyp(h));
+    kil(hso_gol(g));
+  };
+}
+
+mod_rul_gol(g,r)
+{
+  rul_gol(g)=r;
+}
+
+mod_niv_gol(g,n)
+{
+  niv_gol(g)=n;
+}
+
+mod_hso_gol(g,n)
+{
+  hso_gol(g)=n;
+}
+
+mod_hyp_gol(g,n)
+{
+  hyp_gol(g)=n;
+}
+
+mod_spe_gol(g,n)
+{
+  spe_gol(g)=n;
+}
+
+mod_is_frm_gol(g,n)
+{
+  is_frm_gol(g)=n;
+}
+
+is_not_printed_gol(g)
+{register int op,sg,is_not_printed_gol_res ;
+  op=val_root_frm(frm_gol(g));
+  if( ( def_rul_gol(g)==TRUE ) && ( def_spe_gol(g)==FALSE ) ) {
+    is_not_printed_gol_res=FALSE;
+  } else if( def_spe_gol(g)==TRUE ){
+    sg=spe_gol(g);
+    if( (sg==RUL_gol) || (sg==TAC_gol) /* || (sg==LEM_gol) */ || (sg==CAL_gol) ){
+      is_not_printed_gol_res=TRUE;
+    } else {
+      is_not_printed_gol_res=FALSE;
+    };
+  } else {
+    is_not_printed_gol_res=TRUE;
+  }
+; return is_not_printed_gol_res;
+}
+
+write_spe_gol(s)
+{
+  switch( s ){ 
+    case AND_gol :{
+      strcat ( str_buf, "AND")
+    ;break;}case DED_gol :{
+      strcat ( str_buf, "DED");
+    ;break;}case EQL_gol :{
+      strcat ( str_buf, "EQL")
+    ;break;}case ARI_gol :{
+      strcat ( str_buf, "ARI")
+    ;break;}case SUB_gol :{
+      strcat ( str_buf, "SUB")
+    ;break;}case GEN_gol :{
+      strcat ( str_buf, "GEN")
+    ;break;}case HYP_gol :{
+      strcat ( str_buf, "HYP")
+    ;break;}case MAP_gol :{
+      strcat ( str_buf, "MAP")
+    ;break;}case LMAP_gol :{
+      strcat ( str_buf, "LMAP")
+    ;break;}case CAL_gol :{
+      strcat ( str_buf, "CALL")
+    ;break;}case LEM_gol :{
+      strcat ( str_buf, "LEM")
+    ;break;}case QUO_gol :{
+      strcat ( str_buf, "CATL")
+    ;break;}case NEW_gol :{
+      strcat ( str_buf, "NEW")
+    ;break;}case REV_gol :{
+      strcat ( str_buf, "REV")
+    ;break;}case FLAT_gol :{
+      strcat ( str_buf, "FLAT")
+    ;break;}case HALT_gol :{
+      strcat ( str_buf, "HALT")
+    ;break;}case INHYP_gol :{
+      strcat ( str_buf, "INHYP")
+    ;break;}case CONTRA_gol :{
+      strcat ( str_buf, "CONTRA")
+    ;break;}case REDO_gol :{
+      strcat ( str_buf, "REDO")
+    ;break;};
+  };
+}
+
+write_gol(s,g,d)
+{register int r,i,n,m,sg ;
+/***
+printf ( " -- write_gol(%d,%d,%d)\n", s,g,d );
+***/
+  reset_res(0);
+  m=niv_gol(g);
+  if( m<10 ){
+    write_blk_res(3);
+  } else {
+    write_blk_res(2);
+  };
+  write_num_res(niv_gol(g));          /* proof step no */
+  write_blk_res(2);
+  write_blk_res(d);
+  write_frm_res(frm_gol(g),6+d);      /* goal at that step */
+  write_tab_res;
+  if( ( def_rul_gol(g)==TRUE ) && ( def_spe_gol(g)==FALSE ) ) { /* thy justifications */
+    itr(s,i,n,write_nat(n); strcat ( str_buf, " "));
+    r=rul_gol(g);
+    write_nam_the(the_rul(r));
+    strcat ( str_buf, ".");
+    write_nat(num_rul(r));
+  }
+  else if( def_spe_gol(g)==TRUE ){  /* built-in tactic justifications */
+    sg=spe_gol(g);
+    if( (sg==AND_gol) || (sg==HYP_gol) || (sg==MAP_gol) || (sg==CAL_gol) || (sg==QUO_gol) || (sg==NEW_gol) || (sg==REV_gol) || (sg==FLAT_gol) || (sg==HALT_gol) || (sg==CONTRA_gol) || (sg==INHYP_gol) || (sg==GEN_gol) || (sg==SUB_gol) || (sg==ARI_gol) || (sg==LEM_gol) ){
+      itr(s,i,n,write_nat(n); strcat ( str_buf, " "));
+    }
+#ifdef BTOOLKIT_FLAG
+    if ( sg==LEM_gol ) {
+      write_nam_the ( the_rul ( rul_gol ( g ) ) );
+      strcat ( str_buf, "." );
+      CreNumInBuf ( str_buf, num_rul ( rul_gol ( g ) ) );
+    }
+    else {
+      write_spe_gol(spe_gol(g));
+    }
+#else
+    write_spe_gol(spe_gol(g));
+#endif
+    if( spe_gol(g)==HYP_gol ){         /* HYP no justification */
+      strcat ( str_buf, ".");
+      write_nat(niv_hyp(hyp_gol(g)));
+    };
+  };
+}
+
+write_ext_gol(s,g,d)
+{register int r,i,n,sg ;
+  reset_res(0);
+  write_res('(');
+  write_num_res(d);
+  write_res('|'); 
+  write_res('(');
+  write_frm_res(frm_gol(g),0);
+  write_res(')');
+  write_res('|');
+  if( ( def_rul_gol(g)==TRUE ) && ( def_spe_gol(g)==FALSE ) ) {
+    itr(s,i,n,write_nat(n); strcat ( str_buf, ","));
+    r=rul_gol(g);
+    write_nam_the(the_rul(r));
+    strcat ( str_buf, ".");
+    write_nat(num_rul(r));
+  } else if( def_spe_gol(g)==TRUE ){
+    sg=spe_gol(g);
+    if( (sg==AND_gol) || (sg==HYP_gol) || (sg==MAP_gol) || (sg==CAL_gol) || (sg==QUO_gol) || (sg==NEW_gol) || (sg==REV_gol) || (sg==FLAT_gol) || (sg==HALT_gol) || (sg==CONTRA_gol) || (sg==INHYP_gol) || (sg==GEN_gol) || (sg==SUB_gol) || (sg==ARI_gol) || (sg==LEM_gol) ){
+      itr(s,i,n,write_nat(n); strcat ( str_buf, ","));
+    };
+    write_spe_gol(spe_gol(g));
+    if( spe_gol(g)==HYP_gol ){
+      strcat ( str_buf, ".");
+      write_nat(niv_hyp(hyp_gol(g)));
+    };
+  } else {
+    write_res('?');
+  };
+  write_res(')');
+}
+
+sta_golfunc()
+#define sta_gol sta_golfunc()
+{
+/*
+  fprintf(bstdout,"      Max Number of Goals:           ");
+  fprintf(bstdout,"%8d\n",max_gol);
+  fprintf(bstdout,"      Number of Used Goals:          ");
+  fprintf(bstdout,"%8d\n",gol);
+  fprintf(bstdout,"      Number of Dead Goals:          ");
+  fprintf(bstdout,"%8d\n",gttm);
+  fprintf(bstdout,"      Number of Live Goals:          ");
+  fprintf(bstdout,"%8d\n\n",gol-gttm);
+*/
+  int i;
+  char buf [ 100 ];
+  strcpy ( buf, "\n\n          Max Number of Goals:           ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, max_gol );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Used Goals:          ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, gol );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Dead Goals:          ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, gttm );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Live Goals:          ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, gol-gttm );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+}
+
+    
+    

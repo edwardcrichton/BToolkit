@@ -1,0 +1,9 @@
+INTERFACE
+
+  Factorial
+
+OPERATIONS
+
+  comp_fac
+
+END

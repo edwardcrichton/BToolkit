@@ -1,0 +1,155 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(String_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_GET_SEG,Rename_GET_PROMPT_SEG,Rename_PUT_SEG)
+;
+(Rename_GET_SEG,Rename_GET_PROMPT_SEG,Rename_PUT_SEG)
+;
+(Rename_Segment_io(SEGMENT):(card(SEGMENT): NAT1):(?))
+;
+(
+(
+ (Rename_GET_SEG)
+;
+ (?,Val_Op,NonDet_Op,(rr <-- Rename_GET_SEG))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rr:: SEGMENT
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx: SEGMENT)
+ )
+ ==>
+ (
+ (rr:=rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_GET_PROMPT_SEG)
+;
+ (?,Val_Op,NonDet_Op,(rr <-- Rename_GET_PROMPT_SEG(ss)))
+;
+ (ss)
+;
+ (rr)
+;
+ (
+ (ss: STRING)
+ |
+ (
+ (rr:: SEGMENT)
+ )
+ )
+;
+ (
+ (ss: STRING)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx: SEGMENT)
+ )
+ ==>
+ (
+ (rr:=rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_SEG)
+;
+ (?,Val_Op,Det_Op,Rename_PUT_SEG(dd))
+;
+ (dd)
+;
+ (?)
+;
+ (
+ (dd: SEGMENT)
+ |
+ (
+ (skip)
+ )
+ )
+;
+ (
+ (dd: SEGMENT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+)

@@ -1,0 +1,303 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Vseq">
+  <TITLE>The Rename_Vseq machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>         Rename_Vseq(VALUE,maxsize)
+
+<A NAME="SEES"><B>SEES</B></A>            <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>       Rename_Vseq
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_Vseq: seq(VALUE) &
+  size(Rename_Vseq)&lt;=maxsize
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>  Rename_Vseq:=<>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  bb <-- <A NAME="OPNAME!Rename_FUL_SEQ">Rename_FUL_SEQ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(size(Rename_Vseq)=maxsize)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_IDX_SEQ">Rename_XST_IDX_SEQ</A>(ii) =
+  <B>PRE</B>
+    ii: 1..maxsize
+  <B>THEN</B>
+    bb:=<B>bool</B>(ii:1..size(Rename_Vseq))
+  <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_STO_SEQ">Rename_STO_SEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    ii:1..size(Rename_Vseq)
+  <B>THEN</B> 
+    Rename_Vseq(ii):=vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_CLR_SEQ">Rename_CLR_SEQ</A> =
+  <B>BEGIN</B>
+    Rename_Vseq:=<>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_PSH_SEQ">Rename_PSH_SEQ</A>(vv) =
+  <B>PRE</B>
+    vv: VALUE &
+    size(Rename_Vseq) &lt; maxsize
+  <B>THEN</B>
+    Rename_Vseq:=Rename_Vseq &lt;- vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_POP_SEQ">Rename_POP_SEQ</A> =
+  <B>PRE</B>
+    size(Rename_Vseq)/=0
+  <B>THEN</B>
+    Rename_Vseq:= front(Rename_Vseq)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_FST_SEQ">Rename_FST_SEQ</A> =
+  <B>PRE</B>
+    size(Rename_Vseq)/=0
+  <B>THEN</B>
+    vv := Rename_Vseq(1)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_LST_SEQ">Rename_LST_SEQ</A> =
+  <B>PRE</B>
+    size(Rename_Vseq)/=0
+  <B>THEN</B>
+    vv := Rename_Vseq(size(Rename_Vseq))
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_TAL_SEQ">Rename_TAL_SEQ</A> =
+  <B>PRE</B>
+    size(Rename_Vseq)/=0
+  <B>THEN</B>
+    Rename_Vseq := tail(Rename_Vseq)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_KEP_SEQ">Rename_KEP_SEQ</A>(ii) =
+  <B>PRE</B>
+    ii:0..size(Rename_Vseq)
+  <B>THEN</B>
+    Rename_Vseq:=Rename_Vseq /|\ ii
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_CUT_SEQ">Rename_CUT_SEQ</A>(ii) =
+  <B>PRE</B>
+    ii:0..size(Rename_Vseq)
+  <B>THEN</B>
+    Rename_Vseq:=Rename_Vseq \|/ ii
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SWP_SEQ">Rename_SWP_SEQ</A>(ii,jj) =
+  <B>PRE</B>
+    ii: 1..size(Rename_Vseq) &
+    jj: 1..size(Rename_Vseq)
+  <B>THEN</B>
+    Rename_Vseq:= (
+      Rename_Vseq<+{ii |-> Rename_Vseq(jj), jj |-&gt; Rename_Vseq(ii)}
+    )
+  <B>END</B>;
+
+
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_SEQ">Rename_VAL_SEQ</A>(ii) =
+  <B>PRE</B>
+    ii:1..size(Rename_Vseq)
+  <B>THEN</B> 
+    vv:=Rename_Vseq(ii)
+  <B>END</B>;
+
+  nn <-- <A NAME="OPNAME!Rename_LEN_SEQ">Rename_LEN_SEQ</A> =
+  <B>BEGIN</B>
+    nn:=size(Rename_Vseq)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EMP_SEQ">Rename_EMP_SEQ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(Rename_Vseq=<>)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_SEQ">Rename_EQL_SEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    ii:1..size(Rename_Vseq)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Vseq(ii)=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_NEQ_SEQ">Rename_NEQ_SEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    ii:1..size(Rename_Vseq)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Vseq(ii)/=vv)
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_EQL_SEQ">Rename_SCH_LO_EQL_SEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    jj:dom(Rename_Vseq) &
+    kk:dom(Rename_Vseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Vseq~[{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:=min(ss \/ {maxsize})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_NEQ_SEQ">Rename_SCH_LO_NEQ_SEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    jj:dom(Rename_Vseq) &
+    kk:dom(Rename_Vseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Vseq~[(VALUE)-{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= min(ss \/ {maxsize})
+    <B>END</B>
+  <B>END</B>;
+
+  
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_EQL_SEQ">Rename_SCH_HI_EQL_SEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    jj:dom(Rename_Vseq) &
+    kk:dom(Rename_Vseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Vseq~[{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_NEQ_SEQ">Rename_SCH_HI_NEQ_SEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    jj:dom(Rename_Vseq) &
+    kk:dom(Rename_Vseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Vseq~[(VALUE)-{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_REV_SEQ">Rename_REV_SEQ</A>(ii,jj) =
+  <B>PRE</B>
+    ii:1..size(Rename_Vseq) &
+    jj:1..size(Rename_Vseq) &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>LET</B> aa,bb,cc <B>BE</B>
+      aa = (1..ii-1) &lt;| Rename_Vseq &
+      bb = %kk.(kk:ii..jj | Rename_Vseq(jj+ii-kk)) &
+      cc = (jj+1..size(Rename_Vseq)) &lt;| Rename_Vseq
+    <B>IN</B>
+      Rename_Vseq := aa \/ bb \/ cc
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RHT_SEQ">Rename_RHT_SEQ</A>(ii,jj,nn) =
+  <B>PRE</B>
+    ii:1..size(Rename_Vseq) &
+    jj:1..size(Rename_Vseq) &
+    nn:1..size(Rename_Vseq) &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>LET</B> aa,bb,cc <B>BE</B>
+      aa = (1..ii+nn-1) &lt;| Rename_Vseq &
+      bb = 1..size(Rename_Vseq) &lt;| (
+         %kk.(kk:ii+nn..(jj+nn) | Rename_Vseq(kk-nn)) 
+       ) &
+      cc = (jj+nn+1..size(Rename_Vseq)) &lt;| Rename_Vseq
+    <B>IN</B>
+      Rename_Vseq := aa \/ bb \/ cc
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_LFT_SEQ">Rename_LFT_SEQ</A>(ii,jj,nn) =
+  <B>PRE</B>
+    ii:1..size(Rename_Vseq) &
+    jj:1..size(Rename_Vseq) &
+    nn:1..size(Rename_Vseq) &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>LET</B> aa,bb,cc <B>BE</B>
+      aa = (1..ii-nn-1) &lt;| Rename_Vseq &
+      bb = 1..size(Rename_Vseq) &lt;| ( 
+            %kk.(kk:ii-nn..(jj-nn) | Rename_Vseq(kk+nn))
+          ) &
+      cc = (jj-nn+1..size(Rename_Vseq)) &lt;| Rename_Vseq
+    <B>IN</B>
+      Rename_Vseq := aa \/ bb \/ cc
+    <B>END</B>
+  <B>END</B>;
+
+
+/**************  save/restore host byte order **************/
+
+  <A NAME="OPNAME!Rename_SAV_SEQ">Rename_SAV_SEQ</A> = <B>skip</B>;
+
+  <A NAME="OPNAME!Rename_RST_SEQ">Rename_RST_SEQ</A> =
+  <B>ANY</B> vseq <B>WHERE</B>
+     vseq: seq(VALUE) &
+     size(vseq) &lt;= maxsize
+  <B>THEN</B>
+    Rename_Vseq := vseq
+  <B>END</B>;
+
+/**************  save/restore network byte order **************/
+
+  <A NAME="OPNAME!Rename_SAVN_SEQ">Rename_SAVN_SEQ</A> = <B>skip</B>;
+
+  <A NAME="OPNAME!Rename_RSTN_SEQ">Rename_RSTN_SEQ</A> =
+  <B>ANY</B> vseq <B>WHERE</B>
+     vseq: seq(VALUE) &
+     size(vseq) &lt;= maxsize
+  <B>THEN</B>
+    Rename_Vseq := vseq
+  <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:28 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

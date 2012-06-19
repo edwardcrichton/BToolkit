@@ -1,0 +1,442 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(String_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(ASSIGN_ANY_STR,CMP_STR,SMR_STR,PFX_STR,PSX_STR,SUB_STR,CPY_STR,CNC_STR,LEN_STR,VAL_ITH_CHAR,CHAR_TO_NAT,NAT_TO_STR)
+;
+(ASSIGN_ANY_STR , CMP_STR , SMR_STR , PFX_STR , PSX_STR , SUB_STR , CPY_STR , CNC_STR , LEN_STR , VAL_ITH_CHAR , CHAR_TO_NAT , NAT_TO_STR)
+;
+(String_TYPE_Ops(?):(?):(?))
+;
+(
+(
+ (ASSIGN_ANY_STR)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- ASSIGN_ANY_STR))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rr :: STRING
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : STRING)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (CMP_STR)
+;
+ (? , Val_Op , Det_Op , (bb <-- CMP_STR(rr , ss)))
+;
+ (rr , ss)
+;
+ (bb)
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ (bb := bool(rr = ss))
+ )
+ )
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ (bb := bool(rr = ss))
+ )
+ )
+)
+,
+(
+ (SMR_STR)
+;
+ (? , Val_Op , NonDet_Op , (bb <-- SMR_STR(rr , ss)))
+;
+ (rr , ss)
+;
+ (bb)
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ (bb :: BOOL)
+ )
+ )
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ @(bbx).
+ (
+ (
+ (bbx : BOOL)
+ )
+ ==>
+ (
+ (bb := bbx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (PFX_STR)
+;
+ (? , Val_Op , NonDet_Op , (bb <-- PFX_STR(rr , ss)))
+;
+ (rr , ss)
+;
+ (bb)
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ (bb :: BOOL)
+ )
+ )
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ @(bbx).
+ (
+ (
+ (bbx : BOOL)
+ )
+ ==>
+ (
+ (bb := bbx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (PSX_STR)
+;
+ (? , Val_Op , NonDet_Op , (bb <-- PSX_STR(rr , ss)))
+;
+ (rr , ss)
+;
+ (bb)
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ (bb :: BOOL)
+ )
+ )
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ @(bbx).
+ (
+ (
+ (bbx : BOOL)
+ )
+ ==>
+ (
+ (bb := bbx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (SUB_STR)
+;
+ (? , Val_Op , NonDet_Op , (bb <-- SUB_STR(rr , ss)))
+;
+ (rr , ss)
+;
+ (bb)
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ (bb :: BOOL)
+ )
+ )
+;
+ (
+ (rr : STRING & ss : STRING & size(rr) <= 1000 & size(ss) <= 1000)
+ |
+ (
+ @(bbx).
+ (
+ (
+ (bbx : BOOL)
+ )
+ ==>
+ (
+ (bb := bbx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (CPY_STR)
+;
+ (? , Val_Op , Det_Op , (rr <-- CPY_STR(ss)))
+;
+ (ss)
+;
+ (rr)
+;
+ (
+ (ss : STRING & size(ss) <= 1000)
+ |
+ (
+ (rr := ss)
+ )
+ )
+;
+ (
+ (ss : STRING & size(ss) <= 1000)
+ |
+ (
+ (rr := ss)
+ )
+ )
+)
+,
+(
+ (CNC_STR)
+;
+ (? , Val_Op , Det_Op , (rr <-- CNC_STR(ss , tt)))
+;
+ (ss , tt)
+;
+ (rr)
+;
+ (
+ (ss : STRING & tt : STRING & size(ss)+size(tt) <= 1000)
+ |
+ (
+ (rr := ss ^ tt)
+ )
+ )
+;
+ (
+ (ss : STRING & tt : STRING & size(ss)+size(tt) <= 1000)
+ |
+ (
+ (rr := ss ^ tt)
+ )
+ )
+)
+,
+(
+ (LEN_STR)
+;
+ (? , Val_Op , Det_Op , (nn <-- LEN_STR(ss)))
+;
+ (ss)
+;
+ (nn)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ nn := size(ss)
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (nn := size(ss))
+ )
+ )
+)
+,
+(
+ (VAL_ITH_CHAR)
+;
+ (? , Val_Op , Det_Op , (cc <-- VAL_ITH_CHAR(ss , ii)))
+;
+ (ss , ii)
+;
+ (cc)
+;
+ (
+ (ss : STRING & ii : 1..size(ss) & size(ss) <= 1000)
+ |
+ (
+ (cc := ss(ii))
+ )
+ )
+;
+ (
+ (ss : STRING & ii : 1..size(ss) & size(ss) <= 1000)
+ |
+ (
+ (cc := ss(ii))
+ )
+ )
+)
+,
+(
+ (CHAR_TO_NAT)
+;
+ (? , Val_Op , NonDet_Op , (nn <-- CHAR_TO_NAT(cc)))
+;
+ (cc)
+;
+ (nn)
+;
+ (
+ (cc : CHAR)
+ |
+ (
+ (BEGIN
+ nn :: NAT
+ END)
+ )
+ )
+;
+ (
+ (cc : CHAR)
+ |
+ (
+ @(nnx).
+ (
+ (
+ (nnx : NAT)
+ )
+ ==>
+ (
+ (nn := nnx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (NAT_TO_STR)
+;
+ (? , Val_Op , NonDet_Op , (ss <-- NAT_TO_STR(nn)))
+;
+ (nn)
+;
+ (ss)
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (BEGIN
+ ss :: STRING
+ END)
+ )
+ )
+;
+ (
+ (nn : NAT)
+ |
+ (
+ @(ssx).
+ (
+ (
+ (ssx : STRING)
+ )
+ ==>
+ (
+ (ss := ssx)
+ )
+ )
+ )
+ )
+)
+)

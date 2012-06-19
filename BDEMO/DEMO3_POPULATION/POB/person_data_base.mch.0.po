@@ -1,0 +1,160 @@
+THEORY PropertiesX IS
+  ctx(person_data_base) => ctx(data_base_context);
+  ctx(person_data_base) => ctx(Bool_TYPE);
+  ctx(data_base_context) => SEX = {man , woman};
+  ctx(data_base_context) => card(SEX) = 2;
+  ctx(data_base_context) => STATUS = {living , dead};
+  ctx(data_base_context) => card(STATUS) = 2;
+  ctx(Bool_TYPE) => BOOL = {FALSE , TRUE};
+  ctx(Bool_TYPE) => card(BOOL) = 2
+END
+&
+THEORY EnumerateX IS
+  binhyp(ctx(data_base_context)) => SEX == {man , woman};
+  binhyp(ctx(data_base_context)) => STATUS == {living , dead};
+  binhyp(ctx(Bool_TYPE)) => BOOL == {FALSE , TRUE}
+END
+&
+THEORY NotEqualX IS
+  binhyp(SEX = {man , woman}) & binhyp(card(SEX) = 2) => not(man = woman);
+  binhyp(SEX = {man , woman}) & binhyp(card(SEX) = 2) => not(woman = man);
+  binhyp(STATUS = {living , dead}) & binhyp(card(STATUS) = 2) => not(living = dead);
+  binhyp(STATUS = {living , dead}) & binhyp(card(STATUS) = 2) => not(dead = living);
+  binhyp(BOOL = {FALSE , TRUE}) & binhyp(card(BOOL) = 2) => not(FALSE = TRUE);
+  binhyp(BOOL = {FALSE , TRUE}) & binhyp(card(BOOL) = 2) => not(TRUE = FALSE)
+END
+&
+THEORY RewriteToFalseOrTrueX IS
+  binhyp(SEX = {man , woman}) & binhyp(card(SEX) = 2) => man = woman == false;
+  binhyp(SEX = {man , woman}) & binhyp(card(SEX) = 2) => woman = man == false;
+  binhyp(STATUS = {living , dead}) & binhyp(card(STATUS) = 2) => living = dead == false;
+  binhyp(STATUS = {living , dead}) & binhyp(card(STATUS) = 2) => dead = living == false;
+  binhyp(BOOL = {FALSE , TRUE}) & binhyp(card(BOOL) = 2) => FALSE = TRUE == false;
+  binhyp(BOOL = {FALSE , TRUE}) & binhyp(card(BOOL) = 2) => TRUE = FALSE == false
+END
+&
+THEORY FwdContra0X IS
+  woman = man & ctx(data_base_context) => bfalse;
+  x = woman & x = man & ctx(data_base_context) => bfalse;
+  x = woman & y = x & y = man & ctx(data_base_context) => bfalse;
+  x = man & x = woman & ctx(data_base_context) => bfalse;
+  x = man & y = x & y = woman & ctx(data_base_context) => bfalse;
+  dead = living & ctx(data_base_context) => bfalse;
+  x = dead & x = living & ctx(data_base_context) => bfalse;
+  x = dead & y = x & y = living & ctx(data_base_context) => bfalse;
+  x = living & x = dead & ctx(data_base_context) => bfalse;
+  x = living & y = x & y = dead & ctx(data_base_context) => bfalse;
+  TRUE = FALSE & ctx(Bool_TYPE) => bfalse;
+  x = TRUE & x = FALSE & ctx(Bool_TYPE) => bfalse;
+  x = TRUE & y = x & y = FALSE & ctx(Bool_TYPE) => bfalse;
+  x = FALSE & x = TRUE & ctx(Bool_TYPE) => bfalse;
+  x = FALSE & y = x & y = TRUE & ctx(Bool_TYPE) => bfalse
+END
+&
+THEORY FwdEqual1X IS
+  man = x => x = man;
+  woman = x => x = woman;
+  not(man = x) & ctx(data_base_context) => x = woman;
+  not(x = man) & ctx(data_base_context) => x = woman;
+  not(woman = x) & ctx(data_base_context) => x = man;
+  not(x = woman) & ctx(data_base_context) => x = man;
+  living = x => x = living;
+  dead = x => x = dead;
+  not(living = x) & ctx(data_base_context) => x = dead;
+  not(x = living) & ctx(data_base_context) => x = dead;
+  not(dead = x) & ctx(data_base_context) => x = living;
+  not(x = dead) & ctx(data_base_context) => x = living;
+  FALSE = x => x = FALSE;
+  TRUE = x => x = TRUE;
+  not(FALSE = x) & ctx(Bool_TYPE) => x = TRUE;
+  not(x = FALSE) & ctx(Bool_TYPE) => x = TRUE;
+  not(TRUE = x) & ctx(Bool_TYPE) => x = FALSE;
+  not(x = TRUE) & ctx(Bool_TYPE) => x = FALSE
+END
+&
+THEORY ExpandHypX IS
+  inv(person_data_base) => inv(data_base_context);
+  inv(person_data_base) => inv(Bool_TYPE);
+  inv(person_data_base) => person : 0..maxpers;
+  inv(person_data_base) => sex : 1..person --> SEX;
+  inv(person_data_base) => status : 1..person --> STATUS;
+  inv(person_data_base) => mother : 1..person +-> dom(husband);
+  inv(person_data_base) => husband : sex~[{woman}] >+> sex~[{man}];
+  cst(person_data_base) => maxpers : NAT;
+  pre(newborn) => not(person = maxpers);
+  pre(newborn) => ss : SEX;
+  pre(mod_mother) => xx : 1..person;
+  pre(mod_mother) => yy : dom(husband);
+  pre(marriage) => xx : sex~[{woman}]-dom(husband);
+  pre(marriage) => yy : sex~[{man}]-ran(husband);
+  pre(death) => xx : status~[{living}];
+  pre(val_sex) => xx : 1..person;
+  pre(val_status) => xx : 1..person;
+  pre(is_married) => xx : 1..person;
+  pre(val_spouse) => xx : dom(husband) \/ dom(husband~);
+  pre(has_parents) => xx : 1..person;
+  pre(val_mother) => xx : dom(mother);
+  pre(is_present) => xx : 1..maxpers
+END
+&
+THEORY Initialisation IS
+  cst(person_data_base) & ctx(person_data_base) => 0 : 0..maxpers;
+  cst(person_data_base) & ctx(person_data_base) => {} : 1..0 --> SEX;
+  cst(person_data_base) & ctx(person_data_base) => {} : 1..0 --> STATUS;
+  cst(person_data_base) & ctx(person_data_base) => {} : 1..0 +-> dom({});
+  cst(person_data_base) & ctx(person_data_base) => {} : {}~[{woman}] >+> {}~[{man}]
+END
+&
+THEORY newborn IS
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(newborn) => person+1 : 0..maxpers;
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(newborn) => sex <+ {person+1 |-> ss} : 1..person+1 --> SEX;
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(newborn) => status <+ {person+1 |-> living} : 1..person+1 --> STATUS;
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(newborn) => mother : 1..person+1 +-> dom(husband);
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(newborn) => husband : (sex <+ {person+1 |-> ss})~[{woman}] >+> (sex <+ {person+1 |-> ss})~[{man}]
+END
+&
+THEORY mod_mother IS
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(mod_mother) => mother <+ {xx |-> yy} : 1..person +-> dom(husband)
+END
+&
+THEORY marriage IS
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(marriage) => mother : 1..person +-> dom(husband <+ {xx |-> yy});
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(marriage) => husband <+ {xx |-> yy} : sex~[{woman}] >+> sex~[{man}]
+END
+&
+THEORY death IS
+  cst(person_data_base) & ctx(person_data_base) & inv(person_data_base) & asn(person_data_base) & pre(death) => status <+ {xx |-> dead} : 1..person --> STATUS
+END
+&
+THEORY val_sex
+END
+&
+THEORY val_status
+END
+&
+THEORY is_married
+END
+&
+THEORY val_spouse
+END
+&
+THEORY has_parents
+END
+&
+THEORY val_mother
+END
+&
+THEORY is_present
+END
+&
+THEORY system_is_full
+END
+&
+THEORY Context
+END
+&
+THEORY Assertions
+END
+&
+THEORY Constraints
+END

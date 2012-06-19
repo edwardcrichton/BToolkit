@@ -1,0 +1,16 @@
+/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+Created as Rename_UiArr.ldf
+v0.02
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             28/01/01
+Renamed to Rename_UiArr_File.ldf for DecCo8
+***/
+
+(VALUE,lb,ub)
+|
+(Uns_TYPE,Bool_TYPE)

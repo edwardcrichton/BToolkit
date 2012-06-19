@@ -1,0 +1,731 @@
+#! /bin/csh -f
+
+# All the lists of files
+
+setenv Master_dir /se/bin/BTOOL/MASTER_RELEASE/3.3
+
+setenv working_dir /tmp
+
+set bin_script_files = \
+  ( \
+                codes \
+                licences \
+                licencem \
+                cre_Blic \
+                install_bin \
+                install_cod \
+                install_defaults \
+                install_lib \
+                install_lic \
+                install_motif \
+                install_scripts \
+  )
+
+set bin_c_files = \
+  ( \
+                ClientSocket \
+  )
+
+set bin_h_files = \
+  (  \
+                BToolkitlm_globals \
+  )
+
+set BEESRC_files = ( \
+		SYMBOL \
+		b.c \
+		bplatform.c \
+		bplatsize.c \
+		codmch.c \
+		ctxmch.c \
+		errmch.c \
+		ficmch.c \
+		filmch.c.B-Core \
+		filmch.c.release \
+		fncmch.c \
+		frmmch.c \
+		golmch.c \
+		hypmch.c \
+		inimch.c \
+		itfmch.c.B-Core \
+		itfmch.c.release \
+		lexmch.c \
+		macmch.c \
+		macros.c \
+		natmch.c.B-Core \
+		natmch.c.release \
+		nodmch.c \
+		outmch.c \
+		prfmch.c.B-Core \
+		prfmch.c.release \
+		resmch.c \
+		rulmch.c \
+		seqmch.c \
+		setmch.c \
+		shlmch.c \
+		strmch.c \
+		symmch.c \
+		sysmch.c \
+		tacmch.c \
+		themch.c.B-Core \
+		themch.c.release \
+		timmch.c \
+		tolmch.c \
+		trmmch.c \
+		winmch.c \
+		ysnmch.c \
+  )
+
+
+
+set SLIB_files = ( \
+		Bit_TYPE \
+		Bit_TYPE_Ops \
+                BitsNContext \
+		Bool_TYPE \
+		Bool_TYPE_Ops \
+		Char_TYPE \
+		Char_TYPE_Ops \
+		Int_TYPE \
+		Int_TYPE_Ops \
+		Rename_Bit_String \
+		Rename_File_io \
+		Rename_Narr \
+		Rename_Nfnc \
+		Rename_Nseq \
+		Rename_Nvar \
+                Rename_SocketClient \
+                Rename_SocketServer \
+                Rename_SharedSocketServer \
+		Rename_Timer \
+		Rename_Varr \
+		Rename_Vffnc \
+		Rename_Vfnc \
+		Rename_Vseq \
+		Rename_Vvar \
+		Rename_ffnc_ctx \
+		Rename_ffnc_obj \
+		Rename_file_dump \
+		Rename_fnc_ctx \
+                Rename_fnc_obj \
+		Rename_fstr_ctx \
+		Rename_fstr_obj \
+		Rename_seq_ctx \
+		Rename_seq_obj \
+		Rename_set \
+		Rename_set_ctx \
+		Rename_set_obj \
+		Rename_str_ctx \
+		Rename_str_obj \
+		Rename_token_io \
+		Scalar_TYPE \
+		Scalar_TYPE_Ops \
+		String_TYPE \
+		String_TYPE_Ops \
+		basic_io \
+		file_dump \
+		system \
+  )
+
+
+# set SLIB_lowlev_files = ( \
+# 		token_io \
+#   )
+
+
+
+set SLIB_DBSERVER_files = ( \
+		IntegrityCheck \
+  )
+
+set SLIB_DBSERVER_files_ = ( \
+  )
+
+
+set SLIB_BOOSTER_files = ( \
+		Crypt \
+		QueryCheck \
+		Rename_FileRefGen \
+		Rename_Generic \
+		Rename_Generic1 \
+		Rename_IntegrityCheck \
+		Rename_Utilities \
+		Rename_setb_obj \
+		Rename_seqb_obj \
+		Rename_strb_obj \
+		Rename_ffncb_obj \
+  )
+
+
+set SLIB_EXTRA_files = ( \
+		POOLSm \
+		CalcCoeffts \
+  )
+
+set SLIB_EXTRA_files_ = ( \
+		POOLSm_sub \
+  )
+
+  setenv REL_BT_N_files "1 2 3 4 5 6 7 9 13 14 15 16    20 21 24 31 32 39"
+  setenv LAB_BT_N_files "1 2 3 4 5 6 7 9 13 14 15 16 19 20 21 24 31 32 39"
+
+
+
+set Toolkit1_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src \
+                Utils.src \
+                Introduce.src \
+                Find.src \
+                Export.src \
+                CreHtml.src \
+                Toolkit_core.src \
+                Toolkit1.src \
+  )
+
+set Toolkit2_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src \
+                Standardize.src \
+                Normaliser.src \
+                Desugarer.src \
+                Analyser.src \
+                VHDLSyntax.src \
+                PASPSyntax.src \
+                TypeChecker.src \
+                MergeTypeAnlForm.src \
+                CreHtml.src \
+                Toolkit_core.src \
+                Toolkit2.src \
+  )
+  
+set Toolkit3_src = ( \
+                 AMNSYMBOL \
+                 GlobalDefs.src\
+                 Standardize.src \
+                 CommonTheory.src \
+                 SetOfRules_core \
+                 MakeSetOfRules_FwdTheories.src \
+                 MakeSetOfRules.src \
+                 Utils.src\
+                 LoadUnloadProofMethod.src \
+                 CreatePmdTemplate.src \
+                 QueryUser.src \
+                 AutoProver.src \
+                 Toolkit_core.src \
+                 Toolkit3.src \
+   )
+ 
+set Toolkit4_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src\
+                Enum.src \
+                CIO_Common.src \
+                CIO.src \
+                CIOM.src \
+                CreHtml.src \
+                Toolkit_core.src \
+                Toolkit4.src \
+  )
+  
+set Toolkit5_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src \
+                CreatePmdTemplate.src \
+                Standardize.src \
+                CommonTheory.src \
+                POGeneratorTheory.src \
+                POGPreProcessOps.src \
+                ExpandMachineOps.src \
+                POGenerator.src \
+                Toolkit_core.src \
+                Toolkit5.src \
+  )
+  
+set Toolkit6_src = ( \
+                AMNSYMBOLD \
+                GlobalDefs.src\
+                Utils.src \
+                Latexer.src \
+                LatexProof.src \
+                Toolkit_core.src \
+                Toolkit6.src \
+  )
+
+set Toolkit7_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src \
+                Translators.src \
+                TransC.src \
+                Toolkit_core.src \
+                Toolkit7.src \
+  )
+
+set Toolkit9_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src \
+                ExpandMachineOps.src \
+                Animator.src \
+                Animator.thy \
+                Toolkit_core.src \
+                Toolkit9.src \
+  )
+
+set Toolkit13_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src \
+                CommonTheory.src \
+                Standardize.src \
+                MakeSetOfRules_FwdTheories.src \
+                MakeSetOfRules.src \
+                SetOfRules_core \
+                Proof.src \
+                Toolkit_core.src \
+                Toolkit13.src \
+  )
+
+set Toolkit14_src = ( \
+                 AMNSYMBOL \
+                 GlobalDefs.src\
+                 CommonTheory.src \
+                 Standardize.src \
+                 MakeSetOfRules_FwdTheories.src \
+                 MakeSetOfRules.src \
+                 SetOfRules_core \
+                 Toolkit14.src \
+  )
+
+set Toolkit16_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src\
+                ParseBaseExtSyntax.src \
+                GenBase.src \
+                GenBaseOps.src \
+                GenBaseMch.src \
+                GenBaseImp.src \
+                Toolkit_core.src \
+                Toolkit16.src \
+  )
+
+set Toolkit19_src = ( \
+                Toolkit19.src \
+  )
+
+set Toolkit20_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src \
+                CreatePmdTemplate.src \
+                Standardize.src \
+                CommonTheory.src \
+                POGeneratorTheory.src \
+                Toolkit_core.src \
+                Toolkit2021.src \
+                POGeneratorS.src \
+                Toolkit20.src \
+  )
+
+set Toolkit21_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src \
+                CreatePmdTemplate.src \
+                Standardize.src \
+                CommonTheory.src \
+                POGeneratorTheory.src \
+                Toolkit_core.src \
+                Toolkit2021.src \
+                POGeneratorR.src \
+                Toolkit21.src \
+  )
+
+set Toolkit24_src = ( \
+                AMNSYMBOL \
+                GlobalDefs.src\
+                Utils.src\
+                CreSLIB.src \
+                Toolkit_core.src \
+                Toolkit24.src \
+  )
+
+set Toolkit31_src = ( \
+                 AMNSYMBOL \
+                 GlobalDefs.src\
+                 Standardize.src \
+                 CommonTheory.src \
+                 SetOfRules_core \
+                 MakeSetOfRules_FwdTheories.src \
+                 MakeSetOfRules_IP.src \
+                 Utils.src\
+                 LoadUnloadProofMethod.src \
+                 CreatePmdTemplate.src \
+                 QueryUser.src \
+                 PrettyPrint.src \
+                 InterProver.src \
+                 Toolkit_core.src \
+                 Toolkit31.src \
+  )
+
+set Toolkit32_src = ( \
+                 AMNSYMBOL \
+                 GlobalDefs.src\
+                 Utils.src\
+                 Introduce.src \
+                 CreHtml.src \
+                 Toolkit_core.src \
+                 Toolkit32.src \
+  )
+
+
+set BKIT_script_files = \
+  ( \
+  )
+
+# NOTE: Bnetscape should be deprecated in favour of Bbrowser
+# addition: Beditor
+
+set script_files = ( \
+                BLatex \
+                BRead \
+                BTDECCO \
+                Bkit.sty \
+                Bbrowser \
+                Beditor \
+                Bnetscape \
+                Bprintdvi \
+                CheckFileDiff \
+                CheckFileExists \
+                ClearBerr \
+                CreSLIBC \
+                CreateCom \
+                DispFile \
+                ExportFile \
+                FindFile \
+                KillEditor \
+                LIB_Addunderscore \
+                LIB_Check \
+                LIB_NoRename \
+                LIB_Rename \
+                LatexFile \
+                LinkCFile \
+                ExeFile \
+                TransCFile \
+  )
+
+set lex_files = \
+  ( \
+                AFilter \
+                DFilter \
+                Deannot \
+                Doc_Latexer \
+                EFilter \
+                IFilter \
+                Latex_Index \
+                NLFilter \
+                Post_Latexer_0 \
+                Pre_GML_0 \
+                Pre_GML_1 \
+                Pre_GML_2 \
+                Pre_GML_3 \
+                Pre_GML_4 \
+                Pre_GML_5 \
+                SFilter \
+                TransCFilter \
+  )
+
+set lex_html_files = \
+  ( \
+                Html1 \
+                Html2 \
+                Html3 \
+                Html4 \
+                Html5 \
+  )
+
+set BKIT_c_files = \
+  ( \
+                BProcessInfo \
+                BToolkit \
+                BUnlock \
+  )
+
+set c_files = \
+  ( \
+                BSession \
+                CheckRenameLib \
+                CreHtml \
+                CreHtmlc \
+                Greplace \
+                LatexProofFilter \
+                Proof \
+                WaitX \
+                Unix2Dos \
+                Dos2Unix \
+    )
+
+set motif_files = \
+  ( \
+                BPrompt \
+                Upgrade3To4 \
+  )
+
+set motif_b_files = \
+  ( \
+                Abs2Conc_ffnc_obj \
+                Bit_TYPE \
+                Bool_TYPE \
+                CfgDepBase \
+                CfgDepBaseCtx \
+                CfgDepBase_Vffnc \
+                CfgDepBase_file_dump \
+                CfgDepBase_seq_obj \
+                CfgDepBase_set_obj \
+                CfgDepBase_str_obj \
+                CfgDepCtx \
+                Construct_ffnc_obj \
+                GENState_ffnc_obj \
+                MRIState_ffnc_obj \
+                Seqstr_ffnc_obj \
+                String_ffnc_obj \
+                Scalar_TYPE \
+                String_TYPE \
+                basic_io \
+                file_dump \
+  )
+
+set motif_b_dot_o = ""
+foreach file ($motif_b_files)
+  set motif_b_dot_o = "$motif_b_dot_o CFG_DEP_BASE/CDE/C/$file.o"
+end
+
+set motif_btl_b_files = \
+  ( \
+                btl_prf_ffnc_ctx \
+                btl_prf_ffnc_obj \
+                prf_seq_stp_ffnc_ctx \
+                prf_seq_stp_ffnc_obj \
+                btl_proof_seq_ctx \
+                btl_proof_seq_obj \
+                btl_proof_str_ctx \
+                btl_proof_str_obj \
+                btl_proof_file_dump \
+                btl_proof \
+                btl_proofCtx \
+  )
+
+set motif_btl_b_dot_o = ""
+foreach file ($motif_btl_b_files)
+  set motif_btl_b_dot_o = "$motif_btl_b_dot_o ../BEESRC/BTL_PRF/CDE/C/$file.o"
+end
+
+set BMotif_c_files = \
+  ( \
+            B_Motif.c \
+            BMotif_globals.c \
+            BMotif_browser.c \
+            BMotif_fifo.c \
+            BMotif_init.c \
+            BMotif_io.c \
+            BMotif_utils.c \
+            BMotif_widgets.c \
+            BMotif_displaystate.c \
+            ../C/BToolkitlm_globals.c \
+	    ../C/cuserid.c \
+            ../BEESRC/appmch.motif.c \
+            ../BEESRC/motif.c \
+            ../BEESRC/bmotif_sub.c \
+            ../BEESRC/bmotif.c \
+            ../BEESRC/bplatsize.c \
+            ../C/ClientSocket.c \
+  )
+
+set BMotif_c_files_m = \
+  ( \
+            B_Motif.c \
+            BMotif_globals.c \
+            BMotif_browser.c \
+            BMotif_fifo.c \
+            BMotif_init.c \
+            BMotif_io.c \
+            BMotif_utils.c \
+            BMotif_widgets.c \
+            BMotif_displaystate.c \
+            ../C/BToolkitlm_globals.c \
+	    ../C/cuserid.c \
+            ../BEESRC/appmch.motif.c \
+            ../BEESRC/motif.c \
+            ../BEESRC/bmotif_sub.c \
+            ../BEESRC/bmotif.c \
+            ../C/ClientSocket.c \
+  )
+
+set BMotif_obj_files = \
+  ( \
+            B_Motif.o \
+            BMotif_globals.o \
+            BMotif_browser.o \
+            BMotif_fifo.o \
+            BMotif_init.o \
+            BMotif_io.o \
+            BMotif_utils.o \
+            BMotif_widgets.o \
+            BMotif_displaystate.o \
+            BToolkitlm_globals.o \
+	    cuserid.o \
+            appmch.motif.o \
+            motif.o \
+            bmotif_sub.o \
+            bmotif.o \
+            bplatsize.o \
+            ClientSocket.o \
+  )
+
+set BMotif_obj_files_m = \
+  ( \
+            B_Motif.o \
+            BMotif_globals.o \
+            BMotif_browser.o \
+            BMotif_fifo.o \
+            BMotif_init.o \
+            BMotif_io.o \
+            BMotif_utils.o \
+            BMotif_widgets.o \
+            BMotif_displaystate.o \
+            BToolkitlm_globals.o \
+	    cuserid.o \
+            appmch.motif.o \
+            motif.o \
+            bmotif_sub.o \
+            bmotif.o \
+            ClientSocket.o \
+  )
+
+set motif_socket_files = \
+  ( \
+		ClientSocket.c \
+		BToolkitlm_globals.h \
+  )
+
+
+set BToolkitlm_files = \
+  ( \
+		BToolkitd.c \
+		BToolkitlm_globals.h \
+		ServerSocket.c \
+  )
+
+
+set SYMBOL_files = ( \
+                 SYMBOL \
+                 AMNSYMBOL \
+  )
+
+set PALETTE_files = \
+  ( \
+		Machines.pal \
+		OpsMch.pal \
+		Refinements.pal \
+		OpsRef.pal \
+		Implementations.pal \
+		OpsImp.pal \
+		Bases.pal \
+		Documents.pal \
+		Enumerations.pal \
+		Interfaces.pal \
+  )
+
+
+set HELP_files = \
+  ( \
+                AMNotation.html \
+                ASCIISymbols.html \
+                Analyser.html \
+                Animator.html \
+                AutoProver.html \
+                BEnvironment.html \
+                BMethod.html \
+                BPlatform.html \
+                BProcessInfo.html \
+                BToolkit.html \
+                BUnlock.html \
+                BaseGen.html \
+                Close.html \
+                Commit.html \
+                CommitEdits.html \
+                Contents.html \
+                CreateSLIB.html \
+                DocumentMarkUp.html \
+                Documents.html \
+                Editor.html \
+                Enumerator.html \
+                ExportTLIB.html \
+                Find.html \
+                GettingStarted.html \
+                Hypertext.html \
+                Installation.html \
+                InterProver.html \
+                Interface.html \
+                Introduce.html \
+                Linker.html \
+                MathsNotation.html \
+                MiniRemake.html \
+                Options.html \
+                Overview.html \
+                POGenerator.html \
+                Palette.html \
+                Print.html \
+                ProofPrinter.html \
+                Remake.html \
+                Remove.html \
+                RemoveLevel.html \
+                Rename.html \
+                Reset.html \
+                ResetConstruct.html \
+                Run.html \
+                SaveDevelopment.html \
+                Show.html \
+                ShowUnproved.html \
+                Status.html \
+                Structuring.html \
+                SystemLibrary.html \
+                TeamLibrary.html \
+                Translator.html \
+                B1.xpm \
+                B2.xpm \
+  )
+
+set FIG_files = ( \
+                Blogo1 \
+                hierarchy \
+                hierarchy_icon \
+                imports \
+                imports_icon \
+                includes \
+                includes_icon \
+                initmotif \
+                initmotif_icon \
+                interface \
+                interface_icon \
+                refines \
+                refines_icon \
+                sees \
+                sees_icon \
+ )
+
+
+
+set WWW_script_files = ( \
+                Run_WWW_Demos \
+ )
+
+set WWW_motif_files = ( \
+                WWW_Demo_Selection \
+ )
+

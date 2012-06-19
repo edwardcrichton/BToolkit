@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_token_io">
+  <TITLE>The Rename_token_io machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>         Rename_token_io(TOKEN)
+
+<A NAME="SEES"><B>SEES</B></A>            <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+
+  /* operations deal with scalars */
+
+  tt <-- <A NAME="OPNAME!Rename_GET_TOK">Rename_GET_TOK</A> = 
+    <B>BEGIN</B>
+      tt :: TOKEN           /* reads a token (0..2147483646) */
+    <B>END</B>;
+
+  tt <-- <A NAME="OPNAME!Rename_GET_PROMPT_TOK">Rename_GET_PROMPT_TOK</A>(ss : <A HREF="String_TYPE.mch.html#SETS">STRING</A>) = 
+    <B>BEGIN</B>
+      tt :: TOKEN           /* prompts for a token (0..2147483646) */
+    <B>END</B>;
+
+   <A NAME="OPNAME!Rename_PUT_TOK">Rename_PUT_TOK</A>(tt : TOKEN) = 
+    <B>BEGIN</B> <B>skip</B> <B>END</B>;         /* printed as tt */
+
+
+
+  /* operations deal with enumerated elements */
+
+ tt <-- <A NAME="OPNAME!Rename_GET_ACT_TOK">Rename_GET_ACT_TOK</A>(SS : POW(TOKEN)) = 
+    <B>BEGIN</B>
+      tt :: SS             /* gets a token (by presenting a list) */
+    <B>END</B>;
+
+  tt <-- <A NAME="OPNAME!Rename_GET_PROMPT_ACT_TOK">Rename_GET_PROMPT_ACT_TOK</A>(SS : POW(TOKEN) & ss : <A HREF="String_TYPE.mch.html#SETS">STRING</A>) = 
+    <B>BEGIN</B>
+      tt :: TOKEN           /* prompts for a token(by presenting a list) */
+    <B>END</B>;
+
+  <A NAME="OPNAME!Rename_PUT_ACT_TOK">Rename_PUT_ACT_TOK</A>(SS : POW(TOKEN) & tt : SS) =
+    <B>BEGIN</B> <B>skip</B> <B>END</B>          /* actual value printed if possible, else tt(SS) */
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:37:09 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

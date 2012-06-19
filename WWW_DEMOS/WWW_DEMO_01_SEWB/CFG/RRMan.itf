@@ -1,0 +1,12 @@
+INTERFACE     RRMan(/* RESOURCE */ SCALAR, /* max_res */ 1000)
+
+OPERATIONS
+
+  rec_alloc,
+  is_any_free,
+  rec_free,
+  is_free,
+  rec_backup,
+  rec_restore
+
+END

@@ -1,0 +1,377 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define HERE(x) bcall(WRITE:bwritef("\n> % <\n",x))
+
+#define HERE1(x) bcall(WRITE:bwritef(" % ",x))
+
+#define Writef(x) bwritef(x)
+
+#define Writef(x) bwritef(x)
+
+`AMNSYMBOL
+
+
+THEORY  DOITX IS
+
+
+/*
+#define MakeAuto \
+    bcall((DOITX;DOITX;MAP;((FLAT;RULE;MODR;ARI)~;WRITE)~;DOITX)~:runauto)
+*/
+#define MakeAuto \
+    bcall((DOITX;DOITX;MAP;((FLAT;RULE;MODR)~;WRITE)~;DOITX)~:runauto)
+
+
+#include "MakeSetOfRules_FwdTheories.src"
+
+
+  ?;
+
+  bmodr(DOITX.2,1) &
+  bprintf("\n")
+ =>
+  sc;
+
+  brule(DOITX.2,1) &
+  bprintf(";\n")
+ =>
+  sc;
+
+/*************************************************************************/
+
+/**************
+
+  run(auto) to start
+
+**************/
+
+
+  MakeAuto
+ =>
+  run(auto);
+
+
+/*************************************************************************/
+
+/**************
+
+  Theories to be modified (except SwitchX)
+
+**************/
+
+
+  sc &
+  bprintf(" (%)",r)
+ =>
+  print_nml_rule_4(r);
+
+
+  print_nml_rule_4(r)
+ =>
+  print_nml_rule_3(r);
+
+  print_nml_rule_4(bflat(h)=>r)
+ =>
+  print_nml_rule_3(h=>r);
+
+
+  print_nml_rule_3(R => r)
+ =>
+  print_nml_rule_3(bcall(t:R) => r);
+
+  print_nml_rule_3(h & R => r)
+ =>
+  print_nml_rule_3(h & bcall(t:R) => r);
+
+
+
+  print_nml_rule_3((R or Q) => r)
+ =>
+  print_nml_rule_3(bcall(t:R|s:Q) => r);
+
+  print_nml_rule_3(h & (R or Q) => r)
+ =>
+  print_nml_rule_3(h & bcall(t:R|s:Q) => r);
+
+
+  print_nml_rule_3((R or Q or P) => r)
+ =>
+  print_nml_rule_3(bcall(t:R|s:Q|u:P) => r);
+
+  print_nml_rule_3(h & (R or Q or P) => r)
+ =>
+  print_nml_rule_3(h & bcall(t:R|s:Q|u:P) => r);
+
+
+
+/**************
+
+  non-bcall rules
+
+**************/
+
+
+HERE((r))&
+  print_nml_rule_3(r)
+ =>
+  print_nml_rule_2(r);
+
+
+/**************
+
+  goal change rules
+
+**************/
+
+
+  print_nml_rule_3(h & bcall(t:g) => G)
+ =>
+  print_nml_rule_2(h & bcall(t:g) => G);
+
+  print_nml_rule_3(bcall(t:g) => G)
+ =>
+  print_nml_rule_2(bcall(t:g) => G);
+
+
+/**************
+
+  no goal change rules (ie. tactic change)
+
+**************/
+
+
+  print_nml_rule_3(true)
+ =>
+  print_nml_rule_2(h & bcall(t:g) => g);
+
+  print_nml_rule_3(true)
+ =>
+  print_nml_rule_2(bcall(t:g) => g);
+
+
+/**************
+
+  no backtrack rules (Bcall)
+
+**************/
+
+
+  print_nml_rule_3(h & bcall(x) => G)
+ =>
+  print_nml_rule_2(h & Bcall(x) => G);
+
+  print_nml_rule_3(bcall(x) => G)
+ =>
+  print_nml_rule_2(Bcall(x) => G);
+
+
+/**************
+
+  no backtrack rules (Bcall) - no goal change rules
+
+**************/
+
+
+  print_nml_rule_3(true)
+ =>
+  print_nml_rule_2(h & Bcall(t:g) => g);
+
+  print_nml_rule_3(true)
+ =>
+  print_nml_rule_2(Bcall(t:g) => g);
+
+
+
+/*************************************************************************/
+
+
+  bmodr(DOITX.2,?) &
+  print_nml_rule_2 bsmap (s)
+ =>
+  print_nml_rule_0(s);
+
+
+/*************************************************************************/
+
+/**************
+
+  Fwd Theories
+
+**************/
+
+  bprintf("\n (%)\n",(g))
+ =>
+  print_fwd_rule_1(g);
+
+  bprintf("\n (%);\n",(a&b=>g)) &
+  bprintf("\n (%)\n",(b&a=>g))
+ =>
+  print_fwd_rule_1(a&b=>g);
+
+  bprintf("\n (%);\n",(a&b&c=>g)) &
+  bprintf("\n (%);\n",(a&c&b=>g)) &
+  bprintf("\n (%);\n",(b&a&c=>g)) &
+  bprintf("\n (%);\n",(b&c&a=>g)) &
+  bprintf("\n (%);\n",(c&a&b=>g)) &
+  bprintf("\n (%)\n",(c&b&a=>g))
+ =>
+  print_fwd_rule_1(a&b&c=>g);
+
+  bprintf("\n (%);\n",(a&b&c&d=>g)) &
+  bprintf("\n (%);\n",(a&b&d&c=>g)) &
+  bprintf("\n (%);\n",(a&c&b&d=>g)) &
+  bprintf("\n (%);\n",(a&c&d&b=>g)) &
+  bprintf("\n (%);\n",(a&d&b&c=>g)) &
+  bprintf("\n (%);\n",(a&d&c&b=>g)) &
+
+  bprintf("\n (%);\n",(b&c&a&d=>g)) &
+  bprintf("\n (%);\n",(b&c&d&a=>g)) &
+  bprintf("\n (%);\n",(b&d&a&c=>g)) &
+  bprintf("\n (%);\n",(b&d&c&a=>g)) &
+  bprintf("\n (%);\n",(b&a&c&d=>g)) &
+  bprintf("\n (%);\n",(b&a&d&c=>g)) &
+
+  bprintf("\n (%);\n",(c&a&b&d=>g)) &
+  bprintf("\n (%);\n",(c&a&d&b=>g)) &
+  bprintf("\n (%);\n",(c&b&a&d=>g)) &
+  bprintf("\n (%);\n",(c&b&d&a=>g)) &
+  bprintf("\n (%);\n",(c&d&a&b=>g)) &
+  bprintf("\n (%);\n",(c&d&b&a=>g)) &
+
+  bprintf("\n (%);\n",(d&a&b&c=>g)) &
+  bprintf("\n (%);\n",(d&a&c&b=>g)) &
+  bprintf("\n (%);\n",(d&b&a&c=>g)) &
+  bprintf("\n (%);\n",(d&b&c&a=>g)) &
+  bprintf("\n (%);\n",(d&c&a&b=>g)) &
+  bprintf("\n (%)\n",(d&c&b&a=>g))
+ =>
+  print_fwd_rule_1(a&b&c&d=>g);
+
+  print_fwd_rule_1(r) &           /* not last rule */
+  bprintf(";")
+ =>
+  print_fwd_rule_0(r,m,n);
+
+  print_fwd_rule_1(r)             /* last rule */
+ =>
+  print_fwd_rule_0(r,n,n);
+
+
+
+/*************************************************************************/
+
+/**************
+
+  Empty Theories
+
+**************/
+
+  bprintf("\nTHEORY % END\n\n&\n",a)
+ =>
+  run(THEORY a END);
+
+/*************************************************************************/
+
+/**************
+
+  Unwanted Theories
+
+**************/
+
+  run(THEORY FwdPOGTheoryX IS b END);
+
+
+/*************************************************************************/
+
+/**************
+
+  Theories other than SwitchX, Fwd Theories
+
+**************/
+
+  bprintf("\nTHEORY % IS\n",a) &
+  print_nml_rule_0(b) &
+  bprintf("\nEND\n\n&\n")
+ =>
+  run(THEORY a IS b END);
+
+  bprintf("\nTHEORY OrX IS\n") &
+  print_nml_rule_0(b) &
+  bprintf("\nEND\n")
+ =>
+  run(THEORY OrX IS b END);             /* last theory */
+
+/*************************************************************************/
+
+/**************
+
+  Fwd Theories
+
+**************/
+
+  brule(DOITX.1,A) &
+  bsearch(a,A,B) &
+  bprintf("\nTHEORY % IS\n",a) &
+  print_fwd_rule_0 bnmap (b) &
+  bprintf("\nEND\n\n&\n")
+ =>
+  run(THEORY a IS b END);
+
+/*************************************************************************/
+
+
+/**************
+
+  SwitchX Theory
+
+**************/
+
+  run(THEORY SwitchX IS b END);
+
+
+/*************************************************************************/
+
+
+  Writef(("\n\n  Can't connect to SetOfRules.made\n\n")) &
+  bhalt
+ =>
+  connectSetOfRules.made;
+
+  bconnect("SetOfRules.made") &
+  Writef(("-- Creating SetOfRules.made ..."))
+ =>
+  connectSetOfRules.made;
+
+  Writef(("\n\n  Can't connect to SetOfRules\n\n")) &
+  bhalt
+ =>
+  runauto;
+
+  bget("SetOfRules",r) &
+  connectSetOfRules.made &
+  run bsmap r &
+  Writef((" done\n"))
+ =>
+  runauto
+
+/*************************************************************************/
+
+END
+
+

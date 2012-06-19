@@ -1,0 +1,83 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(VHDL_PK(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Ran)
+;
+(Rename_Ran)
+;
+(Rename_Ran = 0..maxnum)
+;
+(Rename_Ran = 0..maxnum)
+;
+(?)
+;
+(?)
+;
+(Rename_num)
+;
+(Rename_num)
+;
+(Rename_num : Rename_Ran)
+;
+(Rename_num : Rename_Ran)
+;
+(?)
+;
+(Rename_num :: Rename_Ran)
+;
+(@Rename_numx.(Rename_numx : Rename_Ran ==> Rename_num := Rename_numx))
+;
+(Rename_EXP)
+;
+(Rename_EXP)
+;
+(Rename_number_SG(maxnum):(maxnum : NAT):(?))
+;
+(
+(
+ (Rename_EXP)
+;
+ (? , Mod_Op , Det_Op , Rename_EXP(num , p1))
+;
+ (num , p1)
+;
+ (?)
+;
+ (
+ (num : 0..maxnum & p1 : 0..maxnum & exp(num , p1) : 0..maxnum)
+ |
+ (
+ (Rename_num := exp(num , p1))
+ )
+ )
+;
+ (
+ (num : 0..maxnum & p1 : 0..maxnum & exp(num , p1) : 0..maxnum)
+ |
+ (
+ (Rename_num := exp(num , p1))
+ )
+ )
+)
+)

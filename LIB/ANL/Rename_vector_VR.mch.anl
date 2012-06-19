@@ -1,0 +1,407 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(std_number_PK(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Vec,Rename_Vec2Nat,Rename_Nat2Vec)
+;
+(Rename_Vec,Rename_Vec2Nat,Rename_Nat2Vec)
+;
+(Rename_Vec = 0..ub --> {0,1} & Rename_Vec2Nat: Rename_Vec --> NAT & Rename_Nat2Vec: NAT +-> Rename_Vec & Rename_Vec2Nat = %vec.(vec: Rename_Vec | SIGMA(nn).(nn: 0..ub | vec(nn)*exp(2,nn))) & Rename_Nat2Vec = Rename_Vec2Nat~)
+;
+(Rename_Vec = 0..ub --> {0,1} & Rename_Vec2Nat: Rename_Vec --> NAT & Rename_Nat2Vec: NAT +-> Rename_Vec & Rename_Vec2Nat = %vec.(vec: Rename_Vec | SIGMA(nn).(nn: 0..ub | vec(nn)*exp(2,nn))) & Rename_Nat2Vec = Rename_Vec2Nat~)
+;
+(?)
+;
+(?)
+;
+(Rename_vec)
+;
+(Rename_vec)
+;
+(Rename_vec: Rename_Vec)
+;
+(Rename_vec: Rename_Vec)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_vec_STO,Rename_vec_VAL,Rename_vec_EQL,Rename_VEC2NAT,Rename_NAT2VEC,Rename_ALL1s,Rename_ALL0s,Rename_VAL,Rename_XTR,Rename_SET1,Rename_SET0,Rename_MASK)
+;
+(Rename_vec_STO,Rename_vec_VAL,Rename_vec_EQL,Rename_VEC2NAT,Rename_NAT2VEC,Rename_ALL1s,Rename_ALL0s,Rename_VAL,Rename_XTR,Rename_SET1,Rename_SET0,Rename_MASK)
+;
+(Rename_vector_VR(lb,ub):(lb = 0 & lb<ub & ub: NAT & lb: NAT):(?))
+;
+(
+(
+ (Rename_vec_STO)
+;
+ (?,Mod_Op,Det_Op,Rename_vec_STO(vec))
+;
+ (vec)
+;
+ (?)
+;
+ (
+ (vec: Rename_Vec)
+ |
+ (
+ (BEGIN
+ Rename_vec:=vec
+ END)
+ )
+ )
+;
+ (
+ (vec: Rename_Vec)
+ |
+ (
+ (Rename_vec:=vec)
+ )
+ )
+)
+,
+(
+ (Rename_vec_VAL)
+;
+ (?,Val_Op,Det_Op,(vec <-- Rename_vec_VAL))
+;
+ (?)
+;
+ (vec)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vec:=Rename_vec
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (vec:=Rename_vec)
+ )
+ )
+)
+,
+(
+ (Rename_vec_EQL)
+;
+ (?,Val_Op,Det_Op,(st <-- Rename_vec_EQL(vec)))
+;
+ (vec)
+;
+ (st)
+;
+ (
+ (vec: Rename_Vec)
+ |
+ (
+ (IF vec = Rename_vec THEN
+ st:=1
+ ELSE
+ st:=0
+ END)
+ )
+ )
+;
+ (
+ (vec: Rename_Vec)
+ |
+ (
+ (
+ (
+ (vec = Rename_vec)
+ )
+ ==>
+ (
+ (st:=1)
+ )
+ )
+ []
+ (
+ (
+ (not(vec = Rename_vec))
+ )
+ ==>
+ (
+ (st:=0)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_VEC2NAT)
+;
+ (?,Val_Op,Det_Op,(nn <-- Rename_VEC2NAT))
+;
+ (?)
+;
+ (nn)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ nn:=Rename_Vec2Nat(Rename_vec)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (nn:=Rename_Vec2Nat(Rename_vec))
+ )
+ )
+)
+,
+(
+ (Rename_NAT2VEC)
+;
+ (?,Mod_Op,Det_Op,Rename_NAT2VEC(nn))
+;
+ (nn)
+;
+ (?)
+;
+ (
+ (nn: NAT & nn: dom(Rename_Nat2Vec))
+ |
+ (
+ (Rename_vec:=Rename_Nat2Vec(nn))
+ )
+ )
+;
+ (
+ (nn: NAT & nn: dom(Rename_Nat2Vec))
+ |
+ (
+ (Rename_vec:=Rename_Nat2Vec(nn))
+ )
+ )
+)
+,
+(
+ (Rename_ALL1s)
+;
+ (?,Mod_Op,Det_Op,Rename_ALL1s)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_vec:=(0..ub)*{1}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_vec:=(0..ub)*{1})
+ )
+ )
+)
+,
+(
+ (Rename_ALL0s)
+;
+ (?,Mod_Op,Det_Op,Rename_ALL0s)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_vec:=(0..ub)*{0}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_vec:=(0..ub)*{0})
+ )
+ )
+)
+,
+(
+ (Rename_VAL)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_VAL(idx)))
+;
+ (idx)
+;
+ (bb)
+;
+ (
+ (idx: 0..ub)
+ |
+ (
+ (BEGIN
+ bb:=Rename_vec(idx)
+ END)
+ )
+ )
+;
+ (
+ (idx: 0..ub)
+ |
+ (
+ (bb:=Rename_vec(idx))
+ )
+ )
+)
+,
+(
+ (Rename_XTR)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_XTR(lo,hi)))
+;
+ (lo,hi)
+;
+ (vv)
+;
+ (
+ (lo: 0..ub & hi: 0..ub & lo<=hi)
+ |
+ (
+ (vv:=%nn.(nn: 0..hi-lo | Rename_vec(lo+nn)))
+ )
+ )
+;
+ (
+ (lo: 0..ub & hi: 0..ub & lo<=hi)
+ |
+ (
+ (vv:=%nn.(nn: 0..hi-lo | Rename_vec(lo+nn)))
+ )
+ )
+)
+,
+(
+ (Rename_SET1)
+;
+ (?,Mod_Op,Det_Op,Rename_SET1(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx: 0..ub)
+ |
+ (
+ (BEGIN
+ Rename_vec:=Rename_vec<+{idx|->1}
+ END)
+ )
+ )
+;
+ (
+ (idx: 0..ub)
+ |
+ (
+ (Rename_vec:=Rename_vec<+{idx|->1})
+ )
+ )
+)
+,
+(
+ (Rename_SET0)
+;
+ (?,Mod_Op,Det_Op,Rename_SET0(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx: 0..ub)
+ |
+ (
+ (BEGIN
+ Rename_vec:=Rename_vec<+{idx|->0}
+ END)
+ )
+ )
+;
+ (
+ (idx: 0..ub)
+ |
+ (
+ (Rename_vec:=Rename_vec<+{idx|->0})
+ )
+ )
+)
+,
+(
+ (Rename_MASK)
+;
+ (?,Mod_Op,Det_Op,Rename_MASK(lo,hi))
+;
+ (lo,hi)
+;
+ (?)
+;
+ (
+ (lo: 0..ub & hi: 0..ub & lo<=hi)
+ |
+ (
+ (Rename_vec:=(0..ub)*{0}<+(lo..hi<|Rename_vec))
+ )
+ )
+;
+ (
+ (lo: 0..ub & hi: 0..ub & lo<=hi)
+ |
+ (
+ (Rename_vec:=(0..ub)*{0}<+(lo..hi<|Rename_vec))
+ )
+ )
+)
+)

@@ -1,0 +1,10 @@
+#! /bin/sh
+
+more $1
+
+input=""
+while [ ! "$input" = "oO00Oo" ]
+do
+  read input
+done
+

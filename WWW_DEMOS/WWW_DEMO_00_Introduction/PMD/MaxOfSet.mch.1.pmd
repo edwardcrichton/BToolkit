@@ -1,0 +1,10 @@
+PROOFMETHOD MaxOfSet.mch.1.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~)
+
+  REASONING_DEPTH 2
+
+  END
+
+END

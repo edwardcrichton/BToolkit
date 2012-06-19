@@ -1,0 +1,4 @@
+CFBundleName = "BToolkit";
+CFBundleShortVersionString = "6.0.3";
+CFBundleGetInfoString = "BToolkit";
+NSHumanReadableCopyright = "BSD license. Search for BToolkit at github.com";

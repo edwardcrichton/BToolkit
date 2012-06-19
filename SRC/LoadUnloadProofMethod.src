@@ -1,0 +1,1057 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define LoadProofMethod \
+   bcall(((MAP;LMAP;WRITE;MODR;RULE;CATL;SHELL)~;LoadProofMethodX)~:lpm0)
+
+#define LoadBtlProofMethod \
+   bcall(((MAP;LMAP;WRITE;MODR;RULE;CATL;SHELL)~;LoadProofMethodX)~:lpm_btl_0)
+
+#define UnloadProofMethod \
+     bcall(((NEWV;ARI;MAP;WRITE;RULE;MODR)~;UnloadProofMethodX)~:upm)
+
+
+#define ProofMethodLoaded       brule(LoadProofMethodX.2,1)
+#define ProofMethodNotLoaded    brule(LoadProofMethodX.2,0)
+
+#define SetProofMethodFlagToLoaded     bcall(MODR:bmodr(LoadProofMethodX.2,1))
+#define SetProofMethodFlagToNotLoaded  bcall(MODR:bmodr(LoadProofMethodX.2,0))
+
+#define FlagProofMethodLoadError         bmodr(LoadProofMethodX.3,1)
+#define UnFlagProofMethodLoadError       bmodr(LoadProofMethodX.3,0)
+#define ProofMethodLoadErrorFlagged      brule(LoadProofMethodX.3,1)
+#define ProofMethodLoadErrorNotFlagged   brule(LoadProofMethodX.3,0)
+
+#define ReadTheoryList(z)         brule(LoadProofMethodX.1,z)
+#define ModifyTheoryList(z)       bmodr(LoadProofMethodX.1,z)
+
+#define AddNameToTheoryList(z)  brule(LoadProofMethodX.1,X) & \
+                                bmodr(LoadProofMethodX.1,(X,z))
+
+#define ReadEditProcessNum(z)     brule(InterProverFromUserX.7,z)
+#define ModifyEditProcessNum(z)   bcall(MODR:bmodr(InterProverFromUserX.7,z))
+
+
+#define ModifyUnprocessedTactic(y,z)       bmodr(UnprocessedTacticX.1,(y,z))
+#define RemoveUnprocessedTactic            bmodr(UnprocessedTacticX.1,?)
+#define ReadUnprocessedTactic(y,z)         brule(UnprocessedTacticX.1,(y,z))
+
+#define ReadPMDFileName(z)    brule(InterProverFromUserX.3,z)
+#define ModifyPMDFileName(z)  bcall((ARI;CATL;MODR):bmodr(InterProverFromUserX.3,z))
+
+#define ReadBtlPMDFileName(z)    brule(LoadProofMethodX.7,z)
+#define ModifyBtlPMDFileName(z)  bcall((ARI;CATL;MODR):bmodr(LoadProofMethodX.7,z))
+
+
+#define ReadPOFileName(z)    brule(InterProverFromUserX.2,z)
+#define ModifyPOFileName(z)  bcall((CATL;MODR):bmodr(InterProverFromUserX.2,z))
+
+
+
+
+
+
+#define KillHypProcess bcall(((CATL;SHELL;MODR)~;KillHypProcessX)~:khp)
+
+
+#define InformUSETACFirst \
+      Writef(("\n  PROOFMETHOD syntax error:\n\n    USETAC clause should appear before THEORY clauses\n",bsrv z berv))
+
+#define WarnNoFwdTactic \
+      Writef(("\n  PROOFMETHOD warning:\n\n    No Forward Tactic - substituting default\n"))
+
+#define WarnEmptyTheory(z) \
+      Writef(("\n  PROOFMETHOD warning:\n\n    % is an empty THEORY\n",bsrv z berv))
+
+#define InformIncorrectProofMethodSyntax(z) \
+      Writef(("\n  PROOFMETHOD syntax error:\n\n    %\n",bsrv z berv))
+
+#define Inform_REASONING_DEPTH_NotSet \
+      Writef(("\n  PROOFMETHOD warning:\n\n    No REASONING_DEPTH clause: using default of 2\n"))
+
+#define InformREASONING_DEPTHNum(z) \
+      Writef(("\n  REASONING_DEPTH error: % should be a number (0..2)\n",bsrv z berv))
+
+#define InformREASONING_DEPTHOutRange(z) \
+      Writef(("\n  REASONING_DEPTH error: % out of range (0..2)\n",bsrv z berv))
+
+#define InformIncorrectUSETACSyntax(z) \
+      Writef(("\n   USETAC syntax error:\n\n    %\n\n    No \"|\" allowed\n",z))
+
+/*
+#define OldUSETACSyntaxOne(a,b) \
+      Writef(("\n  WARNING: old USETAC syntax:\n\n    %,\n    %\n\n  Substituting:\n\n    (UsersTheory~),\n    (FwdUsersTheory~)\n",a,b))
+
+#define OldUSETACSyntaxTwo(a,b,c,d) \
+      Writef(("\n  WARNING: old USETAC syntax:\n\n    %,\n    %\n     |\n    %,\n    %\n\n  Substituting:\n\n    (UsersTheory~),\n    (FwdUsersTheory~)\n",a,b,c,d))
+*/
+
+#define OldUSETACSyntaxOne(a,b) \
+      Writef(("\n  ERROR: old USETAC syntax:\n\n    %,\n    %\n\n  Substitute (for example):\n\n    (UsersTheory~),\n    (FwdUsersTheory~)\n",a,b))
+
+#define OldUSETACSyntaxTwo(a,b,c,d) \
+      Writef(("\n  ERROR: old USETAC syntax:\n\n    %,\n    %\n     |\n    %,\n    %\n\n  Substitute (for example):\n\n    (UsersTheory~),\n    (FwdUsersTheory~)\n",a,b,c,d))
+
+
+#define InformPMDDoesNotParse(z) \
+         Writef(("\n\n  PROOFMETHOD %\n  does not parse\n\n",bsrv z berv))
+
+#define InformPMDDoesNotExist(z)  \
+         Writef(("\n\n  PROOFMETHOD %\n  does not exist\n",bsrv z berv))
+
+#define InformInvalidTheoryName(z) \
+         Writef(("\n  Invalid theory name: %\n",bsrv z berv))
+
+#define InformSyntaxErrorBarUSETAC \
+         Writef(("\n  PROOFMETHOD syntax error: \"|\" not allowed in USETAC\n"))
+
+
+#define InformClashON(x,y) \
+      Writef(("\n  Clash in ON clause: % and %\n",bsrv x berv,bsrv x.y berv))
+
+#define InformDupON(x) \
+      Writef(("\n  Duplication in ON clause: %\n",bsrv x berv))
+
+#define InformSyntaxErrorON(x) \
+      Writef(("\n  Syntax error in ON clause: %\n",bsrv x berv))
+
+
+
+#define ModifyPROOFMETHODQueryUserRule(z)   bmodr(QueryUserX.52,z)
+#define RemovePROOFMETHODQueryUserRule      bmodr(QueryUserX.52,?)
+
+
+
+THEORY ___pmd__Macros__X END &
+
+THEORY BToolUsersTheory END &
+
+THEORY FwdBToolUsersTheory END &
+
+
+
+/*
+
+THEORY RemAllLoopsAndFlattenX IS
+
+#define RemAllLoopsAndFlatten(x) \
+  bcall((RemAllLoopsAndFlattenX~;FLAT;MODR): \
+    bmodr(RemAllLoopsAndFlattenX.1,bflat(x)))
+
+  ?;
+#define ReadRemAllLoopsAndFlattened(x) brule(RemAllLoopsAndFlattenX.1,x)
+
+  (a~)  == a
+
+END
+
+&
+*/
+
+
+
+
+THEORY LoadProofMethodX IS
+
+
+  ?;     /* 1. theory names */
+
+  0;     /* 2. 0=>pmd not loaded, 1=>pmd loaded,  */
+
+  0;     /* 3. PMD load error flag, 0=>no error, 1=>error */
+
+  ?;     /* 4. not used */
+
+  ?;     /* 5. 0=>`empty' proof method 1=>not ...  */
+
+  ?;     /* 6. 0=>`NotProcessingInclusion' 1=>`ProcessingInclusion' */
+#define SetProcessingInclusion     bmodr(LoadProofMethodX.6,1)
+#define SetNotProcessingInclusion  bmodr(LoadProofMethodX.6,0)
+#define ProcessingInclusion        brule(LoadProofMethodX.6,1)
+#define NotProcessingInclusion     brule(LoadProofMethodX.6,0)
+
+  ?;  /* 7. "PMD/a.b.btl.n.pmd BtlPMDFileName */
+
+  bclean(x);
+
+  InformREASONING_DEPTHNum(N) &
+  FlagProofMethodLoadError
+ =>
+  chk_DEPTH(N);
+
+  bnum(N) &
+  InformREASONING_DEPTHOutRange(N) &
+  FlagProofMethodLoadError
+ =>
+  chk_DEPTH(N);
+
+  bnum(N) &
+  btest(N>=0) &
+  btest(N<=2) &
+  Set_REASONING_DEPTH(N)
+ =>
+  chk_DEPTH(N);
+
+
+
+/*************************** add trace bwd rules ***************************/
+
+  /***
+  only add trace for InterProver!
+  ***/
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,g))
+ =>
+  add_trace_bwd_rule(a,(g),m,n);
+
+  IfInterProver &
+  bcall((___pmd__Macros__X~;FLAT;RULE): bcrer(a,(bflat(Writef(("\n    Applying % to:\n      %\n",a.m,g))&(bcall(MODR: bmodr(LemmaTraceX.1,?))))=>g)))
+ =>
+  add_trace_bwd_rule(a,g,m,n);
+
+  IfInterProver &
+  bcall((___pmd__Macros__X~;FLAT;RULE): bcrer(a,(bflat(Writef(("\n    Applying % rewrite:\n      %\n",a.m,(l==r)))&(bcall(MODR: bmodr(LemmaTraceX.1,?))))=>(l==r))))
+ =>
+  add_trace_bwd_rule(a,(l==r),m,n);
+
+  IfInterProver &
+  bcall((___pmd__Macros__X~;FLAT;RULE): bcrer(a,(bflat(Writef(("\n    Applying % to:\n      %\n",a.m,g))&(bcall(MODR: bmodr(LemmaTraceX.1,?)))&h)=>g)))
+ =>
+  add_trace_bwd_rule(a,(h=>g),m,n);
+
+  IfInterProver &
+  bcall((___pmd__Macros__X~;FLAT;RULE): bcrer(a,(bflat(Writef(("\n    Applying % rewrite:\n      %\n",a.m,(l==r)))&(bcall(MODR: bmodr(LemmaTraceX.1,?)))&h)=>(l==r))))
+ =>
+  add_trace_bwd_rule(a,(h=>(l==r)),m,n);
+
+
+/*********************** perm antecedents fwd rules ***********************/
+
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,g))
+ =>
+  perm_antecedents_fwd_rule(a,g);
+
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&w=>g)))
+ =>
+  perm_antecedents_fwd_rule(a,(w&x=>g));
+
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&x&y=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&y&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&w&y=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&y&w=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(y&w&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(y&x&w=>g)))
+ =>
+  perm_antecedents_fwd_rule(a,(w&x&y=>g));
+
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&x&y&z=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&y&x&z=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&w&y&z=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&y&w&z=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(y&w&x&z=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(y&x&w&z=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&x&z&y=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&y&z&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&w&z&y=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&y&z&w=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(y&w&z&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(y&x&z&w=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&z&x&y=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(w&z&y&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&z&w&y=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(x&z&y&w=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(y&z&w&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(y&z&x&w=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(z&w&x&y=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(z&w&y&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(z&x&w&y=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(z&x&y&w=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(z&y&w&x=>g))) &
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(z&y&x&w=>g)))
+ =>
+  perm_antecedents_fwd_rule(a,(w&x&y&z=>g));
+
+  bcall((___pmd__Macros__X~;RULE):bcrer(a,(v&w&x&y&z=>g)))
+ =>
+  perm_antecedents_fwd_rule(a,(v&w&x&y&z=>g));  /* perm <=4 only */
+
+
+/************************** determine fwd/bwd rule **************************/
+
+  /***
+  must be a fwd rule
+  ***/
+  perm_antecedents_fwd_rule(a,r)
+ =>
+  determine_fwd_bwd_rule(a,r,m,n);
+
+  /***
+  theory a doesn't appear in forward tactic
+  treat as a bwd rule
+  ***/
+  ReadUnprocessedTactic(B,F) &
+  a\F &
+  add_trace_bwd_rule(a,r,m,n)
+ =>
+  determine_fwd_bwd_rule(a,r,m,n);
+
+  /***
+  theory a doesn't appear in either
+  tactic - treat as a bwd rule
+  ***/
+  ReadUnprocessedTactic(B,F) &
+  a\B &
+  a\F &
+  add_trace_bwd_rule(a,r,m,n)
+ =>
+  determine_fwd_bwd_rule(a,r,m,n);
+
+
+
+
+
+  ReadPROOFMETHODTactic(B,F) &
+  ModifyPROOFMETHODQueryUserRule((bcall((B,F):b)=>(c <- b)))
+ =>
+  cre_QueryUserRules;
+
+  IfBToolProver
+ =>
+  cre_QueryUserRules;
+
+  ProofMethodLoadErrorFlagged
+ =>
+  cre_QueryUserRules;
+
+
+
+
+  /* default */
+  ModifyPROOFMETHODTactic((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_2_Tac~)
+ =>
+  cre_PROOFMETHOD_Tac_1(B);
+
+  /* default */
+  ModifyPROOFMETHODTactic((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_2_Tac)~)
+ =>
+  cre_PROOFMETHOD_Tac_1(B,F);
+
+  Read_REASONING_DEPTH(2) &
+  ModifyPROOFMETHODTactic((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_2_Tac~)
+ =>
+  cre_PROOFMETHOD_Tac_1(B);
+
+  Read_REASONING_DEPTH(2) &
+  ModifyPROOFMETHODTactic((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_2_Tac)~)
+ =>
+  cre_PROOFMETHOD_Tac_1(B,F);
+
+  Read_REASONING_DEPTH(1) &
+  ModifyPROOFMETHODTactic((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_1_Tac~)
+ =>
+  cre_PROOFMETHOD_Tac_1(B);
+
+  Read_REASONING_DEPTH(1) &
+  ModifyPROOFMETHODTactic((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_1_Tac)~)
+ =>
+  cre_PROOFMETHOD_Tac_1(B,F);
+
+  Read_REASONING_DEPTH(0) &
+  ModifyPROOFMETHODTactic((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_0_Tac~)
+ =>
+  cre_PROOFMETHOD_Tac_1(B);
+
+  Read_REASONING_DEPTH(0) &
+  ModifyPROOFMETHODTactic((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_0_Tac)~)
+ =>
+  cre_PROOFMETHOD_Tac_1(B,F);
+
+  InformIncorrectUSETACSyntax((a|b)) &
+  FlagProofMethodLoadError
+ =>
+  cre_PROOFMETHOD_Tac_1(a|b);
+  
+  OldUSETACSyntaxTwo((((DED;GEN;SUB~;ARI~;UsersTheory~);FWD)~;SwitchX)~,
+    (FwdUsersTheory~;FwdLibraryTactic)~,(((DED;GEN;SUB~;ARI~;UsersTheory~);FWD)~;SwitchX)~,(FwdUsersTheory~;FwdLibraryTactic;FEQL~)~) &
+  FlagProofMethodLoadError
+ =>
+  cre_PROOFMETHOD_Tac_1(((((DED;GEN;SUB~;ARI~;UsersTheory~);FWD)~;SwitchX)~,(FwdUsersTheory~;FwdLibraryTactic)~|(((DED;GEN;SUB~;ARI~;UsersTheory~);FWD)~;SwitchX)~,(FwdUsersTheory~;FwdLibraryTactic;FEQL~)~));
+
+  OldUSETACSyntaxOne((((DED;GEN;SUB~;ARI~;UsersTheory~);FWD)~;SwitchX)~,(FwdUsersTheory~;FwdLibraryTactic)~) &
+  FlagProofMethodLoadError
+ =>
+  cre_PROOFMETHOD_Tac_1(((((DED;GEN;SUB~;ARI~;UsersTheory~);FWD)~;SwitchX)~,(FwdUsersTheory~;FwdLibraryTactic)~));
+
+
+  ReadUnprocessedTactic(B,F) &
+  cre_PROOFMETHOD_Tac_1(B,F)
+ =>
+  cre_PROOFMETHOD_Tac;
+
+  ReadUnprocessedTactic(B,?) &
+  cre_PROOFMETHOD_Tac_1(B)
+ =>
+  cre_PROOFMETHOD_Tac;
+
+
+
+  ProofMethodLoadErrorFlagged
+ =>
+  cre_PROOFMETHOD_Tac;
+
+
+  bcrer(StoreThyNamesX,theorywQeeZZJJJ) /* => attempt all */
+ =>
+  chk_ON_present;
+
+  brule(StoreThyNamesX.1,x)
+ =>
+  chk_ON_present;
+
+  ProofMethodLoadErrorFlagged
+ =>
+  chk_ON_present;
+
+
+
+  InformSyntaxErrorON(t) &
+  FlagProofMethodLoadError
+ =>
+  chk_ON(t);
+
+  bident(t) &
+  bcrer(StoreThyNamesX,t)
+ =>
+  chk_ON(t);
+
+  bident(t) &
+  brule(StoreThyNamesX.I,t) & 
+  InformDupON(t) &
+  FlagProofMethodLoadError
+ =>
+  chk_ON(t);
+
+  bident(t) &
+  brule(StoreThyNamesX.I,t.n) & 
+  InformClashON(t,n) &
+  FlagProofMethodLoadError
+ =>
+  chk_ON(t);
+
+  chk_ON(t.N) &
+  chk_ON(t.n)
+ =>
+  chk_ON(t.(N,n));
+
+  bident(t) &
+  bnum(n) &
+  btest(n>0) &
+  bcrer(StoreThyNamesX,t.n)
+ =>
+  chk_ON(t.n);
+
+  bident(t) &
+  bnum(n) &
+  btest(n>0) &
+  brule(StoreThyNamesX.I,t.n) & 
+  InformDupON((t.n)) &
+  FlagProofMethodLoadError
+ =>
+  chk_ON(t.n);
+
+  bident(t) &
+  bnum(n) &
+  btest(n>0) &
+  brule(StoreThyNamesX.I,t) & 
+  InformClashON(t,n) &
+  FlagProofMethodLoadError
+ =>
+  chk_ON(t.n);
+
+
+
+  ProofMethodLoadErrorNotFlagged &
+  InformIncorrectProofMethodSyntax(a) &
+  FlagProofMethodLoadError
+ =>
+  lst4(a);
+     
+  ProofMethodLoadErrorNotFlagged &
+  InformIncorrectProofMethodSyntax(a) &
+  FlagProofMethodLoadError
+ =>
+  lst3(a,n,m);
+     
+  WarnNoFwdTactic &
+  ModifyUnprocessedTactic(B,?)
+ =>
+  lst4(USETAC B END);
+
+  IfBToolProver &
+  ModifyUnprocessedTactic(B,?)
+ =>
+  lst4(USETAC B END);
+
+
+  ModifyUnprocessedTactic(B,F)
+ =>
+  lst4(USETAC B,F END);
+
+
+
+  chk_DEPTH(N) &
+  lst4(USETAC t END)
+ =>
+  lst4(USETAC t REASONING_DEPTH N END);
+
+  ProcessingInclusion &
+  lst4(USETAC t END)
+ =>
+  lst4(USETAC t REASONING_DEPTH N END);
+
+
+  chk_ON bsmap a &
+  lst4(USETAC t END)
+ =>
+  lst4(USETAC t ON a END);
+
+  ProcessingInclusion &
+  lst4(USETAC t END)
+ =>
+  lst4(USETAC t ON a END);
+
+  lst4(USETAC t END)
+ =>
+  lst4(USETAC t ON ? END);
+
+
+
+  ProofMethodLoadErrorFlagged
+ =>
+  lst4(x);
+     
+
+
+
+
+  lst4(THEORY a END);              /* ignore empty theories */
+
+  AddNameToTheoryList(a) &
+  bmodr(LoadProofMethodX.5,1) &     /* non-empty pmd */
+  determine_fwd_bwd_rule(a) bnmap b
+ =>
+  lst4(THEORY a IS b END);
+
+
+
+
+  AddNameToTheoryList(FwdBToolUsersTheory) &
+  bmodr(LoadProofMethodX.5,1) &     /* non-empty pmd */
+  perm_antecedents_fwd_rule(FwdBToolUsersTheory) bsmap b
+ =>
+  lst4(THEORY FwdBToolUsersTheory IS b END);
+
+  AddNameToTheoryList(BToolUsersTheory) &
+  bmodr(LoadProofMethodX.5,1) &     /* non-empty pmd */
+  add_trace_bwd_rule(BToolUsersTheory) bnmap b  /* it won't add trace! */
+ =>
+  lst4(THEORY BToolUsersTheory IS b END);
+
+
+
+  bsearch(?,b,c) &
+  lst4(THEORY a IS c END)
+ =>
+  lst4(THEORY a IS b END);
+
+  lst4(THEORY a IS ? END);
+
+
+
+
+  lst4(USETAC t END)
+ =>
+  lst3(USETAC t END,m,n);
+
+  ProcessingInclusion
+ =>
+  lst3(USETAC t END,m,n);
+
+  lst4(THEORY a END)
+ =>
+  lst3(THEORY a END,m,n);
+
+
+
+  ProofMethodLoadErrorFlagged
+ => 
+  lst3(x);
+
+
+  ProofMethodLoadErrorFlagged
+ => 
+  lst2(x);
+
+  ProofMethodLoadErrorNotFlagged &
+  InformIncorrectProofMethodSyntax(a) &
+  FlagProofMethodLoadError
+ => 
+  lst2(a);
+
+  ProofMethodLoadErrorNotFlagged &
+  InformIncorrectProofMethodSyntax(x) &
+  FlagProofMethodLoadError
+ => 
+  lst0(x);
+
+  ProofMethodLoadErrorFlagged
+ => 
+  lst0(x);
+
+  lst3 bnmap b &
+  cre_PROOFMETHOD_Tac &
+/*
+  rem_all_loops_and_flatten_FWD_TAC &
+*/
+  cre_QueryUserRules
+ =>
+  lst0(PROOFMETHOD a IS b END);
+
+  ProcessingInclusion &
+  lst3 bnmap b
+ =>
+  lst0(PROOFMETHOD a IS b END);
+
+
+
+
+  ReadPMDFileName(f) &
+  Writef(("\n  %: syntax error\n\n    %\n\n  Each DEFINITIONS rule should be a rewrite rule\n",f,x)) &
+  FlagProofMethodLoadError
+ =>
+  lst_defn(x);
+
+  bcrer(___pmd__Macros__X,(a==b))
+ =>
+  lst_defn(a==b);
+
+  bcrer(___pmd__Macros__X,(h=>(a==b)))
+ =>
+  lst_defn(h=>(a==b));
+
+  lst_defn(?);
+
+  lst_defn bsmap D & 
+  lst0(X)
+ =>
+  lst0(X DEFINITIONS D);
+
+
+
+  ReadPMDFileName(f) &
+  Writef(("\n  %: syntax error\n\n    %\n\n  Each INCLUSIONS rule should be a file name (string)\n",f,s)) &
+  FlagProofMethodLoadError
+ =>
+  lst_incl(s);
+
+  bstring(s) &
+/*  Writef(("\n  Can't connect to file %:\n\n",s)) & */
+  bshell("cp .Berr .BBcom") &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",s," .")) &
+  FlagProofMethodLoadError &
+  lpm1(s)
+ =>
+  lst_incl(s);
+
+  bstring(s) &
+  bget(s,x) &
+  lst0(x) 
+ =>
+  lst_incl(s);
+
+  bshell("$BKIT/BLIB/ClearBerr") &
+  lst_incl(s)
+ =>
+  lst_incl0(s);
+
+  ProofMethodLoadErrorFlagged
+ =>
+  lst_incl0(s);
+
+  lst_incl(?);
+
+  lst_incl0 bsmap I &
+  lst0(X)
+ =>
+  lst0(X INCLUSIONS I);
+
+
+
+
+  ProofMethodLoadErrorNotFlagged &
+  InformIncorrectProofMethodSyntax(x) &
+  FlagProofMethodLoadError
+ => 
+  lst00(x);
+
+  SetNotProcessingInclusion &
+  lst0(PROOFMETHOD a IS b END)
+ =>
+  lst00(PROOFMETHOD a IS b END);
+
+  lst_defn bsmap D & 
+  lst00(X)
+ =>
+  lst00(X DEFINITIONS D);
+
+  lst_incl bsmap I &
+  lst00(X)
+ =>
+  lst00(X INCLUSIONS I);
+
+  ProofMethodLoadErrorFlagged
+ => 
+  lst00(x);
+
+
+
+
+  InformPMDDoesNotExist(f)
+ =>
+  lplm2(f)(1);
+
+  lplm2(?)(1);
+
+  InformPMDDoesNotParse(f) /* &
+  bshell("cat .BBcom") */
+ =>
+  lplm2(f)(0);
+
+  IfInterProver &
+  InformPMDDoesNotParse(f)
+ =>
+  lplm2(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  lpm1(f);
+
+  bget(".Bcom",n) &
+  lplm2(f)(n)
+ =>
+  lpm1(f);
+
+
+
+  check_REASONING_DEPTH_set;
+
+  Read_REASONING_DEPTH(?) &
+  Inform_REASONING_DEPTH_NotSet &
+  Set_REASONING_DEPTH(2)
+ =>
+  check_REASONING_DEPTH_set;
+
+  IfBToolProver &
+  Read_REASONING_DEPTH(?) &
+  Set_REASONING_DEPTH(2)
+ =>
+  check_REASONING_DEPTH_set;
+
+  ProofMethodLoadErrorFlagged
+ =>
+  check_REASONING_DEPTH_set;
+
+
+
+  ReadPMDFileName(f) &
+  ProofMethodLoadErrorFlagged &
+  Writef(("\n  PROOFMETHOD % not loaded\n",f))
+ =>
+  write_loaded_and_set_loaded_flag_if_no_error;
+
+  ProofMethodLoadErrorNotFlagged &
+  SetProofMethodFlagToLoaded
+ =>
+  write_loaded_and_set_loaded_flag_if_no_error;
+
+  ReadPMDFileName(f) &
+  IfInterProver &
+  ProofMethodLoadErrorFlagged &
+  Writef(("\n  PROOFMETHOD % not loaded\n",f))
+ =>
+  write_loaded_and_set_loaded_flag_if_no_error;
+
+  IfInterProver &
+  ProofMethodLoadErrorNotFlagged &
+  SetProofMethodFlagToLoaded &
+  Writef(("\n  PROOFMETHOD loaded\n"))
+ =>
+  write_loaded_and_set_loaded_flag_if_no_error;
+
+
+  /***
+    this ensures UnprocessedTactic(B,F) is set; included pmd's are processed first
+    and a freeness check on B dobe to establish non-fwd theories (tracing stuff
+    inserted). Without this, UnprocessedTactic is ?, the freeness tests fail
+    and everything is treated as a forward theory, and the tracing stuff
+    means that fwd rules will never be applied.
+  ***/
+
+  lst_get_unprocessed_tac(x);
+
+  ModifyUnprocessedTactic(B,?)
+ =>
+  lst_get_unprocessed_tac(USETAC B END);
+
+  ModifyUnprocessedTactic(B,F)
+ =>
+  lst_get_unprocessed_tac(USETAC B,F END);
+
+  lst_get_unprocessed_tac(USETAC X END)
+ =>
+  lst_get_unprocessed_tac(USETAC X ON I END);
+
+  lst_get_unprocessed_tac(USETAC X END)
+ =>
+  lst_get_unprocessed_tac(USETAC X REASONING_DEPTH I END);
+
+  lst_get_unprocessed_tac(THEORY a END);
+
+  lst_get_unprocessed_tac bsmap X
+ =>
+  lst_get_unprocessed_tac(PROOFMETHOD a IS X END);
+
+  lst_get_unprocessed_tac(X)
+ =>
+  lst_get_unprocessed_tac(X DEFINITIONS I);
+
+  lst_get_unprocessed_tac(X)
+ =>
+  lst_get_unprocessed_tac(X INCLUSIONS I);
+
+
+                      /************************/
+
+
+  ReadPMDFileName(f) &
+  bshell("cp .Berr .BBcom") &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  FlagProofMethodLoadError & /*
+  bshell("echo '' > .Berr") & */
+  lpm1(f)
+ =>
+  lpm;             /* bget(f,x) failed */
+
+  ReadPMDFileName(f) &
+/***
+HERE((lpm:f))&
+bshell(bcatl("cat ", f)) &
+***/
+  bget(f,x) &
+  SetProcessingInclusion &
+  lst_get_unprocessed_tac(x) &
+  lst00(x) &
+  write_loaded_and_set_loaded_flag_if_no_error &
+  check_REASONING_DEPTH_set
+ =>
+  lpm;
+
+/***
+ReadUnprocessedTactic(E,F)&HERE((E,F))&
+ReadPROOFMETHODTactic(A,B)&HERE((A,B))&
+PrintTHEORY(UsersTheory) &
+PrintTHEORY(FwdUsersTheory) &
+PrintTHEORY(BToolUsersTheory) &
+PrintTHEORY(FwdBToolUsersTheory) &
+PrintTHEORY(StoreThyNamesX)
+=>
+print_pmd_thys;
+***/
+
+  UnFlagProofMethodLoadError &
+  Set_REASONING_DEPTH(?) &
+  bshell("$BKIT/BLIB/ClearBerr") &
+  bmodr(LoadProofMethodX.5,0) &
+  bclean(StoreThyNamesX) &
+  lpm &
+  chk_ON_present
+/*** To print out processed pmd rules ***/
+/***
+&print_pmd_thys
+***/
+ =>
+  lpm0;
+
+  ReadBtlPMDFileName(f) &
+  bshell("cp .Berr .BBcom") &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  FlagProofMethodLoadError & /*
+  bshell("echo '' > .Berr") & */
+  lpm1(f)
+ =>
+  lpm_btl_0;
+
+  ReadBtlPMDFileName(f) &
+/***
+HERE((lpm_btl_0:f))&
+bshell(bcatl("cat ", f)) &
+***/
+  bget(f,x) &
+  lst00(x)  
+ =>
+  lpm_btl_0;
+
+  ProofMethodLoaded
+ =>
+  lpm0
+
+END
+
+&
+
+THEORY UnloadProofMethodX IS
+
+  0;  /* 0=>no InterProverLemmas to reset, 1=> InterProverLemmas to reset */
+
+  ?;  /* flag for InterProver message */
+
+  ual(n);                             /* no more InterProverLemmas */
+
+  brule(InterProverLemmas.n,x) &                 /* proved ... */
+  bmodr(InterProverLemmas.n,bunproved(x)) &      /* ... so unprove ... */
+  bmodr(UnloadProofMethodX.1,1) &     /* ... and set above flag */
+  ual(n+1)
+ =>
+  ual(n);
+
+  brule(InterProverLemmas.n,bunproved(x)) &      /* already unproved */
+  ual(n+1)
+ =>
+  ual(n);
+
+  brule(InterProverLemmas.n,?) &                 /* already removed */
+  ual(n+1)
+ =>
+  ual(n);
+
+  ual(1)
+ =>
+  unprove_all_InterProverLemmas;
+
+  upm1(t);
+
+  brule(t.1,x) &
+  bclean(t)
+ =>
+  upm1(t);
+
+  upm1(?);
+
+  brule(UnloadProofMethodX.1,1) &
+  Writef("\n  ProofMethod unloaded - InterProverLemmas reset\n")
+ =>
+  write_InterProverLemmas_reset_if_required;
+
+  brule(UnloadProofMethodX.1,0)
+ =>
+  write_InterProverLemmas_reset_if_required;
+
+  ReadTheoryList(T) &
+  ModifyTheoryList(?) &
+  upm1 bsmap T &
+  upm1(___pmd__Macros__X) &
+  RemovePROOFMETHODQueryUserRule &
+  RemoveUnprocessedTactic &
+  RemovePROOFMETHODTactic &
+  SetProofMethodFlagToNotLoaded &
+  bmodr(UnloadProofMethodX.1,0)
+ =>
+  upm;
+
+  IfInterProver &
+  ReadTheoryList(T) &
+  KillHypProcess &
+  ModifyTheoryList(?) &
+  upm1 bsmap T &
+  upm1(___pmd__Macros__X) &
+  RemovePROOFMETHODQueryUserRule &
+  RemoveUnprocessedTactic &
+  RemovePROOFMETHODTactic &
+  SetProofMethodFlagToNotLoaded &
+  bmodr(UnloadProofMethodX.1,0) &
+  unprove_all_InterProverLemmas &
+  write_InterProverLemmas_reset_if_required &
+  Set_REASONING_DEPTH(?)
+ =>
+  upm;
+
+  ProofMethodNotLoaded
+ =>
+  upm
+
+END
+
+&
+
+/*
+THEORY KillPmdProcessX IS
+
+#define KillPmdProcess bcall((KillPmdProcessX;CATL;SHELL)~:kpp)
+
+  bshell(f);
+
+  ReadEditProcessNum(n) &
+  bshell(bcatl("kill -9 ",n))
+ =>
+  kpp
+
+END
+
+&
+*/
+
+THEORY UnprocessedTacticX IS
+
+  ?
+
+END
+
+&
+
+THEORY PROOFMETHODTacticX IS
+
+  ?
+
+END
+
+&
+
+THEORY UsersTheory END
+
+&
+
+THEORY FwdUsersTheory END
+
+&
+
+THEORY BToolUsersTheory END
+
+&
+
+THEORY BToolFwdUsersTheory END

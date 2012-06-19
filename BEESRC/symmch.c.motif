@@ -1,0 +1,735 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#include "symmch.h"
+
+/*
+arith_val_sym_or_int(s,w)
+{
+  if   ( is_nbr_sym(s) ) return ( -s );
+  else                   return ( val_int ( w ) );
+}
+*/
+
+trans_to_low_sym(s)
+{register int res ;
+  if( upper_sym(s) ){
+    res=s+32;
+  } else {
+    res=s;
+  }
+; return res;
+}
+
+is_vrb_idx_sym(s)
+{register int is_vrb_idx_sym_res ;
+  if( is_nbr_sym(s)==TRUE ){
+    is_vrb_idx_sym_res=((arith_val_sym(s)<10000)!=0);
+  } else {
+    is_vrb_idx_sym_res=FALSE;
+  }
+; return is_vrb_idx_sym_res;
+}
+
+#define is_indexed_vrb_sym(s) ((s>=10000)!=0)
+
+#define ident_of_vrb_sym(s) (s / 10000)
+
+#define index_of_vrb_sym(s) (0-(s % 10000))
+
+#define  code_vrb_idx_sym(a,b) (10000*a+arith_val_sym(b))
+inc_vrb_sym(s)
+{register int inc_vrb_sym_res  ;
+  if( is_indexed_vrb_sym(s)==TRUE ){
+    if( (s % 10000)==9999 ){
+      inc_vrb_sym_res=(s / 10000);
+    } else {
+      inc_vrb_sym_res=s+1;
+    };
+  } else {
+    inc_vrb_sym_res=code_vrb_idx_sym(s,0);
+  }
+; return inc_vrb_sym_res;
+}
+
+are_opn_clo_sym(s,t)
+{register int are_opn_clo_sym_res ;
+  if( s==OPNBRK_sym ){
+    are_opn_clo_sym_res=((t==CLOBRK_sym)!=0);
+  } else if( t==clos[s] ){
+    are_opn_clo_sym_res=TRUE;
+  } else if( s>127 ){
+    are_opn_clo_sym_res=((t==END_sym)!=0);
+  } else {
+    are_opn_clo_sym_res=FALSE;
+  }
+; return are_opn_clo_sym_res;
+}
+
+clos_sym(s)
+{register int clos_sym_res ;
+  if( s==OPNBRK_sym ){
+    clos_sym_res=CLOBRK_sym;
+  } else {
+    clos_sym_res=clos[s];
+  }
+; return clos_sym_res;
+}
+
+lexi_sym(s)
+{register int lexi_sym_res ;
+  if( (s<=0) || (s>sym) ){
+    lexi_sym_res=atm;
+  } else {
+    lexi_sym_res=lexi[s];
+  }
+; return lexi_sym_res;
+}
+
+is_bspec_sym(s)
+{register int is_bspec_sym_res ;
+  is_bspec_sym_res=FALSE;
+  if( lexi_sym(s)==unr ){
+    is_bspec_sym_res=((s<=last_bspec_sym)!=0);
+  }
+; return is_bspec_sym_res;
+}
+
+ari_sym(v)
+{register int ari_sym_res ;
+  if( (v>=1) && (v<=sym) ){
+    ari_sym_res=arity[v];
+  } else {
+    ari_sym_res=0;
+  }
+; return ari_sym_res;
+}
+
+edit_sym(s)
+{register int edit_sym_res ;
+  if( s<=0 ){
+    edit_sym_res=nrml;
+  } else {
+    edit_sym_res=edit[s];
+  }
+; return edit_sym_res;
+}
+
+prio_sym(s)
+{register int prio_sym_res ;
+  if( s<=0 ){
+    prio_sym_res=0;
+  } else {
+    prio_sym_res=prio[s];
+  }
+; return prio_sym_res;
+}
+
+is_large_num_sym(s)
+{register int res,i,v ;
+  xst_str(stri_sym(s),i,v,(digit_sym(v)==FALSE),res=FALSE,res=TRUE) 
+; return res;
+}
+
+is_ident_sym(s)
+{register int res,i,v ;
+  if( is_nbr_sym(s)==TRUE ){
+    res=FALSE;
+  } else if( s<=127 ){
+    res=FALSE;
+  } else if( ari_sym(s)==2 ){
+    res=FALSE;
+  } else if( fst_str(stri_sym(s))==SMR_sym ){
+    res=FALSE;
+  } else if( fst_str(stri_sym(s))==LCB_sym ){
+    res=FALSE;
+  } else if( fst_str(stri_sym(s))==SMPQUO_sym ){
+    res=FALSE;
+  } else if( ! ( letter_sym(fst_str(stri_sym(s))) ) ){
+    res=FALSE;
+  } else {
+    xst_str(stri_sym(s),i,v,(v==QUESTION_sym),res=FALSE,res=TRUE);
+    if( res==TRUE ){
+      xst_str(stri_sym(s),i,v,letter_sym(v),res=TRUE,res=FALSE);
+    };
+  }
+; return res;
+}
+
+is_literal_sym(s)
+{
+/*
+printf ( "\n++++++++++++++++++++++++++\n" );
+write_stri_sym(s);
+printf ( "\n++++++++++++++++++++++++++\n" );
+printf ( "fst_str: %c", fst_str ( stri_sym ( s ) ) );
+printf ( "\n++++++++++++++++++++++++++\n" );
+printf ( "lst_str: %c", lst_str ( stri_sym ( s ) ) );
+printf ( "\n++++++++++++++++++++++++++\n" );
+printf ( "len: %d", len ( stri_sym ( s ) ) );
+printf ( "\n++++++++++++++++++++++++++\n" );
+printf ( "len_str: %d", len_str ( stri_sym ( s ) ) );
+printf ( "\n++++++++++++++++++++++++++\n" );
+*/
+  if ( len ( stri_sym ( s ) ) != 1 ) return FALSE;       /* 1 == 4 chars */
+
+  if ( len_str ( stri_sym ( s ) ) != 3 ) return FALSE;
+
+  if  ( ( fst_str ( stri_sym ( s ) ) != QUO_sym ) ||
+        ( lst_str ( stri_sym ( s ) ) != QUO_sym )    ) return FALSE;
+
+  return TRUE;
+}
+
+is_empty_set_sym ( s ) {
+
+  if      ( len ( stri_sym ( s ) ) != 1 )                   { return FALSE; }      /* 1 == 4 chars */
+
+  else if ( len_str ( stri_sym ( s ) ) != 2 )               { return FALSE; }
+
+  else if  ( ( fst_str ( stri_sym ( s ) ) != LCB_sym ) ||
+             ( lst_str ( stri_sym ( s ) ) != RCB_sym )    ) { return FALSE; }
+
+  else                                                      { return TRUE; }
+}
+
+is_empty_seq_sym ( s ) {
+
+  if      ( len ( stri_sym ( s ) ) != 1 )                   { return FALSE; }      /* 1 == 4 chars */
+
+  else if ( len_str ( stri_sym ( s ) ) != 2 )               { return FALSE; }
+
+  else if  ( ( fst_str ( stri_sym ( s ) ) != SMR_sym ) ||
+             ( lst_str ( stri_sym ( s ) ) != GTR_sym )    ) { return FALSE; }
+
+  else                                                      { return TRUE; }
+}
+
+is_upper_ident_sym(s)
+{register int i,v,res ;
+  if( is_ident_sym(s)==TRUE ){
+    xst_str(stri_sym(s),i,v,(upper_sym(v)==FALSE) && (v!=REAL_UNDERSCORE_sym),res=FALSE,res=TRUE);
+  } else {
+    res=FALSE;
+  }
+; return res;
+}
+
+is_bitstring_sym(s)
+{register int i,j,r,v,found_bit,res ;
+  found_bit = 0;
+  if( is_nbr_sym(s)==TRUE ){
+    res=FALSE;
+  } else if( s<=127 ){
+    res=FALSE;
+  } else if( ari_sym(s)==2 ){
+    res=FALSE;
+  } else { 
+    if ( ( fst_str ( stri_sym ( s ) ) == SMPQUO_sym ) &&
+         ( lst_str ( stri_sym ( s ) ) == SMPQUO_sym )    ) {
+      j = 1;
+      res = TRUE;
+      while ( ( j <= len ( stri_sym ( s ) ) ) && ( res == TRUE ) ) {
+        v = val ( stri_sym ( s ),  j );
+        itrn( i, 1, 4,
+           { 
+             r = v % 128;
+	     if ( r ) {
+               if ( ( r == '0' ) || ( r == '1' ) ) {
+                 found_bit = 1;
+               }
+               else if ( r != SMPQUO_sym ) {
+	         res = FALSE;
+               }
+	     }
+             v = v / 128;
+           }
+        )
+        j++;
+      }
+      if ( res == TRUE ) {
+        if ( ! found_bit ) res = FALSE;  /* "" not a bbitstring */
+      }
+    }
+    else {
+      res=FALSE;
+    }
+  }
+  return res;
+}
+
+is_string_sym(s)
+{register int res ;
+  if( is_nbr_sym(s)==TRUE ){
+    res=FALSE;
+  } else if( s<=127 ){
+    res=FALSE;
+  } else if( ari_sym(s)==2 ){
+    res=FALSE;
+  } else { 
+    res=((fst_str(stri_sym(s))==SMPQUO_sym)!=0);
+  }
+; return res;
+}
+
+len_sym(s)
+{register int res ;
+  if( s<=127 ){
+    res=1;
+  } else {
+    res=len_str(stri_sym(s));
+  }
+; return res;
+}
+
+is_vrb_sym(s)
+{register int is_vrb_sym_res,i,v ;
+  if( is_indexed_vrb_sym(s)==TRUE ){
+    is_vrb_sym_res=TRUE;
+  } else if( is_nbr_sym(s)==TRUE ){
+    is_vrb_sym_res=FALSE;
+  } else if( s<=127 ){
+    is_vrb_sym_res=letter_sym(s);
+  } else if( ari_sym(s)==2 ){
+    is_vrb_sym_res=FALSE;
+  } else if( fst_str(stri_sym(s))==SMR_sym ){
+    is_vrb_sym_res=FALSE;
+  } else if( fst_str(stri_sym(s))==LCB_sym ){
+    is_vrb_sym_res=FALSE;
+  } else if( fst_str(stri_sym(s))==SMPQUO_sym ){
+    is_vrb_sym_res=FALSE;
+  } else if( fst_str(stri_sym(s))==REAL_UNDERSCORE_sym ){
+    is_vrb_sym_res=FALSE;
+  } else {
+    xst_str(stri_sym(s),i,v,(v==QUESTION_sym),is_vrb_sym_res=FALSE,
+    is_vrb_sym_res=TRUE);
+    if( is_vrb_sym_res==TRUE ){
+      xst_str(stri_sym(s),i,v,letter_sym(v),is_vrb_sym_res=TRUE,
+      is_vrb_sym_res=FALSE);
+    };
+  }
+; return is_vrb_sym_res;
+}
+
+is_vrb_spe_sym(s)
+{register int is_vrb_spe_sym_res,i,v ;
+  if( is_indexed_vrb_sym(s)==TRUE ){
+    is_vrb_spe_sym_res=TRUE;
+  } else if( is_nbr_sym(s)==TRUE ){
+    is_vrb_spe_sym_res=FALSE;
+  } else if( s<=127 ){
+    is_vrb_spe_sym_res=FALSE  
+/*  no letter here  */;
+  } else if( ari_sym(s)==2 ){
+    is_vrb_spe_sym_res=FALSE;
+  } else if( fst_str(stri_sym(s))==SMR_sym ){
+    is_vrb_spe_sym_res=FALSE;
+  } else if( fst_str(stri_sym(s))==LCB_sym ){
+    is_vrb_spe_sym_res=FALSE;
+  } else if( fst_str(stri_sym(s))==SMPQUO_sym ){
+    is_vrb_spe_sym_res=FALSE;
+  } else if( fst_str(stri_sym(s))==REAL_UNDERSCORE_sym ){
+    is_vrb_spe_sym_res=FALSE;
+  } else {
+    xst_str(stri_sym(s),i,v,(v==QUESTION_sym),is_vrb_spe_sym_res=FALSE,
+    is_vrb_spe_sym_res=TRUE);
+    if( is_vrb_spe_sym_res==TRUE ){
+      xst_str(stri_sym(s),i,v,letter_sym(v),is_vrb_spe_sym_res=TRUE,
+      is_vrb_spe_sym_res=FALSE);
+    };
+  }
+; return is_vrb_spe_sym_res;
+}
+
+ini_symfunc()
+#define ini_sym ini_symfunc()
+{register int s ;
+  sym=127;
+  itrn( s , 1 , 127 , {
+    lexi[s]=atm;
+    edit[s]=nrml;
+    arity[s]=0;
+    prio[s]=0
+ ;});
+  itrn( s , 1 , max_sym , hcod[s]=0);
+  lexi[ord(' ')]=blk;
+  lexi[EOT_sym]=bin;
+  arity[EOT_sym]=2;
+  edit[EOT_sym]=nrml;
+  prio[EOT_sym]=0;
+  lexi[BET_sym]=bin;
+  edit[BET_sym]=nrml;
+  arity[BET_sym]=2;
+  prio[BET_sym]=0;
+  lexi[ord(')')]=clo;
+  arity[ord(')')]=2;
+  lexi[ord('(')]=opn;
+  arity[ord('(')]=2;
+  prio[ord('(')]=(-100);
+}
+
+#define itr_sym(s,S)           itrn( s , 1 , sym , S)
+
+#define xst_sym(s,P,S1,S2)     s=128; stp=stp+1; stack[stp-1]=sym+1; while( s!=stack[stp-1] ){ if( P ){ S1; stack[stp-1]=s ;} else { s=s+1 ;} ;}; if( s==sym+1 ){ S2 ;}; stp=stp-1
+                               
+mak_symfunc()
+#define mak_sym mak_symfunc()
+{
+  if( sym<max_sym ){
+    sym=sym+1;
+  } else {
+            if ( ! exit_flag ) {
+              exit_flag = 1;
+              max_toolfunc();
+              Popup_Info ( "    Symbol memory full!     " );
+	    }
+            else {
+              static int count = 0;
+              XmUpdateDisplay ( top_level );
+              sleep ( 1 );
+              count++;
+              if ( count == 5 ) exit___( 1 );
+	    }
+  }
+; return sym;
+}
+
+#define nbr_sym  sym
+rmv_old_sym(n)
+{register int s ;
+  itrn( s , n+1 , nbr_sym , {
+    kil(stri_sym(s))
+ ;});
+  sym=n;
+}
+
+       
+cre_old_sym(st,l,e,p)
+{register int s,cre_sym_res ;
+  if( len_str(st)==1 ){
+    cre_sym_res=val_str(st,1);
+  } else {
+    xst_sym(s,eql_str(st,stri_sym(s))==TRUE,cre_sym_res=s,
+    s=mak_sym;
+    stri_sym(s)=cre(1);
+    cop(st,stri_sym(s));
+    lexi[s]=l; 
+    if( l==atm ){
+      arity[s]=0;
+    } else {
+      arity[s]=2;
+    };
+    edit[s]=e;
+    prio[s]=p;
+    righ[s]=0;
+    clos[s]=END_sym;
+    cre_sym_res=s);
+  }
+; return cre_sym_res;
+}
+
+hcod_sym(st)
+{register int mm,ll,l,v,hi,hm,hf ;
+  mm=max_sym-128;
+  ll=len(st);
+  l=(ll / 2)+1;
+  v=val(st,l);
+  hm=(v % mm)+128;
+  hi=(fst(st) % mm)+128;
+  if( ll==2 ){
+    hm=(hi+hm) / 2;
+  } else if( ll > 2 ){
+    hf=(lst(st) % mm)+128;
+    hm=(hi+hm+hf) / 3;
+  }
+; return hm;
+}
+
+cre_sym(st,l,e,p)
+{register int s,h,ok,pp,i,v,cre_sym_res ;
+  if( len_str(st)==1 ){
+    cre_sym_res=val_str(st,1);
+  } else {
+    h=hcod_sym(st);
+    ok=TRUE;
+    if( hcod[h]==0 ){  
+      s=mak_sym;
+      hcod[h]=s;       
+/*  new symbol  */
+      ok=FALSE;
+    } else if( hcod[h]>0 ){
+      s=hcod[h];
+      if( eql_str(st,stri_sym(s))==FALSE ){ 
+        pp=cre(3);
+        hcod[h]=0-pp;
+        psh(pp,s);      
+/*  collision with one single element  */
+        s=mak_sym;
+        psh(pp,s);
+        ok= FALSE;
+      };
+    } else { 
+/*  hcod[h] < 0  is a negated sequence name  */
+      pp=(0-hcod[h]);
+      xst(pp,i,v,eql_str(st,stri_sym(v))==TRUE,s=v,{
+        s=mak_sym;
+        psh(pp,s);     
+/*  collision with at least 2 elements  */
+        ok=FALSE
+     ;});
+    };
+    if( ok==FALSE ){
+      stri_sym(s)=cre(1);
+      cop(st,stri_sym(s));
+      lexi[s]=l; 
+      if( l==atm ){
+        arity[s]=0;
+      } else {
+        arity[s]=2;
+      };
+      edit[s]=e;
+      prio[s]=p;
+      righ[s]=0;
+      clos[s]=END_sym;
+};
+    cre_sym_res=s;
+  }
+; return cre_sym_res;
+}
+
+kil_sym(s)
+{register int st,h,v ;
+  st=stri_sym(s);
+  h=hcod_sym(st);
+  if( hcod[h]>=0 ){
+    hcod[h]=0;
+  } else {
+    v=0-hcod[h];
+    pop(v);
+    if( len(v)==1 ){
+      hcod[h]=fst(v);
+      kil(v);
+    };
+  };
+  kil(st);
+}
+
+rmv_sym(n)
+{register int s ;
+  nitrn( s , nbr_sym , n+1 , {
+    kil_sym(s)
+ ;});
+  sym=n;
+}
+
+                   
+/*  SYMBOL MACHINE INPUT-OUTPUT  */
+ 
+      
+write_stri_sym(s)
+{
+  if( s<=0 ){
+    write_nat(-s);
+  } else if( s<=127 ){
+      str_buf_i = strlen ( str_buf );
+      str_buf [ str_buf_i++ ] = ( char ) s;
+      str_buf [ str_buf_i ] = '\0';
+  } else {
+    write_str(stri_sym(s));
+  }
+}
+
+write_err_stri_sym(s)
+{
+  if( s<=0 ){
+    write_nat(-s);
+  } else if( s<=127 ){
+    str_buf_i = strlen ( str_buf );
+    str_buf [ str_buf_i++ ] = ( char ) s;
+    str_buf [ str_buf_i ] = '\0';
+  } else {
+    write_err_str(stri_sym(s));
+  }
+}
+
+     
+write_lexi_sym(s)
+{
+  switch( lexi_sym(s) ){
+    case blk :{ 
+      strcat ( str_buf, "blk" )
+    ;break;}case clo :{ 
+      strcat ( str_buf, "clo" )
+    ;break;}case opn :{ 
+      strcat ( str_buf, "opn" )
+    ;break;}case unr :{ 
+      strcat ( str_buf, "unr" )
+    ;break;}case pst :{ 
+      strcat ( str_buf, "pst" )
+    ;break;}case bin :{ 
+      strcat ( str_buf, "bin" )
+    ;break;}case atm :{ 
+      strcat ( str_buf, "atm" )
+    ;break;};
+  };
+}
+
+write_edit_sym(s)
+{
+  switch( edit_sym(s) ){
+    case keyw :{
+      strcat ( str_buf, "keyw" )
+    ;break;}case keyl :{
+      strcat ( str_buf, "keyl" )
+    ;break;}case mixw :{
+      strcat ( str_buf, "mixw" )
+    ;break;}case keyt :{
+      strcat ( str_buf, "keyt" )
+    ;break;}case nrml :{
+      strcat ( str_buf, "nrml" )
+    ;break;}case voyd :{
+      strcat ( str_buf, "void" )
+    ;break;}case blkb :{
+      strcat ( str_buf, "blkb" )
+    ;break;}case blka :{
+      strcat ( str_buf, "blka" )
+    ;break;}case blba :{
+      strcat ( str_buf, "blba" )
+    ;break;}case blbt :{
+      strcat ( str_buf, "blbt" )
+    ;break;}case blat :{
+      strcat ( str_buf, "blat" )
+    ;break;}case bbat :{
+      strcat ( str_buf, "bbat" )
+    ;break;}case term :{
+      strcat ( str_buf, "term" )
+    ;break;};
+  };
+}
+
+lst_all_symfunc()
+#define lst_all_sym lst_all_symfunc()
+{register int s ;
+  itr_sym(s,if( (s>32) && (s!=127) ){
+              if( letchif_sym(s)==FALSE ){
+                str_buf [ 0 ] = '\0';
+                write_stri_sym(s);
+                fprintf ( bstdout, str_buf );
+                if( len_str(stri_sym(s))<8 ){
+                  putc(9, bstdout);
+                };
+                putc(9, bstdout);
+                str_buf [ 0 ] = '\0';
+                write_lexi_sym(s);
+                fprintf ( bstdout, str_buf );
+                putc(9, bstdout);
+                str_buf [ 0 ] = '\0';
+                write_edit_sym(s);
+                fprintf ( bstdout, str_buf );
+                putc(9, bstdout);
+                str_buf [ 0 ] = '\0';
+                write_prio_sym(s);
+                fprintf ( bstdout, str_buf );
+                fprintf ( bstdout, "\n");
+              }
+           ;});
+}
+
+cnc_stri_sym(st,s)
+{register int m,k,sn,i,v,ss,l ;
+  if( is_single_sym(s)==TRUE ){
+    psh_str(st,s);
+  } else if( is_nbr_sym(s)==TRUE ){
+    m=arith_val_sym(s);
+    k=len_nat(m);
+    sn=cre(k);
+    while( k>0 ){
+      psh(sn,(m % 10)+ord('0'));
+      k=k-1;
+      m=m / 10;
+    };
+    nitr(sn,i,v,psh_str(st,v));
+    kil(sn);
+  } else {
+    ss=stri_sym(s);
+    l=len_str(ss);
+    itr_str(ss,i,v,
+            if( ((i==1) || (i==l)) && (v==SMPQUO_sym) ){
+              {};
+            } else {
+              psh_str(st,v)
+           ;});
+  };
+}
+
+sta_hcod_symfunc()
+#define sta_hcod_sym sta_hcod_symfunc()
+{register int s,v,tot,tot1,tot2,tot3,tot4,totw ;
+  tot=0;
+  tot1=0;
+  tot2=0;
+  tot3=0;
+  tot4=0;
+  totw=0;
+  itrn( s , 128 , max_sym , {
+    if( hcod[s]>0 ){
+      tot=tot+1;
+      tot1=tot1+1;
+    } else if( hcod[s]<0 ){
+      tot=tot+1;
+      v=0-hcod[s];
+      if( len(v) == 2 ){
+        tot2=tot2+1;
+      } else if( len(v) == 3 ){
+        tot3=tot3+1;
+      } else if( len(v) == 4 ){
+        tot4=tot4+1;
+      } else {
+        totw=totw+1;
+      };
+    }
+ ;});
+  fprintf(stderr,"      Hash Coding Entries:           %d (%d,%d,%d,%d,%d)\n\n", 
+  tot,tot1,tot2,tot3,tot4,totw);
+}
+
+sta_symfunc()
+#define sta_sym sta_symfunc()
+{
+  int i;
+  char buf [ 100 ];
+  if ( exit_flag ) printf ( "\n      ----------------------------------------------------\n\n        Statistics:\n" ); else DisplayCurrWinText ( "\n      ----------------------------------------------------\n\n        Statistics:\n" );
+  strcpy ( buf, "\n          Max Number of Symbols:         ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, max_sym );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Used Symbols:        ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, sym );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  
+/*  sta_hcod_sym  */;
+}
+
+                

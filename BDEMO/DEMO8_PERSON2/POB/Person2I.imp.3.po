@@ -1,0 +1,19 @@
+THEORY Add_person IS
+0;0;0;0;0;0;0;0;0
+END
+&
+THEORY Get_person_details IS
+0;0;0;0;0;0
+END
+&
+THEORY Remove_person IS
+0;0;0;0;0;0;0;0;0;0;0;0;0;0
+END
+&
+THEORY Restore_Person IS
+0;0
+END
+&
+THEORY Constraints IS
+0
+END

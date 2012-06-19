@@ -1,0 +1,64 @@
+IMPLEMENTATION     FactorialI
+
+/*" This implementation is a robust implementation of factorial. "*/
+
+REFINES            Factorial
+
+IMPORTS            Fac_Nvar(MaxScalar)
+
+/*" An SLIB integer machine is used for the computation."*/
+
+SEES               Bool_TYPE, Scalar_TYPE
+
+OPERATIONS
+
+/*"
+{\bf fac\_or\_0}\\[.5ex]
+This implementation returns factorial (if possible).
+
+Initially 1 is stored and {\em count\/} set to the value of the
+input; we now loop, multiplying the number stored by the current
+value of {\em count\/} and decrementing the latter at each cycle.
+The loop terminates when {\em count\/} is 0 (in which case the
+stored number is now equal to the factorial of the input) or
+when a further cycle of the loop would see the maximum value of
+the number that we can store exceeded (in which case 0 is returned).
+
+The former is modelled by {\em done\/} (using the {\em EQL\/}
+operation of {\em Scalar\_TYPE\/} to test for equality), and the latter
+by {\em in\_range\/} (using the {\em Fac\_PRE\_MUL\_NVAR\/} operation
+of {\em Fac\_Nvar\/} to test for the maximum being exceeded).
+"*/
+
+ fac_or_0 <-- comp_fac(inp)  = 
+    VAR in_range,done,count IN
+      Fac_STO_NVAR(1);
+      count <-- SCL(inp);
+      done <-- EQL(count,0);
+      IF done = FALSE THEN
+        in_range <-- Fac_PRE_MUL_NVAR(count);
+        WHILE in_range = TRUE & done = FALSE DO
+          Fac_MUL_NVAR(count);
+          count <-- DEC(count);
+          done <-- EQL(count,0);
+          in_range <-- Fac_PRE_MUL_NVAR(count)
+        INVARIANT
+          count: SCALAR &
+          Fac_Nvar: SCALAR &
+          (done = TRUE => count = 0) &
+          (done = TRUE => in_range = TRUE) &
+          (done = FALSE => count /= 0) &
+          (in_range = TRUE => math_fac(inp) = math_fac(count) * Fac_Nvar) &
+          (in_range = TRUE => Fac_Nvar * count <= MaxScalar)
+        VARIANT
+          count
+        END
+      END;
+      IF done = TRUE THEN
+        fac_or_0<--Fac_VAL_NVAR
+      ELSE
+        fac_or_0 := 0
+      END
+    END
+
+END

@@ -1,0 +1,7 @@
+#! /bin/sh
+
+echo $2 > .BBcom
+
+sed s+Rename+$1+g .BBcom > .Bcom
+
+rm -f .BBcom

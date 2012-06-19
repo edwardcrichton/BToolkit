@@ -1,0 +1,325 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>Base Generators</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Base_Generators"></A>
+<H1>
+The Base Generators (gbo) (gbm)</H1>
+The Base Generator tools are invoked from the <A HREF="BToolkit.html#Environments!Generators">Generators
+Environment</A> and take as input a base construct file, with file extension
+`.bse' (giving a description, in the BASE language, of a SYSTEM). The output
+comprises a specification and matching implementation of the system described
+in the base. The implementation is built on the <A HREF="SystemLibrary.html#System_Library">SLIB
+library machines.</A>
+
+<P>These tools provide tailored, purpose-built specifications and implementations
+of objects built as structured data with a rich set of operations to manipulate
+that data. The data is described in a declarative manner in the `.bse'
+file, and the operations produced may be filtered through editing (manually,
+or automatically through an optional SUPPORTS clause) a generated `.ops'
+file.
+
+<P>An input of, for example, `fifi.bse' would produce an output, to the
+<A HREF="BToolkit.html#Development_Environment">CFG</A> directory, of four
+configured Abstract Machine source files <TT>fifi.mch</TT>, <TT>fifiCtx.mch</TT>,
+<TT>fifiI.imp</TT> and <TT>fifiCtxI.imp</TT>; it also outputs related analysed
+and type files to the <A HREF="BToolkit.html#Development_Environment">ANL</A>
+and <A HREF="BToolkit.html#Development_Environment">TYP</A> directories.
+The Ctx machines provide contextual information regarding sets, constants
+and properties, and are not present if the base description comprises a
+single GLOBAL base.
+
+<P><A HREF="AMNotation.html#Abstract_Machines">Abstract Machines</A> produced
+by the tool are standard specifications which can be imported or included
+into other machines. The output source file provides the state and operations
+available on the state. Since these are generated machines, you can assume
+that they are syntactically correct, well-typed and internally consistent
+- hence no proof obligations are generated.
+
+<P>The generation of these machines takes place in two stages: first a
+`.ops' construct is generated (through the `gbo' directive); this comprises
+a file of operation headers which will dictate which operations will subsequently
+be produced by the `gbm' directive.
+
+<P>The `.ops' file may be edited to reduce the number of operations produced
+in line with the user's requirements (it is recommended that operations
+not required are commented out rather than removed). This `.ops' construct
+is dependent on the `.bse' construct, and all generated machines are dependent
+on the `.ops' construct.
+
+<P>The general form of a system description is given in a BNF-like syntax
+as follows:
+<BR>the syntax <TT>exp1 | exp2</TT> indicates <TT>exp1</TT> or <TT>exp2</TT>
+(choice),
+<BR><TT>&lt;&lt; exp >></TT> indicates zero or more occurrences of <TT>exp</TT>
+(repetition) and
+<BR><TT>[| exp |]</TT> indicates optionality.
+<PRE>&nbsp; system_description ::=&nbsp; SYSTEM system_name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUPPORTS imp_name &lt;&lt; , imp_name >>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SETS&nbsp;&nbsp;&nbsp;&nbsp; enum_set_decl &lt;&lt; ; enum_set_decl >>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IS system_body END</PRE>
+
+<PRE>&nbsp; system_name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier
+
+&nbsp; imp_name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier</PRE>
+
+<PRE>&nbsp; enum_set_decl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; { Identifier &lt;&lt; ,&nbsp; Identifier >> }</PRE>
+
+<PRE>&nbsp; system_body&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; GLOBAL global_dec_list END &lt;&lt; ; base_body >> |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base_body &lt;&lt; ; base_body >></PRE>
+
+<PRE>&nbsp; base_body&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; BASE base_name base_clause END |</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; base_name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier</PRE>
+
+<PRE>&nbsp; base_clause&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; MANDATORY mand_dec_list |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPTIONAL opt_dec_list |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MANDATORY mand_dec_list OPTIONAL opt_dec_list</PRE>
+
+<PRE>&nbsp; opt_dec_list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; opt_dec &lt;&lt; ; opt_dec >></PRE>
+
+<PRE>&nbsp; mand_dec_list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; mand_dec &lt;&lt; ; mand_dec >></PRE>
+
+<PRE>&nbsp; opt_dec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier: STRING[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: SEQ(Identifier)[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: SET(Identifier)[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: Identifier</PRE>
+
+<PRE>&nbsp; mand_dec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier [| (ID) |]: STRING[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier [| (ID) |]: FSTRING[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: SEQ(Identifier)[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: SET(Identifier)[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: Identifier</PRE>
+
+<PRE>&nbsp; global_dec_list&nbsp;&nbsp;&nbsp; ::=&nbsp; global_dec &lt;&lt; ; global_dec >></PRE>
+
+<PRE>&nbsp; global_dec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier: STRING[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: FSTRING[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: SEQ(Identifier)[dim] |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier: SET(Identifier)[dim]</PRE>
+
+<PRE>&nbsp; dim&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Bnumber</PRE>
+where Identifier is a <A HREF="MathsNotation.html#Identifier">B Identifier</A>.
+
+<P>An example system description is:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp; SYSTEM
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; example
+&nbsp;&nbsp;&nbsp;&nbsp; SUPPORTS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fifiI, mimiI
+&nbsp;&nbsp;&nbsp;&nbsp; SETS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SEX = { female , male }
+&nbsp;&nbsp;&nbsp;&nbsp; IS
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GLOBAL
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gl1 : SEQ(base1)[10];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gl2 : SET(base1)[15];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gl3 : FSTRING[8]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BASE&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MANDATORY
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base1_mand1 : PERSON;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base1_mand2 : SEX;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base1_mand3 ( ID ) : STRING[15]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BASE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MANDATORY
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2_mand1 : base1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2_mand2 : SEQ(base1)[5];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2_mand3 : SET(base2)[2];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2_mand4 : STRING[10]&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPTIONAL
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2_opt1 : NAT;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2_opt2 : SEQ(base2)[10];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2_opt3 : SET(PERSON)[25];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; base2_opt4 : STRING[12]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+&nbsp;&nbsp;&nbsp;&nbsp; END</PRE>
+This stipulates a module (state machine) consisting of three simple data
+structures <TT>gl1</TT>, <TT>gl2 </TT>and <TT>gl3</TT>, and two complex
+data structures <TT>base1</TT> and <TT>base2</TT>. Complex data structures
+may have mandatory (<TT>MANDATORY</TT>) and optional (<TT>OPTIONAL</TT>)
+attributes. this example would produce a module parameterised over the
+set <TT>PERSON</TT> and the numbers <TT>max_base1</TT> and <TT>max_base2</TT>,
+(the maximum number of objects to be stored in each base).
+
+<P>The optional <TT>SUPPORTS</TT> clause indicates that the generated system
+is to support the two implementations <TT>fifiI</TT> and <TT>mimiI</TT>,
+and as a consequence the generated `.ops' file will automatically have
+those operations not required by the two implementations commented out.
+
+<P>The optional <TT>SETS</TT> clause prevents the generated machines from
+being parameterised over the set <TT>SEX</TT>; instead the (enumerated)
+set is declared inside the generated Context machine.
+
+<P><U>Note the optional ID tag</U>&nbsp; for the <TT>base1_mand2</TT> field;
+this sets the identifier field for the base <TT>base1</TT> as <TT>base1_mand2</TT>.
+So when the operation to print an object from <TT>base2</TT> is invoked
+- <TT>print_BaseObj_base2</TT> - all references to <TT>base1</TT> objects
+will include the value of the field <TT>base1_mand2. </TT>Thus it is sensible
+to ID-tag fields of type STRING or FSTRING, and only one tag per base is
+permitted.
+
+<P>In general, system description may contain a <TT>GLOBAL</TT> clause
+and/or one or any number of <TT>BASE</TT> clauses. Each clause contains
+one or several declarations. The declarations may be of the following forms:
+<H2>
+<A NAME="GLOBAL"></A>GLOBAL declarations</H2>
+
+<UL>
+<LI>
+The declaration <TT>aa : STRING[nn]</TT> generates the specification of
+a variable <TT>aa : STRING</TT> (where <TT>STRING</TT> is the set of character
+strings) and operations on it; <TT>nn</TT> is taken to be the maximum length
+of <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa : FSTRING[nn]</TT> generates the specification of
+a variable <TT>aa : STRING</TT> (where <TT>STRING</TT> is the set of character
+strings) and operations on it; <TT>aa</TT> is, however, considered to be
+a fixed-length string and <TT>nn</TT> is taken to be the fixed length of
+<TT>aa</TT>. Strings of length less than <TT>nn</TT> can be stored in <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: SEQ(CC)[nn]</TT> generates the specification of
+a variable <TT>aa : seq(CC)</TT> and operations on it; <TT>nn</TT> is taken
+to be the maximum length of <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: SET(CC)[nn]</TT> generates the specification of
+a variable <TT>aa &lt;: CC</TT> and operations on it; <TT>nn</TT> is taken
+to be the maximum size of <TT>aa</TT>.</LI>
+</UL>
+
+<H2>
+<A NAME="BASE"></A>BASE declarations</H2>
+Let <TT>bb</TT> be the name of a base.
+<UL>
+<LI>
+The declaration <TT>aa: STRING[nn]</TT> within a MANDATORY clause generates
+the specification of a variable <TT>aa : bb --> STRING</TT> and operations
+on it; <TT>nn</TT> is taken to be the average length of <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: STRING[nn]</TT> within an OPTIONAL clause generates
+the specification of a variable <TT>aa: bb +-> STRING</TT> and operations
+on it; <TT>nn</TT> is taken to be the average length of <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: FSTRING[nn]</TT> within a MANDATORY clause generates
+the specification of a variable <TT>aa : bb --> STRING</TT> and operations
+on it; <TT>aa</TT> is, however, considered to be a fixed-length string
+and <TT>nn</TT> is taken to be the fixed length of <TT>aa</TT>. Strings
+of length less than <TT>nn</TT> can be stored in <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: FSTRING[nn]</TT> within an OPTIONAL clause is ILLEGAL.</LI>
+
+<LI>
+The declaration <TT>aa: SEQ(CC)[nn]</TT> within a MANDATORY clause generates
+the specification of a variable <TT>aa: bb --> seq(CC)</TT> and operations
+on it; <TT>nn</TT> is taken to be the average length of <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: SEQ(CC)[nn]</TT> within an OPTIONAL clause generates
+the specification of a variable <TT>aa: bb +-> seq(CC)</TT> and operations
+on it; <TT>nn</TT> is taken to be the average length of <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: SET(CC)[nn]</TT> within a MANDATORY clause generates
+the specification of a variable <TT>aa: bb --> POW(CC)</TT> and operations
+on it; <TT>nn</TT> is taken to be the average size of <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: SET(CC)[nn]</TT> within an OPTIONAL clause generates
+the specification of a variable <TT>aa: bb +-> POW(CC)</TT> and operations
+on it; <TT>nn</TT> is taken to be the average size of <TT>aa</TT>.</LI>
+
+<LI>
+The declaration <TT>aa: CC</TT> within a MANDATORY clause generates the
+specification of a variable <TT>aa: bb --> CC</TT> and operations on it.
+<TT>CC</TT> will become a parameter to the generated machines.</LI>
+
+<LI>
+The declaration <TT>aa: CC</TT> within an OPTIONAL clause generates the
+specification of a variable <TT>aa: bb +-> CC</TT> and operations on it.
+<TT>CC</TT> will become a parameter to the generated machines.</LI>
+
+<LI>
+The declaration <TT>aa: basename</TT> within a MANDATORY clause generates
+the specification of a variable <TT>aa: bb --> basename</TT> and operations
+on it.</LI>
+
+<LI>
+The declaration <TT>aa: basename</TT> within an OPTIONAL clause generates
+the specification of a variable <TT>aa: bb +-> basename</TT> and operations
+on it.</LI>
+</UL>
+For each base name `basename' in the description a variable
+<PRE>basename &lt;: basename_ABSOBJECT</PRE>
+is generated together with operations which changes the value of basename.
+
+<P>The generated machine is parameterised by:
+<OL>
+<LI>
+all sets (upper case set identifiers) appearing in the SYSTEM description
+as `types' (e.g. <TT>CC</TT> in <TT>SEQ(CC)[nn]</TT>)</LI>
+
+<LI>
+a `<TT>max_basename</TT>' for each BASE name `<TT>basename</TT>' appearing
+in the SYSTEM description</LI>
+</OL>
+The implementation is built on the <A HREF="SystemLibrary.html#System_Library">SLIB
+library</A>: a `<TT>Vffnc</TT>' machine is imported for the GLOBAL variables,
+and a separate `<TT>fnc_obj</TT>' is imported for each BASE; if the SYSTEM
+description contains <TT>STRING</TT>, <TT>SET</TT> or <TT>SEQ</TT>, a single
+`<TT>str_obj</TT>', `<TT>set_obj</TT>' or `<TT>seq_obj</TT>' respectively
+is also imported. Thus each (variable length) string, set or sequence will
+be stored in its appropriate `obj' machine, with the tokens denoting these
+objects being stored in the `<TT>Vffnc</TT>' or `<TT>fnc_obj</TT>' machine;
+all other objects are stored directly in the `<TT>Vffnc</TT>' or `<TT>fnc_obj</TT>'
+machine
+
+<P>An <TT>FSTRING</TT> differs from a <TT>STRING</TT> in the manner in
+which it is implemented; the former is stored, in compressed form, inside
+the `<TT>fnc_obj</TT>' machine itself, (whereas the latter is of variable
+length and stored in the `<TT>str_obj</TT>' machine, and its token stored
+in the `<TT>fnc_obj</TT>' machine). Further, operations for direct copying
+and testing for equality are provided for <TT>FSTRING</TT>s having the
+same length.
+
+<P>The Base Generator tools also perform BASE language syntax checking;
+the <A HREF="MiniRemake.html#MiniRemake">MiniRemake</A> option is provided
+if an error is found.
+
+<P>
+<HR WIDTH="60%">
+<CENTER>&nbsp;</CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+
+<P>&nbsp;
+</BODY>
+</HTML>

@@ -1,0 +1,678 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+extern int ant[];
+extern int cns[];
+extern int rth[];
+extern int num[];
+extern int trl[];
+extern int lsb[];
+extern int pvd[];
+extern int sts[];
+extern int rtmb[];
+extern int max_rul;
+int rttm;
+int rul;
+                  
+/*  PROGRAMS FOR RULE MACHINE  */
+                
+                  
+
+#define ini_rul rul=0; rttm=0
+
+#define ant_rul(r)  ant[r]
+
+#define cns_rul(r)  cns[r]
+
+#define the_rul(r)  rth[r]
+
+#define num_rul(r)  num[r]
+
+#define typ_rul(r)  trl[r]
+
+#define lsb_rul(r)  lsb[r]
+
+#define pvd_rul(r)  pvd[r]
+
+#define sts_rul(r)  sts[r]
+
+#define nev_rul 1
+
+#define now_rul 2
+
+#define bef_rul 3
+
+#define nrm_rul 1
+
+#define lem_rul 2
+
+#define rul_rul 3
+
+#define on_rul  1
+
+#define off_rul 2
+
+#define mod_sts_rul(r,b) sts_rul(r)=b
+
+#define val_sts_rul(r)   sts_rul(r)
+
+#define def_lsb_rul(r)  ((lsb_rul(r)!=0)!=0)
+
+#define rem_lsb_rul(r)  lsb_rul(r)=0
+add_lsb_rul(rr,r)
+{
+  if( def_lsb_rul(rr)==FALSE ){
+    lsb_rul(rr)=cre(5);
+  };
+  psh(lsb_rul(rr),r);
+}
+
+test_lsb_rul(rr,r)
+{register int test_lsb_rul_res,i ;
+  test_lsb_rul_res=FALSE;
+  if( def_lsb_rul(rr)==TRUE ){
+    i=idx(lsb_rul(rr),r);
+    if( i!=0 ){
+      test_lsb_rul_res=TRUE;
+    };
+  }
+; return test_lsb_rul_res;
+}
+
+rmv_lsb_rul(rr,r)
+{register int i ;
+  i=idx(lsb_rul(rr),r);
+  rem(lsb_rul(rr),i);
+}
+
+mak_rulfunc()
+#define mak_rul mak_rulfunc()
+{register int r ;
+  if( rttm!=0 ){
+    r=rtmb[rttm];
+    rttm=rttm-1;
+  } else if( rul<max_rul ){
+    rul=rul+1;
+    r=rul;
+  } else {
+            if ( ! exit_flag ) {
+              exit_flag = 1;
+              max_toolfunc();
+              Popup_Info ( "     Rule memory full!    " );
+	    }
+            else {
+              static int count = 0;
+              XmUpdateDisplay ( top_level );
+              sleep ( 1 );
+              count++;
+              if ( count == 5 ) exit___( 1 );
+	    }
+  }
+; return r;
+}
+
+sup_rul(r)
+{
+  rttm=rttm+1;
+  rtmb[rttm]=r;
+}
+
+cre_rul(tr,t,n,tp)
+{register int r ;
+  r=mak_rul;
+  the_rul(r)=t;
+  num_rul(r)=n;
+  typ_rul(r)=tp;
+  lsb_rul(r)=0;
+  pvd_rul(r)=nev_rul;
+  sts_rul(r)=on_rul;
+  if( val_root_frm(tr)==IMP_sym ){
+    ant_rul(r)=dec_tree(tr, left_node_tree(tr,root_tree(tr)),AND_sym);
+    cns_rul(r)=cre_cop_tree(tr,right_node_tree(tr,root_tree(tr)));
+  } else {
+    ant_rul(r)=cre(0);
+    cns_rul(r)=cre_cop_tree(tr,root_tree(tr));
+  }
+; return r;
+}
+
+mod_pvd_rul(r,v)
+{
+  pvd_rul(r)=v;
+}
+
+is_inverted_rul(r)
+{register int is_inverted_rul_res ;
+  if( typ_rul(r)==lem_rul ){
+    is_inverted_rul_res=((pvd_rul(r)!=now_rul)!=0);
+  } else {
+    is_inverted_rul_res=((pvd_rul(r)==bef_rul)!=0);
+  }
+; return is_inverted_rul_res;
+}
+
+kil_rul(r)
+{register int a,i,v ;
+  if( def_lsb_rul(r)==TRUE ){
+    kil(lsb_rul(r));
+  };
+  a=ant_rul(r);
+  itr(a,i,v,kil(v));
+  kil(a);
+  kil(cns_rul(r));
+  sup_rul(r);
+}
+
+mod_num_rul(r,n)
+{
+  num_rul(r)=n;
+}
+
+cre_rec_rul(r)
+{register int f,a,c,g ;
+  a=ant_rul(r);
+  c=cns_rul(r);
+  if( len(a)!=0 ){
+    g=rec_frm(a,AND_sym);
+    f=cons_frm(g,IMP_sym,cns_rul(r));
+    kil(g);
+  } else {
+    f=cre(len(c));
+    cop(c,f);
+  }
+  return f;
+}
+
+    
+                     
+/*  RULE I/O  */
+write_old_ver_rul(r)
+{register int a,c,i,v,n ;
+  a=ant_rul(r);
+  c=cns_rul(r);
+  n=num_rul(r);
+  if( len(a)==0 ){
+    reset_res(0);
+    write_blk_res(3);
+    write_num_res(num_rul(r));
+    if( n<10 ){
+      write_blk_res(1);
+    };
+    write_blk_res(1);
+    write_frm_res(c,6);
+  } else {
+    itr(a,i,v,reset_res(0);
+              write_blk_res(6);
+              if( val_root_frm(v)==IMP_sym ) write_chr_res(ord('('));
+              write_frm_res(v,6);
+              if( val_root_frm(v)==IMP_sym ) write_chr_res(ord(')'));
+              strcat ( str_buf, "\n" ));
+    reset_res(0);
+    write_blk_res(3);
+/*
+    write_num_res(num_rul(r));
+*/
+    if( n<10 ){
+      write_blk_res(1);
+    };
+    write_chr_res(ord(' '));
+    write_chr_res(ord('='));
+    write_chr_res(ord('>'));
+    strcat ( str_buf, "\n" );
+    reset_res(0);
+    write_blk_res(6);
+    write_frm_res(c,6);
+  };
+}
+
+write_ver_rul(r)
+{register int a,c,i,v,n ;
+  a=ant_rul(r);
+  c=cns_rul(r);
+  n=num_rul(r);
+  if( len(a)==0 ){
+    reset_res(0);
+    write_blk_res(6);
+    write_frm_res(c,6);
+  } else {
+    itr(a,i,v,reset_res(0);
+              write_blk_res(6);
+              if( val_root_frm(v)==IMP_sym ) write_chr_res(ord('('));
+              write_frm_res(v,6);
+              if( val_root_frm(v)==IMP_sym ) write_chr_res(ord(')'));
+              if( i<len(a) ){
+                write_blk_res(1);
+                write_chr_res(ord('&'));
+              };
+              strcat ( str_buf, "\n" ));
+    reset_res(0);
+    write_blk_res(5);
+    write_chr_res(ord('='));
+    write_chr_res(ord('>'));
+    strcat ( str_buf, "\n" );
+    reset_res(0);
+    write_blk_res(6);
+    write_frm_res(c,6);
+  }
+}
+
+write_ver_rul_dave_sub ( r, n )
+{
+  int left, right;
+  if ( val_root_frm ( r ) == AND_sym ) {
+    left = left_frm ( r );
+    right = right_frm ( r );
+    write_ver_rul_dave_sub ( left, n );
+    strcat ( str_buf, " &\n" );
+    write_ver_rul_dave_sub ( right, n );
+    kil ( left );
+    kil ( right );
+  }
+  else if ( val_root_frm( r )== OR_sym ) {
+    left = left_frm ( r );
+    right = right_frm ( r );
+    reset_res( 0 );
+    write_blk_res( n );
+    strcat ( str_buf, "(\n" );
+    write_ver_rul_dave_sub ( left, n + 4 );
+    strcat ( str_buf, "\n" );
+    reset_res( 0 );
+    write_blk_res( n );
+    strcat ( str_buf, ")\n" );
+    reset_res( 0 );
+    write_blk_res( n - 1 );
+    strcat ( str_buf, "or\n" );
+    reset_res( 0 );
+    write_blk_res( n );
+    strcat ( str_buf, "(\n" );
+    write_ver_rul_dave_sub ( right, n + 4 );
+    strcat ( str_buf, "\n" );
+    reset_res( 0 );
+    write_blk_res( n );
+    strcat ( str_buf, ")" );
+    kil ( left );
+    kil ( right );
+  }
+  else {
+    reset_res ( 0 );
+    write_blk_res ( n );
+    write_frm_res ( r , n );
+  }
+}
+
+write_inner_imp_ant_dave ( r, flag )
+{
+  int flag1 = flag;
+  int right, s, i;
+  if ( val_root_frm ( r ) == AND_sym ) {
+    right = right_frm ( r );
+    s=dec_tree(r,left_node_frm(r),AND_sym);
+    i = 1;
+
+    while ( i <= len(s) ) {
+      reset_res ( 0 );
+      if ( ( i == 1 ) && ( flag1 ) ) {
+        flag1 = 0;
+        write_blk_res ( 3 );
+        strcat ( str_buf, "(" );
+        write_frm_res(val(s,i),4);
+      }
+      else {
+        write_blk_res ( 4 );
+        write_frm_res(val(s,i),4);
+      }
+      if ( i < len(s) ) {
+        strcat ( str_buf, " &\n" );
+      }
+      i++;
+    }
+    strcat ( str_buf, " &\n" );
+    write_inner_imp_ant_dave ( right, 0 );
+    kil ( s );
+    kil ( right );
+  }
+  else {
+    if ( flag1 )  {
+      reset_res ( 0 );
+      write_blk_res ( 3 );
+      strcat ( str_buf, "(" );
+      write_frm_res ( r , 4 );
+    }
+    else {
+      reset_res ( 0 );
+      write_blk_res ( 4 );
+      write_frm_res ( r , 4 );
+    }
+  }
+}
+
+write_ver_rul_dave(r)
+{register int a,c,i,v,ll,rr,lll,rrr;
+/***
+print_live_seq ( "write_ver_rul_dave ini" );
+***/
+  save_MAX_COL_RES;
+  mod_MAX_COL_RES(999999);
+  a=ant_rul(r);
+  c=cns_rul(r);
+  if( len(a)==0 ){
+    reset_res(0);
+    write_ver_rul_dave_sub( c, 0 );
+  } else { /* we have antecedents */
+    itr(a,i,v,reset_res(0);
+              write_blk_res(2);
+              if( val_root_frm(v)==IMP_sym ) strcat ( str_buf, "(" );
+              write_frm_res(v,2);
+              if( val_root_frm(v)==IMP_sym ) strcat ( str_buf, ")" );
+              if( i<len(a) ) strcat ( str_buf, " &" );
+              strcat ( str_buf, "\n" ));  /* end of itr */
+    reset_res(0);
+    write_blk_res(1);
+    write_chr_res(ord('='));
+    write_chr_res(ord('>'));
+    strcat ( str_buf, "\n" );
+    if( val_root_frm(c)==IMP_sym ){
+      ll = left_frm ( c );
+      rr = right_frm ( c );
+      write_inner_imp_ant_dave ( ll, 1 );
+      strcat ( str_buf, "\n" );
+      reset_res(0);
+      write_blk_res(3);
+      write_chr_res(ord('='));
+      write_chr_res(ord('>'));
+      strcat ( str_buf, "\n" );
+      if ( val_root_frm(rr)==IMP_sym ) {
+        lll = left_frm ( rr );
+        rrr = right_frm ( rr );
+        reset_res(0);
+        write_blk_res(6);
+        write_chr_res(ord('('));
+        write_frm_res ( lll , 6 );
+        strcat ( str_buf, "\n" );
+        reset_res(0);
+        write_blk_res(5);
+        write_chr_res(ord('='));
+        write_chr_res(ord('>'));
+        strcat ( str_buf, "\n" );
+        write_ver_rul_dave_sub( rrr, 6 );
+        strcat ( str_buf, "))" );
+        kil ( rrr );
+        kil ( lll );
+      }
+      else {
+        write_ver_rul_dave_sub( rr, 4 );
+        strcat ( str_buf, ")" );
+
+      }
+      kil ( rr );
+      kil ( ll );
+    }
+    else {
+      write_ver_rul_dave_sub( c, 2 );
+    }
+  }
+  restore_MAX_COL_RES;
+/***
+print_live_seq ( "write_ver_rul_dave fini" );
+***/
+}
+
+
+write_ver_rul_no_indent_no_nl(r)
+{register int a,c,i,v,n ;
+  a=ant_rul(r);
+  c=cns_rul(r);
+  n=num_rul(r);
+  if( len(a)==0 ){
+    reset_res(0);
+    write_blk_res(0);
+    write_frm_res(c,0);
+  } else {
+    itr(a,i,v,reset_res(0);
+              write_blk_res(0);
+              if( val_root_frm(v)==IMP_sym ) write_chr_res(ord('('));
+              write_frm_res(v,0);
+              if( val_root_frm(v)==IMP_sym ) write_chr_res(ord(')'));
+              if( i<len(a) ){
+                write_blk_res(1);
+                write_chr_res(ord('&'));
+              };
+              strcat ( str_buf, " " ));    /* was '\n' */
+    reset_res(0);
+    write_blk_res(1);
+    write_chr_res(ord('='));
+    write_chr_res(ord('>'));
+    strcat ( str_buf, " " );    /* was '\n' */
+    reset_res(0);
+    write_blk_res(0);
+    write_frm_res(c,0);
+  }
+}
+
+write_ver_cns_rul(f)
+{register int a,c,i,v ;
+  if( val_root_frm(f)==IMP_sym ){
+    a=dec_tree(f,left_node_tree(f,root_tree(f)),AND_sym);
+    c=cre_cop_tree(f,right_node_tree(f,root_tree(f)));
+    itr(a,i,v,reset_res(0);
+              write_frm_res(v,0);
+              strcat ( str_buf, "\n" ));
+    reset_res(0);
+    write_chr_res(ord('='));
+    write_chr_res(ord('>'));
+    strcat ( str_buf, "\n" );
+    reset_res(0);
+    write_frm_res(c,0);
+    itr(a,i,v,kil(v));
+    kil(a);
+    kil(c);
+  } else {
+    reset_res(0);
+    write_frm_res(f,0);
+};
+}
+
+write_spe_ver_rul(r)
+{register int a,c,i,v,n ;
+  a=ant_rul(r);
+  c=cns_rul(r);
+  n=num_rul(r);
+  if( len(a)==0 ){
+    strcat ( str_buf, "No Antecedent\n" );
+  } else {
+    itr(a,i,v,reset_res(0);
+/*              write_blk_res(1); */
+              write_frm_res(v,0);
+              strcat ( str_buf, "\n" ));
+  };
+  reset_res(0);
+  
+/* 
+  write_blk_res(2);
+  write_num_res(num_rul(r));
+  if( n<100 ){
+    write_blk_res(1);
+  };
+  if( n<10 ){
+    write_blk_res(1);
+  };
+*/
+  write_blk_res(0);
+  write_chr_res(ord('-'));
+  write_chr_res(ord('-'));
+  write_chr_res(ord('-'));
+  write_chr_res(ord('-'));
+  strcat ( str_buf, "\n" );
+  write_ver_cns_rul(c);
+}
+
+write_old_hor_rul(r)
+{register int n,f ;
+  n=num_rul(r);
+  reset_res(0);
+  if( sts_rul(r)==off_rul ){
+    write_chr_res(ord('-'));
+  } else if( pvd_rul(r)==now_rul ){
+    write_blk_res(1);
+  } else {
+    write_chr_res(ord('*'));
+  };
+  switch( typ_rul(r) ){
+    case nrm_rul :{
+      write_chr_res(ord('N'))
+    ;break;}case rul_rul :{
+      write_chr_res(ord(' '))
+    ;break;}case lem_rul :{
+      write_chr_res(ord('L'))
+    ;break;};
+  };
+  write_blk_res(1);
+  write_num_res(num_rul(r));
+  if( n<10 ){
+    write_blk_res(1);
+  };
+  write_blk_res(1);
+  f=cre_rec_rul(r);
+  write_frm_res(f,6);
+  kil(f);
+}
+
+write_hor_rul(r)
+{register int n,f ;
+  n=num_rul(r);
+  reset_res(0);
+  write_chr_res(ord('/'));
+  write_chr_res(ord('*'));
+  write_chr_res(ord(' '));
+  if( sts_rul(r)==off_rul ){
+    write_chr_res(ord('-'));
+  } else if( pvd_rul(r)==now_rul ){
+    write_blk_res(1);
+  } else {
+    write_chr_res(ord('*'));
+  };
+  switch( typ_rul(r) ){
+    case nrm_rul :{
+      write_chr_res(ord('N'))
+    ;break;}case rul_rul :{
+      write_chr_res(ord(' '))
+    ;break;}case lem_rul :{
+      write_chr_res(ord('L'))
+    ;break;};
+  };
+  write_blk_res(1);
+  write_num_res(num_rul(r));
+  if( n<10 ){
+    write_blk_res(1);
+  };
+  write_blk_res(1);
+  write_chr_res(ord('*'));
+  write_chr_res(ord('/'));
+  write_chr_res(ord(' '));
+  f=cre_rec_rul(r);
+  write_frm_res(f,12);
+  kil(f);
+}
+
+write_hor_short_rul(r)
+{register int n,f ;
+  n=num_rul(r);
+  reset_res(0);
+  str_buf [ 0 ] = '\0';
+  if( sts_rul(r)==off_rul ){
+    write_chr_res(ord('-'));
+  } else if( pvd_rul(r)==now_rul ){
+    write_blk_res(1);
+  } else {
+    write_chr_res(ord('*'));
+  };
+  switch( typ_rul(r) ){
+    case nrm_rul :{
+      write_chr_res(ord('N'));
+    ;break;}case rul_rul :{
+      write_chr_res(ord(' '));
+    ;break;}case lem_rul :{
+      write_chr_res(ord('L'))
+    ;break;};
+  };
+  write_blk_res(1);
+  if( is_inverted_rul(r)==TRUE ){
+    write_srv_res;
+  };
+  write_num_res(num_rul(r));
+  if( is_inverted_rul(r)==TRUE ){
+    write_erv_res;
+  };
+  if( n<10 ){
+    write_blk_res(1);
+  };
+  write_blk_res(1);
+  f=cre_rec_rul(r);
+  write_short_frm_res(f,6); /* resmch */
+  kil(f);
+}
+
+sta_rulfunc()
+#define sta_rul sta_rulfunc()
+{
+
+/*
+  strcpy ( str_buf, "      Max Number of Rules:           " );
+  PadNumInBuf ( str_buf, max_rul, 8 );
+  strcpy ( str_buf, "      Number of Used Rules:          " );
+  PadNumInBuf ( str_buf, rul, 8 );
+  strcpy ( str_buf, "      Number of Dead Rules:          " );
+  PadNumInBuf ( str_buf, rttm, 8 );
+  strcpy ( str_buf, "      Number of Live Rules:          " );
+  PadNumInBuf ( str_buf, rul-rttm, 8 );
+*/
+
+  int i;
+  char buf [ 100 ];
+  strcpy ( buf, "\n\n          Max Number of Rules:         ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, max_rul );
+  i = strlen ( str_buf );
+  while ( i++ < 10 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Used Rules:        ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, rul );
+  i = strlen ( str_buf );
+  while ( i++ < 10 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Dead Rules:        ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, rttm );
+  i = strlen ( str_buf );
+  while ( i++ < 10 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Live Rules:        ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, rul-rttm );
+  i = strlen ( str_buf );
+  while ( i++ < 10 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+}
+
+    
+    

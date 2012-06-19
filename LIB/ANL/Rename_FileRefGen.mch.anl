@@ -1,0 +1,158 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(String_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_GEN_NEW_FILE_REF)
+;
+(Rename_GEN_NEW_FILE_REF)
+;
+(Rename_FileRefGen(?):(?):(?))
+;
+(
+(
+ (Rename_GEN_NEW_FILE_REF)
+;
+ (? , Val_Op , NonDet_Op , (filePathA , filePathB , filePathC , updatedYear , updatedRefNo <-- Rename_GEN_NEW_FILE_REF(refString , year , refNo)))
+;
+ (refString , year , refNo)
+;
+ (filePathA , filePathB , filePathC , updatedYear , updatedRefNo)
+;
+ (
+ (refString : STRING & year : NAT & refNo : NAT)
+ |
+ (
+ (BEGIN
+ filePathA :: STRING ||
+ filePathB :: STRING ||
+ filePathC :: STRING ||
+ updatedYear :: NAT ||
+ updatedRefNo :: NAT
+ END)
+ )
+ )
+;
+ (
+ (refString : STRING & year : NAT & refNo : NAT)
+ |
+ (
+ (
+ (
+ (
+ (
+ @(filePathAx).
+ (
+ (
+ (filePathAx : STRING)
+ )
+ ==>
+ (
+ (filePathA := filePathAx)
+ )
+ )
+ )
+ ||
+ (
+ @(filePathBx).
+ (
+ (
+ (filePathBx : STRING)
+ )
+ ==>
+ (
+ (filePathB := filePathBx)
+ )
+ )
+ )
+ )
+ ||
+ (
+ @(filePathCx).
+ (
+ (
+ (filePathCx : STRING)
+ )
+ ==>
+ (
+ (filePathC := filePathCx)
+ )
+ )
+ )
+ )
+ ||
+ (
+ @(updatedYearx).
+ (
+ (
+ (updatedYearx : NAT)
+ )
+ ==>
+ (
+ (updatedYear := updatedYearx)
+ )
+ )
+ )
+ )
+ ||
+ (
+ @(updatedRefNox).
+ (
+ (
+ (updatedRefNox : NAT)
+ )
+ ==>
+ (
+ (updatedRefNo := updatedRefNox)
+ )
+ )
+ )
+ )
+ )
+)
+)

@@ -1,0 +1,8 @@
+btoolkit
+	command=BToolkit
+	name=The BToolkit
+	can_open_multiple_files=false
+	expects_uris=non-file
+	requires_terminal=false
+	mime_types=application/x-mch,application/x-ref,application/x-imp,application/x-thy
+

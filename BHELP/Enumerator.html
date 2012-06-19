@@ -1,0 +1,126 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Enumerator</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Enumerator"></A>
+<H1>
+The Enumerator (enm)</H1>
+The Enumerator is invoked from the <A HREF="BToolkit.html#Environments!Generators">Generators
+Environment</A> and takes as input a source enumeration file with file
+extension `.enm', for example fifi.enm, and outputs a configured <A HREF="AMNotation.html#Abstract_Machines">Abstract
+Machine</A> source file to the development <A HREF="BToolkit.html#Development_Environment">CFG</A>
+directory, for example fifi.mch, together with related <A HREF="Analyser.html#Analyser">analysed</A>,
+<A HREF="Analyser.html#Type_File">type</A> and C program files to the <A HREF="BToolkit.html#Development_Environment">ANL</A>,
+<A HREF="BToolkit.html#Development_Environment">TYP</A> and <A HREF="BToolkit.html#Development_Environment">CDE/C</A>
+directories respectively.
+
+<P>Abstract Machines produced by the tool are standard library specifications
+for use in other constructs, therefore they are guaranteed to be syntactically
+correct, well-typed and internally consistent.
+
+<P>The purpose of the Enumerator is to provide basic teletype i/o operations
+for enumerated sets present in a development.
+
+<P>
+<HR WIDTH="60%">
+
+<P>The general form of an enumeration description is given in a BNF-like
+syntax as follows:
+<BR>the syntax <TT>&lt;&lt; exp >></TT> indicates zero or more occurrences
+of <TT>exp</TT> (repetition):
+<PRE>&nbsp; enumeration_description ::=&nbsp; ENUMERATION
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enumeration_name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SEES
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sees_list
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SETS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set_list
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+&nbsp; enumeration_name&nbsp;&nbsp; ::=&nbsp; Identifier
+
+&nbsp; sees_list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >>
+
+&nbsp; sets_list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; ; Identifier >></PRE>
+The <TT>SEES</TT> clause identifies those specifications that are `in scope'
+for the enumeration and the <TT>SETS</TT> clause identifies those enumerated
+sets for which operations are to be generated; each set should be defined
+in one of the machines in scope.
+
+<P>
+<HR WIDTH="60%">
+
+<P>An example enumeration is:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ENUMERATION
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fifi
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SEES
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mimi, gigi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SETS
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SET1; SET2
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END</PRE>
+This defines a construct comprising two enumerated sets (<TT>SET1</TT>
+being an enumerated set of <TT>mimi</TT>, and <TT>SET2</TT> being an enumerated
+set of gigi). When submitted to the generator it produces a machine (and
+code) which may be employed in i/o operations. Three operations for each
+enumerated set are provided:
+<UL>
+<LI>
+PUT_SET1, PUT_SET2</LI>
+
+<BR>&nbsp;
+
+<P>&nbsp;having a single input parameter, which value can range over the
+enumerated set; the operation is an output operation to standard terminal
+output and might be used in an interactive application to output the value
+of a particular variable which ranges over the enumerated set.
+<LI>
+GET_SET1, GET_SET2</LI>
+
+<BR>&nbsp;
+
+<P>&nbsp;having a single output parameter, which value ranges over the
+enumerated set; the operation is an input operation which takes its input
+from standard keyboard input and can be used to input a particular value
+ranging over the enumerated set. The generated code is robust and features
+a small help facility.
+<LI>
+GET_PROMPT_SET1, GET_PROMPT_SET2</LI>
+
+<BR>&nbsp;
+
+<P>&nbsp;having an input parameter, with precondition that it is a string,
+and output parameter, which value ranges over the enumerated set; the operation
+is an input operation which takes its input from standard keyboard input
+and can be used to prompt for a particular value ranging over the enumerated
+set. Again the generated code is robust and features a small help facility.
+<BR>&nbsp;</UL>
+Note that the Enumerator is automatically employed by the <A HREF="Interface.html#Interface!Generator!Non_Motif">non-Motif
+Interface </A>generator where necessary.
+
+<P>
+<HR WIDTH="60%">
+<CENTER><I><FONT COLOR="#33CCFF"></FONT></I>&nbsp;</CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF"></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

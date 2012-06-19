@@ -1,0 +1,69 @@
+    ********
+    MACHINES
+    ********
+
+MACHINE
+  mch(prm,...,prm)
+
+CONSTRAINTS
+  pred & ... & pred
+
+USES
+  mch,...,mch
+
+SEES
+  mch,...,mch
+
+INCLUDES
+  mch(prm,...prm),
+  ...,
+  mch(prm,...prm)
+
+PROMOTES
+  opn,...,opn
+
+EXTENDS
+  mch(prm,...prm),
+  ...,
+  mch(prm,...prm)
+
+SETS
+  set;...;set;
+  enumset = {el,...,el};
+  ...;
+  enumset = {el,...,el}
+
+CONSTANTS
+  cst,...,cst
+
+PROPERTIES
+  pred & ... & pred
+
+VARIABLES
+  vrb,...,vrb
+
+INVARIANT
+  pred & ... & pred  
+
+ASSERTIONS
+  pred & ... & pred 
+
+DEFINITIONS
+  frm == frm;
+  ...;
+  frm == frm
+
+INITIALISATION
+  asub
+
+OPERATIONS
+  op;...;op
+
+END
+
+
+
+
+
+
+  

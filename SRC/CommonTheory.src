@@ -1,0 +1,551 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY FwdContra0X IS
+
+   false
+   =>
+   bfalse;
+
+/* general rules to capture contradictictions on refinement by cases */
+
+  c=v &
+  a=c &
+  not(a=v)
+ =>
+  bfalse;
+
+  not(c=v) &
+  a=c &
+  a=v
+ =>
+  bfalse;
+
+/*************** Rules to capture simple contradictions **********************/
+
+
+   b &
+   not(b)
+   =>
+   bfalse;
+
+   not(b) &
+   b
+   =>
+   bfalse;
+
+
+   not(a = a)
+   =>
+   bfalse;
+
+/*************** Rules to capture NAT contradictions ? **********************/
+
+   a < 1 &
+   a : NAT1
+   =>
+   bfalse;
+
+   a = 0 &
+   a : NAT1
+   =>
+   bfalse;
+
+
+   a < a
+   =>
+   bfalse;
+
+   a < b &
+   b < a
+   =>
+   bfalse;
+
+   a <= b &
+   b < a
+   =>
+   bfalse;
+
+   a < b &
+   b <= a
+   =>
+   bfalse;
+ 
+/***************** 2 rules suppressed from pob file *************************/
+
+   BOOL = {FALSE,TRUE} &
+   card(BOOL) = 2 &
+   FALSE = TRUE
+   =>
+   bfalse;
+
+   BOOL = {FALSE,TRUE} &
+   card(BOOL) = 2 &
+   TRUE = FALSE
+   =>
+   bfalse;
+
+/*************** Simple set contradictions *********************/
+ 
+   not(a : {a})
+   =>
+   bfalse;
+
+   a : {}
+   =>
+   bfalse;
+
+   a : <>
+   =>
+   bfalse
+
+END
+
+&
+
+
+THEORY NotForAllToExistX IS
+
+  not(!a.(b=>c)) == (#a.(b&not(c)));
+
+  a\c &
+  c\a
+ =>
+  not(!a.(b=>!c.d)) == (#(bflat(a,c)).(b & not(d)));
+
+  not(!a.(b=>not(c))) == (#a.bflat(b&c));
+
+  not(!a.(not(b))) ==  (#a.(b));
+
+
+/*
+  (e=>(!a.(b=>!c.d))) == ((#(bflat(a,c)).(b & not(d)))=>not(e));
+
+  (e=>(!a.(b=>not(c)))) == ((#a.bflat(b&c))=>not(e));
+
+  (e=>(!a.(not(b)))) == ((#a.b)=>not(e));
+*/
+
+  ((!a.(b=>!c.d))=>e) == (not(e)=>(#(bflat(a,c)).(b & not(d))));
+
+  ((!a.(b=>not(c)))=>e) == (not(e)=>(#a.bflat(b&c)));
+
+  ((!a.(not(b)))=>e) == (not(e)=>(#a.(b)));
+
+
+
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d) == (a=>d);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e) == (a=>d&e);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f) == (a=>d&e&f);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f&g) == (a=>d&e&f&g);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f&g&h) == (a=>d&e&f&g&h);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f&g&h&i) == (a=>d&e&f&g&h&i);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f&g&h&i&j) == (a=>d&e&f&g&h&i&j);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f&g&h&i&j&k) == (a=>d&e&f&g&h&i&j&k);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f&g&h&i&j&k&l) == (a=>d&e&f&g&h&i&j&k&l);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f&g&h&i&j&k&l&m) == (a=>d&e&f&g&h&i&j&k&l&m);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>c&d&e&f&g&h&i&j&k&l&m&n) == (a=>d&e&f&g&h&i&j&k&l&m&n);
+
+
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d) == (a=>b&d);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e) == (a=>b&d&e);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f) == (a=>b&d&e&f);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f&g) == (a=>b&d&e&f&g);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f&g&h) == (a=>b&d&e&f&g&h);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f&g&h&i) == (a=>b&d&e&f&g&h&i);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f&g&h&i&j) == (a=>b&d&e&f&g&h&i&j);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f&g&h&i&j&k) == (a=>b&d&e&f&g&h&i&j&k);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f&g&h&i&j&k&l) == (a=>b&d&e&f&g&h&i&j&k&l);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f&g&h&i&j&k&l&m) == (a=>b&d&e&f&g&h&i&j&k&l&m);
+
+  bsearch(c,(a&?),C)
+ =>
+  (a=>b&c&d&e&f&g&h&i&j&k&l&m&n) == (a=>b&d&e&f&g&h&i&j&k&l&m&n)
+
+END
+
+&
+
+THEORY RewriteFromHypToFalseOrTrueX IS
+
+/*
+  /? 2 rules suppressed from pob file ?/
+
+  binhyp(BOOL = {FALSE,TRUE}) &
+  binhyp(card(BOOL) = 2)
+  =>
+  FALSE = TRUE == false;
+
+  binhyp(BOOL = {FALSE,TRUE}) &
+  binhyp(card(BOOL) = 2)
+  =>
+  TRUE = FALSE == false;
+*/
+
+
+  binhyp(s:S) &
+  binhyp(S={E}) &
+  bsearch(s,E,F) &
+  bsearch(t,(F,?),G)
+ =>
+  (s=t) == false
+
+END
+
+&
+
+THEORY RewriteToFalseOrTrueX IS
+
+
+  bsearch(not(b),a,c)
+ =>
+  (a&b) == false;
+
+  bsearch(b,a,c)
+ =>
+  (a&not(b)) == false;
+
+  bsearch(not(c=b),a,d)
+ =>
+  (a&(b=c)) == false;
+
+  bsearch((c=b),a,d)
+ =>
+  (a&not(b=c)) == false;
+
+  not(false) == true;  
+
+  (a or true) == true;
+
+  (true or a) == true;
+
+  (a=>a) == true;
+
+  (false=>a) == true;
+
+  (a&not(a)) == false;
+
+  (not(a)&a) == false;
+
+  (a or not(a)) == true;
+
+  (not(a) or a) == true;
+
+  (!a.true) == true;  
+
+  (a=>true) == true;
+
+  (not(a)=>a) == (a);
+
+  (a=>not(a)) == not(a);
+
+  not(a=a) == false;
+
+  not(true) == false;
+
+  (not(a)&a) == false;
+
+  (a&not(a)) == false;
+
+  (not(a=b)&(b=a)) == false;
+
+  ((a=b)&not(b=a)) == false;
+
+  (a&false) == false;
+
+  (false&a) == false
+
+
+END
+
+&
+
+THEORY RewriteNonHypLogic2X IS
+
+  (a=a) == true;
+
+  (true&a) == a;
+
+  (a&true) == a;
+
+  ((b=b)&a) == a;
+
+  (a&(b=b)) == a;
+
+  bsearch(a,b,c)
+ =>
+  (a=>b) == (a=>c)
+
+END
+
+&
+
+THEORY RewriteNonHypLogic1X IS
+
+/*
+  universally true, independent of the current context (hypothesis)
+*/
+
+  bool(true) : BOOL;
+
+  bool(false) : BOOL;
+
+  bsearch(false,c,d)
+ =>
+  ((!a.(b=>not(c))) == true);
+
+  (a&not(a&not(b))) == bflat(a&b);
+
+  x\y &
+  y\x
+  =>
+  (!x.(a=>(!y.(b=>c)))) == (!(bflat(x,y)).(bflat(a&b)=>c));
+
+  not((!a.b)&(!c.d)) == (not(!a.b) or not(!c.d));
+
+  (not(a)=>not(b)) == (b=>a);
+
+
+  (!a.(b=>(c=>d))) == (!a.(bflat(b&c)=>d));
+
+  ((not(a) => b) & (a => b)) == (b);
+
+  ((a => b) & (not(a) => b)) == (b);
+
+
+  not(bool(a)) == bool(not(a));
+
+  not(bool(p) = TRUE) == not(p);
+
+  not(bool(p) = FALSE) == p;
+
+  (bool(p) = TRUE) == p;
+
+  (bool(p) = FALSE) == not(p);
+
+  not(bool(p) = true) == not(p);
+
+  not(bool(p) = false) == p;
+
+  (bool(p) = true) == p;
+
+  (bool(p) = false) == not(p);
+
+
+  (a&(b&c)) == bflat(a&b&c);
+
+  (a&(b&c)&d) == bflat(a&b&c&d);
+
+  not(a or b) == bflat(not(a)&not(b));
+
+  (not(not(a)&not(b))) == (a or b);
+
+  (not(not(a) or not(b))) == bflat(a&b);
+
+  not(a=>b) == bflat(a&not(b));
+
+  (true=>a) == a;
+
+  (a=>false) == not(a);
+
+  not(not(a)) == a;
+
+  (a or false) == a;
+
+  (false or a) == a;
+
+  (a=>(a=>b)) == (a=>b);
+
+  (a or a) == a;
+
+  (a & a) == a;
+
+  a\b
+ =>
+  (!a.b == b)
+
+END
+
+&
+
+THEORY RewriteHypLogic2X IS
+
+  binhyp(b=a)
+ =>
+  (a=b)==true;
+
+  binhyp(a)
+ =>
+  a==true;
+
+  binhyp(a=b)
+ =>
+  ((b=a)&c) == c;
+
+  binhyp(a)
+ =>
+  (b&a) == b;
+
+  binhyp(a)
+ =>
+  (a&b) == b;
+
+  binhyp(a=b)
+ =>
+  (c&(b=a)) == c
+
+END
+
+&
+
+THEORY RewriteHypLogic1X IS
+
+/***
+  shares no rules with NonHypLogicRewriteX
+***/
+
+  binhyp(c:b)
+ =>
+  !a.not(a:b) == false;
+
+  binhyp(not(a))
+ =>
+  (a==false);
+
+  binhyp(a)
+ =>
+  (not(a)==false);
+  
+  binhyp(a=b)
+ =>
+  (not(b=a)==false);
+  
+  binhyp(not(b=a))
+ =>
+  ((a=b)==false);
+
+/*****
+  (not(B) => not(A)) & 
+  (C => not(A)) 
+ => 
+  not(A & (B => C));
+
+  (P => not(Q)) & 
+  (not(P) => not(R)) 
+ => 
+  not((P => Q) & (not(P) => R));
+*****/
+
+
+  true
+
+END
+
+&
+
+
+THEORY FwdPOGTheoryX IS
+
+   bool(a) = TRUE       => a;
+
+   TRUE =  bool(a)      => a;
+
+   bool(a) = FALSE      => not(a);
+
+   FALSE = bool(a)      => not(a);
+
+   not(bool(a) = FALSE) => a;
+
+   not(FALSE = bool(a)) => a;
+
+   not(bool(a) = TRUE)  => not(a);
+
+   not(TRUE = bool(a))  => not(a);
+
+   bool(a) = true       => a;
+
+   bool(a) = false      => not(a);
+
+   not(bool(a) = false) => a;
+
+   not(bool(a) = true)  => not(a)
+
+END

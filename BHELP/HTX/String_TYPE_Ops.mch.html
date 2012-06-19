@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of String_TYPE_Ops">
+  <TITLE>The String_TYPE_Ops machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>     String_TYPE_Ops
+
+<A NAME="SEES"><B>SEES</B></A>        <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  rr <-- <A NAME="OPNAME!ASSIGN_ANY_STR">ASSIGN_ANY_STR</A> = <B>BEGIN</B> rr :: <A HREF="String_TYPE.mch.html#SETS">STRING</A>  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!CMP_STR">CMP_STR</A>(rr:<A HREF="String_TYPE.mch.html#SETS">STRING</A> & ss: <A HREF="String_TYPE.mch.html#SETS">STRING</A> ) =  
+ 	 <B>PRE</B> size(rr) <= 1000 & size(ss) <= 1000 <B>THEN</B> bb:= <B>bool</B>(rr = ss) <B>END</B>;
+
+  rr <-- <A NAME="OPNAME!CPY_STR">CPY_STR</A>(ss  : <A HREF="String_TYPE.mch.html#SETS">STRING</A>) =  
+  	 <B>PRE</B> size(ss) <= 1000 <B>THEN</B> rr:=ss <B>END</B>;
+
+  nn <-- <A NAME="OPNAME!LEN_STR">LEN_STR</A>(ss : <A HREF="String_TYPE.mch.html#SETS">STRING</A>) = <B>BEGIN</B> nn := size(ss) <B>END</B>;
+
+  cc <-- <A NAME="OPNAME!VAL_ITH_CHAR">VAL_ITH_CHAR</A>(ss: <A HREF="String_TYPE.mch.html#SETS">STRING</A> & ii: 1..size(ss)) =
+ 	 <B>PRE</B> size(ss) <= 1000 <B>THEN</B> cc := ss(ii) <B>END</B>;
+
+  nn <-- <A NAME="OPNAME!CHAR_TO_NAT">CHAR_TO_NAT</A>(cc: <A HREF="String_TYPE.mch.html#SETS">CHAR</A>) = <B>BEGIN</B> nn :: NAT <B>END</B>
+  
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:37:13 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

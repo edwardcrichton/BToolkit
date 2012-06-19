@@ -1,0 +1,40 @@
+#! /bin/sh
+
+rm -f .Bter
+echo 0 > .Bcom
+
+if [ -r $BKIT/BLIB/LIB/CFG/$1.mch ]
+then
+  cp $BKIT/BLIB/LIB/CFG/$1.mch    CFG/$1.mch 
+fi
+if [ -r $BKIT/BLIB/LIB/CFG/$1.nch ]
+then
+  cp $BKIT/BLIB/LIB/CFG/$1.nch    CFG/$1.mch 
+fi
+cp $BKIT/BLIB/LIB/ANL/$1.mch.anl  ANL
+cp $BKIT/BLIB/LIB/TYP/$1.mri.typ  TYP
+cp $BKIT/BLIB/LIB/CDE/C/$1.g      CDE/C
+cp $BKIT/BLIB/LIB/CDE/C/$1.h      CDE/C
+cp $BKIT/BLIB/LIB/CDE/C/$1.c      CDE/C
+if [ -r $BKIT/BLIB/LIB/CDE/C/$1.ldf ]
+then
+  cp $BKIT/BLIB/LIB/CDE/C/$1.ldf    CDE/C
+fi
+cd CDE/C
+
+if [ "$2" = "0" ]
+then
+  cc_string="$3 -D_BT_ANSIC"
+else
+  cc_string="$3"
+fi
+if [ "$4" = "0" ]
+then
+  cc_string="$cc_string -D_BT_Motif"
+fi
+$cc_string -c $1.c 2> ../../.Bter
+if [ $? != 0 ]
+then
+  rm -f $1.*
+  echo 1 > ../../.Bcom
+fi

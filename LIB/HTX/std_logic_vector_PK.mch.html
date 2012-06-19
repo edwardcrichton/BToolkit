@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+  <TITLE>The std_logic_vector_PK machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre><A NAME="MACHINE">MACHINE</A>             std_logic_vector_PK
+
+SEES                <A HREF="std_number_PK.mch.html#MACHINE">std_number_PK</A>
+
+<A NAME="CONSTANTS">CONSTANTS</A> 
+
+  std_logic_vector,
+
+/*"
+   {\em 0 .. nn\/} $\fun$ \{ {\em 0\/} , {\em 1\/} \} and\\
+   {\em 0 .. nn\/} $\fun$ {\em std\_logic\/}\\
+   also recognized as {\em std\_logic\_vector\/} ({\em nn\/})
+"*/
+
+  Vec2Nat 
+
+PROPERTIES
+   
+  std_logic_vector = %(nn).(nn : 1..15 | 0..(nn-1) --&gt; {0,1}) &
+
+  Vec2Nat :  ( 0..15 +-&gt; {0,1} ) +-&gt; NAT &
+
+  dom(Vec2Nat) =  UNION(nn).(nn : 0..15 | 0..(nn-1) --&gt; {0,1} )  &   
+
+  !(vec) .( vec : dom(Vec2Nat)  =&gt; (
+           Vec2Nat(vec) = SIGMA(nn).( nn:dom(vec)| vec(nn) * <A HREF="std_number_PK.mch.html#CONSTANTS">exp</A>(2,nn) )
+          ))
+
+
+END
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

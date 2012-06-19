@@ -1,0 +1,49 @@
+#! /bin/csh -f
+
+#
+# Install $BKIT/BDEMO
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  ------------------------------------------"
+echo "  This script copies recursively from BDEMO "
+echo "  to `pwd`/BKIT/BDEMO "
+echo "  ------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+echo ""
+
+if ( $?TOOLKIT_VERSION && $TOOLKIT_VERSION == "WWW_VERSION" ) then
+
+  echo "  BDEMO not copied (WWW_VERSION)
+
+else
+
+  if ( ! -d $BKIT/BDEMO ) then
+    mkdir $BKIT/BDEMO
+  endif
+
+  cd ..
+
+  echo "  cp -r BDEMO $BKIT"
+  cp -r BDEMO $BKIT
+
+endif
+
+echo ""
+echo "  Done "
+echo ""

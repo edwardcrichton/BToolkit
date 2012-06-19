@@ -1,0 +1,586 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define NoReverseOrLink(x,y,z) \
+  Writef(("\n    Warning : no or link in\n      %.%\n    to\n      %\n    ..",x,y,z))
+
+#define NoReverseAltLink(x,y,z) \
+  Writef(("\n    Warning : no | link in\n      %.%\n    to\n      %\n    ..",x,y,z))
+
+#define NoReverseLink(x,y,z) \
+  Writef(("\n    Warning : no link in\n      %.%\n    to\n      %\n    ..",x,y,z))
+
+#define LinkSyntaxError(x,y) \
+  Writef(("\n    Link syntax error for %:\n      %\n    separator should be `|' or `&'\n    ..",x,bsrv y berv))
+
+#define AltLinkSyntaxError(x,y) \
+  Writef(("\n    Link syntax error for %:\n      %\n    alt separator should be `|'\n    ..",x,bsrv y berv))
+
+#define OrLinkSyntaxError(x,y) \
+  Writef(("\n    Link syntax error for %:\n      %\n    or separator should be `or'\n    ..",x,bsrv y berv))
+
+#define BadLinkFieldName(x,y,z) \
+  Writef(("\n    Bad link field name in field %:\n      %.%\n    ..",x,bsrv y berv,bsrv z berv))
+
+#define IsProcessExtSyntaxBaseName(x) brule(ProcessExtSyntaxBaseNamesX.y,x)
+
+THEORY ExpandedLinksX END &
+
+THEORY METHODS_sto END &
+
+THEORY LOCAL_METHODS_sto END &
+
+THEORY ProcessExtSyntaxBaseNamesX END &
+
+
+THEORY ProcessExtSyntaxX IS
+
+#define ProcessExtSyntax(x) \
+ bcall(((MAP;MODR;RULE)~;ProcessExtSyntaxX)~: pes(x))
+   /* (pes(x) & CreateAbsObjNames)) */
+
+  ?;
+
+  ?;
+#define ModifyExtSyntaxRemoved(x) bmodr(ProcessExtSyntaxX.2,x)
+#define ReadExtSyntaxRemoved(x)   brule(ProcessExtSyntaxX.2,x)
+
+  ?;
+#define ModifyLinks(x) bcall(MODR:bmodr(ProcessExtSyntaxX.3,x))
+#define ReadLinks(x)   brule(ProcessExtSyntaxX.3,x)
+
+  ?; /* for flagging error */
+
+TRAP;
+
+  pes1(x);
+
+  bcrer(ProcessExtSyntaxBaseNamesX,b)
+ =>
+  pes1(BASE b MANDATORY m END);
+
+  bcrer(ProcessExtSyntaxBaseNamesX,b)
+ =>
+  pes1(BASE b OPTIONAL o END);
+
+  bcrer(ProcessExtSyntaxBaseNamesX,b)
+ =>
+  pes1(BASE b OPTIONAL o MANDATORY m END);
+
+  bcrer(ProcessExtSyntaxBaseNamesX,b)
+ =>
+  pes1(BASE b MANDATORY m OPTIONAL o END);
+
+  
+  pes1 bsmap B
+ =>
+  pes1(SYSTEM s IS B END);
+
+/***
+HERE((2:I))&
+***/
+/***
+PrintTHEORY(ExpandedLinksX)&
+***/
+  ModifyExtSyntaxRemoved(I) &
+  pes1(I)
+ =>
+  pes(I);
+
+
+
+  bcrer(ExpandedLinksX,(b|a->r))
+ =>
+  sto_lnk3(b)(a->r);
+
+  sto_lnk3(b)(a->r)
+ =>
+  sto_lnk2(b)(a->r);
+
+
+  LinkSyntaxError(a,(R JOK2 r)) &
+  bmodr(ProcessExtSyntaxX.4,1) &
+  SetGenBaseError
+ =>
+  sto_lnk2(b)(a->(R JOK2 r));
+
+
+/***/
+  HERE(("AND links not yet implemented":(a->(R&r))))
+ =>
+/***/
+  sto_lnk2(b)(a->(R&r));
+
+
+  sto_lnk3(b)(a->r)
+ =>
+  sto_lnk_or(b)(a->r);
+
+  OrLinkSyntaxError(a,(R JOK2 r)) &
+  bmodr(ProcessExtSyntaxX.4,1) &
+  SetGenBaseError
+ =>
+  sto_lnk_or(b)(a->(R JOK2 r));
+
+  sto_lnk_or(b)(a->R) &
+  sto_lnk_or(b)(a->r)
+ =>
+  sto_lnk_or(b)(a->(R or r));
+
+  sto_lnk_or(b)(a->(R or r))
+ =>
+  sto_lnk2(b)(a->(R or r));
+
+
+
+  sto_lnk3(b)(a->r)
+ =>
+  sto_lnk_alt(b)(a->r);
+
+  AltLinkSyntaxError(a,(R JOK2 r)) &
+  bmodr(ProcessExtSyntaxX.4,1) &
+  SetGenBaseError
+ =>
+  sto_lnk_alt(b)(a->(R JOK2 r));
+
+  sto_lnk_alt(b)(a->R) &
+  sto_lnk_alt(b)(a->r)
+ =>
+  sto_lnk_alt(b)(a->(R|r));
+
+  sto_lnk_alt(b)(a->(R|r))
+ =>
+  sto_lnk2(b)(a->(R|r));
+
+
+
+  ReadLinks(L) &
+  ModifyLinks((L,(a:r))) &
+  sto_lnk2(b)(a->r)
+ =>
+  sto_lnk(b)(a->r);
+
+
+
+
+  bident(a) &
+  bident(b) &
+  sto_lnk(b)(a->R)
+ =>
+  (a : b.R) == (a : b);
+
+  bident(a) &
+  bident(b) &
+  sto_lnk(b)(a->R)
+ =>
+  (a(ID) : b.R) == (a (ID): b);
+
+  bident(a) &
+  bident(b) &
+  bnum(n) &
+  sto_lnk(b)(a->R)
+ =>
+  (a : SET(b.R)[n]) == (a : SET(b)[n]);
+
+  bident(a) &
+  bident(b) &
+  bnum(n) &
+  sto_lnk(b)(a->R)
+ =>
+  (a(ID) : SET(b.R)[n]) == (a(ID) : SET(b)[n]);
+
+  bident(a) &
+  bident(b) &
+  bnum(n) &
+  sto_lnk(b)(a->R)
+ =>
+  (a : SEQ(b.R)[n]) == (a : SEQ(b)[n]);
+
+  bident(a) &
+  bident(b) &
+  bnum(n) &
+  sto_lnk(b)(a->R)
+ =>
+  (a(ID) : SEQ(b.R)[n]) == (a(ID) : SEQ(b)[n]);
+
+
+
+
+  /*** create LOCAL_METHODS_sto ***/
+
+  /* no postcondition, so insert true */
+  bcrer(LOCAL_METHODS_sto,(b.f|o))
+ =>
+  cre_LOCAL_METHODS_sto1(b.f)(o(p|v));
+
+  /* expand skip */
+  bcrer(LOCAL_METHODS_sto,(b.f|o))
+ =>
+  cre_LOCAL_METHODS_sto1(b.f)(o(p|skip));
+
+  /* postcondition present */
+  bcrer(LOCAL_METHODS_sto,(b.f|o))
+ =>
+  cre_LOCAL_METHODS_sto1(b.f)(o(p|v:s));
+
+
+
+  cre_LOCAL_METHODS_sto1(b.f)(o(true|null:true))
+ =>
+  cre_LOCAL_METHODS_sto(b.f)(o);
+
+  /* no precondition, so insert true */
+  cre_LOCAL_METHODS_sto1(b.f)(o(true|s))
+ =>
+  cre_LOCAL_METHODS_sto(b.f)(o(s));
+
+  /* precondition present */
+  cre_LOCAL_METHODS_sto1(b.f)(o(p|s))
+ =>
+  cre_LOCAL_METHODS_sto(b.f)(o(p|s));
+
+
+
+
+  /*** create METHODS_sto ***/
+
+  /* no postcondition, so insert true */
+  bcrer(METHODS_sto,(b.f|o(p|v:true)))
+ =>
+  cre_METHODS_sto1(b.f)(o(p|v));
+
+  /* expand skip */
+  bcrer(METHODS_sto,(b.f|o(p|null:true)))
+ =>
+  cre_METHODS_sto1(b.f)(o(p|skip));
+
+  /* postcondition present */
+  bcrer(METHODS_sto,(b.f|o(p|v:s)))
+ =>
+  cre_METHODS_sto1(b.f)(o(p|v:s));
+
+
+
+  /* just op name, so expand */
+  cre_METHODS_sto1(b.f)(o(true|null:true))
+ =>
+  cre_METHODS_sto(b.f)(o);
+
+  /* no precondition, so insert true */
+  cre_METHODS_sto1(b.f)(o(true|s))
+ =>
+  cre_METHODS_sto(b.f)(o(s));
+
+  /* precondition present */
+  cre_METHODS_sto1(b.f)(o(p|s))
+ =>
+  cre_METHODS_sto(b.f)(o(p|s));
+
+
+
+
+
+
+
+/***
+HERE((1a:mthd_op(?)(f)(m)(m)))&
+***/
+  cre_METHODS_sto(?.f)(m) &
+  cre_LOCAL_METHODS_sto(?.f)(m)
+ =>
+  (f : t LOCAL_METHODS m) == (f : t);
+
+/***
+HERE((1b:mthd_op(?)(f)(m)(m)))&
+***/
+  cre_METHODS_sto(?.f)(m) &
+  cre_LOCAL_METHODS_sto(?.f)(m)
+ =>
+  (f : t LOCAL_METHODS M,m) == (f : t LOCAL_METHODS M);
+
+
+
+/***
+HERE((2a:mthd(?)(f)(m)(m)))&
+***/
+  cre_METHODS_sto(?.f)(m)
+ =>
+  (f : t METHODS m) == (f : t);
+
+/***
+HERE((2b:mthd(?)(f)(m)(m)))&
+***/
+  cre_METHODS_sto(?.f)(m)
+ =>
+  (f : t METHODS m LOCAL_METHODS O) == (f : t LOCAL_METHODS O);
+
+
+
+/***
+HERE((3a:mthd(?)(f)(m)(m)))&
+***/
+  cre_METHODS_sto(?.f)(m)
+ =>
+  (f : t METHODS M,m) == (f : t METHODS M);
+
+
+/***
+HERE((3b:mthd(?)(f)(m)(m)))&
+***/
+  cre_METHODS_sto(?.f)(m)
+ =>
+  (f : t METHODS M,m LOCAL_METHODS O) == (f : t METHODS M LOCAL_METHODS O);
+
+
+
+
+
+
+
+/***
+HERE((3a:mthd_op(b)(b)(m)(m)))&
+***/
+  cre_METHODS_sto(b.b)(o) &
+  cre_LOCAL_METHODS_sto(b.b)(o)
+ =>
+  (BASE b LOCAL_METHODS o MANDATORY A END) == (BASE b MANDATORY A END);
+
+
+/***
+HERE((3b:mthd_op(b)(b)(m)(m)))&
+***/
+  cre_METHODS_sto(b.b)(o) &
+  cre_LOCAL_METHODS_sto(b.b)(o)
+ =>
+  (BASE b LOCAL_METHODS O,o MANDATORY A END) == (BASE b LOCAL_METHODS O MANDATORY A END);
+
+
+
+
+/***
+HERE((4a:mthd(b)(b)(m)(m)))&
+***/
+  cre_METHODS_sto(b.b)(m)
+ =>
+  (BASE b METHODS m MANDATORY A END) == (BASE b MANDATORY A END);
+
+/***
+HERE((4b:mthd(b)(b)(m)(m)))&
+***/
+  cre_METHODS_sto(b.b)(m)
+ =>
+  (BASE b METHODS m LOCAL_METHODS O MANDATORY A END) == (BASE b LOCAL_METHODS O MANDATORY A END);
+
+
+
+
+/***
+HERE((5a:mthd(b)(b)(m)(m)))&
+***/
+  cre_METHODS_sto(b.b)(m)
+ =>
+  (BASE b METHODS M,m MANDATORY A END) == (BASE b METHODS M MANDATORY A END);
+
+/***
+HERE((5b:mthd(b)(b)(m)(m)))&
+***/
+  cre_METHODS_sto(b.b)(m)
+ =>
+  (BASE b METHODS M,m LOCAL_METHODS O MANDATORY A END) == (BASE b METHODS M LOCAL_METHODS O MANDATORY A END);
+
+
+
+  /*** order! ***/
+
+  (f : t LOCAL_METHODS O METHODS M) == (f : t METHODS M LOCAL_METHODS O);
+
+
+  (BASE b LOCAL_METHODS O METHODS M MANDATORY A END) == (BASE b METHODS M LOCAL_METHODS O MANDATORY A END) ;
+
+
+
+  /*** copied from parseBase ***/
+
+  bident(f) &
+  bident(g)
+ =>
+  (f : [g]) == (f : SET(g)[1]);
+
+  bident(f) &
+  bident(g)
+ =>
+  (f(ID) : [g]) == (f(ID) : SET(g)[1]);
+
+  bident(f) &
+  bident(g)
+ =>
+  (f : [g.L]) == (f : SET(g.L)[1]);
+
+  bident(f) &
+  bident(g)
+ =>
+  (f(ID) : [g.L]) == (f(ID) : SET(g.L)[1])
+
+END
+
+&
+
+THEORY MissingExpandedLinksX END &
+
+THEORY ExpandedLinksX END &
+
+THEORY CheckReverseLinksX IS
+
+#define CheckReverseLinks   bcall(((ARI;MODR;RULE;MAP)~;CheckReverseLinksX)~:crl)
+
+  ?;
+
+  SetGenBaseError  /* error will have been reported earlier */
+ =>
+  cr3(x);
+
+  brule(BaseColFieldColType.N,(B:b:t)) &   /* so it's parseBase */
+  ReadLinks(L) &
+  ModifyLinks((L,(b:a))) &
+  NoReverseLink(B,b,a)
+ =>
+  cr3((b|->a)|W);
+
+  brule(UpdateDepGenBaseMchImpX.1,X) &   /* so it's GenBase */
+  ReadFieldDotBaseNames(D) &
+  bsearch((b:B),D,C) &
+  ReadLinks(L) &
+  ModifyLinks((L,(b:a))) &
+  NoReverseLink(B,b,a)
+ =>
+  cr3((b|->a)|W);
+
+
+
+  brule(BaseColFieldColType.N,(B:b:t)) &   /* so it's parseBase */
+  ReadLinks(L) &
+  ModifyLinks((L,(b:(A or a)))) &
+  NoReverseOrLink(B,b,(A or a))
+ =>
+  cr3(b|->(A or a)|W);
+
+  brule(UpdateDepGenBaseMchImpX.1,X) &    /* so it's GenBase */
+  ReadFieldDotBaseNames(D) &
+  bsearch((b:B),D,C) &
+  ReadLinks(L) &
+  ModifyLinks((L,(b:(A or a)))) &
+  NoReverseOrLink(B,b,(A or a))
+ =>
+  cr3(b|->(A or a)|W);
+
+
+
+  brule(BaseColFieldColType.N,(B:b:t)) &   /* so it's parseBase */
+  ReadLinks(L) &
+  ModifyLinks((L,(b:(A|a)))) &
+  NoReverseAltLink(B,b,(A|a))
+ =>
+  cr3(b|->(A|a)|W);
+
+  brule(UpdateDepGenBaseMchImpX.1,X) &    /* so it's GenBase */
+  ReadFieldDotBaseNames(D) &
+  bsearch((b:B),D,C) &
+  ReadLinks(L) &
+  ModifyLinks((L,(b:(A|a)))) &
+  NoReverseAltLink(B,b,(A|a))
+ =>
+  cr3(b|->(A|a)|W);
+
+  (a|(b|c)) == (a|b|c);
+
+  brule(MissingExpandedLinksX.N,((b|->a)|B)) &
+  bmodr(MissingExpandedLinksX.N,?) &
+  cr3((b|->(a|A))|B)
+ =>
+  cr3((b|->A)|B);
+
+  cr2$M;
+
+  brule(MissingExpandedLinksX.N,((b|->a)|B)) &
+  bmodr(MissingExpandedLinksX.N,?) &
+  cr3((b|->a)|B) &
+  cr2$(M+1)
+ =>
+  cr2$M;
+
+/***
+HERE(("CheckReverseLinks":N))=>
+***/
+  crl(N);
+
+  brule(ExpandedLinksX.N,(B|a->b)) &
+  bcrer(MissingExpandedLinksX,((b|->a)|B)) &
+  bmodr(ExpandedLinksX.N,?) &
+  crl(N+1)
+ =>
+  crl(N);
+
+  brule(ExpandedLinksX.N,(B|a->?)) &
+  bmodr(ExpandedLinksX.N,?) &
+  crl(N+1)
+ =>
+  crl(N);
+
+  brule(ExpandedLinksX.N,(B|a->b)) &
+  brule(ExpandedLinksX.M,(C|b->a)) &
+  bmodr(ExpandedLinksX.N,?) &
+  bmodr(ExpandedLinksX.M,?) &
+  crl(N+1)
+ =>
+  crl(N);
+
+  brule(ExpandedLinksX.N,?) &
+  crl(N+1)
+ =>
+  crl(N);
+
+
+  crl(1) &
+/***
+PrintTHEORY(MissingExpandedLinksX)&
+***/
+  cr2$1
+/***
+&linkInfo
+***/
+ =>
+  crl;
+
+  brule(ProcessExtSyntaxX.4,1) &
+  SetGenBaseError
+ =>
+  x;
+
+
+  x /* don't bother */
+
+/***
+;ReadLinks(L) &
+HERE((" -------------- Links --------------")) &
+linkInfo1 bsmap L &
+HERE((" ----------- End of Links ----------"))
+=>
+linkInfo
+***/
+
+END

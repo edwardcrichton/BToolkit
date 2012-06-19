@@ -1,0 +1,1030 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define RecordFwdReasoningDepth \
+        bcall(((MODR;FLAT;REV)~;RecordFwdReasoningDepthX)~:rfrd)
+
+#define ReadFwdReasoningDepthRecorded(x) brule(RecordFwdReasoningDepthX.1,x)
+
+
+#define ModrIPConstructName(x)  bmodr(InterProverFromUserX.1,x)
+#define ReadIPConstructName(x)  brule(InterProverFromUserX.1,x)
+
+
+#define ipfuTac \
+  (((ARI~;REV;WRITE;FLAT;CATL;MODR;SHELL;MAP;RULE~)~;InterProverFromUserX)~)
+
+#define InterProverDirect(x) bcall(ipfuTac:ipfu5(x))
+
+
+
+#define InformInterProvingMachine(a,r) Writef(("\n  InterProving MACHINE % (Level %)\n",a,r))
+
+#define InformInterProvingRefinement(a,r) Writef(("\n  InterProving REFINEMENT % (Level %)\n",a,r))
+
+#define InformInterProvingImplementation(a,r) Writef(("\n  InterProving IMPLEMENTATION % (Level %)\n",a,r))
+
+
+
+#define ExitToProvers_Option 0
+#define AnotherTheory_Option 0
+
+#define run_Option 1
+#define rst_Option 2
+#define lem_Option 3
+#define ctu_Option 4
+#define hyp_Option 5
+#define lpm_Option 6
+#define upm_Option 7
+
+
+
+#define SwallowAllowed           brule(SwallowX.1,1)
+#define SwallowNotAllowed        brule(SwallowX.1,0)
+#define ModifySwallowAllowed     bcall(MODR:bmodr(SwallowX.1,1))
+#define ModifySwallowNotAllowed  bcall(MODR:bmodr(SwallowX.1,0))
+
+
+
+#define ReadLemmaFailureGoalSnapshot(z)   \
+                 brule(LemmaFailureSnapshotX.1,z)
+#define ModifyLemmaFailureGoalSnapshot(z) \
+                 bcall(MODR:bmodr(LemmaFailureSnapshotX.1,z))
+
+#define LemmaFailureGoalAndHypSnapshotNotTaken \
+             brule(LemmaFailureSnapshotX.2,0)
+#define FlagLemmaFailureGoalAndHypSnapshotNotTaken \
+             bcall(MODR:bmodr(LemmaFailureSnapshotX.2,0))
+#define FlagLemmaFailureGoalAndHypSnapshotTaken \
+             bcall(MODR:bmodr(LemmaFailureSnapshotX.2,1))
+
+
+
+
+#define InterProve_run_Option           1
+#define InterProve_hyp_Option           2
+#define InterProve_lem_Option           3
+#define InterProve_lem_and_prove_Option 4
+#define InterProve_max_fwd_Option       5
+
+#define ProveLemma_run_Option         1
+#define ProveLemma_hyp_Option         2
+#define ProveLemma_rld_Option         3
+#define ProveLemma_max_fwd_Option     4
+#define ProveLemma_skip_Option      999
+
+
+
+#define InterProverLemmasCurrentlySelectedTheory     brule(InterProverFromUserX.10,InterProverLemmas)
+#define ModifyCurrentlySelectedTheory(z) \
+                  bcall(MODR:bmodr(InterProverFromUserX.10,z))
+#define ReadCurrentlySelectedTheory(z) \
+                  brule(InterProverFromUserX.10,z)
+
+
+
+#define ReadAllTheoryNamesWithUnprovedPOB(z)    brule(InterProverFromUserX.9,z)
+#define ModifyAllTheoryNamesWithUnprovedPOB(z) \
+                 bcall(MODR:bmodr(InterProverFromUserX.9,z))
+
+
+
+#define AnotherTheoryRequested       brule(InterProverFromUserX.8,5)
+#define ProversRequested             brule(InterProverFromUserX.8,4)
+#define LemmaCreated                 brule(InterProverFromUserX.8,3)
+#define TheoryInsufficient           brule(InterProverFromUserX.8,2)
+#define LibraryTheoryInsufficient    brule(InterProverFromUserX.8,1)
+#define LemmaProved                  brule(InterProverFromUserX.8,0)
+
+
+#define FlagAnotherTheoryRequested    bcall(MODR:bmodr(InterProverFromUserX.8,5))
+#define FlagProversRequested          bcall(MODR:bmodr(InterProverFromUserX.8,4))
+#define FlagLemmaCreated              bcall(MODR:bmodr(InterProverFromUserX.8,3))
+#define FlagTheoryInsufficient        bcall(MODR:bmodr(InterProverFromUserX.8,2))
+#define UnFlagTheoryInsufficient      bcall(MODR:bmodr(InterProverFromUserX.8,?))
+#define FlagLibraryTheoryInsufficient bcall(MODR:bmodr(InterProverFromUserX.8,1))
+#define FlagLemmaProved               bcall(MODR:bmodr(InterProverFromUserX.8,0))
+
+
+#define ReadOriginalLemma(z)   brule(InterProverFromUserX.6,z)
+#define ModifyOriginalLemma(z) bcall((FLAT;MODR):bmodr(InterProverFromUserX.6,z))
+
+
+
+#define ReadCurrentLemmaDotNum(z)     brule(InterProverFromUserX.5,z)
+#define ModifyCurrentLemmaDotNum(z)   bcall(MODR:bmodr(InterProverFromUserX.5,z))
+
+
+
+#define ReadAllOriginalLemmaNames(z)     brule(InterProverFromUserX.4,z)
+#define ModifyAllOriginalLemmaNames(z) \
+               bcall(MODR:bmodr(InterProverFromUserX.4,z))
+
+
+#define ReadCurrentGoal(z)    brule(CurrStateX.1,z)
+#define ModifyCurrentGoal(z)  bcall((FLAT;MODR):bmodr(CurrStateX.1,z))
+
+
+#define ReadCurrentHyp(z)    brule(CurrStateX.2,z)
+#define ModifyCurrentHyp(z)  bcall((FLAT;MODR):bmodr(CurrStateX.2,z))
+
+
+#define HypCurrentlyDisplayed          brule(ShowHypX.1,1)
+#define SetHypCurrentlyDisplayed       bcall(MODR:bmodr(ShowHypX.1,1))
+#define HypNotCurrentlyDisplayed       brule(ShowHypX.1,0)
+#define SetHypNotCurrentlyDisplayed    bcall(MODR:bmodr(ShowHypX.1,0))
+
+#define SetSisterInterProverLemmasFlag          bcall(MODR:bmodr(RemoveSisterInterProverLemmasX.1,1))
+#define ClearSisterInterProverLemmasFlag        bcall(MODR:bmodr(RemoveSisterInterProverLemmasX.1,0))
+#define SisterInterProverLemmasFlagIsSet        brule(RemoveSisterInterProverLemmasX.1,1)
+#define SisterInterProverLemmasFlagIsNotSet     brule(RemoveSisterInterProverLemmasX.1,0)
+
+#define SetLemmaBeingAttemptedFlag   bcall(MODR:bmodr(ProveLemmaX.1,1))
+#define SetPOBBeingAttemptedFlag     bcall(MODR:bmodr(ProveLemmaX.1,0))
+
+#define CleanInterProverLemmasAndHost \
+           bcall(((ARI;MODR;WRITE;RULE)~;ProveLemmaX)~:clean_Lemma_and_Host)
+
+/***
+  marks host pob as unproved for those InterProverLemmas which have been removed ...
+  ... and cleans InterProverLemmas and InterProverLemmasHostX, preserving all current InterProverLemmas 
+***/
+
+
+#define ResetBackTrackNum         bcall(MODR:bmodr(BackTrackNumX.1,0))
+
+#define ReadBackTrackNum(x)       brule(BackTrackNumX.1,x)
+
+
+/***
+#define PushBackTrackStack        bcall((MODR;BackTrackNumX):push_bts)
+
+#define PopBackTrackStack         bcall((MODR;BackTrackNumX):ppo_bts)
+
+#define ReadBackTrackStack(x)     brule(BackTrackNumX.1,x)
+
+#define ModifyBackTrackStack(x)   bcall(MODR:bmodr(BackTrackNumX.1,x))
+
+#define ReadLastBackTrackStack(x) brule(BackTrackNumX.1,(X,x))
+***/
+
+
+
+
+#define ShowHyp bcall(((MAP;CATL;SHELL;WRITE;MODR)~;ShowHypX)~:show_hyp)
+
+#define CleanInterProver \
+  bcall(((MAP;MODR~;RULE~)~;CleanInterProverX)~:cip)
+
+#define RemoveSisterInterProverLemmas(x) bcall(((ARI;MODR)~;RemoveSisterInterProverLemmasX)~:rsl(x))
+
+
+#define RestoreOriginalPOB bcall(((MODR;WRITE)~;RestoreOriginalPOBX)~:ropob)
+
+#define ShowInterProveOptionsIP \
+      bcall(((FLAT;MAP;WRITE;MODR)~;ARI;ShowInterProveOptionsIPX)~: \
+          ( FlagLemmaFailureGoalAndHypSnapshotNotTaken & \
+            so_InterProve_opt$0 ) )
+
+#define modify_lemma_creation_allowed \
+	bcall(MODR:bmodr(ShowInterProveOptionsIPX.1,0))
+
+#define modify_lemma_creation_not_allowed \
+	bcall(MODR:bmodr(ShowInterProveOptionsIPX.1,1))
+
+#define lemma_creation_allowed         brule(ShowInterProveOptionsIPX.1,0)
+#define lemma_creation_not_allowed     brule(ShowInterProveOptionsIPX.1,1)
+
+#define ShowProveLemmaOptionsIP \
+      bcall(((FLAT;MAP;WRITE;MODR)~;ARI;ShowProveLemmaOptionsIPX)~: \
+          so_ProveLemma_opt$0)
+
+#define CreateInterProverLemma \
+          bcall((((ARI;RULE)~;(FLAT;MODR)~;WRITE)~;CreateInterProverLemmaX)~:create_lemma)
+
+
+#define GetNumUnprovedInterProverLemmas(l) \
+         bcall(((ARI;MODR)~;GetNumUnprovedInterProverLemmasX)~:gnul(l))
+
+#define InterProve bcall((MODR~;InterProveX)~:ip1)
+
+#define ProveLemma bcall(((MODR;WRITE;RULE)~;ARI;ProveLemmaX)~:prove_lemma)
+
+#define LoadZeroLevelFile(f) \
+   bcall(((MAP;RULE)~;LoadZeroLevelFileX)~:lzl_0(f))
+
+
+#define MotifSelSto          (InterProverFromUserX.12)
+#define ModrMotifSelSto(x)   bmodr(MotifSelSto,x)
+#define ReadMotifSelSto(x)   brule(MotifSelSto,x)
+
+#define MotifEscSto          (InterProverFromUserX.13)
+#define MotifEscNotReqd      brule(MotifEscSto,0)
+#define MotifEscReqd         brule(MotifEscSto,1)
+#define SetMotifEscNotReqd   bmodr(MotifEscSto,0)
+#define SetMotifEscReqd      bmodr(MotifEscSto,1)
+
+
+THEORY ShowSubsidiaryGoalsX IS
+
+#define ShowSubsidiaryGoals(x) bcall(((WRITE)~;ShowSubsidiaryGoalsX)~:ssg(x))
+
+  bgoals
+ =>
+  ssg(b)
+
+END
+
+&
+
+THEORY QueryUserX IS
+
+  SisterInterProverLemmasFlagIsNotSet &
+  Writef(("\n"))
+ =>
+  print_message_if_SisterInterProverLemmasFlagIsSet;
+
+  SisterInterProverLemmasFlagIsSet &
+  Writef(("  Removing dependent Lemma(s) ...\n"))
+ =>
+  print_message_if_SisterInterProverLemmasFlagIsSet;
+
+
+
+/*********************
+
+  rules below prompt for a response
+
+*********************/
+
+  IfInterProver &
+  ReadInput(n) &
+  Writef(("\n %: invalid input\n",n)) &
+  get_response1$(N+1)(b)
+ =>
+  get_response2$N(b);
+
+  IfInterProver &
+  ReadInput(InterProve_lem_Option) &
+  RecordFwdReasoningDepth &
+  CreateInterProverLemma &
+  FlagLemmaCreated
+ =>
+  get_response2$N(b);
+
+  IfInterProver &
+  ReadInput(InterProve_hyp_Option) &
+  ShowHyp &
+  get_response1$(N+1)(b)
+ =>
+  get_response2$N(b);
+
+  IfInterProver &
+  ReadInput(InterProve_run_Option) &
+  ZZJJJgoalwQee(b)                               /* force backtrack */
+ =>
+  get_response2$N(b);
+
+  IfInterProver &
+  ReadInput(AnotherTheory_Option) &
+  bcall(MODR~:(FlagAnotherTheoryRequested & ModifySwallowAllowed))
+ =>
+  get_response2$N(b);
+
+
+  IfInterProver &
+  ShowInterProveOptionsIP &
+  get_response2$N(b)
+=>
+  get_response1$N(b);
+
+/*********************
+
+  rule below fow when lemma discharged
+
+*********************/
+
+  Writef(("\n  Discharged: %\n",b))
+ =>
+  pr_disch_lem(b);
+
+
+
+/*********************
+
+  rule below are for printing backtracking info for a lemma establishing false
+
+*********************/
+
+
+  Writef(("\n  User/Library encountered false from:\n\n")) &
+  PrettyPrint(a) &
+  Writef(("\n")) &
+  bcall(MODR: bmodr(LemmaTraceX.1,?))
+ =>
+  pr_false_back_lem(a);
+
+
+/*********************
+
+  rules below are for printing backtracking info for a lemma
+
+*********************/
+
+/***
+
+  TEMPORARY print TO TRAP UNREPORTED MESSAGES
+
+***/
+
+HERE((pr_fail_back_lem(x))) =>
+  pr_fail_back_lem(x);
+
+HERE((pr_fail_lem(x))) =>
+  pr_fail_lem(x);
+
+
+
+/*
+  Writef(("\n  User/Library failed to prove:\n\n")) &
+  PrettyPrint(a) &
+  Writef(("\n\n  Attempting:\n")) &
+  PrettyPrint(b) &
+  Writef(("\n")) &
+  bcall(MODR: bmodr(LemmaTraceX.1,?,(a or b)))
+ =>
+  pr_Or1_lem(a,b);
+*/
+
+
+
+  Writef(("\n  User/Library failed to prove:\n\n")) &
+  PrettyPrint(b) &
+  Writef(("\n\n  Backtracking to:\n\n")) &
+  PrettyPrint(c) &
+  Writef(("\n")) &
+  bcall(MODR: bmodr(LemmaTraceX.1,?))
+ =>
+  pr_fail_back_lem(b,c);
+
+  Writef(("\n  User/Library encountered false - Backtracking to:\n\n")) &
+  PrettyPrint(c) &
+  Writef(("\n")) &
+  bcall(MODR: bmodr(LemmaTraceX.1,?))
+ =>
+  pr_fail_back_lem(false,c);
+
+
+  ReadConfirm(no) &
+  ModifySwallowAllowed &
+  bcall(MODR: bmodr(LemmaTraceX.1,?)) &
+  Writef(("\n  Not backtracking - lemma proof aborted\n")) &
+  FlagTheoryInsufficient
+ =>
+  pr_fail_back_lem_1(b,c);
+
+  ReadConfirm(yes) &
+  Writef(("\n  Backtracking\n")) &
+  bcall(MODR: bmodr(LemmaTraceX.1,?))
+ =>
+  pr_fail_back_lem_1(b,c);
+
+  brule(LemmaTraceX.1,(G&b)) &
+  Writef(("\n  User also failed - backtrack to:\n\n")) &
+  PrettyPrint(c) &
+  Writef((" ?\n")) &
+  PromptConfirm(("        Backtrack?            ")) &
+  pr_fail_back_lem_1(b,c)
+ =>
+  pr_fail_back_lem(b,c);
+
+  pr_fail_back_lem(b,b);
+
+HERE((pr_fail_back_lem((t|b),c))) =>
+  pr_fail_back_lem((t|b),c);
+
+
+
+
+
+
+  bcall(MODR: bmodr(LemmaTraceX.1,(G&g))) &
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(g) &
+  Writef(("\n"))
+ =>
+  pr_fail_lem_1(g)(G)(?);
+
+  bcall(MODR: bmodr(LemmaTraceX.1,(G&false))) &
+  Writef(("\n  Library encountered false\n"))
+ =>
+  pr_fail_lem_1(false)(G)(?);
+
+  bcall(MODR: bmodr(LemmaTraceX.1,(?&g))) &
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(g) &
+  Writef(("\n"))
+ =>
+  pr_fail_lem_1(g)(?)(?);
+
+  bcall(MODR: bmodr(LemmaTraceX.1,(?&false))) &
+  Writef(("\n  Library encountered false\n"))
+ =>
+  pr_fail_lem_1(false)(?)(?);
+
+  pr_fail_lem_1(g)(G)(H)
+ =>
+  pr_fail_lem_1(g)(G)(H&h);
+
+  pr_fail_lem_1(g)(G)(H&g);
+
+  brule(LemmaTraceX.1,G) &
+  pr_fail_lem_1(g)(G)(G)
+ =>
+  pr_fail_lem(g);
+
+  pr_fail_lem(a or b);
+
+
+
+
+/*********************
+
+  rules below are for printing backtracking info for a pob
+
+*********************/
+
+/***
+
+  TEMPORARY RULE TO TRAP UNREPORTED MESSAGES
+
+***/
+
+HERE((pr_fail_pob(x))) =>
+  pr_fail_pob(x);
+
+
+/*
+/???
+
+  Or1
+
+???/
+
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(a) &
+  Writef(("\n\n  Attempting to prove:\n\n")) &
+  PrettyPrint(b) &
+  Writef(("\n"))
+ =>
+  pr_Or1_pob( a | b);
+*/
+
+
+
+
+
+/***
+
+  false has been definitely established
+
+***/
+
+/***
+
+  g and a are different
+
+***/
+
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(g) &
+  Writef(("\n\n  a consequence of encounering false from:\n\n")) &
+  PrettyPrint(a) &
+  Writef(("\n\n  Backtracking ...\n"))
+ =>
+  pr_false_pob( t | g | a);
+
+/***
+
+  g and a are the same (g)
+
+***/
+
+  Writef(("\n  Library encountered false from:\n\n")) &
+  PrettyPrint(g) &
+  Writef(("\n\n  Backtracking ...\n"))
+ =>
+  pr_false_pob( t | g | g);
+
+
+
+
+  pr_false_pob( t | g | a)
+ =>
+  pr_false_pob( t | (h=>g) | a);      /* don't print hypothesis */
+
+
+
+/***
+
+  g and a are different (don't print \n at end ...)
+
+***/
+
+/*
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(g) &
+  Writef(("\n\n  a consequence of failing to prove:\n\n")) &
+*/
+  Writef(("\n  ... and so failed to prove:\n\n")) &
+  PrettyPrint(a) &
+  Writef(("\n\n  Backtracking ...\n"))
+ =>
+  pr_fail_pob2(g,a);
+
+/*
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(g) &
+  Writef(("\n\n  a consequence of failing to prove:\n\n")) &
+*/
+  Writef(("\n  ... and so failed to prove either of the disjuncts:\n\n")) &
+  PrettyPrint(a or b) &
+  Writef(("\n\n  Backtracking ...\n"))
+ =>
+  pr_fail_pob2(g,(a or b));
+
+/*
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(g) &
+  Writef(("\n\n  a consequence of failing to prove:\n\n")) &
+*/
+  Writef(("\n  ... and so failed to prove the conjoin:\n\n")) &
+  PrettyPrint(a&b) &
+  Writef(("\n\n  Backtracking ...\n"))
+ =>
+  pr_fail_pob2(g,(a&b));
+
+/*
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(g) &
+  Writef(("\n\n  a consequence of encountering false ... Backtracking ...\n"))
+*/
+  Writef(("\n  ... a consequence of encountering false ... Backtracking ...\n"))
+ =>
+  pr_fail_pob2(g,false);
+
+/*
+  Writef(("\n  \n  Library encountered false \n\n  a consequence of failing to prove:\n\n")) &
+*/
+  Writef(("\n  \n  Library encountered false \n\n  and so failed to prove:\n\n")) &
+  PrettyPrint(a) &
+  Writef(("\n\n  Backtracking ...\n"))
+ =>
+  pr_fail_pob2(false,a);
+
+  pr_fail_pob2(g,a)
+ =>
+  pr_fail_pob( t , g , a);
+
+  pr_fail_pob2(g,a)
+ =>
+  pr_fail_pob( t , g , (SetOfRules <- a) );
+
+
+/***
+
+  g and a are the same (g)
+
+***/
+
+/*
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(g) &
+*/
+  Writef(("\n  Backtracking ...\n"))
+ =>
+  pr_fail_pob1(g);
+
+  Writef(("\n  Library encountered false ... Backtracking ...\n"))
+ =>
+  pr_fail_pob1(false);
+
+  pr_fail_pob1(g)
+ =>
+  pr_fail_pob( t , g , g );
+
+  pr_fail_pob1(g)
+ =>
+  pr_fail_pob( t , g , (SetOfRules <- g) );
+
+  pr_fail_pob( t , g , a )
+ =>
+  pr_fail_pob( t , (h=>g) , a );      /* don't print hypothesis */
+
+
+/*********************************************************************
+
+  rules below are when an original pob is being attempted
+
+*********************************************************************/
+
+
+  /***
+    non-conjoin
+  ***/
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  ReadCurrentGoal(g) &
+  bcall(MODR~:(ModifyCurrentGoal(b)&
+               ModifyCurrentHyp(true))) &
+  pr_fail_pob(t , g , a) &
+  get_response1$0(b)
+ =>
+  ((t:a) <- b);                                  /* bgetallhyp fails */
+
+  /***
+    non-conjoin
+  ***/
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  bgetallhyp(H) &
+  ReadCurrentGoal(g) &
+  bcall(MODR~:(ModifyCurrentGoal(b)&
+               ModifyCurrentHyp(H))) &
+  pr_fail_pob(t , g , a) &
+  get_response1$0(b)
+ =>
+  ((t:a) <- b);                                  /* bgetallhyp succeeds */
+
+  /***
+    conjoin
+  ***/
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  ReadCurrentGoal(g) &
+  bcall(MODR~:(ModifyCurrentGoal(b)&
+               ModifyCurrentHyp(true))) &
+  pr_fail_pob(t , g , a) &
+  RemoveSisterInterProverLemmas(J) &
+  print_message_if_SisterInterProverLemmasFlagIsSet &
+  get_response1$0(b)
+ =>
+  (J <- (t:a) <- b);                            /* bgetallhyp fails */
+
+  /***
+    conjoin
+  ***/
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  bgetallhyp(H) &
+  ReadCurrentGoal(g) &
+  bcall(MODR~:(ModifyCurrentGoal(b)&
+               ModifyCurrentHyp(H))) &
+  pr_fail_pob(t , g , a) &
+  RemoveSisterInterProverLemmas(J) &
+  print_message_if_SisterInterProverLemmasFlagIsSet &
+  get_response1$0(b)
+ =>
+  (J <- (t:a) <- b);                            /* bgetallhyp succeeds */
+
+
+/*
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  ReadCurrentGoal(g) &
+  bcall(MODR~:(ModifyCurrentGoal(b)&
+               ModifyCurrentHyp(true))) &
+  pr_Or1_pob(a | b) &
+  RemoveSisterInterProverLemmas(J) &
+  print_message_if_SisterInterProverLemmasFlagIsSet &
+  get_response1$0(b)
+ =>
+  (((Or1X: (a or b))  <-  (a or b)));          /? bgetallhyp fails ?/
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  bgetallhyp(H) &
+  ReadCurrentGoal(g) &
+  bcall(MODR~:(ModifyCurrentGoal(b)&
+               ModifyCurrentHyp(H))) &
+  pr_Or1_pob(a | b) &
+  RemoveSisterInterProverLemmas(J) &
+  print_message_if_SisterInterProverLemmasFlagIsSet &
+  get_response1$0(b)
+ =>
+  (((Or1X: (a or b))  <-  (a or b)));          /? bgetallhyp succeeds ?/
+*/
+
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed & 
+  bcall(MODR~:(ModifyCurrentGoal(b)&
+               ModifyCurrentHyp(true))) &
+/*
+  Writef(("\n  Library failed to prove Current Goal\n")) &
+*/
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(b) &
+  Writef(("\n")) &
+  get_response1$0(b)
+ =>
+  (SetOfRules <- b);                           /* bgetallhyp fails */
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed & 
+  bcall(MODR~:(ModifyCurrentGoal(b or c)&
+               ModifyCurrentHyp(true))) &
+/*
+  Writef(("\n  Library failed to prove Current Goal\n")) &
+*/
+  Writef(("\n  Library failed to prove either of the disjuncts:\n\n")) &
+  PrettyPrint(b or c) &
+  Writef(("\n")) &
+  get_response1$0(b or c)
+ =>
+  (SetOfRules <- (b or c));                     /* bgetallhyp fails */
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  bgetallhyp(H) &
+  bcall(MODR~:(ModifyCurrentGoal(b)&
+               ModifyCurrentHyp(H))) &
+/*
+  Writef(("\n  Library failed to prove Current Goal\n")) &
+*/
+  Writef(("\n  Library failed to prove1:\n\n")) &
+  PrettyPrint(b) &
+  Writef(("\n")) &
+/*
+ShowSubsidiaryGoals(b) &
+Writef(("\n")) &
+*/
+  get_response1$0(b)
+ =>
+  (SetOfRules <- b);                           /* bgetallhyp succeeds */
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  bgetallhyp(H) &
+  bcall(MODR~:(ModifyCurrentGoal(b or c)&
+               ModifyCurrentHyp(H))) &
+/*
+  Writef(("\n  Library failed to prove Current Goal\n")) &
+*/
+  Writef(("\n  Library failed to prove:\n\n")) &
+  PrettyPrint(b or c) &
+  Writef(("\n")) &
+  get_response1$0(b or c)
+ =>
+  (SetOfRules <- (b or c));                     /* bgetallhyp succeeds */
+
+
+
+
+/*********************************************************************
+
+  QueryUserX.52: for PROOFMETHOD rule called from SwitchX:
+    goal of form `bcall((B,F):b)=>(c <- b)'
+    bcall incorporates tactic `SwitchX'
+
+*********************************************************************/
+
+  ?;  /* ***MUST*** be rule no. 52 - if not, change LoadUnloadProofMethod.src */
+
+
+
+
+
+
+
+/*********************************************************************
+
+  rules below are when a lemma is being attempted
+
+*********************************************************************/
+
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  pr_fail_back_lem(b,c) &
+  bcall(QueryUserX:((t:b) <- c)) &
+  pr_disch_lem(c)
+ =>
+  ((t:b) <- c);                               /* non-conjoin backtrack */
+
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  pr_fail_back_lem(b,c) &
+  bcall(QueryUserX:(J <- (t:b) <- c)) &
+  pr_disch_lem(c)
+ =>
+  (J <- (t:b) <- c);                          /* conjoin backtrack */
+
+
+/*
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  pr_Or1_lem(a,b) &
+  bcall(QueryUserX:((Or2X: (a or b)) <- (a or b))) &
+  pr_disch_lem(a or b)
+ =>
+  (((Or2X: (a or b))  <-  (a or b)));         /? Or2X ?/
+
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  pr_Or1_lem(a,b) &
+  bcall(QueryUserX:((Or1X: (a or b)) <- (a or b))) &
+  pr_disch_lem(a or b)
+ =>
+  (((Or1X: (a or b))  <-  (a or b)));         /? Or1X ?/
+*/
+
+
+
+
+/* what is all this crap???
+
+/???
+  Snapshot now taken
+???/
+  IfInterProver &
+  LemmaIsBeingAttempted &
+/???
+HERE((21:(InterProver_LemmaHasFailed|b))) &
+???/
+  pr_fail_lem(b) &
+  bcall(?:b)                  /? to `continue' backtrack ?/
+ =>
+  (InterProver_LemmaHasFailed|b);
+
+/???
+  Snapshot not yet taken
+???/
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  SwallowNotAllowed & 
+  LemmaFailureGoalAndHypSnapshotNotTaken &
+  bgetallhyp(H) &
+  FlagLemmaFailureGoalAndHypSnapshotTaken &
+  ModifyCurrentHyp(H) &
+  ModifyLemmaFailureGoalSnapshot(b) &
+/???
+HERE((20:(InterProver_LemmaHasFailed|b))) &
+???/
+  pr_fail_lem(b) &
+  bcall(?:b)                 /? to `continue' backtrack ?/
+ =>
+  (InterProver_LemmaHasFailed|b);
+
+/???
+  DED not yet done
+???/
+  IfInterProver &
+  LemmaIsBeingAttempted &
+/???
+HERE((19:(InterProver_LemmaHasFailed|h=>b))) &
+???/
+  pr_fail_lem(h=>b) &
+  bcall(?:h=>b)               /? to `continue' backtrack ?/
+ =>
+  (InterProver_LemmaHasFailed|h=>b);
+
+*/
+
+
+
+
+
+
+/***
+  Snapshot now taken
+***/
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  pr_fail_lem(b) &
+  bcall(QueryUserX:(SetOfRules <- b)) &
+  pr_disch_lem(b)
+ =>
+  (SetOfRules <- b);                   /* SwitchX */
+
+
+/***
+  Snapshot not yet taken
+***/
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  SwallowNotAllowed & 
+  LemmaFailureGoalAndHypSnapshotNotTaken &
+  bgetallhyp(H) &
+  FlagLemmaFailureGoalAndHypSnapshotTaken &
+  ModifyCurrentHyp(H) &
+  ModifyLemmaFailureGoalSnapshot(b) &
+  pr_fail_lem(b) &
+  bcall(QueryUserX:(SetOfRules <- b)) &
+  pr_disch_lem(b)
+ =>
+  (SetOfRules <- b);                  /* SwitchX */
+
+
+/***
+  DED not yet done
+***/
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  pr_fail_lem(h=>b) &
+  bcall(QueryUserX:(SetOfRules <- (h=>b))) &
+  pr_disch_lem(h=>b)
+ =>
+  (SetOfRules <- (h=>b));               /* SwitchX */
+
+
+
+
+/*************************************
+
+  when false has been definitely established
+  we want to avoid going back into SwitchX
+
+**************************************/
+
+
+  /***********
+  InterProver - POB level - report and fail
+  ***********/
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  SwallowNotAllowed &
+  ReadCurrentGoal(g) &
+  pr_false_pob(?|g|a) &
+  bcall(?:false)
+ =>
+  (?:false|a);                          /* SwitchX */
+
+
+
+  /***********
+  InterProver - Lemma level - report and fail
+  ***********/
+
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  pr_false_back_lem(a) &
+  bcall(?:false)
+ =>
+  (?:false|a);                          /* SwitchX */
+
+
+  /***********
+  AutoProver - just fail!
+  ***********/
+
+  IfAutoProver &
+  bcall(?:false)
+ =>
+  (?:false|b);                        /* SwitchX */
+
+
+
+
+  /***********
+  ProofPrinter - just fail!
+  ***********/
+
+  IfProofPrinter &
+  bcall(?:false)
+ =>
+  (?:false|b);                        /* SwitchX */
+
+
+
+
+  SwallowAllowed
+ =>
+  a
+
+END

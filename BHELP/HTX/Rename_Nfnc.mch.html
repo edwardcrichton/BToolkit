@@ -1,0 +1,210 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Nfnc">
+  <TITLE>The Rename_Nfnc machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>          Rename_Nfnc(maxint,maxfld)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>
+
+   maxint &lt;= 2147483646 &
+   maxfld &lt;= 2147483646
+   
+<A NAME="SEES"><B>SEES</B></A>             <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>        Rename_Nfnc
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>        Rename_Nfnc: 1..maxfld +-&gt; 0..maxint
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>   Rename_Nfnc := {}
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  bb <-- <A NAME="OPNAME!Rename_TST_FLD_NFNC">Rename_TST_FLD_NFNC</A>(ff) =
+  <B>PRE</B>
+    ff: NAT
+  <B>THEN</B>
+    bb:=<B>bool</B>(ff:1..maxfld)
+  <B>END</B>;
+
+ bb <-- <A NAME="OPNAME!Rename_DEF_NFNC">Rename_DEF_NFNC</A>(ff) =
+  <B>PRE</B>
+    ff: 1..maxfld
+  <B>THEN</B>
+    bb:=<B>bool</B>(ff:dom(Rename_Nfnc))
+  <B>END</B>;
+
+  bb,dd <-- <A NAME="OPNAME!Rename_FREE_NFNC">Rename_FREE_NFNC</A> =
+  <B>IF</B> (1..maxfld )- dom(Rename_Nfnc) /= {}  <B>THEN</B>
+    bb := TRUE ||
+    dd :: (1..maxfld) - dom(Rename_Nfnc)
+  <B>ELSE</B>
+    bb := FALSE ||
+    dd :: 1..maxfld 
+  <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_STO_NFNC">Rename_STO_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    ff:1..maxfld &
+    vv:0..maxint
+  <B>THEN</B> 
+    Rename_Nfnc(ff):=vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RMV_NFNC">Rename_RMV_NFNC</A>(ff) =
+  <B>PRE</B>
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B> 
+    Rename_Nfnc:={ff} &lt;<| Rename_Nfnc
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_ADD_NFNC">Rename_ADD_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc) &
+    Rename_Nfnc(ff)+vv &lt;= maxint
+  <B>THEN</B> 
+    Rename_Nfnc(ff):=Rename_Nfnc(ff)+vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_MUL_NFNC">Rename_MUL_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc) &
+    Rename_Nfnc(ff)*vv &lt;= maxint
+  <B>THEN</B> 
+    Rename_Nfnc(ff):=Rename_Nfnc(ff)*vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SUB_NFNC">Rename_SUB_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc) &
+    Rename_Nfnc(ff) &gt;= vv
+  <B>THEN</B> 
+    Rename_Nfnc(ff):=Rename_Nfnc(ff)-vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_DIV_NFNC">Rename_DIV_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:1..maxint &
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B> 
+    Rename_Nfnc(ff):=Rename_Nfnc(ff)/vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_MOD_NFNC">Rename_MOD_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:1..maxint &
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B> 
+    Rename_Nfnc(ff):=Rename_Nfnc(ff)-vv*(Rename_Nfnc(ff)/vv)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_NFNC">Rename_VAL_NFNC</A>(ff) =
+  <B>PRE</B>
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B> 
+    vv:=Rename_Nfnc(ff)
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_NFNC">Rename_EQL_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nfnc(ff)=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_NEQ_NFNC">Rename_NEQ_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nfnc(ff)/=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_GTR_NFNC">Rename_GTR_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nfnc(ff)&gt;vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_GEQ_NFNC">Rename_GEQ_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nfnc(ff)&gt;=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_SMR_NFNC">Rename_SMR_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nfnc(ff)&lt;vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_LEQ_NFNC">Rename_LEQ_NFNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ff:dom(Rename_Nfnc)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nfnc(ff)&lt;=vv)
+  <B>END</B>;
+
+
+/**************  save/restore host byte order **************/
+
+  <A NAME="OPNAME!Rename_SAV_NFNC">Rename_SAV_NFNC</A> = <B>BEGIN</B> <B>skip</B> <B>END</B>;
+
+ 
+  <A NAME="OPNAME!Rename_RST_NFNC">Rename_RST_NFNC</A> =
+    <B>BEGIN</B>  Rename_Nfnc  :: 1..maxfld +-&gt; 0..maxint <B>END</B>;
+
+
+
+/**************  save/restore network byte order **************/
+
+  <A NAME="OPNAME!Rename_SAVN_NFNC">Rename_SAVN_NFNC</A> = <B>BEGIN</B> <B>skip</B> <B>END</B>;
+
+ 
+  <A NAME="OPNAME!Rename_RSTN_NFNC">Rename_RSTN_NFNC</A> =
+    <B>BEGIN</B>  Rename_Nfnc  :: 1..maxfld +-&gt; 0..maxint <B>END</B>
+
+
+
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:35:59 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

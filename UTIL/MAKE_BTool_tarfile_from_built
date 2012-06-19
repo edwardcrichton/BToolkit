@@ -1,0 +1,202 @@
+#! /bin/csh -f
+
+#  MAKE_BTool_tarfile_from_built
+
+#
+#  After the remote BTool has been built and
+#  tested, this script creates the single
+#  ftp-able BT_tarfile BTool_`platform'.`release_version'.tar
+#
+#  All src files should be removed after
+#  running this script
+#
+
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+switch ( $VERSION )
+
+  case SUNOS_VERSION
+    set plat=SunOS
+    breaksw
+  case SOLARIS_VERSION
+    set plat=Solaris
+    breaksw
+  case LINUX_VERSION
+    set plat=Linux
+    breaksw
+  case OSF1_VERSION
+    set plat=DecAlpha
+    breaksw
+  case IRIX_VERSION
+    set plat=Indy
+    breaksw
+  case AIX_VERSION
+    set plat=Aix
+    breaksw
+  default:
+    echo ""
+    echo "  VERSION $PLATFORM not recognized"
+    echo "  Aborted"
+    echo ""
+    exit
+    breaksw
+
+endsw
+
+
+echo ""
+echo "         ------------------------------"
+echo ""
+echo "  This script creates the single ftp-able file: "
+echo ""
+echo "       BTool_$plat.$BT_VERSION.tar "
+echo ""
+echo "  comprising: "
+echo ""
+echo "      BTool_$plat.$BT_VERSION/btool.tar.gz"
+echo "      BTool_$plat.$BT_VERSION/READ_ME"
+echo "      BTool_$plat.$BT_VERSION/BTool.install"
+echo "      BTool_$plat.$BT_VERSION/BTool_Tutorial"
+echo ""
+echo ""
+echo "  It should be used on the remote site, after"
+echo "  the installation has been built and tested."
+echo ""
+echo "  After running thyis script, the all src files"
+echo "  should be removed from the remote system"
+
+echo ""
+echo ""
+echo "  -- 1  Continue"
+echo "  -- 2  Abort"
+
+echo ""
+echo -n "  ** Number? "
+set answer=$<
+
+if ($answer != "1") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+cd ..
+
+if ( ! -x BEESRC/BToolM ) then
+  echo ""
+  echo "  Executable `pwd`/BEESRC/BToolM does not exist "
+  echo ""
+  exit ( 1 )
+endif
+
+if ( ! -d BTool_$plat.$BT_VERSION ) then
+  mkdir BTool_$plat.$BT_VERSION
+endif
+
+rm -f BTool_$plat.$BT_VERSION/*
+
+if ( ! -r BKIT/BPLAT/SYMBOL ) then
+  echo ""
+  echo "  First run CRE_BTool "
+  echo ""
+  echo "  (`pwd`/BKIT/BPLAT/SYMBOL does not exist) "
+  echo ""
+  exit ( 1 )
+endif
+
+if ( ! -r BKIT/BHELP/Contents.html ) then
+  echo ""
+  echo "  First run CRE_BTool "
+  echo ""
+  echo "  (`pwd`/BKIT/BHELP/Contents.html does not exist) "
+  echo ""
+  exit ( 1 )
+endif
+
+if ( ! -r BKIT/BHELP/Index.html ) then
+  echo ""
+  echo "  First run CRE_BTool "
+  echo ""
+  echo "  (`pwd`/BKIT/BHELP/Index.html does not exist) "
+  echo ""
+  exit ( 1 )
+endif
+
+if ( ! -x BTOOL/$plat/BTool ) then
+  echo ""
+  echo "  First run CRE_BTool "
+  echo ""
+  echo "  Executable `pwd`/BTOOL/$plat/BTool does not exist "
+  echo ""
+  exit ( 1 )
+endif
+
+cd BTOOL/$plat
+
+echo ""
+echo "    tar cvf BTool_$plat.$BT_VERSION/btool.tar BTool BToolM etc ... "
+echo ""
+
+cp BTool ../../BKIT
+cp ../../BEESRC/BToolM ../../BKIT
+cd ../..
+
+cp -r BEESRC/BTool_Tutorial BKIT
+
+tar cvf BTool_$plat.$BT_VERSION/btool.tar BKIT/BTool BKIT/BToolM BKIT/BPLAT/SYMBOL BKIT/BHELP/Contents.html BKIT/BHELP/Index.html BKIT/BTool_Tutorial
+if ( $status != 0 ) then
+  echo ""
+  echo "  Make aborted"
+  echo ""
+  rm BKIT/BTool BKIT/BToolM
+  rm -r BKIT/BTool_Tutorial
+  exit ( 1 )
+endif
+
+cd BTool_$plat.$BT_VERSION
+
+cp ../INSTALL_SCRIPTS/BTool.install ./BTool.install
+cp ../INSTALL_SCRIPTS/READ_ME.BTool ./READ_ME
+
+echo ""
+ls -l
+echo ""
+echo "    gzip btool.tar ... "
+echo ""
+gzip btool.tar
+if ( $status != 0 ) then
+  echo ""
+  echo "  Make aborted"
+  echo ""
+  rm ../BKIT/BTool ../BKIT/BToolM
+  rm -r ../BKIT/BTool_Tutorial
+  exit ( 1 )
+endif
+
+cd ..
+
+echo ""
+echo "  tar cvf BTool_$plat.$BT_VERSION.tar BTool_$plat.$BT_VERSION/* "
+echo ""
+
+tar cvf BTool_$plat.$BT_VERSION.tar BTool_$plat.$BT_VERSION/*
+
+echo ""
+ls -l  BTool_$plat.$BT_VERSION.tar
+echo ""
+
+rm -r BTool_$plat.$BT_VERSION
+
+rm BKIT/BTool BKIT/BToolM
+rm -r BKIT/BTool_Tutorial
+
+echo ""
+echo "  ftp-able tarfile BTool_$plat.$BT_VERSION.tar made "
+echo ""
+echo ""

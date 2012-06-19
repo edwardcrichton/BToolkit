@@ -1,0 +1,77 @@
+
+                       FAC DEMONSTRATION
+                       -----------------
+
+    The FAC demonstration illustrates a complete software development of
+    the mathematical factorial function, incorporating animation, the use
+    of SLIB constructs in the design, the proof obligation generator,
+    provers to establish correctness, the interface generator to produce
+    running code, and the documentation tool to produce a report.
+
+
+0. Enter the FAC directory and run the B-Toolkit to create a new
+   development directory.
+
+1. Introduce `factorial.mch' from SRC and POGenerate (pog); the
+   ` FACTORIAL' machine is introduced; no proof obligations result.
+
+2. Animate (anm) `factorial.mch' to check its functionality
+   (the THEORY file `factorial.mch.thy' is automatically loaded from
+   the SRC directory). DO NOT set constant `math_fac' - you
+   can't! The animator simplifies expressions as long as
+   the result is a B Number (ie. in the range 0 .. 2^32-1)
+   You will find out the `my_maxint' should probably be 12
+   for an easy implementation to be written.
+
+3. Introduce the `factorial_1' implementation from SRC and POGenerate;
+   the `Bool_TYPE', `Scalar_TYPE' and `factorial_Nvar' SLIB machines
+   are automatically introduced; 22 proof obligations are generated.
+
+4. Enter the Provers Environment and AutoProve `factorial_1' (Level 0);
+   It is slow since Forward Reasoning Depth is at its maximum (2),
+   with further hypothesis being generated from the Forward Equality
+   tactic operation (FEQL). 4 proof obligations remain. Do not
+   considerer the Context proof obligation.
+
+5. Invoke the InterProver to investigate (the relevant theory is
+   provided in the PROOFMETHOD). 
+  
+   Select `comp_fac.13':
+
+        `Run InterProver' and `Backtrack' until you get to get to:
+            math_fact(inp) = ........
+        the left hand side will match the rule given in the UsersTheory.
+        Look at this theory using Edit Current PROOFMETHOD File.
+
+        `Create Lemma', select it and prove it. (`Backtrack' until the
+        user-supplied rule applies.) The proof of lemmas uses the
+        UsersTheory
+
+   Select `comp_fac.19':
+   
+        `Run Prover' and `Backtrack' until you get to get to:
+            factorial_Nvar_LoopVar = math_fac(inp) ..
+         which is true since:
+             count = 0
+             math_fac(inp) = math_fac(count) * factorial_Nvar_LoopVar
+         ( see Hypothesis )
+
+   `Create Lemma'  and prove it.
+
+6. Quit the InterProver, and Commit `factorial_1' (Level 0);
+   2 proof obligations remain. 
+
+7. Go to the Generators Environment and `Introduce a new' Interface of
+   the implemented machine `factorial.mch'.
+
+8. In the Generators Environment generate the interface (itf) ; the
+   constructs `factorialIo.mch', `factorialIoI.imp', `factorialItf.mch'
+   and `factorialItfI.imp' are generated, and the SLIB constructs
+   `basic_io.mch', `file_dump.mch' and `ITF_token_io.mch' are introduced.
+   `factorial_1', `factorialIO_1' and `factorialITF_1' are translated,
+   and the latter linked to produce running code which may be executed
+   from the translators Environment.
+
+9. Go to the Document Environment and `Introduce a new'  Document of all
+   configured constructs; edit, set the required Document flags (in the
+   Flags Option), mark-up (dmu) and print (prt).

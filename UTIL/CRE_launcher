@@ -1,0 +1,60 @@
+#! /bin/csh -f
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script installs the launcher "
+echo "  in BKIT"
+echo "  -----------------------------------------------------"
+
+######################################
+# set all variables 
+######################################
+
+set cur=`pwd`
+cd ../UTIL
+source set_compile_variables
+cd $cur
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+################################
+# compile launcher.c
+################################
+
+echo ""
+echo "  ----------------------------------------------------------------------"
+echo "  Compiling launcher.c"
+echo ""
+
+cd ../C
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_non_Motif \ "
+echo "      -o ../BKIT/Blauncher \ "
+echo "      launcher.c \ "
+echo "      $ALL_FLAGS \ "
+echo "      $CC_non_X_incl_dir \ "
+echo "      $CC_non_X_link_lib \ "
+echo "      $CC_non_X_link_dir \ "
+$CC \
+    $CC_opt_non_Motif \
+     -o ../BKIT/Blauncher \
+     launcher.c \
+     $ALL_FLAGS \
+     $CC_non_X_incl_dir \
+     $CC_non_X_link_lib \
+     $CC_non_X_link_dir
+
+if ($status != "0") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+strip ../BKIT/"Blauncher"
+
+

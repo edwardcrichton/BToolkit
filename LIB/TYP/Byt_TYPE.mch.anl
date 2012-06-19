@@ -1,0 +1,513 @@
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(BYTE)
+;
+(BYTE)
+;
+(MinByt,MaxByt,n2b,b2n,b2bs,bs2b,bnd,bor,bxr,bcp)
+;
+(MinByt,MaxByt,n2b,b2n,b2bs,bs2b,bnd,bor,bxr,bcp)
+;
+(?+?: BYTE*BYTE +-> BYTE & ?-?: BYTE*BYTE +-> BYTE & ?*?: BYTE*BYTE +-> BYTE & ?/?: BYTE*BYTE +-> BYTE & ? mod ?: BYTE*BYTE +-> BYTE & n2b: 0..255 >->> BYTE & b2n = n2b~ & MinByt = n2b(0) & MaxByt = n2b(255) & b2bs: BYTE >->> (1..8 --> {0,1}) & bs2b = b2bs~ & bnd = {0|->0|->0,0|->1|->0,1|->0|->0,1|->1|->1} & bor = {0|->0|->0,0|->1|->1,1|->0|->1,1|->1|->1} & bxr = {0|->0|->0,0|->1|->1,1|->0|->1,1|->1|->0} & bcp = {0|->1,1|->0} & card(BYTE): NAT1)
+;
+(?+?: BYTE*BYTE +-> BYTE & ?-?: BYTE*BYTE +-> BYTE & ?*?: BYTE*BYTE +-> BYTE & ?/?: BYTE*BYTE +-> BYTE & ? mod ?: BYTE*BYTE +-> BYTE & n2b: 0..255 >->> BYTE & b2n = n2b~ & MinByt = n2b(0) & MaxByt = n2b(255) & b2bs: BYTE >->> (1..8 --> {0,1}) & bs2b = b2bs~ & bnd = {0|->0|->0,0|->1|->0,1|->0|->0,1|->1|->1} & bor = {0|->0|->0,0|->1|->1,1|->0|->1,1|->1|->1} & bxr = {0|->0|->0,0|->1|->1,1|->0|->1,1|->1|->0} & bcp = {0|->1,1|->0} & card(BYTE): NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(BLE,BGE,BLT,BGT,BEQ,BNE,BADD,BSUB,BMUL,BDIV,BMOD,BINC,BDEC,BAND,BOR,BXOR,BNOT)
+;
+(BLE,BGE,BLT,BGT,BEQ,BNE,BADD,BSUB,BMUL,BDIV,BMOD,BINC,BDEC,BAND,BOR,BXOR,BNOT)
+;
+(Byt_TYPE(?):(?):(?))
+;
+(
+(
+ (BLE)
+;
+ (?,Val_Op,Det_Op,(rr <-- BLE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa<=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bool(aa<=bb))
+ )
+ )
+)
+,
+(
+ (BGE)
+;
+ (?,Val_Op,Det_Op,(rr <-- BGE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa>=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bool(bb<=aa))
+ )
+ )
+)
+,
+(
+ (BLT)
+;
+ (?,Val_Op,Det_Op,(rr <-- BLT(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa<bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bool(aa<bb))
+ )
+ )
+)
+,
+(
+ (BGT)
+;
+ (?,Val_Op,Det_Op,(rr <-- BGT(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa>bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bool(bb<aa))
+ )
+ )
+)
+,
+(
+ (BEQ)
+;
+ (?,Val_Op,Det_Op,(rr <-- BEQ(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa = bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bool(aa = bb))
+ )
+ )
+)
+,
+(
+ (BNE)
+;
+ (?,Val_Op,Det_Op,(rr <-- BNE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa/=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bool(not(aa = bb)))
+ )
+ )
+)
+,
+(
+ (BADD)
+;
+ (?,Val_Op,Det_Op,(rr <-- BADD(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE & aa+bb: BYTE)
+ |
+ (
+ (rr:=aa+bb)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE & aa+bb: BYTE)
+ |
+ (
+ (rr:=aa+bb)
+ )
+ )
+)
+,
+(
+ (BSUB)
+;
+ (?,Val_Op,Det_Op,(rr <-- BSUB(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE & aa-bb: BYTE)
+ |
+ (
+ (rr:=aa-bb)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE & aa-bb: BYTE)
+ |
+ (
+ (rr:=aa-bb)
+ )
+ )
+)
+,
+(
+ (BMUL)
+;
+ (?,Val_Op,Det_Op,(rr <-- BMUL(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE & aa*bb: BYTE)
+ |
+ (
+ (rr:=aa*bb)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE & aa*bb: BYTE)
+ |
+ (
+ (rr:=aa*bb)
+ )
+ )
+)
+,
+(
+ (BDIV)
+;
+ (?,Val_Op,Det_Op,(rr <-- BDIV(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE & bb/=MinByt & aa/bb: BYTE)
+ |
+ (
+ (rr:=aa/bb)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE & not(bb = MinByt) & aa/bb: BYTE)
+ |
+ (
+ (rr:=aa/bb)
+ )
+ )
+)
+,
+(
+ (BMOD)
+;
+ (?,Val_Op,Det_Op,(rr <-- BMOD(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE & bb/=MinByt & aa mod bb: BYTE)
+ |
+ (
+ (rr:=aa mod bb)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE & not(bb = MinByt) & aa mod bb: BYTE)
+ |
+ (
+ (rr:=aa mod bb)
+ )
+ )
+)
+,
+(
+ (BINC)
+;
+ (?,Val_Op,Det_Op,(rr <-- BINC(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & aa+n2b(1): BYTE)
+ |
+ (
+ (rr:=aa+n2b(1))
+ )
+ )
+;
+ (
+ (aa: BYTE & aa+n2b(1): BYTE)
+ |
+ (
+ (rr:=aa+n2b(1))
+ )
+ )
+)
+,
+(
+ (BDEC)
+;
+ (?,Val_Op,Det_Op,(rr <-- BDEC(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & aa-n2b(1): BYTE)
+ |
+ (
+ (rr:=aa-n2b(1))
+ )
+ )
+;
+ (
+ (aa: BYTE & aa-n2b(1): BYTE)
+ |
+ (
+ (rr:=aa-n2b(1))
+ )
+ )
+)
+,
+(
+ (BAND)
+;
+ (?,Val_Op,Det_Op,(rr <-- BAND(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bs2b(b2bs(aa)><b2bs(bb);
+ bnd)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bs2b(b2bs(aa)><b2bs(bb);
+bnd))
+ )
+ )
+)
+,
+(
+ (BOR)
+;
+ (?,Val_Op,Det_Op,(rr <-- BOR(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bs2b(b2bs(aa)><b2bs(bb);
+ bor)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bs2b(b2bs(aa)><b2bs(bb);
+bor))
+ )
+ )
+)
+,
+(
+ (BXOR)
+;
+ (?,Val_Op,Det_Op,(rr <-- BXOR(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bs2b(b2bs(aa)><b2bs(bb);
+ bxr)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE & bb: BYTE)
+ |
+ (
+ (rr:=bs2b(b2bs(aa)><b2bs(bb);
+bxr))
+ )
+ )
+)
+,
+(
+ (BNOT)
+;
+ (?,Val_Op,Det_Op,(rr <-- BNOT(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: BYTE)
+ |
+ (
+ (BEGIN
+ rr:=bs2b(b2bs(aa);
+ bcp)
+ END)
+ )
+ )
+;
+ (
+ (aa: BYTE)
+ |
+ (
+ (rr:=bs2b(b2bs(aa);
+bcp))
+ )
+ )
+)
+)

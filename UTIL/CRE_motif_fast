@@ -1,0 +1,93 @@
+#! /bin/csh -f
+
+echo ""
+echo "  ------------------------------------------------------------------------"
+echo "  This script compiles BMotif (malloc - without compiling underlying base)"
+echo "  in `pwd`/BKIT/BLIB "
+echo "  ------------------------------------------------------------------------"
+
+######################################
+# set all variables 
+######################################
+
+set cur=`pwd`
+cd ../UTIL
+source set_compile_variables
+cd $cur
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+
+if ( ! -d $BKIT/BLIB ) then
+  mkdir $BKIT/BLIB
+endif
+
+cd ../MOTIF
+
+
+################################
+# clear /tmp/cc*
+################################
+
+echo ""
+echo "  ls -l /tmp/cc*"
+echo ""
+ls -l /tmp/cc*
+if ( $status == 0 ) then
+  echo ""
+  echo "  rm -f /tmp/cc*"
+  rm -f /tmp/cc*
+endif
+echo ""
+
+
+################################
+# compile object files
+################################
+
+echo ""
+echo "  ----------------------------------------------------------------------"
+echo "  Compiling BMotif object files"
+echo ""
+
+../UTIL/_copy_motif_to_c
+
+foreach file ( $BMotif_c_files_m )
+
+  echo "  $CC \ "
+  echo "      $CC_opt_Motif \ "
+  echo "      -c $file \ "
+  echo "      -Dbmotif -DBTOOLKIT_FLAG \ "
+  echo "      -DBTOOL_FLAG -DBTOOLM_FLAG \ "
+  echo "      $ALL_FLAGS  \ "
+  echo "      $CC_X_incl_dir "
+  $CC \
+      $CC_opt_Motif \
+      -c $file \
+      -Dbmotif -DBTOOLKIT_FLAG \
+      -DBTOOL_FLAG -DBTOOLM_FLAG \
+      $ALL_FLAGS \
+      $CC_X_incl_dir
+  echo ""
+
+  if ($status != 0) then
+    echo ""
+    echo ""
+    echo "  Aborted (compilation) BMotif"
+    echo ""
+    ../UTIL/_rem_copied_to_c
+    exit ( 1 )
+  endif
+
+end
+
+../UTIL/_rem_copied_to_c
+
+../UTIL/_link_BMotif
+
+exit ($status)
+
+
+###################################################################################

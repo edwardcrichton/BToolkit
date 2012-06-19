@@ -1,0 +1,7192 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define NormaliseDirect_tac \
+		(((MAP;LMAP;FLAT;MODR~;RULE;CATL;SHELL)~;NormaliserDirectX)~)
+
+#define NormaliseDirect(x) \
+		bcall(NormaliseDirect_tac: norm_0(x))
+
+
+
+#define ClearNormaliserError    bcall(MODR:bmodr(NormaliserErrorX.1,0))
+
+#define FlagNormaliserError     bcall(MODR:bmodr(NormaliserErrorX.1,1))
+
+
+
+#define ClearNormaliserMiniRemake  bcall(MODR:bmodr(NormaliserMiniRemakeX.1,0))
+
+#define FlagNoMiniRemake           bcall(MODR:bmodr(NormaliserMiniRemakeX.1,1))
+
+#define FlagMiniRemake             bcall(MODR:bmodr(NormaliserMiniRemakeX.1,0))
+
+#define NoMiniRemakeFlagged        brule(NormaliserMiniRemakeX.1,1)
+
+#define InformArityInterference(x)  Writef(("\n\n    Symbol clash with %\n\n    Attempt to redefine system symbol as infix!\n\n    (see shell for parse information)\n",bsrv x berv))
+
+
+
+
+#define parse_name		 1
+#define parse_parameters	 2
+#define parse_constraints	 3
+#define parse_sees		 4
+#define parse_refines		 5
+#define parse_includes		 6
+#define parse_extends		 7
+#define parse_imports		 8
+#define parse_promotes		 9
+#define parse_variables		10
+#define parse_invariant		11
+#define parse_assertions	12
+#define parse_initialisation	13
+#define parse_operations	14
+#define parse_sets		15
+#define parse_constants		16
+#define parse_properties	17
+#define parse_uses		18
+#define parse_definitions	19
+
+
+/*
+#define Included_Op	1
+#define Seen_Op		2
+#define Used_Op		3
+
+#define Mod_Op		1
+#define NonMod_Op	2
+#define Det_Op		3
+#define NonDet_Op	4
+*/
+
+
+#define InformLIBFail(x) \
+  Writef(("\n\n      Introduction of % failed\n",x))
+
+#define InformBASE \
+  Writef((" BASE found"))
+
+#define InformBASESRC \
+  Writef((" BASE found in SRC"))
+
+#define InformENUM \
+  Writef((" ENUMERATION found"))
+
+
+#define InformVHDLENUM \
+  Writef((" VHDL ENUMERATION found"))
+
+
+#define InformENUMSRC \
+  Writef((" ENUMERATION found in SRC"))
+
+
+#define InformInSRC \
+  Writef((" found in SRC"))
+
+
+#define InformInTLIB \
+  Writef((" found in TLIB"))
+
+
+#define InformInLIB \
+  Writef((" found in SLIB"))
+
+
+#define InformInVHDLLIB \
+  Writef((" found in VHDL SLIB"))
+
+
+#define InformNotInSRCLIBENUM \
+  Writef(("\n    % - not found\n:    (SLIB, SRC, ENUMERATION or BASE)",berr))
+
+
+#define InformNotInVHDLSRCLIBENUM \
+  Writef(("\n    % - not found\n    (VHDL SLIB, SLIB, SRC, ENUMERATION or BASE)",berr))
+
+
+#define IsInSRCNoParse \
+  Writef(("\n\n      % - found in SRC, but does not parse",berr))
+
+
+#define InformAlreadyRefined(x,y) \
+  Writef(("\n\n    % is already refined by % ",x,y))
+
+#define InformOpNameClash(x,y) \
+  Writef(("\n\n    Operation % also appears in % ",bsrv x berv,y))
+
+#define InformDuplicateClause(s) \
+  Writef(("\n\n    % Duplicate ",berr)) & \
+  Writef((s)) & \
+  Writef((" clause"))
+
+
+#define InformIllegalClause(c,x) \
+  Writef(("\n\n    % Illegal ",berr)) & \
+  Writef((c)) & \
+  Writef((" clause:\n")) & \
+  Writef((x))
+
+
+#define InformClauseSyntaxError(c,x) \
+  Writef(("\n\n    ")) & \
+  Writef((c)) & \
+  Writef((" syntax error:\n      % ",bsrv x berv))
+
+
+#define InformRepetitionInClause(c,x) \
+  Writef(("\n\n    Repetition in ")) & \
+  Writef((c)) & \
+  Writef((" clause:\n      % ",bsrv x berv))
+
+
+#define InformDotRenameSpecConstruct(x) Writef(("\n\n    Syntax error: %\n    Dot-rename is for specification construction ",bsrv x berv))
+
+
+#define InformParameterDiscrepancy(c,p) Writef(("\n\n    Parameter discrepancy:\n     Referenced construct %\n     Parameter % ",bsrv c berv,bsrv p berv))
+
+#define InformBadPromotedOp(o) Writef(("\n\n    Promoted operation:\n       %\n    Not found ",bsrv o berv))
+
+#define InformRepetitionSubConstr(x) \
+  Writef(("\n\n    Repetition of subordinate construct:\n      % ",bsrv x berv))
+
+
+#define InformCantPromoteUsedOp(p) \
+  Writef(("\n\n    Illegal Promotion of USED operation:\n      % ",bsrv p berv))
+
+
+#define InformCantPromoteSeenOp(p) \
+  Writef(("\n\n    Illegal Promotion of SEEN operation:\n      % ",bsrv p berv))
+
+
+#define InformRecursion(a,b) \
+  Writef(("\n\n    Error - construct recursion:\n      % and % ",bsrv a berv,bsrv b berv))
+
+
+#define InformDEFINITIONSRecursion \
+  Writef(("\n\n    Error - recursion in DEFINITIONS clause "))
+
+
+#define InformSelfRecursion \
+  Writef(("    %\n\n      Self-referential construct\n",berr))
+
+#define InformNameNotMatchFileName(s,t) \
+  Writef(("\n    Construct name:\n      %\n    does not match filename:\n      % ",bsrv s berv,bsrv t berv)) 
+
+
+
+#define InformImpNotMatchFileExt(t) \
+  Writef(("\n    IMPLEMENTATION has wrong file extension: % ",bsrv t berv))
+
+#define InformRefNotMatchFileExt(t) \
+  Writef(("\n    REFINEMENT has wrong file extension: % ",bsrv t berv))
+
+#define InformMchNotMatchFileExt(t) \
+  Writef(("\n    MACHINE has wrong file extension: %" ,bsrv t berv))
+
+
+
+#define InformImpSyntaxError(x) \
+  Writef(("\n\n    IMPLEMENTATION syntax error: % ",bsrv x berv))
+
+#define InformRefSyntaxError(x) \
+  Writef(("\n\n    REFINEMENT syntax error: % ",bsrv x berv))
+
+#define InformMchSyntaxError(x) \
+  Writef(("\n\n    MACHINE syntax error: % ",bsrv x berv))
+
+
+
+#define InformParametersSyntaxError(x) \
+  Writef(("\n\n    PARAMETERS syntax error: % ",bsrv x berv))
+
+
+
+#define InformKeywordNotRecognized(x) \
+  Writef(("\n\n    Keyword not recognized: % ",bsrv x berv))
+
+
+#define InformLastKeywordNotRecognized(x) \
+  Writef(("\n\n    Last keyword not recognized: % ",bsrv x berv))
+
+
+#define InformMchNotYetNormalised(x) Writef(("    % not yet analysed ",x))
+
+
+#define InformPromotesRequiresImports Writef(("    %\n\n      PROMOTES requires IMPORTS or EXTENDS\n",berr))
+
+
+#define InformPromotesRequiresIncludes Writef(("    %\n\n      PROMOTES requires INCLUDES or EXTENDS\n",berr))
+
+
+#define InformInitPRE(p) Writef(("\n\n    Illegal precondition in INITIALISATION:\n      % ",bsrv p berv))
+
+
+#define InformImpNotHaveParams(p) Writef(("\n\n    %\n      An IMPLEMENTATION may not have PARAMETERS ",bsrv p berv))
+
+#define InformRefNotHaveParams(p) Writef(("\n\n    %\n      A REFINEMENT may not have PARAMETERS ",bsrv p berv))
+
+
+#define InformNoVariablesImp(p) Writef(("\n\n    %\n      An IMPLEMENTATION may not have VARIABLES ",bsrv p berv))
+
+
+#define InformNoRefinesClause Writef(("\n\n    %\n      No REFINES clause ",berr))
+
+
+#define InformRepetitionNamespace(c,x) \
+  Writef(("\n    Repetition in ")) & \
+  Writef((c)) & \
+  Writef((" namespace:\n      % ",bsrv x berv))
+
+
+#define WriteMainHeader(h) \
+  Writef(("\n  ")) & \
+  Writef((h))
+
+#define WriteHeader(h) \
+  Writef(("\n")) & \
+  Writef((h))
+
+
+#define InformSyntaxErrorNumber(s,x) \
+  Writef(("\n\n    Syntax error (number!) in ")) & \
+  Writef((s)) & \
+  Writef((" clause\n      % ",bsrv x berv))
+
+
+#define InformSyntaxErrorSingleLetter(s,x) \
+  Writef(("\n\n    Syntax error (single letter joker!) in ")) & \
+  Writef((s)) & \
+  Writef((" clause\n      % ",bsrv x berv))
+
+
+#define InformSyntaxError(s,x) \
+  Writef(("\n\n    Syntax error in ")) & \
+  Writef((s)) & \
+  Writef((" clause\n      % ",bsrv x berv))
+
+
+#define InformSyntaxErrorRaw(x) \
+  Writef(("\n\n    Syntax error % ",bsrv x berv))
+
+
+#define InformCantRenameLIBGNRMch(a,b) Writef(("\n    Can't rename library/generated machine:\n      % to % ",b,bsrv a.b berv))
+
+
+THEORY NormaliserErrorX IS 0 END &
+
+THEORY NormaliserMiniRemakeX IS 0 END &
+
+THEORY OfferNormaliserFailureOptionsX IS
+
+#define OfferNormaliserFailureOptions \
+        bcall(((FLAT;MODR;OfferNormaliserFailureOptionsX)~):oafo0)
+
+  GetCurrentConstruct(a.b) &
+  ModifyCurrentJob((a.b:BT_NML:0)) &
+  GetJobs(X) &
+  AddJobs(X,((a.b:BT_EDT_NML:0)))
+ =>
+  oafo0;
+
+  GetCurrentConstruct(a.b) &
+  ModifyCurrentJob((a.b:BT_NML:0)) &
+  GetJobs(X) &
+  bsearch((a.b:BT_NML:0),X,Y) &
+  AddJobs(Y,((a.b:BT_EDT_NML:0)))
+ =>
+  oafo0
+
+END
+
+&
+
+THEORY FailedIntroLIB IS
+
+#define LoadFailedIntroLib bcall(((SHELL;MODR)~;FailedIntroLIB)~ : fil_0)
+
+  ?;
+#define ReadFailedIntroLIBList(x) brule(FailedIntroLIB.1,x)
+#define ModrFailedIntroLIBList(x) bmodr(FailedIntroLIB.1,x)
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);  
+
+  ModrFailedIntroLIBList((?)) &
+  bshell("rm -f .Bfil")
+ =>
+  fil_0;
+
+  bget(".Bfil",a) &
+  ModrFailedIntroLIBList((a,?)) &
+  bshell("rm -f .Bfil")
+ =>
+  fil_0
+
+END
+
+&
+
+THEORY ConstructTrueAbstractVariablesX IS
+
+#define cstr_tru_av_tac ((RULE;FLAT~)~;ConstructTrueAbstractVariablesX)~
+
+#define ConstructTrueAbstractVariables bcall(cstr_tru_av_tac: cstr_tru_av_0)
+
+
+  bcrer(TRUE_ABS_VARIABLESX,X)
+ =>
+  cstr_tru_av_2(X);
+
+  bsearch(?,X,Y) &
+  cstr_tru_av_2(Y)
+ =>
+  cstr_tru_av_2(X);
+
+  cstr_tru_av_2(X)
+ =>
+  cstr_tru_av_1(C)(?)(X);
+
+  cstr_tru_av_1(C)(A)(X,a)
+ =>
+  cstr_tru_av_1(C)(A,a)(X);
+
+  bsearch(a,C,D) &
+  cstr_tru_av_1(C)(A)(X)
+ =>
+  cstr_tru_av_1(C)(A,a)(X);
+
+  brule(LOCAL_VARIABLESX.1,C) &
+  brule(REFINESX.1,r) &
+  brule(SUB_VARIABLESX.I,r(A)) &
+  cstr_tru_av_1(bflat(?,C))(bflat(?,A))(?)
+ =>
+  cstr_tru_av_0;
+
+  brule(LOCAL_VARIABLESX.1,?) &
+  brule(REFINESX.1,r) &
+  brule(SUB_VARIABLESX.I,r(A)) &
+  bcrer(TRUE_ABS_VARIABLESX,A)
+ =>
+  cstr_tru_av_0;
+
+  brule(REFINESX.1,?) &
+  bcrer(TRUE_ABS_VARIABLESX,?)
+ =>
+  cstr_tru_av_0;
+
+  CurrentConstructIsMch
+ =>
+  cstr_tru_av_0;
+
+  NormaliserErrorFlagged
+ =>
+  cstr_tru_av_0
+
+END
+
+&
+
+THEORY DistributeSUB_VARIABLESX IS
+
+#define dist_SUB_VAR_tac ((MAP;ARI;RULE)~;DistributeSUB_VARIABLESX)~
+
+#define DistributeSUB_VARIABLES bcall(dist_SUB_VAR_tac: dist_SUB_VAR_0)
+
+
+  bcrer(DIST_SUB_VARIABLESX,m(v))
+ =>
+  dist_SUB_VAR_2(m,v);
+
+  dist_SUB_VAR_1(n-1)
+ =>
+  dist_SUB_VAR_1(n);
+
+  brule(SUB_VARIABLESX.n,m(v)) &
+  dist_SUB_VAR_2(m) bsmap v &
+  dist_SUB_VAR_1(n-1)
+ =>
+  dist_SUB_VAR_1(n);
+
+  brule(SUB_VARIABLESX.n,m$v) &
+  dist_SUB_VAR_2(m) bsmap v &
+  dist_SUB_VAR_1(n-1)
+ =>
+  dist_SUB_VAR_1(n);
+
+  dist_SUB_VAR_1(0);
+
+  dist_SUB_VAR_0;
+
+  blent(SUB_VARIABLESX.n) &
+  dist_SUB_VAR_1(n)
+ =>
+  dist_SUB_VAR_0;
+
+  NormaliserErrorFlagged
+ =>
+  dist_SUB_VAR_0
+
+END
+
+&
+
+THEORY DesugarOperationsX IS
+
+#define dsg_ops_tac ((REV;MAP;NEWV~;FLAT;MODR;RULE;REV)~;DesugarOperationsX)~
+
+#define DesugarOperations \
+		bcall(dsg_ops_tac: dsg_ops_0)
+
+#define dsg_init_tac ((MAP;NEWV;MODR;RULE)~;DesugarInitialisationX)~
+
+#define DesugarInitialisation \
+  bcall(dsg_init_tac: \
+	(bmodr(DesugarInitialisationX.1,?) & dsg_init_0))
+
+
+  ?;  /* name|header|input|output|userpre|unexpsub */
+
+  ?;  /* mod|det|calcpre|expsub */
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+  chk_desugarer_error;
+
+  DesugarerErrorFlagged &
+  ClearDesugarerError &
+  FlagNormaliserError
+ =>
+  chk_desugarer_error;
+
+  bmodr(DesugarOperationsX.1,(a|b|c|d|e|f)) &
+  bmodr(RebuildX.4,bflat(?,d))
+ =>
+  dsg_ops_100(a|b|c|d|e|f);
+
+  bmodr(DesugarOperationsX.1,(a|b|c|?|e|f)) &
+  bmodr(RebuildX.4,?)
+ =>
+  dsg_ops_100(a|b|c|?|e|f);
+
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b) == (bnewv(a,b));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)(g)(h)) == (bnewv(a,b)(c)(d)(e)(f)(g)(h));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)(g)) == (bnewv(a,b)(c)(d)(e)(f)(g));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)) == (bnewv(a,b)(c)(d)(e)(f));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)) == (bnewv(a,b)(c)(d)(e));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)) == (bnewv(a,b)(c)(d));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)) == (bnewv(a,b)(c));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b[c]) == (bnewv(a,b)[c]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b~[c]) == (bnewv(a,b)~[c]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)[d]) == (bnewv(a,b)(c)[d]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)~) == (bnewv(a,b)(c)~);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)~[d]) == (bnewv(a,b)(c)~[d]);
+
+
+
+  bcrer(LOCAL_OPERATIONSX,(a;(?,g,h,b);c;d;(e|f);(i|j)))
+ =>
+  dsg_ops_5(a;(?,g,h,b);c;d;(e|f);(i|j));
+
+  bsearch(true,i,I) &
+  dsg_ops_5(a;(?,g,h,b);c;d;(e|f);(I|j))
+ =>
+  dsg_ops_5(a;(?,g,h,b);c;d;(e|f);(i|j));
+
+  brule(DesugarOperationsX.1,(a|b|c|d|e|f)) &
+  brule(DesugarOperationsX.2,(g|h|i|j)) &
+  dsg_ops_5(a;(?,g,h,b);c;d;(e|f);(i|j))
+ =>
+  dsg_ops_4;
+
+  brule(RebuildX.1,s) &
+  brule(RebuildX.5,f) &
+  brule(RebuildX.6,g) &
+  bmodr(RebuildX.1,?) &
+  bmodr(RebuildX.5,?) &
+  bmodr(RebuildX.6,?) &
+  bmodr(DesugarOperationsX.2,(f|g|true|s)) &
+  dsg_ops_4
+ =>
+  dsg_ops_3_3;
+
+  brule(RebuildX.1,(p|s)) &
+  brule(RebuildX.5,f) &
+  brule(RebuildX.6,g) &
+  bmodr(RebuildX.1,?) &
+  bmodr(RebuildX.5,?) &
+  bmodr(RebuildX.6,?) &
+  bmodr(DesugarOperationsX.2,(f|g|p|s)) &
+  dsg_ops_4
+ =>
+  dsg_ops_3_3;
+
+  NormaliserErrorFlagged
+ =>
+  dsg_ops_3_3;
+
+  brule(RebuildX.1,(p|s)) &
+  bmodr(RebuildX.1,(x|s)) &
+  dsg_ops_3_3
+ =>
+  dsg_ops_3_2(x);
+
+  bsearch(?,x,y) &
+  dsg_ops_3_2(y)
+ =>
+  dsg_ops_3_2(x);
+
+  dsg_ops_3_2(brev(x&q))
+ =>
+  dsg_ops_3_1(q)(x);
+
+  dsg_ops_3_1(p)(x&q)
+ =>
+  dsg_ops_3_1(p&q)(x);
+
+  dsg_ops_3_2(brev(x&p))
+ =>
+  dsg_ops_3_1(p&p)(x);
+
+  bsearch(q,p,r) &
+  dsg_ops_3_1(p)(x)
+ =>
+  dsg_ops_3_1(p&q)(x);
+
+  dsg_ops_3_3
+ =>
+  dsg_ops_3_0;
+
+  brule(RebuildX.1,(p&q|s)) &
+  dsg_ops_3_1(p&q)(?)
+ =>
+  dsg_ops_3_0;
+
+  NormaliserErrorFlagged
+ =>
+  dsg_ops_3_0;
+
+/*
+  bmodr(RebuildX.2,n) &
+  CheckFullyHiddenImportedVariables(s) &
+  CheckFullyHiddenAbstractVariables(s) &
+  CheckFullyHiddenSeenVariables(s) &
+  DesugarNoExpand(s) &
+  Desugar(s) &
+  dsg_ops_3_0
+ =>
+  dsg_ops_2(n)(s);
+*/
+
+  bmodr(RebuildX.2,n) &
+  CheckFullyHiddenImportedVariables(s) &
+  CheckFullyHiddenAbstractVariables(s) &
+  CheckFullyHiddenSeenVariables(s) &
+/***
+HERE(("Starting DesugarNoExpand" -- n))&TIME&
+***/
+  DesugarNoExpand(s) &
+/***
+HERE(("Finishing DesugarNoExpand"))&TIME&
+***/
+  dsg_ops_3_0
+ =>
+  dsg_ops_2(n)(s);
+
+  Writef(("\n\n   `Loop' is a reserved word, and so\n    may not be used an an OPERATION name\n")) &
+  FlagDesugarerError
+ =>
+  dsg_ops_2(Loop)(s);
+
+  brule(SUB_OPERATIONSX.I,(X$Y$(n;b;c;d;(e|f);(i|j)))) &
+  InformOpNameClash(n,X) &
+  FlagDesugarerError
+ =>
+  dsg_ops_2(n)(s);
+
+/***
+HERE((n))&
+***/
+  WriteDot &
+  dsg_ops_100(n|n|?|?|true|s) &
+  dsg_ops_2(n)(PRE true THEN s END)
+ =>
+  dsg_ops_1(n = s);
+
+/***
+HERE((n))&
+***/
+  WriteDot &
+  dsg_ops_100(n|n(i)|i|?|true|s) &
+  dsg_ops_2(n)(PRE true THEN s END)
+ =>
+  dsg_ops_1(n(i) = s);
+
+/***
+HERE((n))&
+***/
+  WriteDot &
+  dsg_ops_100(n|o<--n|?|o|true|s) &
+  dsg_ops_2(n)(PRE true THEN s END)
+ =>
+  dsg_ops_1(o<--n = s);
+
+/***
+HERE((n))&
+***/
+  WriteDot &
+  dsg_ops_100(n|o<--n(i)|i|o|true|s) &
+  dsg_ops_2(n)(PRE true THEN s END)
+ =>
+  dsg_ops_1(o<--n(i) = s);
+
+/***
+HERE((n))&
+***/
+  WriteDot &
+  dsg_ops_100(n|n|?|?|p|s) &
+  dsg_ops_2(n)(PRE p THEN s END)
+ =>
+  dsg_ops_1(n = PRE p THEN s END);
+
+/***
+HERE((n))&
+***/
+  WriteDot &
+  dsg_ops_100(n|n(i)|i|?|p|s) &
+  dsg_ops_2(n)(PRE p THEN s END)
+ =>
+  dsg_ops_1(n(i) = PRE p THEN s END);
+
+/***
+HERE((n))&
+***/
+  WriteDot &
+  dsg_ops_100(n|o<--n|?|o|p|s) &
+  dsg_ops_2(n)(PRE p THEN s END)
+ =>
+  dsg_ops_1(o<--n = PRE p THEN s END);
+
+/***
+HERE((n))&
+***/
+  WriteDot &
+  dsg_ops_100(n|o<--n(i)|i|o|p|s) &
+  dsg_ops_2(n)(PRE p THEN s END)
+ =>
+  dsg_ops_1(o<--n(i) = PRE p THEN s END);
+
+  brule(OPERATIONSX.1,O) &
+  ClearDesugarerError &
+  WriteDot &
+  Writef(("\n    Desugaring operations ")) &
+  DesugarInitialisation &
+  dsg_ops_1 bsmap O &
+  chk_desugarer_error
+ =>
+  dsg_ops_0;
+
+  brule(OPERATIONSX.1,?) &
+  ClearDesugarerError &
+  WriteDot &
+  DesugarInitialisation &
+  chk_desugarer_error
+ =>
+  dsg_ops_0;
+
+  NormaliserErrorFlagged
+ =>
+  dsg_ops_0
+
+END
+
+&
+
+THEORY DesugarInitialisationX IS
+
+  ?;
+
+
+  InformInitPRE(p) &
+  FlagNormaliserError
+ =>
+  dsg_init_err(p);
+
+  bsearch(true,p,q) &
+  dsg_init_err(q)
+ =>
+  dsg_init_err(p);
+
+
+
+  brule(RebuildX.1,(p|s)) &
+  dsg_init_err(p)
+ =>
+  dsg_init_no_incl;
+
+  brule(RebuildX.1,(true|s)) &
+  bmodr(RebuildX.1,?) &
+  bmodr(RebuildX.5,?) &
+  bmodr(RebuildX.6,?) &
+  bmodr(FULL_INITIALISATIONX.1,s)
+ =>
+  dsg_init_no_incl;
+
+  NormaliserErrorFlagged
+ =>
+  dsg_init_no_incl;
+
+
+
+  dsg_init_err(p)
+ =>
+  dsg_init_incl_chk_loc_init(p|s);
+
+  dsg_init_incl_chk_loc_init(true|s);
+
+/*
+  bmodr(RebuildX.2,Init) &
+  brule(FULL_INITIALISATIONX.1,x) &
+  DesugarNoExpand(PRE true THEN x END) &
+  dsg_init_1
+ =>
+  desugar_init_0;
+*/
+
+
+
+  brule(DesugarInitialisationX.1,x) &
+  bcrer(FULL_INITIALISATIONX,(x||i))
+ =>
+  dsg_init_mchref_3(i);     /* i is desugared local init */
+
+  brule(DesugarInitialisationX.1,x) &
+  bcrer(FULL_INITIALISATIONX,x)
+ =>
+  dsg_init_mchref_3(skip);  /* skip is desugared local init */
+
+  brule(DesugarInitialisationX.1,x) &
+  bcrer(FULL_INITIALISATIONX,x)
+ =>
+  dsg_init_mchref_3(?);     /* ? is desugared local init */
+
+
+  brule(SUB_INITIALISATIONX.I,m$(i)) &
+  brule(DesugarInitialisationX.1,x) &
+  bmodr(DesugarInitialisationX.1,(x||i))
+ =>
+  dsg_init_mchref_2(m);
+
+  brule(SUB_INITIALISATIONX.I,m$(i)) &
+  brule(DesugarInitialisationX.1,?) &
+  bmodr(DesugarInitialisationX.1,i)
+ =>
+  dsg_init_mchref_2(m);
+
+  brule(SUB_INITIALISATIONX.I,m$(?))
+ =>
+  dsg_init_mchref_2(m);
+
+  dsg_init_mchref_2(b)
+ =>
+  dsg_init_mchref_1(b);
+
+  dsg_init_mchref_2(b)
+ =>
+  dsg_init_mchref_1(b(c));
+
+  dsg_init_mchref_2(bnewv(a,b))
+ =>
+  dsg_init_mchref_1(a.b);
+
+  dsg_init_mchref_2(bnewv(a,b))
+ =>
+  dsg_init_mchref_1(a.b(c));
+
+  brule(RebuildX.1,(p|s)) &  /* the desugared local init */
+  dsg_init_incl_chk_loc_init(p|s) &
+  brule(INCLUDESX.1,x) &
+  WriteDot &
+  dsg_init_mchref_1 bsmap x &
+  dsg_init_mchref_3(s) &
+  bmodr(RebuildX.1,?) &
+  bmodr(RebuildX.5,?) &
+  bmodr(RebuildX.6,?)
+ =>
+  dsg_init_incl;  /* included initialisations */
+
+
+
+  brule(DesugarInitialisationX.1,x) &
+  bcrer(FULL_INITIALISATIONX,(x;i))
+ =>
+  dsg_init_imp_3(i);     /* i is desugared local init */
+
+  brule(DesugarInitialisationX.1,x) &
+  bcrer(FULL_INITIALISATIONX,x)
+ =>
+  dsg_init_imp_3(skip);  /* skip is desugared local init */
+
+  brule(DesugarInitialisationX.1,x) &
+  bcrer(FULL_INITIALISATIONX,x)
+ =>
+  dsg_init_imp_3(?);     /* ? is desugared local init */
+
+  brule(SUB_INITIALISATIONX.I,m$(i)) &
+  brule(DesugarInitialisationX.1,x) &
+  bmodr(DesugarInitialisationX.1,(x;i))
+ =>
+  dsg_init_imp_2(m);
+
+  brule(SUB_INITIALISATIONX.I,m$(i)) &
+  brule(DesugarInitialisationX.1,?) &
+  bmodr(DesugarInitialisationX.1,i)
+ =>
+  dsg_init_imp_2(m);
+
+  brule(SUB_INITIALISATIONX.I,m$(?))
+ =>
+  dsg_init_imp_2(m);
+
+  dsg_init_imp_2(b)
+ =>
+  dsg_init_imp_1(b);
+
+  dsg_init_imp_2(b)
+ =>
+  dsg_init_imp_1(b(c));
+
+  dsg_init_imp_2(bnewv(a,b))
+ =>
+  dsg_init_imp_1(a.b);
+
+  dsg_init_imp_2(bnewv(a,b))
+ =>
+  dsg_init_imp_1(a.b(c));
+
+  CurrentlyNormalisingImp &
+  brule(RebuildX.1,(p|s)) &  /* the desugared local init */
+  dsg_init_incl_chk_loc_init(p|s) &
+  brule(INCLUDESX.1,x) &
+  WriteDot &
+  dsg_init_imp_1 bsmap x &
+  dsg_init_imp_3(s) &
+  bmodr(RebuildX.1,?) &
+  bmodr(RebuildX.5,?) &
+  bmodr(RebuildX.6,?)
+ =>
+  dsg_init_incl;  /* imported initialisations */
+
+  NormaliserErrorFlagged
+ =>
+  dsg_init_incl;
+
+
+  brule(LOCAL_INITIALISATIONX.1,i) &
+  bmodr(RebuildX.2,Init) &
+  DesugarNoExpand(PRE true THEN i END) &
+  dsg_init_incl
+ =>
+  dsg_init_0;
+
+  brule(INCLUDESX.1,?) &
+  brule(LOCAL_INITIALISATIONX.1,i) &
+  bmodr(RebuildX.2,Init) &
+  bcrer(FULL_INITIALISATIONX,?) &
+  DesugarNoExpand(PRE true THEN i END) &
+  dsg_init_no_incl
+ =>
+  dsg_init_0;
+
+  brule(INCLUDESX.1,?) &
+  brule(LOCAL_INITIALISATIONX.1,(PRE p THEN i END)) &
+  InformInitPRE(p) &
+  FlagNormaliserError
+ =>
+  dsg_init_0;
+
+  brule(INCLUDESX.1,?) &
+  brule(LOCAL_INITIALISATIONX.1,?) &
+  bcrer(FULL_INITIALISATIONX,?)
+ =>
+  dsg_init_0
+
+END
+
+&
+
+THEORY Standardize_etcX IS
+
+#define Standardize_etc(X,Y) \
+        bcall(((StandardizeX;FLAT)~;(Standardize_etcX;FLAT~)~):se(X)(Y))
+
+  ?;
+
+  bcall(MODR:bmodr(Standardize_etcX.1,(a|b)))
+ =>
+  se(a)(b);
+
+  WriteDot => ( a || ( b || c ) ) == ( a || b || c );
+
+  WriteDot => ( a & ( b & c ) ) == bflat( a & b & c );
+
+  WriteDot => ( a ; ( b ; c ) ) == bflat( a ; b ; c );
+
+  WriteDot => ( skip ; a ) == a;
+
+  WriteDot => ( a ; skip ) == a;
+
+  WriteDot => ( skip || a ) == a;
+
+  WriteDot => ( a || skip ) == a
+
+END
+
+&
+
+THEORY PrintConstructX IS
+
+#define prt_cstr_tac ((ARI;FLAT;WRITE;CATL;MODR;MAP)~; PrintConstructX)~
+
+#define  PrintConstruct  bcall(prt_cstr_tac: prt_cstr_0)
+
+
+  ?;
+
+  ?;  /* TypeCheckerRewrites */
+
+
+  bprintf(x)
+ =>
+  delay_bprintf(x);
+
+  (?||x) == x;
+
+  (x||?) == x;
+
+  brule(LOCAL_INITIALISATIONX.1,x) &
+  delay_bprintf("(%)\n;\n",x)
+ =>
+  prt_loc_init;
+
+  brule(Standardize_etcX.1,(?|Y)) &
+  WriteDot &
+  bcall(MODR:bmodr(Standardize_etcX.1,?)) &
+  delay_bprintf("(%)\n;\n",Y)
+ =>
+  prt_full_init1;
+
+  brule(FULL_INITIALISATIONX.1,x) &
+  WriteDot &
+  Standardize_etc(?,x) &
+  prt_full_init1
+ =>
+  prt_full_init;
+
+
+
+  bprintf("(%(%):(%):((%),(%),(%)))\n",s,?,?,?,?,?)
+ =>
+  prt_sees_1(s);
+
+  brule(SUB_PARAMETERSX.J,s$d) &
+  brule(SEES_DOTTED_SEESX.K,(s|f)) &
+  brule(SUB_CONSTRAINTSX.L,(s$g)) &
+  bprintf("(%(%):(%):((%),(%),(%)))\n",f,d,g,?,?,?)
+ =>
+  prt_sees_1(s);
+
+  brule(DOT_RENAMEX.I,s(a|b|c)) &
+  brule(SUB_PARAMETERSX.J,s$d) &
+  brule(SEES_DOTTED_SEESX.K,(s|f)) &
+  brule(SUB_CONSTRAINTSX.L,(s$g)) &
+  bprintf("(%(%):(%):((%),(%),(%)))\n",f,d,g,a,b,c)
+ =>
+  prt_sees_1(s);
+
+  brule(DOTTED_SEESX.n,x) &
+  prt_sees_1(x) &
+  bprintf(",\n") &
+  prt_sees_0(n-1)
+ =>
+  prt_sees_0(n);
+
+  brule(DOTTED_SEESX.1,x) &
+  prt_sees_1(x)
+ =>
+  prt_sees_0(1);
+
+  blent(DOTTED_SEESX.n) &
+  bprintf("(\n") &
+  prt_sees_0(n) &
+  bprintf(")\n;\n")
+ =>
+  prt_sees;
+
+  blent(DOTTED_SEESX.0) &
+  bprintf("(%)\n;\n",?)
+ =>
+  prt_sees;
+
+  brule(DOTTED_SEESX.1,?) &
+  bprintf("(%)\n;\n",?)
+ =>
+  prt_sees;
+
+
+
+
+  bprintf("(%(%):(%):((%),(%),(%)))\n",s,?,?,?,?,?)
+ =>
+  prt_uses_1(s);
+
+  brule(SUB_PARAMETERSX.J,s$d) &
+  brule(USES_DOTTED_USESX.K,(s|f)) &
+  brule(SUB_CONSTRAINTSX.L,(s$g)) &
+  bprintf("(%(%):(%):((%),(%),(%)))\n",f,d,g,?,?,?)
+ =>
+  prt_uses_1(s);
+
+  brule(DOT_RENAMEX.I,s(a|b|c)) &
+  brule(SUB_PARAMETERSX.J,s$d) &
+  brule(USES_DOTTED_USESX.K,(s|f)) &
+  brule(SUB_CONSTRAINTSX.L,(s$g)) &
+  bprintf("(%(%):(%):((%),(%),(%)))\n",f,d,g,a,b,c)
+ =>
+  prt_uses_1(s);
+
+  brule(DOTTED_USESX.n,x) &
+  prt_uses_1(x) &
+  bprintf(",\n") &
+  prt_uses_0(n-1)
+ =>
+  prt_uses_0(n);
+
+  brule(DOTTED_USESX.1,x) &
+  prt_uses_1(x)
+ =>
+  prt_uses_0(1);
+
+  blent(DOTTED_USESX.n) &
+  bprintf("(\n") &
+  prt_uses_0(n) &
+  bprintf(")\n;\n")
+ =>
+  prt_uses;
+
+  blent(DOTTED_USESX.0) &
+  bprintf("(%)\n;\n",?)
+ =>
+  prt_uses;
+
+  brule(DOTTED_USESX.1,?) &
+  bprintf("(%)\n;\n",?)
+ =>
+  prt_uses;
+
+
+
+
+  brule(Standardize_etcX.1,(?|Y)) &
+  bprintf("(%)\n;\n",Y)
+ =>
+  prt_sets_const_prpy1;
+
+  Standardize_etc(?,x) &
+  prt_sets_const_prpy1
+ =>
+  prt_sets_const_prpy(x);
+
+  bsearch(?,x,y) &
+  prt_sets_const_prpy(y)
+ =>
+  prt_sets_const_prpy(x);
+
+
+
+  brule(LOCAL_SETSX.1,y) &
+  prt_sets_const_prpy(y)
+ =>
+  prt_loc_sets;
+
+  brule(LOCAL_SETSX.1,y) &
+  prt_sets_const_prpy(y)
+ =>
+  prt_full_sets;
+
+  brule(FULL_SETSX.1,x) &
+  brule(LOCAL_SETSX.1,y) &
+  prt_sets_const_prpy(bflat(y,x))
+ =>
+  prt_full_sets;
+
+  brule(FULL_SETSX.1,x) &
+  brule(LOCAL_SETSX.1,?) &
+  prt_sets_const_prpy(x)
+ =>
+  prt_full_sets;
+
+
+
+  brule(LOCAL_CONSTANTSX.1,y) &
+  prt_sets_const_prpy(y)
+ =>
+  prt_loc_const;
+
+  brule(LOCAL_CONSTANTSX.1,y) &
+  prt_sets_const_prpy(y)
+ =>
+  prt_full_const;
+
+  brule(FULL_CONSTANTSX.1,x) &
+  brule(LOCAL_CONSTANTSX.1,y) &
+  prt_sets_const_prpy(bflat/*(y,x) ib */(x,y))
+ =>
+  prt_full_const;
+
+  brule(FULL_CONSTANTSX.1,x) &
+  brule(LOCAL_CONSTANTSX.1,?) &
+  prt_sets_const_prpy(x)
+ =>
+  prt_full_const;
+
+
+
+  brule(LOCAL_PROPERTIESX.1,y) &
+  prt_sets_const_prpy(y)
+ =>
+  prt_loc_prpy;
+
+  brule(LOCAL_PROPERTIESX.1,y) &
+  prt_sets_const_prpy(y)
+ =>
+  prt_full_prpy;
+
+  brule(FULL_PROPERTIESX.1,x) &
+  brule(LOCAL_PROPERTIESX.1,y) &
+  prt_sets_const_prpy(bflat(y&x))
+ =>
+  prt_full_prpy;
+
+  brule(FULL_PROPERTIESX.1,x) &
+  brule(LOCAL_PROPERTIESX.1,?) &
+  prt_sets_const_prpy(x)
+ =>
+  prt_full_prpy;
+
+
+
+
+
+  brule(Standardize_etcX.1,(?|(F,D,G,A,B,C))) &
+  bprintf("(%(%):(%):((%),(%),(%)))\n",F,D,G,A,B,C)
+ =>
+  prt_incl_2;
+
+  Standardize_etc(?,(s,?,?,?,?,?)) &
+  prt_incl_2
+ =>
+  prt_incl_1(s);
+
+  brule(SUB_PARAMETERSX.J,s$d) &
+  brule(INCLUDES_DOTTED_INCLUDESX.K,(s|f)) &
+  brule(SUB_CONSTRAINTSX.L,(s$g)) &
+  Standardize_etc(?,(f,d,g,?,?,?)) &
+  prt_incl_2
+ =>
+  prt_incl_1(s);
+
+  brule(DOT_RENAMEX.I,s(a|b|c)) &
+  brule(SUB_PARAMETERSX.J,s$d) &
+  brule(INCLUDES_DOTTED_INCLUDESX.K,(s|f)) &
+  brule(SUB_CONSTRAINTSX.L,(s$g)) &
+  Standardize_etc(?,(f,d,g,a,b,c)) &
+  prt_incl_2
+ =>
+  prt_incl_1(s);
+
+/***
+  bprintf("(%(%):(%):((%),(%),(%)))\n",s,?,?,?,?,?)
+ =>
+  prt_incl_1(s);
+
+  brule(SUB_PARAMETERSX.J,s$d) &
+  brule(INCLUDES_DOTTED_INCLUDESX.K,(s|f)) &
+  brule(SUB_CONSTRAINTSX.L,(s$g)) &
+  bprintf("(%(%):(%):((%),(%),(%)))\n",f,d,g,?,?,?)
+ =>
+  prt_incl_1(s);
+
+  brule(DOT_RENAMEX.I,s(a|b|c)) &
+  brule(SUB_PARAMETERSX.J,s$d) &
+  brule(INCLUDES_DOTTED_INCLUDESX.K,(s|f)) &
+  brule(SUB_CONSTRAINTSX.L,(s$g)) &
+  bprintf("(%(%):(%):((%),(%),(%)))\n",f,d,g,a,b,c)
+ =>
+  prt_incl_1(s);
+***/
+
+  brule(DOTTED_INCLUDESX.n,x) &
+  prt_incl_1(x) &
+  bprintf(",\n") &
+  prt_incl_0(n-1)
+ =>
+  prt_incl_0(n);
+
+  brule(DOTTED_INCLUDESX.1,x) &
+  prt_incl_1(x)
+ =>
+  prt_incl_0(1);
+
+  blent(DOTTED_INCLUDESX.n) &
+  bprintf("(\n") &
+  prt_incl_0(n) &
+  bprintf(")\n;\n")
+ =>
+  prt_incl;
+
+  blent(DOTTED_INCLUDESX.0) &
+  bprintf("(%)\n;\n",?)
+ =>
+  prt_incl;
+
+  brule(DOTTED_INCLUDESX.1,?) &
+  bprintf("(%)\n;\n",?)
+ =>
+  prt_incl;
+
+
+
+  bprintf("%,",a)
+ =>
+  prt_prom_1(a,m,n);
+
+  bprintf("%%,",a,b)
+ =>
+  prt_prom_1(a.b,m,n);
+
+  bprintf("%\n",a)
+ =>
+  prt_prom_1(a,n,n);
+
+  bprintf("%%\n",a,b)
+ =>
+  prt_prom_1(a.b,n,n);
+
+  brule(PROMOTESX.1,x) &
+  bprintf("(\n") &
+  prt_prom_1 bnmap x &
+  bprintf(")\n;\n")
+ =>
+  prt_prom;
+
+  brule(PROMOTESX.1,?) &
+  bprintf("(%)\n;\n",?)
+ =>
+  prt_prom;
+
+
+
+  brule(LOCAL_VARIABLESX.1,x) &
+  bprintf("(%)\n;\n",x)
+ =>
+  prt_loc_var;
+
+  brule(LOCAL_VARIABLESX.1,x) &
+  bprintf("(%)\n;\n",x)
+ =>
+  prt_full_var;
+
+  brule(FULL_VARIABLESX.1,x) &
+  brule(LOCAL_VARIABLESX.1,y) &
+  bprintf("(%)\n;\n",bflat(y,x))
+ =>
+  prt_full_var;
+
+  brule(FULL_VARIABLESX.1,x) &
+  brule(LOCAL_VARIABLESX.1,?) &
+  bprintf("(%)\n;\n",x)
+ =>
+  prt_full_var;
+
+
+
+  brule(Standardize_etcX.1,(?|Y)) &
+  bprintf("(%)\n;\n",Y)
+ =>
+  prt_loc_inv1;
+
+  brule(LOCAL_INVARIANTX.1,x) &
+  Standardize_etc(?,x) &
+  prt_loc_inv1
+ =>
+  prt_loc_inv;
+
+
+  brule(Standardize_etcX.1,(?|Y)) &
+  bprintf("(%)\n;\n",Y)
+ =>
+  prt_full_inv1;
+
+  brule(LOCAL_INVARIANTX.1,x) &
+  Standardize_etc(?,x) &
+  prt_full_inv1 
+ =>
+  prt_full_inv;
+
+  brule(FULL_INVARIANTX.1,x) &
+  brule(LOCAL_INVARIANTX.1,y) &
+  Standardize_etc(?,bflat(y&x)) &
+  prt_full_inv1 
+ =>
+  prt_full_inv;
+
+  brule(FULL_INVARIANTX.1,x) &
+  brule(LOCAL_INVARIANTX.1,?) &
+  Standardize_etc(?,x) &
+  prt_full_inv1 
+ =>
+  prt_full_inv;
+
+
+
+  brule(ASSERTIONSX.1,x) &
+  bprintf("(%)\n;\n",x)
+ =>
+  prt_asn;
+
+
+  brule(LOCAL_OPERATIONSX.n,(a;b;c;d;(e|f);(i|j))) &
+  brule(PrintConstructX.1,O) &
+  bprintf("%,",a) &
+  bmodr(PrintConstructX.1,(O,a)) &
+  prt_loc_opnames_1(n-1)
+ =>
+  prt_loc_opnames_1(n);
+
+  brule(LOCAL_OPERATIONSX.1,(a;b;c;d;(e|f);(i|j))) &
+  brule(PrintConstructX.1,O) &
+  bprintf("%",a) &
+  bmodr(PrintConstructX.1,(O,a))
+ =>
+  prt_loc_opnames_1(1);
+
+  bprintf("(?)\n;\n")
+ =>
+  prt_loc_opnames;
+
+  blent(LOCAL_OPERATIONSX.n) &
+  bprintf("(") &
+  prt_loc_opnames_1(n) &
+  bprintf(")\n;\n")
+ =>
+  prt_loc_opnames;
+
+  blent(LOCAL_OPERATIONSX.0) &
+  bprintf("(?)\n;\n")
+ =>
+  prt_loc_opnames;
+
+
+
+
+  bprintf("(%)\n;\n",O)
+ =>  
+  prt_full_opnames_3(O);
+
+  bsearch(?,O,Q) &
+  prt_full_opnames_3(Q)
+ =>
+  prt_full_opnames_3(O);
+
+  brule(PrintConstructX.1,O) &
+  prt_full_opnames_3(O)
+ =>  
+  prt_full_opnames_2;
+
+  brule(FULL_OPERATIONSX.n,(a;b;c;d;(e|f);(i|j))) &
+  brule(PrintConstructX.1,O) &
+  bmodr(PrintConstructX.1,(O,a)) &
+  prt_full_opnames_1(n-1)
+ =>
+  prt_full_opnames_1(n);
+
+  brule(FULL_OPERATIONSX.1,(a;b;c;d;(e|f);(i|j))) &
+  brule(PrintConstructX.1,O) &
+  bmodr(PrintConstructX.1,(O,a))
+ =>
+  prt_full_opnames_1(1);
+
+  prt_full_opnames_2
+ =>
+  prt_full_opnames;
+
+  blent(FULL_OPERATIONSX.n) &
+  prt_full_opnames_1(n) &
+  prt_full_opnames_2
+ =>
+  prt_full_opnames;
+
+  blent(FULL_OPERATIONSX.0) &
+  prt_full_opnames_2
+ =>
+  prt_full_opnames;
+
+
+
+  GetCurrentConstruct(a.b) &
+  brule(PARAMETERSX.1,p) &
+  brule(CONSTRAINTSX.1,c) &
+  brule(REFINESX.1,r) &
+  bprintf("(%(%):(%):(%))\n;\n",a,p,c,r)
+ =>
+  prt_mch_id;
+
+
+
+
+  bprintf(" (%)\n",a)
+ =>
+  prt_ops_3(a);
+
+  bprintf(" WHILE\n") &
+  bprintf(" (%)\n",a) &
+  bprintf(" DO\n (\n") &
+  prt_ops_3(b) &
+  bprintf(" )\n INVARIANT\n") &
+  bprintf(" (%)\n",c) &
+  bprintf(" VARIANT\n") &
+  bprintf(" (%)\n",d) &
+  bprintf(" END\n")
+ =>
+  prt_ops_3(WHILE a DO b INVARIANT c VARIANT d END);
+
+  bprintf(" WHILE\n") &
+  bprintf(" (%)\n",a) &
+  bprintf(" DO\n (\n") &
+  prt_ops_3(b) &
+  bprintf(" )\n VARIANT\n") &
+  bprintf(" (%)\n",c) &
+  bprintf(" INVARIANT\n") &
+  bprintf(" (%)\n",d) &
+  bprintf(" END\n")
+ =>
+  prt_ops_3(WHILE a DO b VARIANT c INVARIANT d END);
+
+  bprintf(" (\n") &
+  prt_ops_3(a) &
+  bprintf(" )\n |\n (\n") &
+  prt_ops_3(b) &
+  bprintf(" )\n")
+ =>
+  prt_ops_3(a|b);
+
+  bprintf(" (\n") &
+  prt_ops_3(a) &
+  bprintf(" )\n ==>\n (\n") &
+  prt_ops_3(b) &
+  bprintf(" )\n")
+ =>
+  prt_ops_3(a==>b);
+
+  bprintf(" (\n") &
+  prt_ops_3(a) &
+  bprintf(" )\n ||\n (\n") &
+  prt_ops_3(b) &
+  bprintf(" )\n")
+ =>
+  prt_ops_3(a||b);
+
+  bprintf(" (\n") &
+  prt_ops_3(a) &
+  bprintf(" )\n []\n (\n") &
+  prt_ops_3(b) &
+  bprintf(" )\n")
+ =>
+  prt_ops_3(a[]b);
+
+  bprintf(" (\n") &
+  prt_ops_3(a) &
+  bprintf(" )\n ;\n (\n") &
+  prt_ops_3(b) &
+  bprintf(" )\n")
+ =>
+  prt_ops_3(a;b);
+
+  bprintf(" @(%).\n (\n",a) &
+  prt_ops_3(b) &
+  bprintf(" )\n")
+ =>
+  prt_ops_3(@a.b);
+
+  bprintf(" @(%).\n",a) &
+  bprintf(" (\n") &
+  prt_ops_3(b==>c) &
+  bprintf(" )\n")
+ =>
+  prt_ops_3(@a.(b==>c));
+
+
+  bprintf("\n;\n (%)",x)
+ =>
+  prt_ops_2(x,m,n);
+
+  bprintf("\n (%)",x)
+ =>
+  prt_ops_2(x,1,n);
+
+  brule(Standardize_etcX.1,(X|Y)) &
+  WriteDot &
+  bcall(MODR:bmodr(Standardize_etcX.1,?)) &
+  bprintf("\n;\n (\n (%)\n |\n ",X) &
+  bprintf(" (\n") &
+  prt_ops_3(Y) &
+  bprintf(" )\n )")
+ =>
+  prt_ops_222(x|y);
+
+  bprintf("\n;\n (\n (%)\n |\n ",x) &
+  bprintf(" (\n") &
+  prt_ops_3(y) &                    /* don't standardize user-stated */
+  bprintf(" )\n )")
+ =>
+  prt_ops_2((x|y),m,n);
+
+  WriteDot &
+  Standardize_etc(x,y) &
+  prt_ops_222(x|y)                  /* standardize expanded */
+ =>
+  prt_ops_2((x|y),n,n);
+
+/*
+  WriteDot &
+  Standardize_etc(x,y) &
+  prt_ops_222(x|y)
+ =>
+  prt_ops_2((x|y),m,n);
+*/
+
+  brule(LOCAL_OPERATIONSX.I,(a;b;c;d;(e|f);(i|j))) &
+  bprintf("(") &
+  prt_ops_2 bnmap (a;b;c;d;(e|f);(i|j)) &
+  bprintf("\n)\n,\n")
+ =>
+  prt_ops_1(a,m,n);
+
+  brule(SUB_OPERATIONSX.I,(X$Y$(a;b;c;d;(e|f);(i|j)))) &
+  bprintf("(") &
+  prt_ops_2 bnmap (a;b;c;d;(e|f);(i|j)) &
+  bprintf("\n)\n,\n")
+ =>
+  prt_ops_1(a,m,n);
+
+  brule(LOCAL_OPERATIONSX.I,(a;b;c;d;(e|f);(i|j))) &
+  bprintf("(") &
+  prt_ops_2 bnmap (a;b;c;d;(e|f);(i|j)) &
+  bprintf("\n)\n")
+ =>
+  prt_ops_1(a,n,n);
+
+  brule(SUB_OPERATIONSX.I,(X$Y$(a;b;c;d;(e|f);(i|j)))) &
+  bprintf("(") &
+  prt_ops_2 bnmap (a;b;c;d;(e|f);(i|j)) &
+  bprintf("\n)\n")
+ =>
+  prt_ops_1(a,n,n);
+
+
+
+
+
+
+
+
+  brule(PrintConstructX.1,O) &
+  bsearch(?,O,P) &
+  bprintf("(\n") &
+  prt_ops_1 bnmap P &
+  bprintf(")\n")
+ =>
+  prt_ops;
+
+  brule(PrintConstructX.1,?) &
+  bprintf("(\n?\n)\n")
+ =>
+  prt_ops;
+
+
+
+
+
+  bprintf(" (%)",d)
+ =>
+  prt_definitions5(d);
+
+  prt_definitions5(D) &
+  bprintf(",\n") &
+  prt_definitions5(d)
+ =>
+  prt_definitions5(D,d);
+
+  bsearch(?,D,E) &
+  prt_definitions5(E)
+ =>
+  prt_definitions5(D);
+
+  prt_definitions5(L,d)
+ =>
+  prt_definitions4(d)(L);
+
+  prt_definitions4(D)(L,d)
+ =>
+  prt_definitions4(D,d)(L);
+
+  prt_definitions4(D)(?)
+ =>
+  prt_definitions3(D);
+
+  bsearch(?,D,E) &
+  prt_definitions4(E)(?)
+ =>
+  prt_definitions3(D);
+
+  prt_definitions3(L,d)
+ =>
+  prt_definitions2(d)(L);
+
+  bsearch(d,L,M) &
+  prt_definitions3(L)
+ =>
+  prt_definitions2(d)(L);
+
+  prt_definitions2(D)(L,d)
+ =>
+  prt_definitions2(D,d)(L);
+
+  bsearch(d,L,M) &
+  prt_definitions2(D)(L)
+ =>
+  prt_definitions2(D,d)(L);
+
+  bmodr(StandardizeX.N,("" == <>)) &
+  brule(Standardize_etcX.1,(?|Y)) &
+  bcall(MODR:bmodr(Standardize_etcX.1,?)) &
+  bprintf("\n (\n") &
+  prt_definitions2(Y)(?) &
+  bprintf("\n )\n")
+ =>
+  prt_definitions1(N);
+
+  brule(Standardize_etcX.1,(?|Y)) &
+  bcall(MODR:bmodr(Standardize_etcX.1,?)) &
+  bprintf("\n (\n") &
+  prt_definitions2(Y)(?) &
+  bprintf("\n )\n")
+ =>
+  prt_definitions1(0);
+
+  Standardize_etc(?,x) &
+  prt_definitions1(0)
+ =>
+  prt_definitions(x);
+
+  brule(StandardizeX.N,("" == <>)) &
+  bmodr(StandardizeX.N,?) &
+  Standardize_etc(?,x) &
+  prt_definitions1(N)
+ =>
+  prt_definitions(x);
+
+  bsearch(?,x,y) &
+  prt_definitions(y)
+ =>
+  prt_definitions(x);
+
+
+  brule(LOCAL_DEFINITIONSX.1,y) &
+  prt_definitions(y)
+ =>
+  prt_loc_definitions;
+
+  brule(LOCAL_DEFINITIONSX.1,y) &
+  prt_definitions(y)
+ =>
+  prt_full_definitions;
+
+  brule(FULL_DEFINITIONSX.1,x) &
+  brule(LOCAL_DEFINITIONSX.1,y) &
+  prt_definitions(bflat(x,y))
+ =>
+  prt_full_definitions;
+
+  brule(FULL_DEFINITIONSX.1,x) &
+  brule(LOCAL_DEFINITIONSX.1,?) &
+  prt_definitions(x)
+ =>
+  prt_full_definitions;
+
+
+
+
+
+
+  Writef(("\n    Normalising ")) &
+  GetCurrentConstruct(a.b) &
+  Connect(bcatl("ANL/",a,".",b,".anl")) &
+  WriteDot &
+  bprintf("(\n (?)\n ;\n (") &
+  prt_loc_definitions &
+  bprintf(" |") &
+  prt_full_definitions &
+  bprintf(" )\n )\n;\n") &
+  prt_sees &
+  prt_uses &
+  prt_loc_sets &
+  prt_full_sets &
+  prt_loc_const &
+  prt_full_const &
+  prt_loc_prpy &
+  prt_full_prpy &
+  prt_incl &
+  prt_prom &
+  prt_loc_var &
+  prt_full_var &
+  prt_loc_inv &
+  prt_full_inv &
+  prt_asn &
+  prt_loc_init &
+  prt_full_init &
+  bmodr(PrintConstructX.1,?) &
+  prt_loc_opnames &
+  prt_full_opnames &
+  prt_mch_id &
+  prt_ops  
+ =>
+  prt_cstr_0;
+
+  NormaliserErrorFlagged
+ =>
+  prt_cstr_0
+
+END
+
+&
+
+THEORY FlattenConstructX IS
+
+#define flt_cstr_tac ((MAP;FLAT;MODR;RULE;NEWV)~;FlattenConstructX)~
+
+#define FlattenConstruct \
+		bcall(flt_cstr_tac: flt_cstr_0)
+
+
+  brule(u.I,m$x) &
+  bcrer(v,x)
+ =>
+  flt_cstr_3(m,(u|v));
+
+  brule(u.I,m$x) &
+  brule(v.1,y) &
+  bmodr(v.1,bflat(x&y))
+ =>
+  flt_cstr_3(m,(u|v));
+
+  brule(u.I,m$?)
+ =>
+  flt_cstr_3(m,(u|v));
+
+  brule(u.I,m$x) &
+  bcrer(v,x)
+ =>
+  flt_cstr_2(m,(u|v));
+
+  brule(u.I,m$x) &
+  brule(v.1,y) &
+  bmodr(v.1,bflat(x,y))
+ =>
+  flt_cstr_2(m,(u|v));
+
+  brule(u.I,m$?)
+ =>
+  flt_cstr_2(m,(u|v));
+
+  WriteDot &
+  flt_cstr_2(b) bsmap 
+  (
+   (SUB_DEFINITIONSX | FULL_DEFINITIONSX),
+   (SUB_VARIABLESX | FULL_VARIABLESX),
+   (SUB_SETSX | FULL_SETSX),
+   (SUB_CONSTANTSX | FULL_CONSTANTSX)
+  ) &
+  flt_cstr_3(b) bsmap 
+  (
+   (SUB_INVARIANTX | FULL_INVARIANTX),
+   (SUB_PROPERTIESX | FULL_PROPERTIESX)
+  )
+ =>
+  flt_cstr_1(b);
+
+  WriteDot &
+  flt_cstr_2(b) bsmap 
+  (
+   (SUB_DEFINITIONSX | FULL_DEFINITIONSX),
+   (SUB_VARIABLESX | FULL_VARIABLESX),
+   (SUB_SETSX | FULL_SETSX),
+   (SUB_CONSTANTSX | FULL_CONSTANTSX)
+  ) &
+  flt_cstr_3(b) bsmap 
+  (
+   (SUB_INVARIANTX | FULL_INVARIANTX),
+   (SUB_PROPERTIESX | FULL_PROPERTIESX)
+  )
+ =>
+  flt_cstr_1(b(c));
+
+  WriteDot &
+  flt_cstr_2(bnewv(a,b)) bsmap 
+  (
+   (SUB_DEFINITIONSX | FULL_DEFINITIONSX),
+   (SUB_VARIABLESX | FULL_VARIABLESX),
+   (SUB_SETSX | FULL_SETSX),
+   (SUB_CONSTANTSX | FULL_CONSTANTSX)
+  ) &
+  flt_cstr_3(bnewv(a,b)) bsmap 
+  (
+   (SUB_INVARIANTX | FULL_INVARIANTX),
+   (SUB_PROPERTIESX | FULL_PROPERTIESX)
+  )
+ =>
+  flt_cstr_1(a.b);
+
+  WriteDot &
+  flt_cstr_2(bnewv(a,b)) bsmap 
+  (
+   (SUB_DEFINITIONSX | FULL_DEFINITIONSX),
+   (SUB_VARIABLESX | FULL_VARIABLESX),
+   (SUB_SETSX | FULL_SETSX),
+   (SUB_CONSTANTSX | FULL_CONSTANTSX)
+  ) &
+  flt_cstr_3(bnewv(a,b)) bsmap 
+  (
+   (SUB_INVARIANTX | FULL_INVARIANTX),
+   (SUB_PROPERTIESX | FULL_PROPERTIESX)
+  )
+ =>
+  flt_cstr_1(a.b(c));
+
+  brule(INCLUDESX.1,x) &
+  Writef(("\n    Expanding construct ")) &
+  flt_cstr_1 bsmap x
+ =>
+  flt_cstr_0;
+
+  brule(INCLUDESX.1,?)
+ =>
+  flt_cstr_0;
+
+  NormaliserErrorFlagged
+ =>
+  flt_cstr_0
+
+END
+
+&
+
+THEORY CheckNamespacesX IS
+
+#define chk_nmspc_tac ((ARI;FLAT;MODR;MAP)~;CheckNamespacesX)~
+
+#define CheckNamespaces \
+		bcall(chk_nmspc_tac: chk_nmspc_0)
+
+
+
+  chk_nmspc_5(m)(X)(?);
+
+  chk_nmspc_5(m)(X)(O)
+ =>
+  chk_nmspc_5(m)(X)(O;o);
+
+  bsearch(o,X,Y) &
+  InformRepetitionNamespace(m,o) &
+  FlagNormaliserError
+ =>
+  chk_nmspc_5(m)(X)(O;(o=s));
+
+  bsearch(o,X,Y) &
+  InformRepetitionNamespace(m,o) &
+  FlagNormaliserError
+ =>
+  chk_nmspc_5(m)(X)(O;(o(b)=s));
+
+  bsearch(o,X,Y) &
+  InformRepetitionNamespace(m,o) &
+  FlagNormaliserError
+ =>
+  chk_nmspc_5(m)(X)(O;(a<--o=s));
+
+  bsearch(o,X,Y) &
+  InformRepetitionNamespace(m,o) &
+  FlagNormaliserError
+ =>
+  chk_nmspc_5(m)(X)(O;(a<--o(b)=s));
+
+  brule(OPERATIONSX.1,O) &
+  chk_nmspc_5(m)(X)(bflat(?;O))
+ =>
+  chk_nmspc_4(m)(X);
+
+  brule(OPERATIONSX.1,?)
+ =>
+  chk_nmspc_4(m)(X);
+
+  chk_nmspc_4(m)(?);
+
+
+
+  InformRepetitionNamespace(m,x) &
+  FlagNormaliserError
+ =>
+  chk_nmspc_chk_abs3(m)(X,x);
+
+  brule(REFINESX.1,r) &
+  brule(SUB_OPERATIONSX.I,r(x;t;u;w;y)) &
+  chk_nmspc_3(m)(X)
+ =>
+  chk_nmspc_chk_abs3(m)(X,x);
+
+  chk_nmspc_3(m)(?);
+
+  chk_nmspc_3(m)(X)
+ =>
+  chk_nmspc_3(m)(X,x);
+
+  bsearch(x,X,Y) &
+/*
+  InformRepetitionNamespace(m,x) &
+  FlagNormaliserError
+*/
+  chk_nmspc_chk_abs3(m)(X,x)
+ =>
+  chk_nmspc_3(m)(X,x);
+
+  chk_nmspc_3(m)(X)
+ =>
+  chk_nmspc_3(m)(X,?);
+
+  chk_nmspc_2(t|m)(X)(n-1)
+ =>
+  chk_nmspc_2(t|m)(X)(n);
+
+  brule(t.n,p(x)) &
+  chk_nmspc_2(t|m)(bflat(X,x))(n-1)
+ =>
+  chk_nmspc_2(t|m)(X)(n);
+
+  chk_nmspc_3(m)(X) &
+  chk_nmspc_4(m)(X)
+ =>
+  chk_nmspc_2(t|m)(X)(0);
+
+  blent(t.n) &
+  chk_nmspc_2(t|m)(?)(n)
+ =>
+  chk_nmspc_1(t|m);
+
+  chk_nmspc_1 bsmap
+  (
+/*
+   (SUB_CONSTANTSX|"CONSTANTS"),
+   (SUB_VARIABLESX|"VARIABLES"),
+*/
+   (SUB_OPNAMESX|"OPERATION NAMES")
+  )
+ =>
+  chk_nmspc_0;
+
+  NormaliserErrorFlagged
+ =>
+  chk_nmspc_0
+
+END
+
+&
+
+THEORY Create_PARAM_RENAMEX IS
+
+#define cre_param_renm_tac ((NEWV;RULE)~;Create_PARAM_RENAMEX)~
+
+#define Create_PARAM_RENAME(x) \
+		bcall(cre_param_renm_tac: cre_param_renm(x))
+
+  
+  bcrer(PARAM_RENAMEX,g(f|c))
+ =>
+  cre_param_renm_2(o,g)(f)(c)(s)(t); 
+
+  InformParameterDiscrepancy(o,c) &
+  FlagNormaliserError
+ =>
+  cre_param_renm_2(o,g)(f)(c)(s)(T,t); 
+
+  InformParameterDiscrepancy(o,c) &
+  FlagNormaliserError
+ =>
+  cre_param_renm_2(o,g)(f)(c)(S,s)(t); 
+
+  cre_param_renm_2(o,g)(f)(c)(S)(T)
+ =>
+  cre_param_renm_2(o,g)(f)(c)(S,s)(T,t); 
+
+  brule(SUB_PARAMETERSX.I,b(f)) &
+  cre_param_renm_2(b,b)(f)(c)(f)(c) 
+ =>
+  cre_param_renm(b(c));
+
+  brule(SUB_PARAMETERSX.I,b(f)) &
+  cre_param_renm_2(a.b,bnewv(a,b))(f)(c)(f)(c) 
+ =>
+  cre_param_renm(a.b(c));
+
+  bident(b) &
+  brule(SUB_PARAMETERSX.I,b(f)) &
+  InformParameterDiscrepancy((b),f) &
+  FlagNormaliserError
+ =>
+  cre_param_renm(b);
+
+  bident(b) &
+  brule(SUB_PARAMETERSX.I,b(?))
+ =>
+  cre_param_renm(b);
+
+  bident(a) &
+  brule(SUB_PARAMETERSX.I,b(f)) &
+  InformParameterDiscrepancy((a.b),f) &
+  FlagNormaliserError
+ =>
+  cre_param_renm(a.b);
+
+  bident(a) &
+  brule(SUB_PARAMETERSX.I,b(?))
+ =>
+  cre_param_renm(a.b);
+
+  bident(b) &
+  brule(SUB_PARAMETERSX.I,b(?)) &
+  InformParameterDiscrepancy(b,c) &
+  FlagNormaliserError
+ =>
+  cre_param_renm(b(c));
+
+  bident(a) &
+  brule(SUB_PARAMETERSX.I,b(?)) &
+  InformParameterDiscrepancy((a.b),c) &
+  FlagNormaliserError
+ =>
+  cre_param_renm(a.b(c));
+
+  NormaliserErrorFlagged
+ =>
+  cre_param_renm(x)
+
+END
+
+&
+
+THEORY Create_DOT_RENAMEX IS
+
+#define cre_dot_renm_tac ((NEWV~;RULE;FLAT~;LMAP);Create_DOT_RENAMEX)~
+
+#define Create_DOT_RENAME(x) \
+		bcall(cre_dot_renm_tac: cre_dot_renm(x))
+
+
+  bcrer(DOT_RENAMEX,m(u|s|t))
+ =>
+  cre_dot_renm_1(m)(s)(t)(u);
+
+  make_dot(a,b) == (a.b);
+
+  make_new(a,b) == bnewv(a,b);
+
+  brule(SUB_VARIABLESX.I,b(v)) &
+  brule(SUB_OPNAMESX.J,b(n)) &
+/***
+HERE((b(v)))&
+HERE((b(n)))&
+***/
+  cre_dot_renm_1(bnewv(a,b))(make_new(a) bslmap bflat(v,n))(make_dot(a) bslmap bflat(v,n))(bflat(v,n))
+ =>
+  cre_dot_renm(a.b);
+
+  brule(SUB_VARIABLESX.I,b(v)) &
+  brule(SUB_OPNAMESX.J,b(?)) &
+  cre_dot_renm_1(bnewv(a,b))(make_new(a) bslmap v)(make_dot(a) bslmap v)(v)
+ =>
+  cre_dot_renm(a.b);
+
+  brule(SUB_VARIABLESX.I,b(?)) &
+  brule(SUB_OPNAMESX.J,b(n)) &
+  cre_dot_renm_1(bnewv(a,b))(make_new(a) bslmap n)(make_dot(a) bslmap n)(n)
+ =>
+  cre_dot_renm(a.b);
+
+  brule(SUB_VARIABLESX.I,b(?)) &
+  brule(SUB_OPNAMESX.J,b(?))
+ =>
+  cre_dot_renm(a.b);
+
+  NormaliserErrorFlagged
+ =>
+  cre_dot_renm(x)
+
+END
+
+&
+
+THEORY Create_FULL_RENAMEX IS
+
+#define cre_full_renm_tac ((NEWV;FLAT~;RULE)~;Create_FULL_RENAMEX)~
+
+#define Create_FULL_RENAME(x) \
+		bcall(cre_full_renm_tac: cre_full_renm(x))
+
+
+  bcrer(FULL_RENAMEX,m(aaa|aaa))
+ =>
+  cre_full_renm_1(m);
+
+  brule(DOT_RENAMEX.I,m(u|t|s)) &
+  bcrer(FULL_RENAMEX,m(u|t))
+ =>
+  cre_full_renm_1(m);
+
+  brule(PARAM_RENAMEX.J,m(v|w)) &
+  bcrer(FULL_RENAMEX,m(v|w))
+ =>
+  cre_full_renm_1(m);
+
+  brule(DOT_RENAMEX.I,m(u|t|s)) &
+  brule(PARAM_RENAMEX.J,m(v|w)) &
+  bcrer(FULL_RENAMEX,m(bflat(u,v)|bflat(t,w)))
+ =>
+  cre_full_renm_1(m);
+
+  cre_full_renm_1(b)
+ =>
+  cre_full_renm(b);
+
+  cre_full_renm_1(bnewv(a,b))
+ =>
+  cre_full_renm(a.b);
+
+  NormaliserErrorFlagged
+ =>
+  cre_full_renm(x)
+
+END
+
+&
+
+THEORY CreateRenamesX IS
+
+#define cre_rnms_tac  ((MAP;MODR)~;CreateRenamesX)~
+
+#define CreateRenames \
+		bcall(cre_rnms_tac: cre_rnms_0)
+
+
+  ?;
+
+  Create_FULL_RENAME((b))
+ =>
+  cre_rnms_2(b);
+
+  Create_FULL_RENAME((b))
+ =>
+  cre_rnms_2(b(c));
+
+  Create_DOT_RENAME((a.b)) &
+  Create_FULL_RENAME((a.b))
+ =>
+  cre_rnms_2(a.b);
+
+  Create_DOT_RENAME((a.b)) &
+  Create_FULL_RENAME((a.b))
+ =>
+  cre_rnms_2(a.b(c));
+
+  brule(CreateRenamesX.1,EXTENDSX) &
+  Create_PARAM_RENAME((b)) &
+  Create_FULL_RENAME((b))
+ =>
+  cre_rnms_2(b);
+
+  brule(CreateRenamesX.1,EXTENDSX) &
+  Create_PARAM_RENAME((b(c))) &
+  Create_FULL_RENAME((b))
+ =>
+  cre_rnms_2(b(c));
+
+  brule(CreateRenamesX.1,EXTENDSX) &
+  Create_DOT_RENAME((a.b)) &
+  Create_PARAM_RENAME((a.b)) &
+  Create_FULL_RENAME((a.b))
+ =>
+  cre_rnms_2(a.b);
+
+  brule(CreateRenamesX.1,EXTENDSX) &
+  Create_DOT_RENAME((a.b)) &
+  Create_PARAM_RENAME((a.b(c))) &
+  Create_FULL_RENAME((a.b))
+ =>
+  cre_rnms_2(a.b(c));
+
+  brule(CreateRenamesX.1,INCLUDESX) &
+  Create_PARAM_RENAME((b)) &
+  Create_FULL_RENAME((b))
+ =>
+  cre_rnms_2(b);
+
+  brule(CreateRenamesX.1,INCLUDESX) &
+  Create_PARAM_RENAME((b(c))) &
+  Create_FULL_RENAME((b))
+ =>
+  cre_rnms_2(b(c));
+
+  brule(CreateRenamesX.1,INCLUDESX) &
+  Create_DOT_RENAME((a.b)) &
+  Create_PARAM_RENAME((a.b)) &
+  Create_FULL_RENAME((a.b))
+ =>
+  cre_rnms_2(a.b);
+
+  brule(CreateRenamesX.1,INCLUDESX) &
+  Create_DOT_RENAME((a.b)) &
+  Create_PARAM_RENAME((a.b(c))) &
+  Create_FULL_RENAME((a.b))
+ =>
+  cre_rnms_2(a.b(c));
+
+  brule(t.1,x) &
+  bmodr(CreateRenamesX.1,t) &
+  cre_rnms_2 bsmap x
+ =>
+  cre_rnms_1(t);
+
+  brule(t.1,?)
+ =>
+  cre_rnms_1(t);
+
+  cre_rnms_1 bsmap (SEESX,USESX,INCLUDESX,EXTENDSX)
+ =>
+  cre_rnms_0;
+
+  NormaliserErrorFlagged
+ =>
+  cre_rnms_0
+
+END
+
+&
+
+THEORY ProcessExtendsX IS
+
+#define prc_extd_tac    ((MAP;LMAP;FLAT;MODR)~;ProcessExtendsX)
+
+#define ProcessExtends  bcall(prc_extd_tac: prc_extd_0)
+
+
+  bmodr(PROMOTESX.1,p)
+ =>
+  prc_extd_5(p);
+
+  bsearch(?,p,q) &
+  prc_extd_5(q)
+ =>
+  prc_extd_5(p);
+
+  brule(PROMOTESX.1,p) &
+  prc_extd_5(p)
+ =>
+  prc_extd_4;
+
+  brule(PROMOTESX.1,p) &
+  bmodr(PROMOTESX.1,bflat(p,o))
+ =>
+  prc_extd_3(o);
+
+  prc_extd_3(?);
+
+  glue(a,o) == (a.o);
+
+  brule(SUB_OPNAMESX.I,b(o)) &
+  prc_extd_3(o)
+ =>
+  prc_extd_2(b)(b);
+
+  brule(SUB_OPNAMESX.I,b(o)) &
+  prc_extd_3(glue(a) bslmap o)
+ =>
+  prc_extd_2(a.b)(c);
+
+  prc_extd_2(b)(b)
+ =>
+  prc_extd_1(b);
+
+  prc_extd_2(b)(b)
+ =>
+  prc_extd_1(b(c));
+
+  prc_extd_2(a.b)(b)
+ =>
+  prc_extd_1(a.b);
+
+  prc_extd_2(a.b)(b)
+ =>
+  prc_extd_1(a.b(c));
+
+  brule(EXTENDSX.1,e) &
+  brule(INCLUDESX.1,X) &
+  bmodr(INCLUDESX.1,bflat(X,e)) &
+  prc_extd_1 bsmap e &
+  prc_extd_4
+ =>
+  prc_extd_0;
+
+  brule(EXTENDSX.1,e) &
+  brule(INCLUDESX.1,?) &
+  bmodr(INCLUDESX.1,e) &
+  prc_extd_1 bsmap e &
+  prc_extd_4
+ =>
+  prc_extd_0;
+
+  brule(EXTENDSX.1,?)
+ =>
+  prc_extd_0;
+
+  NormaliserErrorFlagged
+ =>
+  prc_extd_0
+
+END
+
+&
+
+THEORY BuildRenamedConstructsMacrosX IS
+
+  [a]b == [a] evl (b);
+
+  [s:=t][a]b == [s:=t]([a] evl (b))
+
+END
+
+&
+
+THEORY BuildRenamedConstructsX IS
+
+#define bld_rnm_cstr_tac \
+	( \
+          ( \
+            (MAP;NEWV;FLAT;MODR)~; \
+             BuildRenamedConstructsX \
+          )~; \
+          ((SUB~;BuildRenamedConstructsMacrosX)~;RULE) \
+        )~
+
+/*
+#define bld_rnm_cstr_tac \
+	( \
+          ( \
+            (MAP;NEWV;FLAT)~; \
+             BuildRenamedConstructsX \
+          )~; \
+          ((SUB~;BuildRenamedConstructsMacrosX)~;MODR;RULE) \
+        )~
+*/
+
+
+
+#define BuildRenamedConstructs  bcall(bld_rnm_cstr_tac: bld_rnm_cstr_0)
+
+
+  ?;
+
+  bld_rnm_cstr_7(x);  /* op not reqd */
+
+  brule(INCLUDESX.1,b) &
+  brule(SUB_OPERATIONSX.I,m(S;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  bcrer(SUB_OPERATIONSX,r$Included_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+/*
+  bmodr(SUB_OPERATIONSX.I,r$Included_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+*/ =>
+  bld_rnm_cstr_7(b,m,r,(s:=t),S);
+
+  brule(INCLUDESX.1,D) &
+  bsearch(b,D,E) &
+  brule(SUB_OPERATIONSX.I,m(S;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  bcrer(SUB_OPERATIONSX,r$Included_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+/*
+  bmodr(SUB_OPERATIONSX.I,r$Included_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+*/ =>
+  bld_rnm_cstr_7(b,m,r,(s:=t),S);
+
+  brule(USESX.1,b) &
+  brule(SUB_OPERATIONSX.I,m(S;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  bcrer(SUB_OPERATIONSX,r$Used_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+/*
+  bmodr(SUB_OPERATIONSX.I,r$Used_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+*/ =>
+  bld_rnm_cstr_7(b,m,r,(s:=t),S);
+
+  brule(USESX.1,D) &
+  bsearch(b,D,E) &
+  brule(SUB_OPERATIONSX.I,m(S;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  bcrer(SUB_OPERATIONSX,r$Used_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+/*
+  bmodr(SUB_OPERATIONSX.I,r$Used_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+*/ =>
+  bld_rnm_cstr_7(b,m,r,(s:=t),S);
+
+  brule(SEESX.1,b) &
+  brule(SUB_OPERATIONSX.I,m(S;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  bcrer(SUB_OPERATIONSX,r$Seen_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+/*
+  bmodr(SUB_OPERATIONSX.I,r$Seen_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+*/ =>
+  bld_rnm_cstr_7(b,m,r,(s:=t),S);
+
+  brule(SEESX.1,D) &
+  bsearch(b,D,E) &
+  brule(SUB_OPERATIONSX.I,m(S;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  bcrer(SUB_OPERATIONSX,r$Seen_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+/*
+  bmodr(SUB_OPERATIONSX.I,r$Seen_Op$([s:=t](S;(?,A,B,C);U;V;(W|X);(Y|Z))))
+*/ =>
+  bld_rnm_cstr_7(b,m,r,(s:=t),S);
+
+
+  brule(SUB_OPNAMESX.I,m(o)) &
+  bld_rnm_cstr_7(b,m,r,(s:=t)) bsmap o
+ =>
+  bld_rnm_cstr_6(b,m,r,(s:=t));
+
+  brule(SUB_OPNAMESX.I,m(?))
+ =>
+  bld_rnm_cstr_6(b,m,r,(s:=t));
+
+  brule(T.I,m(x)) &
+  bcrer(T,r$([s:=t]x))
+ =>
+  bld_rnm_cstr_5(b,m,r,(s:=t),T);
+
+  bld_rnm_cstr_5(b,m,r,(s:=t)) bsmap
+   (
+    SUB_DEFINITIONSX,
+    SUB_SETSX,
+    SUB_CONSTANTSX,
+    SUB_PROPERTIESX,
+    SUB_VARIABLESX,
+    SUB_INVARIANTX,
+    SUB_INITIALISATIONX,
+    SUB_OPNAMESX,
+    SUB_PARAMETERSX,
+    SUB_CONSTRAINTSX
+   ) &
+  bld_rnm_cstr_6(b,m,r,(s:=t))
+  =>
+  bld_rnm_cstr_4(b)(m)(r)(s:=t);
+
+  brule(FULL_RENAMEX.I,r(s|t)) &
+  WriteDot &
+  bld_rnm_cstr_4(b)(m)(r)(s:=t)
+ =>
+  bld_rnm_cstr_3(b)(m)(r);
+
+  brule(FULL_RENAMEX.I,b(s|t)) &
+  bld_rnm_cstr_4(b)(b)(b)(s:=t)
+ =>
+  bld_rnm_cstr_3(b)(b)(b);
+
+  bld_rnm_cstr_3(b)(b)(b)
+ =>
+  bld_rnm_cstr_2(b);
+
+  bld_rnm_cstr_3(b(c))(b)(b)
+ =>
+  bld_rnm_cstr_2(b(c));
+
+  bld_rnm_cstr_3(a.b)(b)(bnewv(a,b))
+ =>
+  bld_rnm_cstr_2(a.b);
+
+  bld_rnm_cstr_3(a.b(c))(b)(bnewv(a,b))
+ =>
+  bld_rnm_cstr_2(a.b(c));
+
+  bld_rnm_cstr_1(?);
+
+  bld_rnm_cstr_2(b) &
+  bld_rnm_cstr_1(X)
+ =>
+  bld_rnm_cstr_1(X,b);
+
+  bld_rnm_cstr_1(X)
+ =>
+  bld_rnm_cstr_1(X,?);
+
+  brule(BuildRenamedConstructsX.1,0) &
+  bmodr(BuildRenamedConstructsX.1,1) &
+  Writef(("\n    Renaming constructs ")) &
+  bld_rnm_cstr_2(b(c)) &
+  bld_rnm_cstr_1(X)
+ =>
+  bld_rnm_cstr_1(X,b(c));
+
+  brule(BuildRenamedConstructsX.1,0) &
+  bmodr(BuildRenamedConstructsX.1,1) &
+  Writef(("\n    Renaming constructs ")) &
+  bld_rnm_cstr_2(a.b) &
+  bld_rnm_cstr_1(X)
+ =>
+  bld_rnm_cstr_1(X,a.b);
+
+  brule(BuildRenamedConstructsX.1,0) &
+  bmodr(BuildRenamedConstructsX.1,1) &
+  Writef(("\n    Renaming constructs ")) &
+  bld_rnm_cstr_2(a.b(c)) &
+  bld_rnm_cstr_1(X)
+ =>
+  bld_rnm_cstr_1(X,a.b(c));
+
+  brule(INCLUDESX.1,X) &
+  brule(SEESX.1,Y) &
+  brule(USESX.1,Z) &
+  bmodr(BuildRenamedConstructsX.1,0) &
+  bld_rnm_cstr_1(bflat(?,X,Y,Z))
+ =>
+  bld_rnm_cstr_0;
+
+  NormaliserErrorFlagged
+ =>
+  bld_rnm_cstr_0
+
+END
+
+&
+
+THEORY CheckDefinitionsX IS
+
+#define chk_defs_tac        ((MAP;FLAT)~;CheckDefinitionsX)~
+
+#define CheckDefinitions(x) bcall(chk_defs_tac: chk_defs_00(x))
+
+
+  InformSyntaxError("DEFINITIONS",(x)) &
+  Writef(("\n\n    Should be a semi-colon separated list of predicates,\n    each of form a == b ..")) &
+  FlagNormaliserError
+ =>
+  chk_defs_1(x);
+
+/*
+  InformSyntaxError("DEFINITIONS",(a==b)) &
+  Writef(("\n\n    % should be an identifier\n",a)) &
+  FlagNormaliserError
+ =>
+  chk_defs_1(a==b);
+
+  bident(a)
+ =>
+*/
+  chk_defs_1(a==b);
+
+/*
+  InformSyntaxError("DEFINITIONS",(a(p)==b)) &
+  Writef(("\n\n    % should be an identifier\n",a)) &
+  FlagNormaliserError
+ =>
+  chk_defs_1(a(p)==b);
+
+  bident(a)
+ =>
+*/
+  chk_defs_1(a(p)==b);
+
+  InformSyntaxError("DEFINITIONS",(a==b==c)) &
+  Writef(("\n\n    Should be a semi-colon separated list of predicates,\n    each of form a == b ..")) &
+  FlagNormaliserError
+ =>
+  chk_defs_1(a==b==c);
+
+  chk_defs_1(x)
+ =>
+  chk_defs_0(x);
+
+  chk_defs_0(X) &
+  chk_defs_0(x)
+ =>
+  chk_defs_0(X;x);
+
+  chk_defs_0(X)
+ =>
+  chk_defs_00(X);
+
+  chk_defs_00(?);
+
+  NormaliserErrorFlagged
+ =>
+  chk_defs_00(x)
+
+END
+
+&
+
+THEORY  CheckOpHeadersX IS
+
+#define chk_op_hdrs_tac   ((MAP)~;CheckOpHeadersX)~
+
+#define CheckOpHeaders(x) bcall(chk_op_hdrs_tac: chk_op_hdrs_0(x))
+
+
+  InformSyntaxError("OPERATIONS",(o)) &
+  FlagNormaliserError
+ =>
+  chk_op_hdrs_1(o);
+
+/*
+  InformSyntaxError("OPERATIONS",(o=s)) &
+  FlagNormaliserError
+ =>
+  chk_op_hdrs_1(o=s);
+*/
+
+  bident(o)
+ =>
+  chk_op_hdrs_1(o=s);
+
+  InformSyntaxError("OPERATIONS",(o(c))) &
+  FlagNormaliserError
+ =>
+  chk_op_hdrs_1(o(c)=s);
+
+  bident(o) &
+  blident(c)
+ =>
+  chk_op_hdrs_1(o(c)=s);
+
+  InformSyntaxError("OPERATIONS",(a<--o)) &
+  FlagNormaliserError
+ =>
+  chk_op_hdrs_1(a<--o=s);
+
+  bident(o) &
+  blident(a)
+ =>
+  chk_op_hdrs_1(a<--o=s);
+
+  InformSyntaxError("OPERATIONS",(a<--o(c))) &
+  FlagNormaliserError
+ =>
+  chk_op_hdrs_1(a<--o(c)=s);
+
+  bident(o) &
+  blident(a) &
+  blident(c)
+ =>
+  chk_op_hdrs_1(a<--o(c)=s);
+
+  chk_op_hdrs_1 bsmap x
+ =>
+  chk_op_hdrs_0(x);
+
+  chk_op_hdrs_0(?);
+
+  NormaliserErrorFlagged
+ =>
+  chk_op_hdrs_0(x)
+
+END
+
+&
+
+THEORY CheckSetsSemicolonSeparatorX IS
+
+#define chk_sc_sets_sep_tac ((FLAT;ARI)~;CheckSetsSemicolonSeparatorX)~
+
+#define CheckSetsSemicolonSeparator(x)  \
+		bcall(chk_sc_sets_sep_tac: chk_sc_sets_sep(bflat(?;x)))
+
+
+  InformSyntaxError("SETS",s)
+ =>
+  chk_sc_sets_sep2(s)(n);
+
+  InformSyntaxErrorSingleLetter("SETS",s)
+ =>
+  chk_sc_sets_sep2(s)(1);
+
+  chk_sc_sets_sep2(s)(blen(s))
+ =>
+  chk_sc_sets_sep1(s);
+
+  InformSyntaxError("SETS",(s JOK2 t))
+ =>
+  chk_sc_sets_sep1(s JOK2 t);
+
+  bnum(s) &
+  InformSyntaxErrorNumber("SETS",s)
+ =>
+  chk_sc_sets_sep1(s);
+
+  Writef(("\n\n    SETS separator should be a semi-colon: % ",bsrv (s,t) berv))
+ =>
+  chk_sc_sets_sep1(s||t);
+
+  Writef(("\n\n    SETS separator should be a semi-colon: % ",bsrv (s,t) berv))
+ =>
+  chk_sc_sets_sep1(s&t);
+
+  Writef(("\n\n    SETS separator should be a semi-colon: % ",bsrv (s,t) berv))
+ =>
+  chk_sc_sets_sep1(s,t);
+
+  chk_sc_sets_sep1(s) &
+  FlagNormaliserError
+ =>
+  chk_sc_sets_sep(S;s);
+
+  bident(s) &
+  chk_sc_sets_sep(S)
+ =>
+  chk_sc_sets_sep(S;s);
+
+  InformSyntaxError("SETS",(s[n])) &
+  FlagNormaliserError
+ =>
+  chk_sc_sets_sep(S;s[n]);
+
+  btest(n>1) &
+  chk_sc_sets_sep1(s) &
+  chk_sc_sets_sep(S)
+ =>
+  chk_sc_sets_sep(S;s[n]);
+
+  btest(n>1) &
+  bident(s) &
+  chk_sc_sets_sep(S)
+ =>
+  chk_sc_sets_sep(S;s[n]);
+
+
+
+
+
+  chk_sc_sets_sep(S)
+ =>
+  chk_sc_sets_sep(S;s={t});
+
+  chk_sc_sets_sep1(s) &
+  FlagNormaliserError
+ =>
+  chk_sc_sets_sep(S;s={t});
+
+  bident(s) &
+  chk_sc_sets_sep(S)
+ =>
+  chk_sc_sets_sep(S;s=a..b);
+
+  bident(s) &
+  bnum(a) &
+  bnum(b) &
+  btest(a>b) &
+  InformSyntaxError("SETS",(s=a..b)) &
+  FlagNormaliserError
+ =>
+  chk_sc_sets_sep(S;s=a..b);
+
+  bident(s) &
+  chk_sc_sets_sep(S)
+ =>
+  chk_sc_sets_sep(S;s={t});
+
+  chk_sc_sets_sep(?);
+
+  chk_sc_sets_sep(?;?);
+
+  NormaliserErrorFlagged
+ =>
+  chk_sc_sets_sep(x)
+
+END
+
+&
+
+THEORY CheckParametersX IS
+
+#define CheckParameters bcall(CheckParametersX: chk_parm_0)
+
+
+  CurrentlyNormalisingImp &
+  brule(PARAMETERSX.1,p) &
+  InformImpNotHaveParams(p) &
+  FlagNormaliserError
+ =>
+  chk_parm_0;
+
+  CurrentlyNormalisingRef &
+  brule(PARAMETERSX.1,p) &
+  InformRefNotHaveParams(p) &
+  FlagNormaliserError
+ =>
+  chk_parm_0;
+
+  brule(PARAMETERSX.1,?)
+ =>
+  chk_parm_0;
+
+  CurrentlyNormalisingMch
+ =>
+  chk_parm_0;
+
+  NormaliserErrorFlagged
+ =>
+  chk_parm_0
+
+END
+
+&
+
+THEORY PromoteFromAbstractionX IS
+
+#define prmt_abstr_tac    ((MAP;FLAT;MODR)~;PromoteFromAbstractionX)
+
+#define PromoteFromAbstraction bcall(prmt_abstr_tac: prmt_abstr_0)
+
+
+  
+  brule(REFINESX.1,r) &
+  brule(t.I,r(p)) &
+  brule(u.1,s) &
+  bmodr(u.1,bflat(s&p))
+ =>
+  prmt_abstr_2(t|u);
+
+  brule(REFINESX.1,r) &
+  brule(t.I,r(p)) &
+  brule(u.1,?) &
+  bmodr(u.1,p)
+ =>
+  prmt_abstr_2(t|u);
+
+  brule(REFINESX.1,r) &
+  brule(t.I,r(?))
+ =>
+  prmt_abstr_2(t|u);
+
+  brule(REFINESX.1,r) &
+  brule(t.I,r(p)) &
+  brule(u.1,s) &
+  bmodr(u.1,bflat(s,p))
+ =>
+  prmt_abstr_1(t|u);
+
+  brule(REFINESX.1,r) &
+  brule(SUB_PROPERTIESX.I,r(p)) &
+  brule(LOCAL_PROPERTIESX.1,s) &
+  bmodr(LOCAL_PROPERTIESX.1,bflat(s&p))
+ =>
+  prmt_abstr_1(SUB_PROPERTIESX|LOCAL_PROPERTIESX);
+
+  brule(REFINESX.1,r) &
+  brule(t.I,r(p)) &
+  brule(u.1,?) &
+  bmodr(u.1,p)
+ =>
+  prmt_abstr_1(t|u);
+
+  brule(REFINESX.1,r) &
+  brule(t.I,r(?))
+ =>
+  prmt_abstr_1(t|u);
+
+  prmt_abstr_1 bsmap
+   (
+    (SUB_DEFINITIONSX|LOCAL_DEFINITIONSX),
+    (SUB_SETSX|LOCAL_SETSX),
+    (SUB_CONSTANTSX|LOCAL_CONSTANTSX),
+    (SUB_PARAMETERSX|PARAMETERSX)
+   ) &
+  prmt_abstr_2 bsmap
+   (
+    (SUB_PROPERTIESX|LOCAL_PROPERTIESX),
+    (SUB_CONSTRAINTSX|CONSTRAINTSX)
+   )
+ =>
+  prmt_abstr_0;
+
+  brule(REFINESX.1,?)
+ =>
+  prmt_abstr_0;
+
+  NormaliserErrorFlagged
+ =>
+  prmt_abstr_0
+
+END
+
+&
+
+THEORY ProcessPromotesX IS
+
+#define prc_prmt_tac    ((ARI;SUB;MAP;FLAT;MODR;NEWV;RULE)~;ProcessPromotesX)
+
+#define ProcessPromotes  bcall(prc_prmt_tac: prc_prmt_00)
+
+
+  InformBadPromotedOp(o) &
+  FlagNormaliserError
+ =>
+  prc_prmt_2(o)(m$p);
+
+  brule(SUB_OPERATIONSX.I,m$Used_Op$(p;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  InformCantPromoteUsedOp(p) &
+  FlagNormaliserError
+ =>
+  prc_prmt_2(o)(m$p);
+
+  brule(SUB_OPERATIONSX.I,m$Seen_Op$(p;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  InformCantPromoteSeenOp(p) &
+  FlagNormaliserError
+ =>
+  prc_prmt_2(o)(m$p);
+
+  brule(SUB_OPERATIONSX.I,m$Included_Op$(p;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  bcrer(FULL_OPERATIONSX,(p;(?,A,B,C);U;V;(W|X);(Y|Z)))
+ =>
+  prc_prmt_2(o)(m$p);
+
+  brule(SUB_OPERATIONSX.I,m$Included_Op$(p;(?,A,B,C);U;V;(W|X);(Y|Z))) &
+  bcrer(FULL_OPERATIONSX,(p;(?,A,B,C);U;V;(W|X);(Y|Z)))
+ =>
+  prc_prmt_2(r.o)(m$p);
+
+  prc_prmt_1((n-1),c,p)
+ =>
+  prc_prmt_1(n,c,p);
+
+  brule(SUB_OPNAMESX.n,m$P) &
+  bsearch(p,P,Q) &
+  prc_prmt_2(c)(m$p)
+ =>
+  prc_prmt_1(n,c,p);
+
+  brule(SUB_OPNAMESX.n,m$p) &
+  prc_prmt_2(c)(m$p)
+ =>
+  prc_prmt_1(n,c,p);
+
+  InformBadPromotedOp(o) &
+  FlagNormaliserError
+ =>
+  prc_prmt_1(0,c,o);
+
+  WriteDot &
+  prc_prmt_1(n,o,o)
+ =>
+  prc_prmt_0(n,o);
+
+  WriteDot &
+  prc_prmt_1(n,r.o,bnewv(r,o))
+ =>
+  prc_prmt_0(n,r.o);
+
+  brule(PROMOTESX.1,p) &
+  blent(SUB_OPNAMESX.n) &
+  Writef(("\n    Promoting operations ")) &
+  prc_prmt_0(n) bsmap p
+ =>
+  prc_prmt_00;
+
+  brule(PROMOTESX.1,?)
+ =>
+  prc_prmt_00;
+
+  NormaliserErrorFlagged
+ =>
+  prc_prmt_00
+
+END
+
+&
+
+THEORY CheckRepetitionInClauseX IS
+
+#define  check_rept_clau_tac ((FLAT;NEWV)~;CheckRepetitionInClauseX)~
+
+#define  CheckRepetitionInClause(c,x) \
+		bcall(check_rept_clau_tac: check_rept_clau(c)(bflat(?,x))(?))
+
+
+  check_rept_clau_1(C)(x);
+
+  check_rept_clau_1(C)(X)
+ =>
+  check_rept_clau_1(C)(X,x);
+
+  bsearch(x,X,Y) &
+  InformRepetitionInClause(C,x) &
+  FlagNormaliserError
+ =>
+  check_rept_clau_1(C)(X,x);
+
+  InformRepetitionInClause(c,x) &
+  FlagNormaliserError
+ =>
+  check_rept_clau_1(C)(x,x);
+
+  check_rept_clau_1(C)(Z)
+ =>
+  check_rept_clau(C)(?)(Z);
+
+  check_rept_clau(C)(X)(Z,b)
+ =>
+  check_rept_clau(C)(X,b)(Z);
+
+  check_rept_clau(C)(X)(Z,b)
+ =>
+  check_rept_clau(C)(X,b(c))(Z);
+
+  check_rept_clau(C)(X)(Z,bnewv(a,b))
+ =>
+  check_rept_clau(C)(X,a.b)(Z);
+
+  check_rept_clau(C)(X)(Z,bnewv(a,b))
+ =>
+  check_rept_clau(C)(X,a.b(c))(Z);
+
+  NormaliserErrorFlagged
+ =>
+  check_rept_clau(C)(X)(Z)
+
+END
+
+&
+
+
+THEORY CheckRepetitionSubConstrX IS
+
+#define  check_rept_sub_constr_tac ((FLAT;NEWV)~;CheckRepetitionSubConstrX)~
+
+#define  CheckRepetitionSubConstr(x) \
+		bcall(check_rept_sub_constr_tac: \
+			check_rept_sub_constr(bflat(?,x))(?))
+
+
+  check_rept_sub_constr_1(x);
+
+  check_rept_sub_constr_1(X)
+ =>
+  check_rept_sub_constr_1(X,x);
+
+  bsearch(x,X,Y) &
+  InformRepetitionSubConstr(x) &
+  FlagNormaliserError
+ =>
+  check_rept_sub_constr_1(X,x);
+
+  InformRepetitionSubConstr(x) &
+  FlagNormaliserError
+ =>
+  check_rept_sub_constr_1(x,x);
+
+  check_rept_sub_constr_1(Z)
+ =>
+  check_rept_sub_constr(?)(Z);
+
+  check_rept_sub_constr(X)(Z,b)
+ =>
+  check_rept_sub_constr(X,b)(Z);
+
+  check_rept_sub_constr(X)(Z)
+ =>
+  check_rept_sub_constr(X,?)(Z);
+
+  check_rept_sub_constr(X)(Z,b)
+ =>
+  check_rept_sub_constr(X,b(c))(Z);
+
+  check_rept_sub_constr(X)(Z,bnewv(a,b))
+ =>
+  check_rept_sub_constr(X,a.b)(Z);
+
+  check_rept_sub_constr(X)(Z,bnewv(a,b))
+ =>
+  check_rept_sub_constr(X,a.b(c))(Z);
+
+  NormaliserErrorFlagged
+ =>
+  check_rept_sub_constr(X)(Z)
+
+END
+
+&
+
+THEORY FindAllRecursiveLoadsMacrosX IS
+
+  bident(a)
+ =>
+  (a(c)) == a;
+
+  bident(a)
+ =>
+  (a.b) == b;
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)) == b
+
+END
+
+&
+
+THEORY CheckConfiguredX IS
+
+#define check_cfg_sto      (CheckConfiguredX.1)
+#define modr_cfg_sto(x)    bmodr(check_cfg_sto,x)
+#define read_cfg_sto(x)    brule(check_cfg_sto,x)
+
+
+#define not_parse_sto         (CheckConfiguredX.2)
+#define set_not_parse_flag    bmodr(not_parse_sto,1)
+#define clear_not_parse_flag  bmodr(not_parse_sto,0)
+#define not_parse_flag_set    brule(not_parse_sto,1)
+
+
+#define chk_cfg_tac \
+      ((ARI~;WRITE;REV;FLAT;MAP;MODR;CATL;SHELL;NEWV)~;CheckConfiguredX)~
+
+#define CheckConfigured(x) \
+	bcall(chk_cfg_tac: \
+		(clear_not_parse_flag & \
+                 modr_cfg_sto(?) & \
+                 (chk_cfg_0 bsmap bflat(x)) & \
+                 chk_cfg_1))
+
+  ?;
+
+  0;
+
+  ?;
+
+  ?; /* 4. POSTFIX result */
+
+  ?; /* 5. REM_UP_TO_UND result */
+
+  ?; /* 6. SPLIT_AT_SECOND_UND result */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);  
+
+
+  check_not_parse_flag;
+
+  not_parse_flag_set &
+  FlagNoMiniRemake
+ =>
+  check_not_parse_flag;
+
+
+/*** try bse as a last resort ***/
+
+
+  InformNotInSRCLIBENUM &
+  FlagNormaliserError
+ =>
+  chk_bse4(a);
+
+  IsVHDL &
+  InformNotInVHDLSRCLIBENUM &
+  FlagNormaliserError
+ =>
+  chk_bse4(a);
+
+  chk_bse4(c)
+ =>
+  chk_bse3(c);
+
+  bget("TMP/.BBcom",(a;Ctx)) &
+  bident(a) &
+  chk_bse(c)(a)
+ =>
+  chk_bse3(c);
+
+  chk_bse4(a)
+ =>
+  chk_bse2(b)(a); /* b /= a - Ctx already tried */
+
+  chk_bse4(a)
+ =>
+  chk_bse2(a)(a); /*  Ctx already tried */
+
+  Connect("TMP/.Bcom") &
+  bprintf("%\n",a) &
+  bclose &
+  bshell("sed -e s+'Ctx'+';Ctx'+g < TMP/.Bcom > TMP/.BBcom") &
+  chk_bse3(a)
+ =>
+  chk_bse2(a)(a); /* do this only if not done before! */
+
+  ReadBget(0) &
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformBASESRC &
+  AddJobs(((a.bse:BT_SRC_FRC:0);(a.bse:BT_GBO:0);(a.bse:BT_GBMI:0);(s.t:BT_NML:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_bse2(b)(a);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".bse SRC")) &
+  Bget(".Bcom") &
+  chk_bse2(b)(a)
+ =>
+  chk_bse1(b)(a);
+
+  ReadBget(0) &
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformBASE &
+  AddJobs(((a.bse:BT_GBO:0);(a.bse:BT_GBMI:0);(s.t:BT_NML:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_bse1(b)(a);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".bse CFG")) &
+  Bget(".Bcom") &
+  chk_bse1(b)(a)
+ =>
+  chk_bse(b)(a); /* b might be a.Ctx, or a */
+
+
+
+
+
+/*** a not in SLIB, TLIB, SRC or ENUM ***/
+
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformENUMSRC &
+  AddJobs(((a.enm:BT_SRC_FRC:0);(a.enm:BT_ENUM:0);(s.t:BT_NML:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_ENUM_3(a);
+
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformENUMSRC &
+  bsearch((s.t:BT_NML:0),X,Y) &
+  AddJobs(((a.enm:BT_SRC_FRC:0);(a.enm:BT_ENUM:0);(s.t:BT_NML:0)),Y) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_ENUM_3(a);
+
+
+
+
+
+
+
+/*** VHDL ENUMERATION check ***/
+
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformENUMSRC &
+  AddJobs(((a.enm:BT_SRC_FRC:0);(a.enm:BT_ENUM_VHDL_WITH_ENV:0);(s.t:BT_NML:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_ENUM_vhdl4(a)(0);
+
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformENUMSRC &
+  bsearch((s.t:BT_NML:0),X,Y) &
+  AddJobs(((a.enm:BT_SRC_FRC:0);(a.enm:BT_ENUM_VHDL_WITH_ENV:0);(s.t:BT_NML:0)),Y) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_ENUM_vhdl4(a)(0);
+
+/*
+  InformNotInVHDLSRCLIBENUM &
+  FlagNormaliserError
+*/
+  chk_bse(a)(a)
+ =>
+  chk_ENUM_vhdl4(a)(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_ENUM_vhdl3(a);
+
+  bget(".Bcom",x) &
+  WriteDot &
+  chk_ENUM_vhdl4(a)(x)
+ =>
+  chk_ENUM_vhdl3(a);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",e,".enm SRC")) &
+  chk_ENUM_vhdl3(e)
+ =>
+  chk_ENUM_vhdl2(e.enm);
+
+  IsCfg(e.enm) &
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformENUM &
+  AddJobs(((e.enm:BT_ENUM_VHDL_WITH_ENV:0);(s.t:BT_NML:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_ENUM_vhdl2(e.enm);
+
+  IsCfg(e.enm) &
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformENUM &
+  bsearch((s.t:BT_NML:0),X,Y) &
+  AddJobs(((e.enm:BT_ENUM_VHDL_WITH_ENV:0);(s.t:BT_NML:0)),Y) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_ENUM_vhdl2(e.enm);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_ENUM_vhdl(a);
+
+  bget(".Bcom",e) &
+  chk_ENUM_vhdl2(e.enm)
+ =>
+  chk_ENUM_vhdl2(a);
+
+  bconnect(".Bcom") &
+  bcall(WRITE:bprintf(P)) &
+  bcall(WRITE:bprintf("_EN")) &
+  bclose &
+  chk_ENUM_vhdl2(a)
+ =>
+  chk_ENUM_vhdl1(a)(P);
+
+  IsVHDL &
+/*
+  InformNotInVHDLSRCLIBENUM &
+  FlagNormaliserError
+*/
+  chk_bse(a)(a)
+ =>
+  chk_ENUM_vhdl(a);
+
+  brule(CheckConfiguredX.4,(P,"_PK")) &
+  chk_ENUM_vhdl1(a)(P)
+ =>
+  chk_ENUM_vhdl(a);
+
+
+/*
+  InformNotInSRCLIBENUM &
+  FlagNormaliserError
+*/
+  chk_bse(a)(a)
+ =>
+  chk_ENUM_2(a)(1);
+
+  IsVHDL &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(CheckConfiguredX.4)) &
+  chk_ENUM_vhdl(a)  
+ =>
+  chk_ENUM_2(a)(1);
+
+
+  chk_ENUM_3(a)
+ =>
+  chk_ENUM_2(a)(0);
+  
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_ENUM_1(a);
+
+  bget(".Bcom",x) &
+  WriteDot &
+  chk_ENUM_2(a)(x)
+ =>
+  chk_ENUM_1(a);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".enm SRC")) &
+  chk_ENUM_1(a)
+ =>
+  chk_ENUM_0(a);
+
+  IsCfg(a.enm) &
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformENUM &
+  AddJobs(((a.enm:BT_ENUM:0);(s.t:BT_NML:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_ENUM_0(a);
+
+  IsCfg(a.enm) &
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  InformENUM &
+  bsearch((s.t:BT_NML:0),X,Y) &
+  AddJobs(((a.enm:BT_ENUM:0);(s.t:BT_NML:0)),Y) &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_ENUM_0(a);
+
+
+/*** a not in SLIB, TLIB or SRC - check for ENUM ***/
+
+  chk_ENUM_0(a)
+ =>
+  chk_cfg_6(ref,a)(1);
+  
+  chk_cfg_04(ref,a)
+ =>
+  chk_cfg_6(mch,a)(1);
+  
+  GetJobs(X) &
+  InformInSRC &
+  AddJobs(((a.M:BT_SRC_FRC:0);(a.M:BT_NML:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  check_SRC_1(M,a)(f);
+
+  GetJobs(X) &
+  InformInSRC &
+  bsearch((a.mch:BT_NML:0),X,Y) &
+  AddJobs(((a.M:BT_SRC_FRC:0);(a.M:BT_NML:0)),Y)  &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  check_SRC_1(M,a)(f);
+
+  GetJobs(X) &
+  InformInSRC &
+  bsearch((a.M:BT_NML:0),X,Y) &
+  AddJobs(((a.M:BT_SRC_FRC:0);(a.M:BT_NML:0)),Y)  &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  check_SRC_1(M,a)(f);
+
+  GetCurrentConstruct(s.t) &
+  GetJobs(X) &
+  WriteDot &
+  IsInSRCNoParse &
+  bsearch((s.t:BT_NML:0),X,Y) &
+  ModifyJobs(Y)  &
+  FlagNormaliserError &
+  set_not_parse_flag
+ =>
+  check_SRC_0(M,a)(f);
+
+  bget(f,Z) &
+  check_SRC_1(M,a)(f)  
+ =>
+  check_SRC_0(M,a)(f);
+
+  WriteDot &
+  check_SRC_0(M,a)(bcatl("SRC/",a,".",M))
+ =>
+  chk_cfg_6(M,a)(0);
+  
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_cfg_5(M,a);
+
+  bget(".Bcom",x) &
+  WriteDot &
+  chk_cfg_6(M,a)(x)
+ =>
+  chk_cfg_5(M,a);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",M," SRC")) &
+  chk_cfg_5(M,a)
+ =>
+  chk_cfg_04(M,a);
+
+  chk_cfg_04(mch,a)
+ =>
+  chk_cfg_66(a)(1);
+
+
+/*** a not in SLIB or TLIB - try SRC ***/
+
+  brule(CheckConfiguredX.3,c) &
+  GetJobs(X) &
+  GetCurrentConstruct(s.t) &
+  InformInTLIB &
+  AddJobs(((a.mch:BT_TLIB_FRC:c)),X) &
+  bshell(bcatl("echo ",s,".",t," > .BBcom")) &
+  FlagNormaliserError &
+  FlagNoMiniRemake 
+ =>
+  chk_cfg_66(a)(0);
+  
+  ReadFailedIntroLIBList(L) &
+  bsearch(a.mch,L,M) &
+  InformLIBFail(a.mch) &
+  FlagNormaliserError 
+ =>
+  chk_cfg_66(a)(0);
+  
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_cfg_65(a);
+
+  bget(".Bcom",x) &
+  WriteDot &
+  chk_cfg_66(a)(x)
+ =>
+  chk_cfg_65(a);
+
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".mch $BTEAMLIB/CFG")) &
+  chk_cfg_65(a)
+ =>
+  chk_cfg_64(M,a);
+
+
+/*** not in SLIB - try TLIB ***/
+
+  GetJobs(X) &
+  InformInLIB &
+  AddJobs((((A,B):BT_LIB_FRC:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  chk_LIB_5(a)(A;B);
+
+  GetJobs(X) &
+  InformInLIB &
+  bsearch((a.mch:BT_NML:0),X,Y) &
+  AddJobs((((A,B):BT_LIB_FRC:0)),Y)  &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  chk_LIB_5(a)(A;B);
+
+  ReadFailedIntroLIBList(L) &
+  bsearch(a.mch,L,M) &
+  InformLIBFail(a.mch) &
+  FlagNormaliserError
+ =>
+  chk_LIB_5(a)(A;B);
+
+/*
+  chk_cfg_64(mch,a)
+ =>
+  chk_LIB_4(a)(C|A;B)(1);
+*/
+  
+  chk_LIB_2(a)(C)
+ =>
+  chk_LIB_4(a)(C|A;B)(1);
+  
+    Writef(("\n\n    Renamed SLIB construct %_%:\n      Name too long (max length 50)\n    ",A,B)) &
+  FlagNormaliserError
+ =>
+  chk_LIB_4_1(a)(C|A;B)(n);
+
+  btest(n<50) &
+  chk_LIB_5(a)(A;B)
+ =>
+  chk_LIB_4_1(a)(C|A;B)(n);
+
+  chk_LIB_4_1(a)(C|A;B)(blen(A)+blen(B))
+ =>
+  chk_LIB_4(a)(C|A;B)(0);
+  
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_LIB_3(a)(C|A;B);
+
+  bget(".Bcom",x) &
+  WriteDot &
+  chk_LIB_4(a)(C|A;B)(x)
+ =>
+  chk_LIB_3(a)(C|A;B);
+
+  chk_cfg_64(mch,a)
+ =>
+  chk_LIB_2(a)(?);      /* no `_' in name */
+  
+  chk_cfg_64(mch,a)
+ =>
+  chk_LIB_2(a)(?|A);      /* no `_' in name */
+  
+  chk_LIB_2(a)(A|B)
+ =>
+  chk_LIB_2(a)(A|B|C);
+  
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists Rename_",B,".mch $BKIT/BLIB/LIB/CFG")) &
+  chk_LIB_3(a)(C|A;B)
+ =>
+  chk_LIB_2(a)(C|A;B);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_LIB_1(a);
+
+  bget(".Bcom",X) &
+  chk_LIB_2(a)(X)
+ =>  
+  chk_LIB_1(a);
+
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  WriteDot &
+  chk_LIB_1(a)
+ =>
+  chk_cfg_4(M,a)(1);
+
+
+/*** a not in SLIB - try renamable SLIB ***/
+
+  GetJobs(X) &
+  InformInLIB &
+  AddJobs((((?,a):BT_LIB_FRC:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  chk_cfg_4(mch,a)(0);
+  
+  ReadFailedIntroLIBList(L) &
+  bsearch(a.mch,L,M) &
+  InformLIBFail(a.mch) &
+  FlagNormaliserError 
+ =>
+  chk_cfg_4(mch,a)(0);
+  
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_cfg_3(mch,a);
+
+  bget(".Bcom",x) &
+  WriteDot &
+  chk_cfg_4(mch,a)(x)
+ =>
+  chk_cfg_3(mch,a);
+
+
+
+/*
+  InformNotConfigured(a) &
+  bmodr(CheckConfiguredX.3,c) &
+  WriteSpace &
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".mch $BKIT/BLIB/LIB/CFG")) &
+  chk_cfg_3(mch,a)  
+ =>
+  chk_cfg_2(mch,a(c));
+*/
+
+
+/*** search for Rename_ in SLIB ***/
+
+  /***
+  not `Rename_' so carry on
+  ***/
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".mch $BKIT/BLIB/LIB/CFG")) &
+  chk_cfg_3(mch,a)  
+ =>  
+  chk_cfg_2_2(mch,a(c))(?);
+
+  chk_cfg_2_2(mch,a(c))(A)
+ =>
+  chk_cfg_2_2(mch,a(c))(A|B);
+
+  /***
+  `Rename_' so skip next section
+  ***/
+  chk_cfg_4(mch,a)(1)
+ =>  
+  chk_cfg_2_2(mch,a(c))(C|Rename;b);
+
+  Writef((" (if % is a renamed library machine, it has a bad rename prefix) .",a)) &
+/***/
+bcall(SHELL:bshell("cat .Bcom"))&
+/***/
+  chk_cfg_64(mch,a)
+ =>
+  chk_cfg_2_1(mch,a(c));      /* the rename prefix doesn't parse - so skip SLIB */
+
+  bget(".Bcom",X) &
+  chk_cfg_2_2(mch,a(c))(X)
+ =>
+  chk_cfg_2_1(mch,a(c));
+
+  InformNotConfigured(a) &
+  bmodr(CheckConfiguredX.3,c) &
+  WriteSpace &
+  WriteDot &
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  chk_cfg_2_1(mch,a(c))
+ =>
+  chk_cfg_2(mch,a(c));
+
+
+
+
+
+
+
+/****************** check VHDL SLIB before SLIB ************/
+
+  brule(CheckConfiguredX.6,(P|S)) & /* _ in name */
+  GetJobs(X) &
+  InformInVHDLLIB &
+  AddJobs((((P,S):BT_VHDL_LIB_FRC_WITH_ENV:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  chk_cfg_vhdl4_2(a)(0);  /* Rename LIB_VHDL exists */
+
+  ReadFailedIntroLIBList(L) &
+  bsearch(a.mch,L,M) &
+  InformLIBFail(m.mch) &
+  FlagNormaliserError 
+ =>
+  chk_cfg_vhdl4_2(a)(0);  /* Rename LIB_VHDL exists */
+
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  chk_cfg_2_1(mch,a(c))
+ =>
+  chk_cfg_vhdl4_2(a)(1);  /* Rename LIB_VHDL doesn't exist */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_cfg_vhdl4_1(a);
+
+  bget(".Bcom",x) &
+  chk_cfg_vhdl4_2(a)(x)
+ =>
+  chk_cfg_vhdl4_1(a);
+
+  brule(CheckConfiguredX.5,(P|S)) & /* _ in name */
+  GetJobs(X) &
+  InformInVHDLLIB &
+  AddJobs((((P,S):BT_VHDL_LIB_FRC_WITH_ENV:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  chk_cfg_vhdl4(a)(0);  /* Rename LIB_VHDL exists */
+
+  ReadFailedIntroLIBList(L) &
+  bsearch(a.mch,L,M) &
+  InformLIBFail(m.mch) &
+  FlagNormaliserError 
+ =>
+  chk_cfg_vhdl4(a)(0);  /* Rename LIB_VHDL exists */
+
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  chk_cfg_2_1(mch,a(c))
+ =>
+  chk_cfg_vhdl4(a)(1);  /* Rename LIB_VHDL doesn't exist */
+
+  brule(CheckConfiguredX.6,(P|S)) & /* _ in name */
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists Rename_",S,".mch $BKIT/BLIB/LIB_VHDL/CFG")) &
+  chk_cfg_vhdl4_1(a)
+ =>
+  chk_cfg_vhdl4(a)(1);  /* Rename LIB_VHDL doesn't exist */
+
+
+
+
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_cfg_vhdl3(a);
+
+  bget(".Bcom",x) &
+  chk_cfg_vhdl4(a)(x)
+ =>
+  chk_cfg_vhdl3(a);
+
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  chk_cfg_2_1(mch,a(c)) /* no _ in name */
+ =>
+  chk_cfg_vhdl2(a)(1);  /* non-Rename LIB_VHDL doesn't exist */
+
+  brule(CheckConfiguredX.5,(P|S)) & /* _ in name */
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists Rename_",S,".mch $BKIT/BLIB/LIB_VHDL/CFG")) &
+  chk_cfg_vhdl3(a)
+ =>
+  chk_cfg_vhdl2(a)(1);  /* non-Rename LIB_VHDL doesn't exist */
+
+  GetJobs(X) &
+  InformInVHDLLIB &
+  AddJobs((((?,a):BT_VHDL_LIB_FRC_WITH_ENV:0)),X) &
+  FlagNormaliserError &
+  FlagNoMiniRemake
+ =>
+  chk_cfg_vhdl2(a)(0);  /* non-Rename LIB_VHDL exists */
+  
+  ReadFailedIntroLIBList(L) &
+  bsearch(a.mch,L,M) &
+  InformLIBFail(a.mch) &
+  FlagNormaliserError 
+ =>
+  chk_cfg_vhdl2(a)(0);  /* non-Rename LIB_VHDL exists */
+  
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_cfg_vhdl1(a);
+
+  bget(".Bcom",x) &
+  WriteDot &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(CheckConfiguredX.4)) &
+  FifoWrite_Store((BT_SPLIT_AT_FIRST_UND_M,a,0),(CheckConfiguredX.5)) &
+  FifoWrite_Store((BT_SPLIT_AT_SECOND_UND_M,a,0),(CheckConfiguredX.6)) &
+  chk_cfg_vhdl2(a)(x)
+ =>
+  chk_cfg_vhdl1(a);
+
+  InformNotConfigured(a) &
+  WriteSpace &
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".mch $BKIT/BLIB/LIB_VHDL/CFG")) &
+  chk_cfg_vhdl1(a)  
+ =>
+  chk_cfg_vhdl(a);
+
+  IsVHDL &
+  chk_cfg_vhdl(a)
+ =>
+  chk_cfg_2(mch,a(c));
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+/************************************************************/
+
+  Writef(("\n\n  Construct name % causes parse problems!\n",a)) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,s,0)) &
+  ClearJobs &
+  FlagNormaliserError &
+  FlagNoMiniRemake  
+ =>
+  chk_cfg_chk_name_parses2(a)(s);
+
+  ReadBfifoSto(0) &                /* name doesn't parse */
+  chk_cfg_chk_name_parses2(a)(bcatl("Construct name ",a," causes parse problems!"))
+ =>
+  chk_cfg_chk_name_parses1(mch,a);
+  
+  ReadBfifoSto(0) &                /* name doesn't parse */
+  chk_cfg_chk_name_parses2(a)(bcatl("Construct name ",a," causes parse problems!"))
+ =>
+  chk_cfg_chk_name_parses1(mch,a(c));
+  
+  ReadBfifoSto(0) &                /* TEMPORARY */   /* name doesn't parses */
+  chk_cfg_2(mch,a)
+ =>
+  chk_cfg_chk_name_parses1(mch,a);
+  
+  ReadBfifoSto(1) &                /* name parses */
+  chk_cfg_2(mch,a)
+ =>
+  chk_cfg_chk_name_parses1(mch,a);
+  
+  FifoWrite_NoStore((BT_CHK_MCH_NAME_PARSES_M,a,0)) &
+  chk_cfg_chk_name_parses1(mch,a)
+ =>
+  chk_cfg_chk_name_parses(mch,a);
+
+  FifoWrite_NoStore((BT_CHK_MCH_NAME_PARSES_M,a,0)) &
+  chk_cfg_chk_name_parses1(mch,a(c))
+ =>
+  chk_cfg_chk_name_parses(mch,a(c));
+
+  chk_cfg_chk_name_parses(mch,?);
+
+  read_cfg_sto(X) &
+  chk_cfg_chk_name_parses(mch) bsmap X &
+  check_not_parse_flag
+ =>
+  chk_cfg_1;
+
+  read_cfg_sto(?) &
+  check_not_parse_flag
+ =>
+  chk_cfg_1;
+
+  NormaliserErrorFlagged
+ =>
+  chk_cfg_1;
+
+
+  read_cfg_sto(X) &
+  modr_cfg_sto((X,x(c)))
+ =>
+  chk_cfg_sto(x(c));
+
+  read_cfg_sto(X) &
+  bsearch(x(c),X,Y)
+ =>
+  chk_cfg_sto(x(c));
+
+  IsCfg(x.ref)
+ =>
+  chk_cfg_sto(x(c));
+
+  IsCfg(x.mch)
+ =>
+  chk_cfg_sto(x(c));
+
+  InformSyntaxErrorRaw(b) &
+  FlagNormaliserError
+ =>
+  chk_cfg_0(b);
+
+  bident(b) &
+  chk_cfg_sto(b(?))
+ =>
+  chk_cfg_0(b);
+
+  chk_cfg_sto(b(?))
+ =>
+  chk_cfg_0(r.b);
+
+
+  chk_cfg_sto(b(c))
+ =>
+  chk_cfg_0(b(c));
+
+  chk_cfg_sto(b(c))
+ =>
+  chk_cfg_0(r.b(c));
+
+
+  chk_cfg_sto(b(?))
+ =>
+  chk_cfg_0(a.b);
+
+  chk_cfg_sto(b(?))
+ =>
+  chk_cfg_0(r.a.b);
+
+
+  chk_cfg_sto(b(c))
+ =>
+  chk_cfg_0(a.b(c));
+
+  chk_cfg_sto(b(c))
+ =>
+  chk_cfg_0(r.a.b(c));
+
+
+  chk_cfg_0(?);
+
+
+  NormaliserErrorFlagged
+ =>
+  chk_cfg_0(x)
+
+END
+
+&
+
+THEORY FindAllRecursiveLoadsX IS
+
+#define FindAllRecursiveLoadsTac \
+	  ( \
+            MODR~;FindAllRecursiveLoadsMacrosX~;FLAT;MAP; \
+	    ( \
+	      (FLAT;MODR;SHELL)~;FindAllRecursiveLoadsX \
+            )~ \
+	  )
+
+#define FindAllRecursiveLoads(a) \
+	bcall(FindAllRecursiveLoadsTac : (bmodr(FindAllRecursiveLoadsX.1,0) & \
+                                          bmodr(FindAllRecursiveLoadsX.2,?) & \
+                                          (find_rec_loads bsmap bflat(a)) & \
+                                          find_rec_loads_fini))
+
+  0;   /* for result */
+
+  ?;   /* list of reported machines */
+
+  InformCantExecute(a) &
+  PFZ
+ =>
+  bshell(a);
+
+  find_rec_loads_fini;
+
+  brule(FindAllRecursiveLoadsX.1,1) &
+  FlagNormaliserError
+ =>
+  find_rec_loads_fini;
+
+  brule(FindAllRecursiveLoadsX.2,L) &
+  Writef("\n") & 
+  InformMchNotYetNormalised(a) &
+
+  FlagNoMiniRemake &
+
+  bmodr(FindAllRecursiveLoadsX.2,(L,a))
+ =>
+  inform_not_normalised(a);
+
+  brule(FindAllRecursiveLoadsX.2,L) &
+  Writef("\n") & 
+  InformMchNotYetNormalised(a) &
+
+  FlagNoMiniRemake &
+
+  bmodr(FindAllRecursiveLoadsX.2,(L,a$ref))
+ =>
+  inform_not_normalised(a$ref);
+
+  brule(FindAllRecursiveLoadsX.1,1) &
+  brule(FindAllRecursiveLoadsX.2,L) &
+  Writef("\n") & 
+  InformMchNotYetNormalised(a) &
+
+  FlagNoMiniRemake &
+
+  bmodr(FindAllRecursiveLoadsX.2,(L,a))
+ =>
+  inform_not_normalised(a);
+
+  brule(FindAllRecursiveLoadsX.1,1) &
+  brule(FindAllRecursiveLoadsX.2,L) &
+  Writef("\n") & 
+  InformMchNotYetNormalised(a) &
+
+  FlagNoMiniRemake &
+
+  bmodr(FindAllRecursiveLoadsX.2,(L,a$ref))
+ =>
+  inform_not_normalised(a$ref);
+
+  GetCurrentConstruct(a.b) &
+  FlagNormaliserError &
+  bmodr(CheckRecursionX.1,1) &
+  InformSelfRecursion &
+  ClearJobs  
+ =>
+  inform_not_normalised(a);
+
+  GetCurrentConstruct(a.b) &
+  FlagNormaliserError &
+  bmodr(CheckRecursionX.1,1) &
+  InformSelfRecursion &
+  ClearJobs
+ =>
+  inform_not_normalised(a$ref);
+
+  brule(FindAllRecursiveLoadsX.2,L) &
+  bsearch(a,L,M)                         /* already reported on */
+ =>
+  inform_not_normalised(a);
+
+
+  
+  GetCurrentConstruct(S.T) &
+  GetJobs(X) &
+  AddJobs(((a.mch:BT_NML_PRIORITY:0);(S.T:BT_NML:0)),X) &
+  inform_not_normalised(a) & 
+  bmodr(FindAllRecursiveLoadsX.1,1)
+ =>
+  find_rec_loads_1(a);
+
+  GetCurrentConstruct(S.T) &
+  GetJobs(X) &
+  AddJobs(((a.ref:BT_NML_PRIORITY:0);(S.T:BT_NML:0)),X) &
+  inform_not_normalised(a) & 
+  bmodr(FindAllRecursiveLoadsX.1,1)
+ =>
+  find_rec_loads_1(a$ref);
+
+  GetCurrentConstruct(S.imp) &
+  GetJobs(X) &
+  bsearch((S.imp:BT_NML:0),X,Y) &  /* S.imp already jobbed */
+  AddJobs((a.mch:BT_NML_PRIORITY:0),X) &
+  inform_not_normalised(a) & 
+  bmodr(FindAllRecursiveLoadsX.1,1)
+ =>
+  find_rec_loads_1(a);
+
+  GetCurrentConstruct(S.ref) &
+  GetJobs(X) &
+  bsearch((S.ref:BT_NML:0),X,Y) &  /* S.ref already jobbed */
+  AddJobs((a.mch:BT_NML_PRIORITY:0),X) &
+  inform_not_normalised(a) & 
+  bmodr(FindAllRecursiveLoadsX.1,1)
+ =>
+  find_rec_loads_1(a);
+
+  GetCurrentConstruct(S.mch) &
+  GetJobs(X) &
+  bsearch((S.mch:BT_NML:0),X,Y) &  /* S.mch already jobbed */
+  AddJobs((a.mch:BT_NML_PRIORITY:0),X) &
+  inform_not_normalised(a) & 
+  bmodr(FindAllRecursiveLoadsX.1,1)
+ =>
+  find_rec_loads_1(a);
+
+  GetCurrentConstruct(S.T) &
+  GetJobs(X) &
+  bsearch((S.T:BT_NML:0),X,Y) &     /* S.T already jobbed */
+  AddJobs((a.ref:BT_NML_PRIORITY:0),X) &
+  inform_not_normalised(a) & 
+  bmodr(FindAllRecursiveLoadsX.1,1)
+ =>
+  find_rec_loads_1(a$ref);
+
+  GetCurrentConstruct(S.T) &
+  GetJobs(X) &
+  bsearch((a.mch:BT_NML:0),X,Y) &   /* a.mch already jobbed */
+  bsearch((S.T:BT_NML:0),Y,W) &     /* S.T already jobbed */
+  AddJobs((a.mch:BT_NML_PRIORITY:0),Y) &
+  inform_not_normalised(a) & 
+  bmodr(FindAllRecursiveLoadsX.1,1)
+ =>
+  find_rec_loads_1(a);
+
+  GetCurrentConstruct(S.T) &
+  GetJobs(X) &
+  bsearch((a.ref:BT_NML:0),X,Y) &   /* a.ref already jobbed */
+  bsearch((S.T:BT_NML:0),Y,W) &     /* S.T already jobbed */
+  AddJobs((a.ref:BT_NML_PRIORITY:0),Y) &
+  inform_not_normalised(a) & 
+  bmodr(FindAllRecursiveLoadsX.1,1)
+ =>
+  find_rec_loads_1(a$ref);
+
+  NormaliserErrorFlagged
+ =>
+  find_rec_loads_1(a);
+
+  InformNotConfigured(a) &
+  bmodr(FindAllRecursiveLoadsX.2,0) &
+  FlagNormaliserError &
+  bshell("rm -f .Brec") &
+  ClearJobs
+ =>
+  find_rec_loads(a);
+
+  IsCfg(a.mch) &
+  find_rec_loads_1(a)
+ =>
+  find_rec_loads(a);
+
+  IsCfg(a.ref) &
+  find_rec_loads_1(a$ref)
+ =>
+  find_rec_loads(a$ref);
+
+
+  IsAnl(a.mch)
+ =>
+  find_rec_loads(a);
+
+  IsAnl(a.ref)
+ =>
+  find_rec_loads(a$ref);
+
+
+  find_rec_loads(?);
+
+  NormaliserErrorFlagged
+ =>
+  find_rec_loads(x)
+
+END
+
+&
+
+THEORY CheckRecursionX IS
+
+#define CheckRecursionTac ((MAP;WRITE;SHELL;MODR)~;CheckRecursionX)~
+
+#define CheckRecursion    bcall(CheckRecursionTac: check_rec)
+
+
+  ?;
+
+
+  InformCantExecute(a) &
+  PFZ
+ =>
+  bshell(a);
+
+  InformCantConnect(".Brec") &
+  PFZ
+ =>
+  check_rec_fini(L);
+
+  bappend(".Brec") &
+  GetCurrentConstruct(S.T) &
+  brule(FindAllRecursiveLoadsX.2,c) &
+  bprintf(";%(%)",S,c)
+ =>
+  check_rec_fini(L);
+
+  brule(CheckRecursionX.1,1) &
+  ClearJobs
+ =>
+  check_rec_fini(L);
+
+
+
+  check_rec2(a(b),c);
+
+  GetCurrentConstruct(S.T) &
+  FlagNormaliserError &
+  bmodr(CheckRecursionX.1,1) &
+  InformRecursion(a,S)
+ =>
+  check_rec2(a(b),a);
+
+  GetCurrentConstruct(S.T) &
+  FlagNormaliserError &
+  bmodr(CheckRecursionX.1,1) &
+  InformRecursion(a,S)
+ =>
+  check_rec2(a$ref(b),a);
+
+  check_rec2(a(b),?);
+
+  check_rec2(?,x);
+
+  check_rec2(L) bsmap X
+ =>
+  check_rec_1(X,L);
+
+
+
+
+  InformCantConnect(".Brec") &
+  PFZ
+ =>
+  check_rec_101(1);
+
+  bconnect(".Brec") &
+  GetCurrentConstruct(S.T) &
+  brule(FindAllRecursiveLoadsX.2,c) &
+  bprintf("?;%(%)",S,c)
+ =>
+  check_rec_101(1);             /* .Brec doesn't exist */
+
+  InformCantConnect(".Brec") &
+  PFZ
+ =>
+  check_rec_101(0);             /* .Brec exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  check_rec_100;
+
+  bget(".Bcom",x) &
+  check_rec_101(x)
+ =>
+  check_rec_100;
+
+
+
+  bmodr(CheckRecursionX.1,0) &
+  bshell("$BKIT/BLIB/CheckFileExists .Brec .") &
+  check_rec_100
+ =>
+  check_rec;
+
+
+
+  bmodr(CheckRecursionX.1,0) &
+  bget(".Brec",L) &
+  brule(FindAllRecursiveLoadsX.2,l) &
+  check_rec_1(l) bsmap L &
+  check_rec_fini(L)
+ =>
+  check_rec;
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  rewrite_rec(M);
+
+  bconnect(".Brec") &
+  bprintf("%\n",M)
+ =>
+  rewrite_rec(M);
+
+  bmodr(CheckRecursionX.1,0) &
+  bget(".Brec",L) &
+  GetCurrentConstruct(S.T) &
+  bsearch(S(X),L,M) &           /* poss revisited through MiniRemake */
+  brule(FindAllRecursiveLoadsX.2,l) &
+  rewrite_rec(M) &
+  check_rec_1(l) bsmap M &
+  check_rec_fini(M)
+ =>
+  check_rec
+
+END
+
+&
+
+THEORY CleanNormaliserX IS
+
+#define CleanNormaliser_tac \
+		(CleanNormaliserX;MAP;(CleanNormaliserX;RULE;MODR)~)~
+
+#define CleanNormaliser \
+		bcall(CleanNormaliser_tac: clean_norm_0)
+
+  ?;
+
+  (
+    parse_name,
+    parse_parameters,
+    parse_constraints,
+    parse_sees,
+    parse_refines,
+    parse_includes,
+    parse_extends,
+    parse_imports,
+    parse_promotes,
+    parse_variables,
+    parse_invariant,
+    parse_assertions,
+    parse_initialisation,
+    parse_operations,
+    parse_sets,
+    parse_constants,
+    parse_properties,
+    parse_uses,
+    parse_definitions
+  );
+
+  bmodr(NormaliserParseX.n,?)
+ =>
+  clean_norm_2(n);
+
+  ModifyFreenessAggregate(?) &
+  brule(CleanNormaliserX.2,t) &
+  clean_norm_2 bsmap t &
+  bmodr(SubordinateLoadedListX.1,?) &
+  ModifyColonRewrites(?)
+ =>
+  clean_norm_0
+
+END
+
+&
+
+THEORY CopyDottedClausesX IS
+
+#define cpy_dot_clau_tac \
+	(((ARI;MAP;NEWV;RULE;MODR)~;CopyDottedClausesX)~)
+
+#define CopyDottedClauses \
+		bcall(cpy_dot_clau_tac: cpy_dot_clau_0)
+
+
+  bcrer(u,x)
+ =>
+  cpy_dot_clau_3$u(x);
+
+  cpy_dot_clau_3$u bsmap (x)
+ =>
+  cpy_dot_clau_2$x$u;
+
+  bident(b)
+ =>
+  (b(c)) == (b);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b) == (bnewv(a,b));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b[c]) == (bnewv(a,b)[c]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)) == (bnewv(a,b));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)[d]) == (bnewv(a,b)(c)[d]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)~) == (bnewv(a,b)(c)~);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)~[d]) == (bnewv(a,b)(c)~[d]);
+
+
+  brule(t.1,x) &
+  cpy_dot_clau_2$x$u
+ =>
+  cpy_dot_clau_1(t|u);
+
+
+
+  brule(DOTTED_EXTENDSX.n,x) &
+  bcrer(DOTTED_INCLUDESX,x) &
+  cpy_dot_ext_incl_1(n-1)
+ =>
+  cpy_dot_ext_incl_1(n);
+
+  brule(DOTTED_EXTENDSX.n,x) &
+  brule(DOTTED_INCLUDESX.1,?) &
+  bmodr(DOTTED_INCLUDESX.1,x) &
+  cpy_dot_ext_incl_1(n-1)
+ =>
+  cpy_dot_ext_incl_1(n);
+
+  cpy_dot_ext_incl_1(0);
+
+  cpy_dot_ext_incl_0;
+
+  blent(DOTTED_EXTENDSX.n) &
+  cpy_dot_ext_incl_1(n)
+ =>
+  cpy_dot_ext_incl_0;
+
+  blent(DOTTED_EXTENDSX.0)
+ =>
+  cpy_dot_ext_incl_0;
+
+  brule(DOTTED_EXTENDSX.1,?)
+ =>
+  cpy_dot_ext_incl_0;
+
+
+
+  brule(u.n,y) &
+  bcrer(v,(y|x)) &
+  cpy_dot_clau_6(X)(u|v)(n-1)
+ =>
+  cpy_dot_clau_6(X,x)(u|v)(n);
+
+  brule(u.n,y) &
+  bcrer(v,(y|x)) &
+  cpy_dot_clau_6(X)(u|v)(n-1)
+ =>
+  cpy_dot_clau_6(X,x(p))(u|v)(n);
+
+  brule(u.n,y) &
+  bcrer(v,(y|r.x)) &
+  cpy_dot_clau_6(X)(u|v)(n-1)
+ =>
+  cpy_dot_clau_6(X,r.x(p))(u|v)(n);
+
+  brule(u.n,?) &
+  cpy_dot_clau_6(X)(u|v)(n-1)
+ =>
+  cpy_dot_clau_6(X,?)(u|v)(n);
+
+  brule(u.1,y) &
+  bcrer(v,(y|x))
+ =>
+  cpy_dot_clau_6(x)(u|v)(1);
+
+  brule(u.1,y) &
+  bcrer(v,(y|x))
+ =>
+  cpy_dot_clau_6(x(p))(u|v)(1);
+
+  brule(u.1,y) &
+  bcrer(v,(y|r.x))
+ =>
+  cpy_dot_clau_6(r.x(p))(u|v)(1);
+
+  brule(u.1,?)
+ =>
+  cpy_dot_clau_6(?)(u|v)(1);
+
+  blent(u.n) &
+  brule(t.1,x) &
+  cpy_dot_clau_6(x)(u|v)(n)
+ =>
+  cpy_dot_clau_5(t|u|v);
+
+
+
+  cpy_dot_clau_1 bsmap 
+  (
+   (SEESX|DOTTED_SEESX),
+   (USESX|DOTTED_USESX),
+   (EXTENDSX|DOTTED_EXTENDSX),
+   (INCLUDESX|DOTTED_INCLUDESX)
+  ) &
+  cpy_dot_clau_5 bsmap 
+  (
+   (SEESX|DOTTED_SEESX|SEES_DOTTED_SEESX),
+   (USESX|DOTTED_USESX|USES_DOTTED_USESX),
+   (EXTENDSX|DOTTED_EXTENDSX|INCLUDES_DOTTED_INCLUDESX),
+   (INCLUDESX|DOTTED_INCLUDESX|INCLUDES_DOTTED_INCLUDESX)
+  ) &
+  cpy_dot_ext_incl_0
+ =>
+  cpy_dot_clau_0;
+
+  NormaliserErrorFlagged
+ =>
+  cpy_dot_clau_0
+
+END
+
+&
+
+THEORY ParseCopyIntoLOCALmacrosX IS
+
+  modset(a) == (a);
+
+  modset(a=b..c) == (a(b..c));
+
+  modset(a={b}) == (a(b));
+
+  commatoamp(a) == (a);
+
+  commatoamp(a,b) == (commatoamp(a)&b);
+
+  semicolontoamp(a) == (a);
+
+  semicolontoamp(a;b) == (semicolontoamp(a)&b);
+
+  semicolontocomma(a) == (a);
+
+  semicolontocomma(a;b) == (semicolontocomma(a),b);
+
+  pis(a) == true;  
+
+  pis(a) == /* not(a={}) (a:FIN1(a)) */ (card(a):NAT1);
+
+  bnum(N)
+ =>
+  pis(a[N]) == /* not(a={}) (a:FIN1(a)) */ (card(a):NAT1);
+
+
+
+
+
+/*
+changing these two rules prevent
+not(s={}) being added to properties clause
+for enumerations
+
+  bnum(a) &
+  bnum(b) &
+  btest(b>=c)
+ =>
+  pis(a=b..c) == not(a={});
+
+  pis(a={b}) == not(a={});
+*/
+
+  bnum(a) &
+  bnum(b) &
+  btest(b>=c)
+ =>
+  pis(a=b..c) == ?;
+
+  pis(a={b}) == ?;
+
+
+
+
+
+  pic(a) == (a:NAT);  
+
+  brule(ParamTypeX.I,(a:T))
+ =>
+  pic(a) == (?);  
+
+  bUpident(a)          /* PARAMETERS */
+ =>
+  pic(a) == /* not(a={}) (a:FIN1(a)) */ (card(a):NAT1)
+
+END
+
+&
+
+THEORY GlueDotsX IS
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b) == (bnewv(a,b));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)(g)(h)) == (bnewv(a,b)(c)(d)(e)(f)(g)(h));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)(g)) == (bnewv(a,b)(c)(d)(e)(f)(g));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)) == (bnewv(a,b)(c)(d)(e)(f));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)) == (bnewv(a,b)(c)(d)(e));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)) == (bnewv(a,b)(c)(d));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)) == (bnewv(a,b)(c));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b[c]) == (bnewv(a,b)[c]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b~[c]) == (bnewv(a,b)~[c]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)[d]) == (bnewv(a,b)(c)[d]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)~) == (bnewv(a,b)(c)~);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)~[d]) == (bnewv(a,b)(c)~[d])
+
+END
+
+&
+
+THEORY CheckRecursiveDEFINITIONSX IS
+
+#define CheckRecursiveDEFINITIONS(x) \
+   bcall(((MODR;MAP)~;CheckRecursiveDEFINITIONSX)~:crd0(x))
+
+  ?;
+#define ReadLhsDefs(x)     brule(CheckRecursiveDEFINITIONSX.1,x)
+#define ModifyLhsDefs(x)   bmodr(CheckRecursiveDEFINITIONSX.1,x)
+
+  ?;
+#define ReadRhsDefs(x)     brule(CheckRecursiveDEFINITIONSX.2,x)
+#define ModifyRhsDefs(x)   bmodr(CheckRecursiveDEFINITIONSX.2,x)
+
+
+  Writef(("        % appears in %\n",l,r))
+ =>
+  crd4(l,r);
+
+  l\r  
+ =>
+  crd4(l,r);
+
+  ReadRhsDefs(R) &
+  crd4(l) bsmap R
+ =>
+  crd3(l);
+
+  ReadRhsDefs(R) &
+  l\R
+ =>
+  crd3(l);
+
+  ReadLhsDefs(L) &
+  Writef(("\n\n      Local definition used in DEFINITIONS:\n")) &
+  crd3 bsmap L &
+  FlagNormaliserError
+ =>
+  crd2;
+
+  ReadLhsDefs(L) &
+  ReadRhsDefs(R) &
+  L\R
+ =>
+  crd2;
+
+  ReadLhsDefs(?)
+ =>
+  crd2;
+
+/*
+ReadLhsDefs(L) &
+ReadRhsDefs(R) &
+HERE((L|R))
+=>
+junk;
+*/
+
+  crd1(x);
+
+  bident(l) &
+  ReadLhsDefs(L) &
+  ReadRhsDefs(R) &
+  ModifyLhsDefs((L,l)) &
+  ModifyRhsDefs((R,r))
+ =>
+  crd1(l==r);
+
+  bident(l) &
+  ReadLhsDefs(?) &
+  ModifyLhsDefs(l) &
+  ModifyRhsDefs(r)
+ =>
+  crd1(l==r);
+
+  crd1(l==r)
+ =>
+  crd1(l(p)==r);
+
+  ModifyLhsDefs(?) &
+  ModifyRhsDefs(?) &
+  crd1 bsmap d &
+/*
+junk &
+*/
+  crd2
+ =>
+  crd0(d);
+
+  NormaliserErrorFlagged
+ =>
+  crd0(d)
+
+END
+
+&
+
+THEORY ParseCopyIntoLOCALX IS
+
+/*
+#define ParseCopyIntoLOCAL_tac \
+	(((ParseCopyIntoLOCALmacrosX~;DEFINITIONSX~;REV;MAP;LMAP;MODR;FLAT;RULE)~;ParseCopyIntoLOCALX)~)
+*/
+
+#define ParseCopyIntoLOCAL_tac \
+ (((ParseCopyIntoLOCALmacrosX~;REV;MAP;LMAP;MODR;FLAT;RULE)~;ParseCopyIntoLOCALX)~)
+
+
+#define ParseCopyIntoLOCAL(x) \
+		bcall(ParseCopyIntoLOCAL_tac: parse_cpy(x))
+
+
+/*
+#define glue_dots_tac \
+		((DEFINITIONSX~;(GlueDotsX;NEWV)~;RULE)~;ParseCopyIntoLOCALX)~
+*/
+
+#define glue_dots_tac   (((GlueDotsX;NEWV)~;RULE)~;ParseCopyIntoLOCALX)~
+
+#define GlueDots(x)     bcall(glue_dots_tac: x)
+
+
+  
+  delay(bcrer(LOCAL_PROPERTIESX,(bflat(x&y))))
+ =>
+  parse_cpy_3(a.b,parse_properties)(x)(y);
+
+  delay(bcrer(LOCAL_PROPERTIESX,x))
+ =>
+  parse_cpy_3(a.b,parse_properties)(x)(true);
+
+  bsearch(true,y,z) &
+  parse_cpy_3(a.b,parse_properties)(x)(z)
+ =>
+  parse_cpy_3(a.b,parse_properties)(x)(y);
+
+  parse_cpy_3(a.b,parse_properties)(x)(pis bslmap y)
+ =>
+  parse_cpy_2(a.b,parse_properties)(x)(y);
+
+  brule(NormaliserParseX.parse_properties,x) &
+  bmodr(NormaliserParseX.parse_properties,?) &
+  brule(NormaliserParseX.parse_sets,y) &
+  bmodr(NormaliserParseX.parse_sets,?) &
+  parse_cpy_2(a.b,parse_properties)(x)(semicolontoamp(y))
+ =>
+  parse_cpy_1(a.b,parse_properties);
+
+  brule(NormaliserParseX.parse_properties,x) &
+  bmodr(NormaliserParseX.parse_properties,?) &
+  brule(NormaliserParseX.parse_sets,?) &
+  delay(bcrer(LOCAL_PROPERTIESX,x))
+ =>
+  parse_cpy_1(a.b,parse_properties);
+
+
+
+  bsearch(?,D,E) &
+  delay(bmodr(CONSTRAINTSX.1,brev(E)))
+ =>
+  parse_cpy_3_check_dup_CONSTRAINTSX(?)(D);
+
+  parse_cpy_3_check_dup_CONSTRAINTSX(C)(D&c)
+ =>
+  parse_cpy_3_check_dup_CONSTRAINTSX(C&c)(D);
+
+  bsearch(c,D,E) &
+  parse_cpy_3_check_dup_CONSTRAINTSX(C)(D)
+ =>
+  parse_cpy_3_check_dup_CONSTRAINTSX(C&c)(D);
+
+  bsearch((a:NAT),C,B) &
+  parse_cpy_3_check_dup_CONSTRAINTSX(B)(D&(a:NAT))
+ =>
+  parse_cpy_3_check_dup_CONSTRAINTSX(C)(D);
+
+  bsearch((a:NAT),C,B) &
+  bsearch((a:NAT1),D,E) &
+  parse_cpy_3_check_dup_CONSTRAINTSX(B)(D)
+ =>
+  parse_cpy_3_check_dup_CONSTRAINTSX(C)(D);
+
+  bsearch((a:NAT1),C,B) &
+  parse_cpy_3_check_dup_CONSTRAINTSX(B)(D&(a:NAT1))
+ =>
+  parse_cpy_3_check_dup_CONSTRAINTSX(C)(D);
+
+  bsearch((a:NAT1),C,B) &
+  bsearch((a:NAT1),D,E) &
+  parse_cpy_3_check_dup_CONSTRAINTSX(B)(D)
+ =>
+  parse_cpy_3_check_dup_CONSTRAINTSX(C)(D);
+
+
+
+  brule(CONSTRAINTSX.1,c) &
+  parse_cpy_3_check_dup_CONSTRAINTSX(bflat(?&p&c))(?)
+ =>
+  parse_cpy_3(a.b,parse_parameters)(p);
+ 
+  brule(CONSTRAINTSX.1,?) &
+  delay(bmodr(CONSTRAINTSX.1,p))
+ =>
+  parse_cpy_3(a.b,parse_parameters)(p);
+ 
+  parse_cpy_3(a.b,parse_parameters)(commatoamp(p))
+ =>
+  parse_cpy_2(a.b,parse_parameters)(p);
+ 
+  brule(NormaliserParseX.parse_parameters,p) &
+  bmodr(NormaliserParseX.parse_parameters,?) &
+  delay(bcrer(PARAMETERSX,p)) &
+  parse_cpy_2(a.b,parse_parameters)(pic bslmap p)
+ =>
+  parse_cpy_1(a.b,parse_parameters);
+
+  brule(NormaliserParseX.parse_parameters,?) &
+  delay(bcrer(PARAMETERSX,?))
+ =>
+  parse_cpy_1(a.b,parse_parameters);
+
+
+  brule(NormaliserParseX.parse_definitions,x) &
+  bmodr(NormaliserParseX.parse_definitions,?) &
+  delay(bcrer(LOCAL_DEFINITIONSX,semicolontocomma(x))) /*  &
+  bcrelr(DEFINITIONSX,x) */
+ =>
+  parse_cpy_1(a.b,parse_definitions);
+
+  brule(NormaliserParseX.parse_definitions,?) &
+  delay(bcrer(LOCAL_DEFINITIONSX,?))
+ =>
+  parse_cpy_1(a.b,parse_definitions);
+
+  brule(NormaliserParseX.parse_constraints,x) &
+  bmodr(NormaliserParseX.parse_constraints,?) &
+  delay(bcrer(CONSTRAINTSX,x))
+ =>
+  parse_cpy_1(a.b,parse_constraints);
+
+  brule(NormaliserParseX.parse_sees,x) &
+  bmodr(NormaliserParseX.parse_sees,?) &
+  delay(bcrer(SEESX,brev(x)))
+ =>
+  parse_cpy_1(a.b,parse_sees);
+
+  brule(NormaliserParseX.parse_uses,x) &
+  bmodr(NormaliserParseX.parse_uses,?) &
+  delay(bcrer(USESX,brev(x)))
+ =>
+  parse_cpy_1(a.b,parse_uses);
+
+  brule(NormaliserParseX.parse_refines,x) &
+  bmodr(NormaliserParseX.parse_refines,?) &
+  delay(bcrer(REFINESX,x))
+ =>
+  parse_cpy_1(a.b,parse_refines);
+
+  brule(NormaliserParseX.parse_variables,x) &
+  bmodr(NormaliserParseX.parse_variables,?) &
+  delay(bcrer(LOCAL_VARIABLESX,x))
+ =>
+  parse_cpy_1(a.b,parse_variables);
+
+  brule(NormaliserParseX.parse_invariant,x) &
+  bmodr(NormaliserParseX.parse_invariant,?) &
+  GlueDots(delay(bcrer(LOCAL_INVARIANTX,x)))
+ =>
+  parse_cpy_1(a.b,parse_invariant);
+
+  brule(NormaliserParseX.parse_assertions,x) &
+  bmodr(NormaliserParseX.parse_assertions,?) &
+  GlueDots(delay(bcrer(ASSERTIONSX,x)))
+ =>
+  parse_cpy_1(a.b,parse_assertions);
+
+  brule(NormaliserParseX.parse_initialisation,x) &
+  bmodr(NormaliserParseX.parse_initialisation,?) &
+  GlueDots(delay(bcrer(LOCAL_INITIALISATIONX,x)))
+ =>
+  parse_cpy_1(a.b,parse_initialisation);
+
+  brule(NormaliserParseX.parse_operations,x) &
+  bmodr(NormaliserParseX.parse_operations,?) &
+  delay(bcrer(OPERATIONSX,brev(x)))
+ =>
+  parse_cpy_1(a.b,parse_operations);
+
+  brule(NormaliserParseX.parse_sets,x) &
+  delay(bcrer(LOCAL_SETSX,semicolontocomma(x)))
+ =>
+  parse_cpy_1(a.b,parse_sets);
+
+  delay(bcrer(LOCAL_SETSX,x))
+ =>
+  parse_cpy_3(a.b,parse_sets)(x);
+
+  parse_cpy_3(a.b,parse_sets)(modset bslmap x)
+ =>
+  parse_cpy_2(a.b,parse_sets)(x);
+
+  brule(NormaliserParseX.parse_sets,x) &
+  parse_cpy_2(a.b,parse_sets)(semicolontocomma(x))
+ =>
+  parse_cpy_1(a.b,parse_sets);
+
+  brule(NormaliserParseX.parse_constants,x) &
+  bmodr(NormaliserParseX.parse_constants,?) &
+  delay(bcrer(LOCAL_CONSTANTSX,x))
+ =>
+  parse_cpy_1(a.b,parse_constants);
+
+  brule(NormaliserParseX.parse_promotes,x) &
+  bmodr(NormaliserParseX.parse_promotes,?) &
+  delay(bcrer(PROMOTESX,brev(x)))
+ =>
+  parse_cpy_1(a.b,parse_promotes);
+
+  brule(NormaliserParseX.parse_includes,x) &
+  bmodr(NormaliserParseX.parse_includes,?) &
+  delay(bcrer(INCLUDESX,brev(x)))
+ =>
+  parse_cpy_1(a.b,parse_includes);
+
+  parse_cpy_1(a.imp,parse_includes);
+
+  brule(NormaliserParseX.parse_imports,x) &
+  bmodr(NormaliserParseX.parse_imports,?) &
+  delay(bcrer(INCLUDESX,brev(x)))
+ =>
+  parse_cpy_1(a.b,parse_imports);
+
+  parse_cpy_1(a.ref,parse_imports);
+
+  parse_cpy_1(a.mch,parse_imports);
+
+  brule(NormaliserParseX.parse_extends,x) &
+  bmodr(NormaliserParseX.parse_extends,?) &
+  delay(bcrer(EXTENDSX,brev(x)))
+ =>
+  parse_cpy_1(a.b,parse_extends);
+
+  a
+ =>
+  delay(a);
+
+  (a&(b&c)) == (a&b&c);
+
+  bsearch(?,x,y) &
+  delay(bmodr(t.n,(y)))
+ =>
+  delay(bmodr(t.n,(x)));
+
+  parse_cpy_1(a.b)  bsmap 
+ (
+  parse_definitions,
+  parse_constraints,
+  parse_parameters,
+  parse_variables,
+  parse_invariant,
+  parse_assertions,
+  parse_initialisation,
+  parse_operations,
+  parse_sets,
+  parse_constants,
+  parse_properties,
+  parse_sees,
+  parse_uses,
+  parse_refines,
+  parse_promotes,
+  parse_includes,
+  parse_imports,
+  parse_extends
+ )
+ =>
+  parse_cpy(a.b);
+
+  NormaliserErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY SubordinateLoadedListX IS
+
+  ?
+
+END
+
+&
+
+THEORY ParamTypeX END &
+
+THEORY StoParamTypeX IS
+
+#define StoParamType bcall(((MAP;RULE)~;StoParamTypeX)~: spt_0)
+
+  spt_1(x);
+
+  bcrer(ParamTypeX,(c:T))
+ =>
+  spt_1(c:T);
+
+  bclean(ParamTypeX) &
+  brule(NormaliserParseX.parse_constraints,C) &
+  spt_1 bsmap C
+ =>
+  spt_0;
+
+  NormaliserErrorFlagged
+ =>
+  spt_0
+
+END
+
+&
+
+THEORY LoadSubordinateConstructsX IS
+
+#define load_sub_tac ((FLAT;MAP;MODR;CATL;REV;RULE)~;LoadSubordinateConstructsX)~
+
+#define LoadSubordinateConstructs(x) \
+	bcall(load_sub_tac: ( ( check_usr_mch bsmap bflat(x) & \
+                                load_sub bsmap bflat(x) & \
+                                load_all ) ) )
+
+#define StoreInitOpsForSubordCostLoad(x) \
+  bcall(MODR:bmodr(LoadSubordinateConstructsX.1,x))
+
+  ?; /* (init;ops)
+         from NormaliserParseX.parse_initialisation/operations/promotes
+     */
+
+  ?; /* 1=> curr machine in EXTENDS clause, 0=> not */
+
+  check_usr_mch(x);
+
+  InformCantRenameLIBGNRMch(a,b) &
+  FlagNormaliserError
+ =>
+  check_usr_mch(a.b);
+
+  IsUsrVHDL(b.mch)
+ =>
+  check_usr_mch(a.b);
+
+  IsUsr(b.mch)
+ =>
+  check_usr_mch(a.b);
+
+  check_usr_mch(a.b)
+ =>
+  check_usr_mch(a.b(c));
+
+  bcrer(SUB_OPERATIONSX,k(o))
+ =>
+  load_all_ops_1(k,o);
+
+  brule(LoadSubordinateConstructsX.1,O) &
+  s\O                                      /* op s not reqd */
+ =>
+  load_all_ops_1(k,(s;t;u;v;W;Y));
+
+  brule(LoadSubordinateConstructsX.2,1) &  /* extended op */
+  bcrer(SUB_OPERATIONSX,k(o))
+ =>
+  load_all_ops_1(k,(o));
+
+  load_all_ops_1(k,o)
+ =>
+  load_all_ops(k)(o);
+
+  load_all_ops_1(k) bsmap (N,n)
+ =>
+  load_all_ops(k)(N,n);
+
+/*
+  InformCantConnect(f) &
+  PFZ
+ =>
+  load_all_2(k)(f);
+*/
+
+  InformArityInterference(k) &
+  FlagNormaliserError
+ =>
+  load_all_2(k)(f);
+
+  bmodr(LoadSubordinateConstructsX.2,0)
+ =>
+  set_extends_flag(e);
+
+  brule(EXTENDSX.1,E) &
+  bsearch(r.e(p),(E,?),f) &
+  bmodr(LoadSubordinateConstructsX.2,1)
+ =>
+  set_extends_flag(e);
+
+  brule(EXTENDSX.1,E) &
+  bsearch(e(p),(E,?),f) &
+  bmodr(LoadSubordinateConstructsX.2,1)
+ =>
+  set_extends_flag(e);
+
+  brule(EXTENDSX.1,E) &
+  bsearch(r.e,(E,?),f) &
+  bmodr(LoadSubordinateConstructsX.2,1)
+ =>
+  set_extends_flag(e);
+
+  brule(EXTENDSX.1,E) &
+  bsearch(e,(E,?),f) &
+  bmodr(LoadSubordinateConstructsX.2,1)
+ =>
+  set_extends_flag(e);
+
+
+  bget(Z,((S;(J|K));A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  bcrer(SUB_DEFINITIONSX,k(K)) &
+  bcrer(SUB_SETSX,k(D)) &
+  bcrer(SUB_CONSTANTSX,k(F)) &
+  bcrer(SUB_PROPERTIESX,k(H)) &
+/*
+  bcrer(SUB_VARIABLESX,k(Q)) &
+  bcrer(SUB_INVARIANTX,k(e)) &
+*/
+  bcrer(SUB_VARIABLESX,k(d)) &
+  bcrer(SUB_INVARIANTX,k(f)) &
+  bcrer(SUB_INITIALISATIONX,k(i)) &
+  bcrer(SUB_OPNAMESX,k(brev(j))) &
+  bcrer(SUB_PARAMETERSX,k(l)) &
+  bcrer(SUB_CONSTRAINTSX,k(m)) &
+  set_extends_flag(k) &
+  load_all_ops(k)(n)
+ =>
+  load_all_2(L)(Z);
+
+  WriteDot &
+  load_all_2(a)(bcatl("ANL/",a,".ref.anl"))
+ =>
+  load_all_1(a);
+
+  IsAnl(a.mch) &
+  WriteDot &
+  load_all_2(a)(bcatl("ANL/",a,".mch.anl"))
+ =>
+  load_all_1(a);
+
+  brule(SubordinateLoadedListX.1,L) &
+  bsearch(?,L,M) &
+  Writef(("\n    Loading subordinate constructs ")) &
+  load_all_1 bsmap M
+ =>
+  load_all;
+
+  brule(SubordinateLoadedListX.1,?) &
+  bcrer(SUB_DEFINITIONSX,?) &
+  bcrer(SUB_SETSX,?) &
+  bcrer(SUB_CONSTANTSX,?) &
+  bcrer(SUB_PROPERTIESX,?) &
+  bcrer(SUB_VARIABLESX,?) &
+  bcrer(SUB_INVARIANTX,?) &
+  bcrer(SUB_INITIALISATIONX,?) &
+  bcrer(SUB_OPNAMESX,?) &
+  bcrer(SUB_PARAMETERSX,?) &
+  bcrer(SUB_CONSTRAINTSX,?)
+ =>
+  load_all;
+
+  NormaliserErrorFlagged
+ =>
+  load_all;
+
+  brule(SubordinateLoadedListX.1,L) &
+  bmodr(SubordinateLoadedListX.1,(L,b))
+ =>
+  load_sub(b);
+
+  brule(SubordinateLoadedListX.1,L) &
+  bsearch(b,L,M)
+ =>
+  load_sub(b);
+
+  brule(SubordinateLoadedListX.1,L) &
+  bmodr(SubordinateLoadedListX.1,(L,b))
+ =>
+  load_sub(b(c));
+
+  brule(SubordinateLoadedListX.1,L) &
+  bsearch(b,L,M)
+ =>
+  load_sub(b(c));
+
+  brule(SubordinateLoadedListX.1,L) &
+  bmodr(SubordinateLoadedListX.1,(L,b))
+ =>
+  load_sub(a.b);
+
+  brule(SubordinateLoadedListX.1,L) &
+  bsearch(b,L,M)
+ =>
+  load_sub(a.b);
+
+  brule(SubordinateLoadedListX.1,L) &
+  bmodr(SubordinateLoadedListX.1,(L,b))
+ =>
+  load_sub(a.b(c));
+
+  brule(SubordinateLoadedListX.1,L) &
+  bsearch(b,L,M)
+ =>
+  load_sub(a.b(c));
+
+  load_sub(?);
+
+  NormaliserErrorFlagged
+ =>
+  load_sub(x)
+
+END
+
+&
+
+THEORY CheckUsedInvariantX IS
+
+#define CheckUsedInvariant \
+  bcall(((NEWV;MAP;MODR;ARI)~;CheckUsedInvariantX)~:cui_0)
+
+  ?; /* 1. temp FULL_INVARIANT */
+
+  ?; /* 2. temp LOCAL_INVARIANT */
+
+  ?; /* 3. temp FULL_VARIABLES -> variables excluding current import */
+
+  ?; /* 4. temp imported invariant */
+
+  ?; /* 5. invariant to be moved */
+
+#define temp_FULL_INVARIANT         CheckUsedInvariantX.1
+#define temp_LOCAL_INVARIANT        CheckUsedInvariantX.2
+#define temp_FULL_VARIABLES         CheckUsedInvariantX.3
+#define temp_IMPORTED_INVARIANT     CheckUsedInvariantX.4
+#define temp_INVARIANT_TO_BE_MOVED  CheckUsedInvariantX.5
+
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+  brule(LOCAL_INVARIANTX.1,I) &
+  bmodr(LOCAL_INVARIANTX.1,(I&i))
+ =>
+  cui_6(i);
+
+  brule(LOCAL_INVARIANTX.1,?) &
+  bmodr(LOCAL_INVARIANTX.1,i)
+ =>
+  cui_6(i);
+
+  brule(FULL_INVARIANTX.1,i) &
+  bmodr(FULL_INVARIANTX.1,?)
+ =>
+  cui_5(i);
+
+  brule(FULL_INVARIANTX.1,I) &
+  bsearch(i,I,J) &
+  bmodr(FULL_INVARIANTX.1,J)
+ =>
+  cui_5(i);
+
+  brule(temp_INVARIANT_TO_BE_MOVED,I) &
+  cui_5 bsmap I &
+  cui_6 bsmap I
+ =>
+  cui_4;
+
+  brule(temp_INVARIANT_TO_BE_MOVED,?)
+ =>
+  cui_4;
+
+  brule(temp_INVARIANT_TO_BE_MOVED,I) &
+  bmodr(temp_INVARIANT_TO_BE_MOVED,(I&i))
+ =>
+  cui_3(i);
+
+  brule(temp_INVARIANT_TO_BE_MOVED,?) &
+  bmodr(temp_INVARIANT_TO_BE_MOVED,i)
+ =>
+  cui_3(i);
+
+  brule(temp_FULL_VARIABLES,v) &
+  v\i
+ =>
+  cui_3(i);
+
+  brule(temp_IMPORTED_INVARIANT,I) &
+  cui_3 bsmap I
+ =>
+  cui_3;
+
+  brule(temp_IMPORTED_INVARIANT,?)
+ =>
+  cui_3;
+
+  brule(temp_FULL_VARIABLES,?)
+ =>
+  cui_3;
+
+  brule(temp_FULL_VARIABLES,v) &
+  bmodr(temp_FULL_VARIABLES,?)
+ =>
+  cui_2(v);
+
+  brule(temp_FULL_VARIABLES,V) &
+  bsearch(v,V,W) &
+  bmodr(temp_FULL_VARIABLES,W)
+ =>
+  cui_2(v);
+
+  brule(SUB_VARIABLESX.J,i$v) &
+  brule(SUB_INVARIANTX.K,i$w) &
+  brule(FULL_INVARIANTX.1,I) &
+  brule(LOCAL_INVARIANTX.1,L) &
+  brule(FULL_VARIABLESX.1,V) &
+  bmodr(temp_FULL_INVARIANT,I) &
+  bmodr(temp_LOCAL_INVARIANT,L) &
+  bmodr(temp_FULL_VARIABLES,V) &
+  bmodr(temp_IMPORTED_INVARIANT,w) &
+  bmodr(temp_INVARIANT_TO_BE_MOVED,?) &
+  cui_2 bsmap v &
+  cui_3 &
+  cui_4
+ =>
+  cui_1(i);
+
+  cui_1(i)
+ =>
+  cui_1(i(p));
+
+  cui_1(bnewv(r,i))
+ =>
+  cui_1(r.i);
+
+  cui_1(bnewv(r,i))
+ =>
+  cui_1(r.i(p));
+
+  brule(SUB_VARIABLESX.J,i$?)
+ =>
+  cui_1(i);
+
+  cui_1(?);
+
+  cui_0;
+
+  brule(INCLUDESX.1,i) &
+  cui_1 bsmap i
+ =>
+  cui_0;
+
+  brule(FULL_INVARIANTX.1,?)
+ =>
+  cui_0;
+
+  GetCurrentConstruct(a.imp)
+ =>
+  cui_0;
+
+  GetCurrentConstruct(a.ref)
+ =>
+  cui_0
+
+END
+
+&
+
+THEORY LocalDefsX END &
+
+THEORY SubDefsX END &
+
+THEORY PreProcessOpsX IS
+
+#define pre_proc_ops_tac  (((REV~;MAP;MODR;RULE)~;PreProcessOpsX)~)
+
+#define PreProcessOps  bcall(pre_proc_ops_tac: (ppo_defs0 & ppo0 & ppo_fini))
+
+  ?;
+#define ReadCurrentOpName(x)     brule(PreProcessOpsX.1,x)
+#define ModifyCurrentOpName(x)   bmodr(PreProcessOpsX.1,x)
+
+  ?;
+#define ReadCurrentOpPRE(x)     brule(PreProcessOpsX.2,x)
+#define ModifyCurrentOpPRE(x)   bmodr(PreProcessOpsX.2,x)
+
+  ?;
+#define ReadCurrentOpBody(x)     brule(PreProcessOpsX.3,x)
+#define ModifyCurrentOpBody(x)   bmodr(PreProcessOpsX.3,x)
+
+  ?;
+#define ReadAdditionalOpPRE(x)     brule(PreProcessOpsX.4,x)
+#define ModifyAdditionalOpPRE(x)   bmodr(PreProcessOpsX.4,x)
+
+  ?;
+#define ReadAdditionalOpBody(x)     brule(PreProcessOpsX.5,x)
+#define ModifyAdditionalOpBody(x)   bmodr(PreProcessOpsX.5,x)
+
+  ?;
+#define ReadInputList(x)     brule(PreProcessOpsX.6,x)
+#define ModifyInputList(x)   bmodr(PreProcessOpsX.6,x)
+
+  ?;
+#define ReadOutputList(x)     brule(PreProcessOpsX.7,x)
+#define ModifyOutputList(x)   bmodr(PreProcessOpsX.7,x)
+
+
+  brule(NormaliserParseX.parse_operations,O) &
+  bmodr(NormaliserParseX.parse_operations,(O;(s=b)))
+ =>
+  ppo_rbld1(s)(b);
+
+  ppo_rbld1(s)(PRE true THEN b END)
+ =>
+  ppo_rbld1(s)(PRE ? THEN b END);
+
+  (a||(b||c)) == (a||b||c);
+
+  (a&(b&c)) == (a&b&c);
+
+  (?||a) == a;
+
+  (a||?) == a;
+
+  (?&a) == a;
+
+  (a&?) == a;
+
+  (?,a) == a;
+
+  (a,?) == a;
+
+  (?,a) == a;
+
+  (a,?) == a;
+
+  ppo_rbld1(O<--n)(s)
+ =>
+  ppo_rbld1(O<--n(?))(s);
+
+  ppo_rbld1(n(I))(s)
+ =>
+  ppo_rbld1(?<--n(I))(s);
+
+  ppo_rbld1(n)(s)
+ =>
+  ppo_rbld1(?<--n(?))(s);
+
+  ReadOutputList(O) &
+  ReadInputList(I) &
+  ReadCurrentOpName(n) &
+  ReadCurrentOpPRE(P) &
+  ReadAdditionalOpPRE(Q) &
+  ReadCurrentOpBody(B) &
+  ReadAdditionalOpBody(C) &
+  ppo_rbld1(O<--n(I))(PRE Q&P THEN C||B END)
+ =>
+  ppo_rbld;
+
+
+  /***
+  local defs
+  ***/
+  bcrer(LocalDefsX,d)
+ =>
+  ppo_defs(d);
+
+  brule(SubDefsX.N,(d==f)) &
+  Writef(("\n\n    Conflict in DEFINITIONS clause:\n\n      %\n\n      % ..",bsrv d==f berv,bsrv d==e berv)) &
+  FlagNormaliserError  
+ =>
+  ppo_defs(d==e);
+
+  brule(LocalDefsX.N,(d==f)) &
+  Writef(("\n\n    Conflict in DEFINITIONS clause:\n\n      %\n\n      % ..",bsrv d==f berv,bsrv d==e berv)) &
+  FlagNormaliserError  
+ =>
+  ppo_defs(d==e);
+
+  brule(SubDefsX.N,d)
+ =>
+  ppo_defs(d);
+
+  brule(LocalDefsX.N,d)
+ =>
+  ppo_defs(d);
+
+  brule(NormaliserParseX.parse_definitions,d) &
+  ppo_defs bsmap d
+ =>
+  ppo_defs0;
+
+
+/* HERE((x))=>print_op(x); */
+
+
+  ppo_fini;
+
+  brule(NormaliserParseX.parse_operations,O) &
+  bsearch(?,O,P) &
+  bmodr(NormaliserParseX.parse_operations,P) &
+/* print_op bsmap P & */
+  ModifyCurrentOpName(?) &
+  ModifyCurrentOpPRE(?) &
+  ModifyCurrentOpBody(?) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?)
+ =>
+  ppo_fini;
+
+
+  ReadOutputList(O) &
+  ModifyOutputList((O,o))
+ =>  
+  ppo_out(o);
+
+  ReadAdditionalOpBody(B) &
+  ModifyAdditionalOpBody((B||o::t)) &
+  ReadOutputList(O) &
+  ModifyOutputList((O,o))
+ =>  
+  ppo_out(o:t);
+
+  ReadOutputList(O) &
+  ModifyOutputList((O,o)) &
+  ppo_out(O)
+ =>  
+  ppo_out(O,o);
+
+  ReadAdditionalOpBody(B) &
+  ModifyAdditionalOpBody((B||o::t)) &
+  ReadOutputList(O) &
+  ModifyOutputList((O,o)) &
+  ppo_out(O)
+ =>  
+  ppo_out(O,(o:t));
+
+
+
+
+  ReadInputList(I) &
+  ModifyInputList((I,i))
+ =>  
+  ppo_in(i);
+
+  ReadAdditionalOpPRE(P) &
+  ModifyAdditionalOpPRE((P&i:t)) &
+  ReadInputList(I) &
+  ModifyInputList((I,i))
+ =>  
+  ppo_in(i:t);
+
+  ReadInputList(I) &
+  ModifyInputList((I,i)) &
+  ppo_in(I)
+ =>  
+  ppo_in(I,i);
+
+  ReadAdditionalOpPRE(P) &
+  ModifyAdditionalOpPRE((P&i:t)) &
+  ReadInputList(I) &
+  ModifyInputList((I,i)) &
+  ppo_in(I)
+ =>  
+  ppo_in(I,(i:t));
+
+
+
+
+  brule(NormaliserParseX.parse_operations,O) &
+  bmodr(NormaliserParseX.parse_operations,(O;o))
+ =>
+  ppo(o);
+
+
+
+
+  ModifyCurrentOpName(n) &
+  ModifyCurrentOpPRE(?) &
+  ModifyCurrentOpBody(s) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?) &
+  ppo_in bsmap i &
+  ppo_rbld
+ =>
+  ppo(n(i)=s);
+
+  ModifyCurrentOpName(n) &
+  ModifyCurrentOpPRE(p) &
+  ModifyCurrentOpBody(b) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?) &
+  ppo_in bsmap i &
+  ppo_rbld
+ =>
+  ppo(n(i)=PRE p THEN b END);
+
+  blident(i) &
+  brule(NormaliserParseX.parse_operations,O) &
+  bmodr(NormaliserParseX.parse_operations,(O;(n(i)=s)))
+ =>
+  ppo(n(i)=s);
+
+
+
+
+  ModifyCurrentOpName(n) &
+  ModifyCurrentOpPRE(?) &
+  ModifyCurrentOpBody(?) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?) &
+  ppo_out bsmap o &
+  ppo_rbld
+ =>
+  ppo(o<--n);
+
+  ModifyCurrentOpName(n) &
+  ModifyCurrentOpPRE(?) &
+  ModifyCurrentOpBody(s) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?) &
+  ppo_out bsmap o &
+  ppo_rbld
+ =>
+  ppo(o<--n=s);
+
+  ModifyCurrentOpName(n) &
+  ModifyCurrentOpPRE(p) &
+  ModifyCurrentOpBody(b) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?) &
+  ppo_out bsmap o &
+  ppo_rbld
+ =>
+  ppo(o<--n=PRE p THEN b END);
+
+  bsearch((o:t),O,P) &
+  Writef(("\n\n    Error in OPERATION % - can't type output varables\n      %\n    in an operation having a body ...",n,bsrv O berv)) &
+  FlagNormaliserError
+ =>
+  ppo(O<--n=s);
+
+  Writef(("\n\n    Error in OPERATION % - can't type output varables\n      %\n    in an operation having a body ...",n,bsrv (o:t) berv)) &
+  FlagNormaliserError
+ =>
+  ppo((o:t)<--n=s);
+
+  blident(o) &
+  brule(NormaliserParseX.parse_operations,O) &
+  bmodr(NormaliserParseX.parse_operations,(O;(o<--n=s)))
+ =>
+  ppo(o<--n=s);
+
+
+
+
+  ModifyCurrentOpName(n) &
+  ModifyCurrentOpPRE(?) &
+  ModifyCurrentOpBody(?) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?) &
+  ppo_out bsmap o &
+  ppo_in bsmap i &
+  ppo_rbld
+ =>
+  ppo(o<--n(i));
+
+  ModifyCurrentOpName(n) &
+  ModifyCurrentOpPRE(?) &
+  ModifyCurrentOpBody(s) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?) &
+  ppo_out bsmap o &
+  ppo_in bsmap i &
+  ppo_rbld
+ =>
+  ppo(o<--n(i)=s);
+
+  ModifyCurrentOpName(n) &
+  ModifyCurrentOpPRE(p) &
+  ModifyCurrentOpBody(b) &
+  ModifyAdditionalOpPRE(?) &
+  ModifyAdditionalOpBody(?) &
+  ModifyInputList(?) &
+  ModifyOutputList(?) &
+  ppo_out bsmap o &
+  ppo_in bsmap i &
+  ppo_rbld
+ =>
+  ppo(o<--n(i)=PRE p THEN b END);
+
+  bsearch((o:t),O,P) &
+  Writef(("\n\n    Error in OPERATION % - can't type output varables\n      %\n    in an operation having a body ...",n,bsrv O berv)) &
+  FlagNormaliserError
+ =>
+  ppo(O<--n(i)=s);
+
+  Writef(("\n\n    Error in OPERATION % - can't type output varables\n      %\n    in an operation having a body ...",n,bsrv (o:t) berv)) &
+  FlagNormaliserError
+ =>
+  ppo((o:t)<--n(i)=s);
+
+  blident(o) &
+  blident(i) &
+  brule(NormaliserParseX.parse_operations,O) &
+  bmodr(NormaliserParseX.parse_operations,(O;(o<--n(i)=s)))
+ =>
+  ppo(o<--n(i)=s);
+
+  WriteDot &
+  bcall((LocalDefsX~;SubDefsX~;pre_proc_ops_tac): ppo(o))
+ =>
+  ppo_(o);
+
+  brule(NormaliserParseX.parse_operations,O) &
+  bcall(MODR:bmodr(NormaliserParseX.parse_operations,?)) &
+  ppo_ bsmap O
+ =>
+  ppo0;
+
+  brule(NormaliserParseX.parse_operations,?)
+ =>
+  ppo0;
+
+  NormaliserErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY LoadSubDefsX IS
+
+
+#define LoadSubDefs(x) \
+    bcall(((SUB;FLAT;MAP;MODR;CATL;RULE)~;LoadSubDefsX)~:(lsd bsmap x))
+
+  /***
+  subordinate defs
+  ***/
+  bcrer(SubDefsX,d)
+ =>
+  lsd4(d);
+
+  brule(LocalDefsX.N,(d==f)) &
+  Writef(("\n\n    Conflict in DEFINITIONS clause:\n\n      %\n\n      % ..",bsrv d==f berv,bsrv d==e berv)) &
+  FlagNormaliserError  
+ =>
+  lsd4(d==e);
+
+  brule(SubDefsX.N,(d==f)) &
+  Writef(("\n\n    Conflict in DEFINITIONS clause:\n\n      %\n\n      % ..",bsrv d==f berv,bsrv d==e berv)) &
+  FlagNormaliserError  
+ =>
+  lsd4(d==e);
+
+  brule(LocalDefsX.N,d)
+ =>
+  lsd4(d);
+
+  brule(SubDefsX.N,d)
+ =>
+  lsd4(d);
+
+  lsd4(?);
+
+  lsd4 bsmap K 
+ =>
+  lsd3(k)(K);
+
+  lsd3(k)(K)
+ =>
+  lsd3(k)([?:=?]K);
+
+/*
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  lsd2(p(q))(Z);
+*/
+
+  InformArityInterference(k) &
+  FlagNormaliserError
+ =>
+  lsd2(k(q))(Z);
+
+  bget(Z,((S;(J|K));A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  lsd3(k)([l:=q]K)
+ =>
+  lsd2(k(q))(Z);
+
+  /*** not Anl - error will be picked up later ***/
+  lsd1(b(c));
+
+  IsAnl(b.imp) &
+  lsd2(b(c))(bcatl("ANL/",b,".",imp,".anl"))
+ =>
+  lsd1(b(c));
+
+  IsAnl(b.ref) &
+  lsd2(b(c))(bcatl("ANL/",b,".",ref,".anl"))
+ =>
+  lsd1(b(c));
+
+  IsAnl(b.mch) &
+  lsd2(b(c))(bcatl("ANL/",b,".",mch,".anl"))
+ =>
+  lsd1(b(c));
+
+  lsd1(b(?))
+ =>
+  lsd(b);
+
+  lsd1(b(c))
+ =>
+  lsd(b(c));
+
+  lsd1(b(?))
+ =>
+  lsd(a.b);
+
+  lsd1(b(c))
+ =>
+  lsd(a.b(c));
+
+  lsd(?)
+
+END
+
+&
+
+THEORY CheckInclusionSLIBTYPEX IS
+
+#define CheckInclusionSLIBTYPE(x) \
+  bcall(((MAP;SHELL;WRITE)~;CheckInclusionSLIBTYPEX)~:(cislt bsmap x))
+
+
+  cislt2(m);
+
+  bsearch(t,(Byt,PASP,Uns),u) &
+  Writef(("\n\n    %_BS_TYPE may not be INCLUDED (use SEES)\n",t)) &
+  FlagNormaliserError
+ =>
+  cislt2(t;BS;TYPE);
+
+  bsearch(t,(Bit,Bool,Byt,Int,PASP,Scalar,String,Uns),u) &
+  Writef(("\n\n    %_TYPE may not be INCLUDED (use SEES)\n",t)) &
+  FlagNormaliserError
+ =>
+  cislt2(t;TYPE);
+
+  cislt1(m);
+
+  bget("TMP/.BBcom",x) &
+  cislt2(x)
+ =>
+  cislt1(m);
+
+  cislt(m);
+
+  bident(m) &
+  Connect("TMP/.Bcom") &
+  bprintf("%",m) &
+  bclose &
+  bshell("sed -e s+'_'+';'+g < TMP/.Bcom > TMP/.BBcom") &
+  cislt1(m)
+ =>
+  cislt(m)
+
+END
+
+&
+
+THEORY NormaliserParseX IS
+
+#define NormaliserParse_tac \
+		((CATL;MODR;RULE;MAP;WRITE)~;NormaliserParseX)~
+
+#define NormaliserParse \
+		bcall(NormaliserParse_tac: norm_parse_0)
+
+#define NormaliserCheckSun_tac \
+		((CATL;SHELL;WRITE)~;NormaliserParseX)~
+
+#define NormaliserCheckSun \
+		bcall(NormaliserCheckSun_tac: norm_check_sun_0)
+
+
+ ?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;
+
+  InformClauseSyntaxError("SEES",x) &
+  FlagNormaliserError
+ =>
+  check_sees_uses_syntax_1(parse_sees,x);
+
+  InformClauseSyntaxError("USES",x) &
+  FlagNormaliserError
+ =>
+  check_sees_uses_syntax_1(parse_uses,x);
+
+  check_sees_uses_syntax_1(n,?);
+
+  bident(a)
+ =>
+  check_sees_uses_syntax_1(n,a);
+
+  bident(a) &
+  bident(b)
+ =>
+  check_sees_uses_syntax_1(n,a.b);
+
+  check_sees_uses_syntax_1(n) bsmap l
+ =>
+  check_sees_uses_syntax(n)(l);
+
+
+
+
+  check_variables;
+
+  CurrentlyNormalisingImp &
+  brule(NormaliserParseX.parse_variables,v) &
+  InformNoVariablesImp(v) &
+  FlagNormaliserError
+ =>
+  check_variables;
+
+  CurrentlyNormalisingImp &
+  brule(NormaliserParseX.parse_variables,?)
+ =>
+  check_variables;
+
+
+  GetCurrentConstruct(a.mch) &
+  brule(NormaliserParseX.parse_parameters,p) &
+  InformParametersSyntaxError(p) &
+  FlagNormaliserError
+ =>
+  check_parameters;
+
+  GetCurrentConstruct(a.mch) &
+  brule(NormaliserParseX.parse_parameters,p) &
+  blident(p)
+ =>
+  check_parameters;
+
+  GetCurrentConstruct(a.imp) &
+  brule(NormaliserParseX.parse_parameters,p) &
+  InformImpSyntaxError((a(p))) &
+  FlagNormaliserError
+ =>
+  check_parameters;
+
+  GetCurrentConstruct(a.ref) &
+  brule(NormaliserParseX.parse_parameters,p) &
+  InformRefSyntaxError((a(p))) &
+  FlagNormaliserError
+ =>
+  check_parameters;
+
+  brule(NormaliserParseX.parse_parameters,?)
+ =>
+  check_parameters;
+
+  check_constraints;
+
+  CurrentlyNormalisingImp &
+  InformIllegalClause("IMPLEMENTATION","CONSTRAINTS") &
+  FlagNormaliserError
+ =>
+  check_constraints;
+
+  brule(NormaliserParseX.parse_constraints,?)
+ =>
+  check_constraints;
+
+
+
+  check_promotes_imports;
+
+  brule(NormaliserParseX.parse_imports,?) &
+  brule(NormaliserParseX.parse_extends,?) &
+  InformPromotesRequiresImports &
+  FlagNormaliserError
+ =>
+  check_promotes_imports;
+
+  check_promotes_includes;
+
+  brule(NormaliserParseX.parse_includes,?) &
+  brule(NormaliserParseX.parse_extends,?) &
+  InformPromotesRequiresIncludes &
+  FlagNormaliserError
+ =>
+  check_promotes_includes;
+
+  brule(NormaliserParseX.parse_promotes,p) &
+  InformClauseSyntaxError("PROMOTES",p) &
+  FlagNormaliserError
+ =>
+  check_promotes;
+
+  InformClauseSyntaxError("PROMOTES",p) &
+  FlagNormaliserError
+ =>
+  check_promotes_1(p);
+
+  bident(p) &
+  bident(q) &
+  check_promotes_includes      /* mch */
+ =>
+  check_promotes_1(p.q);
+
+  CurrentlyNormalisingImp &
+  InformClauseSyntaxError("PROMOTES",(p.q)) &
+  FlagNormaliserError
+ =>
+  check_promotes_1(p.q);
+
+  bident(p) &
+  check_promotes_includes      /* mch */
+ =>
+  check_promotes_1(p);
+
+  CurrentlyNormalisingImp &
+  bident(p) &
+  check_promotes_imports       /* imp */
+ =>
+  check_promotes_1(p);
+
+  bident(p) &
+  bident(q) &
+  check_promotes_1(P)
+ =>
+  check_promotes_1(P,p.q);
+
+  CurrentlyNormalisingImp &
+  InformClauseSyntaxError("PROMOTES",(P,p.q)) &
+  FlagNormaliserError
+ =>
+  check_promotes_1(P,p.q);
+
+  bident(p) &
+  check_promotes_1(P)
+ =>
+  check_promotes_1(P,p);
+
+  brule(NormaliserParseX.parse_promotes,P) &
+  check_promotes_1(P)
+ =>
+  check_promotes;
+
+  brule(NormaliserParseX.parse_promotes,p) &
+  blident(p) &
+  check_promotes_includes
+ =>
+  check_promotes;
+
+  GetCurrentConstruct(a.imp) &
+  brule(NormaliserParseX.parse_promotes,p) &
+  blident(p) &
+  check_promotes_imports
+ =>
+  check_promotes;
+
+  brule(NormaliserParseX.parse_promotes,?)
+ =>
+  check_promotes;
+
+
+  check_dup_ref2(r,(t))(s);
+
+  InformAlreadyRefined(r,s) &
+  FlagNormaliserError
+ =>
+  check_dup_ref2(r,(r.t))(s.u);
+
+  check_dup_ref2(r,(R))(t)
+ =>
+  check_dup_ref2(r,(R,t))(s);
+
+  InformAlreadyRefined(r,s) &
+  FlagNormaliserError
+ =>
+  check_dup_ref2(r,(R,r.t))(s.u);
+
+  check_dup_ref1(r,(x));
+
+  check_dup_ref2(r,(R))(s)
+ =>
+  check_dup_ref1(r,(R,s));
+
+  ReadRef(R) &
+  check_dup_ref1(r) bsmap R
+ =>
+  check_dup_ref(r);
+
+  brule(NormaliserParseX.parse_refines,r) &
+  InformClauseSyntaxError("REFINES",r) &
+  FlagNormaliserError
+ =>
+  check_refines;
+
+  brule(NormaliserParseX.parse_refines,r) &
+  bident(r) &
+  check_dup_ref(r)
+ =>
+  check_refines;
+
+  CurrentlyNormalisingMch &
+  brule(NormaliserParseX.parse_refines,r) &
+  InformIllegalClause("MACHINE","REFINES") &
+  FlagNormaliserError
+ =>
+  check_refines;
+
+  CurrentlyNormalisingMch &
+  brule(NormaliserParseX.parse_refines,?)
+ =>
+  check_refines;
+
+  CurrentlyNormalisingImp &
+  brule(NormaliserParseX.parse_refines,?) &
+  InformNoRefinesClause &
+  FlagNormaliserError
+ =>
+  check_refines;
+
+  CurrentlyNormalisingRef &
+  brule(NormaliserParseX.parse_refines,?) &
+  InformNoRefinesClause &
+  FlagNormaliserError
+ =>
+  check_refines;
+
+
+
+  brule(NormaliserParseX.parse_includes,i) &
+  CheckRepetitionInClause("INCLUDES",i) &
+  CheckInclusionSLIBTYPE(i)
+ =>
+  check_includes;
+
+  CurrentlyNormalisingImp &
+  InformIllegalClause("IMPLEMENTATION","INCLUDES") &
+  FlagNormaliserError
+ =>
+  check_includes;
+
+  brule(NormaliserParseX.parse_includes,?)
+ =>
+  check_includes;
+
+
+
+  brule(NormaliserParseX.parse_extends,e) &
+  CheckRepetitionInClause("EXTENDS",e)
+ =>
+  check_extends;
+
+/*
+  CurrentlyNormalisingImp &
+  InformIllegalClause("IMPLEMENTATION","EXTENDS") &
+  FlagNormaliserError
+ =>
+  check_extends;
+*/
+
+  brule(NormaliserParseX.parse_extends,?)
+ =>
+  check_extends;
+
+
+  InformClauseSyntaxError("IMPORTS",i) &
+  FlagNormaliserError
+ =>
+  check_imports_1(i);
+
+  InformDotRenameSpecConstruct((j.i)) &
+  FlagNormaliserError
+ =>
+  check_imports_1(j.i);
+
+  InformDotRenameSpecConstruct((j.i)) &
+  FlagNormaliserError
+ =>
+  check_imports_1(j.i(p));
+
+  bident(i)
+ =>
+  check_imports_1(i);
+
+  bident(i)
+ =>
+  check_imports_1(i(p));
+
+  InformDotRenameSpecConstruct((j.i)) &
+  FlagNormaliserError
+ =>
+  check_imports_1(I,j.i);
+
+  InformDotRenameSpecConstruct((j.i)) &
+  FlagNormaliserError
+ =>
+  check_imports_1(I,j.i(p));
+
+  bident(i) &
+  check_imports_1(I)
+ =>
+  check_imports_1(I,i);
+
+  bident(i) &
+  check_imports_1(I)
+ =>
+  check_imports_1(I,i(p));
+
+
+  brule(NormaliserParseX.parse_imports,i) &
+  check_imports_1(i) &
+  CheckRepetitionInClause("IMPORTS",i)
+ =>
+  check_imports;
+
+  CurrentlyNormalisingMch &
+  InformIllegalClause("MACHINE","IMPORTS") &
+  FlagNormaliserError
+ =>
+  check_imports;
+
+  CurrentlyNormalisingRef &
+  InformIllegalClause("REFINEMENT","IMPORTS") &
+  FlagNormaliserError
+ =>
+  check_imports;
+
+  brule(NormaliserParseX.parse_imports,?)
+ =>
+  check_imports;
+
+
+
+  brule(NormaliserParseX.parse_sees,s) &
+  CheckRepetitionInClause("SEES",s) &
+  check_sees_uses_syntax(parse_sees)(s)
+ =>
+  check_sees;
+
+  brule(NormaliserParseX.parse_sees,?)
+ =>
+  check_sees;
+
+
+
+  brule(NormaliserParseX.parse_uses,u) &
+  CheckRepetitionInClause("USES",u) &
+  check_sees_uses_syntax(parse_uses)(u)
+ =>
+  check_uses;
+
+/* allow to use uses ???? */
+
+  CurrentlyNormalisingImp &
+  InformIllegalClause("IMPLEMENTATION","USES") &
+  FlagNormaliserError
+ =>
+  check_uses;
+
+  CurrentlyNormalisingRef &
+  InformIllegalClause("REFINEMENT","USES") &
+  FlagNormaliserError
+ =>
+  check_uses;
+
+  brule(NormaliserParseX.parse_uses,?)
+ =>
+  check_uses;
+
+
+
+
+  brule(NormaliserParseX.parse_sees,s) &
+  brule(NormaliserParseX.parse_uses,u) &
+  brule(NormaliserParseX.parse_refines,r) &
+  brule(NormaliserParseX.parse_includes,i) &
+  brule(NormaliserParseX.parse_imports,m) &
+  brule(NormaliserParseX.parse_extends,e) &
+  CheckRepetitionSubConstr((s,u,r,i,m,e))
+ =>
+  check_rept_sub_constr;
+
+
+  brule(NormaliserParseX.parse_definitions,d) &
+  CheckDefinitions(d) &
+  CheckRecursiveDEFINITIONS(d)
+ =>
+  check_definitions;
+
+
+  InformLastKeywordNotRecognized(s) &
+  FlagNormaliserError
+ =>
+  parse_0(s);
+
+  InformKeywordNotRecognized(blank0? JOK2 blank0?) &
+  FlagNormaliserError
+ =>
+  parse_0(s JOK2 t);
+
+
+  bident(x) &
+  GetCurrentConstruct(a.b) &
+  InformNameNotMatchFileName(x,a) &
+  FlagNormaliserError
+ =>
+  parse_0(x(y));
+
+  bident(x) &
+  GetCurrentConstruct(a.b) &
+  InformNameNotMatchFileName(x,a) &
+  FlagNormaliserError
+ =>
+  parse_0(x);
+
+
+
+  
+
+
+  GetCurrentConstruct(a.imp) &
+  brule(NormaliserParseX.parse_sees,b) &
+  brule(NormaliserParseX.parse_imports,d) &
+  brule(NormaliserParseX.parse_extends,e) &
+  brule(NormaliserParseX.parse_uses,n) &
+  brule(NormaliserParseX.parse_refines,c) &
+  CheckConfigured((b,d,e,n,c)) &
+  FindAllRecursiveLoads((b,d,e,n,c)) &
+  CheckRecursion
+ =>
+  parse_chk_rec;
+
+  GetCurrentConstruct(a.imp) &
+  brule(NormaliserParseX.parse_sees,b) &
+  brule(NormaliserParseX.parse_imports,d) &
+  brule(NormaliserParseX.parse_extends,e) &
+  brule(NormaliserParseX.parse_uses,n) &
+  brule(NormaliserParseX.parse_refines,c) &
+  IsCfg(c.ref) &
+  CheckConfigured((b,d,n,c)) &
+  FindAllRecursiveLoads((b,d,n,c$ref)) &
+  CheckRecursion
+ =>
+  parse_chk_rec;
+
+
+  GetCurrentConstruct(a.ref) &
+  brule(NormaliserParseX.parse_sees,b) &
+  brule(NormaliserParseX.parse_includes,d) &
+  brule(NormaliserParseX.parse_extends,e) &
+  brule(NormaliserParseX.parse_uses,n) &
+  brule(NormaliserParseX.parse_refines,c) &
+  CheckConfigured((b,d,e,n,c)) &
+  FindAllRecursiveLoads((b,d,e,n,c)) &
+  CheckRecursion
+ =>
+  parse_chk_rec;
+
+  GetCurrentConstruct(a.ref) &
+  brule(NormaliserParseX.parse_sees,b) &
+  brule(NormaliserParseX.parse_includes,d) &
+  brule(NormaliserParseX.parse_extends,e) &
+  brule(NormaliserParseX.parse_uses,n) &
+  brule(NormaliserParseX.parse_refines,c) &
+  IsCfg(c.ref) &
+  CheckConfigured((b,d,e,n,c)) &
+  FindAllRecursiveLoads((b,d,e,n,c$ref)) &
+  CheckRecursion
+ =>
+  parse_chk_rec;
+
+  GetCurrentConstruct(a.mch) &
+  brule(NormaliserParseX.parse_sees,b) &
+  brule(NormaliserParseX.parse_includes,d) &
+  brule(NormaliserParseX.parse_extends,e) &
+  brule(NormaliserParseX.parse_uses,n) &
+  CheckConfigured((b,d,e,n)) &
+  FindAllRecursiveLoads((b,d,e,n)) &
+  CheckRecursion
+ =>
+  parse_chk_rec;
+
+  NormaliserErrorFlagged
+ =>
+  parse_chk_rec;
+
+
+  BuildRenamedConstructs &
+  DistributeSUB_VARIABLES &
+  ConstructTrueAbstractVariables &
+  FlattenConstruct &
+  ProcessPromotes &
+  PromoteFromAbstraction &
+  CheckUsedInvariant &
+  DesugarOperations &
+/*
+  DesugarInitialisation &
+*/
+  PrintConstruct
+ =>
+  parse_3;
+
+  NormaliserErrorFlagged
+ =>
+  parse_3;
+
+  GetCurrentConstruct(a.b) &
+  brule(NormaliserParseX.parse_sees,s) &
+  brule(NormaliserParseX.parse_sets,t) &
+  brule(NormaliserParseX.parse_uses,u) &
+  brule(NormaliserParseX.parse_refines,r) &
+  brule(NormaliserParseX.parse_includes,i) &
+  brule(NormaliserParseX.parse_imports,m) &
+  brule(NormaliserParseX.parse_extends,e) &
+  brule(NormaliserParseX.parse_promotes,p) &
+  brule(NormaliserParseX.parse_initialisation,I) &
+  brule(NormaliserParseX.parse_operations,h) &
+  brule(NormaliserParseX.parse_definitions,d) &
+/*** HERE(("Norm":21))& ***/
+  StoParamType &
+/*** HERE(("Norm":22))& ***/
+  ParseCopyIntoLOCAL(a.b) &
+/*** HERE(("Norm":23))& ***/
+  CheckOpHeaders(h) &
+/*** HERE(("Norm":24))& ***/
+  CopyDottedClauses &
+/*** HERE(("Norm":25))& ***/
+  StoreInitOpsForSubordCostLoad((I;h;p;d)) &
+/*** HERE(("Norm":26))& ***/
+  LoadSubordinateConstructs((s,u,r,i,m,e)) &
+/*** HERE(("Norm":27))& ***/
+  StoreInitOpsForSubordCostLoad((?)) &
+/*** HERE(("Norm":28))& ***/
+  CheckSetsSemicolonSeparator(t) &
+/*** HERE(("Norm":29))& ***/
+  CheckParameters &
+/*
+  CheckNamespaces &
+*/
+/*** HERE(("Norm":30))& ***/
+  CreateRenames &
+/*** HERE(("Norm":31))& ***/
+  ProcessExtends &
+/*** HERE(("Norm":32))& ***/
+  parse_3
+ =>
+  parse_2a;
+
+  NormaliserErrorFlagged
+ =>
+  parse_2a;
+
+/***
+  brule(NormaliserParseX.parse_sees,s) &
+  brule(NormaliserParseX.parse_sets,t) &
+  brule(NormaliserParseX.parse_uses,u) &
+  brule(NormaliserParseX.parse_refines,r) &
+  brule(NormaliserParseX.parse_includes,i) &
+  brule(NormaliserParseX.parse_imports,m) &
+  brule(NormaliserParseX.parse_extends,e) &
+  brule(NormaliserParseX.parse_promotes,p) &
+  brule(NormaliserParseX.parse_initialisation,I) &
+  brule(NormaliserParseX.parse_operations,h) &
+  brule(NormaliserParseX.parse_definitions,d) &
+  HERE(("sees")) &
+  Writef(("%\n",s)) &
+  HERE(("sets")) &
+  Writef(("%\n",t)) &
+  HERE(("uses")) &
+  Writef(("%\n",u)) &
+  HERE(("refines")) &
+  Writef(("%\n",r)) &
+  HERE(("includes")) &
+  Writef(("%\n",i)) &
+  HERE(("imports")) &
+  Writef(("%\n",m)) &
+  HERE(("extends")) &
+  Writef(("%\n",e)) &
+  HERE(("promotes")) &
+  Writef(("%\n",p)) &
+  HERE(("initialisation")) &
+  Writef(("%\n",I)) &
+  HERE(("operations")) &
+  Writef(("%\n",h)) &
+  HERE(("definitions")) &
+  Writef(("%\n",d))
+ =>
+  print_database;
+***/
+
+
+
+  brule(NormaliserParseX.n,A) &
+  bcall((LocalDefsX~;SubDefsX~;MODR):bmodr(NormaliserParseX.n,A))
+ =>
+  pre_process_rest(n);
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+  brule(NormaliserParseX.parse_definitions,d) &
+  brule(NormaliserParseX.parse_sees,s) &
+  brule(NormaliserParseX.parse_uses,u) &
+  brule(NormaliserParseX.parse_refines,r) &
+  brule(NormaliserParseX.parse_includes,i) &
+  brule(NormaliserParseX.parse_imports,m) &
+  brule(NormaliserParseX.parse_extends,e) &
+/***
+print_database&
+***/
+  LoadSubDefs((bflat(s,u,r,i,m,e))) &
+/*** HERE(("Norm":18))& ***/
+  PreProcessOps & /* LocalDefsX are creted here */
+/***
+PrintTHEORY(LocalDefsX)&
+PrintTHEORY(SubDefsX)&
+***/
+/*** HERE(("Norm":19))& ***/
+  pre_process_rest bsmap 
+    (
+       parse_parameters,
+       parse_constraints,
+       parse_sees,
+       parse_uses,
+       parse_refines,
+       parse_includes,
+       parse_extends,
+       parse_imports,
+       parse_promotes,
+       parse_variables,
+       parse_invariant,
+       parse_assertions,
+       parse_initialisation,
+       parse_sets,
+       parse_constants,
+       parse_properties
+    )
+  &
+/*** HERE(("Norm":20))& ***/
+  bclean(LocalDefsX) &
+  bclean(SubDefsX) &
+  parse_2a
+ =>
+  parse_2;
+
+
+  NormaliserErrorFlagged
+ =>
+  parse_2;
+
+  GetCurrentConstruct(a.b) &
+  check_definitions &
+  check_parameters &
+  check_constraints &
+  check_variables &
+  check_refines &
+  check_includes &
+  check_extends &
+  check_imports &
+  check_sees &
+  check_uses &
+  check_promotes &
+  check_rept_sub_constr &
+  parse_chk_rec &
+  parse_2
+ =>
+  parse_1;
+
+  NormaliserErrorFlagged
+ =>
+  parse_1;
+
+  GetCurrentConstruct(a.b) &
+  bmodr(NormaliserParseX.parse_parameters,t) &
+  parse_1
+ =>
+  parse_0(a(t));
+
+  GetCurrentConstruct(a.imp) &
+  InformImpSyntaxError((a(?))) &
+  FlagNormaliserError
+ =>
+  parse_0(a(?));
+
+  GetCurrentConstruct(a.ref) &
+  InformRefSyntaxError((a(?))) &
+  FlagNormaliserError
+ =>
+  parse_0(a(?));
+
+  GetCurrentConstruct(a.mch) &
+  InformMchSyntaxError((a(?))) &
+  FlagNormaliserError
+ =>
+  parse_0(a(?));
+
+  GetCurrentConstruct(a.b) &
+  parse_1
+ =>
+  parse_0(a);
+
+
+
+
+#define ParseClause(x,y,n,m) \
+\
+  InformDuplicateClause(m) & \
+  FlagNormaliserError \
+ => \
+  parse_0(x); \
+\
+  brule(NormaliserParseX.n,?) & \
+  bmodr(NormaliserParseX.n,t) & \
+  WriteDot & \
+  parse_0(y) \
+ => \
+  parse_0(x)
+
+
+
+  ParseClause(s PARAMETERS t,s,parse_parameters,"PARAMETERS");
+  ParseClause(s CONSTRAINTS t,s,parse_constraints,"CONSTRAINTS");
+  ParseClause(s SEES t,s,parse_sees,"SEES");
+  ParseClause(s REFINES t,s,parse_refines,"REFINES");
+  ParseClause(s INCLUDES t,s,parse_includes,"INCLUDES");
+  ParseClause(s EXTENDS t,s,parse_extends,"EXTENDS");
+  ParseClause(s IMPORTS t,s,parse_imports,"IMPORTS");
+  ParseClause(s PROMOTES t,s,parse_promotes,"PROMOTES");
+  ParseClause(s VARIABLES t,s,parse_variables,"VARIABLES");
+  ParseClause(s INVARIANT t,s,parse_invariant,"INVARIANT");
+  ParseClause(s ASSERTIONS t,s,parse_assertions,"ASSERTIONS");
+  ParseClause(s INITIALISATION t,s,parse_initialisation,"INITIALISATION");
+  ParseClause(s OPERATIONS t,s,parse_operations,"OPERATIONS");
+  ParseClause(s SETS t,s,parse_sets,"SETS");
+  ParseClause(s CONSTANTS t,s,parse_constants,"CONSTANTS");
+  ParseClause(s PROPERTIES t,s,parse_properties,"PROPERTIES");
+  ParseClause(s USES t,s,parse_uses,"USES");
+  ParseClause(s DEFINITIONS t,s,parse_definitions,"DEFINITIONS");
+
+
+  NormaliserErrorFlagged
+ =>
+  parse_0(x);
+
+
+  InformImpSyntaxError(x) &
+  FlagNormaliserError
+ =>
+  norm_parse_2(x)(imp);
+
+  InformRefSyntaxError(x) &
+  FlagNormaliserError
+ =>
+  norm_parse_2(x)(ref);
+
+  InformMchSyntaxError(x) &
+  FlagNormaliserError
+ =>
+  norm_parse_2(x)(mch);
+
+  InformImpNotMatchFileExt(e) &
+  FlagNormaliserError
+ =>
+  norm_parse_2(IMPLEMENTATION x END)(e);
+
+  ModifyCfgFormCurrMch(x) &
+  parse_0(x)
+ =>
+  norm_parse_2(IMPLEMENTATION x END)(imp);
+
+  InformRefNotMatchFileExt(e) &
+  FlagNormaliserError
+ =>
+  norm_parse_2(REFINEMENT x END)(e);
+
+  ModifyCfgFormCurrMch(x) &
+  parse_0(x)
+ =>
+  norm_parse_2(REFINEMENT x END)(ref);
+
+  InformMchNotMatchFileExt(e) &
+  FlagNormaliserError
+ =>
+  norm_parse_2(MACHINE x END)(e);
+
+  ModifyCfgFormCurrMch(x) &
+  parse_0(x)
+ =>
+  norm_parse_2(MACHINE x END)(mch);
+
+  NormaliserErrorFlagged
+ =>
+  norm_parse_2(x)(y);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  norm_parse_1(f)(b);
+
+  bget(f,x) &
+  norm_parse_2(x)(b)
+ =>
+  norm_parse_1(f)(b);
+
+  GetCurrentConstruct(a.b) &
+  Writef("    Parsing ") &
+  norm_parse_1(bcatl("CFG/",a,".",b))(b)
+ =>
+  norm_parse_0;
+
+  NormaliserErrorFlagged
+ =>
+  norm_parse_0;
+
+  norm_check_sun_2(a)(x);
+
+  bshell("cat .Berr") &
+  Writef(("\n    %%% is a reserved word",bsrv s berv,bsrv u berv,bsrv n berv)) &
+  FlagNormaliserError
+ =>
+  norm_check_sun_2(a)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  norm_check_sun_1(a);
+
+  bget(".Bcom",x) &
+  norm_check_sun_2(a)(x)
+ =>
+  norm_check_sun_1(a);
+
+  GetCurrentConstruct(a.b) &
+  bshell(bcatl("rm -f .Berr ; grep '\<sun\>' CFG/",a,".",b," > .Berr;  echo $? > .Bcom")) &
+  norm_check_sun_1(a)
+ =>
+  norm_check_sun_0
+
+END
+
+&
+
+THEORY CheckCurrentConstructIsVHDLX IS
+
+#define CheckCurrentConstructIsVHDL(x) \
+    bcall(((MODR;SHELL;WRITE)~;CheckCurrentConstructIsVHDLX)~:ck_vhdl(x))
+
+  ?;
+
+  ck_vhdl1(x); /* it doesn't parse - ignore it */
+  
+/***
+ReadBget(y)&HERE((y:"is NOT a vhdl"))=>
+***/
+  ck_vhdl1(x);
+  
+  ReadBget((a;PR)) &
+  bmodr(CheckCurrentConstructIsVHDLX.1,1)
+/***
+&HERE((a;PR:"is a vhdl"))
+***/
+ =>
+  ck_vhdl1(x);
+
+  ReadBget((a;CM)) &
+  bmodr(CheckCurrentConstructIsVHDLX.1,1)
+/***
+&HERE((a;CM:"is a vhdl"))
+***/
+ =>
+  ck_vhdl1(x);
+
+  ReadBget((a;SM)) &
+  bmodr(CheckCurrentConstructIsVHDLX.1,1)
+/***
+&HERE((a;SM:"is a vhdl"))
+***/
+ =>
+  ck_vhdl1(x);
+
+  Connect("TMP/.Bcom") &
+  bprintf("%\n",a) &
+  bclose &
+  bshell("sed -e s+'_'+';'+g < TMP/.Bcom > TMP/.BBcom") &
+  Bget_if_parse("TMP/.BBcom") &
+  ck_vhdl1(a.b)
+ =>
+  ck_vhdl(a.b)
+
+END
+
+&
+
+THEORY NormaliserDirectX IS
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  Writef(("\n  Analysing IMPLEMENTATION %\n\n",a))
+ =>
+  inform_analysing(a.imp);
+
+  Writef(("\n  Analysing REFINEMENT %\n\n",a))
+ =>
+  inform_analysing(a.ref);
+
+  Writef(("\n  Analysing MACHINE %\n\n",a))
+ =>
+  inform_analysing(a.mch);
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  update_Brec_1(M);
+
+  bconnect(".Brec") &
+  bcall(WRITE: bprintf("%\n",M))
+ =>
+  update_Brec_1(M);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  update_Brec;
+
+  bget(".Brec",L) &
+  GetCurrentConstruct(S.T) &
+  bsearch(S(X),L,M) &
+  update_Brec_1(M)
+ =>
+  update_Brec;
+
+
+  GetCurrentConstruct(a.b) &
+  GetJobs(X) &
+  bsearch((a.b:BT_NML:0),X,Y) &
+  ModifyJobs((Y;(a.b:BT_ANL:0))) &
+  update_Brec &
+  UnloadVar &
+  Writef(("\n    Syntax checking ")) &
+  bclose &
+  bshell(bcatl("$BKIT/BLIB/AFilter < ANL/",a,".",b,".anl > .BBcom ; mv .BBcom ANL/",a,".",b,".anl")) &
+  WriteDot
+ =>
+  check_error;
+
+
+  NormaliserErrorFlagged &
+  GetCurrentConstruct(a.b) &
+  bshell(bcatl("rm -f .Brec ANL/",a,".",b,".anl")) &
+  CleanDesugarer &
+  Writef("\n") &
+  OfferNormaliserFailureOptions
+ =>
+  check_error;
+
+
+
+
+  chk_pog(a.b);
+
+  not_parse_flag_set &
+  GetJobs(X) &
+  bsearch((a.b:BT_POG:n),X,Y) &
+  ModifyJobs(Y) &
+  clear_not_parse_flag
+ =>
+  chk_pog(a.b);
+
+  NormaliserErrorFlagged &
+  NoMiniRemakeFlagged  &
+  ClearNormaliserMiniRemake &
+  GetCurrentConstruct(a.b) &
+  bshell(bcatl("rm -f .Brec ANL/",a,".",b,".anl")) &
+  CleanDesugarer &
+  chk_pog(a.b) &
+  Writef("\n")
+ =>
+  check_error;
+
+
+
+#define print_database \
+  PrintTHEORY(SUB_DEFINITIONSX) & \
+  PrintTHEORY(FULL_DEFINITIONSX) & \
+  PrintTHEORY(SUB_SETSX) & \
+  PrintTHEORY(FULL_SETSX) & \
+  PrintTHEORY(SUB_CONSTANTSX) & \
+  PrintTHEORY(FULL_CONSTANTSX) & \
+  PrintTHEORY(SUB_PROPERTIESX) & \
+  PrintTHEORY(FULL_PROPERTIESX) & \
+  PrintTHEORY(SUB_VARIABLESX) & \
+  PrintTHEORY(FULL_VARIABLESX) & \
+  PrintTHEORY(SUB_INVARIANTX) & \
+  PrintTHEORY(FULL_INVARIANTX) & \
+  PrintTHEORY(SUB_OPNAMESX) & \
+  PrintTHEORY(FULL_OPNAMESX) & \
+  PrintTHEORY(SUB_PARAMETERSX) & \
+  PrintTHEORY(FULL_PARAMETERSX) & \
+  PrintTHEORY(FULL_CONSTRAINTSX) & \
+  PrintTHEORY(SUB_CONSTRAINTSX) & \
+  PrintTHEORY(FULL_OPERATIONSX) & \
+  PrintTHEORY(SUB_OPERATIONSX) & \
+  PrintTHEORY(LOCAL_INVARIANTX) & \
+  PrintTHEORY(FULL_INVARIANTX) & \
+  PrintTHEORY(LOCAL_VARIABLESX) & \
+  PrintTHEORY(FULL_VARIABLESX) & \
+  PrintTHEORY(SUB_VARIABLESX) & \
+  PrintTHEORY(TRUE_ABS_VARIABLESX) & \
+  PrintTHEORY(DIST_SUB_VARIABLESX) & \
+  PrintTHEORY(DOTTED_INCLUDESX) & \
+  PrintTHEORY(INCLUDES_DOTTED_INCLUDESX) & \
+  PrintTHEORY(SUB_INVARIANTX) & \
+  PrintTHEORY(INCLUDESX) & \
+  PrintTHEORY(DOT_RENAMEX) & \
+  PrintRule(RebuildX.8)
+
+
+  inform_analysing(a.b) &
+  FlagMiniRemake &
+  ClearNormaliserError &
+  CleanNormaliser &
+  CleanDesugarer &
+  SetCurrentConstruct(a.b) &
+  NormaliserCheckSun &
+  LoadFailedIntroLib &
+  NormaliserParse &
+/***
+print_database &
+***/
+  check_error
+ =>
+  norm_0(a.b);
+
+  IsVHDL &
+  CheckCurrentConstructIsVHDL(a.b) &
+  inform_analysing(a.b) &
+  FlagMiniRemake &
+  ClearNormaliserError &
+  CleanNormaliser &
+  CleanDesugarer &
+  SetCurrentConstruct(a.b) &
+  NormaliserCheckSun &
+  LoadFailedIntroLib &
+  NormaliserParse &
+/***
+print_database &
+***/
+  check_error
+ =>
+  norm_0(a.b)
+
+END
+
+
+&
+
+THEORY TEST IS
+
+
+  NormaliseDirect(test_def.mch)
+
+
+END

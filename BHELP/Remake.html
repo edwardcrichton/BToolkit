@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>Remake</TITLE>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Remake"><HR></A>
+<H1>Remake</H1>
+
+Remake is available on the 
+<A HREF="BToolkit.html#TopBar!Remake">TopBar
+Remake</A> pull-down.
+<P>
+A record of the most advanced state of development reached by each
+<A HREF="BToolkit.html#Constructs!Area">construct</A> 
+is maintained by the system. If the status of any construct
+(or constructs) is changed (e.g. by editing it) then it is possible to
+restore the development to its most advanced state from its current
+state by use of the Remake facility. The Remake tool causes all the
+necessary tools to be applied to the appropriate constructs
+automatically until either an error is encountered or the most
+advanced state is restored.
+<P>
+Two choices are initially offered:
+<UL>
+   <LI> Remake all constructs
+   <LI> Remake construct(s)
+</UL>
+<P>
+Selection of the first produces a menu of jobs for all constructs in
+the development which should be carried out for a full remake;
+selection of the second produces a menu of constructs from which one
+or more may be selected, when a menu of jobs relating to those
+constructs is subsequently produced.
+<P>
+In both cases, the jobs presented depend on the current setting of the
+<A HREF="Options.html#Options!Remake">Remake Options</A>; 
+each of the following tools
+may be included in or excluded form the Remake:
+<UL>
+<LI>      POGenerator
+<LI>      AutoProver
+<LI>      ProofPrinter
+<LI>      DocumentMarkUp
+<LI>      Translator
+<LI>      Linker
+<LI>      ITFGenerator
+</UL>
+<P>
+In both cases, the list of jobs presented is pre-selected, and jobs
+may be de-selected in the usual way to enable a partial remake to be
+achieved.
+<P>
+Before the initial two choices are offered, however, if one or more
+constructs have been 
+<A HREF="Editor.html#Editor">edited</A> 
+and the (saved) version in the 
+<A HREF="BToolkit.html#Development_Environment">SRC</A>
+directory differs from that of the committed version in the 
+<A HREF="BToolkit.html#Development_Environment">CFG</A>
+directory, the tool will, for each such file, prompt for 
+<A HREF="Commit.html#Commit">committing</A>
+before proceeding in the same manner as the 
+<A HREF="Analyser.html#Analyser">Analyser</A>. 
+Accepting the
+commit option will have the same effect as that described for the
+<A HREF="CommitEdits.html#CommitEdits">CommitEdit</A> 
+tool.
+
+<P>
+<HR WIDTH="60%">
+<P>
+<P><CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

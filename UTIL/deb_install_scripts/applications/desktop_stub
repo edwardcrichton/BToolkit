@@ -1,0 +1,19 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Type=Application
+Name=The BToolkit
+GenericName=B Method Toolkit
+GenericName[en_CA]=B Method Toolkit
+GenericName[en_GB]=B Method Toolkit
+Comment=Specify, refine, implement, prove, animate program specifications
+Comment[en_CA]=Specify, refine, implement, prove, animate B specifications
+Comment[en_GB]=Specify, refine, implement, prove, animate B specifications
+Exec=BToolkit %U
+TryExec=Blauncher
+Icon=B
+Terminal=false
+Categories=Application;Development;
+StartupNotify=true
+MimeType=text/x-b;
+

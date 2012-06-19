@@ -1,0 +1,480 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(PASP_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(Rename_ARROBJ)
+;
+(Rename_ARROBJ)
+;
+(?)
+;
+(?)
+;
+(Rename_ARROBJ = BYTE & card(Rename_ARROBJ) : NAT1)
+;
+(Rename_ARROBJ = BYTE & card(Rename_ARROBJ) : NAT1)
+;
+(?)
+;
+(?)
+;
+(Rename_UiAO_arrtok , Rename_UiAO_arrstruct , Rename_UiAO_nxt)
+;
+(Rename_UiAO_arrtok , Rename_UiAO_arrstruct , Rename_UiAO_nxt)
+;
+(Rename_UiAO_arrtok <: Rename_ARROBJ & card(Rename_UiAO_arrtok) <= maxobj & Rename_UiAO_arrstruct : Rename_UiAO_arrtok --> (1..ub +-> BYTE) & Rename_UiAO_nxt : Rename_UiAO_arrtok --> 1..ub)
+;
+(Rename_UiAO_arrtok <: Rename_ARROBJ & card(Rename_UiAO_arrtok) <= maxobj & Rename_UiAO_arrstruct : Rename_UiAO_arrtok --> (1..ub +-> BYTE) & Rename_UiAO_nxt : Rename_UiAO_arrtok --> 1..ub)
+;
+(?)
+;
+(Rename_UiAO_arrtok , Rename_UiAO_arrstruct , Rename_UiAO_nxt := {} , {} , {})
+;
+(Rename_UiAO_arrtok , Rename_UiAO_arrstruct , Rename_UiAO_nxt := {} , {} , {})
+;
+(Rename_UiAO_OBJ_FUL,Rename_UiAO_XST,Rename_UiAO_INI,Rename_UiAO_CRE,Rename_UiAO_VAL,Rename_UiAO_NXT,Rename_UiAO_EQL,Rename_UiAO_STO,Rename_UiAO_STO_NXT,Rename_UiAO_CPY,Rename_UiAO_FILL)
+;
+(Rename_UiAO_OBJ_FUL , Rename_UiAO_XST , Rename_UiAO_INI , Rename_UiAO_CRE , Rename_UiAO_VAL , Rename_UiAO_NXT , Rename_UiAO_EQL , Rename_UiAO_STO , Rename_UiAO_STO_NXT , Rename_UiAO_CPY , Rename_UiAO_FILL)
+;
+(Rename_UiArrO(maxobj , ub):(maxobj : 1..255 & ub > 0 & maxobj*ub <= 65535 & ub : NAT):(?))
+;
+(
+(
+ (Rename_UiAO_OBJ_FUL)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_UiAO_OBJ_FUL))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(card(Rename_UiAO_arrtok) = maxobj)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(card(Rename_UiAO_arrtok) = maxobj))
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_XST)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_UiAO_XST(pp)))
+;
+ (pp)
+;
+ (bb)
+;
+ (
+ (pp : Rename_ARROBJ)
+ |
+ (
+ (BEGIN
+ bb := bool(pp : Rename_UiAO_arrtok)
+ END)
+ )
+ )
+;
+ (
+ (pp : Rename_ARROBJ)
+ |
+ (
+ (bb := bool(pp : Rename_UiAO_arrtok))
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_INI)
+;
+ (? , Mod_Op , Det_Op , Rename_UiAO_INI)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_UiAO_arrtok , Rename_UiAO_arrstruct , Rename_UiAO_nxt := {} , {} , {}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_UiAO_arrtok , Rename_UiAO_arrstruct , Rename_UiAO_nxt := {} , {} , {})
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_CRE)
+;
+ (? , Mod_Op , NonDet_Op , (bb , pp <-- Rename_UiAO_CRE))
+;
+ (?)
+;
+ (bb , pp)
+;
+ (
+ (true)
+ |
+ (
+ (IF card(Rename_UiAO_arrtok) < maxobj THEN
+ ANY qq WHERE
+ qq : Rename_ARROBJ-Rename_UiAO_arrtok
+ THEN
+ Rename_UiAO_arrstruct(qq) := {} ||
+ Rename_UiAO_nxt(qq) := 1 ||
+ Rename_UiAO_arrtok := Rename_UiAO_arrtok \/ {qq} ||
+ pp := qq ||
+ bb := TRUE
+ END
+ ELSE
+ bb := FALSE ||
+ pp :: Rename_ARROBJ
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (card(Rename_UiAO_arrtok) < maxobj)
+ )
+ ==>
+ (
+ @(qq).
+ (
+ (
+ (qq : Rename_ARROBJ-Rename_UiAO_arrtok)
+ )
+ ==>
+ (
+ (Rename_UiAO_arrstruct , Rename_UiAO_nxt , Rename_UiAO_arrtok , pp , bb := Rename_UiAO_arrstruct <+ {qq |-> {}} , Rename_UiAO_nxt <+ {qq |-> 1} , Rename_UiAO_arrtok \/ {qq} , qq , TRUE)
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ (maxobj <= card(Rename_UiAO_arrtok))
+ )
+ ==>
+ (
+ (
+ (bb := FALSE)
+ )
+ ||
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_ARROBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_UiAO_VAL(pp , ii)))
+;
+ (pp , ii)
+;
+ (vv)
+;
+ (
+ (pp : Rename_ARROBJ & ii : UNSIGNED & pp : Rename_UiAO_arrtok & u2n(ii) : dom(Rename_UiAO_arrstruct(pp)))
+ |
+ (
+ (vv := Rename_UiAO_arrstruct(pp)(u2n(ii)))
+ )
+ )
+;
+ (
+ (pp : Rename_ARROBJ & ii : UNSIGNED & pp : Rename_UiAO_arrtok & ii : n2u[dom(Rename_UiAO_arrstruct(pp))])
+ |
+ (
+ (vv := Rename_UiAO_arrstruct(pp)(u2n(ii)))
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_NXT)
+;
+ (? , Val_Op , Det_Op , (nn <-- Rename_UiAO_NXT(pp)))
+;
+ (pp)
+;
+ (nn)
+;
+ (
+ (pp : Rename_ARROBJ & pp : Rename_UiAO_arrtok)
+ |
+ (
+ (nn := n2u(Rename_UiAO_nxt(pp)))
+ )
+ )
+;
+ (
+ (pp : Rename_ARROBJ & pp : Rename_UiAO_arrtok)
+ |
+ (
+ (nn := n2u(Rename_UiAO_nxt(pp)))
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_EQL)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_UiAO_EQL(ss , tt)))
+;
+ (ss , tt)
+;
+ (bb)
+;
+ (
+ (ss : Rename_ARROBJ & tt : Rename_ARROBJ & tt : Rename_UiAO_arrtok & ss : Rename_UiAO_arrtok)
+ |
+ (
+ (bb := bool(Rename_UiAO_arrstruct(tt) = Rename_UiAO_arrstruct(ss)))
+ )
+ )
+;
+ (
+ (ss : Rename_ARROBJ & tt : Rename_ARROBJ & tt : Rename_UiAO_arrtok & ss : Rename_UiAO_arrtok)
+ |
+ (
+ (bb := bool(Rename_UiAO_arrstruct(tt) = Rename_UiAO_arrstruct(ss)))
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_UiAO_STO(pp , ii , vv))
+;
+ (pp , ii , vv)
+;
+ (?)
+;
+ (
+ (pp : Rename_ARROBJ & ii : UNSIGNED & vv : BYTE & pp : Rename_UiAO_arrtok & u2n(ii) : 1..ub)
+ |
+ (
+ (
+ (Rename_UiAO_arrstruct(pp)(u2n(ii)) := vv)
+ )
+ ||
+ (
+ (IF u2n(ii) < ub THEN
+ Rename_UiAO_nxt(pp) := u2n(ii)+1
+ ELSE
+ Rename_UiAO_nxt(pp) := 1
+ END)
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_ARROBJ & ii : UNSIGNED & vv : BYTE & pp : Rename_UiAO_arrtok & ii : n2u[1..ub])
+ |
+ (
+ (
+ (Rename_UiAO_arrstruct := Rename_UiAO_arrstruct <+ {pp |-> (Rename_UiAO_arrstruct(pp) <+ {u2n(ii) |-> vv})})
+ )
+ ||
+ (
+ (
+ (
+ (ii < n2u(ub))
+ )
+ ==>
+ (
+ (Rename_UiAO_nxt := Rename_UiAO_nxt <+ {pp |-> u2n(ii)+1})
+ )
+ )
+ []
+ (
+ (
+ (n2u(ub) <= ii)
+ )
+ ==>
+ (
+ (Rename_UiAO_nxt := Rename_UiAO_nxt <+ {pp |-> 1})
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_STO_NXT)
+;
+ (? , Mod_Op , Det_Op , Rename_UiAO_STO_NXT(pp , vv))
+;
+ (pp , vv)
+;
+ (?)
+;
+ (
+ (pp : Rename_ARROBJ & vv : BYTE & pp : Rename_UiAO_arrtok)
+ |
+ (
+ (
+ (Rename_UiAO_arrstruct(pp)(Rename_UiAO_nxt(pp)) := vv)
+ )
+ ||
+ (
+ (IF Rename_UiAO_nxt(pp) < ub THEN
+ Rename_UiAO_nxt(pp) := Rename_UiAO_nxt(pp)+1
+ ELSE
+ Rename_UiAO_nxt(pp) := 1
+ END)
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_ARROBJ & vv : BYTE & pp : Rename_UiAO_arrtok)
+ |
+ (
+ (
+ (Rename_UiAO_arrstruct := Rename_UiAO_arrstruct <+ {pp |-> (Rename_UiAO_arrstruct(pp) <+ {Rename_UiAO_nxt(pp) |-> vv})})
+ )
+ ||
+ (
+ (
+ (
+ (Rename_UiAO_nxt(pp) < ub)
+ )
+ ==>
+ (
+ (Rename_UiAO_nxt := Rename_UiAO_nxt <+ {pp |-> Rename_UiAO_nxt(pp)+1})
+ )
+ )
+ []
+ (
+ (
+ (ub <= Rename_UiAO_nxt(pp))
+ )
+ ==>
+ (
+ (Rename_UiAO_nxt := Rename_UiAO_nxt <+ {pp |-> 1})
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_CPY)
+;
+ (? , Mod_Op , Det_Op , Rename_UiAO_CPY(pp , qq))
+;
+ (pp , qq)
+;
+ (?)
+;
+ (
+ (pp : Rename_ARROBJ & qq : Rename_ARROBJ & pp : Rename_UiAO_arrtok & qq : Rename_UiAO_arrtok)
+ |
+ (
+ (Rename_UiAO_arrstruct(qq) := Rename_UiAO_arrstruct(pp))
+ )
+ )
+;
+ (
+ (pp : Rename_ARROBJ & qq : Rename_ARROBJ & pp : Rename_UiAO_arrtok & qq : Rename_UiAO_arrtok)
+ |
+ (
+ (Rename_UiAO_arrstruct := Rename_UiAO_arrstruct <+ {qq |-> Rename_UiAO_arrstruct(pp)})
+ )
+ )
+)
+,
+(
+ (Rename_UiAO_FILL)
+;
+ (? , Mod_Op , Det_Op , Rename_UiAO_FILL(pp , vv))
+;
+ (pp , vv)
+;
+ (?)
+;
+ (
+ (pp : Rename_ARROBJ & vv : BYTE & pp : Rename_UiAO_arrtok)
+ |
+ (
+ (
+ (Rename_UiAO_arrstruct(pp) := (1..ub)*{vv})
+ )
+ ||
+ (
+ (Rename_UiAO_nxt(pp) := 1)
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_ARROBJ & vv : BYTE & pp : Rename_UiAO_arrtok)
+ |
+ (
+ (Rename_UiAO_arrstruct , Rename_UiAO_nxt := Rename_UiAO_arrstruct <+ {pp |-> (1..ub)*{vv}} , Rename_UiAO_nxt <+ {pp |-> 1})
+ )
+ )
+)
+)

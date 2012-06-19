@@ -1,0 +1,298 @@
+#! /bin/sh
+
+###################################
+# functions
+###################################
+
+rm_files ()
+{
+rm -f tmpb runauto SetOfRules.made SetOfRules_IP.made MakeSetOfRules.src.bin MakeSetOfRules_IP.src.bin runauto AddTRACESetOfRules.src.bin AddTRACESetOfRules_IP.src.bin ../SRC/Standardize.src ../SRC/SetOfRules
+}
+
+test_exist ()
+{
+if [ ! -r $1 ]
+then
+  echo ""
+  echo ""
+  echo "-- Error creating $1 from $2"
+  echo ""
+  rm_files
+  exit 1
+fi
+}
+
+test_status ()
+{
+if [ $? != 0 ]
+then
+  echo ""
+  echo ""
+  echo "-- Error creating $1"
+  echo ""
+  rm_files
+  exit 1
+fi
+}
+
+test_again ()
+{
+grep Again .Berr > /dev/null
+if [ $? = 0 ]
+then
+  echo ""
+  echo ""
+  echo "-- Error creating $1"
+  echo ""
+  rm_files
+  exit 1
+fi
+}
+
+###################################
+# check input required
+###################################
+
+if [ "xxx$1" = "xxx" ]
+then
+  inp_reqd=1
+else
+  inp_reqd=0
+fi
+
+###################################
+# check BEESRC exists
+###################################
+
+if [ ! -x ../BEESRC/b ]
+then
+  echo ""
+  cd ..
+  echo "  `pwd`/BEESRC/b does not exist - run CRE_b"
+  echo ""
+  rm_files
+  exit 1
+fi
+
+###################################
+#  set BKIT
+###################################
+
+curdir=`pwd`
+cd ..
+BKIT=`pwd`/BKIT
+export BKIT
+if [ ! -d $BKIT ]
+then
+  mkdir $BKIT
+fi
+if [ ! -d $BKIT/BLIB ]
+then
+  mkdir $BKIT/BLIB
+fi
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+if [ $inp_reqd = 1 ]
+then
+
+  echo ""
+  echo "  1    Toolkit1.bin     (Control)"
+  echo "  2    Toolkit2.bin     (Normaliser/Analyser/TypeChecker)"
+  echo "  3    Toolkit3.bin     (AutoProver)"
+  echo "  33   Toolkit3.bin     (AutoProver - TRACE)"
+  echo "  4    Toolkit4.bin     (Enum/CIO)"
+  echo "  5    Toolkit5.bin     (POGenerator)"
+  echo "  6    Toolkit6.bin     (Latexer)"
+  echo "  7    Toolkit7.bin     (C Translators)"
+  echo "  9    Toolkit9.bin     (Animator)"
+  echo " 13    Toolkit13.bin    (ProofPrinter)"
+  echo " 14    Toolkit14.bin    (SetOfRules ProofPrinter)"
+  echo " 15    Toolkit15.bin    (SetOfRules BTool)"
+  echo " 16    Toolkit16.bin    (GenBase)"
+  echo " 20    Toolkit20.bin    (POGSpecCalc)"
+  echo " 21    Toolkit21.bin    (POGRefCalc)"
+  echo " 24    Toolkit24.bin    (CreSLIB)"
+  echo " 31    Toolkit31.bin    (InterProver)"
+  echo " 34    Toolkit31.bin    (InterProver - TRACE)"
+  echo " 32    Toolkit32.bin    (Introduce force)"
+  echo " 39    Toolkit39.bin    (BToolProver)"
+  echo ""
+  echo " <CR>  Abort"
+  echo ""
+  printf "  Number? "
+fi
+
+read answer
+echo ""
+
+tool=999
+case  $answer in
+  "1")
+    tool=Toolkit1
+    ;;
+  "2")
+    tool=Toolkit2
+    ;;
+  "3")
+    tool=Toolkit3
+    ;;
+  "4")
+    tool=Toolkit4
+    ;;
+  "5")
+    tool=Toolkit5
+    ;;
+  "6")
+    tool=Toolkit6
+    ;;
+  "7")
+    tool=Toolkit7
+    ;;
+  "9")
+    tool=Toolkit9
+    ;;
+  "12")
+    tool=Toolkit12
+    ;;
+  "13")
+    tool=Toolkit13
+    ;;
+  "14")
+    tool=Toolkit14
+    ;;
+  "15")
+    tool=Toolkit15
+    ;;
+  "16")
+    tool=Toolkit16
+    ;;
+  "20")
+    tool=Toolkit20
+    ;;
+  "21")
+    tool=Toolkit21
+    ;;
+  "24")
+    tool=Toolkit24
+    ;;
+  "31")
+    tool=Toolkit31
+    ;;
+  "32")
+    tool=Toolkit32
+    ;;
+  "39")
+    tool=Toolkit39
+    ;;
+esac
+
+if [ $tool = 999 ]
+then
+  echo ""
+  echo " Aborted"
+  echo ""
+  rm_files
+  exit 1
+fi
+
+cd ../SRC
+
+if [ $tool = Toolkit33 ]
+then
+  echo "                Creating Toolkit3 (TRACE) binary"
+elif [ $tool = Toolkit34 ]
+then
+  echo "                Creating Toolkit31 (TRACE) binary "
+else
+  echo "                Creating $tool binary"
+fi
+echo ""
+
+if [ $tool = Toolkit3 ] || [ $tool = Toolkit33 ] || [ $tool = Toolkit13 ] || [ $tool = Toolkit14 ]
+then
+  printf "  Making MakeSetOfRules.src.bin ... "
+  ../BEESRC/b -c MakeSetOfRules.src > .Berr
+  test_exist MakeSetOfRules.src.bin MakeSetOfRules.src
+  printf "done\n\n"
+  printf "  Making SetOfRules.made ... "
+  echo "run(auto)" > runauto
+  echo "n" | ../BEESRC/b -b MakeSetOfRules.src.bin runauto
+#  ../BEESRC/b -b MakeSetOfRules.src.bin runauto
+  test_exist SetOfRules.made MakeSetOfRules.src.bin
+  printf "done\n\n"
+fi
+
+if [ $tool = Toolkit33 ]
+then
+  printf "  Creating AddTRACESetOfRules.src.bin ... "
+  rm -f AddTRACESetOfRules.src.bin
+  ../BEESRC/b -c AddTRACESetOfRules.src > .Berr
+  test_exist AddTRACESetOfRules.src.bin AddTRACESetOfRules.src
+  printf "done\n\n"
+  printf "  Adding TRACE to SetOfRules.made ... "
+  echo "run(auto)" > runauto
+  echo "n" | ../BEESRC/b -b AddTRACESetOfRules.src.bin runauto > .Berr
+  test_exist SetOfRules.made AddTRACESetOfRules.src.bin
+  printf "done\n\n"
+  tool=Toolkit3
+fi
+
+if [ $tool = Toolkit31 ] || [ $tool = Toolkit34 ]
+then
+  printf "  Making MakeSetOfRules_IP.src.bin ... "
+  ../BEESRC/b -c MakeSetOfRules_IP.src > .Berr
+  test_exist MakeSetOfRules_IP.src.bin MakeSetOfRules_IP.src
+  printf "done\n\n"
+  echo "run(auto)" > runauto
+  echo "n" | ../BEESRC/b -b MakeSetOfRules_IP.src.bin runauto > .Berr
+#  ../BEESRC/b -b MakeSetOfRules_IP.src.bin runauto
+  test_exist SetOfRules_IP.made MakeSetOfRules_IP.src.bin
+fi
+
+if [ $tool = Toolkit34 ]
+then
+  printf "  Creating AddTRACESetOfRules_IP.src.bin ... "
+  rm -f AddTRACESetOfRules_IP.src.bin
+  ../BEESRC/b -c AddTRACESetOfRules_IP.src > .Berr
+  test_exist AddTRACESetOfRules_IP.src.bin AddTRACESetOfRules_IP.src
+  printf "done\n\n"
+  printf "  Adding TRACE to SetOfRules_IP.made ... "
+  echo "run(auto)" > runauto
+  echo "n" | ../BEESRC/b -b AddTRACESetOfRules_IP.src.bin runauto > .Berr
+  test_exist SetOfRules_IP.made AddTRACESetOfRules_IP.src.bin
+  printf "done\n\n"
+  tool=Toolkit31
+fi
+
+if [ $tool = Toolkit15 ]
+then
+  cd ../UTIL
+  _make_Toolkit15.bin
+  test_status $tool.bin
+  cd ../SRC
+else
+  printf "  Creating $tool.bin ... "
+  echo "n" | ../BEESRC/b -c $tool.src > .Berr
+  test_status $tool.bin
+  test_again $tool.bin
+  rm -f  $BKIT/BLIB/$tool.bin
+  mv $tool.src.bin $BKIT/BLIB/$tool.bin
+  printf "done\n\n"
+fi
+
+curdir=`pwd`
+cd $BKIT/BLIB
+ls -l $tool.bin
+cd $curdir
+
+echo ""
+echo "  Installed $tool.bin "
+
+rm_files
+
+exit 0
+

@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Int_TYPE_Ops">
+  <TITLE>The Int_TYPE_Ops machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>	 Int_TYPE_Ops 
+
+<A NAME="SEES"><B>SEES</B></A>	<A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>,  <A HREF="Int_TYPE.mch.html#MACHINE">Int_TYPE</A>
+ 
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  uu <-- <A NAME="OPNAME!MINI">MINI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = 
+     <B>SELECT</B> vv <= ww <B>THEN</B> uu := vv 
+     <B>WHEN</B>  ww <= vv <B>THEN</B> uu := ww <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!MAXI">MAXI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = 
+     <B>SELECT</B> vv &gt;= ww <B>THEN</B> uu := vv 
+     <B>WHEN</B>  ww &gt;= vv <B>THEN</B> uu := ww <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!INCI">INCI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) =
+    <B>PRE</B> vv < <A HREF="Int_TYPE.mch.html#DEFINITIONS">MaxINT</A> <B>THEN</B> uu:=vv+(+1) <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!DECI">DECI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) =
+    <B>PRE</B> vv &gt; <A HREF="Int_TYPE.mch.html#DEFINITIONS">MinINT</A> <B>THEN</B> uu:=vv-(+1) <B>END</B>;
+
+
+  uu <-- <A NAME="OPNAME!ADDI">ADDI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) =
+    <B>PRE</B> vv+ww : <A HREF="Int_TYPE.mch.html#SETS">INT</A> <B>THEN</B> uu:=vv+ww <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!MULI">MULI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) =
+    <B>PRE</B> vv*ww : <A HREF="Int_TYPE.mch.html#SETS">INT</A> <B>THEN</B> uu:=vv*ww <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!SUBI">SUBI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) =
+    <B>PRE</B> vv-ww : <A HREF="Int_TYPE.mch.html#SETS">INT</A> <B>THEN</B> uu:=vv-ww <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!DIVI">DIVI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) =
+    <B>PRE</B> ww /= +0 <B>THEN</B> uu:=vv/ww <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!MODI">MODI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) =
+    <B>PRE</B> ww /= +0 <B>THEN</B> uu:=vv-ww*(vv/ww) <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!EQLI">EQLI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = <B>BEGIN</B> bb:=<B>bool</B>(vv=ww) <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!NEQI">NEQI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = <B>BEGIN</B> bb:=<B>bool</B>(vv/=ww) <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!GTRI">GTRI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = <B>BEGIN</B> bb:=<B>bool</B>(vv&gt;ww) <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!GEQI">GEQI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = <B>BEGIN</B> bb:=<B>bool</B>(vv&gt;=ww) <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!SMRI">SMRI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = <B>BEGIN</B> bb:=<B>bool</B>(vv<ww) <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!LEQI">LEQI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & ww:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = <B>BEGIN</B> bb:=<B>bool</B>(vv<=ww) <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!EQZI">EQZI</A>(vv:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = <B>BEGIN</B> bb:=<B>bool</B>(vv=(+0)) <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:35:37 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

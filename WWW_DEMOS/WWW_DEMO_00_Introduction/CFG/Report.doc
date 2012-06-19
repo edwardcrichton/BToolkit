@@ -1,0 +1,62 @@
+DOCUMENT
+
+  Report
+
+CONTENTS
+
+/*"
+  \title{WWW Demonstration of MAXIMUM}
+  \author{Copyright \copyright B-Core(UK)}
+  \date{April 1996}
+
+  \maketitle
+
+  \tableofcontents
+"*/
+
+
+
+/*"
+\newpage
+\section{The Specification: MaxOfSet}
+"*/
+
+include(MaxOfSet.mch);
+
+/*" \newpage "*/
+include(MaxOfSet.mch.0.prf);
+
+/*" \newpage "*/
+include(MaxOfSet.mch.1.prf);
+
+/*" \newpage "*/
+include(MaxOfSet.mch.2.prf);
+
+
+/*"
+\newpage
+\section{The Implementation: MaxOfSetI}
+"*/
+
+include(MaxOfSetI.imp);
+
+/*" \newpage "*/
+include(MaxOfSetI.imp.0.prf);
+
+/*" \newpage "*/
+include(MaxOfSetI.imp.1.prf);
+
+/*" \newpage "*/
+include(MaxOfSetI.imp.2.prf);
+
+
+/*"
+\newpage
+\section{The Library Machines}
+"*/
+
+include(MAX_Nvar.mch(MAX_GTR_NVAR,MAX_STO_NVAR,MAX_VAL_NVAR));
+
+include(Bool_TYPE.mch(xxx))
+
+END

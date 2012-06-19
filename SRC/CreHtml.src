@@ -1,0 +1,436 @@
+/* Copyright (c) 1996, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define cre_html_tac ((MAP;ARI;MODR;CATL;WRITE)~;SHELL;cre_htmlX)~
+
+#define CreHtml(x) bcall(cre_html_tac: ch1(x))
+
+
+THEORY cre_htmlX IS
+
+  ?;
+#define ReadHtmlSubords(x) brule(cre_htmlX.1,x)
+#define ModrHtmlSubords(x) bcall((FLAT;MODR):bmodr(cre_htmlX.1,x))
+
+  ?;
+#define ReadHtmlNumSubords(x) brule(cre_htmlX.2,x)
+#define ModrHtmlNumSubords(x) bmodr(cre_htmlX.2,x)
+
+  ?;
+#define ReadHtmlSets(x) brule(cre_htmlX.3,x)
+#define ModrHtmlSets(x) bmodr(cre_htmlX.3,x)
+
+  ?;
+#define ReadHtmlNumSets(x) brule(cre_htmlX.4,x)
+#define ModrHtmlNumSets(x) bmodr(cre_htmlX.4,x)
+
+  ?;
+#define ReadHtmlConstants(x) brule(cre_htmlX.5,x)
+#define ModrHtmlConstants(x) bmodr(cre_htmlX.5,x)
+
+  ?;
+#define ReadHtmlNumConstants(x) brule(cre_htmlX.6,x)
+#define ModrHtmlNumConstants(x) bmodr(cre_htmlX.6,x)
+
+  ?;
+#define ReadHtmlVariables(x) brule(cre_htmlX.7,x)
+#define ModrHtmlVariables(x) bmodr(cre_htmlX.7,x)
+
+  ?;
+#define ReadHtmlNumVariables(x) brule(cre_htmlX.8,x)
+#define ModrHtmlNumVariables(x) bmodr(cre_htmlX.8,x)
+
+  ?;
+#define ReadHtmlOps(x) brule(cre_htmlX.9,x)
+#define ModrHtmlOps(x) bmodr(cre_htmlX.9,x)
+
+  ?;
+#define ReadHtmlNumOps(x) brule(cre_htmlX.10,x)
+#define ModrHtmlNumOps(x) bmodr(cre_htmlX.10,x)
+
+  ?;
+#define ReadHtmlPromotes(x) brule(cre_htmlX.11,x)
+#define ModrHtmlPromotes(x) bmodr(cre_htmlX.11,x)
+
+  ?;
+#define ReadHtmlNumPromotes(x) brule(cre_htmlX.12,x)
+#define ModrHtmlNumPromotes(x) bmodr(cre_htmlX.12,x)
+
+  ?;
+#define ReadHtmlDefinitions(x) brule(cre_htmlX.13,x)
+#define ModrHtmlDefinitions(x) bmodr(cre_htmlX.13,x)
+
+  ?;
+#define ReadHtmlNumDefinitions(x) brule(cre_htmlX.14,x)
+#define ModrHtmlNumDefinitions(x) bmodr(cre_htmlX.14,x)
+
+  bshell(f);
+
+  bprintf("\E") &
+  bprintf("%",x)
+ =>
+  ch_print(x);
+
+  ch_print(x)
+ =>
+  ch_print(x.y);
+
+  ch_print(?);
+
+
+  bprintf("\E") &
+  bprintf("%",x)
+ =>
+  ch_print_with_ext(x);
+
+  ch_print_with_ext(x) &
+  bprintf("\E") &
+  bprintf("%",y)
+ =>
+  ch_print_with_ext(x.y);
+
+  ch_print_with_ext(?);
+
+/*
+  ReadHtmlNumSubords(n) &
+  ReadHtmlSubords(S) &
+  bprintf("%",n) &
+  ch_print bsmap S &
+  bprintf("\n")
+ =>
+  ch_PrintSubords;
+*/
+
+  ReadHtmlNumSubords(n) &
+  ReadHtmlSubords(S) &
+  bprintf("%",n) &
+  ch_print_with_ext bsmap S &
+  bprintf("\n")
+ =>
+  ch_PrintSubords_With_Ext;
+
+
+
+  ReadHtmlSubords(S) &
+  bsearch(a.mch,S,T) &
+  ModrHtmlSubords(bflat(a.mch,T)) 
+ =>
+  ch_OrderAbstractionFirst(a);
+
+  IsCfg(a.ref) &
+  ReadHtmlSubords(S) &
+  bsearch(a.ref,S,T) &
+  ModrHtmlSubords(bflat(a.ref,T))
+ =>
+  ch_OrderAbstractionFirst(a);
+
+  ch_OrderAbstractionFirst(?);
+
+
+
+  ReadHtmlSubords(S) &
+  ModrHtmlSubords((S,r.ref)) &
+  ReadHtmlNumSubords(n) &
+  ModrHtmlNumSubords(n+1)
+ =>
+  ch_AddSubords(r);
+
+  IsCfg(r.imp) &
+  ReadHtmlSubords(S) &
+  ModrHtmlSubords((S,r.imp)) &
+  ReadHtmlNumSubords(n) &
+  ModrHtmlNumSubords(n+1)
+ =>
+  ch_AddSubords(r);
+
+  IsCfg(r.mch) &
+  ReadHtmlSubords(S) &
+  ModrHtmlSubords((S,r.mch)) &
+  ReadHtmlNumSubords(n) &
+  ModrHtmlNumSubords(n+1)
+ =>
+  ch_AddSubords(r);
+
+  ch_AddSubords(?);
+
+
+  ReadHtmlNumPromotes(n) &
+  ReadHtmlPromotes(P) &
+  bprintf("%",n) &
+  ch_print bsmap P &
+  bprintf("\n")
+ =>
+  ch_PrintPromotes;
+
+  ReadHtmlPromotes(O) &
+  ModrHtmlPromotes((O,o)) &
+  ReadHtmlNumPromotes(n) &
+  ModrHtmlNumPromotes(n+1)
+ =>
+  ch_AddPromotes(o);
+
+  ch_AddPromotes(?);
+
+
+  ReadHtmlNumDefinitions(n) &
+  ReadHtmlDefinitions(D) &
+  bprintf("%",n) &
+  ch_print bsmap D &
+  bprintf("\n")
+ =>
+  ch_PrintDefinitions;
+
+  ReadHtmlDefinitions(D) &
+  ModrHtmlDefinitions((D,d)) &
+  ReadHtmlNumDefinitions(n) &
+  ModrHtmlNumDefinitions(n+1)
+ =>
+  ch_AddDefinitions(d);
+
+  ch_AddDefinitions(a)
+ =>
+  ch_AddDefinitions(a == c);
+
+  ch_AddDefinitions(a)
+ =>
+  ch_AddDefinitions(a(b) == c);
+
+  ch_AddDefinitions(?);
+
+
+  ReadHtmlNumSets(n) &
+  ReadHtmlSets(S) &
+  bprintf("%",n) &
+  ch_print bsmap S &
+  bprintf("\n")
+ =>
+  ch_PrintSets;
+
+  ReadHtmlSets(O) &
+  ModrHtmlSets((O,o)) &
+  ReadHtmlNumSets(n) &
+  ModrHtmlNumSets(n+1)
+ =>
+  ch_AddSets(o);
+
+  ch_AddSets(o)
+ =>
+  ch_AddSets(o[d]);
+
+  ch_AddSets(o)
+ =>
+  ch_AddSets(o(e));
+
+  ch_AddSets(?);
+
+
+  ReadHtmlNumConstants(n) &
+  ReadHtmlConstants(C) &
+  bprintf("%",n) &
+  ch_print bsmap C &
+  bprintf("\n")
+ =>
+  ch_PrintConstants;
+
+  ReadHtmlConstants(O) &
+  ModrHtmlConstants((O,o)) &
+  ReadHtmlNumConstants(n) &
+  ModrHtmlNumConstants(n+1)
+ =>
+  ch_AddConstants(o);
+
+  ch_AddConstants(?);
+
+
+  ReadHtmlNumVariables(n) &
+  ReadHtmlVariables(V) &
+  bprintf("%",n) &
+  ch_print bsmap V &
+  bprintf("\n")
+ =>
+  ch_PrintVariables;
+
+  ReadHtmlVariables(O) &
+  ModrHtmlVariables((O,o)) &
+  ReadHtmlNumVariables(n) &
+  ModrHtmlNumVariables(n+1)
+ =>
+  ch_AddVariables(o);
+
+  ch_AddVariables(?);
+
+
+  ReadHtmlNumOps(n) &
+  ReadHtmlOps(O) &
+  bprintf("%",n) &
+  ch_print bsmap O &
+  bprintf("\n")
+ =>
+  ch_PrintOps;
+
+  ReadHtmlOps(O) &
+  ModrHtmlOps((O,o)) &
+  ReadHtmlNumOps(n) &
+  ModrHtmlNumOps(n+1)
+ =>
+  ch_AddOps(o);
+
+  ch_AddOps(?);
+
+
+  InformCantConnect(z) &
+  PFZ
+ =>
+  ch9(a.s)(z);
+
+  /***
+  referenced construct
+  ***/
+  bget(z,((X;(J|K));A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  bprintf("%",a) &
+  bprintf("\E") &
+  bprintf("%\n",s) &
+  ch_AddSets bsmap D &
+  ch_AddConstants bsmap F &
+  ch_AddVariables bsmap d &
+  ch_AddOps bsmap W &
+  ch_AddPromotes bsmap c &
+  ch_AddDefinitions bsmap K &
+  ch_PrintSets &
+  ch_PrintConstants &
+  ch_PrintVariables &
+  ch_PrintOps &
+  ch_PrintPromotes &
+  ch_PrintDefinitions
+ =>
+  ch9(a.s)(z);
+
+  ModrHtmlSubords(?) &
+  ModrHtmlNumSubords(0) &
+  ModrHtmlSets(?) &
+  ModrHtmlNumSets(0) &
+  ModrHtmlConstants(?) &
+  ModrHtmlNumConstants(0) &
+  ModrHtmlVariables(?) &
+  ModrHtmlNumVariables(0) &
+  ModrHtmlOps(?) &
+  ModrHtmlNumOps(0) &
+  ModrHtmlPromotes(?) &
+  ModrHtmlNumPromotes(0) &
+  ModrHtmlDefinitions(?) &
+  ModrHtmlNumDefinitions(0) &
+  ch9(a.b)(bcatl("ANL/",a,".",b,".anl"))
+ =>
+  ch8(a.b);
+
+  ch7(r);
+
+  IsCfg(r.ref) &
+  ch8(r.ref)
+ =>
+  ch7(r);
+
+  IsCfg(r.imp) &
+  ch8(r.imp)
+ =>
+  ch7(r);
+
+  IsCfg(r.mch) &
+  ch8(r.mch)
+ =>
+  ch7(r);
+
+  ch7(r)
+ =>
+  ch7(r(s):t:(u,v,w));
+
+  ch7(r)
+ =>
+  ch7(R.r(s):t:(u,v,w));
+
+  ch7(?);
+
+
+
+
+  Connect("TMP/.Bhtx") &
+  ReadHtmlNumSubords(m) &
+  bprintf("%",m) &
+  bprintf("\E") &
+  bprintf("%",a) &
+  bprintf("\E") &
+  bprintf("%\n",s) &
+  ch_PrintSubords_With_Ext &
+  ch_PrintOps
+ =>
+  ch5(a.s);
+
+  ch_AddSubords(r)
+ =>
+  ch3(r);
+
+  ch3(r)
+ =>
+  ch3(r(s):t:(u,v,w));
+
+  ch3(r)
+ =>
+  ch3(R.r(s):t:(u,v,w));
+
+  ch3(?);
+
+  InformCantConnect(z) &
+  PFZ
+ =>
+  ch2(a.s)(z);
+
+  /***
+  referencing construct
+  ***/
+  bget(z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ch3 bsmap A &
+  ch3 bsmap B &
+  ch3 bsmap b &
+  ch3(r) &
+  ch_AddOps bsmap W &
+  ch_OrderAbstractionFirst(r) &
+  ch5(a.s) &
+  ch7 bsmap A &
+  ch7 bsmap B &
+  ch7 bsmap b &
+  ch7(r)
+ =>
+  ch2(a.s)(z);
+
+  ModrHtmlSubords(?) &
+  ModrHtmlNumSubords(0) &
+  ModrHtmlOps(?) &
+  ModrHtmlNumOps(0) &
+  ch2(a.b)(bcatl("ANL/",a,".",b,".anl")) &
+  bprintf("\n") &
+  bclose &
+/***
+Writef(("\n\ncat TMP/.Bhtx:\n++++++++++++++++++++++++\n"))&
+bcall(SHELL:bshell("cat TMP/.Bhtx"))&
+Writef(("++++++++++++++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtml")
+ =>
+  ch1(a.b)
+
+END

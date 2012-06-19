@@ -1,0 +1,240 @@
+#! /bin/csh -f
+
+#  MAKE_tarfile_from_floppies
+
+#
+#  This script creates the single ftp-able
+#  BT_tarfile BT_`platform'.3,4.tar from
+#  floppies containing BTookit_a*
+#
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+echo ""
+echo "         ------------------------------"
+echo ""
+
+echo ""
+echo "  Make ftp-able tarfile for:"
+echo ""
+echo "      1 ... SunOS"
+echo "      2 ... SunOS.stat"
+echo "      3 ... Solaris"
+echo "      4 ... Aix"
+echo "      5 ... DecAlpha"
+echo "      6 ... Linux"
+echo "      7 ... Indy"
+echo ""
+
+echo -n "  Number: "
+set answer=$<
+echo ""
+
+if ( $answer != "1" && $answer != "2" && $answer != "3" && $answer != "4" && $answer != "5" && $answer != "6" && $answer != "7") then
+  echo "  Bad input - aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $answer == "1" ) set plat=SunOS
+if ( $answer == "2" ) set plat=SunOS.stat
+if ( $answer == "3" ) set plat=Solaris
+if ( $answer == "4" ) set plat=Aix
+if ( $answer == "5" ) set plat=DecAlpha
+if ( $answer == "6" ) set plat=Linux
+if ( $answer == "7" ) set plat=Indy
+
+cd ..
+
+if ( -r BT_$plat.$BT_VERSION.tar ) then
+  echo ""
+  echo "  BT_$plat.$BT_VERSION.tar already exists! "
+  echo ""
+  echo ""
+  exit
+endif
+
+echo ""
+echo "         ------------------------------"
+echo ""
+echo "  This script creates the single ftp-able file: "
+echo ""
+echo "       BT_$plat.$BT_VERSION.tar "
+echo ""
+echo "  comprising: "
+echo ""
+echo "      BT_$plat.$BT_VERSION/bkit.tar.gz"
+echo "      BT_$plat.$BT_VERSION/READ_ME"
+echo "      BT_$plat.$BT_VERSION/BToolkit.install"
+echo "      BT_$plat.$BT_VERSION/gunzip"
+echo "      BT_$plat.$BT_VERSION/gunzip.READ_ME"
+echo ""
+echo "  from the 5/6 installation disks in your hand! "
+echo ""
+echo ""
+echo "  Number of installation disks:"
+echo ""
+echo "      3 ... (DISK0 (BToolkit_ac) and BToolkit_aa BToolkit_ab)"
+echo "      4 ... (DISK0 (BToolkit_ad) and BToolkit_aa BToolkit_ab BToolkit_ac)"
+echo ""
+echo -n "  Number? "
+set answer=$<
+
+if ( $answer != "3" && $answer != "4" ) then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $answer == "3" ) then
+  set disks = "0 1 2"
+  set files = "READ_ME BToolkit.install gunzip gunzip.READ_ME BToolkit_aa BToolkit_ab BToolkit_ac"
+else
+  set disks = "0 1 2 3"
+  set files = "READ_ME BToolkit.install gunzip gunzip.READ_ME BToolkit_aa BToolkit_ab BToolkit_ac BToolkit_ad"
+endif
+
+if ( ! -d BT_$plat.$BT_VERSION ) then
+  mkdir BT_$plat.$BT_VERSION
+else 
+  rm -f BT_$plat.$BT_VERSION/* > /dev/null
+endif
+
+cd BT_$plat.$BT_VERSION
+
+foreach disk ($disks)
+
+  set done=0
+  while ($done == 0)
+
+    echo "  Insert DISK$disk - hit <CR> when ready"
+    echo ""
+    echo -n "***** ? "
+    set answer=$<
+    echo ""
+
+    echo "    Extracting"
+    echo ""
+
+    tar xvf /dev/fd0
+
+    if ($status == 0) then
+
+      echo ""
+      echo "    OK"
+      echo ""
+      eject
+      set done=1
+
+    endif
+
+    if ($done == 0) then
+
+      eject
+      echo ""
+      echo ""
+      echo "-- DISK$disk failed"
+      echo ""
+
+      set y_n=0
+      while ($y_n == 0)
+
+        echo -n "***** Retry (y/n)? "
+        set answer=$<
+        echo ""
+
+        if ($answer == "y") then
+
+          set y_n=1
+          set first_attempt=0
+
+        else
+
+          if ($answer == "n") then
+
+
+            echo "                ----------------"
+            echo ""
+            echo "                     ABORTED"
+            echo ""
+            echo "                ----------------"
+            echo ""
+            cd ..
+            cd ..
+            rm -fr BT_$plat.$BT_VERSION
+            exit(1)
+
+          else
+
+            echo "-- Bad input"
+            echo ""
+
+          endif
+
+        endif
+
+      end
+
+    endif
+
+  end
+
+end
+
+echo ""
+echo "  Checking for presence of files "
+
+foreach file ($files)
+
+  if ( ! -r $file ) then
+    echo ""
+    echo "    $file not found"
+    echo ""
+    echo "  Aborted"
+    echo ""
+    echo ""
+    cd ..
+    rm -fr BT_$plat.$BT_VERSION
+    exit
+  endif
+
+end
+
+echo ""
+echo "  OK "
+
+echo ""
+echo ""
+echo "        concatenating floppies ..."
+cat BToolkit_a* > bkit.tar.gz
+rm BToolkit_a*
+
+echo ""
+echo "  OK "
+
+echo ""
+ls -al 
+echo ""
+
+cd ..
+
+echo ""
+echo "  tar cvf BT_$plat.$BT_VERSION.tar BT_$plat.$BT_VERSION/* "
+echo ""
+
+tar cvf BT_$plat.$BT_VERSION.tar BT_$plat.$BT_VERSION/*
+
+echo ""
+ls -l  BT_$plat.$BT_VERSION.tar
+echo ""
+
+rm -r BT_$plat.$BT_VERSION
+
+echo ""
+echo "  ftp-able tarfile BT_$plat.$BT_VERSION.tar made "
+echo ""
+echo ""

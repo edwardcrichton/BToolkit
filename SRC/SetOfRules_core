@@ -1,0 +1,6850 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+#include "GlobalDefs.src"
+
+
+
+
+
+
+/***********************************************************************/
+/***********************************************************************/
+/*                                                                     */
+/*                             Fwd rules                               */    
+/*                                                                     */
+/***********************************************************************/
+/***********************************************************************/
+
+
+THEORY FwdContra0X END &
+  
+THEORY FwdContra1X IS
+  
+/* Rules to capture contradictictions  */
+
+  not(a=b) &
+  c=a &
+  c=b
+ =>
+  bfalse;
+
+  not(a=b) &
+  c=a &
+  b=c
+ =>
+  bfalse;
+
+  not(a=b) &
+  a=c &
+  c=b
+ =>
+  bfalse;
+
+  not(b=a) &
+  c=a &
+  c=b
+ =>
+  bfalse;
+
+  not(b=a) &
+  c=a &
+  b=c
+ =>
+  bfalse;
+
+  not(b=a) &
+  a=c &
+  c=b
+ =>
+  bfalse;
+
+/***************************************/
+
+  not(a /\ {} = {})
+ =>
+  bfalse;
+
+  a /\ b = {} &
+  c : a &
+  c : b
+ =>
+  bfalse;
+
+  not(a : {a})
+ =>
+  bfalse;
+
+  a:ran({})
+ =>
+  bfalse;
+
+
+  a:dom({})
+ =>
+  bfalse;
+
+
+  a: c &
+  not(a: b) &
+  b = c
+ =>
+  bfalse;
+
+
+  a: c &
+  not(a: b) &
+  c = b
+ =>
+  bfalse
+
+END
+
+&
+
+THEORY FwdContra2X  IS
+
+  a & not(a & b) & b => bfalse;
+
+  b & not(a & b) & a => bfalse
+
+END
+
+
+&
+
+THEORY FwdPredicate0X IS
+
+/*
+first 11 rules a duplication of POGFwdTheoryX
+*/
+   bool(a) = TRUE         => a;
+
+   TRUE =  bool(a)        => a;
+
+   bool(a) = FALSE        => not(a);
+
+   FALSE = bool(a)        => not(a);
+
+   not(bool(a) = FALSE  ) => a;
+
+   not(FALSE = bool(a))   => a;
+
+   not(bool(a) = TRUE)    => not(a);
+
+   not(TRUE = bool(a))    => not(a);
+
+   bool(a) = true         => a;
+
+   bool(a) = false        => not(a);
+
+   not(bool(a) = false)   => a;
+
+   not(bool(a) = true)    => not(a);
+
+
+   ((a=a) => b)           => b;
+
+   (a => b) & a           => b;
+
+   not(not(a))            => a;
+
+   (TRUE => b)            => b;
+
+   (true => b)            => b;
+
+   (a <=> b)              => (a => b);
+
+   (a <=> b)              => (b => a)
+
+END
+
+&
+
+THEORY FwdPredicate1X IS
+
+   not(a or b)            => not(a);
+
+   not(a or b)            => not(b);
+
+   not(a & b) & b         => not(a);
+    
+   not(a & b) & a         => not(b);
+
+   not(not(a) => b)       => not(a);
+    
+   not(not(a) => b)       => not(b);
+    
+   not(a) & (a or b)      => b;
+
+   not(a) & (b or a)      => b
+
+END
+
+&
+
+THEORY FwdPredicate2X END
+
+&
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+THEORY FwdEqual0X END &
+
+THEORY FwdEqual1X IS
+
+   a:s>->>t & t={}             => s={};
+
+   a:s>->>t & s={}             => t={};
+
+
+
+/*
+  /? 4 rules suppressed from pob file ?/
+
+   not(a = FALSE) &
+   BOOL = {FALSE,TRUE} &
+   card(BOOL) = 2              => a = TRUE;
+
+   not(FALSE = a) &
+   BOOL = {FALSE,TRUE} &
+   card(BOOL) = 2              => a = TRUE;
+
+   not(a = TRUE) &
+   BOOL = {FALSE,TRUE} &
+   card(BOOL) = 2              => a = FALSE;
+
+   not(TRUE = a) &
+   BOOL = {FALSE,TRUE} &
+   card(BOOL) = 2              => a = FALSE;
+*/  
+
+   (a + 0) JOK2 b              => a JOK2 b;
+
+   (a - 0) JOK2 b              => a JOK2 b;
+
+   (0 + a) JOK2 b              => a JOK2 b;
+
+   a JOK2 (b + 0)              => a JOK2 b;
+
+   a JOK2 (b - 0)              => a JOK2 b;
+
+   a JOK2 (0 + b)              => a JOK2 b;
+
+   s = {}\/t                   =>  t = s;
+
+   s = t\/{}                   =>  t = s;
+
+   {}\/t = s                   =>  t = s;
+
+   t\/{} = s                   =>  t = s;
+
+   a <: b & b <: a             => a = b;
+
+   a <= b & b <= a             => a = b;
+
+   ran(f) = {}                 => f = {};
+
+   dom(f) = {}                 => f = {};
+
+   a <: {}                     => a = {};
+
+   n : p..p                    => n=p;
+
+   a:{card(s)}                 => a=card(s);
+
+   a : ran({c|->d})            => a = d;
+
+   a : dom({c|->d})            => a = c;
+
+   a: {f(x)}                   => f(x) = a;
+
+   a: {f~(x)}                  => f~(x) = a;
+
+   a: {{e}}                    => a = {e};
+
+   a: {e} & e:S                => a = e;
+
+   {e} = a                     => a = {e}
+
+END
+
+&
+
+THEORY FwdEqual2X IS
+
+   !x.(x : dom(f) => f(x) = h(g(x)(y))) &
+   a : dom(f)
+                                => h(g(a)(y)) = f(a);
+
+   !x.(x : dom(f) => f(x) = g(x)(y)) &
+   a : dom(f)
+                               => g(a)(y) = f(a);
+
+   a /\ b = c                  => b /\ a = c;
+
+   a \/ b = c                  => b \/ a = c
+
+END
+
+&
+
+
+
+
+THEORY FwdNotEqual0X END
+
+&
+
+THEORY FwdNotEqual1X IS
+
+   not(a - b = {})                  => not(a = {});
+
+   not(a - b = 0)                   => not(a = b)
+
+/*   not(a - b = 0)                   => not(b = a) */
+
+END
+
+&
+
+THEORY FwdNotEqual2X IS
+
+   !(x,y).(x:s & y:s & not(x=y)   => not(f(x)(z) = f(y)(z))) &
+   a:s &
+   b:s &
+   not(a=b)                             => not(f(a)(z) = f(b)(z));
+
+   !(x,y).(x:s & y:s & not(x=y)   => not(f(x)(z) = f(y)(z))) &
+   a:s &
+   b:s &
+   not(b=a)                             => not(f(a)(z) = f(b)(z));
+
+   not((f<+{x|->(f(x)<+{y|->z})})(w)(y) = z)
+                                        => not(w = x);
+
+   not((f<+{x|->y})(z) = y)             => not(x = z);
+
+/*   not((f<+{x|->y})(z) = y)             => not(z = x); */
+
+   not(f(x)(y) = f(z)(y))               => not(x = z);
+
+   not(f(x) = f(y))                     => not(y = x);
+
+/*   not(f(x) = f(y))                     => not(x = y); */
+
+
+   a <<: b                              => not(a = b);
+
+/*   a <<: b                              => not(b = a); */
+
+   a: dom((f<+{x|->{}})(z))             => not(x = z);
+
+/*   a: dom((f<+{x|->{}})(z))             => not(z = x); */
+
+   a: dom((f<+{x|->({a}<<|f(x))})(z))   => not(x = z);
+
+/*   a: dom((f<+{x|->({a}<<|f(x))})(z))   => not(z = x); */
+
+   not(a : {c}) & c : d                 => not(a = c);
+
+/*   not(a : {c}) & c : d                 => not(c = a); */
+
+   not(a : {b,c})                       => not(a = c);
+
+/*   not(a : {b,c})                       => not(c = a); */
+
+   (a : c) & not(b : c)                 => not(a = b);
+
+/*   (a : c) & not(b : c)                 => not(b = a); */
+
+   (a : s) & (b : s) & not(a : {b})     => not(a = b);
+
+/*   (a : s) & (b : s) & not(a : {b})     => not(b = a); */
+
+   not(ran(f) = {})                     => not(f = {});
+
+   not(dom(f) = {})                     => not(f = {});
+
+   0 < size(s)                          => not(s = <>);
+
+   0 < size(s)                          => not(s = {});
+
+   1 <= size(s)                         => not(s = <>);
+
+   1 <= size(s)                         => not(s = {});
+
+   m < n                                => not(m = n)
+
+/*   m < n                                => not(n = m) */
+
+END
+
+&
+
+
+
+
+
+
+
+
+
+
+THEORY FwdFunction0X END &
+
+THEORY FwdFunction1X IS
+
+   f : s >->> t                => card(s) = card(t);
+
+   f : s >->> t                => ran(f) = t;
+
+   f : s >->> t                => dom(f) = s;
+
+   f : s +->> t                => ran(f) = t;
+
+   f : s --> t                 => dom(f) = s  
+
+END
+
+&
+
+THEORY FwdFunction2X IS
+
+   f : s >->> t                => f : s >+> t;
+
+   f : s >->> t                => f : s +->> t;
+
+   f : s >->> t                => f : s --> t;
+
+
+   f : s >-> t                 => f : s >+> t;
+
+   f : s >-> t                 => f : s --> t;
+
+
+   f : s -->> t                => f : s +->> t;
+
+   f : s -->> t                => f : s --> t;
+
+
+   f : s >+> t                 => f : s +-> t;
+
+   f : s +->> t                => f : s +-> t;
+
+/* July 1999: last two give rise to lots of crap like dom(a) <: ...
+   but commented back in */
+
+   f : s --> t                 => f : s +-> t;
+
+
+   f : s +-> t                 => f : s <-> t
+
+
+END
+
+&
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+THEORY FwdRelation0X END &
+
+THEORY FwdRelation1X IS
+
+   r~ : s <-> t                => r : t <-> s;
+
+   a : r[b] & r : s <-> t      => a : t;
+
+   a : r~[b] & r : s <-> t     => a : s;
+
+   a : ran(r) & r : s <-> t    => a : t;
+
+   a : dom(r) & r : s <-> t    => a : s;
+
+   r : s <-> t                 => dom(r) <: s;
+
+   r : s <-> t                 => ran(r) <: t
+
+END
+
+&
+
+THEORY FwdRelation2X END
+
+&
+
+
+
+
+
+
+
+
+THEORY FwdSequence0X END &
+
+THEORY FwdSequence1X IS
+
+   s : seq(a) & ran(s) = b                => s : seq(b);
+
+   s : seq(a) & ran(s) <: b               => s : seq(b);
+
+   s : iseq(a)                            => s : seq(a);
+
+   s : seq1(a)                            => s : seq(a);
+
+   s : seq(a)                             => s : 1..size(s) --> a;
+
+   n : dom(s) & s : seq(a)                => n : NAT1;
+
+   0 < card(s) & s : seq(a)               => size(s) : NAT1
+
+END
+
+&
+
+THEORY FwdSequence2X IS
+
+   b : dom(s) & s : seq(a)                => s(b) : a;
+
+   b <= size(s) & b : NAT1 & s : seq(a)   => s(b) : a;
+
+   size(s) : NAT1 & s : seq(a)               => first(s) : a;
+
+   size(s) : NAT1 & s : seq(a)               => last(s) : a
+
+END
+
+&
+
+
+
+
+
+
+
+THEORY FwdInNat0X END &
+
+THEORY FwdInNat1X IS
+
+   n : dom(s) & s : seq(a)  => n : NAT1;
+
+   a : FIN1(b)              => card(a) : NAT1;
+
+   a : FIN(b)               => card(a) : NAT;
+
+   s : seq(a)               => size(s) : NAT;
+
+   a = b..c                 => card(a) : NAT;
+
+   a : NAT1 & a < b         => b : NAT1;
+
+   a : NAT1 & a <= b        => b : NAT1;
+
+   a : NAT & a < b          => b : NAT1;
+
+   1 <= n & n : NAT         => n : NAT1;
+
+   0 < n & n : NAT          => n : NAT1;
+
+   not(n = 0) & n : NAT     => n : NAT1;
+
+   n : NAT1                 => n : NAT;
+
+   n : p..q                 => n : NAT
+
+END
+
+&
+
+THEORY FwdInNat2X END
+
+&
+
+
+
+
+
+
+
+
+
+THEORY FwdInSet0X END &
+
+THEORY FwdInSet1X IS
+
+   a: FIN1(b)                => a : FIN(b);
+
+   a: POW1(b)                => a : POW(b);
+
+   x,y: S*T                  => y : T;
+
+   x,y: S*T                  => x : S;
+
+   a : {b} & b : c           => a : c;
+
+   a : b /\ c                => a : b;
+
+   a : b /\ c                => a : c;
+
+   a : b - c                 => a : b
+
+END
+
+&
+
+THEORY FwdInSet2X IS
+
+   s = {x | x : dom(f) & y : dom(f(x))} &
+   a : dom(f) &
+   y : dom(f(a))
+   =>
+   a : s;
+
+   !x.(x:dom(f) => y : dom(f(x))) &
+   a : dom(f)
+   =>
+   y : dom(f(a));
+
+   !x.(x:dom(f) => g(x)(y) : s) &
+   a : dom(f)
+   =>
+   g(a)(y) : s;
+
+   f : g+->(h+->k) &
+   x : dom(f)
+   =>
+   f(x) : h+->k;
+
+   a:b\/{c} & c:b => a:b;
+
+   f : s>->>t & a = f(x) => a : t;
+
+   f : s>->>t & f(x) = a => a : t;
+
+   f : s>->>t & a = f~(x) => a : s;
+
+   f : s>->>t & f~(x) = a => a : s;
+
+   x: STRING                 => x : seq(0..255);
+
+   x : t & t = {y|P & a:dom(f(y))}   => a :dom(f(x));
+
+   x : {y|P & a:dom(f(y))}   => a : dom(f(x));
+
+   x : t & t = {y|y:S & P}   => x : S;
+
+   x : {y|y:S & P}           => x : S;
+
+   a <: b & b: c        => a : c;
+
+   a: perm(b)                => (a: 1..card(b) >->> b);
+
+   f: 1 .. a --> b           => dom(f) = 1 .. a;
+
+   a: ran((f<+{x|->y})(z)) & not(x = z) => a: ran(f(z));
+
+   a: ran((f<+{x|->y})(z)) & not(z = x) => a: ran(f(z));
+
+   a: dom((f<+{x|->y})(z)) & not(x = z) => a: dom(f(z));
+
+   a: dom((f<+{x|->y})(z)) & not(z = x) => a: dom(f(z));
+
+   a: ran((f<+{x|->y})(z)) & x = z => a: ran(y);
+
+   a: dom((f<+{x|->y})(z)) & x = z => a: dom(y);
+
+   a: ran((f<+{x|->y})(z)) & z = x => a: ran(y);
+
+   a: dom((f<+{x|->y})(z)) & z = x => a: dom(y);
+
+   a: (f<+{x|->y})(z) & not(x = z) => a: f(z);
+
+   a: (f<+{x|->y})(z) & not(z = x) => a: f(z);
+
+   a: (f<+{x|->y})(z) & x = z => a: y;
+
+   a: (f<+{x|->y})(z) & z = x => a: y;
+
+   a: ran((f|>>{x})(z)) & not(x = z) => a: ran(f(z));
+
+   a: ran((f|>>{x})(z)) & not(z = x) => a: ran(f(z));
+
+   a: dom(({x}<<|f)(z)) & not(x = z) => a: dom(f(z));
+
+   a: dom(({x}<<|f)(z)) & not(z = x) => a: dom(f(z));
+
+   a: dom(f<+{x|->y})        => a: dom(f)\/{x};
+
+   a: ran(f<+{x|->y})        => a: ran(f)\/{y};
+
+   a : dom(b <<| f)          => a : (dom(f) - b);
+
+   a : dom(b <| f)           => a : (dom(f) /\ b);
+
+   a : ran(f |>> b)          => a : (ran(f) - b);
+
+   a : ran(f |> b)           => a : (ran(f) /\ b);
+
+   a : b \/ c & not(a : c)   => a : b;
+
+   a : b \/ {c} & not(a = c) => a : b;
+
+   a : b \/ {c} & not(c = a) => a : b;
+
+   a : b \/ c & not(a : b)   => a : c;
+
+   a : b & b <: c            => a : c;
+
+/* July 1999: generate too much crap
+
+   a : ran(b) & b = c       => a : ran(c);
+
+   a : ran(b) & c = b       => a : ran(c);
+
+   a : dom(b) & b = c       => a : dom(c);
+
+   a : dom(b) & c = b       => a : dom(c);
+
+*/
+
+   a : b & b = c             => a : c;
+
+   a : b & c = b             => a : c;
+
+   a : ran(b) & (b <: c)     => a : ran(c);
+
+   a : dom(b) & (b <: c)     => a : dom(c);
+
+   a : b & (b <: c)          => a : c
+
+END
+
+&
+
+
+
+THEORY FwdNotInSet0X END &
+
+THEORY FwdNotInSet1X IS
+
+   not(a : (b-c)) & not(a : c)  => not(a : (c\/b));
+
+   a /\ b = {} & c : b          => not(c : a);
+
+   not(a : ran(b)) & c = b      => not(a : ran(c));
+
+   not(a : ran(b)) & b = c      => not(a : ran(c));
+
+   not(a : dom(b)) & c = b      => not(a : dom(c));
+
+   not(a : dom(b)) & b = c      => not(a : dom(c));
+
+   not(a : b) & c = b           => not(a : c);
+
+   not(a : b) & b = c           => not(a : c);
+
+   not(a : ran(b)) & c <: b     => not(a : ran(c));
+
+   not(a : dom(b)) & c <: b     => not(a : dom(c));
+
+   not(a : b) & c <: b          => not(a : c);
+
+   not(a : {f(x)})              => not(a = f(x));
+
+   not(a : {f(x)})              => not(f(x) = a);
+
+   not(a : {f~(x)})             => not(a = f~(x));
+
+   not(a : {f~(x)})             => not(f~(x) = a);
+
+   not(a : (b \/ c))            => not(a : b);
+
+   not(a : (b \/ c))            => not(a : c);
+
+   a : b - c                    => not(a : c)
+
+END
+
+&
+
+THEORY FwdNotInSet2X END
+
+&
+
+
+
+
+
+
+
+THEORY FwdInclusion0X END &
+
+THEORY FwdInclusion1X IS
+
+   a : FIN(b)             => a <: b;
+
+   a : POW(b)             => a <: b
+
+END
+
+&
+
+THEORY FwdInclusion2X END
+
+&
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+THEORY FwdLessThanOrEqual0X END &
+
+THEORY FwdLessThanOrEqual1X IS
+
+   n : p..q                     => p <= q;
+
+   n : p..q                     => p <= n;
+
+   n : p..q                     => n <= q
+  
+END
+
+&
+
+THEORY FwdLessThanOrEqual2X IS
+
+
+   /* July 1999 added */
+   a - 1 < n    => a <= n;
+   a < n + 1    => a <= n;
+
+   n : dom(s) & s : seq(a)      => n <= size(s);
+
+   a - b <= c                   => a <= (c + b);
+
+   a <= (b - c)                 => a + c <= b;
+
+   (n + p) <= (m + p)           => n <= m;
+
+   (p + n) <= (p + m)           => n <= m;
+
+   (n + p) <= (p + m)           => n <= m;
+
+   (p + n) <= (m + p)           => n <= m;
+
+   p <= q & n <= p              => n <= q
+
+/*   n < p                        => n <= p */
+
+END
+
+&
+
+
+
+
+
+
+
+
+THEORY FwdLessThan0X END &
+
+THEORY FwdLessThan1X IS
+
+   /* July 1999 added */
+   a + 1 <= n    => a < n;
+   a <= n - 1    => a < n;
+
+
+
+   a : POW1(b)  & card(a) : NAT  =>  card(a) : NAT1;
+
+   not(s = <> ) & size(s) : NAT  =>  size(s) : NAT1;
+
+   not(s = {} ) & card(s) : NAT  =>  card(s) : NAT1
+
+END
+
+&
+
+THEORY FwdLessThan2X IS
+
+/* generates a hell of a lot!!!!!!!
+  not(e : a) & a <: b & e : b  => card(a) < card(b);
+*/
+
+   s : seq(a) & not(s = <>)     => size(s) : NAT1; 
+
+   card(b) < n & a <: b         => card(a) < n;
+
+   a - b < c                    => a < (c + b); /* bad rule ??? */
+
+   a < (b - c)                  => a + c < b;   /* ditto ! */
+
+   p < q & n < p                => n < q;
+
+/*   n < p & p <= q               => n < q; */
+
+/*   n <= p & p < q               => n < q; */
+
+   (n + p) < (m + p)            => n < m;
+
+   (p + n) < (p + m)            => n < m;
+
+   (n + p) < (p + m)            => n < m;
+
+   (p + n) < (m + p)            => n < m;
+  
+   not(a = b) & a <= b          => a < b;
+
+   not(b = a) & a <= b          => a < b
+
+END
+
+&
+
+THEORY FwdPOGTheoryX END &  /***
+                              if FwdPOGTheoryX is NOT the last,
+                              Fwd rule edit motif.c accordingly
+                            ***/
+
+
+
+
+
+
+/***********************************************************************/
+/***********************************************************************/
+/*                                                                     */
+/*                           Rewrite rules                             */    
+/*                                                                     */
+/***********************************************************************/
+/***********************************************************************/
+
+
+THEORY RewritePredicate0X IS
+
+/* whole goal rules - which guards the application of the rules below */
+
+
+  bnum(a) & bnum(b) & btest (b>0) => (a mod b) == (a-((a/b)*b));
+
+  btest(a>=b) &
+  btest(a<=b)
+ =>
+  a = b;      /* hardwired in Proof.src */
+
+
+
+  btest(a > b)
+  =>
+  not(a = b);      /* hardwired in Proof.src */
+
+  btest(a < b)
+  =>
+  not(a = b);      /* hardwired in Proof.src */
+
+  binhyp(b=a)
+  =>
+  a=b;
+
+  btest(a < b)
+  =>
+  a < b;      /* hardwired in Proof.src */
+
+  btest(a <= b)
+  =>
+  a <= b      /* hardwired in Proof.src */
+
+END
+
+&
+
+THEORY RewritePredicate1X IS
+
+  binhyp(not(a=b))
+ =>
+  (a = b) == false;
+
+  binhyp(not(b=a))
+ =>
+  (a = b) == false;
+
+  not(a = a)  == false;
+
+
+
+/* true and false predicates on  numbers */
+
+  binhyp(not(a=b))
+  =>
+  not(a=b) == true;
+ 
+  binhyp(not(b=a))
+  =>
+  not(a=b) == true;
+ 
+  btest(a > b)
+  =>
+  not(a = b) == true;      /* hardwired in Proof.src */
+
+  btest(a < b)
+  =>
+  not(a = b) == true;      /* hardwired in Proof.src */
+
+  binhyp(b=a)
+  =>
+  a=b == true;
+
+  a=a == true;
+
+  btest(a < b)
+  =>
+  a < b == true;      /* hardwired in Proof.src */
+
+  btest(a <= b)
+  =>
+  a <= b == true;      /* hardwired in Proof.src */
+
+
+  btest(a > b)
+  =>
+  a = b == false;      /* hardwired in Proof.src */
+
+  btest(a < b)
+  =>
+  a = b == false      /* hardwired in Proof.src */
+
+END
+
+&
+
+THEORY RewritePredicate2X 
+
+/* IS
+
+  binhyp(a=b) &
+  a\b
+  =>
+  (a==b) */
+
+END
+
+&
+
+
+
+
+
+
+
+THEORY RewriteAlgebra0X IS
+
+  (b+a-a)      == b;
+
+  (b-a+a)      == b;
+
+  bnum(a)
+  =>
+  (a-(a-b))    == b;
+
+  bnum(b)
+  =>
+  (a-(a-b))    == b;
+
+  (a+(b-a))    == b;
+
+  (a+b-a)      == b
+
+END
+
+&
+
+THEORY RewriteAlgebra1X IS
+
+
+
+   ({a} - b - {a}) == {} ;
+
+
+   a \/ (b \/ c) == (a \/ b) \/ c;
+
+   a /\ (b /\ c) == (a /\ b) /\ c;
+
+
+   a <| (r |> b)   == (a <| r) |> b;
+
+   a <<| (r |>> b) == (a <<| r) |>> b;
+
+   a <| (r |>> b)  == (a <| r) |>> b;
+
+   a <<| (r |> b)  == (a <<| r) |> b;
+
+
+   a^(b^c) == (a^b)^c
+
+END
+
+&
+
+THEORY RewriteAlgebra2X IS
+
+
+   c /\ (a \/ b) == (c /\ a) \/ (c /\ b); 
+
+   (a \/ b) /\ c == (a /\ c) \/ (b /\ c);
+
+   (a - c) /\ b  == (a /\ b) - c;
+
+   (a - b) \/ c  == (a \/ c) - (b - c);
+
+  bnum(c)
+ =>
+  (a-b-c) == (a-c-b);
+
+  bnum(b) &
+  bnum(c)
+ =>
+  (a-b-c) == (a-(b+c));
+
+  (a-(b+c)) == (a-b-c);
+
+  bnum(c)
+ =>
+  (a-(b-c)) == (a-b+c);
+
+  btest(a>=b)               /* hardwired in Proof.src */
+ =>
+  (a-(b-c)) == ((a-b)+c);
+
+
+  bnum(c)
+ =>
+  (a-b+c) == (a+c-b);
+
+  btest(c>=b)               /* hardwired in Proof.src */
+ =>
+  (a-b+c) == (a+(c-b));
+
+  btest(b>=c)               /* hardwired in Proof.src */
+ =>
+  (a-b+c) == (a-(b-c));
+
+
+
+  bnum(b)
+ =>
+  (a+b-c) == (b+a-c);
+
+  bnum(c)
+ =>
+  (a+b-c) == (a-c+b);
+
+  btest(a>=c)               /* hardwired in Proof.src */
+ =>
+  (a+b-c) == (b+(a-c));
+
+  btest(b>=c)               /* hardwired in Proof.src */
+ =>
+  (a+b-c) == (a+(b-c));
+
+  (a+(b-c)) == (a+b-c);
+
+
+
+  bnum(b)
+ =>
+  (a*b*c) == (b*a*c);
+
+  bnum(c)
+ =>
+  (a*b*c) == (c*a*b);
+
+  bnum(c) &
+  bnum(b)
+ =>
+  (a*b*c) == (a*(b*c));
+
+
+  (a*(b*c)) == (a*b*c);
+
+
+
+  bnum(b)
+ =>
+  (a+b+c) == (b+a+c);
+
+  bnum(c)
+ =>
+  (a+b+c) == (c+a+b);
+
+  bnum(c) &
+  bnum(b)
+ =>
+  (a+b+c) == (a+(b+c));
+
+
+  (a+(b+c)) == (a+b+c)
+
+END
+
+&
+
+
+
+
+
+
+
+THEORY RewriteNat0X IS
+
+   binhyp(card(a):NAT)
+   =>
+   (a - a) == {};
+
+   binhyp(a : NAT)
+   =>
+   (a - a) == 0;
+
+   (n - 0) == n;
+
+   (0 + n) == n;
+
+   (n + 0) == n;
+
+   (1 * n) == n;
+
+   (n * 1) == n;
+
+   (n * 0) == 0;
+
+   (0 * n) == 0
+
+END
+
+&
+
+THEORY RewriteNat1X IS
+
+   binhyp(p<=q)        
+   =>
+   {q+1} \/p..q              == p..q+1;
+
+   btest(p<=q)                                   /* hardwired in Proof.src */
+   =>
+   {q+1} \/ p..q             == p..q+1;
+
+   binhyp(p<=q)
+   =>
+   p..q \/ {q+1}             == p..q+1;
+
+   btest(p<=q)                                    /* hardwired in Proof.src */
+   =>
+   p..q \/ {q+1}             == p..q+1;
+
+
+   {q+1} \/ 1..q             == 1..q+1;
+
+   1..q \/ {q+1}             == 1..q+1;
+
+
+   {q+1} \/ 0..q             == 0..q+1;
+
+   0..q \/ {q+1}             == 0..q+1;
+
+
+   bident(n)
+   => 
+   max({n})                  == n;
+
+   bnum(n)
+   => 
+   max({n})                  == n;
+
+   binhyp(n : NAT)
+   =>
+   card(1..n)                == n;   /* holds when n=0! */
+
+   binhyp(m <= n)
+   =>
+   card(m..n)                == (n - m) + 1;
+
+   btest(m <= n)
+   =>
+   card(m..n)                == (n - m) + 1;      /* hardwired in Proof.src */
+
+   binhyp(n < m)
+   =>
+   m..n                      == {};
+
+   btest(n < m)
+   =>
+   m..n                      == {};               /* hardwired in Proof.src */
+
+   binhyp(n = 0)
+   =>
+   n                         == 0;
+
+   binhyp(0 = n)
+   =>
+   n                         == 0
+
+END
+
+&
+
+THEORY RewriteNat2X IS
+
+
+   bident(i)
+   =>
+   SIGMA(i).( i:m..n+1 | e )    == SIGMA(i).( i:m..n | e ) + [i:=n+1]e; 
+
+   bident(i)
+   =>
+   (SIGMA(i).(i : {a} | e))     == ([i := a]e);
+
+   bident(i)
+   =>
+   (SIGMA(i).(i : {a, b} | e))  == (SIGMA(i).(i : {a} | e)) + ([i := b]e);
+
+   (SIGMA(i).(i : {} | e))      == 0;
+
+
+   binhyp(not(p <= q)) &
+   binhyp(p : r..(q + 1))
+   =>
+   p                   == q + 1;
+
+
+   binhyp(r < p)
+   =>
+   (p..q) - {r}        == p..q;
+
+   binhyp(q < r)
+   =>
+   (p..q) - {r}        == p..q
+
+END
+
+&
+
+THEORY RewriteRelation0X END
+
+&
+
+THEORY RewriteRelation1X IS
+
+   (s +> t) == (s <+ t);
+
+   iterate({},x) == {};
+
+   ((f \/ g) ; h) == (f ; h) \/ (g ; h);
+
+   (h ; (f \/ g)) == (h ; f) \/ (h ; g);
+
+   (a <<| r)~[b]  == r~[b] - a;
+
+   (f \/ g) |>> a == (f |>> a) \/ (g |>> a);
+
+   (f \/ g) |> a  == (f |> a) \/ (g |> a);
+
+   a <<| (f \/ g) == (a <<| f) \/ (a <<| g);
+
+   a <| (f \/ g)  == (a <| f) \/ (a <| g);
+
+   r[a \/ b]      == r[a] \/ r[b];
+
+   (r \/ s)[a]    == (r[a] \/ s[a]);
+
+/*    Domain    */
+
+   dom(%x.(x : a | e)) == a;
+
+   dom(r |> a)         == r~[a]; 
+
+   dom(a <| r)         == (dom(r) /\ a);
+
+   dom(r |>> a)        == (dom(r) - r~[a]); 
+
+   dom(a <<| r)        == (dom(r) - a);
+
+   dom(r \/ s)         == dom(r) \/ dom(s);
+
+   dom(r <+ s)         == dom(r) \/ dom(s);
+
+   dom({l,x|->y}) == dom({l}) \/ {x};
+
+   dom({a |-> b})      == {a};
+
+   dom(a * b)          == a;
+
+   dom({})             == {};
+
+
+/*    Range    */
+
+   ran(s <- x) == (ran(s) \/ {x});
+
+   ran(x -> s) == (ran(s) \/ {x});
+
+   binhyp(not(a : dom(r)))
+   =>
+   ran({a} <<| r) == ran(r);
+
+   ran(a <| r)    == r[a];
+
+   ran(r |> a)    == (ran(r) /\ a);
+
+   ran(r |>> a)   == (ran(r) - a);
+
+   ran(r \/ s)    == ran(r) \/ ran(s);
+
+   ran({l,x|->y}) == ran({l}) \/ {y};
+
+   ran({a |-> b}) == {b};
+
+   ran(a * b)     == b;
+
+   ran({})        == {};
+
+
+/*    Domain restriction    */
+
+   binhyp(f : s +-> t) &
+   binhyp(a : dom(f))
+   =>
+   {a} <| f         == {a |-> f(a)};
+
+   binhyp((a /\ b) = {})
+   =>
+   (b <| (a * c))   == {};
+
+   dom(f) <| f      == f;
+
+   {a} <| {a |-> b} == {a |-> b};
+
+   binhyp(not(a : dom(r)))
+   =>
+   ({a} <| r) == {};
+
+   ({} <| r)        == {};
+
+   (a <| {})        == {};
+
+
+/*    Range restriction    */
+
+   f |> ran(f)      == f;
+
+   {a |-> b} |> {b} == {a |-> b};
+
+   binhyp(not(a : ran(r)))
+   =>
+   (r |> {a}) == {};
+
+   (r |> {})        == {};
+
+   ({} |> a)        == {};
+
+
+/*    Domain subtraction    */
+
+   binhyp(not(a: dom(f)))
+   =>
+   {a}<<|(f<+{a|->b}) == f;
+
+   binhyp(a: dom(f))
+    =>
+   {a}<<|(f<+{a|->b}) == ({a}<<|f);
+
+   dom(f) <<| f       == {};
+
+   {a} <<| {a |-> b}  == {};
+
+   binhyp(not(a : dom(r)))
+   =>
+   ({a} <<| r)        == r;
+
+   ({} <<| r)         == r;
+
+   (a <<| {})         == {};
+
+    1..size(f)<<|f    == {};
+
+/*    Range subtraction    */
+
+   binhyp(not(b: ran(f)))
+   =>
+   (f<+{a|->b})|>>b   == f;
+
+   binhyp(b: ran(f))
+   =>
+   (f<+{a|->b})|>>b   == (f|>>b);
+
+   f |>> ran(f)       == {};
+
+   {a |-> b} |>> {b}  ==  {};
+
+   binhyp(not(a : ran(r)))
+   =>
+   (r |>> {a})        == r;
+
+   (r |>> {})         == r;
+
+   ({} |>> a)         == {};
+
+
+/*    Composition    */
+
+   binhyp(not(a : ran(r)))
+   =>
+   (r ; ({a} <<| s)) == (r ; s);
+
+   binhyp(not(a : ran(r)))
+   =>
+   (r ; {a |-> b})   == {};
+
+   ({} ; r)          == {};
+
+   (r ; {})          == {};
+
+
+/*    Inverse    */
+
+   binhyp(f: s >->> t) &
+   binhyp(b=f~(a))
+   =>
+   f(b) == a;
+
+   binhyp(f: s >->> t) &
+   binhyp(f~(a)=b)
+   =>
+   f(b) == a;
+
+   binhyp(f: s >->> t) &
+   binhyp(b=f(a))
+   =>
+   f~(b) == a;
+
+   binhyp(f: s >->> t) &
+   binhyp(f(a)=b)
+   =>
+   f~(b) == a;
+
+   (r /\ s)~       == (r~ /\ s~);
+
+   (r \/ s)~       == (r~ \/ s~);
+
+   binhyp(not(x:dom(r))) &
+   binhyp(not(y:dom(r~)))
+   =>
+   (r <+ {x|->y})~ == (r~ <+ {y|->x});
+
+   {a |-> b}~      == {b |-> a};
+
+   (a * b)~        == b * a;
+
+   binhyp(f: s >+> t) &
+   binhyp(a: dom(f))
+  =>
+   f~(f(a)) == a;
+
+   binhyp(f: s >+> t) &
+   binhyp(a: ran(f))
+  =>
+   f(f~(a)) == a;
+
+   r~~             == r;
+
+   {}~             == {};
+
+
+/*    Overriding    */
+
+   ((a<+{b|->c})<+{b|->d}) == (a<+{b|->d});
+
+/* dave added Aug 1999 */
+   ((a<+{b|->c})<+{e|->f}<+{b|->d}) == (a<+{e|->f}<+{b|->d});
+
+   binhyp(not(a : dom(f)))
+   =>
+   (f \/ {a|->b}) == (f <+ {a|->b});
+
+   (r <+ {}) == r;
+
+   ({} <+ r) == r;
+
+
+/*    Application    */
+
+
+    binhyp(f: s +-> u) &
+    binhyp(a: dom(f))
+    =>
+    f[{a}] == {f(a)};
+
+    binhyp(f: s >+> u) &
+    binhyp(a: ran(f))
+    =>
+    f~[{a}] == {f~(a)};
+
+    binhyp(not(x : s))
+    =>
+    (s <<| f)(x) == f(x);
+
+    binhyp(x : s)
+    =>
+    (s <| f)(x) == f(x);
+
+    binhyp(x : d)
+    =>
+    (%i.(i : d | f))(x) == ([i:=x]f);
+
+
+
+
+
+   bnum(x) &
+   bnum(a) &
+   btest(x/=a)                      /* hardwired in Proof.src */
+   =>
+   ({a} <<| f)(x)  == f(x);
+
+   binhyp(not(x = a))
+   =>
+   ({a} <<| f)(x)  == f(x);
+
+   binhyp(not(a = x))
+   =>
+   ({a} <<| f)(x)  == f(x);
+
+
+
+   bnum(x) &
+   bnum(z) &
+   btest(x/=z)                      /* hardwired in Proof.src */
+   => 
+   (f <+ {x |-> y})(z)     == f(z);
+
+   binhyp(not(x=z))
+   => 
+   (f <+ {x |-> y})(z)     == f(z);
+
+   binhyp(not(z=x))
+   => 
+   (f <+ {x |-> y})(z)     == f(z);
+
+
+   binhyp(x=z)
+  =>
+   (f <+ {x |-> y})(z)     == y;
+   
+   binhyp(z=x)
+  =>
+   (f <+ {x |-> y})(z)     == y;
+
+
+   (f <+ {x |-> y})(x)     == y;
+   
+
+
+   bsearch((x|->y),(S),(T))  &
+   card({S}) = card(dom({S}))
+   =>
+   {S}(x) == y;
+
+   binhyp(z=x)
+  =>
+   ({x |-> y})(z)          == y;
+
+
+   binhyp(x=z)
+  =>
+   ({x |-> y})(z)          == y;
+
+
+   ({x |-> y})(x)          == y;
+
+
+/*    Image    */
+
+   (r <+ {a |-> b})[{a}]   == {b};
+
+   ({FALSE |-> a})[{TRUE}] == {};
+
+   ({TRUE |-> a})[{FALSE}] == {};
+
+   binhyp(not(a : {c}))
+   =>
+   ({a |-> b})[{c}]        == {};
+
+   bnum(a) &
+   bnum(c) &
+   btest(a/=c)                      /* hardwired in Proof.src */
+   =>
+   ({a |-> b})[{c}]        == {};
+
+   binhyp(not(a = c))
+   =>
+   ({a |-> b})[{c}]        == {};
+
+   binhyp(not(c = a))
+   =>
+   ({a |-> b})[{c}]        == {};
+
+   binhyp(a = b)
+   =>
+   ({a |-> c})[{b}]        == {c};
+
+   binhyp(b = a)
+   =>
+   ({a |-> c})[{b}]        == {c};
+
+   ({a |-> b})[{a}]        == {b};
+
+   bnum(a) &
+   bnum(d) &
+   btest(a/=d)                      /* hardwired in Proof.src */
+   =>
+   ({a |-> b})[{c, d}]     == ({a |-> b})[{c}];
+
+   binhyp(not(a = d))
+   =>
+   ({a |-> b})[{c, d}]     == ({a |-> b})[{c}];
+
+   binhyp(not(d = a))
+   =>
+   ({a |-> b})[{c, d}]     == ({a |-> b})[{c}];
+
+   ({a |-> b})[{c, a}]     == {b};
+
+   bnum(a) &
+   bnum(b) &
+   btest(a/=b)                      /* hardwired in Proof.src */
+   =>
+   ({a} * p)[{b}]          == {};
+
+   binhyp(not(a = b))
+   =>
+   ({a} * p)[{b}]          == {};
+
+   binhyp(not(b = a))
+   =>
+   ({a} * p)[{b}]          == {};
+
+   bnum(a) &
+   bnum(c) &
+   btest(a/=c)                      /* hardwired in Proof.src */
+   =>
+   ({a} * p)[{b, c}]       == ({a} * p)[{b}];
+
+   binhyp(not(a = c))
+   =>
+   ({a} * p)[{b, c}]       == ({a} * p)[{b}];
+
+   binhyp(not(c = a))
+   =>
+   ({a} * p)[{b, c}]       == ({a} * p)[{b}];
+
+   ({a} * p)[{b, a}]       == p;
+
+   (a * b)[a]              == b;
+
+   {}[a]                   == {};
+
+   r[{}]                   == {};
+
+
+/*    Set expression    */
+
+    x:{s|t} == [s:=x]t;
+
+    x:{s|t}-u == ([s:=x]t & not(x:u));
+
+    binhyp(y={s|t})
+   =>
+    x:y == [s:=x]t;
+
+    binhyp(y={s|t})
+   =>
+    x:y-u == ([s:=x]t & not(x:u));
+
+/*    Lambda expression    */
+
+   %x.(x : {} | e) == {};
+
+/*    Functions on segments            */
+
+   binhyp(f : 1 .. a --> v)
+  =>
+   card(dom(f)) == a;
+
+   binhyp(f : 1 .. a --> v)
+  =>
+   1..size(f) == 1 .. a;
+
+   binhyp(f : 1 .. a --> v)
+  =>
+   dom(f) ==  1 .. a
+
+END
+
+&
+
+THEORY RewriteRelation2X END
+
+&
+
+
+
+
+
+
+
+
+THEORY RewriteSequence0X END
+
+&
+
+THEORY RewriteSequence1X IS
+
+   binhyp(s = <>)
+   =>
+   s == <>;
+
+   binhyp(<> = s)
+   =>
+   s == <>;
+
+
+   binhyp(s : iseq(a))
+   =>
+   card(ran(s)) == size(s);
+
+   binhyp(s : seq(a))
+   =>
+   card(dom(s)) == size(s);
+
+
+   <> <- a == [a];
+
+   a -> <> == [a];
+
+   <>^s    == s;
+
+   s^<>    == s;
+
+
+   dom(s <- a) == (1..(size(s) + 1));
+
+   binhyp(s : seq(a))
+   =>
+   dom(s)      == 1..size(s);
+
+   dom(<>)     == {};
+
+   ran(<>)     == {};
+
+
+   rev(<>)    == <>;
+
+   rev(x->s)  == rev(s)<-x;
+
+   rev(s<-x)  == x->rev(s);
+
+   conc(<>)   == <>;
+
+   conc(s<-t) == conc(s)^t;
+
+   conc(t->s) == t^conc(s);
+
+
+   first(x->s)  == x;
+
+   first([x])   == x;
+
+   first([L,x]) == first([L]);
+
+   last(s) == s(size(s));
+
+   last(s<-x)   == x;
+
+   last([x])    == x;
+
+   last([L,x])  == x;
+
+   tail(x->s)   == s;
+
+   front(s<-x)  == s;
+
+   front([L,x]) == L;
+
+   binhyp(not(s = <>))
+   =>
+   size(tail(s))        == (size(s) - 1);
+
+   binhyp(not(s = <>))
+   =>
+   size(front(s))       == (size(s) - 1);
+
+   binhyp(n : NAT1) &
+   binhyp(n <= size(s))
+   =>
+   size(s <+ {n |-> a}) == size(s);
+
+   binhyp(n : NAT) &
+   binhyp(n <= size(s))
+   =>
+   size(s /|\ n)        == n;
+
+   binhyp(n : NAT) &
+   binhyp(n <= size(s))
+   =>
+   size(s \|/ n)        == (size(s) - n);
+
+   size(s <- x)         == size(s) + 1;
+ 
+   size(x -> s)         == size(s) + 1;
+
+   size(s ^ t)          == size(s) + size(t);
+
+   size(rev(s))         == size(s);
+
+   bnum(a) => size([a])     == 1;
+
+   bident(a) => size([a])   == 1;
+
+   binhyp(a:b) => size([a]) == 1;
+
+   size([a, b])         == size([a]) + 1;
+
+   size(<>)             == 0;
+
+   size({})             == 0;
+
+   bstring(s) =>  size(s) == blen(s)
+
+END
+
+&
+
+THEORY RewriteSequence2X END
+
+&
+
+
+
+
+
+
+
+
+
+
+
+
+THEORY RewriteSet0X END
+
+&
+
+THEORY RewriteSet1X IS
+
+   a\b
+   =>
+   {a}\/{b} == {bflat(a,b)};
+
+   binhyp(not(b:a))
+   =>
+   card(a - {b}) == card(a);
+
+   binhyp(b:a)
+   =>
+   card(a - {b}) == card(a)-1;
+
+   binhyp(b:a)
+   =>
+   card(a \/ {b}) == card(a);
+
+   binhyp(not(b:a))
+   =>
+   card(a \/ {b}) == card(a)+1;
+/*
+   bnum(c)
+   =>
+   not(a = {c}) == not(c : a);
+
+   bident(c)
+   =>
+   not(a = {c}) == not(c : a);
+
+   bnum(c)
+   =>
+   not({} = {c}) == not(c : a);
+
+   bident(c)
+   =>
+   not({} = {c}) == not(c : a);
+*/
+   card({}) == 0;
+
+   binhyp(x:y)
+   =>
+   card({x}) == 1;
+
+   bnum(x)
+   =>
+   card({x}) == 1;
+
+   bident(x)
+   =>
+   card({x}) == 1;
+
+   card({x,y}) == card({x}) + 1;
+
+
+   btest(m <= n)      /* hardwired in Proof.src */
+   =>
+   card(m..n) == (n - m) + 1;       /* duplicate */
+
+   binhyp(m <= n)
+   =>
+   card(m..n) == (n - m) + 1;
+
+   binhyp(a=b-1)
+   =>
+   a..b == {a,b};
+
+   binhyp(b-1=a)
+   =>
+   a..b == {a,b};
+
+   binhyp(b=a+1)
+   =>
+   a..b == {a,b};
+
+   binhyp(a+1=b)
+   =>
+   a..b == {a,b};
+
+   a..a == {a};
+
+   binhyp(a <: b)
+   =>
+   (a \/ b) == b;
+
+   binhyp(b <: a)
+   =>
+   (a \/ b) == a;
+
+   binhyp(a : b)
+   =>
+   b \/ {c, a} == b \/ {c};
+
+   binhyp(a : b)
+   =>
+   {c, a} \/ b == {c} \/ b;
+
+   binhyp(a : b)
+   =>
+   (b \/ {a}) == b;
+
+   binhyp(a : b)
+   =>
+   ({a} \/ b) == b;
+
+   (a - b) \/ b == a \/ b;
+
+   (a \/ a) == a;
+
+   ({} \/ a) == a;
+
+   (a \/ {}) == a;
+
+
+   binhyp(a <: b)
+   =>
+   (a /\ b) == a;
+
+   binhyp(b <: a)
+   =>
+   (a /\ b)  == b;
+
+   binhyp(not(a : b))
+   =>
+   b /\ {c, a} == b /\ {c};
+
+   binhyp(not(a : b))
+   =>
+   {c, a} /\ b == {c} /\ b;
+
+   binhyp(not(a : b))
+   =>
+   ({a} /\ b) == {};
+
+   binhyp(not(a : b))
+   =>
+   (b /\ {a}) == {};
+
+   binhyp(not(a : b))
+   =>
+   b /\ {c, a} == b /\ {c};
+
+   binhyp(not(a : b))
+   =>
+   {c, a} /\ b == {c} /\ b;
+
+   (a - b) /\ b == {};
+   
+   a /\ (b - a) == {};
+
+   (b - a) /\ a == {};
+
+   (a /\ a) == a;
+
+   ({}  /\ a) == {};
+
+   (a  /\ {}) == {};
+
+
+   binhyp(not(b <: a))
+   =>
+   ((b \/ a) - b) == a;
+
+   binhyp(not(b <: a))
+   =>
+   ((a \/ b) - b) == a;
+
+   binhyp(not(b : a))
+   =>
+   (({b} \/ a) - {b}) == a;
+
+   binhyp(not(b : a))
+   =>
+   ((a \/ {b}) - {b}) == a;
+
+   binhyp(a <: b)
+   =>
+   (a \/ b) == b;
+
+   binhyp(a <: b)
+   =>
+   (a - b)      == {};
+
+   binhyp(a <: b)
+   =>
+   a - a == {};
+
+   binhyp(not(a : b)) 
+   =>
+   b - {c,a} == b - {c};
+
+   binhyp(not(a : b))
+   =>
+   b - {a}  == b;
+
+   binhyp(not(b:a))
+   =>
+   ({b} /\ a) == {};
+
+   binhyp(not(b:a))
+   =>
+   (a /\ {b}) == {};
+
+   (a /\ b) - b == {};
+
+   (a /\ b) - a == {};
+
+   ({} /\ a) == {};
+
+   (a /\ {}) == {};
+
+   (a /\ a) == a;
+
+   (a - {}) == a;
+
+   ({} - a) == {};
+
+   {a} - {a} == {};
+
+   binhyp(a = {})
+   =>
+   a == {};
+
+   binhyp({} = a)
+   =>
+   a == {}
+
+END
+
+&
+
+THEORY RewriteSet2X END &
+
+THEORY RewriteToFalseOrTrueX END &
+
+THEORY RewriteFromHypToFalseOrTrueX END &
+
+THEORY RewriteHypLogic1X END &
+
+THEORY RewriteHypLogic2X END &
+
+THEORY RewriteNonHypLogic1X END &
+
+THEORY RewriteNonHypLogic2X END &
+
+
+
+
+
+
+
+
+
+
+
+THEORY StandardizeX END & /* THIS SHOULD ALWAYS BE THE FIRST THEORY
+                             FOLLOWING THE REWRITE THEORIES         */
+
+THEORY CardinalityX IS /* THIS SHOULD ALWAYS BE THE FIRST THEORY
+                             FOLLOWING THE StandardizeX             */
+
+   binhyp(a : FIN(b)) &
+   bcall((NotEqualX;SwitchX) : not(a = {}))
+   =>
+   0 < card(a);
+
+   binhyp(a : FIN1(b))
+   =>
+   0 < card(a);
+
+   binhyp(a : FIN(b)) &
+   bcall((NotEqualX;SwitchX) : not(a = {}))
+   =>
+   1 <= card(a);
+
+   binhyp(a : FIN1(b))
+   =>
+   1 <= card(a);
+
+   binhyp(a <: b) &
+   binhyp(b : FIN(c))
+   =>
+   card(a) <= card(b);
+
+   binhyp(a <: b) &
+   binhyp(b : FIN1(c))
+   =>
+   card(a) <= card(b);
+
+   binhyp(card(a) <= n)
+   =>
+   card(a - b) <= n;
+
+   bnum(b) &
+   bcall((LessThanX~;SwitchX) : ( ( not(b : a) => (card(a) <  n) ) &
+                                  ( b : a      => (card(a) <= n) )   ))
+   =>
+   card(a \/ {b}) <= n;
+
+   bident(b) &
+   bcall((LessThanX~;SwitchX) : ( ( not(b : a) => (card(a) <  n) ) &
+                                  ( b : a      => (card(a) <= n) )   ))
+   =>
+   card(a \/ {b}) <= n;
+
+
+   card(a) <= card(a \/ b);
+
+   card(b) <= card(a \/ b);
+
+   card(a /\ b) <= card(a); 
+
+   card(a /\ b) <= card(b);
+
+   card(a - b) <= card(a)
+
+END
+
+&
+
+THEORY NotEqualX IS
+
+/*
+   bcall(SwitchX: not(b = a) )
+  =>
+   not(a = b);
+*/
+
+   bcall(SwitchX: not((b<+c)(d) = a) )
+  =>
+   not(a = (b<+c)(d));
+
+   bcall(SwitchX~ : ( (x=a => not(v = z)) & (not(x=a) => not((f<+{g(x)(y)|->v})(g(a)(y)) = z)) ) )
+  =>
+   not((f<+{g(x)(y)|->v})(g(a)(y)) = z);  /*** allow by-pass no longer needed ***/
+
+   bcall(SwitchX~ : ((x = a => not(y(b) = z)) & (not(x = a) => not(f(a)(b) = z))))
+  =>
+   not((f<+{x|->y})(a)(b) = z);    /*** allow by-pass no longer needed ***/
+
+   bcall(SwitchX~ : ((x = a => not(y = z)) & (not(x = a) => not(f(a) = z))))
+  =>
+   not((f<+{x|->y})(a) = z);      /*** allow by-pass no longer needed ***/
+
+
+
+   binhyp(not(a:s)) &
+   bcall(SwitchX : (b:s) )
+   =>
+   not(a=b);      /*** allow by-pass no longer needed ***/
+
+
+   not(NAT = {});
+
+   binhyp(not(a : {b, c}))
+   =>
+   not(a = c);
+
+   binhyp(not(card(a) = 0))
+   =>
+   not(a = {});
+
+   bcall(SwitchX : (not(a={}) or not(b={})))
+   =>
+   not(a\/b = {});
+
+   binhyp(not(a={}))
+   =>
+   not(a\/b = {});
+
+   binhyp(not(b={}))
+   =>
+   not(a\/b = {});
+
+   binhyp(card(a) : NAT1)
+   =>
+   not(a = {});
+
+   bcall((LessThanOrEqualX~;SwitchX) : (m <= n) )
+   =>
+   not(m..n = {});
+
+   bcall((InNatX~;SwitchX) : (size(s) : NAT1))
+   =>
+   not(s = <>);
+
+   binhyp(s : seq(a)) &
+   bcall((InNatX~;SwitchX) : (size(s) : NAT1))
+   =>
+   not(s = {});
+
+   binhyp(size(s) : NAT1)
+   =>
+   not(s = {});
+
+   binhyp(not(a - b = {}))
+   =>
+   not(a = {});
+
+   binhyp(b <: a) &
+   binhyp(not(b = {}))
+   =>
+   not(a = {});
+
+   binhyp(not((a /\ b) = {}))
+   =>
+   not(a = {});
+
+   binhyp(a : FIN1(b))
+   =>
+   not(a = {});
+
+   binhyp(a : POW1(b))
+   =>
+   not(a = {});
+
+   binhyp(b : a)
+   =>
+   not(a = {});
+
+   not({a} = {});
+
+   not({} = {a});
+
+
+   binhyp(n : NAT) &
+   bcall((LessThanX~;SwitchX) : (0 < n))
+   =>
+   not(n = 0);
+
+   binhyp(n : NAT1)
+   =>
+   not(n = 0);
+
+   binhyp(a < b)
+   =>
+   not(a = b);
+
+   binhyp(b < a)
+   =>
+   not(a = b);
+
+   btest(a < b)      /* hardwired in Proof.src */
+   => 
+   not(a = b);       /* duplicate */
+
+   btest(a > b)      /* hardwired in Proof.src */
+   => 
+   not(a = b);       /* duplicate */
+
+   binhyp(not(a = b))
+   =>
+   not(b = a);
+
+
+   /***
+   establish false
+   ***/
+
+   binhyp(b=a) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   not(a = b);
+
+   binhyp(a=b) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   not(a = b);
+
+   bnum(a) &
+   bnum(b) &
+   btest(a=b) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   not(a = b)
+
+END
+
+&
+
+THEORY EqualityX IS
+
+/*
+   bcall(SwitchX : ( b = a ) )
+  =>
+   a = b;
+*/
+
+   bcall(SwitchX: ((b<+c)(d) = a) )
+  =>
+   a = (b<+c)(d);
+
+   binhyp(b <: c) &
+   bcall((InclusionX;SwitchX) : ((a <: b) & (b <: a)))
+   =>
+   a = b;       /*** allow by-pass no longer needed ***/
+
+   binhyp(a <: c) &
+   bcall((InclusionX;SwitchX) : ((a <: b) & (b <: a)))
+   =>
+   a = b;      /*** allow by-pass no longer needed ***/
+
+
+   bcall((InclusionX;SwitchX) : ((a <: {s|t}) & ({s|t} <: a)))
+   =>
+   a = {s|t};      /*** allow by-pass no longer needed ***/
+
+
+
+   binhyp(a : NAT) &
+   bcall((LessThanOrEqualX~;SwitchX) : ((a <= b) & (b <= a)))
+   =>
+   a = b;      /*** allow by-pass no longer needed ***/
+
+   binhyp(b : NAT) &
+   bcall((LessThanOrEqualX~;SwitchX) : ((a <= b) & (b <= a)))
+   =>
+   a = b;      /*** allow by-pass no longer needed ***/
+
+   bnum(b) &
+   bcall((LessThanOrEqualX~;SwitchX) : ((a <= b) & (b <= a)))
+   =>
+   a = b;      /*** allow by-pass no longer needed ***/
+
+   bnum(a) &
+   bcall((LessThanOrEqualX~;SwitchX) : ((a <= b) & (b <= a)))
+   =>
+   a = b;      /*** allow by-pass no longer needed ***/
+
+
+
+   bcall((InclusionX;SwitchX) : (a <: {}))
+   =>
+   {} = a;      /*** allow by-pass no longer needed ***/
+
+   bcall((InclusionX;SwitchX) : (a <: {}))
+   =>
+   a = {};      /*** allow by-pass no longer needed ***/
+
+
+   bcall(SwitchX : (f=TRUE => f=FALSE) )
+  =>
+   f = FALSE;      /*** allow by-pass no longer needed ***/
+
+   bcall(SwitchX : (f=FALSE => f=TRUE) )
+  =>
+   f = TRUE;       /*** allow by-pass no longer needed ***/
+
+
+
+
+
+   bcall(SwitchX~ : ( (a=x => v = z) & (not(a=x) => (f<+{g(x)(y)|->v})(g(a)(y)) = z) ) )
+  =>
+   (f<+{g(x)(y)|->v})(g(a)(y)) = z;   /*** allow by-pass no longer needed ***/
+
+   bcall(SwitchX~ : ((a = x => y(b) = z) & (not(a = x) => f(a)(b) = z)))
+  =>
+   (f<+{x|->y})(a)(b) = z;      /*** allow by-pass no longer needed ***/
+
+   bcall(SwitchX~ : ((a = x => y = z) & (not(a = x) => f(a) = z)))
+  =>
+   (f<+{x|->y})(a) = z;      /*** allow by-pass no longer needed ***/
+
+
+
+   binhyp(f: s>+>t) &
+   bcall((InSetX~;SwitchX) : ({y|->x} : f))
+  =>
+   {y}<<|f = f|>>{x};
+
+   binhyp(f: s>+>t) &
+   bcall((InSetX~;SwitchX) : ({y|->x} : f))
+  =>
+    f|>>{x} = {y}<<|f;
+
+
+
+   bcall(SwitchX : not(x:s))
+   =>
+   f(x) = (s<<|f)(x);
+
+   bcall(SwitchX : not(x:s))
+   =>
+   (s<<|f)(x) = f(x);
+
+
+
+   bcall(SwitchX : (not(c : a)))
+  =>
+   a - {c} = a;
+
+
+   bcall(SwitchX : ({b,c} /\ a = {}))
+  =>
+   a - {b,c} = a;
+
+
+
+
+   bcall((EqualityX;SwitchX) : ( (a - c) = d ))
+  => 
+   (d - b) = (a - b - c);
+
+   bcall((EqualityX;SwitchX) : ( (a - c) = d ))
+  => 
+   (a - b - c) = (d - b);
+
+
+
+
+   bcall((EqualityX;SwitchX) : ( (b - c) = d ))
+  => 
+   (d + a) = (a + b - c);
+
+   bcall((EqualityX;SwitchX) : ( (b - c) = d ))
+  => 
+   (a + b - c) = (d + a);
+
+   bcall((EqualityX;SwitchX) : ( (b + c) = d ))
+  => 
+   (d + a) = (a + b + c);
+
+   bcall((EqualityX;SwitchX) : ( (b + c) = d ))
+  => 
+   (a + b + c) = (d + a);
+
+
+
+   bcall((EqualityX;SwitchX) : ( (a - c) = d ))
+  => 
+   (d - b) = (a - b - c);
+
+   bcall((EqualityX;SwitchX) : ( (a - c) = d ))
+  => 
+   (a - b - c) = (d - b);
+
+   bcall((EqualityX;SwitchX) : ( (a - c) = d ))
+  => 
+   (d + b) = (a + b - c);
+
+   bcall((EqualityX;SwitchX) : ( (a - c) = d ))
+  => 
+   (a + b - c) = (d + b);
+
+
+
+
+   bcall((EqualityX;SwitchX) : ( (a + c) = d ))
+  => 
+   (d - b) = (a - b + c);
+
+   bcall((EqualityX;SwitchX) : ( (a + c) = d ))
+  => 
+   (a - b + c) = (d - b);
+
+   bcall((EqualityX;SwitchX) : ( (a + c) = d ))
+  => 
+   (d + b) = (a + b + c);
+
+   bcall((EqualityX;SwitchX) : ( (a + c) = d ))
+  => 
+   (a + b + c) = (d + b);
+
+
+
+   bcall((EqualityX;SwitchX) : ( a = b ))
+  => 
+   (m - a) = (m - b);
+
+   bcall((EqualityX;SwitchX) : ( a = b ))
+  => 
+   (a - m) = (b - m);
+
+   bcall((EqualityX;SwitchX) : ( a = b ))
+  => 
+   (a + m) = (b + m);
+
+   bcall((EqualityX;SwitchX) : ( a = b ))
+  => 
+   (m + a) = (b + m);
+
+   bcall((EqualityX;SwitchX) : ( a = b ))
+  => 
+   (a + m) = (m + b);
+
+   bcall((EqualityX;SwitchX) : ( a = b ))
+  => 
+   (m + a) = (m + b);
+
+   binhyp(b <: d) &
+   bcall((InclusionX;SwitchX) : ((c <: a) & (c <: b) & ((a /\ b) <: c)))
+   =>
+   (a /\ b) =  c;
+
+   binhyp(a <: d) &
+   bcall((InclusionX;SwitchX) : ((c <: a) & (c <: b) & ((a /\ b) <: c)))
+   =>
+   (a /\ b) = c;
+
+   binhyp(c <: d) &
+   bcall((InclusionX;SwitchX) : ((c <: a) & (c <: b) & ((a /\ b) <: c)))
+   =>
+   (a /\ b) = c;
+
+   binhyp(c <: d) &
+   bcall((InclusionX;SwitchX) : ((a <: c) & (b <: c) & (c <: (a \/ b))))
+   =>
+   (a \/ b) = c;
+
+   binhyp(b <: d) &
+   bcall((InclusionX;SwitchX) : ((a <: c) & (b <: c) & (c <: (a \/ b))))
+   =>
+   (a \/ b) = c;
+
+   binhyp(a <: d) &
+   bcall((InclusionX;SwitchX) : ((a <: c) & (b <: c) & (c <: (a \/ b))))
+   =>
+   (a \/ b) = c;
+
+   binhyp(a /\ b = c)
+   =>
+   b /\ a = c;
+
+   binhyp(c = a /\ b)
+   =>
+   b /\ a = c;
+
+   binhyp(a \/ b = c)
+   =>
+   b \/ a = c;
+
+   binhyp(c = a \/ b)
+   =>
+   b \/ a = c;
+
+   bcall(SwitchX : (b = c)) 
+   =>
+   a \/ b = a \/ c;
+
+   bcall(SwitchX : (b = c)) 
+   =>
+   b \/ a = c \/ a;
+
+   binhyp(f:S-->T) &
+   bcall((InclusionX;SwitchX) : (ran(f) <: dom(g)) )
+   =>
+   dom(f;g) = S;
+
+   {} = <>;
+
+   binhyp( b /\ a = {})
+  =>
+   (b-c) /\ a = {};
+
+   binhyp( a /\ b = {})
+  =>
+   (b-c) /\ a = {};
+
+   binhyp( b /\ a = {})
+  =>
+   a /\ (b-c) = {};
+
+   binhyp( a /\ b = {})
+  =>
+   a /\ (b-c) = {};
+
+   <> = {};
+
+   binhyp(card(1..b) = a)
+   =>
+   a = b;
+
+   binhyp(card(1..b) = a)
+   =>
+   b = a;
+
+   binhyp(f: 1 .. a --> b)
+   =>
+   card(f) = a;
+
+   binhyp(f: 1 .. a --> b)
+   =>
+   a = card(f);
+
+   binhyp(b = a)
+   =>
+   a = b;
+
+   s^[x] = s<-x;
+
+   s<-x  = s^[x];
+
+   bsearch(a,B,C) &
+   bcall((EqualityX;SwitchX) : ( {A} = {C} ))
+   =>
+   {A,a} = {B};
+
+   /***
+   establish false
+   ***/
+
+   binhyp(S={b,a}) &
+   binhyp(card(S)=2) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a = b;
+
+   binhyp(S={a,b}) &
+   binhyp(card(S)=2) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a = b;
+
+   binhyp(not(b=a)) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a = b;
+
+   binhyp(not(a=b)) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a = b;
+
+   bnum(a) &
+   bnum(b) &
+   btest(a/=b) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a = b
+
+END
+
+&
+
+THEORY Exist0X IS
+
+  (a & (b & c)) == (a & b & c);
+
+  (#(a,b).(b<:a & card(a):NAT1));
+
+  a\b &
+  bcall(SwitchX : ( b ) )
+ =>
+  (#(a).b);
+
+  a\b &
+  (#(A).b)
+ =>
+  (#(A,a).b);
+
+
+  bsearch(true,b,c) &
+  (#a.c)
+ =>
+  (#a.b);
+
+  bsearch((a=a),b,c) &
+  (#a.c)
+ =>
+  (#a.b);
+
+  (#a.(a: POW(NAT) & not(a = {})));
+
+  (#a.(a: POW(SCALAR) & not(a = {})));
+
+  (#a.(not(a = {}) & a: POW(NAT)));
+
+  (#a.(not(a = {}) & a: POW(SCALAR)));
+
+   btest(b<=c)                /* hardwired in Proof.src */
+  =>
+   (#a.(a:b..c));
+
+   binhyp(not(b={}))
+  =>
+   (#a.(a:b));
+
+   (#a.(a:{b}));
+
+   (#a.(a:NAT1));
+
+   (#a.(a:NAT));
+
+   (#a.(a:SCALAR));
+
+    bcall(SwitchX: ( n:NAT ) )
+  =>
+   (#a.(card(a):NAT & card(a)=n));
+
+    bcall(SwitchX: ( n:NAT1 ) )
+  =>
+   (#a.(card(a):NAT1 & card(a)=n));
+
+   (#a.(card(a):NAT));
+
+   (#a.(card(a):NAT1));
+
+   binhyp(n : NAT1)
+   =>
+   (#s.(n<=card(s) & not(s={})));
+
+   binhyp(n : NAT1)
+   =>
+   (#s.(not(s={}) & n<=card(s)));
+
+   binhyp(n : NAT1)
+   =>
+   (#s.(card(s)=n & not(s={})));
+
+   binhyp(n : NAT1)
+   =>
+   (#s.(not(s={}) & card(s)=n));
+
+   binhyp(not(t={}))
+   =>
+   (#s.(s=t));
+
+   binhyp(a = b) &
+   binhyp(y : b)
+   =>
+   (#x.(x : a));
+
+   binhyp(b = a) &
+   binhyp(y : b)
+   =>
+   (#x.(x : a));
+
+   binhyp(y : a)
+   =>
+   (#x.(x : a));
+
+   binhyp(not(a={}))
+   =>
+   (#x.(x : a));
+
+   (#S.(card(S) = m));
+
+/***
+moved from Toolkit2021
+***/
+
+  (#(a,x).(not(a={})&x:a));
+
+  (#(a,x).(not(a={})&x<:a));
+
+  (#a.(a: {s}));
+
+  (#a.(a<:{s}));
+
+  binhyp(s=t)
+ =>
+  (#a.(a<:s));
+
+  binhyp(t=s)
+ =>
+  (#a.(a<:s));
+
+  binhyp(t=s)
+ =>
+  (#a.(s=a));
+
+  binhyp(s=t)
+ =>
+  (#a.(s=a));
+
+  binhyp(t=s)
+ =>
+  (#a.(a=s));
+
+  binhyp(s=t)
+ =>
+  (#a.(a=s));
+
+  binhyp(not(s)={})
+ =>
+  (#a.(a<:s));
+
+  binhyp(not(s)={})
+ =>
+  (#a.(s=a));
+
+  binhyp(not(s)={})
+ =>
+  (#a.(a=s));
+
+  (#a.(not(a={})));
+
+  bnum(b) &
+  btest(b>0)
+ =>
+  (#a.(a:NAT1 & b<=a));
+
+  bnum(b)
+ =>
+  (#a.(card(a):NAT1 & b<card(a)));
+
+  bnum(b)
+ =>
+  (#a.(a:NAT1 & b<a));
+
+  bnum(b) &
+  btest(b>0)
+ =>
+  (#a.(b<=card(a) & card(a):NAT1));
+
+  bnum(b) &
+  btest(b>0)
+ =>
+  (#a.(b<=a & a:NAT1));
+
+  bnum(b)
+ =>
+  (#a.(b<card(a) & card(a):NAT1));
+
+  bnum(b)
+ =>
+  (#a.(b<a & a:NAT1));
+
+  bnum(b)
+ =>
+  (#a.(card(a):NAT & b<=card(a)));
+
+  bnum(b)
+ =>
+  (#a.(a:NAT & b<=a));
+
+  bnum(b) &
+  btest(a<2147483646)
+ =>
+  (#a.(a:SCALAR & b<=a));
+
+  bnum(b)
+ =>
+  (#a.(a:NAT & b<a));
+
+  bnum(b) &
+  btest(a<2147483645)
+ =>
+  (#a.(a:SCALAR & b<a));
+
+  bnum(b)
+ =>
+  (#a.(b<=a & a:NAT));
+
+  bnum(b) &
+  btest(a<2147483646)
+ =>
+  (#a.(b<=a & a:SCALAR));
+
+  bnum(b)
+ =>
+  (#a.(b<a & a:NAT));
+
+  bnum(b) &
+  btest(a<2147483645)
+ =>
+  (#a.(b<a & a:SCALAR));
+
+  btest(b<=c)
+ =>
+  (#a.(a=b..c))
+
+END
+
+&
+
+
+THEORY Exist1X IS
+
+   bsearch((y=a),b,c) &     /* make sure there is another before rotating */
+   bsearch((z=a),c,d) &
+   Bcall(SwitchX : (#a.(c&(y=a))))
+ =>
+   (#a.(b));
+
+   bsearch((y=a),b,c) &
+   bsearch((a=z),c,d) &     /* make sure there is another before rotating */
+   Bcall(SwitchX : (#a.(c&(y=a))))
+ =>
+   (#a.(b));
+
+   bsearch((a=y),b,c) &
+   bsearch((z=a),c,d) &     /* make sure there is another before rotating */
+   Bcall(SwitchX : (#a.(c&(a=y))))
+ =>
+   (#a.(b));
+
+   bsearch((a=y),b,c) &
+   bsearch((a=z),c,d) &     /* make sure there is another before rotating */
+   Bcall(SwitchX : (#a.(c&(a=y))))
+ =>
+   (#a.(b));
+
+
+
+   bsearch((y=a),b,c) &
+   bsearch((z=a),c,d) &     /* make sure there is another before rotating */
+   Bcall(SwitchX : (#(A,a).(c&(y=a))))
+ =>
+   (#(A,a).(b));
+
+   bsearch((y=a),b,c) &
+   bsearch((a=z),c,d) &     /* make sure there is another before rotating */
+   Bcall(SwitchX : (#(A,a).(c&(y=a))))
+ =>
+   (#(A,a).(b));
+
+   bsearch((a=y),b,c) &
+   bsearch((z=a),c,d) &     /* make sure there is another before rotating */
+   Bcall(SwitchX : (#(A,a.(c&(a=y)))))
+ =>
+   (#(A,a).(b));
+
+   bsearch((a=y),b,c) &
+   bsearch((a=z),c,d) &     /* make sure there is another before rotating */
+   Bcall(SwitchX : (#(A,a).(c&(a=y))))
+ =>
+   (#(A,a).(b));
+
+
+
+
+   bident(x) &
+   Bcall(SwitchX : (#(y,x).(b)))
+  =>
+   (#(x,y).(b));
+
+   bsearch(x,a,c) &
+   Bcall(SwitchX : (#(c,x).(b)))
+  =>
+   (#a.(b));
+
+
+
+
+   bsearch((a:s),b,c) &
+   bsearch(s,A,a) &
+   (#(a).[s:={a}](c))
+ =>
+   (#(A).(b));
+
+   bsearch((a:s),b,c) &
+   bsearch(s,A,B) &
+   bsearch(a,B,C) &
+   (#(B).[s:={a}](c))
+ =>
+   (#(A).(b));
+
+
+
+   bsearch((a:NAT),b,c) &
+   bcall(SwitchX : ([a:=2](c)))
+  =>
+   (#(a).(b));
+  
+   bsearch((a:NAT),b,c) &
+   bsearch(a,A,B) &
+   bcall(SwitchX : (#(B).[a:=2](c)))
+  =>
+   (#(A).(b));
+  
+   bsearch((a:NAT),b,c) &
+   bcall(SwitchX : ([a:=1](c)))
+  =>
+   (#(a).(b));
+  
+   bsearch((a:NAT),b,c) &
+   bsearch(a,A,B) &
+   bcall(SwitchX : (#(B).[a:=1](c)))
+  =>
+   (#(A).(b));
+  
+   bsearch((a:NAT),b,c) &
+   bcall(SwitchX : [a:=0](c))
+  =>
+   (#(a).(b));
+  
+   bsearch((a:NAT),b,c) &
+   bsearch(a,A,B) &
+   bcall(SwitchX : (#(B).[a:=0](c)))
+  =>
+   (#(A).(b));
+
+
+  
+   bsearch((a:NAT1),b,c) &
+   bcall(SwitchX : [a:=2](c))
+  =>
+   (#(a).(b));
+  
+   bsearch((a:NAT1),b,c) &
+   bsearch(a,A,B) &
+   bcall(SwitchX : (#(B).[a:=2](c)))
+  =>
+   (#(A).(b));
+
+   bsearch((a:NAT1),b,c) &
+   bcall(SwitchX : ([a:=1](c)))
+  =>
+   (#(a).(b));
+  
+   bsearch((a:NAT1),b,c) &
+   bsearch(a,A,B) &
+   bcall(SwitchX : (#(B).[a:=1](c)))
+  =>
+   (#(A).(b));
+
+
+
+
+   bsearch((x:{z}),b,c) &
+   bnum(z) &
+   x\z &
+   bsearch(x,a,s) &
+   (#s.[x:=z]c)
+  =>
+   (#a.b);
+
+   bsearch((x:{z}),b,c) &
+   bident(z) &
+   x\z &
+   bsearch(x,a,s) &
+   (#s.[x:=z]c)
+  =>
+   (#a.b);
+
+   bsearch((a:{y}),b,c) &
+   bnum(y) &
+   a\y &
+   ([a:=y]c)
+  =>
+   (#a.b);
+
+   bsearch((a:{y}),b,c) &                /* hardwired in Proof.src */
+   bident(y) &
+   a\y &
+   ([a:=y]c)
+  =>
+   (#a.b);
+
+		   (#(a).(p & q)) or (#(a).(p & r))
+		   =>
+		   (#(a).(p & (q or r)));
+
+	 	  (#(a).(q)) or (#(a).(r))
+	 	  =>
+	 	  (#(a).(q or r));
+
+   bsearch((y=x),b,c) &
+   x\y &
+   bsearch(x,a,s) &
+   (#s.[x:=y]c)
+  =>
+   (#a.b);
+
+   bsearch((x=y),b,c) &
+   x\y &
+   bsearch(x,a,s) &
+   (#s.[x:=y]c)
+  =>
+   (#a.b);
+
+   bsearch((x=a),b,c) &
+   a\x &
+   ([a:=x]c)
+  =>
+   (#a.b);
+
+   bsearch((a=x),b,c) &
+   a\x &
+   ([a:=x]c)
+  =>
+   (#a.b);
+
+   bsearch(d,c,e) &
+   a\d &
+   b\e &
+   bcall(((Exist0X;SUB;ARI)~;SwitchX) : ((#b.d) & (#a.e)))
+  =>
+   (#(a,b).(c));
+
+   bcall((InNatX;SwitchX):(card(b):NAT&card(c):NAT))
+   =>
+   (#a.(a:b-->c));
+
+   bcall((InNatX;SwitchX):(card(b):NAT&card(c):NAT))
+   =>
+   (#a.(a:b+->c));
+
+   bcall((InNatX;SwitchX):(card(b):NAT&card(c):NAT))
+   =>
+   (#a.(a:b<->c));
+
+   bcall((EqualityX;SwitchX) : (card(S) = card(T)) )
+  =>
+   (#f. (f: S >->> T ))
+
+END
+
+&
+
+THEORY Exist2X IS
+
+/*
+   Bcall(((SUB;ExistX;ARI)~;SwitchX) : a)
+  =>
+   a;
+*/
+
+  bsearch((z:{Z}),b,c) &     /* make sure there is another before rotating */
+  bsearch((y:{Y}),c,d) &
+  Bcall(SwitchX : (#a.(c&(z:{Z}))))
+ =>
+   (#a.(b));
+
+  bsearch((z:{Z}),b,c) &     /* make sure there is another before rotating */
+  bsearch(z,a,A) &
+  bsearch(x,Z,y) &
+  Bcall(SwitchX : (#a.(c&(z:{y,x}))))
+ =>
+   (#a.(b));
+  
+
+
+   bsearch((s|>>{a}=t|>>{x}),b,c) &
+   a\x &
+   bcall(SwitchX : [a:=x]b)
+ =>
+   (#a.b);
+
+   bsearch((s|>{a}=t|>{x}),b,c) &
+   a\x &
+   bcall(SwitchX : [a:=x]b)
+ =>
+   (#a.b);
+
+   bsearch(({a}<<|s={x}<<|t),b,c) &
+   a\x &
+   bcall(SwitchX : [a:=x]b)
+ =>
+   (#a.b);
+
+   bsearch(({a}<|s={x}<|t),b,c) &
+   a\x &
+   bcall(SwitchX : [a:=x]b)
+ =>
+   (#a.b);
+
+   bsearch((s-{a}=t-{x}),b,c) &
+   a\x &
+   bcall(SwitchX : [a:=x]b)
+ =>
+   (#a.b);
+
+   bsearch((s\/{a}=t\/{x}),b,c) &
+   a\x &
+   bcall(SwitchX : [a:=x]b)
+ =>
+   (#a.b);
+
+
+
+   bsearch((s|>>{a}=t|>>{x}),b,c) &
+   a\x &
+   bcall((SUB;SwitchX) : (#A.[a:=x]b))
+ =>
+   (#(A,a).b);
+
+   bsearch((s|>{a}=t|>{x}),b,c) &
+   a\x &
+   bcall((SUB;SwitchX) : (#A.[a:=x]b))
+ =>
+   (#(A,a).b);
+
+   bsearch(({a}<<|s={x}<<|t),b,c) &
+   a\x &
+   bcall((SUB;SwitchX) : (#A.[a:=x]b))
+ =>
+   (#(A,a).b);
+
+   bsearch(({a}<|s={x}<|t),b,c) &
+   a\x &
+   bcall((SUB;SwitchX) : (#A.[a:=x]b))
+ =>
+   (#(A,a).b);
+
+   bsearch((s-{a}=t-{x}),b,c) &
+   a\x &
+   bcall((SUB;SwitchX) : (#A.[a:=x]b))
+ =>
+   (#(A,a).b);
+
+   bsearch((s\/{a}=t\/{x}),b,c) &
+   a\x &
+   bcall((SUB;SwitchX) : (#A.[a:=x]b))
+ =>
+   (#(A,a).b);
+
+
+
+
+   bsearch((x:{Z}),b,c) &
+   bsearch(z,Z,Y) &
+   x\z &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=z]c))
+  =>
+   (#a.b);
+
+
+
+   bsearch((y JOK2 a),b,c) &
+   binhyp(y JOK2 x) &
+   a\x &
+   bcall(SwitchX : ([a:=x]c))
+ =>
+   (#a.b);
+
+   bsearch((a JOK2 y),b,c) &
+   binhyp(x JOK2 y) &
+   a\x &
+   bcall(SwitchX : ([a:=x]c))
+ =>
+   (#a.b);
+
+   bsearch((a<:y),b,c) &
+   binhyp(x<:y) &
+   a\x &
+   bcall(SwitchX : ([a:=x]c))
+ =>
+   (#a.b);
+
+   bsearch((y<:a),b,c) &
+   binhyp(y<:x) &
+   a\x &
+   bcall(SwitchX : ([a:=x]c))
+ =>
+   (#a.b);
+
+   bsearch((a:{Y}),b,c) &
+   bsearch(y,Y,Z) &
+   a\y &
+   bcall(SwitchX : ([a:=y]c))
+  =>
+   (#a.b);
+
+   bsearch((a:L..H),b,c) &                /* hardwired in Proof.src */
+   btest(L<=H) &
+   ([a:=H]c)
+  =>
+   (#a.b);
+
+   bsearch((a:L..H),b,c) &
+   btest(L<=H) &
+   ([a:=L]c)
+  =>
+   (#a.b);
+
+   bsearch((a:y),b,c) &
+   binhyp(x:y) &
+   a\x &
+   bcall(SwitchX : ([a:=x]c))
+  =>
+   (#a.b);
+
+   bsearch(not(a:y),b,c) &
+   binhyp(not(x:y)) &
+   a\x &
+   bcall(SwitchX : ([a:=x]c))
+  =>
+   (#a.b);
+
+   bsearch((y:a),b,c) &
+   binhyp(y:x) &
+   a\x &
+   bcall(SwitchX : ([a:=x]c))
+ =>
+   (#a.b);
+
+   bsearch(not(y:a),b,c) &
+   binhyp(not(y:x)) &
+   a\x &
+   bcall(SwitchX : ([a:=x]c))
+ =>
+   (#a.b);
+
+   bsearch((a:S),b,c) &
+   binhyp(S={s,t}) &
+   binhyp(card(S)=2) &
+   a\(s,t) &
+   bcall((SUB~;SwitchX) : (([a:=s]c) or ([a:=t]c)))
+ =>
+   (#a.b);
+
+
+
+   bsearch((x<c),b,q) &
+   bsearch(c,a,d) &
+   c\x &
+   bcall((SUB;SwitchX) : (#d.[c:=x+1]q))
+  =>
+   (#a.b);
+
+   bsearch((x<=c),b,q) &
+   bsearch(c,a,d) &
+   c\x &
+   bcall((SUB;SwitchX) : (#d.[c:=x]q))
+  =>
+   (#a.b);
+
+   bsearch((c<x),b,q) &
+   bsearch(c,a,d) &
+   c\x &
+   bcall((SUB;SwitchX) : (#d.[c:=x-1]q))
+  =>
+   (#a.b);
+
+   bsearch((c<=x),b,q) &
+   bsearch(c,a,d) &
+   c\x &
+   bcall((SUB;SwitchX) : (#d.[c:=x]q))
+  =>
+   (#a.b);
+
+
+
+   bsearch((x<a),b,q) &
+   a\x &
+   bcall((SUB;SwitchX) : ([a:=x+1]q))
+  =>
+   (#a.b);
+
+   bsearch((x<=a),b,q) &
+   a\x &
+   bcall((SUB;SwitchX) : ([a:=x]q))
+  =>
+   (#a.b);
+
+   bsearch((a<x),b,q) &
+   a\x &
+   bcall((SUB;SwitchX) : ([a:=x-1]q))
+  =>
+   (#a.b);
+
+   bsearch((a<=x),b,q) &
+   a\x &
+   bcall((SUB;SwitchX) : ([a:=x]q))
+  =>
+   (#a.b);
+
+
+
+   bsearch((z JOK2 x),b,c) &
+   binhyp(z JOK2 y) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch(not(z JOK2 x),b,c) &
+   binhyp(not(z JOK2 y)) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch((x JOK2 z),b,c) &
+   binhyp(y JOK2 z) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch(not(x JOK2 z),b,c) &
+   binhyp(not(y JOK2 z)) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch((z<:x),b,c) &
+   binhyp(z<:y) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch((x<:z),b,c) &
+   binhyp(y<:z) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch((z:x),b,c) &
+   binhyp(z:y) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch((x:L..H),b,c) &                /* hardwired in Proof.src */
+   btest(L<=H) &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=H]c))
+  =>
+   (#a.b);
+
+   bsearch((x:L..H),b,c) &                /* hardwired in Proof.src */
+   btest(L<=H) &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=L]c))
+  =>
+   (#a.b);
+
+
+   bsearch((x:z),b,c) &
+   binhyp(y:z) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch(not(x:z),b,c) &
+   binhyp(not(y:z)) &
+   x\y &
+   bsearch(x,a,s) &
+   bcall((SUB;SwitchX) : (#s.[x:=y]c))
+  =>
+   (#a.b);
+
+   bsearch((x:S),b,c) &
+   binhyp(S={s,t}) &
+   binhyp(card(S)=2) &
+   x\(s,t) &
+   bsearch(x,a,s) &
+   bcall((SUB~;SwitchX) : ((#s.[x:=s]c) or (#s.[x:=t]c)))
+  =>
+   (#a.b)
+
+END
+
+&
+
+
+
+
+THEORY InFINX IS
+
+   /*** moved from InTypeX ***/
+   bcall(SwitchX : ( (a : FIN(b)) & not(a = {}) ))
+   =>
+   a : FIN1(b);
+
+   bcall(SwitchX : ( card(a) : NAT1 ) )
+   =>
+   a : FIN1(a);
+
+   bcall(SwitchX : ( card(a) : NAT ) )
+   =>
+   a : FIN(a);
+
+   bnum(b) &
+   bcall((InclusionX;SwitchX) : (a <: {b}))
+   =>
+   a : FIN({b});
+
+   bident(b) &
+   bcall((InclusionX;SwitchX) : (a <: {b}))
+   =>
+   a : FIN({b});
+
+   bcall((InclusionX;SwitchX) : (a <: {b, c}))
+   =>
+   a : FIN({b, c});
+
+   zzz_0\a &
+   zzz_0\P &
+   bident(x) &
+   binhyp(a : FIN(c)) &
+   bcall(SwitchX : (!zzz_0.((zzz_0:a) => [x:=zzz_0]P)))
+   =>
+   a : FIN({x | P});
+
+   bcall(SwitchX : ( (a : FIN(b)) & (a /\ c) = {}) )
+   =>
+   a : FIN(b - c);
+
+   bcall(SwitchX : (a : FIN(c) & (a <: b)))
+   =>
+   a : FIN(b /\ c);
+
+   bcall((InSetX~;SwitchX) : (a : b))
+   =>
+   {a} : FIN(b);
+
+   bcall((InSetX~;SwitchX) : (({a} : FIN(c)) &  (b : c)))
+   =>
+   {a, b} : FIN(c);
+
+   bcall((InSetX~;SwitchX) : ((a : FIN(c)) & (b : FIN(d))))
+   =>
+   (a * b) : FIN(c * d);
+
+   bcall((InSetX~;SwitchX) : ((a : FIN(c)) & (b : FIN(c))))
+   =>
+   (a \/ b) : FIN(c);
+
+   bcall(SwitchX~ : ((a : FIN(b)) or (a : FIN(c))) )
+   =>
+   a : FIN(b \/ c);
+
+   binhyp(a : FIN(b))
+   =>
+   a : FIN(b \/ c);
+
+   binhyp(a : FIN(c))
+   =>
+   a : FIN(b \/ c);
+
+   binhyp(a : FIN(b))
+   =>
+   a : FIN(b \/ c);
+
+   bcall((InFINX;SwitchX) :  (s : FIN(V)) )
+   =>
+   (s - t) : FIN(V);
+
+   binhyp(a : FIN(c))   
+   =>
+   (a - b) : FIN(c);
+
+   bcall(SwitchX~ : ((a : FIN(c)) or (b : FIN(c))) )
+   =>
+   (a /\ b) : FIN(c);
+
+   binhyp(a : FIN(c))
+   =>
+   (a /\ b) : FIN(c);
+
+   binhyp(b : FIN(c))
+   =>
+   (a /\ b) : FIN(c);
+
+   {} : FIN(a)
+
+END
+
+&
+
+THEORY InNatX IS
+
+   bcall(SwitchX : ((s : seq(NAT)) & not(s = <>)))
+   =>
+   first(s) : NAT;
+
+   bcall(SwitchX : ((s : seq(NAT)) & not(s = <>)))
+   =>
+   last(s) : NAT;
+
+   zzz_0\s &
+   zzz_0\e &
+   bident(x) &
+   bcall(SwitchX : ((s : FIN(s)) & (!zzz_0.((zzz_0:s) => ([x:=zzz_0]e:NAT)))))
+   =>
+   (SIGMA(x).(x : s | e)) : NAT;
+
+   bcall((InFINX~;SwitchX) : (a : FIN(a)))
+   =>
+   card(a) : NAT;
+
+   bcall(SwitchX : ( (a : FIN(a)) & not(a={}) ) )
+   =>
+   max(a) : NAT;
+
+   binhyp(s : seq(a))
+   =>
+   size(s) : NAT;
+
+   binhyp(ran(s) <: seq(v))
+   =>
+   size(s(a)) :NAT;
+
+   binhyp(f:S+->STRING) &
+   bcall(SwitchX : (x : dom(f)))
+   =>
+   size(f(x)) : NAT;
+
+   bcall((InNatX;SwitchX):(card(a):NAT1&card(b):NAT1))
+   =>
+   card(a*b) : NAT1;
+
+   /*** moved from InTypeX ***/
+   bcall(SwitchX : ( (n : NAT) & (0 < n) ))
+   =>
+   n : NAT1;
+
+   bcall((InNatX;SwitchX):(card(a):NAT&card(b):NAT))
+   =>
+   card(a*b) : NAT;
+
+   binhyp(card(a)<=b) &
+   bnum(b)
+   =>
+   card(a) : NAT;
+
+   binhyp(card(a)<=b) &
+   binhyp(b: NAT)
+   =>
+   card(a) : NAT;
+
+
+   binhyp(card(a)=b) &
+   bnum(b)
+   =>
+   card(a) : NAT;
+
+
+   binhyp(card(a)=b) &
+   binhyp(b: NAT)
+   =>
+   card(a) : NAT;
+
+   binhyp(a : FIN(b))
+   =>
+   card(a) : NAT;
+
+   bcall(SwitchX : ( (n : NAT) & (0 < n) ))
+   =>
+   pred(n) : NAT;
+
+   bcall(SwitchX : ( (n : NAT) ))
+   =>
+   succ(n) : NAT;
+
+   bcall(SwitchX : ( (n : NAT) & (0 < p) ))
+   =>
+   (n / p) : NAT;
+
+   bcall(SwitchX : ( (n : NAT) & (p : NAT) & (p <= n) ))
+   =>
+   (n - p) : NAT;
+
+   bcall(SwitchX : ( (n : NAT) & (m : NAT) ))
+   =>
+   (n mod m) : NAT; 
+
+   bcall(SwitchX : ( (n : NAT) & (p : NAT) ))
+   =>
+   (n ** p) : NAT;
+
+   bcall(SwitchX : ( (n : NAT) & (p : NAT) ))
+   =>
+   (n * p) : NAT;
+
+   bcall(SwitchX : ( (n : NAT) & (p : NAT) ))
+   =>
+   (n + p) : NAT;
+
+   bnum(n)
+   =>
+   n : NAT
+
+END
+
+&
+
+THEORY InRealX IS
+
+   bcall(SwitchX : ( (s : seq(REAL)) & (not(s = <>)) ))
+   =>
+   first(s) : REAL;
+
+   bcall(SwitchX : ( (s : seq(REAL)) & (not(s = <>)) ))
+   =>
+   last(s) : REAL;
+
+   zzz_0\s &
+   zzz_0\e &
+   bident(x) &
+   bcall(SwitchX : ( (s : FIN(s)) & (!zzz_0.((zzz_0:s) => ([x:=zzz_0]e:REAL))) & (!zzz_0.((zzz_0:s) => ([x:=zzz_0]e:REAL))) ))
+   =>
+   (SIGMA(x).(x : s | e)) : REAL;
+
+   binhyp(r : NAT)
+   =>
+   r : REAL;
+
+   bcall(SwitchX : ( (r : REAL) & (not(s = 0)) ))
+   =>
+   (r / s) : REAL;
+
+   bcall(SwitchX : ( (r : REAL) & (s : REAL) ))
+   =>
+   (r * s) : REAL;
+
+   bcall(SwitchX : ( (r : REAL) & (s : REAL) ))
+   =>
+   (r - s) : REAL;
+
+   bcall(SwitchX : ( (r : REAL) & (s : REAL) ))
+   =>
+   (r + s) : REAL;
+
+   bnum(r)
+   =>
+   r : REAL 
+
+END
+
+&
+
+THEORY InTypeX IS
+
+   binhyp(c=a) &
+   bcall(SwitchX : (c : b) )
+  =>
+   a : b;      /*** allow by-pass no longer needed ***/
+
+  
+   binhyp(c=b) &
+   bcall(SwitchX : (a : c) )
+  =>
+   a : b;      /*** allow by-pass no longer needed ***/
+
+  
+   binhyp(y : ran(f)) &
+   bcall(SwitchX : (f(x) = y) )
+  =>
+   x : f~[{y}];      /*** allow by-pass no longer needed ***/
+
+
+
+   binhyp(z: ran((f<+{x|->y})(a))) &
+   bcall(SwitchX~ : ((x = a => z: ran(f(a))) & (not(x = a) => z: ran(f(a)))))
+  =>
+   z: ran(f(a));      /*** allow by-pass no longer needed ***/
+
+   binhyp(z: dom((f<+{x|->y})(a))) &
+   bcall(SwitchX~ : ((x = a => z: dom(f(a))) & (not(x = a) => z: dom(f(a)))))
+  =>
+   z: dom(f(a));      /*** allow by-pass no longer needed ***/
+
+   bcall(SwitchX~ : ((x = a => z: ran(y)) & (not(x = a) => z: ran(f(a)))))
+  =>
+   z: ran((f<+{x|->y})(a));      /*** allow by-pass no longer needed ***/
+
+   bcall(SwitchX~ : ((x = a => z: dom(y)) & (not(x = a) => z: dom(f(a)))))
+  =>
+   z: dom((f<+{x|->y})(a));      /*** allow by-pass no longer needed ***/
+
+
+   bcall(SwitchX~ : ((x = a =>  y(b): s) & (not(x = a) => f(a)(b) : s)))
+  =>
+   (f<+{x|->y})(a)(b): s;      /*** allow by-pass no longer needed ***/
+
+   bcall(SwitchX~ : ((x = a =>  y: s) & (not(x = a) => f(a) : s)))
+  =>
+   (f<+{x|->y})(a): s;      /*** allow by-pass no longer needed ***/
+
+
+    bnum(x) &
+    bnum(a) &
+    btest(x/=a) &                /* hardwired in Proof.src */
+    Bcall((InSetX;SwitchX) : (a:dom(f)) )
+   =>
+    a:dom(f<+{x|->y});
+ 
+    binhyp(not(x=a)) &
+    Bcall((InSetX;SwitchX) : (a:dom(f)) )
+   =>
+    a:dom(f<+{x|->y});
+ 
+    binhyp(not(a=x)) &
+    Bcall((InSetX;SwitchX) : (a:dom(f)) )
+   =>
+    a:dom(f<+{x|->y});
+ 
+   bcall(SwitchX~ : (0<=a & a<=2147483646))
+   =>
+   a : SCALAR;
+
+   bcall(SwitchX : ( (f : s --> t) & (f : s +->> t) ))
+   =>
+   f : s -->> t;
+
+   bcall(SwitchX : ( (f : s >+> t) & (f : s --> t) ))
+   =>
+   f : s >-> t;
+
+   binhyp(? JOK2 ? : a*b-->c) &
+   bcall(SwitchX : ( (x : a) &( y : b) ))
+   =>
+   x JOK2 y:c;  
+
+   bcall(SwitchX : ( (a <: b) & not(a = {}) ))
+   =>
+   a : POW1(b);
+
+   bcall((InclusionX;SwitchX) : (a <: b))
+   =>
+   a : POW(b);
+
+
+
+
+   bcall((LessThanOrEqualX~;SwitchX) : ((p <= n) & (n <= q)))
+   =>
+   n : p..q;
+
+   Bcall(SwitchX : (m<=n))
+   =>
+   m: m..n;
+
+   btest(m<=n)
+   =>
+   m: m..n;      /* hardwired in Proof.src */
+
+   Bcall(SwitchX : (m<=n))
+   =>
+   n: m..n;
+
+   btest(m<=n)
+   =>
+   n: m..n;      /* hardwired in Proof.src */
+
+   Bcall(SwitchX : (n = p))
+ =>
+   n: p..p
+
+END
+
+&
+
+THEORY InSetX IS
+
+   bcall((InTypeX;SwitchX) : (a : b))
+   =>
+   a : b;
+
+   binhyp(size(s) : NAT1)
+   =>
+   last(s) : ran(s);
+
+   binhyp(size(s) : NAT1)
+   =>
+   first(s) : ran(s);
+
+
+/*   bcall((InTypeX;SwitchX) : ({} : b))
+   =>
+   <> : b; */
+
+   <> : perm({});
+
+
+   bcall(SwitchX : ( (a: 1..card(b) >->> b) ))
+   =>
+   a: perm(b);
+
+
+    binhyp(f: s >+> u) &
+    bcall(SwitchX : ( (a: ran(f)) & (dom(f) <: t) ))
+    =>
+    f~(a): t;
+
+    binhyp(f: s >->> t) &
+    bcall(SwitchX : (a:t) )
+    =>
+    f~(a): s;
+
+
+    binhyp(f: s >+> u) &
+    bcall(SwitchX : ( (b: ran(f)) & (f~(b) = a) ))
+    =>
+    {a|->b}: f;
+
+
+    binhyp(f: s +-> u) &
+    bcall(SwitchX : ( (a: dom(f)) & (f(a) = b) ))
+    =>
+    {a|->b}: f;
+
+
+
+   binhyp(f : s +-> u) &
+   bcall(SwitchX : ( (a: dom(f)) & (ran(f) <: t) ))
+   =>
+   f(a) : t;
+
+   binhyp(f : s +-> t) &
+   bcall((InTypeX;SwitchX) : (a: dom(f)))
+   =>
+   f(a) : t;
+
+   binhyp(f : s +-> u) &
+   binhyp(ran(f) = t) &
+   bcall((InTypeX;SwitchX) : (a: dom(f)))
+   =>
+   f(a) : t;
+
+   binhyp(f : s +-> u) &
+   binhyp(t = ran(f)) &
+   bcall((InTypeX;SwitchX) : (a: dom(f)))
+   =>
+   f(a) : t;
+
+   binhyp(f : s +-> t) &
+   bcall((InTypeX;SwitchX) : (x: dom(f)))
+   =>
+   f(x) : ran(f);
+   
+   s(size(s)) : ran(s);
+
+   size(s) : dom(s);
+
+   binhyp(a : 1..size(s))
+   =>
+   a : dom(s);
+
+   binhyp(s : seq(a)) &
+   bcall(SwitchX : ((n : NAT1) &  (n <= size(s))))
+   =>
+   s(n) : a;
+
+   bcall(SwitchX : ( (a : b) & (a : c) ))
+   =>
+   a : (b /\ c);
+
+   bcall(SwitchX : ( (a : b) & not(a : c) ))
+   =>
+   a : (b - c);
+
+   bcall(SwitchX : ((a:b) or (a:c)))
+   =>
+   a : (b \/ c);
+   
+   bcall(SwitchX : ( (b : d) & (a : c) ))
+   =>
+   (a, b) : (c * d);
+   
+   bcall(SwitchX : ( (b : d) & (a : c) ))
+   =>
+   a |-> b : (c * d);
+
+   bcall((SUB ; SwitchX) : ([x := a](p)))
+   =>
+   a : {x | p};
+
+   bsearch(a,b,c)
+   =>
+   a : {b};
+
+   binhyp(a : s \/ {b}) &
+   bnum(a) &
+   bnum(b) &
+   btest(a/=b)                      /* hardwired in Proof.src */
+   =>
+   a : s;
+
+   binhyp(a : s \/ {b}) &
+   binhyp(not(a = b))
+   =>
+   a : s;
+
+   binhyp(a : s \/ {b}) &
+   binhyp(not(b = a))
+   =>
+   a : s;
+
+   a : {b, a};
+
+   a : {a} \/ b;
+
+   a : b \/ {a};
+
+   bcall(SwitchX : ( a = b|->c ))
+   =>
+   a : {b|->c};
+
+   bool(p) : {FALSE,TRUE};
+
+   binhyp(b : s) &
+   bcall(SwitchX : ( a = b ))
+   =>
+   a : {b};
+
+   bcall(SwitchX : ( a = f(x) ))
+   =>
+   a : {f(x)};
+
+/*
+   bnum(b) &
+   bcall(SwitchX : ( a = b ))
+   =>
+   a : {b};
+
+   bident(b) &
+   bcall(SwitchX : ( a = b ))
+   =>
+   a : {b};
+*/
+   bsingleton(b) &
+   bcall(SwitchX : ( a = b ))
+   =>
+   a : {b};
+
+   a : {a}
+
+END
+
+&
+
+THEORY NotInSetX IS
+
+   binhyp(f: s>->>t) &
+   bcall(SwitchX : not(x: t) )
+  =>
+   not(f~(x) : s);
+
+/* `|' replaced by 3 separate rules below
+   bcall((LessThanX~;SwitchX) : (n < p) | LessThanX~ : (q < n) | LessThanX~ : (q < p) )
+   =>
+   not(n : p..q);
+*/
+
+   binhyp(size(s) : NAT1) &
+   binhyp(ran(s) /\ t = {})
+   =>
+   not(last(s) : t);
+
+   binhyp(size(s) : NAT1) &
+   binhyp(ran(s) /\ t = {})
+   =>
+   not(first(s) : t);
+
+   bcall((LessThanX~;SwitchX) : (n < p) )
+   =>
+   not(n : p..q);
+
+   bcall((LessThanX~;SwitchX) : (q < n) )
+   =>
+   not(n : p..q);
+
+   bcall((LessThanX~;SwitchX) : (q < p) )
+   =>
+   not(n : p..q);
+
+
+   bcall(SwitchX : ( not(a : b) & not(a : c) ))
+   =>
+   not(a : (b \/ c));
+
+   bcall(SwitchX : ((a : c) => not(a : b)))
+   =>
+   not(a : (b /\ c));
+
+   bcall(SwitchX : ((a : b) => (a : c)))
+   =>
+   not(a : (b - c));
+
+   bcall(SwitchX : ((b : d) => not(a : c)))
+   =>
+   not((a, b) : (c * d));
+
+   bcall((SUB;SwitchX) : not([x := a](p)))
+   =>
+   not(a : {x | p});
+
+   bcall(SwitchX : not(a = f(x)) )
+   =>
+   not(a : {f(x)});
+
+   bnum(b) &
+   bcall((NotEqualX;SwitchX) : not(a = b))
+   =>
+   not(a : {b});
+
+   bnum(a) &
+   bnum(b) &
+   btest(a/=b)      /* hardwired in Proof.src */
+   =>
+   not(a:{b});
+
+   bident(b) &
+   bcall((NotEqualX;SwitchX) : not(a = b))
+   =>
+   not(a : {b});
+
+   bcall((SwitchX~) : (not(a = c) & not(a : {b})) )   
+   =>
+   not(a : {b, c});
+
+   binhyp(b = {})
+   =>
+   not(a : b);
+
+   not(a : {});
+
+   not(0 : NAT1)
+
+END
+
+&
+
+THEORY InRelationX IS
+
+   binhyp(r : s <-> t)
+   =>
+   r : (s \/ u) <-> (t \/ v);
+
+   binhyp(r : s <-> t)
+   =>
+   r : (s \/ u) <-> t;
+
+   binhyp(r : u <-> t)
+   =>
+   r : (s \/ u) <-> t;
+
+   binhyp(r : s <-> t)
+   =>
+   r : s <-> (t \/ v);
+
+   binhyp(r : s <-> v)
+   =>
+   r : s <-> (t \/ v);
+
+   binhyp(r : s <-> t) &
+   bcall(SwitchX : ((a /\ dom(r)) = {}))
+   =>
+   r : (s - a) <-> t;
+
+   binhyp(r : s <-> t) &
+   bcall(SwitchX : ((a /\ ran(r)) = {}))
+   =>
+   r : s <-> (t - a);
+
+   bcall(SwitchX : ( r : s <-> t ))
+   =>
+   r~ : t <-> s;
+
+   bcall((InSetX~;SwitchX) : (a : s & b : t))
+   =>
+   {a |-> b} : s <-> t;
+
+   bcall(SwitchX : ( (a : s) & (b : t) & ({c} : s <-> t) ))
+   =>
+   {c, (a |-> b)} : s <-> t;
+
+   binhyp(q : s <-> t) &
+   bcall(SwitchX : ( r : t <-> u ))
+   =>
+   (q ; r) : s <-> u;
+
+   binhyp(r : t <-> u) &
+   bcall(SwitchX : ( q : s <-> t ))
+   =>
+   (q ; r) : s <-> u;
+
+   bcall(SwitchX : ( (r : s <-> t) & (q : s <-> t) ))
+   =>
+   (r \/ q) : s <-> t;
+
+   bcall(SwitchX : ( (r : s <-> t) & (q : s <-> t) ))
+   =>
+   (r /\ q) : s <-> t;
+
+   binhyp(r : a <-> b)
+   =>
+   r - s : a <-> b;
+
+   bcall((InclusionX;SwitchX) : ((dom(q) <<| r) : s <-> t))
+   =>
+   (r <+ q) : s <-> t;
+
+   binhyp(r : s <-> t) &
+   bcall(SwitchX : ( q : s <-> t ))
+   =>
+   (r <+ q) : s <-> t;
+
+   binhyp(r : u <-> t) &
+   bcall((InclusionX;SwitchX) : ((dom(r) /\ a) <: s))
+   =>
+   (a <| r) : s <-> t;
+
+   binhyp(r : s <-> t) &
+   bcall((InclusionX;SwitchX) : (a <: s))
+   =>
+   (a <| r) : s <-> t;
+
+   binhyp(r : u <-> t) &
+   bcall((InclusionX;SwitchX)  : ((dom(r) - a) <: s))
+   =>
+   (a <<| r) : s <-> t;
+
+   binhyp(r : s <-> t) &
+   bcall((InclusionX;SwitchX)  : (a <: s))
+   =>
+   (a <<| r) : s <-> t;
+
+   binhyp(r : s <-> u) &
+   bcall((InclusionX;SwitchX)  : ((ran(r) /\ a) <: t))
+   =>
+   (r |> a) : s <-> t;
+
+   binhyp(r : s <-> t) &
+   bcall((InclusionX;SwitchX)  : (a <: t))
+   =>
+   (r |> a) : s <-> t;
+
+   binhyp(r : s <-> u) &
+   bcall((InclusionX;SwitchX) : ((ran(r) - a) <: t))
+   =>
+   (r |>> a) : s <-> t;
+
+   bcall(SwitchX : ( (r : s <-> t) & (a <: t) ))
+   =>
+   (r |>> a) : s <-> t;
+
+   binhyp(r : s <-> t) &
+   bcall((InclusionX;SwitchX) : (a <: t))
+   =>
+   (r |>> a) : s <-> t;
+
+   bcall((InclusionX;SwitchX) : (a <: c & b <: d))
+   =>
+   (a * b) : c <-> d;
+
+   binhyp(r <: a*b) &
+   bcall((InclusionX;SwitchX) : (a <: X & b <: X))
+   =>
+   r : X <-> X;
+
+   bcall((SwitchX~) : (r : X <-> X & s <: X))
+   =>
+   s<|r : X <-> X;
+
+   bcall((SwitchX~) : (r : X <-> X & s <: X))
+   =>
+   r|>s : X <-> X;
+
+   (s<|r|>t) : (s<->t);
+
+   {} : s <-> t
+
+END
+
+&
+
+THEORY InPartialFunctionX IS
+
+   binhyp(f : u +-> s) &
+   bcall((InclusionX;SwitchX) : (ran(f) <: t))
+   =>
+   f : u +-> t;
+
+   binhyp(f : s +-> t) &
+   bcall((InclusionX;SwitchX) : (dom(f) <: u))
+   =>
+   f : u +-> t;
+
+/***
+   binhyp(f:s+->T) &
+   s<:S
+   =>
+   f:S+->T;    >>> above rule ??? <<<
+***/
+
+   binhyp(f : s +-> t) 
+   =>
+   f : (s \/ u) +-> (t \/ v);
+
+   binhyp(f : s +-> t)
+   =>
+   f : s +-> (t \/ u);
+
+   binhyp(f : s +-> t)
+   =>
+   f : (s \/ u) +-> t; 
+
+   binhyp(f : u +-> t)
+   =>
+   f : (s \/ u) +-> t; 
+
+   binhyp(f : m..n +-> t) &
+   bcall(SwitchX : ( (p <= m) & (n <= q) ))
+   =>
+   f : p..q +-> t;
+
+   bcall(SwitchX : ( (f : s +-> t) & ((a /\ dom(f)) = {}) ))
+   =>
+   f : (s - a) +-> t;
+
+   bcall(SwitchX : ( (f : s +-> t) & ((a /\ ran(f)) = {}) ))
+   =>
+   f : s +-> (t - a);
+
+   bident(x) &
+   x\(s, t) &
+   bcall(SwitchX : ( (a <: s) & (!x.(x : a => e : t)) ))
+   =>
+   %x.(x : a | e) : s +-> t;
+
+   bcall((SwitchX~) : ({l} : S+->T & {x|->y} : S+->T) )
+  =>
+   {l,x|->y} : S+->T;
+
+   bcall((InSetX~;SwitchX) : (a : s & b : t))
+   =>
+   {a |-> b} : s +-> t;
+
+   binhyp(g : t +-> u) &
+   bcall((InPartialFunctionX~;SwitchX) : ((f |> dom(g)) : s +-> t))
+   =>
+   (f ; g) : s +-> u;
+
+   binhyp(f : s +-> t) &
+   bcall((InPartialFunctionX~;SwitchX) : ((ran(f) <| g) : t +-> u))
+   =>
+   (f ; g) : s +-> u;
+ 
+/*
+   zzz_0\f &
+   zzz_0\g &
+*/
+   bcall(SwitchX : ( (f : s +-> t) & (g : s +-> t) & ((dom(f)/\dom(g) = {})/* or (!zzz_0.((zzz_0 : dom(f)/\dom(g)) => (f(zzz_0) = g(zzz_0)))) */)  ))
+   =>
+   (f \/ g) : s +-> t;
+
+   binhyp(g : s +-> t) &
+   bcall((InRelationX~;SwitchX) : (f : s <-> t))
+   =>
+   (f /\ g) : s +-> t;
+
+   binhyp(f : s +-> t) &
+   bcall((InRelationX~;SwitchX) : (g : s <-> t))
+   =>
+   (f /\ g) : s +-> t;
+
+   bcall(SwitchX~ : (f:S+->T & g:S+->T))
+   =>
+   f<+g : S+->T;
+
+   binhyp(g : s +-> t) &
+   bcall((InPartialFunctionX~;SwitchX) : (f : s +-> t))
+   =>
+   (f <+ g) : s +-> t;
+
+   binhyp(f : s +-> t) &
+   bcall((InPartialFunctionX~;SwitchX) : (g : s +-> t))
+   =>
+   (f <+ g) : s +-> t;
+
+   binhyp(f : m..n +-> t) &
+   binhyp(g : m..n +-> t)
+   =>
+   (f <+ g) : m..n+p +-> t;
+
+   binhyp(f : u +-> v) &
+   bcall(SwitchX~ : ( ((u \/ {a}) <: s) & (b : t) & (ran(f) <: t) ))
+   =>
+   (f <+ {a |-> b}) : s +-> t;
+
+   bcall(SwitchX~ : (f : S+->T & i : S & v: T) )
+   =>
+   f<+{i|->v} : S+->T;
+
+   binhyp(f : s +-> t) &
+   bcall((InSetX~;SwitchX) : (b : t))
+   =>
+   (f <+ {a |-> b}) : s \/ {a} +-> t;
+
+   binhyp(f : u +-> t) &
+   bcall((InclusionX~;SwitchX) : ((dom(f) /\ a) <: s)) 
+   =>
+   (a <| f) : s +-> t;
+
+   bcall((InSetX~;SwitchX) : (f : s+->t) )
+   =>
+   (a <<| f) : s+->t;  /*** allow by-pass no longer needed ***/
+
+
+   binhyp(ran(f) : s+->t)
+   =>
+   (a <<| f(x)) : s+->t;
+
+   binhyp(f: s+->t)
+   =>
+   (a <<| f) : s+->t;
+
+   binhyp(f : u +-> t) &
+   bcall((InclusionX~;SwitchX) : ((dom(f) - a) <: s))
+   =>
+   (a <<| f) : s +-> t;
+
+    binhyp(f: s+->t)
+   =>
+    (a <<| f) : s+->t;
+
+   binhyp(f : s +-> u) &
+   bcall((InclusionX~;SwitchX) : ((ran(f) /\ a) <: t))
+   =>
+   (f |> a) : s +-> t;
+
+   binhyp(f : s +-> u) &
+   bcall((InclusionX~;SwitchX) : ((ran(f) - a) <: t))
+   =>
+   (f |>> a) : s +-> t;
+
+   bnum(b) &
+   bcall(SwitchX : ( (a <: c) & (b : d) ))
+   =>
+   (a * {b}) : c +-> d;
+
+   bident(b) &
+   bcall(SwitchX : ( (a <: c) & (b : d) ))
+   =>
+   (a * {b}) : c +-> d;
+
+   {} : s +-> t;
+
+   bcall((InclusionX;SwitchX): (s <: 1..n))
+   =>
+   <>: s +-> t
+
+END
+
+&
+
+THEORY InInjectionX IS
+
+   binhyp(f : s >+> t)
+   =>
+   f : s >+> (t \/ u);
+
+   binhyp(f : s >+> t)
+   =>
+   f : (s \/ u) >+> t;
+
+   binhyp(f : u >+> t)
+   =>
+   f : (s \/ u) >+> t;
+
+   binhyp(f : u >+> v)
+   =>
+   f : (s \/ u) >+> (t \/ v);
+
+   binhyp(f : s >+> v)
+   =>
+   f : (s \/ u) >+> (t \/ v);
+
+   binhyp(f : u >+> t)
+   =>
+   f : (s \/ u) >+> (t \/ v);
+
+   binhyp(f : s >+> t)
+   =>
+   f : (s \/ u) >+> (t \/ v);
+
+   bcall(SwitchX : ((f : s >+> t)  & ((a /\ dom(f)) = {}) ))
+   =>
+   f : (s - a) >+> t;
+
+   bcall(SwitchX : ((f : s >+> t)  & ((a /\ ran(f)) = {}) ))
+   =>
+   f : s >+> (t - a);
+
+   (yyy_0,z)\i &
+   (yyy_0,z)\a &
+   (yyy_0,z)\e &
+   (yyy_0,z)\s &
+   (yyy_0,z)\t &
+   bcall((SUB~;SwitchX) : ( (a <: s) & (!(yyy_0,z).((z:a & yyy_0:a & z /= yyy_0) => ([i:=z](e) /= [i:=yyy_0](e)))) ))
+   =>
+   %z.(z : a | e) : s >+> t;
+
+   zzz_0\f &
+   zzz_0\g &
+   bcall((SUB~;SwitchX) : ( (f : s >+> t) & (g : s >+> t) & (!zzz_0.((zzz_0 : ran(f)/\ran(g)) => (f~(zzz_0) = g~(zzz_0)))) & (!zzz_0.((zzz_0 : dom(f)/\dom(g)) => (f(zzz_0) = g(zzz_0)))) ))
+   =>
+   f \/ g : s >+> t;
+
+   binhyp(f : u >+> t) &
+   bcall((InclusionX;SwitchX) : ((dom(f) /\ a) <: s))
+   =>
+   a <| f : s>+> t;
+
+   binhyp(f : s >+> u) &
+   bcall((InclusionX;SwitchX) : ((ran(f) /\ a) <: t))
+   =>
+   f |> a : s >+> t;
+
+   binhyp(f : u >+> t) &
+   bcall((InclusionX;SwitchX) : ((dom(f) - a) <: s))
+   =>
+   a <<| f : s>+> t;
+
+   binhyp(f : s >+> u) &
+   bcall((InclusionX;SwitchX) : ((ran(f) - a) <: t))
+   =>
+   f |>> a : s >+> t;
+
+   binhyp(f : u >+> v) &
+   bcall(SwitchX : ( not(a|->b : f) => (((u \/ {a}) <:s) & not(b : ran(f)) & ((v \/ {b}) <: t))))
+   =>
+   f <+ {a |-> b} : s >+> t;
+
+   binhyp(f : u >+> t) &
+   bcall(SwitchX : ( (u \/ {a} <: s) & (b : t) & (ran(f) <: t) & (b : ran(f) => a|->b : f)))
+   =>
+   f <+ {a |-> b} : s >+> t;
+
+   binhyp(f : s >+> t) &
+   bcall((InInjectionX~;SwitchX) : ((ran(f) <| g) : t >+> u))
+   =>
+   (f ; g) : s >+> u;
+
+   binhyp(g : t >+> u) &
+   bcall((InInjectionX~;SwitchX) : ((f |> dom(g)) : s >+> t))
+   =>
+   (f ; g) : s >+> u;
+
+   bcall((InSetX~;SwitchX) : (a : s & b : t))
+   =>
+   {a |-> b} : s >+> t;
+
+   {}  : a >+> b
+
+END
+
+&
+
+THEORY InBijectionX IS
+
+   bcall(SwitchX : ( (f : s --> t) & (f : s >+> t) & (f : s +->> t) ))
+   =>
+   f : s >->> t;
+
+   binhyp(f : u >->> v) &
+   bcall(SwitchX : ( (u \/ {a} = s) & (v \/ {b} = t) & (b: ran(f) => a|->b : f)))
+   =>
+   f <+ {a |-> b} : s >->> t
+
+END
+
+&
+
+THEORY InSurjectionX IS
+
+   binhyp( f : u +-> v) &
+   bcall(SwitchX : ( (dom(f) <: s) & (ran(f) = t) ))
+   =>
+   f : s +->> t;
+
+   zzz_0\f &
+   zzz_0\g &
+   bcall(SwitchX : ( ((f : s +-> t) & (g : s +-> t)) & (ran(f) \/ ran(g) = t) & (!zzz_0.((zzz_0 : dom(f)/\dom(g)) => (f(zzz_0) = g(zzz_0)))) ))
+   =>
+   f \/ g : s +->> t;
+
+   binhyp(f : u +-> v) &
+   bcall(SwitchX : ( ((dom(f) /\ a) <: s) & ((ran(f) /\ f[a]) = t) ))
+   =>
+   (a <| f) : s +->> t;
+
+   binhyp( f : u +-> v) &
+   bcall(SwitchX : ( ((dom(f) /\ f~[a]) <: s) &  ((ran(f) /\ a) = t) ))
+   =>
+   (f |> a) : s +->>  t;
+ 
+   binhyp(f : u +-> v) &
+   bcall(SwitchX : ( ((dom(f) - a) <: s) &  ((ran(f) - f[a]) = t)))
+   =>
+   (a <<| f) : s +->> t;
+
+   binhyp(f : u +-> v) &
+   bcall(SwitchX : ( ((dom(f) - f~[a]) <: s) & ((ran(f) - a) = t) ))
+   =>
+   (f |>> a ) : s +->> t;
+
+   binhyp(f : u +->> v) &
+   bcall(SwitchX : ( ((u \/ {a}) <:s) & (b : t) & (v \/ {b} = t) ))
+   =>
+   f <+ {a |-> b} : s +->> t;
+
+   binhyp(f : s +->> t) &
+   bcall(SwitchX : ( (g : s +-> t) & (ran(dom(g) <| f) <: ran(g)) ))
+   =>
+   f <+ g : s +->> t;
+
+   binhyp(f : s +-> u) &
+   bcall(SwitchX : ( (g : u +->> t) & (dom(g) <: ran(f)) ))
+   =>
+   (f ; g) : s +->> t;
+
+   binhyp(g : u +->> t) &
+   bcall(SwitchX : ( (f : s +-> u) & (dom(g) <: ran(f)) ))
+   =>
+   (f ; g) : s +->> t;
+
+   binhyp(f : s +->> t)
+   =>
+   f : (s \/ u) +->> t;
+
+   binhyp(f : u +->> t)
+   =>
+   f : (s \/ u) +->> t;
+
+   bcall(SwitchX : ( (f : s +->> t) & ((ran(f) - f[a]) = ran(f)) ))
+   =>
+   f : (s - a) +->> t;
+
+   bcall(SwitchX : ( (f : s +-> t) &  ((t - a) = ran(f))))
+   =>
+   f : s +->> (t -a );
+
+   {}  : s +->> {}
+
+END
+
+&
+
+THEORY InTotalFunctionX IS
+
+   binhyp(f : s --> t)
+   =>
+   f : s --> (t \/ u);
+
+   binhyp(f : u --> s) &
+   bcall((InclusionX;SwitchX) : (ran(f) <: t))
+   =>
+   f : u --> t;
+
+   binhyp(f : s --> t) &
+   bcall(SwitchX : (u = s))
+   =>
+   f : u --> t;
+
+   x\t &
+   bcall(SwitchX : ( (a = s) & (!x.(x : a => e : t)) ))
+   =>
+   %x.(x : a | e) : s --> t;
+
+   bcall((InSetX~;SwitchX) : (a : b))            
+   =>
+   (s * {a}) : s --> b;
+
+   binhyp(f : s --> t) &
+   bcall((InTotalFunctionX;SwitchX) : ((ran(f) <| g) : ran(f) --> u))
+   =>
+   (f ; g) : s --> u;
+
+/*
+   bcall(SwitchX : ( (f: seq(b)) &  (size(f) = a)))
+   =>
+   f: 1..a --> b;
+*/
+
+   binhyp(f: seq(b)) &
+   bcall( (EqualityX;SwitchX) :(size(f) = a))
+   =>
+   f: 1..a --> b;
+
+/*
+   zzz_0\f &
+   zzz_0\g &
+*/
+   bcall(SwitchX : ( (f : s +-> t & g : s +-> t) & ((dom(f) \/ dom(g)) = s) & ( (dom(f)/\dom(g) = {}) /* or  (!zzz_0.((zzz_0 : dom(f)/\dom(g)) => (f(zzz_0) = g(zzz_0))))*/ ) ))
+   =>
+   (f \/ g) : s --> t;
+
+   binhyp(f : u --> v) &
+   bcall(SwitchX : ( ((u \/ {a}) = s) & (b : t) & (ran(f) <: t) ))
+   =>
+   (f <+ {a |-> b}) : s --> t;
+
+   binhyp(f : s --> t) &
+   bcall((InPartialFunctionX~;SwitchX) : (g : s +-> t))
+   =>
+   (f <+ g) : s --> t;
+
+   binhyp(f : u --> t) &
+   bcall(SwitchX : ( ((u \/ {a}) = s) & (b : t) ))
+   =>
+   (f <+ {a |-> b}) : s --> t;
+
+   binhyp(f : s --> t) &
+   bcall(SwitchX : ( (a : s) & (b : t) ))
+   =>
+   (f <+ {a |-> b}) : s --> t;
+
+   binhyp(f : m..n --> t) &
+   bcall((InSetX~;SwitchX): (b: t)) 
+   =>
+   (f <+ {n + 1 |-> b}): m..n+1 --> t;
+
+   binhyp(f : u +-> t) &
+   bcall(SwitchX : ((dom(f) /\ a) = s))
+   =>
+   a <| f : s --> t;
+
+   binhyp(f : u +-> t) &
+   bcall(SwitchX : ((dom(f) - a) = s))
+   =>
+   (a <<| f) : s --> t;
+
+   binhyp(f : s --> t) &
+   bcall(SwitchX : ((a /\ ran(f)) = {}))
+   =>
+   (f |>> a) : s --> (t - a);
+
+
+/***/
+   binhyp(f : s --> t) &
+   binhyp(b: ran(f)) &
+   bcall((InSetX~;SwitchX) : (a : dom(f)))
+   =>
+   (f |>> {b}) : (s - {a}) --> (t - {b});
+
+
+
+   a * {b} : a --> {b};
+
+   bcall((InSetX~;SwitchX) : (b : t))
+   =>
+   {a |-> b} : {a} --> t;
+
+   bcall(SwitchX : ( (b : t) & ({m} : {s} --> t) ))
+   =>
+   {m,(a|->b)} : {s,a} --> t;
+
+   {} : {} --> t;
+
+   <>: {} --> t
+
+END
+
+&
+
+THEORY InSequenceX IS
+
+
+   bcall(SwitchX~ : ( (s : seq(a)) & (size(s) = card(ran(s))) ) )
+  =>
+   s : iseq(a);
+
+   bcall(SwitchX~ : ( (s : iseq(a)) & (t : iseq(a)) & (ran(s) /\ ran(t) = {}) ))
+   =>
+   (s ^ t) : iseq(a);
+
+   bcall(SwitchX~ : ( s : iseq(a) & not(x : ran(s)) ) )
+  =>
+   (x -> s) : iseq(a);
+
+   bcall(SwitchX~ : ( s : iseq(a) & not(x : ran(s)) ) )
+  =>
+   (s <- x) : iseq(a);
+
+   bcall(SwitchX~ : ( s : iseq(a) ) )
+  =>
+   tail(s) : iseq(a);
+
+   bcall(SwitchX~ : ( s : iseq(a) ) )
+  =>
+   front(s) : iseq(a);
+
+   bcall(SwitchX : ( (s : iseq(a)) & (n : NAT) & (n <= size(s)) ))
+   =>
+   (s /|\ n) : iseq(a);
+
+   bcall(SwitchX : ( (s : iseq(a)) & (n : NAT) & (n <= size(s)) ))
+   =>
+   (s \|/ n) : iseq(a);
+
+
+   /*** moved from InTypeX ***/
+   bcall(SwitchX : ( (s : seq(a)) & not(s = <>) ))
+   =>
+   s : seq1(a);
+
+
+
+
+   bcall(SwitchX~ : (x : NAT & y : V & {l} : seq(V) & x=card({l})+1 ) )
+  =>
+   {l,x|->y} : seq(V);
+
+   bcall(SwitchX~ : (x = 1 &  y : V) )
+  =>
+   {x|->y} : seq(V);
+
+   i\a &
+   bcall(SwitchX : (i : (1..m) => e : a))
+   =>
+   %i.(i : 1..m | e) : seq(a);
+
+   binhyp(s : seq(b)) &
+   bcall(SwitchX : ( (t : b +-> a) & (ran(s) <: dom(t)) ))
+   =>
+   (s ; t) : seq(a);
+
+   bcall(SwitchX : ( (s : seq(a)) & (x : a) ))
+   =>
+   (s <- x) : seq(a);
+
+   bcall(SwitchX : ( (s : seq(a)) & (x : a) ))
+   =>
+   (x -> s) : seq(a);
+
+   bcall(SwitchX : ( (s : seq(a)) & not(s = <>) ))
+   =>
+   tail(s) : seq(a);
+
+   bcall(SwitchX : ( (s : seq(a)) & not(s = <>) ))
+   =>
+   front(s) : seq(a);
+
+   bcall(SwitchX : ( (s : seq(a)) & (n : NAT) & (n <= size(s)) ))
+   =>
+   (s /|\ n) : seq(a);
+
+   bcall(SwitchX : ( (s : seq(a)) & (n : NAT) & (n <= size(s)) ))
+   =>
+   (s \|/ n) : seq(a);
+
+/***
+   binhyp(f:seq(V)) &
+   dom(g) <: dom(f) &
+   ran(g) <: S
+  =>
+   g <+ f : seq(V);          ????
+***/
+
+   binhyp(f:seq(S)) &
+   bcall(SwitchX~ : ((dom(g) <: dom(f)) & (ran(g) <: S)) )
+  =>
+   f <+ g : seq(S);
+
+   bcall(SwitchX~ : ( (s : seq(a)) & (i : dom(s)) &(b : a) ))
+   =>
+   (s <+ {i |-> b}) : seq(a);
+
+   binhyp(f:seq(S)) &
+   binhyp(g:seq(S))
+  =>
+   f <+ g : seq(S);
+
+   bcall(SwitchX : ( (s : seq(a)) & (i <= size(s)+1) & (i : NAT1) & (b : a) ))
+   =>
+   (s <+ {i |-> b}) : seq(a);
+
+   bcall(SwitchX~ : ( (s : seq(a)) & (n : NAT) & (n <= size(s)) ))
+   =>
+   (1..n <| s) : seq(a);
+
+   binhyp(s : seq(a)) &
+   binhyp(c = size(s))
+   =>
+   ({c} <<| s) : seq(a);
+
+   binhyp(s : seq(a)) &
+   binhyp(size(s) = c)
+   =>
+   ({c} <<| s) : seq(a);
+
+   bcall(SwitchX~ : ( (s : seq(a)) & (t : seq(a)) ))
+   =>
+   (s ^ t) : seq(a);
+
+   bcall(SwitchX : ( s : seq(a)  ))
+   =>
+   rev(s) : seq(a);
+
+   bcall((InSetX~;SwitchX) : (a : c))
+   =>
+   [a] : seq(c);
+
+   bcall(SwitchX : ( (b : c) & ([a] : seq(c)) ))
+   =>
+   [a, b] : seq(c);
+
+   bstring(s)
+   =>
+   s : seq(CHAR);
+
+   bstring(s)
+   =>
+   s : seq(0..255);
+
+   <> : iseq(a);
+
+   {} : iseq(a);
+
+   <> : seq(a);
+
+   {} : seq(a)
+
+END
+
+&
+
+THEORY InclusionX IS
+
+   binhyp(a <: b) &
+   bcall(SwitchX : (b <: c))
+   =>
+   a <: c;
+
+   binhyp(b <: c) &
+   bcall(SwitchX : (a <: b))
+   =>
+   a <: c;
+
+   bcall(SwitchX : (f <: g))
+    =>
+   f[x] <: g[x];
+
+   bcall(SwitchX : (f <: g))
+    =>
+   f~ <: g~;
+
+   bcall(SwitchX : (not(x : dom(f)) or (x|->y : f)))
+    =>
+   f <: f<+{x|->y};
+
+   binhyp(f: b+->POW(s)) &
+   bcall(SwitchX : ( a: dom(f) ))
+   =>
+   f(a) <: s;
+
+   binhyp(ran(r) <: b) &
+   binhyp(r : s <-> t) 
+   =>
+   ran(a <<| r) <: b;
+
+   binhyp(ran(r) <: b) &
+   binhyp(r : s <-> t) 
+   =>
+   ran(a <| r) <: b;
+
+   binhyp(dom(r) <: b) &
+   binhyp(r : s <-> t) 
+   =>
+   dom(a <<| r) <: b;
+
+   binhyp(dom(r) <: b) &
+   binhyp(r : s <-> t) 
+   =>
+   dom(a <| r) <: b;
+
+   binhyp(ran(r) <: b) &
+   binhyp(r : s <-> t) 
+   =>
+   ran(r |>> a) <: b;
+
+   binhyp(ran(r) <: b) &
+   binhyp(r : s <-> t) 
+   =>
+   ran(r |> a) <: b;
+
+   binhyp(dom(r) <: b) &
+   binhyp(r : s <-> t) 
+   =>
+   dom(r |>> a) <: b;
+
+   binhyp(dom(r) <: b) &
+   binhyp(r : s <-> t) 
+   =>
+   dom(r |> a) <: b;
+
+   bcall((InclusionX;SwitchX) : (dom(f) <: S) )
+   =>
+   dom(f;g) <: S;
+
+   binhyp(r : s <-> t) &
+   bcall((InclusionX;SwitchX) : (a <: s))
+   =>
+   r[a] <: t;
+
+   binhyp(r : s <-> t) &
+   bcall((InSetX~;SwitchX) : (x : s))
+   =>
+   r[{x}] <: t;
+
+   bcall((NotInSetX~;SwitchX) : not(b : a)) 
+   =>
+   (a /\ {b}) <: {};
+
+   x\a &
+   bcall(SwitchX : (P => not(x : a)))
+   =>
+   (a /\ {x | P}) <: {};
+
+   bcall(SwitchX : ( not(c : a) & ((a /\ {b}) <: {}) ))
+   =>   
+   (a /\ {b, c}) <: {};
+
+   bident(x) &
+   zzz_0\a &
+   zzz_0\p &
+   bcall(SwitchX : (!zzz_0.((zzz_0:a) => [x:=zzz_0]p)))
+   =>
+   a <: {x | p};
+
+   bident(x) &
+   bident(y) &
+   zzz_0\a &
+   zzz_0\p &
+   zzz_1\a &
+   zzz_1\p &
+   bcall(SwitchX : (!(zzz_0,zzz_1).(((zzz_0|->zzz_1):a) => [x,y:=zzz_0,zzz_1]p)))
+   =>
+   a <: {x | p};
+
+   zzz_0\a &
+   zzz_0\b &
+   zzz_0\c &
+   bcall(SwitchX : (!zzz_0.(((zzz_0:a) & not(zzz_0:c)) => (zzz_0:b))))
+   =>
+   a <: (b \/ c);
+
+   bcall((LessThanOrEqualX~;SwitchX) : (c <= a & b <= d))
+   =>
+   a..b <: c..d;
+
+   bcall((InNatX~;SwitchX) : (p : NAT & q : NAT))
+   =>
+   p..q <: NAT;
+
+   binhyp(f:S+->m..n)
+   =>
+   ran(f) <: NAT;
+
+   bcall((InSetX~;SwitchX) : (a : b))
+   =>
+   {a} <: b;
+
+   bcall(SwitchX : ( (b : c) & ({a} <: c) ))
+   =>
+   {a, b} <: c;
+
+   a\b &
+   bcall(SwitchX : (!a.(p => (a : b))))
+   =>
+   {a | p} <: b;
+
+   bcall((InclusionX;SwitchX) : ((b - a) <: c))
+   =>
+   (b - a) <: (c - a); 
+
+   binhyp(b <: c) &
+   bcall((InclusionX;SwitchX) : (a <: c ))   
+   =>
+   (a - b) <: c;
+
+   binhyp(b: c) &
+   bcall((InclusionX;SwitchX) : (a <: c ))   
+   =>
+   (a - {b}) <: c;
+
+   binhyp(a <: c)      
+   =>
+   (a - b) <: c;
+
+   binhyp(r: S<->T)
+   =>
+   r <: (S * T);
+
+   bcall(SwitchX : ( (a <: c) & (b <: d) ))
+   =>
+   (a * b) <: (c * d);
+
+   binhyp(a <: c)
+   =>
+   (a /\ b) <: c;
+
+   binhyp(b <: c)
+   =>
+   (a /\ b) <: c;
+
+   bcall(SwitchX : ( (a <: c) & (b <: c) ))
+   =>
+   (a \/ b) <: c;
+
+   bcall(SwitchX : ( (a <: b) & ((a /\ c) = {}) ))
+   =>
+   a <: (b - c);
+
+   bcall(SwitchX : ( (a <: c) & (a <: b) ))
+   =>
+   a <: (b /\ c);
+
+   binhyp(a <: b)
+   =>
+   a <: (b \/ c);
+
+   binhyp(a <: b)
+   =>
+   a <: (c \/ b);
+
+   NAT1 <: NAT;
+
+   POW(a/\b) <: POW(a);
+
+   POW(a/\b) <: POW(b);
+
+   (a /\ b) <: a;
+
+   (a /\ b) <: b;
+
+   POW(a) <: POW(a\/b);
+
+   POW(a) <: POW(b\/a);
+
+   a <: (b \/ a);
+
+   a <: (a \/ b);
+
+   (a - b) <: a;
+
+   {x | (x : a) & p} <: a;
+
+   a <: a;
+
+   {} <: a
+
+END
+
+&
+
+THEORY LessThanOrEqualX IS
+
+/*** NEW ***/
+
+/*  23:06:97
+
+   binhyp(N<=b) &
+   bcall(SwitchX : ( a <= N ))
+   =>
+   a <= b;
+
+   binhyp(a<=N) &
+   bcall(SwitchX : ( N <= b ))
+   =>
+   a <= b;
+
+*/
+
+
+
+   binhyp(a+c<=b) &
+   bcall(SwitchX : ( c : NAT ))
+   =>
+   a <= b;
+
+   binhyp(a<=b-c) &
+   bcall(SwitchX : ( c : NAT ))
+   =>
+   a <= b;
+
+
+
+
+   binhyp(c:NAT) &
+   bcall((LessThanOrEqualX~;SwitchX) : (a <= b))
+  =>
+   a <= b + c;
+
+
+   binhyp(a<=c) &
+   binhyp(a:NAT) &
+   bcall(SwitchX : (b : NAT))
+   =>
+   a <= b + c;
+
+   binhyp(a<c) &
+   binhyp(a:NAT) &
+   bcall(SwitchX : (b : NAT))
+   =>
+   a <= b + c;
+
+
+   Bcall((CardinalityX;SwitchX) : n <= card(a) )
+  => 
+   n <= card(a);
+
+   Bcall((CardinalityX;SwitchX) : (card(a) <= n)) 
+   =>
+   card(a) <= n;
+
+
+   bcall((NotEqualX;SwitchX) : not(s = <>))
+   =>
+   1 <= size(s);
+
+    binhyp(ran(s) <: seq(v))
+   =>
+   0 <= size(s(a));
+
+
+/* July 1999 - bad rules! (esp for UNSIGNED - 65535!!!)
+   bnum(a) &
+   binhyp(b:NAT) &
+   binhyp(x<b) &
+   bcall((LessThanOrEqualX~;SwitchX) : (a-1 <= x))
+   =>
+   a<=b;
+
+   bnum(b) &
+   binhyp(a:NAT) &
+   binhyp(a<x) &
+   bcall((LessThanOrEqualX~;SwitchX) : (x <= b+1))
+   =>
+   a<=b;
+*/
+
+
+   binhyp(c <= b) & /* but is this reached ? */
+   btest(a <= c) 
+   =>
+   a <= b;      /* hardwired in Proof.src */
+
+   binhyp(a <= c) &
+   btest(c <= b) 
+   =>
+   a <= b;      /* hardwired in Proof.src */
+
+   btest(a <= b)       /* hardwired in Proof.src */
+   =>
+   a <= b;            /* duplicate */
+
+   bnum(b) &
+   bcall(SwitchX : ( n <= b ))
+   =>
+   n <= min({b}); 
+
+   bident(b) &
+   bcall(SwitchX : ( n <= b ))
+   =>
+   n <= min({b}); 
+
+   bcall(SwitchX : ( (n <= b) & (n <= min({a})) ))
+   =>
+   n <= min({a, b}); 
+
+   x\n &
+   bcall(SwitchX : (!x.(p => (n <= x))))
+   =>
+   n <= min({x | p});
+
+   bnum(x)
+   =>
+   min({x,y}) <= x;
+
+   bident(x)
+   =>
+   min({x,y}) <= x;
+
+   min({x,y}) <= y;
+
+   bnum(b) &
+   bcall(SwitchX : ( b <= n ))   
+   =>
+   max({b}) <= n;
+
+   bident(b) &
+   bcall(SwitchX : ( b <= n ))   
+   =>
+   max({b}) <= n;
+
+   bcall(SwitchX : ( (b <= n) & (max({a}) <= n) ))
+   =>
+   max({a, b}) <= n;
+
+   x\n &
+   bcall(SwitchX : (!x.(p => (x <= n))))
+   =>
+   max({x | p}) <= n;
+
+   bnum(x)
+   =>
+   x<=max({x,y});
+
+   bident(x)
+   =>
+   x<=max({x,y});
+
+   y<=max({x,y});
+
+   binhyp(f:S+->0..m) &
+   bcall(SwitchX : ( i : dom(f) ) )
+   =>
+   0<=f(i);
+
+   binhyp(f:S+->0..m) &
+   bcall(SwitchX : ( i : dom(f) ) )
+  =>
+   f(i)<=m;
+
+/*   bcall((CardinalityX;SwitchX) : (card(a) <= n)) 
+   =>
+   card(a) <= n;    */
+
+   bcall((LessThanX~ ;SwitchX): (n < p))
+   =>
+   succ(n) <= p;
+
+   bcall(SwitchX : ( p <= (n + 1) ))
+   =>
+   p <= succ(n);
+
+   bcall(SwitchX : ( n <= (p + 1) ))
+   =>
+   pred(n) <= p;
+
+   bcall((LessThanX~;SwitchX) : (p < n))
+   =>
+   p <= pred(n);
+
+   bcall(SwitchX : ( (p + r) <= q ))
+   =>
+   p <= (q - r);
+
+   bcall(SwitchX : ( q <= p  & p <= (r + q) ))
+   =>
+   (p - q) <= r;
+
+   binhyp(n <= m) &
+   binhyp(p <= q)
+   =>
+   (n + p) <= (m + q);
+
+   binhyp(n <= q) &
+   binhyp(p <= m)
+   =>
+   (n + p) <= (m + q);
+
+   bcall(SwitchX : ( (n : NAT) & (p <= q) ))
+   =>
+   (p * n) <= (q * n);
+
+   bcall(SwitchX : ( (n : NAT) & (p <= q) ))
+   =>
+   (p * n) <= (n * q);
+
+   bcall(SwitchX : ( (n : NAT) & (p <= q) ))
+   =>
+   (n * p) <= (q * n);
+
+   bcall(SwitchX : ( (n : NAT) & (p <= q) ))
+   =>
+   (n * p) <= (n * q);
+
+/***/
+    bcall(SwitchX : ( ( b : NAT ) & ( c : NAT1 ) ) )
+    =>
+    0 <= b/c;
+
+/***/
+    bcall(SwitchX : ( a : NAT1 ))
+    =>
+    (b/a)*a <= b;
+
+/***/
+    bcall(SwitchX : ( a : NAT1 ))
+    =>
+    a*(b/a) <= b;
+
+/***/
+    bcall(SwitchX : ( (b : NAT1) & (a <= c * b) ))
+   =>
+    a/b <= c;
+
+/***/
+   binhyp(p <= n) &
+   bcall(SwitchX : ( (m: NAT1) & (n: NAT) ))
+   =>
+   p <= m * n;
+
+/***/
+   binhyp(p <= m) &
+   bcall(SwitchX : ( (m: NAT) & (n: NAT1) ))
+   =>
+   p <= m * n;
+
+   binhyp(n <= p) &
+   bcall(SwitchX : ( q : NAT ))
+   =>
+   n <= (p + q);
+
+   binhyp(n <= q) &
+   bcall(SwitchX : ( p : NAT ))
+   =>
+   n <= (p + q); 
+
+   bcall(SwitchX : ( n : NAT ))
+   =>
+   p <= (p + n);
+
+   bcall(SwitchX : ( n : NAT ))
+   =>
+   p <= (n + p);
+
+   bcall(SwitchX : ( (n: NAT) & (m: NAT) & (n < m) ))
+    =>
+   (n + 1) <= m;
+
+   bcall(SwitchX : ( (n: NAT) & (m: NAT) & (n < m) ))
+   =>
+   (1 + n) <= m; 
+
+   bcall(SwitchX : ( (n : NAT) & (p <= q) ))
+   =>
+   (p + n) <= (q + n);
+
+   bcall(SwitchX : ( (n : NAT) & (p <= q) ))
+   =>
+   (n + p) <= (q + n);
+
+   bcall(SwitchX : ( (n : NAT) & (p <= q) ))
+   =>
+   (n + p) <= (n + q);
+
+   bcall(SwitchX : ( (n : NAT) & (p <= q) ))
+   =>
+   (p + n) <= (n + q);
+
+
+/*  23:06:97
+
+   binhyp(n <= p) &
+   bcall((LessThanOrEqualX~;SwitchX) : (m <= q))
+  =>
+   n + m <= p + q;
+
+   binhyp(m <= p) &
+   bcall((LessThanOrEqualX~;SwitchX) : (n <= q))
+  =>
+   n + m <= p + q;
+
+   binhyp(n <= q) &
+   bcall((LessThanOrEqualX~;SwitchX) : (m <= p))
+  =>
+   n + m <= p + q;
+
+   binhyp(m <= q) &
+   bcall((LessThanOrEqualX~;SwitchX) : (n <= p))
+  =>
+   n + m <= p + q;
+
+*/
+
+
+
+
+
+
+   bcall((LessThanOrEqualX;SwitchX) : (m + n <= q + p))
+  =>
+   m <= q - n + p;
+
+   bcall((LessThanOrEqualX;SwitchX) : (m + p <= q + n))
+  =>
+   m - n + p <= q;
+
+   binhyp(m <= n - p) &
+   binhyp(p : NAT)
+  => 
+   m <= n;
+
+   binhyp(m + p <= n) &
+   binhyp(p : NAT)
+  => 
+   m <= n;
+
+   binhyp(n = m)
+   =>
+   m <= n;
+
+   binhyp(m = n)
+   =>
+   m <= n;
+
+   n <= n;
+
+
+/*** NEW ***/
+
+   bnum(a) &
+   bnum(c) &
+   bcall((ARI~;SwitchX) : ( a + c <= b ))
+   =>
+   a <= b - c;
+
+   bnum(a) &
+   bnum(c) &
+   btest(c<=a) &
+   bcall((ARI~;SwitchX) : ( a - c <= b ))
+   =>
+   a <= c + b;
+
+   bnum(b) &
+   bnum(c) &
+   btest(b<=c) &
+   bcall((ARI~;SwitchX) : ( a <= c - b ))
+   =>
+   a + b <= c;
+
+
+   bnum(b) &
+   bnum(c) &
+   bcall((ARI~;SwitchX) : ( a <= c + b ))
+   =>
+   a - b <= c;
+
+   bnum(a) &
+   bnum(c) &
+   btest(a<=c) &
+   bcall((ARI~;SwitchX) : ( b <= c - a ))
+   =>
+   a + b <= c;
+
+   bnum(b) &
+   bnum(c) &
+   btest(b<=c) &
+   bcall((ARI~;SwitchX) : ( a <= c - b ))
+   =>
+   a + b <= c;
+
+
+/*   July 1999 - requested by Andy Farnsworth - also added a * b
+*/
+  bcall( SwitchX~ : ( (a:NAT) & (b:NAT) ) )
+ =>
+  0 <= a + b;
+
+  bcall( SwitchX~ : ( (a:NAT) & (b:NAT) ) )
+ =>
+  0 <= a * b;
+
+
+/***/
+   bcall(SwitchX : ( q <= p ))
+   =>
+   0 <= (p - q);
+
+   bcall(SwitchX : ( p = q ))
+   =>
+   (p - q) <= 0;
+
+   binhyp(x : NAT1)
+   =>
+   1 <= x;
+
+   binhyp(x : NAT)
+   =>
+   0 <= x;
+
+
+   binhyp(a<b)
+   =>
+   a<=b;
+
+
+   /***
+   establish false
+   ***/
+
+   binhyp(a>b) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a <= b;
+
+   bnum(a) &
+   bnum(b) &
+   btest(a>b) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a <= b
+
+END
+
+&
+
+THEORY LessThanX IS
+
+
+/*** NEW ***/
+
+/*
+   binhyp(N<=b) &
+   bcall(SwitchX : ( a < N ))
+   =>
+   a < b;
+
+   binhyp(N<b) &
+   bcall(SwitchX : ( a < N ))
+   =>
+   a < b;
+*/
+
+   binhyp(a<=N) &
+   bcall(SwitchX : ( N < b ))
+   =>
+   a < b;
+
+   binhyp(a<N) &
+   bcall(SwitchX : ( N <= b ))
+   =>
+   a < b;
+
+   binhyp(a+c<b) &
+   bcall(SwitchX : ( c : NAT ))
+   =>
+   a < b;
+
+   binhyp(a<b-c) &
+   bcall(SwitchX : ( c : NAT ))
+   =>
+   a < b;
+
+
+
+   binhyp(a<=c) &
+   binhyp(a:NAT) &
+   bcall(SwitchX : (b : NAT1))
+   =>
+   a < b + c;
+
+   binhyp(a<c) &
+   binhyp(a:NAT) &
+   bcall(SwitchX : (b : NAT))
+   =>
+   a < b + c;
+
+
+  
+   Bcall(SwitchX: (0<b & 0<c) )
+  =>
+   0<b*c;
+
+   Bcall((CardinalityX;SwitchX) : n < card(a) )
+  => 
+   n < card(a);
+
+   Bcall((CardinalityX;SwitchX) : (card(a) < n)) 
+   =>
+   card(a) < n;
+
+
+   btest(a < b)      /* hardwired in Proof.src */
+   => 
+   a < b;                  /* duplicate */
+
+   binhyp(m <= n) &
+   binhyp(not(m = n))
+   =>
+   m < n;
+
+   binhyp(m <= n) &
+   binhyp(not(n = m))
+   =>
+   m < n;
+
+   binhyp(c < b) &
+   btest(a <= c) 
+   =>
+   a < b;      /* hardwired in Proof.src */
+
+   binhyp(c <= b) &
+   btest(a < c) 
+   =>
+   a < b;      /* hardwired in Proof.src */
+
+   bcall((CardinalityX;SwitchX) : (card(a) < n))
+   =>
+   card(a) < n;
+
+   bnum(b) &
+   bcall(SwitchX : ( n < b ))
+   =>
+   n < min({b}); 
+
+   bident(b) &
+   bcall(SwitchX : ( n < b ))
+   =>
+   n < min({b}); 
+
+   bcall(SwitchX : ( (n < b) & (n < min({a})) ))
+   =>
+   n < min({a, b}); 
+
+   x\n &
+   bcall(SwitchX : (!x.(p => (n < x))))
+   =>
+   n <min({x | p});
+
+   bnum(b) &
+   bcall(SwitchX : ( b < n ))
+   =>
+   max({b}) < n;
+
+   bident(b) &
+   bcall(SwitchX : ( b < n ))
+   =>
+   max({b}) < n;
+
+   bcall(SwitchX : ( (b < n) & (max({a}) < n) ))
+   =>
+   max({a, b}) < n;
+
+   x\n &
+   bcall(SwitchX : (!x.(p => (x < n))))
+   =>
+   max({x | p}) < n;
+
+   bcall((CardinalityX;SwitchX) : (card(a) < n)) 
+   =>
+   card(a) < n;
+
+   bcall((LessThanX~;SwitchX) : ((n + 1) < p))
+   =>
+   succ(n) < p;
+
+   bcall(SwitchX : ( p < (n + 1) ))
+   =>
+   p < succ(n);
+
+   bcall(SwitchX : ( n < (p + 1) ))
+   =>
+   pred(n) < p;
+
+   bcall(SwitchX : ( (p + r) < q ))
+   =>
+   p < (q - r);
+
+   bcall(SwitchX : ( q <= p  & p < (r + q) ))
+   =>
+   (p - q) < r;
+
+   binhyp(n < m) &
+   binhyp(p <= q)
+   =>
+   (n + p) < (m + q);
+
+   binhyp(n <= m) &
+   binhyp(p < q)
+   =>
+   (n + p) < (m + q);
+
+   binhyp(n < q) &
+   binhyp(p <= m)
+   =>
+   (n + p) < (m + q);
+
+   binhyp(n <= q) &
+   binhyp(p < m)
+   =>
+   (n + p) < (m + q);
+
+   bcall(SwitchX : ( (n : NAT1) & (p < q) ))
+   =>
+   (p * n) < (q * n);
+
+   bcall(SwitchX : ( (n : NAT1) & (p < q) ))
+   =>
+   (p * n) < (n * q);
+
+   bcall(SwitchX : ( (n : NAT1) & (p < q) ))
+   =>
+   (n * p) < (q * n);
+
+   bcall(SwitchX : ( (n : NAT1) & (p < q) ))
+   =>
+   (n * p) < (n * q);
+
+   binhyp(n <= p) &
+   bcall(SwitchX : ( q : NAT1 ))
+   =>
+   n < (p + q);
+
+   binhyp(n <= p) &
+   bcall(SwitchX : ( q : NAT1 ))
+   =>
+   n < (q + p);
+
+   binhyp(n < p) &
+   bcall((InNatX~;SwitchX) : ( q : NAT))
+   =>
+   n < (p + q);
+
+   binhyp(n < p) &
+   bcall((InNatX~;SwitchX) : ( q : NAT))
+   =>
+   n < (q + p);
+
+   bcall(SwitchX : ( (n : NAT1) & (p : NAT) ))
+   =>
+   p < (p + n);
+
+   bcall(SwitchX : ( (n : NAT1) & (p : NAT) ))
+   =>
+   p < (n + p);
+
+   bcall(SwitchX : ( (n < p) & (q : NAT) ))
+   =>
+   (n + q) < (p + q);
+
+   bcall(SwitchX : ( (n < p) & (q : NAT) ))
+   =>
+   (n + q) < (q + p);
+
+   bcall(SwitchX : ( (n < p) & (q : NAT) ))
+   =>
+   (q + n) < (p + q);
+
+   bcall(SwitchX : ( (n < p) & (q : NAT) ))
+   =>
+   (q + n) < (q + p);
+
+   bcall((LessThanX;SwitchX) : (m + p < q + n))
+  =>
+   m - n + p < q;
+
+   binhyp(m <= p) &
+   bcall((LessThanX~;SwitchX) : (n < q))
+ =>
+   m + n < p + q;
+
+   binhyp(m <= q) &
+   bcall((LessThanX~;SwitchX) : (n < p))
+ =>
+   m + n < p + q;
+
+   binhyp(n <= p) &
+   bcall((LessThanX~;SwitchX) : (m < q))
+ =>
+   m + n < p + q;
+
+   binhyp(n <= q) &
+   bcall((LessThanX~;SwitchX) : (m < p))
+ =>
+   m + n < p + q;
+
+
+   binhyp(m < p) &
+   bcall((LessThanOrEqualX~;SwitchX) : (n <= q))
+ =>
+   m + n < p + q;
+
+   binhyp(m < q) &
+   bcall((LessThanOrEqualX~;SwitchX) : (n <= p))
+ =>
+   m + n < p + q;
+
+   binhyp(n < p) &
+   bcall((LessThanOrEqualX~;SwitchX) : (m <= q))
+ =>
+   m + n < p + q;
+
+   binhyp(n < q) &
+   bcall((LessThanOrEqualX~;SwitchX) : (m <= p))
+ =>
+   m + n < p + q;
+
+
+
+
+
+
+/***/
+   bcall(SwitchX : ( q < p ))
+   =>
+   0 < (p - q);
+
+   binhyp(not(n=0))
+  =>
+   0<n;
+
+   binhyp(0<card(s))
+  =>
+   0<size(s);
+
+   binhyp(x : NAT1)
+  =>
+   0 < x;
+
+
+   /***
+   establish false
+   ***/
+
+   binhyp(a>=b) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a < b;
+
+   bnum(a) &
+   bnum(b) &
+   btest(a>=b) &
+   bcall(CheckSnapshotX:false)  /* stop it dead */
+  =>
+   a < b
+
+END
+
+&
+
+THEORY SwitchNotX IS  /*** REFLECT CHANGES HERE IN SwitchBTP.src ***/
+
+   bcall((LessThanOrEqualX~;SwitchX) : (b <= a)) 
+   => 
+   not(a < b);
+
+   bcall((LessThanX~;SwitchX) : (b < a)) 
+   => 
+   not(a <= b);
+
+   bcall((NotEqualX;SwitchX) : not(a = b)) 
+   => 
+   not(a = b);
+
+   bcall(SwitchX : (#x.not(P)))
+   => 
+   not(!x.P);
+
+   bcall(SwitchX : (#x.(P&Q)))
+   => 
+   not(!x.(P=>not(Q)));
+
+   bcall((GEN;SUB~;SwitchNotX~;SwitchX) : (!x.not(P)))
+   => 
+   not(#x.P);
+
+   bcall(SwitchX : (not((a => b) & (b => a))))
+   => 
+   not(bool(a) = bool(b));
+
+   bcall(SwitchX : (a & not(b)))
+   => 
+   not(a => b);
+
+   bcall(SwitchX : p) 
+   => 
+   not(not(p));
+
+   bcall((SwitchNotX~;SwitchX) : (not(a) & not(b))) 
+   => 
+   not(a or b);
+   
+   bcall(SwitchX : (not(p) or not(q)))
+   => 
+   not(p & q);
+
+   bcall((NotEqualX;SwitchX) : ( not((a - b) = {})) )
+   => 
+   not(a <: b);
+
+   bcall((NotInSetX~;SwitchX) : not(a : b)) 
+   => 
+   not(a : b);
+
+   /***
+   establish false
+   ***/
+
+   binhyp(a) &
+   bcall(FalseX:false)  /* stop it dead */
+  =>
+   not(a)
+
+END
+
+&
+
+THEORY FalseX IS
+
+   binhyp(not(a)) &
+   bcall(DummyX:false)  /* stop it dead */
+  => 
+   a;
+
+   binhyp(a) &
+   bcall(DummyX:false)  /* stop it dead */
+  => 
+   not(a)
+
+END
+
+&
+
+THEORY BoolX IS
+
+   bcall(SwitchX~ : ((a => b) & (b => a)))
+   => 
+   (bool(a) = bool(b))
+
+END
+
+&
+
+THEORY OrX IS /* THIS SHOULD ALWAYS APPEAR IMMEDIATELY ABOVE SwitchX */
+
+  bcall(SwitchX~ : b)
+ => 
+  (a or b);
+
+  bcall(SwitchX~ : a)
+ => 
+  (a or b)
+
+END
+
+&
+
+THEORY SwitchX IS  /*** REFLECT CHANGES HERE IN SwitchBTP.src ***/
+
+  /********************************
+           HYP & QueryUser
+  ********************************/
+
+   bcall(
+         ((ARI~;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;SwitchX) :  a) |
+         (QueryUserX : (SetOfRules <- a))
+        )
+   =>
+   a;
+
+
+/*
+   bcall(
+         ((HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;SwitchX) :  a)
+        )
+   =>
+   a;
+*/
+
+
+
+  /************************************************************
+   ************************************************************
+
+                      Tac_Rewrite_Simplify
+
+   ************************************************************
+   ************************************************************
+
+   ************************************************************
+                         ProofPrinter
+   ************************************************************/
+
+
+   IfProofPrinter &
+   Read_REASONING_DEPTH(2) &
+   bcall((Tac_Rewrite_Simplify_FWD_2~;SwitchX) : a)
+   =>
+   a;
+
+   IfProofPrinter &
+   Read_REASONING_DEPTH(1) &
+   bcall((Tac_Rewrite_Simplify_FWD_1~;SwitchX) : a)
+   =>
+   a;
+
+   IfProofPrinter &
+   Read_REASONING_DEPTH(0) &
+   bcall((Tac_Rewrite_Simplify_FWD_0~;SwitchX) : a)
+   =>
+   a;
+
+
+
+  /************************************************************
+                           AutoProver
+  ************************************************************/
+
+
+   IfAutoProver &
+   Read_REASONING_DEPTH(2) &
+   bcall((Tac_Rewrite_Simplify_FWD_2~;SwitchX) : a)
+   =>
+   a;
+
+   IfAutoProver &
+   Read_REASONING_DEPTH(1) &
+   bcall((Tac_Rewrite_Simplify_FWD_1~;SwitchX) : a)
+   =>
+   a;
+
+   IfAutoProver &
+   Read_REASONING_DEPTH(0) &
+   bcall((Tac_Rewrite_Simplify_FWD_0~;SwitchX) : a)
+   =>
+   a;
+
+
+  /************************************************************
+                          InterProver
+  ************************************************************/
+
+  /***************************************
+  Rewrite Simplify:
+  LemmaIsBeingAttempted - but allow for
+  no PROOFMETHODTactic (since PROOFMETHOD
+  may not have parsed & hence been loaded)
+  *****************************************/
+
+   IfInterProver &
+   Read_REASONING_DEPTH(N) &
+   btest(N/=0) &
+   btest(N/=1) &
+   btest(N/=2) &
+   LemmaIsBeingAttempted &
+   bcall((Tac_Rewrite_Simplify_FWD_2~;SwitchX) : a)
+   =>
+   a;
+
+   IfInterProver &
+   LemmaIsBeingAttempted &
+   Read_REASONING_DEPTH(2) &
+   bcall((Tac_Rewrite_Simplify_FWD_2~;SwitchX) : a)
+   =>
+   a;
+
+   IfInterProver &
+   LemmaIsBeingAttempted &
+   Read_REASONING_DEPTH(1) &
+   bcall((Tac_Rewrite_Simplify_FWD_1~;SwitchX) : a)
+   =>
+   a;
+
+   IfInterProver &
+   LemmaIsBeingAttempted &
+   Read_REASONING_DEPTH(0) &
+   bcall((Tac_Rewrite_Simplify_FWD_0~;SwitchX) : a)
+   =>
+   a;
+
+  /*******************************************
+  Rewrite Simplify:
+  POBIsBeingAttempted, use InterProverDepth
+  So there is no PROOFMETHODTactic!
+  *******************************************/
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(2) &
+   bcall((Tac_Rewrite_Simplify_FWD_2~;SwitchX) : a)
+   =>
+   a;
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(1) &
+   bcall((Tac_Rewrite_Simplify_FWD_1~;SwitchX) : a)
+   =>
+   a;
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(0) &
+   bcall((Tac_Rewrite_Simplify_FWD_0~;SwitchX) : a)
+   =>
+   a;
+
+
+
+
+
+
+
+
+  /********************************
+            Existential
+  ********************************/
+
+   Read_REASONING_DEPTH(2) &
+   bcall(((Exist2X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+   Read_REASONING_DEPTH(2) &
+   bcall(((Exist1X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+   Read_REASONING_DEPTH(2) &
+   bcall(((Exist0X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+
+
+   Read_REASONING_DEPTH(1) &
+   bcall(((Exist1X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+   Read_REASONING_DEPTH(1) &
+   bcall(((Exist0X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+
+
+   Read_REASONING_DEPTH(0) &
+   bcall(((Exist0X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(2) &
+   bcall(((Exist2X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(2) &
+   bcall(((Exist1X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(2) &
+   bcall(((Exist0X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(1) &
+   bcall(((Exist1X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(1) &
+   bcall(((Exist0X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+
+
+   IfInterProver &
+   POBIsBeingAttempted &
+   InterProverDepthIs(0) &
+   bcall(((Exist0X;SUB;ARI)~;SwitchX) : (#x.P))
+   => 
+   (#x.P);
+
+
+
+  /*********************
+       goal matches
+  *********************/
+
+   bcall((EqualityX;SwitchX) : (a = b)) 
+   =>
+   a = b;
+
+   bcall((GEN;SUB~;SwitchX) : (!x.P)) 
+   => 
+   !x.P;
+
+   bcall((BoolX;SwitchX) : (bool(a) = bool(b)))
+   => 
+   (bool(a) = bool(b));
+
+   bcall((SwitchNotX;SwitchX) : not(p)) 
+   => 
+   not(p);
+
+   bcall((OrX;SwitchX)~ : (a or b) )
+   => 
+   (a or b);
+
+   bcall((LessThanOrEqualX~;SwitchX) : (n <= p)) 
+   => 
+   n <= p;
+
+   bcall((LessThanX~;SwitchX) : (n < p)) 
+   => 
+   n < p;
+
+   bcall((InclusionX;SwitchX) : (a <: b)) 
+   => 
+   a <: b;
+
+   bcall((NotInSetX~;SwitchX) : not(a : b)) 
+   => 
+   not(a : b);
+
+   bcall((InSetX~;SwitchX) : (a : b)) 
+   => 
+   a : b;
+
+   /*** moved from InTypeX ***/
+   bcall((InRealX~;SwitchX) : (a : REAL))
+   =>
+   a : REAL;
+
+   /*** added ***/
+   bcall((InNatX~;SwitchX) : (n : NAT1))
+   =>
+   n : NAT1;
+
+   /*** moved from InTypeX ***/
+   bcall((InNatX~;SwitchX) : (n : NAT))
+   =>
+   n : NAT;
+
+   /*** moved from InTypeX ***/
+   bcall((InSequenceX;SwitchX) : (s : iseq(a)))
+   =>
+   s : iseq(a);
+
+   /*** moved from InTypeX ***/
+   bcall((InSequenceX;SwitchX) : (s : seq(a)))
+   =>
+   s : seq(a);
+
+   /*** moved from InTypeX ***/
+   bcall((InBijectionX;SwitchX) : ( (f : s >->> t) ) )
+   =>
+   f : s >->> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InSurjectionX;SwitchX) : (f : s +->> t))
+   =>
+   f : s +->> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InInjectionX;SwitchX) : (f : s >+> t))
+   =>
+   f : s >+> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InTotalFunctionX;SwitchX) : (f : s --> t))
+   =>
+   f : s --> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InPartialFunctionX~;SwitchX) : (f : s +-> t))
+   =>
+   f : s +-> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InRelationX~;SwitchX) : (r : s <-> t))
+   =>
+   r : s <-> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InFINX~;SwitchX) : (a : FIN(b)))
+   =>
+   a : FIN(b);
+
+   bcall((SUB~;SwitchX) : ([s:=t]g))
+   => 
+   [s:=t]g;
+
+
+   /***
+   establish false
+   ***/
+
+   binhyp(a) &
+   bcall(FalseX:not(a))
+  =>
+   not(a);
+
+   binhyp(not(a)) &
+   bcall(FalseX:a)
+  =>
+   a;
+
+
+
+   /***
+   false established
+   ***/
+
+   bcall(DummyX:false)  /* stop it dead */
+  =>
+   false;
+
+
+
+
+
+
+
+
+
+  /************************************************************
+   ************************************************************
+
+                             DED rules
+
+   ************************************************************
+   ************************************************************
+
+
+
+   ************************************************************
+       DED:
+                          ProofPrinter
+   ************************************************************/
+
+  IfProofPrinter &
+  ReadPROOFMETHODTactic(B,F) &
+  bcall
+    (
+      (DED~;SwitchX~), F                          : (h=>g)
+    )
+ =>
+  (h=>g);
+
+
+
+  /************************************************************
+       DED:
+                    Subsid Hypotheses in AutoProver
+  ************************************************************/
+
+  IfAutoProver &
+  ReadPROOFMETHODTactic(B,F) &
+  bcall
+    (
+      (DED~;SwitchX~), F                          : (h=>g)
+    )
+ =>
+  (h=>g);
+
+
+  /************************************************************
+       DED:
+                   Top Level Hypotheses in AutoProver
+  ************************************************************/
+
+  /*********************
+  DED:
+  no FwdTac in this rule 
+  so no loop on DED!
+  *********************/
+
+  IfAutoProver &
+  Read_Expanded_Hyp(H) &
+  bcall
+  (
+    (DED;SwitchX~)                           : (H=>g)
+  )
+ =>
+  Expand_Hyp_1(g);
+
+
+/***
+brule(ProcessLemmaFilesX.1,z)&HERE((z))&
+***/
+  IfAutoProver &
+  Expand_Hyp_If_Reqd(h) &
+  Expand_Hyp_1(g)
+ =>
+  Expand_Hyp_0(h=>g);
+
+
+  IfAutoProver &
+  bsearch(cst(x),(h&?),k) &
+  bcall
+    (
+      SwitchX                                           : Expand_Hyp_0(h=>g)
+    )
+ =>
+  (h=>g);
+
+
+  IfAutoProver &
+  bsearch(ctx(x),(h&?),k) &
+  bcall
+    (
+      SwitchX                                           : Expand_Hyp_0(h=>g)
+    )
+ =>
+  (h=>g);
+
+
+
+  /************************************************************
+              DED:
+                           InterProver
+  ************************************************************/
+
+  /***************************************
+  DED:
+  LemmaIsBeingAttempted - but allow for
+  no PROOFMETHODTactic (since PROOFMETHOD
+  may not have parsed & hence been loaded)
+  *****************************************/
+
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  bcall
+    (
+      (DED~;SwitchX~), REASONING_DEPTH_2_Tac~ : (h=>g)
+    )
+ =>
+  (h=>g);
+
+  IfInterProver &
+  LemmaIsBeingAttempted &
+  ReadPROOFMETHODTactic(B,F) &
+  bcall
+    (
+      (DED~;SwitchX~), F                          : (h=>g)
+    )
+ =>
+  (h=>g);
+
+
+  /*******************************************
+  DED:
+  POBIsBeingAttempted, use InterProverDepth
+  So there is no PROOFMETHODTactic!
+  *******************************************/
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  InterProverDepthIs(2) &
+  bcall
+    (
+      (DED~;SwitchX~), REASONING_DEPTH_2_Tac~ : (h=>g)
+    )
+ =>
+  (h=>g);
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  InterProverDepthIs(1) &
+  bcall
+    (
+      (DED~;SwitchX~), REASONING_DEPTH_1_Tac~ : (h=>g)
+    )
+ =>
+  (h=>g);
+
+  IfInterProver &
+  POBIsBeingAttempted &
+  InterProverDepthIs(0) &
+  bcall
+    (
+      (DED~;SwitchX~), REASONING_DEPTH_0_Tac~ : (h=>g)
+    )
+ =>
+  (h=>g);
+
+
+
+
+
+
+  /*****************************************************
+  DED:
+  Rewrite InterProver & ProofPrinter
+  to match action of AutoProver
+  *****************************************************/
+
+  IfProofPrinter &
+  (h=>(pre(o)=>g))
+ =>
+  (h&pre(o)=>g);
+
+  IfInterProver &
+  (h=>(pre(o)=>g))
+ =>
+  (h&pre(o)=>g);
+
+
+  /***************
+  Swallow allowed!
+  ***************/
+
+  IfInterProver &
+  brule(SwallowX.1,1) &
+  bcall(?:a)
+ =>
+  a
+
+END
+
+
+
+
+
+
+
+/******
+
+   TEST MUST BE COMMENTED OUT OTHERWISE THE BTOOL BINARIES WILL NOT BUILD
+
+   remember: bmodr(InterProverFromUserX.11,2) &  IfAutoProver !!!
+
+*****/
+
+/*
+&
+
+THEORY TEST IS
+
+bcall ( ((DED;MODR;SwitchX),(REASONING_DEPTH_2_Tac)) : 
+  (
+    not(uqsstr_UiAO_arrtok$1 = uqsstr_ARROBJ) &
+    qq : uqsstr_ARROBJ-uqsstr_UiAO_arrtok$1 &
+    not(uqsstr_UiAO_arrtok$1 \/ {qq} = uqsstr_ARROBJ) &
+    qq$0 : uqsstr_ARROBJ-(uqsstr_UiAO_arrtok$1 \/ {qq}) &
+    array : u2n(uqsstr_lb)..255 +-> BYTE &
+    card(array) = 255 &
+    ran(array) = {n2b(0)} &
+    array$0 : u2n(uqsstr_lb)..255 +-> BYTE &
+    card(array$0) = 255 &
+    ran(array$0) = {n2b(x_code)} &
+    n2u(6) < n2u(255) &
+    kk$0 : uqsO_str_keys \/ {qq}
+   =>
+    (bmodr(InterProverFromUserX.11,2) &
+    (uqsO_pntr_str \/ {qq |-> 1})(kk$0) = (uqsstr_UiAO_nxt$1 <+ {qq |-> u2n(uqsstr_lb)} <+ {qq$0 |-> u2n(uqsstr_lb)} <+ {qq |-> u2n(uqsstr_lb)} <+ {qq$0 |-> u2n(uqsstr_lb)} <+ {qq$0 |-> 7})(kk$0))
+  )
+)
+
+END
+
+*/

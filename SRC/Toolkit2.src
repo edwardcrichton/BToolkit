@@ -1,0 +1,466 @@
+/* Copyright (c) 1996, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+
+
+#include "GlobalDefs.src"
+
+
+
+
+#define InformNothingConfigured Writef(("\n  % % %\n",bsrv No berv,bsrv machines berv,bsrv configured berv))
+
+#define InformSearchUnsuccessful Writef(("\n  % %\n",bsrv Search berv,bsrv unsuccessful berv))
+
+#define InformFileAlreadyExists(x)  Writef(("\n    % already exists\n",bsrv x berv))
+
+#define InformAlreadyConfigured(x) Writef(("\n    % is already configured\n",bsrv x berv))
+
+#define InformNameAlreadyUsed(x) Writef(("\n    Name % is already used\n",bsrv x berv))
+
+#define InformNotIdentifier(x) Writef(("\n    % must be an identifier\n",bsrv x berv))
+
+#define InformDoesNotParse(x)  Writef(("\n    %\n\n    % does not parse\n",bwarn,x))
+
+#define InformCantWriteBerr Writef(("\n    %\n\n    Can't write to \".Berr\"\n",berr))
+
+#define InformErrorInvokingVi Writef(("\n    %\n\n    Error invoking vi\n",berr))
+
+
+#define SetCurrentConstruct(x)       bcall(MODR: bmodr(CurrentConstructX.1,x))
+
+#define GetCurrentConstruct(x)       brule(CurrentConstructX.1,x)
+
+#define CurrentlyNormalisingImp      brule(CurrentConstructX.1,O.imp)
+
+#define CurrentlyNormalisingRef      brule(CurrentConstructX.1,O.ref)
+
+#define CurrentlyNormalisingMch      brule(CurrentConstructX.1,O.mch)
+
+
+/*
+#define ReadVHDL(x)                  brule(CheckVHDLX.1,x)
+#define ModifyVHDL(x)                bmodr(CheckVHDLX.1,x)
+*/
+
+THEORY BTOOLKITINIT END   /* Theory # 2 */
+
+&
+
+#include "Utils.src"
+
+&
+
+#include "Standardize.src"
+
+&
+
+#include "CreHtml.src"
+
+&
+
+#define CurrentConstructIsVHDL brule(CheckCurrentConstructIsVHDLX.1,1)
+
+#include "Desugarer.src"
+
+&
+
+#include "Normaliser.src"
+
+&
+
+#include "Analyser.src"
+
+&
+
+#include "VHDLSyntax.src"
+
+&
+
+#include "PASPSyntax.src"
+
+&
+
+THEORY CreHtmlFileX IS
+
+#define CreHtmlFileDirect(x) bcall(CreHtmlFileX~:ch(x))
+
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CRE_HTML_RETURN_M:0)) &
+  LoadToolkit(1)
+ =>
+  ch1(a.b);
+
+  CreHtml(a.b) &
+  ch1(a.b)
+ =>
+  ch(a.b)
+
+END
+
+&
+
+THEORY UpdateDepTypeCheckerX IS
+
+#define upd_typTac (((FLAT)~;UpdateDepTypeCheckerX)~)
+
+#define UpdateDepTypeChecker(x) bcall(upd_typTac:upd_typ0(x))
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_NML:(d;e;c))) & /* sees_uses;inc_ipt;abs */
+  AddAnl(a.b) &
+  AddRef(a.b,c) &
+  CreHtml(a.b) &
+  LoadToolkit(1)
+ =>
+  upd_typ1(a|b)(c)(d)(e);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b) == b;
+
+  bsearch(?,X,Y) &
+  upd_typ1(a|b)(c)(Y)(e)
+ =>
+  upd_typ1(a|b)(c)(X)(e);
+
+  upd_typ1(a|b)(u)(bflat(s,t))(v)
+ =>
+  upd_typ0(a.b,s,t,u,v) /* SEES s USES t  Abstraction u INCLUDES v ) */
+
+END
+
+&
+
+#include "MergeTypeAnlForm.src"
+
+&
+
+#include "TypeChecker.src"
+
+&
+
+#include "Toolkit_core.src"
+
+&
+
+THEORY ParseInitX IS
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformUnknownEnvironment(x) &
+  PFZ
+ =>  
+  pi$x;
+
+
+
+
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+
+
+  /***
+  CreHtml job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_HTML:0),X,Y) &
+  ModifyJobs(Y) &
+  CreHtmlFileDirect((x))
+ =>
+  run;
+
+
+
+
+
+  /***
+  Normalise job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_NML:0),X,Y) &
+  NormaliseDirect((x))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_NML:0),X,Y) &
+  IsAnl(x) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+
+
+
+
+
+  /***
+  Priority Normalise job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_NML_PRIORITY:0),X,Y) &
+  AddPriorityJob(Y,(x:BT_NML:0)) &
+  NormaliseDirect((x))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_NML_PRIORITY:0),X,Y) &
+  IsAnl(x) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+
+
+
+
+  /***
+  Base job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_GBO:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+  /***
+  Enumerator job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+
+  /***
+  VHDL Enumerator job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM_VHDL_WITH_ENV:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+
+  /***
+  Normalise job from Enumerator
+  ***/
+
+  GetJobs(X) &
+  bsearch((x.mch:BT_ENUM_NML:0),X,Y) &
+  AddPriorityJob(Y,(x.mch:BT_NML:0)) &
+  NormaliseDirect((x.mch))
+ =>
+  run;
+
+
+
+
+
+  /***
+  Analyser job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_ANL:0),X,Y) &
+  AnalyserDirect((x))
+ =>
+  run;
+
+
+
+
+  /***
+  PASP job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_PASP_SYTX:0),X,Y) &
+  PASPSyntaxDirect((x))
+ =>
+  run;
+
+
+
+
+  /***
+  VHDL job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_VHDL_SYTX:0),X,Y) &
+  VHDLSyntaxDirect((x))
+ =>
+  run;
+
+
+
+
+  /***
+  TypeChecker job
+  ***/
+
+  GetJobs(X) &
+  bsearch((a.b:BT_TYP:0),X,Y) &
+  TypeCheckerDirect((a.b.anl))
+ =>
+  run;
+
+
+
+
+
+  /***
+  Mini-remake job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_EDT_NML:0),X,Y) &
+  ModifyJobs((Y;(x:BT_MINI_RMK_M:0))) &
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+
+
+  /***
+  Introduce job
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_CSTR:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+
+
+  /***
+  Introduce force jobs
+  ***/
+
+  GetJobs(X) &
+  bsearch((x:BT_SRC_FRC:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TLIB_FRC:c),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_VHDL_LIB_FRC_WITH_ENV:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_LIB_FRC:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_SRC_FRC:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+
+
+
+
+
+  ReadAppendedCompletedJobsCount(N) &
+  btest(N>2) &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  FifoWrite_NoStore((BT_INTERIM_COMP_JOBS_M,0,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_LST_FLG:0),X,Y) &
+  ModifyJobs((Y;(x:BT_MOTIF_QUIT:1))) &
+  LoadToolkit(7)
+ =>
+  run;
+
+  bnum(x) &
+  btest(1<=x) &
+  btest(5>=x) &
+  run &
+  bredo
+ =>  
+  pi$x;
+
+  bnum(n) &
+  bmodr(ParseInitX.1,1) &             /* first loop */
+  bmodr(ParseEnvX.2,n) &
+  LoadJobs &
+  pi$n
+ =>
+  n$toolkit$n$n;
+
+  brule(ParseInitX.1,1) &             /* subsequent loops (bredo) */
+  run &
+  bredo
+ =>
+  n$toolkit$n$n
+
+END
+
+&
+
+THEORY CurrentConstructX IS ? END

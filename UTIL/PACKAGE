@@ -1,0 +1,154 @@
+#! /bin/csh -f
+
+#
+# Package!
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo '  This script packages the current build or the source.'
+
+cd $curdir
+
+
+echo ""
+echo "  Entry point: "
+echo ""
+echo "   1    MAKE_BTool_tarfile             tar ball containing basic script. no environment setup."
+echo "   2    MAKE_BToolkit_tarfile          tar ball containing basic script. no environment setup."
+echo "   3    MAKE_BToolkit_debian           debian linux package"
+echo "   4    MAKE_BToolkit_debian_redhat    redhat package converted from debian package"
+echo "   5    MAKE_BToolkit_MACOS            Mac OS X disk image of Application"
+echo "   6    MAKE_BToolkit_selfextract      self installing shell script (script+tar)"
+echo "   7    MAKE_bkitsrc                   selective copy of the source"
+echo "   8    gzipall                        copy the whole of the source structure"
+echo ""
+echo "   9    abort "
+
+echo ""
+echo -n "  Number? "
+set answer=$<
+
+switch ( $answer )
+  case "1":
+    set level = 1
+    breaksw
+  case "2":
+    set level = 2
+    breaksw
+  case "3":
+    set level = 3
+    breaksw
+  case "4":
+    set level = 4
+    breaksw
+  case "5":
+    set level = 5
+    breaksw
+  case "6":
+    set level = 6
+    breaksw
+  case "7":
+    set level = 7
+    breaksw
+  case "8":
+    set level = 8
+    breaksw
+  case "9":
+    set level = 9
+    breaksw
+  default:
+    echo ""
+    echo "  Aborted"
+    echo ""
+    exit ( 1 )
+    breaksw
+endsw
+
+
+if ( $level == 1 ) then
+  MAKE_BTool_tarfile_from_built
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Build aborted"
+    echo ""
+    exit ( 1 )
+  endif
+endif
+
+if ( $level == 2 ) then
+  MAKE_BToolkit_tarfile_from_built
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Build aborted"
+    echo ""
+    exit ( 1 )
+  endif
+endif
+
+if ( $level == 3 ) then
+  MAKE_BToolkit_debian_from_built
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Build aborted"
+    echo ""
+    exit ( 1 )
+  endif
+endif
+
+if ( $level == 4 ) then
+  MAKE_BToolkit_debian_redhat_from_built
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Build aborted"
+    echo ""
+    exit ( 1 )
+  endif
+endif
+
+if ( $level == 5 ) then
+  MAKE_BToolkit_MACOS_from_built
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Build aborted"
+    echo ""
+    exit ( 1 )
+  endif
+endif
+
+if ( $level == 6 ) then
+  MAKE_BToolkit_selfextract_from_built
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Build aborted"
+    echo ""
+    exit ( 1 )
+  endif
+endif
+
+if ( $level == 7 ) then
+  MAKE_bkitsrc
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Build aborted"
+    echo ""
+    exit ( 1 )
+  endif
+endif
+
+if ( $level == 8 ) then
+  gzipall
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Build aborted"
+    echo ""
+    exit ( 1 )
+  endif
+endif
+
+echo ""
+echo ""
+echo "  PACKAGE complete"
+echo ""

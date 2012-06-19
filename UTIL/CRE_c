@@ -1,0 +1,153 @@
+#! /bin/csh -f
+
+#
+# c executables installed
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script installs executables from C "
+echo "  in  `pwd`/BKIT "
+echo "  and `pwd`/BKIT/BLIB "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+
+if ( ! -d $BKIT/BLIB ) then
+  mkdir $BKIT/BLIB
+endif
+
+cd ../C
+
+######################################
+# compile BKIT c files
+######################################
+
+echo ""
+foreach file ( $BKIT_c_files )
+
+  echo "  creating $BKIT/$file"
+  echo "  $CC \ "
+  echo "      $CC_opt_non_Motif \ "
+  echo "      $file.c \ "
+  echo "      -o $BKIT/$file \ "
+  echo "      $ALL_FLAGS \ "
+  echo "      $CC_non_X_link_lib"
+
+  $CC \
+      $CC_opt_non_Motif \
+      $file.c \
+      -o $BKIT/$file \
+      $ALL_FLAGS \
+      $CC_non_X_link_lib
+
+  if ( $status != 0 ) then
+    echo ""
+    echo "                            >>>>> $file NOT COMPILED <<<<<"
+    echo ""
+    echo "  Aborted"
+    echo ""
+    exit ( 1 )
+  else
+    echo "  strip $BKIT/$file >>SUPPRESSED<<"
+    #strip $BKIT/$file
+  endif
+  echo ""
+
+end
+
+
+######################################
+# compile BKIT/BLIB c files
+######################################
+
+echo ""
+foreach file ( $c_files )
+
+  echo "  creating $BKIT/BLIB/$file"
+
+  if ($file == "Proof") then
+
+    echo "  $CC \ "
+    echo "      $CC_opt_non_Motif \ "
+    echo "      $file.c \ "
+    echo "      -o $BKIT/BLIB/CheckAnnot \ "
+    echo "      $ALL_FLAGS \ "
+    echo "      $CC_non_X_link_lib "
+
+    $CC \
+        $CC_opt_non_Motif \
+        $file.c \
+        -o $BKIT/BLIB/CheckAnnot \
+        $ALL_FLAGS \
+        $CC_non_X_link_lib
+
+    if ( $status != 0 ) then
+      echo ""
+      echo "                            >>>>> $file NOT COMPILED <<<<<"
+      echo ""
+      echo "  Aborted"
+      echo ""
+      exit ( 1 )
+    else
+      if ($file == "Proof") then
+        echo "  strip $BKIT/BLIB/CheckAnnot >>SUPPRESSED<<"
+        #strip $BKIT/BLIB/CheckAnnot 
+      else
+        echo "  strip $BKIT/BLIB/$file >>SUPPRESSED<<"
+        #strip $BKIT/BLIB/$file
+      endif 
+    endif
+    echo ""
+
+  else
+
+    echo "  $CC \ "
+    echo "      $CC_opt_non_Motif \ "
+    echo "      $file.c \ "
+    echo "      -o $BKIT/BLIB/$file \ "
+    echo "      $ALL_FLAGS \ "
+    echo "      $CC_non_X_link_lib "
+
+    $CC \
+        $CC_opt_non_Motif \
+        $file.c \
+        -o $BKIT/BLIB/$file \
+        $ALL_FLAGS \
+        $CC_non_X_link_lib
+
+    if ( $status != 0 ) then
+      echo ""
+      echo "                            >>>>> $file NOT COMPILED <<<<<"
+      echo ""
+      echo "  Aborted"
+      echo ""
+      exit ( 1 )
+    else
+      if ($file == "Proof") then
+        echo "  strip $BKIT/BLIB/CheckAnnot >>SUPPRESSED<<"
+        #strip $BKIT/BLIB/CheckAnnot 
+      else
+        echo "  strip $BKIT/BLIB/$file >>SUPPRESSED<<"
+        #strip $BKIT/BLIB/$file
+      endif 
+    endif
+    echo ""
+
+  endif
+
+end

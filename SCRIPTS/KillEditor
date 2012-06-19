@@ -1,0 +1,5 @@
+#! /bin/sh
+
+winid=`cat .Bed`
+kill -9 $winid
+rm -f .Bed

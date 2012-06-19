@@ -1,0 +1,180 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Scalar_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_CheckIntegrity,Rename_IntegritySetAllObjectsModified,Rename_IntegrityResetAllObjectsModified,Rename_IntegritySetObjectsModifiedFromModOp)
+;
+(Rename_CheckIntegrity , Rename_IntegritySetAllObjectsModified , Rename_IntegrityResetAllObjectsModified , Rename_IntegritySetObjectsModifiedFromModOp)
+;
+(Rename_IntegrityCheck(?):(?):(?))
+;
+(
+(
+ (Rename_CheckIntegrity)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- Rename_CheckIntegrity(print_flag)))
+;
+ (print_flag)
+;
+ (rr)
+;
+ (
+ (print_flag : NAT)
+ |
+ (
+ (BEGIN
+ rr :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (print_flag : NAT)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : BOOL)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_IntegritySetAllObjectsModified)
+;
+ (? , Val_Op , Det_Op , Rename_IntegritySetAllObjectsModified)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_IntegrityResetAllObjectsModified)
+;
+ (? , Val_Op , Det_Op , Rename_IntegrityResetAllObjectsModified)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_IntegritySetObjectsModifiedFromModOp)
+;
+ (? , Val_Op , Det_Op , Rename_IntegritySetObjectsModifiedFromModOp(op))
+;
+ (op)
+;
+ (?)
+;
+ (
+ (op : SCALAR)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (op : SCALAR)
+ |
+ (
+ (skip)
+ )
+ )
+)
+)

@@ -1,0 +1,202 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+THEORY DoIt IS
+
+  ?;
+
+  ?;
+
+ (
+   FwdContra0X,
+   FwdContra1X,
+   FwdContra2X,
+
+   FwdPredicate0X,
+   FwdPredicate1X,
+   FwdPredicate2X,
+
+   FwdNotEqual1X,
+   FwdNotEqual2X,
+
+   FwdEqual1X,
+   FwdEqual2X,
+
+   FwdFunction1X,
+   FwdFunction2X,
+
+   FwdRelation1X,
+   FwdRelation2X,
+
+   FwdSequence1X,
+   FwdSequence2X,
+
+   FwdInNat1X,
+   FwdInNat2X,
+
+   FwdInSet1X,
+   FwdInSet2X,
+
+   FwdInclusion1X,
+   FwdInclusion2X,
+
+   FwdNotInSet1X,
+   FwdNotInSet2X,
+
+   FwdLessThanOrEqual1X,
+   FwdLessThanOrEqual2X,
+
+   FwdLessThan1X,
+   FwdLessThan2X
+
+ );                                /* fwd theories */
+
+  bget("SetOfRules.made",x) &
+  connect_ &
+  proc_th bnmap x
+ =>
+  run(auto);
+
+  bconnect("SetOfRules.made")
+ =>
+  connect_;
+
+
+
+  bmodr(DoIt.1,T) &
+  bmodr(DoIt.2,1) &
+  bprintf("\n&\n\nTHEORY % IS\n\n",T) &
+  proc_rl bnmap x &
+  bprintf("\n\nEND\n")
+ =>
+  proc_th((THEORY T IS x END),m,n);
+
+  bmodr(DoIt.1,T) &
+  bmodr(DoIt.2,1) &
+  bprintf("THEORY % IS\n\n",T) &
+  proc_rl bnmap x &
+  bprintf("\n\nEND\n")
+ =>
+  proc_th((THEORY T IS x END),1,n);
+
+
+
+
+  brule(DoIt.3,Z) &
+  bsearch(T,Z,X) &
+  bprintf("\n&\n\nTHEORY % IS\n\n",T) &
+  proc_rl_no_adjust bnmap x &
+  bprintf("\n\nEND\n")
+ =>
+  proc_th((THEORY T IS x END),m,n);
+
+  brule(DoIt.3,Z) &
+  bsearch(T,Z,X) &
+  bprintf("THEORY % IS\n\n",T) &
+  proc_rl_no_adjust bnmap x &
+  bprintf("\n\nEND\n")
+ =>
+  proc_th((THEORY T IS x END),1,n);
+
+  bprintf(" &\n  (%)",x)
+ =>
+  proc_rl2(x);
+
+
+
+
+  brule(DoIt.1,T) &
+  brule(DoIt.2,n) &
+  bmodr(DoIt.2,(n+1)) &
+  bprintf("  bcall(WRITE: bwritef(\"\\n  {%}-->(\%)\",(%)\n))",(T.n),r) &
+  bprintf("\n =>\n  (%)",r)
+ =>
+  proc_rl1(r);
+
+  brule(DoIt.1,T) &
+  brule(DoIt.2,n) &
+  bmodr(DoIt.2,(n+1)) &
+  bprintf("  bcall(WRITE: bwritef(\"\\n  {%}-->(\%)\",(%)\n))",(T.n),(r)) &
+  proc_rl2 bsmap h &
+  bprintf("\n =>\n   (%)",r)
+ =>
+  proc_rl1(h=>r);
+
+/*
+  brule(DoIt.1,T) &
+  brule(DoIt.2,n) &
+  bmodr(DoIt.2,(n+1)) &
+  bprintf("  bcall(WRITE: bwritef(\"{%}\"))",(T.n)) &
+  bprintf("\n =>\n  (%)",r)
+ =>
+  proc_rl1(r);
+
+  brule(DoIt.1,T) &
+  brule(DoIt.2,n) &
+  bmodr(DoIt.2,(n+1)) &
+  bprintf("  bcall(WRITE: bwritef(\"{%}\"))",(T.n)) &
+  proc_rl2 bsmap h &
+  bprintf("\n =>\n   (%)",r)
+ =>
+  proc_rl1(h=>r);
+
+*/
+  bprintf(";\n\n") &
+  proc_rl1(r)
+ =>
+  proc_rl(r,m,n);
+
+  proc_rl1(r)
+ =>
+  proc_rl(r,1,n);
+
+
+
+  bprintf(" &\n  (%)",x)
+ =>
+  proc_rl2_no_adjust(x,m,n);
+
+  bprintf("  (%)",x)
+ =>
+  proc_rl2_no_adjust(x,1,n);
+
+  bprintf("  (%)",r)
+ =>
+  proc_rl1_no_adjust(r);
+
+  proc_rl2_no_adjust bnmap h &
+  bprintf("\n =>\n   (%)",r)
+ =>
+  proc_rl1_no_adjust(h=>r);
+
+  bprintf(";\n\n") &
+  proc_rl1_no_adjust(r)
+ =>
+  proc_rl_no_adjust(r,m,n);
+
+  proc_rl1_no_adjust(r)
+ =>
+  proc_rl_no_adjust(r,1,n)
+
+TAC
+
+  ((ARI;MAP;WRITE;MODR);DoIt)~
+
+END

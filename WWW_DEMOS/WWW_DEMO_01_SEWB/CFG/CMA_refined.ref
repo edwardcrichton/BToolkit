@@ -1,0 +1,69 @@
+REFINEMENT
+
+  CMA_refined
+
+REFINES
+
+  CMA
+
+SEES
+
+  Bool_TYPE
+
+VARIABLES
+
+  only, both
+
+INVARIANT
+
+  only <: STUDENT &
+  both <: STUDENT &
+  only /\ both = {} &
+  enrolled = only \/ both &
+  tested = both
+
+INITIALISATION
+
+  only, both := {}, {}
+
+OPERATIONS
+
+  enrol(st) =
+    BEGIN
+      only := only \/ {st}
+    END
+    ;
+
+  ans <-- isenrolled(st) =
+    BEGIN
+      ans := bool (st : only or st : both)
+    END
+    ;
+
+  test(st) =
+    BEGIN
+      only := only - {st} ||
+      both := both \/ {st}
+    END
+    ;
+
+  ans <-- istested(st) =
+    BEGIN
+      ans := bool (st : both)
+    END
+    ;
+
+  leave(st) =
+    BEGIN
+      only := only - {st} ||
+      both := both - {st}
+    END
+    ;
+
+  clmax,sofar <-- how_many =
+    BEGIN
+      clmax := class_size ||
+      sofar := card(only) + card(both)
+    END
+
+END

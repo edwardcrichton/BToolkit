@@ -1,0 +1,36 @@
+PROOFMETHOD CMA_ref_imp.imp.0.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~ /* ;FEQL~ */ )
+
+  REASONING_DEPTH 2
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    ?
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END
+
+DEFINITIONS
+
+  ?
+
+INCLUSIONS
+
+  ?

@@ -1,0 +1,178 @@
+#! /bin/sh
+
+rm -f .Bter
+if [ "$1" = "0" ]
+then
+
+  if [ ! -w $BKIT/BLIB/LIB/CFG ] || [ ! -x $BKIT/BLIB/LIB/CFG ]
+  then
+    echo 1 > .Bcom
+    exit
+  fi
+  if [ ! -w $BKIT/BLIB/LIB/ANL ] || [ ! -x $BKIT/BLIB/LIB/ANL ]
+  then
+    echo 2 > .Bcom
+    exit
+  fi
+  if [ ! -w $BKIT/BLIB/LIB/TYP ] || [ ! -x $BKIT/BLIB/LIB/TYP ]
+  then
+    echo 3 > .Bcom
+    exit
+  fi
+  if [ ! -w $BKIT/BLIB/LIB/CDE/C ] || [ ! -x $BKIT/BLIB/LIB/CDE/C ]
+  then
+    echo 4 > .Bcom
+    exit
+  fi
+  echo 0 > .Bcom
+
+elif [ "$1" = "1" ]
+then
+
+  echo 1 > .Bcom
+  cd SRC
+
+  if [ "$3" = "1" ]
+  then
+    cp $2.c .BBcom
+  else
+    cp _$2.c .BBcom
+  fi
+
+  cc_string="$5"
+  if [ "$4" = "1" ]
+  then
+    cc_string="$cc_string -D_BT_ANSIC"
+  fi
+
+  if [ "$3" = "1" ]
+  then
+    $cc_string -c $2.c 2> .Bter
+  else
+    $cc_string -c _$2.c 2> .Bter
+  fi
+
+  if [ $? != 0 ]
+  then
+    rm -f $2.o _$2.o
+    echo ""  
+    echo ""
+    if [ -r .Bter ]
+    then
+      cat .Bter
+    fi
+    rm -f .BBcom .Bter
+    exit
+  fi
+  if [ -r .Bter ]
+  then
+    cat .Bter
+    rm -f .Bter
+  fi
+
+  rm -f $2.o
+  cd ..
+  if [ "$3" = "1" ]
+  then
+    cp CFG/$2.mch $BKIT/BLIB/LIB/CFG/$2.mch 2> .Bter
+  else
+    cp CFG/$2.mch $BKIT/BLIB/LIB/CFG/_$2.nch 2> .Bter
+  fi
+  if [ $? != 0 ]
+  then
+    if [ -r .Bter ]
+    then
+      cat .Bter
+    fi
+    exit 
+  fi
+  if [ "$3" = "1" ]
+  then
+    cp ANL/$2.mch.anl $BKIT/BLIB/LIB/ANL/$2.mch.anl 2> .Bter
+  else
+    cp ANL/$2.mch.anl $BKIT/BLIB/LIB/ANL/_$2.mch.anl 2> .Bter
+  fi
+  if [ $? != 0 ]
+  then
+    if [ -r .Bter ]
+    then
+      cat .Bter
+    fi
+    exit 
+  fi
+  if [ "$3" = "1" ]
+  then
+    cp TYP/$2.mri.typ $BKIT/BLIB/LIB/TYP/$2.mri.typ 2> .Bter
+  else
+    cp TYP/$2.mri.typ $BKIT/BLIB/LIB/TYP/_$2.mri.typ 2> .Bter
+  fi
+  if [ $? != 0 ]
+  then
+    if [ -r .Bter ]
+    then
+      cat .Bter
+    fi
+    exit 
+  fi
+  if [ -x /bin/cb ]
+  then
+    /bin/cb -s SRC/$2.c > .BBcom
+    if [ $? = 0 ]
+    then
+      cp .BBcom SRC/$2.c
+    fi
+    rm .BBcom
+  fi
+  if [ "$3" = "1" ]
+  then
+    cp SRC/$2.c $BKIT/BLIB/LIB/CDE/C/$2.c 2> .Bter
+  else
+    cp SRC/_$2.c $BKIT/BLIB/LIB/CDE/C/_$2.c 2> .Bter
+  fi
+  if [ $? != 0 ]
+  then
+    if [ -r .Bter ]
+    then
+      cat .Bter
+    fi
+    exit 
+  fi
+  if [ "$3" = "1" ]
+  then
+    cp SRC/$2.g $BKIT/BLIB/LIB/CDE/C/$2.g 2> .Bter
+  else
+    cp SRC/_$2.g $BKIT/BLIB/LIB/CDE/C/_$2.g 2> .Bter
+  fi
+  if [ $? != 0 ]
+  then
+    if [ -r .Bter ]
+    then
+      cat .Bter
+    fi
+    exit 
+  fi
+  if [ "$3" = "1" ]
+  then
+    cp SRC/$2.h $BKIT/BLIB/LIB/CDE/C/$2.h 2> .Bter
+  else
+    cp SRC/_$2.h $BKIT/BLIB/LIB/CDE/C/_$2.h 2> .Bter
+  fi
+  if [ $? != 0 ]
+  then
+    if [ -r .Bter ]
+    then
+      cat .Bter
+    fi
+    exit 
+  fi
+  echo 0 > .Bcom
+
+  echo ""  
+  echo ""
+  if [ -r .Bter ]
+  then
+    cat .Bter
+  fi
+  rm -f .Bter
+
+fi

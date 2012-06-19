@@ -1,0 +1,162 @@
+#! /bin/csh -f
+
+#  MAKE_BToolkit_MACOS_from_built
+
+#
+#  After the remote system has been built and
+#  tested, this script creates the Mac OS X application bundle and packages as a disk image .dmg file
+#
+#    `release_version'.dmg
+#
+
+set HERE=`pwd`
+
+source ./set_basic_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+switch ( $VERSION )
+
+  case MAC_VERSION
+    set plat=MacOS
+    breaksw
+  default:
+    echo ""
+    echo "  $PLATFORM does not support .dmg packages"
+    echo "  Aborted"
+    echo ""
+    exit
+    breaksw
+
+endsw
+
+set binding=""
+
+set arch=`arch`
+
+set pkg="btoolkit"
+set app="Btoolkit"
+set pkgvernodash="${BT_MAJOR_VERSION}.${BT_MINOR_VERSION}"
+set pkgver="${pkgvernodash}-${BT_PATCH_VERSION}"
+
+set filename="${pkg}$binding_${pkgvernodash}_${arch}"
+
+### echo $filename
+### exit
+
+cd ..
+
+# local directory structure to be packaged
+set release="../RELEASE/$filename"
+
+set destination="$release/${app}.app"
+set contents="$destination/Contents"
+set macos="$contents/MacOS"
+set destBKIT="$macos/BKIT"
+
+# clean
+
+if ( -d $release ) then
+  echo "cleaning $filename"
+
+  set CL = ( \
+        $destBKIT \
+	$macos \
+	$contents \
+	$destination \
+	$release \
+        )
+
+  foreach file ( $CL )
+
+    if ( -e $file ) then
+      echo "rm -Rf $file"
+      rm -Rf $file
+    endif
+  end
+
+endif
+
+
+# make these directories
+set MK = ( \
+          ../RELEASE \
+          $release \
+          $destination \
+	  $contents \
+	  $macos \
+          $destBKIT \
+       )
+
+foreach file ( $MK )
+
+  if ( ! -d $file ) then
+    echo "mkdir -p $file"
+    mkdir -p $file
+  endif
+
+end
+
+# copy application bundle skeleton
+
+echo `pwd`
+
+cp -rp ./UTIL/${app}.app.bundle/* $destination
+
+
+find $release -type d | xargs chmod 755
+
+echo "Copying files to application bundle"
+
+# copy the files and directories
+
+  cp -rf BKIT/BDEMO $destBKIT
+  cp -rf BKIT/BHELP $destBKIT
+  cp -rf BKIT/BTool_Tutorial $destBKIT
+  cp -rf BKIT/BLIB $destBKIT
+  cp -rf BKIT/BPLAT $destBKIT
+  cp -rf BKIT/BPALETTE $destBKIT
+
+# copy the binaries
+# 'public' Launcher program
+  cp -f BKIT/Blauncher $destBKIT/../.
+# 'private' parts oo-er
+  cp -f BKIT/BProcessInfo $destBKIT
+  cp -f BKIT/BTool $destBKIT
+  cp -f BKIT/BToolkit $destBKIT
+  cp -f BKIT/BUnlock $destBKIT
+
+# copy the configuration files
+  cp -f BKIT/ErrorCodes $destBKIT
+  cp -f BKIT/XBMotif $destBKIT
+  cp -f BKIT/XBMotif.mono $destBKIT
+
+# jump to macos directory and link the Blauncher
+# to BToolkit
+cd $macos
+
+ln -s Blauncher BToolkit
+
+cd ${HERE}/..
+
+echo "Creating disk image"
+
+cd $release/..
+
+if ( -e ${filename}.dmg ) then
+    echo "rm -f ${filename}.dmg"
+    rm -f ${filename}.dmg
+endif
+
+hdiutil create -srcfolder $destination  ${filename}.dmg
+
+# clean up
+
+#echo "rm -rf $filename"
+#rm -rf $filename
+
+ls -l
+
+

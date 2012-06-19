@@ -1,0 +1,1128 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Scalar_TYPE(?):(?):((?),(?),(?)))
+,
+(Int_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(String_TYPE(?):(?):((?),(?),(?)))
+,
+(Bit_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(NWL,BLK,PUT_NBR,PUT_NAT,PUT_INT,PUT_STR,PUT_CHR,PUT_EOT,PUT_BOOL,PUT_BTS,FLSH,PUT_NBR_PAD,PUT_NAT_PAD,PUT_INT_PAD,PUT_STR_PAD,PUT_BOOL_PAD,GET_NBR,GET_NAT,GET_INT,GET_STR,GET_CHR,GET_BOOL,GET_BTS,GET_PROMPT_NBR,GET_PROMPT_NAT,GET_PROMPT_INT,GET_PROMPT_STR,GET_PROMPT_CHR,GET_PROMPT_BOOL,GET_PROMPT_BTS,REDIR_stdout,REAPP_stdout,RESTR_stdout)
+;
+(NWL , BLK , PUT_NBR , PUT_NAT , PUT_INT , PUT_STR , PUT_CHR , PUT_EOT , PUT_BOOL , PUT_BTS , FLSH , PUT_NBR_PAD , PUT_NAT_PAD , PUT_INT_PAD , PUT_STR_PAD , PUT_BOOL_PAD , GET_NBR , GET_NAT , GET_INT , GET_STR , GET_CHR , GET_BOOL , GET_BTS , GET_PROMPT_NBR , GET_PROMPT_NAT , GET_PROMPT_INT , GET_PROMPT_STR , GET_PROMPT_CHR , GET_PROMPT_BOOL , GET_PROMPT_BTS , REDIR_stdout , REAPP_stdout , RESTR_stdout)
+;
+(basic_io(?):(?):(?))
+;
+(
+(
+ (NWL)
+;
+ (? , Val_Op , Det_Op , NWL(nn))
+;
+ (nn)
+;
+ (?)
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (BLK)
+;
+ (? , Val_Op , Det_Op , BLK(nn))
+;
+ (nn)
+;
+ (?)
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_NBR)
+;
+ (? , Val_Op , Det_Op , PUT_NBR(nn))
+;
+ (nn)
+;
+ (?)
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_NAT)
+;
+ (? , Val_Op , Det_Op , PUT_NAT(nn))
+;
+ (nn)
+;
+ (?)
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_INT)
+;
+ (? , Val_Op , Det_Op , PUT_INT(nn))
+;
+ (nn)
+;
+ (?)
+;
+ (
+ (nn : INT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (nn : INT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_STR)
+;
+ (? , Val_Op , Det_Op , PUT_STR(ss))
+;
+ (ss)
+;
+ (?)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_CHR)
+;
+ (? , Val_Op , Det_Op , PUT_CHR(cc))
+;
+ (cc)
+;
+ (?)
+;
+ (
+ (cc : CHAR)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (cc : CHAR)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_EOT)
+;
+ (? , Val_Op , Det_Op , PUT_EOT)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_BOOL)
+;
+ (? , Val_Op , Det_Op , PUT_BOOL(bb))
+;
+ (bb)
+;
+ (?)
+;
+ (
+ (bb : BOOL)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (bb : BOOL)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_BTS)
+;
+ (? , Val_Op , Det_Op , PUT_BTS(bs))
+;
+ (bs)
+;
+ (?)
+;
+ (
+ (bs : BITS)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (bs : BITS)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (FLSH)
+;
+ (? , Val_Op , Det_Op , FLSH)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_NBR_PAD)
+;
+ (? , Val_Op , Det_Op , PUT_NBR_PAD(nn , pd))
+;
+ (nn , pd)
+;
+ (?)
+;
+ (
+ (nn : NAT & pd : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (nn : NAT & pd : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_NAT_PAD)
+;
+ (? , Val_Op , Det_Op , PUT_NAT_PAD(nn , pd))
+;
+ (nn , pd)
+;
+ (?)
+;
+ (
+ (nn : NAT & pd : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (nn : NAT & pd : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_INT_PAD)
+;
+ (? , Val_Op , Det_Op , PUT_INT_PAD(nn , pd))
+;
+ (nn , pd)
+;
+ (?)
+;
+ (
+ (nn : INT & pd : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (nn : INT & pd : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_STR_PAD)
+;
+ (? , Val_Op , Det_Op , PUT_STR_PAD(ss , pd))
+;
+ (ss , pd)
+;
+ (?)
+;
+ (
+ (ss : STRING & pd : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING & pd : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (PUT_BOOL_PAD)
+;
+ (? , Val_Op , Det_Op , PUT_BOOL_PAD(bb , pd))
+;
+ (bb , pd)
+;
+ (?)
+;
+ (
+ (bb : BOOL & pd : NAT)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (bb : BOOL & pd : NAT)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (GET_NBR)
+;
+ (? , Val_Op , NonDet_Op , (mm <-- GET_NBR(nn)))
+;
+ (nn)
+;
+ (mm)
+;
+ (
+ (nn : NAT)
+ |
+ (
+ (BEGIN
+ mm :: 0..nn
+ END)
+ )
+ )
+;
+ (
+ (nn : NAT)
+ |
+ (
+ @(mmx).
+ (
+ (
+ (mmx : 0..nn)
+ )
+ ==>
+ (
+ (mm := mmx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_NAT)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- GET_NAT))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (true)
+ |
+ (
+ (rr :: SCALAR)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : SCALAR)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_INT)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- GET_INT))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (true)
+ |
+ (
+ (rr :: INT)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : INT)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_STR)
+;
+ (? , Val_Op , NonDet_Op , (ss <-- GET_STR))
+;
+ (?)
+;
+ (ss)
+;
+ (
+ (true)
+ |
+ (
+ (ss :: STRING)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(ssx).
+ (
+ (
+ (ssx : STRING)
+ )
+ ==>
+ (
+ (ss := ssx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_CHR)
+;
+ (? , Val_Op , NonDet_Op , (cc <-- GET_CHR))
+;
+ (?)
+;
+ (cc)
+;
+ (
+ (true)
+ |
+ (
+ (cc :: CHAR)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(ccx).
+ (
+ (
+ (ccx : CHAR)
+ )
+ ==>
+ (
+ (cc := ccx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_BOOL)
+;
+ (? , Val_Op , NonDet_Op , (bb <-- GET_BOOL))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (bb :: BOOL)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(bbx).
+ (
+ (
+ (bbx : BOOL)
+ )
+ ==>
+ (
+ (bb := bbx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_BTS)
+;
+ (? , Val_Op , NonDet_Op , (bs <-- GET_BTS))
+;
+ (?)
+;
+ (bs)
+;
+ (
+ (true)
+ |
+ (
+ (bs :: BITS)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(bsx).
+ (
+ (
+ (bsx : BITS)
+ )
+ ==>
+ (
+ (bs := bsx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_PROMPT_NBR)
+;
+ (? , Val_Op , NonDet_Op , (mm <-- GET_PROMPT_NBR(ss , nn)))
+;
+ (ss , nn)
+;
+ (mm)
+;
+ (
+ (ss : STRING & nn : NAT)
+ |
+ (
+ (BEGIN
+ mm :: 0..nn
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING & nn : NAT)
+ |
+ (
+ @(mmx).
+ (
+ (
+ (mmx : 0..nn)
+ )
+ ==>
+ (
+ (mm := mmx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_PROMPT_NAT)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- GET_PROMPT_NAT(ss)))
+;
+ (ss)
+;
+ (rr)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ rr :: SCALAR
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : SCALAR)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_PROMPT_INT)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- GET_PROMPT_INT(ss)))
+;
+ (ss)
+;
+ (rr)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ rr :: INT
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : INT)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_PROMPT_STR)
+;
+ (? , Val_Op , NonDet_Op , (tt <-- GET_PROMPT_STR(ss)))
+;
+ (ss)
+;
+ (tt)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ tt :: STRING
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ @(ttx).
+ (
+ (
+ (ttx : STRING)
+ )
+ ==>
+ (
+ (tt := ttx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_PROMPT_CHR)
+;
+ (? , Val_Op , NonDet_Op , (nn <-- GET_PROMPT_CHR(ss)))
+;
+ (ss)
+;
+ (nn)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ nn :: CHAR
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ @(nnx).
+ (
+ (
+ (nnx : CHAR)
+ )
+ ==>
+ (
+ (nn := nnx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_PROMPT_BOOL)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- GET_PROMPT_BOOL(ss)))
+;
+ (ss)
+;
+ (rr)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ rr :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : BOOL)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (GET_PROMPT_BTS)
+;
+ (? , Val_Op , NonDet_Op , (bs <-- GET_PROMPT_BTS(ss)))
+;
+ (ss)
+;
+ (bs)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ bs :: BITS
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ @(bsx).
+ (
+ (
+ (bsx : BITS)
+ )
+ ==>
+ (
+ (bs := bsx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (REDIR_stdout)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- REDIR_stdout(file)))
+;
+ (file)
+;
+ (rr)
+;
+ (
+ (file : STRING)
+ |
+ (
+ (BEGIN
+ rr :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (file : STRING)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : BOOL)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (REAPP_stdout)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- REAPP_stdout(file)))
+;
+ (file)
+;
+ (rr)
+;
+ (
+ (file : STRING)
+ |
+ (
+ (BEGIN
+ rr :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (file : STRING)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : BOOL)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (RESTR_stdout)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- RESTR_stdout))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rr :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : BOOL)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+)

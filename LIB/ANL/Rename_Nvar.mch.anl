@@ -1,0 +1,817 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Nvar)
+;
+(Rename_Nvar)
+;
+(Rename_Nvar : 0..maxint)
+;
+(Rename_Nvar : 0..maxint)
+;
+(?)
+;
+(Rename_Nvar := 0)
+;
+(Rename_Nvar := 0)
+;
+(Rename_VAL_NVAR,Rename_STO_NVAR,Rename_MIN_NVAR,Rename_MAX_NVAR,Rename_PRE_INC_NVAR,Rename_INC_NVAR,Rename_PRE_DEC_NVAR,Rename_DEC_NVAR,Rename_PRE_ADD_NVAR,Rename_ADD_NVAR,Rename_PRE_MUL_NVAR,Rename_MUL_NVAR,Rename_PRE_SUB_NVAR,Rename_SUB_NVAR,Rename_PRE_DIV_NVAR,Rename_DIV_NVAR,Rename_PRE_MOD_NVAR,Rename_MOD_NVAR,Rename_EQL_NVAR,Rename_NEQ_NVAR,Rename_GTR_NVAR,Rename_GEQ_NVAR,Rename_SMR_NVAR,Rename_LEQ_NVAR,Rename_SAV_NVAR,Rename_RST_NVAR,Rename_SAVN_NVAR,Rename_RSTN_NVAR)
+;
+(Rename_VAL_NVAR , Rename_STO_NVAR , Rename_MIN_NVAR , Rename_MAX_NVAR , Rename_PRE_INC_NVAR , Rename_INC_NVAR , Rename_PRE_DEC_NVAR , Rename_DEC_NVAR , Rename_PRE_ADD_NVAR , Rename_ADD_NVAR , Rename_PRE_MUL_NVAR , Rename_MUL_NVAR , Rename_PRE_SUB_NVAR , Rename_SUB_NVAR , Rename_PRE_DIV_NVAR , Rename_DIV_NVAR , Rename_PRE_MOD_NVAR , Rename_MOD_NVAR , Rename_EQL_NVAR , Rename_NEQ_NVAR , Rename_GTR_NVAR , Rename_GEQ_NVAR , Rename_SMR_NVAR , Rename_LEQ_NVAR , Rename_SAV_NVAR , Rename_RST_NVAR , Rename_SAVN_NVAR , Rename_RSTN_NVAR)
+;
+(Rename_Nvar(maxint):(maxint <= 2147483646 & maxint : NAT):(?))
+;
+(
+(
+ (Rename_VAL_NVAR)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_NVAR))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv := Rename_Nvar
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (vv := Rename_Nvar)
+ )
+ )
+)
+,
+(
+ (Rename_STO_NVAR)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_NVAR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (Rename_Nvar := vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (Rename_Nvar := vv)
+ )
+ )
+)
+,
+(
+ (Rename_MIN_NVAR)
+;
+ (? , Val_Op , Det_Op , (uu <-- Rename_MIN_NVAR(vv)))
+;
+ (vv)
+;
+ (uu)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (uu := min({Rename_Nvar , vv}))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (uu := min({Rename_Nvar , vv}))
+ )
+ )
+)
+,
+(
+ (Rename_MAX_NVAR)
+;
+ (? , Val_Op , Det_Op , (uu <-- Rename_MAX_NVAR(vv)))
+;
+ (vv)
+;
+ (uu)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (uu := max({Rename_Nvar , vv}))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (uu := max({Rename_Nvar , vv}))
+ )
+ )
+)
+,
+(
+ (Rename_PRE_INC_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_PRE_INC_NVAR))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_Nvar < maxint)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(Rename_Nvar < maxint))
+ )
+ )
+)
+,
+(
+ (Rename_INC_NVAR)
+;
+ (? , Mod_Op , Det_Op , Rename_INC_NVAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_Nvar+1 : 0..maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar+1)
+ )
+ )
+;
+ (
+ (Rename_Nvar+1 : 0..maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar+1)
+ )
+ )
+)
+,
+(
+ (Rename_PRE_DEC_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_PRE_DEC_NVAR))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_Nvar > 0)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(0 < Rename_Nvar))
+ )
+ )
+)
+,
+(
+ (Rename_DEC_NVAR)
+;
+ (? , Mod_Op , Det_Op , Rename_DEC_NVAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_Nvar : 1..maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar-1)
+ )
+ )
+;
+ (
+ (Rename_Nvar : 1..maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar-1)
+ )
+ )
+)
+,
+(
+ (Rename_PRE_ADD_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_PRE_ADD_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar+vv <= maxint))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar+vv <= maxint))
+ )
+ )
+)
+,
+(
+ (Rename_ADD_NVAR)
+;
+ (? , Mod_Op , Det_Op , Rename_ADD_NVAR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & Rename_Nvar+vv <= maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar+vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & Rename_Nvar+vv <= maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar+vv)
+ )
+ )
+)
+,
+(
+ (Rename_PRE_MUL_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_PRE_MUL_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar*vv <= maxint))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar*vv <= maxint))
+ )
+ )
+)
+,
+(
+ (Rename_MUL_NVAR)
+;
+ (? , Mod_Op , Det_Op , Rename_MUL_NVAR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & Rename_Nvar*vv <= maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar*vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & Rename_Nvar*vv <= maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar*vv)
+ )
+ )
+)
+,
+(
+ (Rename_PRE_SUB_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_PRE_SUB_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar-vv >= 0))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(0 <= Rename_Nvar-vv))
+ )
+ )
+)
+,
+(
+ (Rename_SUB_NVAR)
+;
+ (? , Mod_Op , Det_Op , Rename_SUB_NVAR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & Rename_Nvar-vv >= 0)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar-vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & 0 <= Rename_Nvar-vv)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar-vv)
+ )
+ )
+)
+,
+(
+ (Rename_PRE_DIV_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_PRE_DIV_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(vv > 0))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(0 < vv))
+ )
+ )
+)
+,
+(
+ (Rename_DIV_NVAR)
+;
+ (? , Mod_Op , Det_Op , Rename_DIV_NVAR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : 1..maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar/vv)
+ )
+ )
+;
+ (
+ (vv : 1..maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar/vv)
+ )
+ )
+)
+,
+(
+ (Rename_PRE_MOD_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_PRE_MOD_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(vv > 0))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(0 < vv))
+ )
+ )
+)
+,
+(
+ (Rename_MOD_NVAR)
+;
+ (? , Mod_Op , Det_Op , Rename_MOD_NVAR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : 1..maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar-vv*(Rename_Nvar/vv))
+ )
+ )
+;
+ (
+ (vv : 1..maxint)
+ |
+ (
+ (Rename_Nvar := Rename_Nvar-vv*(Rename_Nvar/vv))
+ )
+ )
+)
+,
+(
+ (Rename_EQL_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar = vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar = vv))
+ )
+ )
+)
+,
+(
+ (Rename_NEQ_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_NEQ_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar /= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(not(Rename_Nvar = vv)))
+ )
+ )
+)
+,
+(
+ (Rename_GTR_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_GTR_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar > vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(vv < Rename_Nvar))
+ )
+ )
+)
+,
+(
+ (Rename_GEQ_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_GEQ_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar >= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(vv <= Rename_Nvar))
+ )
+ )
+)
+,
+(
+ (Rename_SMR_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_SMR_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar < vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar < vv))
+ )
+ )
+)
+,
+(
+ (Rename_LEQ_NVAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_LEQ_NVAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar <= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint)
+ |
+ (
+ (bb := bool(Rename_Nvar <= vv))
+ )
+ )
+)
+,
+(
+ (Rename_SAV_NVAR)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_NVAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_NVAR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_NVAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Nvar :: 0..maxint
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Nvarx).
+ (
+ (
+ (Rename_Nvarx : 0..maxint)
+ )
+ ==>
+ (
+ (Rename_Nvar := Rename_Nvarx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_NVAR)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_NVAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_NVAR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_NVAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Nvar :: 0..maxint
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Nvarx).
+ (
+ (
+ (Rename_Nvarx : 0..maxint)
+ )
+ ==>
+ (
+ (Rename_Nvar := Rename_Nvarx)
+ )
+ )
+ )
+ )
+)
+)

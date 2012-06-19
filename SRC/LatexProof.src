@@ -1,0 +1,1061 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define prf_mid_width 33.5
+#define prf_rgt_width 10
+
+
+
+
+#define TabToImpliesLevel bcall((( /* ARI~; */ WRITE)~;LatexProofX)~: \
+      tab_to_implies_lvl)
+
+
+THEORY LPErrorX IS 0 END &
+
+THEORY prt_proof_nl_tabX IS
+
+  prt_prf_nl_tab_1(x);
+
+  LatexARI_res(n) &
+  prt_prf_nl_tab_1(n)
+ =>
+  prt_prf_nl_tab_ari(m);
+
+  bnum(n) &
+  btest(n>0) &
+  bprintf(" \\bhsp ") &
+  LatexARI_dec(n) &
+  prt_prf_nl_tab_ari(n)
+ =>
+  prt_prf_nl_tab_1(n);
+
+  bprintf(" \\bhsp ")
+ =>
+  prt_prf_nl_tab_1(1);
+
+  ReadCurrProofTabLevel(n) &
+  bprintf(" \\bnl\n & ") &
+  prt_prf_nl_tab_1(n)
+ =>
+  prt_prf_nl_tab_0;
+
+  /***
+  Level 0
+  ***/
+  brule(LatexProofX.1,a.b.(0-1)) &
+  bprintf(" \\bnl\n") &
+  TabToImpliesLevel &
+  bprintf(" \\bhsp ")
+ =>
+  prt_prf_nl_tab_0
+
+END
+
+&
+
+THEORY LatexProofX IS
+
+  ?; /* 1. a.b.n */
+
+  ?; /* 2. curr tab  - for \bhsp */
+
+  ?; /* 3. DMUAnnotError */
+#define SetDMUAnnotError     bmodr(LatexProofX.3,1)
+#define ClearDMUAnnotError   bmodr(LatexProofX.3,0)
+#define DMUAnnotErrorFlagged brule(LatexProofX.3,1)
+
+  ?; /* 4. filename */
+
+  ?; /* 5. CurrProofImpliesLevel: indent count for => */
+
+  brule(LatexProofX.4,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  re_open;
+
+  brule(LatexProofX.4,f) &
+  bappend(f)
+ =>
+  re_open;
+
+
+
+  LPTrans(x)
+ =>
+  LPTrans_delay(x);
+
+  bident(t) &
+  bnum(n) &
+  bprintf("{\\em %\/}",t.n)
+ =>
+  LPTrans_delay(t.n);
+
+
+
+  LPTrans(x)
+ =>
+  LPTrans_delay_sf(x);
+
+  bident(t) &
+  bnum(n) &
+  bprintf("{\\sf %}",t.n)
+ =>
+  LPTrans_delay_sf(t.n);
+
+  bident(t) &
+  bnum(n) &
+  bident(u) &
+  bnum(m) &
+  bprintf("{\\sf %} ({\\sf %})",t.n,u.m)
+ =>
+  LPTrans_delay_sf(t.n(u.m));
+
+
+
+
+  Writef(("\n\n  Bad pagebreak position in :\n    \\newpage %\n  ",a)) &
+  SetDMUAnnotError
+ =>
+  (Xx___np___ /0O0/ a) == a;
+
+  Writef(("\n\n  Bad pagebreak position in :\n    % \\newpage\n  ",a)) &
+  SetDMUAnnotError
+ =>
+  (a /0O0/ Xx___np___) == a;
+
+  Writef(("\n\n  Bad pagebreak position in :\n    % \\newpage %\n  ",b JOK2 blank0?,a)) &
+  SetDMUAnnotError
+ =>  
+  (b JOK2 Xx___np___ /0O0/ a) == (b JOK2 a);
+
+  Writef(("\n\n  Bad pagebreak position in :\n    % \\newpage %\n  ",a,blank0? JOK2 b)) &
+  SetDMUAnnotError
+ =>
+  (a /0O0/ Xx___np___ JOK2 b) == (a JOK2 b);
+
+  Writef(("\n\n  Bad pagebreak position in :\n    \\newpage %\n  ",b)) &
+  SetDMUAnnotError
+ =>
+  lp_5(Xx___np___ /0O0/ b);
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+
+  LatexARI_res(n) &
+  lp_6(n)
+ =>
+  lp_6_ari(m);
+
+  bnum(n) &
+  bprintf(" \\bhsp") &
+  LatexARI_dec(n) &
+  lp_6_ari(n)
+ =>
+  lp_6(n);
+
+/*
+  bprintf(" \\bhsp\n")
+ =>
+*/
+  lp_6(1);
+
+
+
+  bprintf("%",a)
+ =>
+  prt_just(a);
+
+/*  bident(a) & */
+  bprintf("{\\sf %}",a)
+ =>
+  prt_just(a);
+
+  prt_just(Xx___np___);
+
+  prt_just(Xx___nl___);
+
+  prt_just(A) &
+  bprintf(", ") &
+  prt_just(a)
+ =>
+  prt_just(A,a);
+
+  prt_just(a) &
+  bprintf(", \\bnl\n & & ")
+ =>
+  prt_just(a /0O0/ Xx___nl___);
+
+  bprintf(", \\bnl\n & & ") &
+  prt_just(a)
+ =>
+  prt_just(Xx___nl___ /0O0/ a);
+
+  prt_just(A) &
+  bprintf(", \\bnl\n & & ") &
+  prt_just(a)
+ =>
+  prt_just(A,Xx___nl___  /0O0/ a);
+
+
+
+
+
+  ReadCurrProofImpliesLevel(n) &
+  ModrCurrProofImpliesLevel(n-1)
+ =>
+  dec_implies_lvl;
+
+  ReadCurrProofImpliesLevel(n) &
+  ModrCurrProofImpliesLevel(n+1)
+ =>
+  inc_implies_lvl;
+
+
+  LatexARI_res(n) &
+  tab_to_implies_lvl1(n)
+ =>
+  tab_to_implies_lvl1_ari(m);
+
+  bprintf(" \\bhsp ") &
+  LatexARI_dec(n) &
+  tab_to_implies_lvl1_ari(n)
+ =>
+  tab_to_implies_lvl1(n);
+
+  tab_to_implies_lvl1(0);
+
+  ReadCurrProofImpliesLevel(n) &
+  tab_to_implies_lvl1(n)
+  =>  
+  tab_to_implies_lvl;
+
+
+
+  TabToImpliesLevel &
+  bprintf(" \\bhsp ") &
+  LPTrans_delay(g)
+ =>
+  lp_goal(g);
+
+
+
+
+
+  
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp \\bhsp ") &
+  LPTrans_delay(p)
+ =>
+  lp_goal_exst(p);
+
+
+
+  lp_goal_exst(p)
+ =>
+  lp_goal_exst_or(p);
+
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp \\bhsp ( ( ") &
+  LPTrans_delay(P) &
+  bprintf(" )\\bnl ") &
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp \\bhsp \\bhsp $\\wedge$ \\bnl ") &
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp \\bhsp ( ") &
+  LPTrans_delay(p) &
+  bprintf(" ) ) ")
+ =>
+  lp_goal_exst_and(P & p);
+
+  lp_goal_exst_or(P) &
+  bprintf("  $\\vee$ \\bnl\n") &
+  lp_goal_exst_or(p)
+ =>
+  lp_goal_exst_or(P or p);
+
+
+  lp_goal_exst(p)
+ =>
+  lp_goal_exst_and(p);
+
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp \\bhsp ( ( ") &
+  LPTrans_delay(P) &
+  bprintf(" )\\bnl ") &
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp \\bhsp \\bhsp $\\vee$ \\bnl ") &
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp \\bhsp ( ") &
+  LPTrans_delay(p) &
+  bprintf(" ) ) ")
+ =>
+  lp_goal_exst_and(P or p);
+
+  lp_goal_exst_and(P) &
+  bprintf(" $\\wedge$ \\bnl\n") &
+  lp_goal_exst_and(p)
+ =>
+  lp_goal_exst_and(P&p);
+
+
+
+
+  lp_goal_exst_or(P or p)
+ =>
+  lp_goal_exst(P or p);
+
+
+  lp_goal_exst_and(P&p)
+ =>
+  lp_goal_exst(P&p);
+
+
+
+
+
+  TabToImpliesLevel &
+  bprintf(" \\bhsp $\\exists$ ") &
+  LPTrans_delay(a) &
+  bprintf(" . ( \\bnl \n") &
+  lp_goal_exst(B&b&c&d) &
+  bprintf(" \\bnl ") &
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp ) ")
+ =>
+  lp_goal(#a.(B&b&c&d));
+
+
+/* ihs 21/01/98 */
+
+  TabToImpliesLevel &
+  bprintf(" \\bhsp $\\exists$ ( ") &
+  LPTrans_delay(a) &
+  bprintf(" ) . ( \\bnl \n") &
+  lp_goal_exst(B) &
+  bprintf("\\bnl \n $\\vee$\\bnl \n") &
+  lp_goal_exst(b) &
+  bprintf(" \\bnl ") &
+  TabToImpliesLevel &
+  bprintf(" \\bhsp \\bhsp ) ")
+ =>
+  lp_goal(#(a).(B or b));
+
+
+  TabToImpliesLevel &
+  bprintf(" \\bhsp ") &
+  LPTrans_delay(b)
+ =>
+  lp_goal_amp(b);
+
+  TabToImpliesLevel &
+  bprintf(" \\bhsp ") &
+  bprintf(" ( ") &
+  LPTrans_delay(a=>b) &
+  bprintf(" ) ")
+ =>
+  lp_goal_amp(a=>b);
+
+  lp_goal_amp(a) &
+  bprintf("  $\\wedge$\\bnl\n") &
+  lp_goal_amp(b)
+ =>
+  lp_goal_amp(a&b);
+
+  lp_goal_amp(a&b)
+ =>
+  lp_goal(a&b);
+
+
+  inc_implies_lvl &
+  lp_goal(a) &
+  bprintf(" \\bnl\n") &
+  TabToImpliesLevel &
+  bprintf("  $\\Rightarrow$\\bnl\n") &
+  lp_goal(b) &
+  dec_implies_lvl
+ =>
+  lp_goal(a=>b);
+
+
+
+  lp_goal(a)
+ =>
+  lp_or_goal(a);
+
+  lp_or_goal(a) &
+  bprintf(" \\bnl\n") &
+  TabToImpliesLevel &
+  bprintf("  $\\vee$\\bnl\n") &
+  lp_or_goal(b)
+ =>
+  lp_or_goal(a or b);
+
+  inc_implies_lvl &
+  lp_or_goal(a or b) &
+  dec_implies_lvl
+ =>
+  lp_goal(a or b);
+
+
+  LPTrans_delay(a)
+ =>
+  lp_step(a);
+
+
+  LPTrans_delay(p)
+ =>
+  lp_step_exst(p);
+
+  lp_step_exst(P) &
+  bprintf(" $\wedge$ \\bnl \n & \\bhsp \\bhsp ") &  
+  TabToImpliesLevel &
+  lp_step_exst(p)
+ =>
+  lp_step_exst(P&p);
+
+
+  lp_step_exst(P) &
+  bprintf(" $\vee$ \\bnl \n & \\bhsp \\bhsp ") &  
+  lp_step_exst(p)
+ =>
+  lp_step_exst(P or p);
+
+
+
+  
+  bprintf(" $\\char91$ ") &
+  LPTrans_delay(s) &
+  bprintf(" $\\char93$ ") &
+  bprintf(" ( \\bnl \n & \\bhsp \\bhsp ") &
+  inc_implies_lvl &
+  TabToImpliesLevel &
+  lp_step_exst(B&b&c) &
+  bprintf(" ) ") &
+  dec_implies_lvl
+ =>
+  lp_step([s](B&b&c));
+
+  bprintf(" $\\exists$ ") &
+  LPTrans_delay(a) &
+  bprintf(" . ( \\bnl \n & \\bhsp \\bhsp ") &
+  inc_implies_lvl &
+  TabToImpliesLevel &
+  lp_step_exst(B&b&c) &
+  bprintf(" ) ") &
+  dec_implies_lvl
+ =>
+  lp_step(#(a).(B&b&c));
+
+  bprintf(" $\\exists$ ") &
+  LPTrans_delay(a) &
+  bprintf(" . {\\sf bflat} ( \\bnl \n & \\bhsp \\bhsp ") &
+  inc_implies_lvl &
+  TabToImpliesLevel &
+  lp_step_exst(p) &
+  bprintf(" ) ") &
+  dec_implies_lvl
+ =>
+  lp_step(#(a).bflat(p));
+
+  bprintf(" $\\exists$ ") &
+  LPTrans_delay(a) &
+  bprintf(" . ( \\bnl \n & \\bhsp \\bhsp ") &
+  bprintf(" $\\char91$ ") &
+  LPTrans_delay(s) &
+  bprintf(" $\\char93$ ") &
+  bprintf(" ( \\bnl \n & \\bhsp \\bhsp ") &
+  inc_implies_lvl &
+  TabToImpliesLevel &
+  lp_step_exst(B&b&c) &
+  bprintf(" ) ") &
+  dec_implies_lvl
+ =>
+  lp_step(#(a).[s](B&b&c));
+
+  bprintf(" $\\exists$ ( ") &
+  LPTrans_delay(A,a) &
+  bprintf(" ) . ( \\bnl \n & \\bhsp \\bhsp ") &
+  inc_implies_lvl &
+  TabToImpliesLevel &
+  lp_step_exst(B or b) &
+  bprintf(" ) ") &
+  dec_implies_lvl
+ =>
+  lp_step(#(A,a).(B or b));
+
+  lp_step(#(A).(B)) &
+  bprintf("  \\bnl \n & \\bhsp $\vee$ \\bnl \n & \\bhsp \\bhsp ") & 
+  lp_step(#(a).(b))
+ =>
+  lp_step(#(A).(B) or #(a).(b));
+
+
+
+
+
+
+/***
+level 0 : proof obligation
+***/
+  brule(LatexProofX.1,a.b.(0-1)) &
+  lp_goal(g) &
+  bprintf(" \\bnl\n")
+ =>
+  lp_5(g);
+
+  lp_np &
+  lp_5(a)
+ =>
+  lp_5(Xx___np___ /0O0/ a);
+
+  lp_5(Xx___nl___);
+
+/***
+level > 0 : proof step
+***/
+/***
+HERENOARI((n[m]|y|z))&
+***/
+
+  bprintf("\\bproofline{%}{",n) &
+  ModrCurrProofTabLevel(m) &
+  bcall((( /* ARI~; */ WRITE)~;LatexProofX)~:lp_6(m)) &
+  lp_step(y) &
+  bprintf("}{") &
+  prt_just(z) &
+  bprintf("}\n")
+ =>
+  lp_5(n[m]|y|z);
+
+
+
+  LPTrans_delay(a)
+ =>
+  lp_4(a);
+
+
+/*
+  bprintf("\n\\end{tabbing}\n\\newpage\n\\begin{tabbing}\n\\bSetProofTabs\n")
+ =>
+  lp_np;
+*/
+
+  bprintf("\n\\newpage \%\% lp_np\n")
+ =>
+  lp_np;
+
+
+  bprintf("\n\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n") &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  %\n",o.m) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n\n") &
+  bprintf("\\rule{\\textwidth}{.1ex} \\bnl\n\\underline{") &
+  LPTrans_delay(o.m) &
+  bprintf("} \\bbnl\n\\bbhsp ") &
+  LPTrans_delay(f(a))
+ =>
+  lp_4(s.t(n): o.m : f(a));
+
+  lp_4(A) &
+  bprintf(" $\\wedge$ \bnl\n\\bbhsp ") &
+  LPTrans_delay(a)
+ =>
+  lp_4(A&a);
+
+  bprintf("\n\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n") &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  %\n",o.m) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n\n") &
+  bprintf("\\rule{\\textwidth}{.1ex} \\bnl\n\\underline{") &
+  LPTrans_delay(o.m) &
+  bprintf("} \\bbnl\n")
+ =>
+  lp_4(s.t(n):o.m);  /* level > 0 */
+
+  bprintf("\n\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n") &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  %\n",o.m) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n\n") &
+  bprintf("\\rule{\\textwidth}{.1ex} \\bnl\n\\underline{") &
+  LPTrans_delay(o.m) &
+  bprintf("} \\bbnl\n\\bhsp ") &
+  LPTrans_delay(cst(a)&ctx(a))
+ =>
+  lp_4(s.t(n):o.m:cst(a)&ctx(a));  /* level 0 */
+
+  bprintf("\n\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n") &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  %\n",o.m) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n\n") &
+  bprintf("\\rule{\\textwidth}{.1ex} \\bnl\n\\underline{") &
+  LPTrans_delay(o.m) &
+  bprintf("} \\bbnl\n\\bhsp ") &
+  LPTrans_delay(cst(a)&ctx(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  lp_4(g)
+ =>
+  lp_4(s.t(n):o.m:cst(a)&ctx(a)&g);  /* level 0 */
+
+  bprintf("\n\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n") &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  %\n",o.m) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n\n") &
+  bprintf("\\rule{\\textwidth}{.1ex} \\bnl\n\\underline{") &
+  LPTrans_delay(o.m) &
+  bprintf("} \\bbnl\n\\bhsp ") &
+  LPTrans_delay(cst(a)&ctx(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  LPTrans_delay(inv(a)&asn(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  LPTrans_delay(pre(o))
+ =>
+  lp_4(s.t(n):o.m:cst(a)&ctx(a)&inv(a)&asn(a)&pre(o));  /* level 0 */
+
+  bprintf("\n\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n") &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  %\n",o.m) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n\n") &
+  bprintf("\\rule{\\textwidth}{.1ex} \\bnl\n\\underline{") &
+  LPTrans_delay(o.m) &
+  bprintf("} \\bbnl\n\\bhsp ") &
+  LPTrans_delay(cst(a)&ctx(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  LPTrans_delay(inv(a)&asn(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  LPTrans_delay(pre(o)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  lp_4(g)
+ =>
+  lp_4(s.t(n):o.m:cst(a)&ctx(a)&inv(a)&asn(a)&pre(o)&g);  /* level 0 */
+
+  Writef(("\n\n  Bad pagebreak position in :\n    \\newpage %\n  ",(s.t(n): T.m))) &
+  SetDMUAnnotError
+ =>
+  lp_4(Xx___np___ /0O0/ s.t(n): T.m);
+
+  Writef(("\n\n  Bad pagebreak position in :\n    \\newpage %\n  ",(s.t(n): T.m:b))) &
+  SetDMUAnnotError
+ =>
+  lp_4(Xx___np___ /0O0/ s.t(n): T.m: b);
+
+
+
+
+  LPTrans_delay(b)
+ =>
+  lp_lw2_BToolProver(b);
+
+  lp_lw2_BToolProver(a) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  lp_lw2_BToolProver(b)
+ =>
+  lp_lw2_BToolProver(a&b);
+
+  LPTrans_delay(a)
+ =>
+  lp_lw2(a);
+
+  LPTrans_delay(cst(a)&ctx(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  LPTrans_delay(inv(a)&asn(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  LPTrans_delay(pre(o))
+ =>
+  lp_lw2(cst(a)&ctx(a)&inv(a)&asn(a)&pre(o));
+
+  bsearch(cst(a),A,B) &
+  bsearch(ctx(a),B,C) &
+  bsearch(inv(a),C,D) &
+  bsearch(asn(a),D,E) &
+  bsearch(pre(o),E,F) &
+  LPTrans_delay(cst(a)&ctx(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  LPTrans_delay(inv(a)&asn(a)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  LPTrans_delay(pre(o)) &
+  bprintf(" $\\wedge$ \bnl\n\\bhsp ") &
+  lp_lw2_BToolProver(F)
+ =>
+  lp_lw2(A);
+
+  lp_lw2(a)
+ =>
+  lp_lw1(a);
+
+  lp_lw2(a) &
+  bprintf("\bnl\n $\\Rightarrow$ \\bnl\n\\bhsp ") &
+  lp_lw2(b)
+ =>
+  lp_lw1(a=>b);
+
+  bclose &
+  lp_error_3(x) &
+  re_open
+ =>
+  lp_lw(x);
+
+  bprintf("\bbnl \n \\underline{") &
+  LPTrans_delay_sf(l.n) &
+  bprintf("} \\bbnl\n\\bhsp ") &
+  lp_lw1(x)
+ =>
+  lp_lw(l.n:x);
+
+  lp_np &
+  bprintf("\bbnl \n \\underline{") &
+  LPTrans_delay_sf(l.n) &
+  bprintf("} \\bbnl\n\\bhsp ") &
+  lp_lw1(x)
+ =>
+  lp_lw(Xx___np___ /0O0/ l.n:x);
+
+
+  bshell("sed -e s+'Xx___np___/0O0/'+'\\newpage '+g < .BBcom")
+ =>
+  lp_error_5;
+
+  bshell("sed -e s+'Xx___nl___,'+'\\\\ '+g < .Bcom > .BBcom") &
+  lp_error_5
+ =>
+  lp_error_4;
+
+  bconnect(".Bcom") &
+  Writef(("\n\n  Bad linebreak/pagebreak position in :\n    ")) &
+  bprintf("%\n",x) &
+  bclose &
+  lp_error_4 &
+  Writef("\n  ") &
+  SetDMUAnnotError &
+  re_open
+ =>
+  lp_error_3(x);
+
+  lp_error_3(x:a)
+ =>
+  lp_error_3(x:a:b);
+
+  bclose &
+  lp_error_3(x) &
+  re_open
+ =>
+  lp_3(x);
+
+
+
+
+/***
+brule(LatexProofX.1,a.b.(0-1)) => b is proof statement
+brule(LatexProofX.1,a.b.n) => b is proof obligation
+
+level 0:
+old: lp_3(Person3.mch(0): Constraints.1: #max_person.(max_person: SCALAR & 0<max_person))
+
+level > 0:
+lp_3((Person3.mch(0): Constraints.1: (1[1] | (not({1} = {})) | Law.1),...);
+***/
+
+  lp_4(s.t(n): T.m) &
+/*
+  bprintf("\\hspace*{-2em}\\begin{tabular}{rp{%em}p{%em}}\n",prf_mid_width,prf_rgt_width) &
+*/
+  lp_5 bsmap b
+/*
+ &
+  bprintf("\\end{tabular}\\\\\n")
+*/
+ =>
+  lp_3(s.t(n): T.m: b); 
+
+  lp_np &
+  lp_4(s.t(n): T.m) &
+/*
+  bprintf("\\hspace*{-2em}\\begin{tabular}{rp{36em}p{7.5em}}\n") &
+*/
+  lp_5 bsmap b
+/*
+ &
+  bprintf("\\end{tabular}\\\\\n")
+*/
+ =>
+  lp_3(Xx___np___ /0O0/ (s.t(n): T.m: b));
+
+
+  brule(LatexProofX.1,a.b.n) &
+  WriteDot &
+  bprintf("\\rule{\\textwidth}{.1ex} \\bnl\n{\\bf Laws (Level %) for % } ",n,a.b) &
+  lp_lw bsmap x
+ =>
+  lp_3(f(x));  /* laws */
+
+  WriteDot &
+  brule(LatexProofX.1,a.b.n) &
+  lp_np &
+  bprintf("\\rule{\\textwidth}{.1ex} \\bnl\n{\\bf Laws} (Level %) for % ",n,a.b) &
+  lp_lw bsmap x
+ =>
+  lp_3(Xx___np___ /0O0/ f(x));  /* laws */
+
+  WriteDot &
+  lp_4(a) &
+  bprintf("\bnl\n $\\Rightarrow$\\bnl\n") &
+/*  inc_implies_lvl & */
+  lp_5 bsmap b
+/*  dec_implies_lvl */
+ =>
+  lp_3(a=>b);                      /* level 0 matches here! */
+
+  lp_np &
+  lp_3(a=>b)
+ =>
+  lp_3(Xx___np___ /0O0/ (a=>b));   /* level 0 matches here! */
+
+
+  DMUErrorFlagged
+ =>
+  x;
+
+  LPErrorFlagged
+ =>
+  x;
+
+  Writef((" aborted\n"))
+ =>
+  check_error11(1);
+
+  brule(LatexProofX.1,a.imp.n) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp_prf:BT_DMU:n)) &
+  AddDmu(a.imp.prf.n)
+ =>
+  update_prf;
+
+  brule(LatexProofX.1,a.ref.n) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.ref_prf:BT_DMU:n)) &
+  AddDmu(a.ref.prf.n)
+ =>
+  update_prf;
+
+  brule(LatexProofX.1,a.mch.n) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch_prf:BT_DMU:n)) &
+  AddDmu(a.mch.prf.n)
+ =>
+  update_prf;
+
+  brule(LatexProofX.1,a.imp.(0-1)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp_prf:BT_DMU:999999)) &
+  AddDmu(a.imp.prf)
+ =>
+  update_prf;
+
+  brule(LatexProofX.1,a.ref.(0-1)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.ref_prf:BT_DMU:999999)) &
+  AddDmu(a.ref.prf)
+ =>
+  update_prf;
+
+  brule(LatexProofX.1,a.mch.(0-1)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch_prf:BT_DMU:999999)) &
+  AddDmu(a.mch.prf)
+ =>
+  update_prf;
+
+
+  Writef((" done\n")) &
+  update_prf
+ =>
+  check_error11(0);
+
+  DMUAnnotErrorFlagged &
+  Writef(("\n\n  LaTeXing aborted\n"))
+ =>
+  check_error11(0);
+
+  LPErrorFlagged &
+  Writef(("\n\n  LaTeXing aborted\n"))
+ =>
+  check_error11(0);
+
+  DMUErrorFlagged &
+  Writef(("\n\n  LaTeXing aborted\n"))
+ =>
+  check_error11(0);
+
+  Writef(("\n\n  LaTeXing aborted\n"))
+ =>
+  check_error11(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  check_error10;
+
+  bget(".Bcom",x) &
+  check_error11(x)
+ =>
+  check_error10;
+
+
+
+  /***
+  for args for LatexFile see Latexer.src
+  ***/
+
+  bcall((CATL;SHELL):bshell(bcatl(S, " 0")))
+ =>
+  check_error1(S);
+  
+  brule(LatexProofX.1,a.b.n) &
+  
+  ReadDeclarationString(p) &
+  ReadExecutableString(e) &
+  check_error1("$BKIT/BLIB/LatexFile 0 0 ",a,".",b," prf.",n, " '",p,"' 0 '",e,"'") &
+  check_error10
+ =>
+  check_error;
+
+  brule(LatexProofX.1,a.b.(0-1)) &
+  ReadExecutableString(e) &
+  ReadDeclarationString(p) &
+  check_error1("$BKIT/BLIB/LatexFile  0 0 ",a,".",b," prf '",p,"' 0 '",e,"'") &
+  check_error10
+ =>
+  check_error;
+
+
+
+  DMUAnnotErrorFlagged &
+  Writef(("\n\n  LaTeXing aborted\n"))
+ =>
+  check_error;
+
+  DMUErrorFlagged &
+  Writef(("\n\n  LaTeXing aborted\n"))
+ =>
+  check_error;
+
+  LPErrorFlagged &
+  Writef(("\n\n  LaTeXing aborted\n"))
+ =>
+  check_error;
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lp_2(a.b.n)(f)(x);
+
+
+
+  bconnect(f) &
+  bmodr(LatexProofX.4,f) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n") &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  %\n",a.b.prf) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n\n") &
+  bprintf("\\begin{center}\n{\\large {\\bf Proof Obligations for %}}\n\\end{center}\n\n",a.b) &
+  lp_3 bsmap x &
+  bprintf("\n") &
+  check_error
+ =>
+  lp_2(a.b)(f)(x);
+
+  bconnect(f) &
+  bmodr(LatexProofX.4,f) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n") &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  %\n",a.b.prf.n) &
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\n\n") &
+  bprintf("\\begin{center}\n{\\large {\\bf Proofs (Level %) for %}}\n\\end{center}\n\n",n,a.b) &
+  lp_3 bsmap x &
+  bprintf("\n") &
+  check_error
+ =>
+  lp_2(a.b.n)(f)(x);
+
+  InformCantConnect(".Bcom") &
+bcall(SHELL:bshell("cat .Berr"))
+ =>
+  lp_1(a.b);
+
+  InformCantConnect(".Bcom") &
+bcall(SHELL:bshell("cat .Berr"))
+ =>
+  lp_1(a.b.n);
+
+  Writef(("\n  LaTeXing "))
+ =>
+  lp_1_l(x);
+
+  Latex2e_DMU_Language_Flag_set &
+  Writef(("\n  LaTeX(2e)ing "))
+ =>
+  lp_1_l(x);
+
+  bget(".Bcom",x) &
+  lp_1_l(a.b) &
+  Writef(("% ",a.b.prf)) &
+  WriteDot &
+  lp_2(a.b)("TEX/.Btex")(x)
+ =>
+  lp_1(a.b);
+
+  bget(".Bcom",x) &
+  lp_1_l(a.b.n) &
+  Writef(("% ",a.b.prf.n)) &
+  WriteDot &
+  lp_2(a.b.n)("TEX/.Btex")(x)
+ =>
+  lp_1(a.b.n);
+
+  LoadBdmf &
+  ClearDMUAnnotError &
+  Connect("TEX/.prl") &      /* to empty */
+  bclose &  
+  bmodr(LatexProofX.1,a.b.(0-1)) &
+  ModrCurrProofImpliesLevel(0) &
+  bshell(bcatl("$BKIT/BLIB/LatexProofFilter 1 < POB/",a,".",b,".prf > .Bcom")) &
+  lp_1(a.b)
+ =>
+  lp_0(a.b);
+
+  LoadBdmf &
+  ClearDMUAnnotError &
+  Connect("TEX/.prl") &      /* to empty */
+  bclose &  
+  bmodr(LatexProofX.1,a.b.n) &
+  ModrCurrProofImpliesLevel(0) &
+  bshell(bcatl("$BKIT/BLIB/LatexProofFilter 1 < POB/",a,".",b,".prf.",n," > .Bcom")) &
+  lp_1(a.b.n)
+ =>
+  lp_0(a.b.n)
+
+END
+
+&
+
+THEORY testProof IS
+
+ bcall(LatexProofTransTac:trans(0)(aaa or (bbb&ccc)))
+
+END

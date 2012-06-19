@@ -1,0 +1,567 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Nseq">
+  <TITLE>The Rename_Nseq machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>      Rename_Nseq(maxint,maxsize)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>
+
+   maxint &lt;= 2147483646 &
+   maxsize &lt;= 2147483646
+
+<A NAME="SEES"><B>SEES</B></A>         <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>    Rename_Nseq
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_Nseq: seq(0..maxint) &
+  size(Rename_Nseq)&lt;=maxsize
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_Nseq:=<>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  bb <-- <A NAME="OPNAME!Rename_FUL_NSEQ">Rename_FUL_NSEQ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(size(Rename_Nseq)=maxsize)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_IDX_NSEQ">Rename_XST_IDX_NSEQ</A>(ii) =
+  <B>PRE</B>
+    ii: 1..maxsize
+  <B>THEN</B>
+    bb:=<B>bool</B>(ii:1..size(Rename_Nseq))
+  <B>END</B>;
+
+/**************** sequence operations ***************/
+
+
+  <A NAME="OPNAME!Rename_STO_NSEQ">Rename_STO_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B> 
+    Rename_Nseq(ii):=vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_CLR_NSEQ">Rename_CLR_NSEQ</A> =
+  <B>BEGIN</B>
+    Rename_Nseq:=<>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_PSH_NSEQ">Rename_PSH_NSEQ</A>(vv) =
+  <B>PRE</B>
+    vv: 0..maxint &
+    size(Rename_Nseq) &lt; maxsize
+  <B>THEN</B>
+    Rename_Nseq:=Rename_Nseq &lt;- vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_POP_NSEQ">Rename_POP_NSEQ</A> =
+  <B>PRE</B>
+    size(Rename_Nseq)/=0
+  <B>THEN</B>
+    Rename_Nseq:= front(Rename_Nseq)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_FST_NSEQ">Rename_FST_NSEQ</A> =
+  <B>PRE</B>
+    size(Rename_Nseq)/=0
+  <B>THEN</B>
+    vv := Rename_Nseq(1)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_LST_NSEQ">Rename_LST_NSEQ</A> =
+  <B>PRE</B>
+    size(Rename_Nseq)/=0
+  <B>THEN</B>
+    vv := Rename_Nseq(size(Rename_Nseq))
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_TAL_NSEQ">Rename_TAL_NSEQ</A> =
+  <B>PRE</B>
+    size(Rename_Nseq)/=0
+  <B>THEN</B>
+    Rename_Nseq := tail(Rename_Nseq)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_KEP_NSEQ">Rename_KEP_NSEQ</A>(ii) =
+  <B>PRE</B>
+    ii:0..size(Rename_Nseq)
+  <B>THEN</B>
+    Rename_Nseq:=Rename_Nseq /|\ ii
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_CUT_NSEQ">Rename_CUT_NSEQ</A>(ii) =
+  <B>PRE</B>
+    ii:0..size(Rename_Nseq)
+  <B>THEN</B>
+    Rename_Nseq:=Rename_Nseq \|/ ii
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SWP_NSEQ">Rename_SWP_NSEQ</A>(ii,jj) =
+  <B>PRE</B>
+    ii: 1..size(Rename_Nseq) &
+    jj: 1..size(Rename_Nseq)
+  <B>THEN</B>
+    Rename_Nseq:=Rename_Nseq&lt;+(
+    {ii |-&gt; Rename_Nseq(jj), jj |-&gt; Rename_Nseq(ii)}
+     )
+  <B>END</B>;
+
+/*****************  Queries ************************/
+
+  
+  vv <-- <A NAME="OPNAME!Rename_VAL_NSEQ">Rename_VAL_NSEQ</A>(ii) =
+  <B>PRE</B>
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B> 
+    vv:=Rename_Nseq(ii)
+  <B>END</B>;
+
+  nn <-- <A NAME="OPNAME!Rename_LEN_NSEQ">Rename_LEN_NSEQ</A> =
+  <B>BEGIN</B>
+    nn:=size(Rename_Nseq)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EMP_NSEQ">Rename_EMP_NSEQ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(Rename_Nseq=<>)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_MAX_IDX_NSEQ">Rename_MAX_IDX_NSEQ</A>(ii,jj) =
+  <B>PRE</B>
+    ii: dom(Rename_Nseq) &
+    jj: dom(Rename_Nseq) &
+    ran((ii..jj) &lt;| Rename_Nseq) /= {}
+  <B>THEN</B>
+    vv::Rename_Nseq~[{max(ran((ii..jj) &lt;| Rename_Nseq))}]
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_MIN_IDX_NSEQ">Rename_MIN_IDX_NSEQ</A>(ii,jj) =
+  <B>PRE</B>
+    ii: dom(Rename_Nseq) &
+    jj: dom(Rename_Nseq) &
+    ran((ii..jj) &lt;| Rename_Nseq) /= {}
+  <B>THEN</B>
+    vv::Rename_Nseq~[{min(ran((ii..jj) &lt;| Rename_Nseq))}]
+  <B>END</B>;
+
+/************** Arithmetic operations ***************/
+
+
+  <A NAME="OPNAME!Rename_ADD_NSEQ">Rename_ADD_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq) &
+    Rename_Nseq(ii)+vv &lt;= maxint
+  <B>THEN</B> 
+    Rename_Nseq(ii):=Rename_Nseq(ii)+vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_MUL_NSEQ">Rename_MUL_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq) &
+    Rename_Nseq(ii)*vv &lt;= maxint
+  <B>THEN</B> 
+    Rename_Nseq(ii):=Rename_Nseq(ii)*vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SUB_NSEQ">Rename_SUB_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq) &
+    Rename_Nseq(ii)-vv &gt;= 0
+  <B>THEN</B> 
+    Rename_Nseq(ii):=Rename_Nseq(ii)-vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_DIV_NSEQ">Rename_DIV_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:1..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B> 
+    Rename_Nseq(ii):=Rename_Nseq(ii)/vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_MOD_NSEQ">Rename_MOD_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:1..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B> 
+    Rename_Nseq(ii):=Rename_Nseq(ii)-vv*(Rename_Nseq(ii)/vv)
+  <B>END</B>;
+
+
+/**************  equality queries **************/
+
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_NSEQ">Rename_EQL_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nseq(ii)=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_NEQ_NSEQ">Rename_NEQ_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nseq(ii)/=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_GTR_NSEQ">Rename_GTR_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nseq(ii)&gt;vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_GEQ_NSEQ">Rename_GEQ_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nseq(ii)&gt;=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_SMR_NSEQ">Rename_SMR_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nseq(ii)&lt;vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_LEQ_NSEQ">Rename_LEQ_NSEQ</A>(ii,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    ii:1..size(Rename_Nseq)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nseq(ii)&lt;=vv)
+  <B>END</B>;
+
+
+/***************** Searching *********************/
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_EQL_NSEQ">Rename_SCH_LO_EQL_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:=min(ss \/ {maxsize})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_NEQ_NSEQ">Rename_SCH_LO_NEQ_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[(0..maxint)-{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= min(ss \/ {maxsize})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_GEQ_NSEQ">Rename_SCH_LO_GEQ_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[vv..maxint]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= min(ss \/ {maxsize})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_GTR_NSEQ">Rename_SCH_LO_GTR_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[vv+1..maxint]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= min(ss \/ {maxsize})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_LEQ_NSEQ">Rename_SCH_LO_LEQ_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[0..vv]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= min(ss \/ {maxsize})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_SMR_NSEQ">Rename_SCH_LO_SMR_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[ 0..vv-1]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= min(ss \/ {maxsize})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_EQL_NSEQ">Rename_SCH_HI_EQL_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_NEQ_NSEQ">Rename_SCH_HI_NEQ_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[(0..maxint)-{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_GEQ_NSEQ">Rename_SCH_HI_GEQ_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[vv..maxint]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_GTR_NSEQ">Rename_SCH_HI_GTR_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[vv+1..maxint]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_LEQ_NSEQ">Rename_SCH_HI_LEQ_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[0..vv]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_SMR_NSEQ">Rename_SCH_HI_SMR_NSEQ</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    jj:dom(Rename_Nseq) &
+    kk:dom(Rename_Nseq)
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Nseq~[ 0..vv-1]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+/************** Re-ordering **********************/
+
+  <A NAME="OPNAME!Rename_SRT_ASC_NSEQ">Rename_SRT_ASC_NSEQ</A>(ii,jj) =
+  <B>PRE</B>
+    ii:1..size(Rename_Nseq) &
+    jj:1..size(Rename_Nseq) &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>ANY</B> ff,aa,bb,cc <B>WHERE</B>
+      ff: (ii..jj) &gt;-&gt;&gt; (ii..jj) &
+      aa = (1..ii-1) &lt;| Rename_Nseq &
+      bb: NAT +-&gt; (0..maxint) &
+      bb = (ff;Rename_Nseq) &
+      !kk.(kk:ii..jj-1 =&gt; bb(kk) &lt;= bb(kk+1)) &
+      cc = (jj+1..size(Rename_Nseq)) &lt;| Rename_Nseq
+    <B>THEN</B>
+      Rename_Nseq := aa \/ bb \/ cc
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SRT_DSC_NSEQ">Rename_SRT_DSC_NSEQ</A>(ii,jj) =
+  <B>PRE</B>
+    ii:1..size(Rename_Nseq) &
+    jj:1..size(Rename_Nseq) &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>ANY</B> ff,aa,bb,cc <B>WHERE</B>
+      ff: ii..jj &gt;-&gt;&gt; ii..jj &
+      aa = (1..ii-1) &lt;| Rename_Nseq &
+      bb: NAT +-&gt; (0..maxint) &
+      bb = (ff;Rename_Nseq) &
+      !kk.(kk:ii..jj-1 =&gt; bb(kk) &gt;= bb(kk+1)) &
+      cc = (jj+1..size(Rename_Nseq)) &lt;| Rename_Nseq
+    <B>THEN</B>
+      Rename_Nseq := aa \/ bb \/ cc
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_REV_NSEQ">Rename_REV_NSEQ</A>(ii,jj) =
+  <B>PRE</B>
+    ii:1..size(Rename_Nseq) &
+    jj:1..size(Rename_Nseq) &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>LET</B> aa,bb,cc <B>BE</B>
+      aa = (1..ii-1) &lt;| Rename_Nseq &
+      bb = %kk.(kk:ii..jj | Rename_Nseq(jj+ii-kk)) &
+      cc = (jj+1..size(Rename_Nseq)) &lt;| Rename_Nseq
+    <B>IN</B>
+      Rename_Nseq := aa \/ bb \/ cc
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RHT_NSEQ">Rename_RHT_NSEQ</A>(ii,jj,nn) =
+  <B>PRE</B>
+    ii:1..size(Rename_Nseq) &
+    jj:1..size(Rename_Nseq) &
+    nn:1..size(Rename_Nseq) &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>LET</B> aa,bb,cc <B>BE</B>
+      aa = (1..ii+nn-1) &lt;| Rename_Nseq &
+      bb = 1..size(Rename_Nseq) &lt;| (
+          %kk.(kk:ii+nn..(jj+nn) | Rename_Nseq(kk-nn))
+      ) &
+      cc = (jj+nn+1..size(Rename_Nseq)) &lt;| Rename_Nseq
+    <B>IN</B>
+      Rename_Nseq := aa \/ bb \/ cc
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_LFT_NSEQ">Rename_LFT_NSEQ</A>(ii,jj,nn) =
+  <B>PRE</B>
+    ii:1..size(Rename_Nseq) &
+    jj:1..size(Rename_Nseq) &
+    nn:1..size(Rename_Nseq) &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>LET</B> aa,bb,cc <B>BE</B>
+      aa = (1..ii-nn-1) &lt;| Rename_Nseq &
+      bb = 1..size(Rename_Nseq) &lt;| (
+        %kk.(kk:ii-nn..(jj-nn) | Rename_Nseq(kk+nn))
+      ) &
+      cc = (jj-nn+1..size(Rename_Nseq)) &lt;| Rename_Nseq
+    <B>IN</B>
+      Rename_Nseq := aa \/ bb \/ cc
+    <B>END</B>
+  <B>END</B>;
+
+
+ 
+/**************  save/restore host byte order **************/
+
+  <A NAME="OPNAME!Rename_SAV_NSEQ">Rename_SAV_NSEQ</A> = <B>skip</B>;
+
+  <A NAME="OPNAME!Rename_RST_NSEQ">Rename_RST_NSEQ</A> =
+  <B>ANY</B> nseq <B>WHERE</B>
+    nseq: seq(0..maxint) &
+    size(nseq) &lt;= maxsize
+  <B>THEN</B>
+    Rename_Nseq := nseq
+  <B>END</B>;
+
+/**************  save/restore network byte order **************/
+
+  <A NAME="OPNAME!Rename_SAVN_NSEQ">Rename_SAVN_NSEQ</A> = <B>skip</B>;
+
+  <A NAME="OPNAME!Rename_RSTN_NSEQ">Rename_RSTN_NSEQ</A> =
+  <B>ANY</B> nseq <B>WHERE</B>
+    nseq: seq(0..maxint) &
+    size(nseq) &lt;= maxsize
+  <B>THEN</B>
+    Rename_Nseq := nseq
+  <B>END</B>
+
+
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:07 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

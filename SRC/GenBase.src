@@ -1,0 +1,3520 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define GBTac    (((CATL;SHELL;NEWV~;MAP;MODR)~;GenBaseFromUserX)~)
+
+
+#define ReadRawSETSClause(x)      brule(GenBaseFromUserX.2,x)
+
+#define ModifyRawSETSClause(x)    bmodr(GenBaseFromUserX.2,x)
+
+#define ReadRawSUPPORTSClause(x)      brule(GenBaseFromUserX.3,x)
+
+#define ModifyRawSUPPORTSClause(x)    bmodr(GenBaseFromUserX.3,x)
+
+#define ReadRawISClause(x)      brule(GenBaseFromUserX.4,x)
+
+#define ModifyRawISClause(x)    bmodr(GenBaseFromUserX.4,x)
+
+
+
+#define GenBaseOpsDirect(x)    bcall(GBTac:gb_ops_0(x))
+
+#define GenBaseMchImpDirect(x) bcall(GBTac:gb_mch_imp_chk_bse_edt_0(x))
+
+#define GenBaseMchImpRemakeDirect(x) bcall(GBTac:gb_mch_imp_chk_bse_edt_rem_0(x))
+
+
+#define InformGeneratingOps(x) Writef(("\n  Generating %.ops ",x))
+
+#define InformGeneratingBse(x) Writef(("\n  Generating BASE % ",x))
+
+#define ClearGenBaseError      bcall(MODR:bmodr(GBErrorX.1,0))
+
+#define SetGenBaseError        bcall(MODR:bmodr(GBErrorX.1,1))
+
+#define ModifySystemName(x)    bmodr(GenBaseParseX.1,x)
+
+#define ReadSystemName(x)      brule(GenBaseParseX.1,x)
+
+#define ReadFileName(x)        brule(FileNameX.1,x)
+
+#define ReadBaseNames(x)          brule(GenBaseParseX.2,x)
+#define IsBaseName(y) ReadBaseNames(x) & bsearch(y,x,z)
+
+#define ModifyBaseNames(x)        bmodr(GenBaseParseX.2,x)
+
+#define ReadFieldNames(x)          brule(GenBaseParseX.3,x)
+
+#define ModifyFieldNames(x)        bmodr(GenBaseParseX.3,x)
+
+#define ReadAllSetNames(x)          brule(GenBaseParseX.4,x)
+
+#define ModifyAllSetNames(x)        bmodr(GenBaseParseX.4,x)
+
+#define ModifySupports(x)        bmodr(GenBaseParseX.5,x)
+
+#define ReadSupports(x)          brule(GenBaseParseX.5,x)
+
+#define ModifySETS(x)        bmodr(GenBaseParseX.6,x)
+
+#define ReadSETS(x)          brule(GenBaseParseX.6,x)
+
+#define ModifyFlattenedSETS(x)        bmodr(GenBaseParseX.7,x)
+
+#define ReadFlattenedSETS(x)          brule(GenBaseParseX.7,x)
+
+#define ModifyIDs(x)        bmodr(GenBaseParseX.8,x)
+
+#define ReadIDs(x)          brule(GenBaseParseX.8,x)
+
+#define ModifyMaxFieldNameLength(x)        bmodr(GenBaseParseX.9,x)
+
+#define ReadMaxFieldNameLength(x)          brule(GenBaseParseX.9,x)
+
+#define ModifyBaseIDs(x)        bmodr(GenBaseParseX.10,x)
+
+#define ReadBaseIDs(x)          brule(GenBaseParseX.10,x)
+
+#define ReadFieldDotBaseNames(x)          brule(GenBaseParseX.11,x)
+
+#define ModifyFieldDotBaseNames(x)        bmodr(GenBaseParseX.11,x)
+
+
+#define InformNoOpsReqd \
+	Writef(("\n\n    No operations requested in ops file! "))
+
+#define FileSystemNameClash(x,y) \
+	Writef(("\n    Filename name/SYSTEM name clash: %/% ",bsrv x berv,bsrv y berv))
+
+#define GBGlobalSyntax(x) \
+	Writef(("\n    Illegal GLOBAL syntax: % ",bsrv x berv))
+
+#define GBSupportsSyntax(x) \
+	Writef(("\n    Illegal SUPPORTS syntax: % ",bsrv x berv))
+
+#define GBBadDimension(x) \
+	Writef(("\n    Dimension should be a non-negative natural number: % ",bsrv x berv))
+
+#define GBSetsUpperCase(x) \
+	Writef(("\n    Deferred SETS should be an upper case\n    identifier (or BASE name): % ",bsrv x berv))
+
+#define GBSetStructObj(x) \
+	Writef(("\n    Invalid SET of structured object: % ",bsrv x berv))
+
+#define GBSeqStructObj(x) \
+	Writef(("\n    Invalid SEQ of structured object: % ",bsrv x berv))
+
+#define GBSyntaxError(x,y) \
+	Writef(("\n    Syntax error: % ",bsrv y berv))
+
+/***
+#define GBSyntaxError(x,y) \
+	Writef(("\n    Syntax error(%): % ",x,bsrv y berv))
+***/
+
+#define GBSETSSyntaxError(x) \
+	Writef(("\n    SETS syntax error: % ",bsrv x berv))
+
+#define SETSListIdentifiers(x) \
+	Writef(("\n    SETS elements should be a distinct list of identifiers:\n    % ",bsrv x berv))
+
+#define SETSIdentifier(x) \
+	Writef(("\n    SETS name should be an identifier: % ",bsrv x berv))
+
+#define SETSSemiColon \
+	Writef(("\n    SETS entries should be separated by a semi-colon "))
+
+#define RepetitionFlattenedSETS(x) \
+	Writef(("\n    Repetition of identifier in SETS: % ",bsrv x berv))
+
+#define GBSyntaxSepError(x) \
+	Writef(("\n    Syntax error (separator should be a semi-colon):\n      % ",bsrv x berv))
+
+#define GBIdentifier(x) \
+	Writef(("\n    % should be an identifier ",bsrv x berv))
+
+#define GBSystemBaseNameClash(x) \
+	Writef(("\n    SYSTEM/BASE name clash: % ",bsrv x berv))
+
+#define GBBaseFieldNameClash(x) \
+	Writef(("\n    BASE/FIELD name clash: % ",bsrv x berv))
+
+#define GBSystemFieldNameClash(x) \
+	Writef(("\n    SYSTEM/FIELD name clash: % ",bsrv x berv))
+
+#define GBSetsFieldNameClash(x) \
+	Writef(("\n    Deferred SETS/FIELD name clash: % ",bsrv x berv))
+
+#define GBSETSBaseNameClash(x) \
+	Writef(("\n    SETS/BASE name clash: % ",bsrv x berv))
+
+#define GBSETSFieldNameClash(x) \
+	Writef(("\n    SETS/FIELD name clash: % ",bsrv x berv))
+
+#define GBRepetitionBaseNames(x) \
+	Writef(("\n    Repetition of BASE names: % ",bsrv x berv))
+
+#define GBRepetitionFieldNames(x) \
+	Writef(("\n    Repetition of FIELD names: % ",bsrv x berv))
+
+#define GBIllegalBaseName(x) \
+	Writef(("\n    Illegal BASE name: % ",bsrv x berv))
+
+#define GBIllegalFieldName(x) \
+	Writef(("\n    Illegal FIELD name: % ",bsrv x berv))
+
+#define GBSystemNameUnderscore(x) \
+	Writef(("\n    SYSTEM name may not contain more than one underscore: % ",bsrv x berv))
+
+#define GBBaseNameUnderscore(x) \
+	Writef(("\n    BASE name may not contain more than one underscore: % ",bsrv x berv))
+
+#define GBDimensionReqd(x) \
+	Writef(("\n    Dimension required: % ",bsrv x berv))
+
+#define GBReservedWord(x) \
+	Writef(("\n    % is a reserved word ",bsrv x berv))
+
+
+#define GBOptFStr(x) \
+	Writef(("\n    %\n    FSTRING may not appear with OPTIONAL attribute ",bsrv x berv))
+
+#define InformOneID(x,y,z) \
+	Writef(("\n    BASE % has more than one ID: %,% ",bsrv x berv,bsrv y berv,bsrv z berv))
+
+#define WarnOneID(y,z) \
+	Writef(("\n    Warning BASE % has more than one ID:\n            ID `%' has been ignored\n    ...",y,z))
+
+#define IDMustBeMandatory(x,y) \
+	Writef(("\n    BASE % has OPTIONAL ID: % ",bsrv x berv,bsrv y berv))
+
+#define GBIDStructObj(x,y) \
+	Writef(("\n    Invalid ID of structured object:\n    BASE % ID %",bsrv x berv,bsrv y berv))
+
+#define WarnGBIDStructObj(y,z) \
+	Writef(("\n    Warning BASE % has an invalid ID\n            of a structured object:\n            ID `%' has been ignored\n    ...",y,z))
+
+
+
+#define FieldNameTooLong(x,y) \
+  Writef(("\n    Field name % of %",bsrv y berv,x)) & \
+  Writef(("\n      Too long (max length 35) "))
+
+
+#define FieldNameTooLongGlobal(y) \
+  Writef(("\n    Field name % of GLOBAL",bsrv y berv,x)) & \
+  Writef(("\n      Too long (max length 35) "))
+
+
+#define BaseNameTooLong(x) \
+  Writef(("\n    BASE name %",bsrv x berv)) & \
+  Writef(("\n      Too long (max length 30) "))
+
+
+#define SetNameTooLong(x) \
+  Writef(("\n    Set name %",bsrv x berv)) & \
+  Writef(("\n      Too long (max length 35) "))
+
+
+
+#define setSTRINGFlag    bcall(MODR:bmodr(GBFlagsX.1,1))
+
+#define clearSTRINGFlag  bcall(MODR:bmodr(GBFlagsX.1,0))
+
+#define STRINGFlagset    brule(GBFlagsX.1,1)
+
+
+#define setBITFlag    bcall(MODR:bmodr(GBFlagsX.2,1))
+
+#define clearBITFlag  bcall(MODR:bmodr(GBFlagsX.2,0))
+
+#define BITFlagset    brule(GBFlagsX.2,1)
+
+
+#define setSETFlag       bcall(MODR:bmodr(GBFlagsX.3,1))
+
+#define clearSETFlag     bcall(MODR:bmodr(GBFlagsX.3,0))
+
+#define SETFlagset       brule(GBFlagsX.3,1)
+
+
+#define setSEQFlag       bcall(MODR:bmodr(GBFlagsX.4,1))
+
+#define clearSEQFlag     bcall(MODR:bmodr(GBFlagsX.4,0))
+
+#define SEQFlagset       brule(GBFlagsX.4,1)
+
+
+
+#define setFSTRINGFlag    bcall(MODR:bmodr(GBFlagsX.5,1))
+
+#define clearFSTRINGFlag  bcall(MODR:bmodr(GBFlagsX.5,0))
+
+#define FSTRINGFlagset    brule(GBFlagsX.5,1)
+
+
+
+/*
+#define setPrintElemFlag       bcall(MODR:bmodr(GBFlagsX.6,1))
+
+#define clearPrintElemFlag     bcall(MODR:bmodr(GBFlagsX.6,0))
+
+#define PrintElemFlagset       brule(GBFlagsX.6,1)
+
+
+#define setPrintOptElemFlag       bcall(MODR:bmodr(GBFlagsX.7,1))
+
+#define clearPrintOptElemFlag     bcall(MODR:bmodr(GBFlagsX.7,0))
+
+#define PrintOptElemFlagset       brule(GBFlagsX.7,1)
+
+
+#define setPrintSetFlag       bcall(MODR:bmodr(GBFlagsX.8,1))
+
+#define clearPrintSetFlag     bcall(MODR:bmodr(GBFlagsX.8,0))
+
+#define PrintSetFlagset       brule(GBFlagsX.8,1)
+
+
+#define setPrintOptSetFlag       bcall(MODR:bmodr(GBFlagsX.9,1))
+
+#define clearPrintOptSetFlag     bcall(MODR:bmodr(GBFlagsX.9,0))
+
+#define PrintOptSetFlagset       brule(GBFlagsX.9,1)
+
+
+#define setPrintSeqFlag       bcall(MODR:bmodr(GBFlagsX.10,1))
+
+#define clearPrintSeqFlag     bcall(MODR:bmodr(GBFlagsX.10,0))
+
+#define PrintSeqFlagset       brule(GBFlagsX.10,1)
+
+
+#define setPrintOptSeqFlag       bcall(MODR:bmodr(GBFlagsX.11,1))
+
+#define clearPrintOptSeqFlag     bcall(MODR:bmodr(GBFlagsX.11,0))
+
+#define PrintOptSeqFlagset       brule(GBFlagsX.11,1)
+*/
+
+
+#define setDEFSFlag       bcall(MODR:bmodr(GBFlagsX.12,1))
+
+#define clearDEFSFlag     bcall(MODR:bmodr(GBFlagsX.12,0))
+
+#define DEFSFlagset       brule(GBFlagsX.12,1)
+
+
+#define setPrintGlobalSetFlag       bcall(MODR:bmodr(GBFlagsX.14,1))
+
+#define clearPrintGlobalSetFlag     bcall(MODR:bmodr(GBFlagsX.14,0))
+
+#define PrintGlobalSetFlagset       brule(GBFlagsX.14,1)
+
+
+#define setPrintGlobalSeqFlag       bcall(MODR:bmodr(GBFlagsX.15,1))
+
+#define clearPrintGlobalSeqFlag     bcall(MODR:bmodr(GBFlagsX.15,0))
+
+#define PrintGlobalSeqFlagset       brule(GBFlagsX.15,1)
+
+
+#define setPrintGlobalStrFlag       bcall(MODR:bmodr(GBFlagsX.16,1))
+
+#define clearPrintGlobalStrFlag     bcall(MODR:bmodr(GBFlagsX.16,0))
+
+#define PrintGlobalStrFlagset       brule(GBFlagsX.16,1)
+
+
+#define setPrintGlobalFStrFlag       bcall(MODR:bmodr(GBFlagsX.17,1))
+
+#define clearPrintGlobalFStrFlag     bcall(MODR:bmodr(GBFlagsX.17,0))
+
+#define PrintGlobalFStrFlagset       brule(GBFlagsX.17,1)
+
+
+#define setPrintFStrFlag       bcall(MODR:bmodr(GBFlagsX.18,1))
+
+#define clearPrintFStrFlag     bcall(MODR:bmodr(GBFlagsX.18,0))
+
+#define PrintFStrFlagset       brule(GBFlagsX.18,1)
+
+
+#define setCHARFlag    bcall(MODR:bmodr(GBFlagsX.19,1))
+
+#define clearCHARFlag  bcall(MODR:bmodr(GBFlagsX.19,0))
+
+#define CHARFlagset    brule(GBFlagsX.19,1)
+
+
+#define setPrintGlobalNatFlag       bcall(MODR:bmodr(GBFlagsX.20,1))
+
+#define clearPrintGlobalNatFlag     bcall(MODR:bmodr(GBFlagsX.20,0))
+
+#define PrintGlobalNatFlagset       brule(GBFlagsX.20,1)
+
+
+#define ModifyCtxMchNotRequired     bcall(MODR:bmodr(GBFlagsX.21,0))
+#define ModifyCtxMchRequired        bcall(MODR:bmodr(GBFlagsX.21,1))
+#define CtxMchNotRequired           brule(GBFlagsX.21,0)
+#define CtxMchRequired              brule(GBFlagsX.21,1)
+
+
+#define Modify_invarReqd(x)     bcall(MODR:bmodr(GBFlagsX.22,x))
+#define Read_invarReqd(x)       brule(GBFlagsX.22,x)
+
+
+
+
+THEORY UpdateDepGenBaseMchImpX IS
+
+#define UpdateDepGenBaseMchImp(w,x,y,z) \
+	bcall((NEWV~;UpdateDepGenBaseMchImpX)~: udep_gbmi(w,x,y,z))
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((a.mch:BT_CMT_GEN_CSTR:a.ops);(b.mch:BT_CMT_GEN_CSTR:a.ops);(c.imp:BT_CMT_GEN_CSTR:a.ops);(d.imp:BT_CMT_GEN_CSTR:a.ops))) &
+  AddCfg(a.mch) &
+  AddCfg(b.mch) &
+  AddCfg(c.imp) &
+  AddCfg(d.imp)
+ =>
+  udep_gbmi(a,b,c,d);
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((a.mch:BT_CMT_GEN_CSTR:a.ops);(b.imp:BT_CMT_GEN_CSTR:a.ops))) &
+  AddCfg(a.mch) &
+  AddCfg(b.imp)
+ =>
+  udep_gbmi(a,b,a,b);
+
+  GenBaseErrorFlagged
+ =>
+  udep_gbmi(a,b,c,d)
+
+END
+
+&
+
+
+THEORY UpdateDepGenBaseOpsX IS
+
+#define UpdateDepGenBaseOps(x) \
+	bcall((NEWV;UpdateDepGenBaseOpsX)~: uo(x))
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.ops:BT_CMT_GEN_CSTR:a.bse)) &
+  AddCfg(a.ops) &
+  AddGen(a.bse)
+ =>
+  uo(a.bse);
+
+  GetJobs(X) &
+  bsearch((x:BT_GBMI_REM:0),X,Y) &
+  GetCompletedJobs(W) &
+  AddCompletedJobs(W,(a.ops:BT_CMT_GEN_CSTR:a.bse)) &
+  AddCfg(a.ops) &
+  AddGen(a.bse)
+ =>
+  uo(a.bse);
+
+  GenBaseErrorFlagged
+ =>
+  uo(a.bse)
+
+END
+
+&
+
+
+THEORY GBErrorX IS 0 END &
+
+THEORY OfferGenBaseFailureOptionsX IS
+
+#define OfferGenBaseFailureOptions bcall(OfferGenBaseFailureOptionsX:ofo)
+
+
+  Writef(("\n"))&
+  ReadFileName(a) &
+  ModifyCurrentJob((a.bse:BT_GBO:0)) &
+  GetJobs(X) &
+  ModifyJobs((X;(a.bse:BT_MINI_RMK_M:0))) &
+  LoadToolkit(1)
+ =>
+  ofo
+
+END
+
+&
+
+THEORY BaseDefinitionsX IS
+
+  SCALAR == NAT;
+
+/*
+  NAT[d] == NAT
+*/
+
+  (f(d) == NAT(e)) == (f == NAT)
+
+END
+
+&
+
+THEORY CheckDefinitionsX IS
+
+#define CheckDefinitions(x) bcall((CheckDefinitionsX)~:cd(x))
+
+  Writef(("\n  Bad definition:\n\n    %\n\n  Each should be of the form bident==expression\n  or bident(params)==expression, separated by semi-colons\n",bsrv a berv)) &
+  SetGenBaseError
+ =>
+  cd(a);
+
+  bident(d)
+ =>
+  cd(d==f);
+
+  bident(d)
+ =>
+  cd(d(p)==f);
+
+  cd(D) &
+  cd(d)
+ =>
+  cd(D;d)
+
+END
+
+&
+
+THEORY PreProcessDefinitionsX IS
+
+  (SYSTEM a DEFINITIONS D END) == (SYSTEM a END DEFINITIONS D)
+
+END
+
+&
+
+THEORY StoreDefinitionsX IS
+
+#define StoreDefinitions(x) \
+  bcall(((MAP;RULE)~;StoreDefinitionsX)~:(sd bsmap x))
+
+
+  /* projection def */
+
+  bcrer(BaseDefinitionsX,d)
+ =>
+  sd(d);
+
+  sd(f == NAT)
+ =>
+  sd(f(d)== NAT(e))
+
+END
+
+&
+
+THEORY ProcessDefinitionsX IS
+
+#define ProcessDefinitions(x) \
+  bcall((PreProcessDefinitionsX;ProcessDefinitionsX;ProcessDefinitionsX;BaseDefinitionsX~;MODR):pd0(x))
+
+  ?;
+#define ReadProcessedDefinitions(x) brule(ProcessDefinitionsX.1,x)
+
+  bmodr(ProcessDefinitionsX.1,a)
+ =>
+  pd0(a);
+
+  /*** accept either form ***/
+
+  CheckDefinitions(D) &
+/*
+  bcrelr(BaseDefinitionsX,D) &
+*/
+  StoreDefinitions(D) &
+  bmodr(ProcessDefinitionsX.1,a)
+ =>
+  pd0(a DEFINITIONS D)
+
+END
+
+&
+
+THEORY GBFlagsX IS ?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;? /* 22 */ END &
+
+THEORY GBOpSCX IS
+
+#define ResetGBOpSC bcall(MODR: bmodr(GBOpSCX.1,?))
+
+#define GBOpSC      bcall(((MODR;WRITE)~;GBOpSCX)~: opsc)
+
+  ?;
+
+  bprintf(";\n\n")
+ =>
+  opsc;
+
+  brule(GBOpSCX.1,?) &
+  bmodr(GBOpSCX.1,1) &
+  bprintf("\n\n")
+ =>
+  opsc
+
+END
+
+&
+
+THEORY CheckReservedWordsX IS
+
+#define CheckReservedWords \
+          bcall(((ARI;MAP;MODR)~;CheckReservedWordsX)~: crw_0(1))
+
+
+  int,char,float,double,struct,/*union,*/long,short,unsigned,auto,
+  extern,register,typedef,static,goto,return,sizeof,break,continue,if,
+  else,for,do,while,switch,case,default,entry,fortran,asm,
+  succ,pred,multiply,divide,minus,plus,tok;         /* res word (comma) list */
+
+  ?; /* 2. b(1)=>mand b(0)=>opt */
+
+  crw_1(v);           /* error should have been set elsewhere */
+
+  bident(v) &
+  GBReservedWord(v) &
+  SetGenBaseError
+ =>
+  crw_1(v);
+
+  brule(CheckReservedWordsX.1,R) &
+  v\R
+ =>
+  crw_1(v);
+
+  crw_1(v)
+ =>
+  crw_1(v(ID));
+
+  crw_1(GLOBAL ? END);
+
+  crw_1(?);
+
+  crw_0(n);
+
+  brule(GBConstantsStoX.n,(0|b(L))) &
+  bmodr(CheckReservedWordsX.2,b(0)) &
+  crw_1 bsmap L &
+  crw_0(n+1)
+ =>
+  crw_0(n);
+
+
+  brule(GBConstantsStoX.n,(1|b(L))) &
+  bmodr(CheckReservedWordsX.2,b(1)) &
+  crw_1(b) &                           /* check base name once */
+  crw_1 bsmap L &
+  crw_0(n+1)
+ =>
+  crw_0(n)
+
+END
+
+&
+
+THEORY CheckFileConstructNameX IS
+
+#define CheckFileConstructName bcall(CheckFileConstructNameX: cfcn)
+
+  ReadFileName(f) &
+  ReadSystemName(s) &
+  FileSystemNameClash(f,s) &
+  SetGenBaseError
+ =>
+  cfcn;
+
+  ReadFileName(f) &
+  ReadSystemName(f)
+ =>
+  cfcn
+
+END
+
+&
+
+#include "ParseBaseExtSyntax.src"
+
+&
+THEORY GenBaseParseX IS
+
+#define gbpTac (((MAP;FLAT;CATL;SHELL;MODR)~;GenBaseParseX)~)
+
+#define GBParse bcall(gbpTac: p_0)
+
+  ?;  /* 1. system name: Person3Base */
+
+  ?;  /* 2. base names: ?,personbase,... */
+
+  ?;  /* 3. field names: ?,name,sex,age,... */
+
+  ?;  /* 4. set names ?,SEX,BOOL,... */
+
+  ?;  /* 5. SUPPORTS clause: Person3I */
+  
+  ?;  /* 6. ENUM SETS clause: ?;S1(e1,e2);S2(e3,e4,e5,e6);... */
+
+  ?;  /* 7. Flattened ENUM SETS clause: ?,S1,e1,e2,S2,e3,e4,e5,e6,... */
+
+  ?;  /* 8. base IDs ?,b1(k1),b2(k2),... */
+
+  ?;  /* 9. max field name length */
+
+  ?;  /* 10. base BaseIDs ?,b1(k1),b2(k2),... */
+
+  ?;  /* 11. FieldDotBaseNames ?,(f1:b1),(f1:b2),... */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  GBSyntaxError(1,X) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(X);
+
+  ReadBaseNames(B) &
+  bsearch(t,B,C)
+ =>
+  p_fn_4(b)(f:t);
+
+  bident(t) &
+  GBSetsUpperCase(t) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:t);
+
+  bUpident(t)
+ =>
+  p_fn_4(b)(f:t);
+
+  ReadBaseNames(B) &
+  bsearch(t,B,C)
+ =>
+  p_fn_4(b)(f:t);
+
+  GBDimensionReqd(f:FSTRING) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:FSTRING);
+
+  GBDimensionReqd(f:STRING) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:STRING);
+
+  bnum(n) &
+  btest(n>0)
+ =>
+  p_fn_4(b)(f:FSTRING[n]);
+
+  bnum(n) &
+  btest(n>0)
+ =>
+  p_fn_4(b)(f:STRING[n]);
+
+  GBDimensionReqd(f:SET(a)) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(a));
+
+  GBDimensionReqd(f:SEQ(a)) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(a));
+
+  GBBadDimension(n) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(a)[n]);
+
+  bnum(n) &
+  btest(n>0) &
+  GBSetsUpperCase(a) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(a)[n]);
+
+  bUpident(a) &
+  bnum(n) &
+  btest(n>0)
+ =>
+  p_fn_4(b)(f:SET(a)[n]);
+
+  GBBadDimension(n) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(a)[n]);
+
+  bnum(n) &
+  btest(n>0) &
+  GBSetsUpperCase(a) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(a)[n]);
+
+  bUpident(a) &
+  bnum(n) &
+  btest(n>0)
+ =>
+  p_fn_4(b)(f:SEQ(a)[n]);
+
+  ReadBaseNames(B) &
+  bsearch(g,B,C)
+ =>
+  p_fn_4(b)(f:SET(g)[m]);
+
+  ReadBaseNames(B) &
+  bsearch(g,B,C)
+ =>
+  p_fn_4(b)(f:SEQ(g)[m]);
+
+  GBSetStructObj(f:SET(FSTRING)) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(FSTRING));
+
+  GBSetStructObj(f:SET(STRING)) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(STRING));
+
+  GBSeqStructObj(f:SEQ(FSTRING)) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(FSTRING));
+
+  GBSeqStructObj(f:SEQ(STRING)) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(STRING));
+
+  GBSetStructObj(f:SET(FSTRING)[m]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(FSTRING[m]));
+
+  GBSetStructObj(f:SET(STRING)[m]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(STRING[m]));
+
+  GBSeqStructObj(f:SEQ(FSTRING)[m]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(FSTRING[m]));
+
+  GBSeqStructObj(f:SEQ(STRING)[m]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(STRING[m]));
+
+  GBSetStructObj(f:SET(FSTRING)[n]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(FSTRING)[n]);
+
+  GBSetStructObj(f:SET(STRING)[n]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(STRING)[n]);
+
+  GBSeqStructObj(f:SEQ(FSTRING)[n]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(FSTRING)[n]);
+
+  GBSeqStructObj(f:SEQ(STRING)[n]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(STRING)[n]);
+
+  GBSetStructObj(f:SET(FSTRING[m])[n]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(FSTRING[m])[n]);
+
+  GBSetStructObj(f:SET(STRING[m])[n]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SET(STRING[m])[n]);
+
+  GBSeqStructObj(f:SEQ(FSTRING)[n]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(FSTRING[m])[n]);
+
+  GBSeqStructObj(f:SEQ(STRING)[n]) &
+  SetGenBaseError
+ =>
+  p_fn_4(b)(f:SEQ(STRING[m])[n]);
+
+
+  ReadFieldNames(F) &
+  ModifyFieldNames((F,f)) &
+  ReadFieldDotBaseNames(G) &
+  ModifyFieldDotBaseNames((G,(f:b)))
+ =>
+  p_fn_3(b)(f);
+
+  ReadFieldNames(F) &
+  bsearch(f,F,G) &
+  GBRepetitionFieldNames(f) &
+  SetGenBaseError
+ =>
+  p_fn_3(b)(f);
+
+  ReadFlattenedSETS(B) &
+  bsearch(f,B,C) &
+  GBSETSFieldNameClash(f) &
+  SetGenBaseError
+ =>
+  p_fn_3(b)(f);
+
+  ReadBaseNames(B) &
+  bsearch(f,B,C) &
+  GBBaseFieldNameClash(f) &
+  SetGenBaseError
+ =>
+  p_fn_3(b)(f);
+
+  ReadAllSetNames(S) &
+  bsearch(f,S,T) &
+  GBSetsFieldNameClash(f) &
+  SetGenBaseError
+ =>
+  p_fn_3(b)(f);
+
+  GBSyntaxError(2,X) &
+  SetGenBaseError
+ =>
+  p_fn_2(b)(X);
+
+  GBIdentifier(f) &
+  SetGenBaseError &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f:t);
+
+  bident(f) &
+  p_fn_3(b)(f) &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f:t);
+
+  bident(f) &
+  ReadIDs(K) &
+  ModifyIDs((K,b(f))) &
+  p_fn_3(b)(f) &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f(ID):t);
+
+/* originally an error
+  bident(f) &
+  ReadIDs(K) &
+  ModifyIDs((K,b(f))) &
+  ReadBaseNames(B) &
+  bsearch(t,B,C) &
+  GBIDStructObj(b,(f:t)) &
+  SetGenBaseError &
+  p_fn_3(b)(f) &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f(ID):t);
+*/
+
+/* for SSTL was a warning
+  bident(f) & 
+  ReadBaseNames(B) &
+  bsearch(t,B,C) &
+  WarnGBIDStructObj(b,f) &
+  p_fn_2(b)(f:t)
+ =>
+  p_fn_2(b)(f(ID):t);
+*/
+
+  bident(f) &
+  ReadBaseNames(B) &
+  bsearch(t,B,C) &
+  ReadBaseIDs(K) &
+  ModifyBaseIDs((K,b(f))) &
+  p_fn_3(b)(f) &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f(ID):t);
+
+/* originally an error
+  bident(f) &
+  GBIDStructObj(b,(f:SEQ(t))) &
+  SetGenBaseError &
+  p_fn_3(b)(f) &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f(ID):SEQ(t)[N]);
+*/
+
+  bident(f) &
+  WarnGBIDStructObj(b,f) &
+  p_fn_2(b)(f:SEQ(t)[N])
+ =>
+  p_fn_2(b)(f(ID):SEQ(t)[N]);
+
+
+/* originally an error
+  bident(f) &
+  GBIDStructObj(b,(f:SET(t))) &
+  SetGenBaseError &
+  p_fn_3(b)(f) &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f(ID):SET(t)[N]);
+*/
+
+  bident(f) &
+  WarnGBIDStructObj(b,f) &
+  p_fn_2(b)(f:SET(t)[N])
+ =>
+  p_fn_2(b)(f(ID):SET(t)[N]);
+
+/* originally an error
+  bident(f) &
+  ReadIDs(K) &
+  bsearch(b(g),K,L) &
+  InformOneID(b,g,f) &
+  SetGenBaseError &
+  p_fn_3(b)(f) &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f(ID):t);
+*/
+
+  bident(f) &
+  ReadIDs(K) &
+  bsearch(b(g),K,L) &
+  WarnOneID(b,f) &
+  p_fn_2(b)(f:t)
+ =>
+  p_fn_2(b)(f(ID):t);
+
+  bsearch(f,(STRING,CHAR,ID,NAT,SCALAR,FSTRING,BOOL),T) &
+  GBIllegalFieldName(f) &
+  SetGenBaseError
+ =>
+  p_fn_2(b)(f:t);
+
+  ReadSystemName(f) &
+  GBSystemFieldNameClash(f) &
+  SetGenBaseError &
+  p_fn_4(b)(f:t)
+ =>
+  p_fn_2(b)(f:t);
+
+
+
+  bident(t) &
+  btest(t/=NAT) &
+  btest(t/=SCALAR) &
+  GBGlobalSyntax((f:t)) &
+  SetGenBaseError
+ =>
+  p_fn_2(GLOBAL g END)(f:t);
+
+  GBSyntaxError(3,X) &
+  SetGenBaseError
+ =>
+  p_fn_1(X);
+
+  GBSyntaxError(4,X) &
+  SetGenBaseError
+ =>
+  p_fn_1(b)(X);
+
+  p_fn_1(b)(?);
+
+  p_fn_2(b)(a:b)
+ =>
+  p_fn_1(b)(a:b);
+
+  GBSyntaxSepError((X&x)) &
+  SetGenBaseError
+ =>
+  p_fn_2(b)(X&x);
+
+  GBSyntaxSepError((X&x)) &
+  SetGenBaseError
+ =>
+  p_fn_1(b)(X&x);
+
+  GBSyntaxSepError((a=x:d)) &
+  SetGenBaseError
+ =>
+  p_fn_2(b)(a=x:d);
+
+  GBSyntaxSepError((a=x:d)) &
+  SetGenBaseError
+ =>
+  p_fn_1(b)(a=x:d);
+
+  GBSyntaxSepError((a:x:d)) &
+  SetGenBaseError
+ =>
+  p_fn_2(b)(a:x:d);
+
+  GBSyntaxSepError((a:x:d)) &
+  SetGenBaseError
+ =>
+  p_fn_1(b)(a:x:d);
+
+  p_fn_1(b)(X) &
+  p_fn_2(b)(x)
+ =>
+  p_fn_1(b)(X;x);
+
+  p_fn_0(X);
+
+  p_fn_0(X)
+ =>
+  p_fn_0(X;x);
+
+  p_fn_0(?);
+
+  p_fn_0(X) &
+  p_fn_1(b)(bflat(?;m))
+ =>
+  p_fn_0(X;BASE b MANDATORY m END);
+
+  p_fn_0(X) &
+  p_fn_1(b)(bflat(?;o))
+ =>
+  p_fn_0(X;BASE b OPTIONAL o END);
+
+  p_fn_0(X) &
+  p_fn_1(b)(bflat(?;o)) &
+  p_fn_1(b)(bflat(?;m))
+ =>
+  p_fn_0(X;BASE b OPTIONAL o MANDATORY m END);
+
+  p_fn_0(X) &
+  p_fn_1(b)(bflat(?;m)) &
+  p_fn_1(b)(bflat(?;o))
+ =>
+  p_fn_0(X;BASE b MANDATORY m OPTIONAL o END);
+
+  p_fn_0(X) &
+  p_fn_1(GLOBAL g END)(bflat(?;g))
+ =>
+  p_fn_0(X;GLOBAL g END);
+
+
+
+  p_st_1(X);
+
+  bident(t) &
+  ReadAllSetNames(S) &
+  ModifyAllSetNames((S,t))
+ =>
+  p_st_1(f:t);
+
+  bident(t) &
+  ReadAllSetNames(S) &
+  bsearch(t,S,T)
+ =>
+  p_st_1(f:t);
+
+  bident(t) &
+  ReadBaseNames(B) &
+  bsearch(t,B,C)
+ =>
+  p_st_1(f:t);
+
+  p_st_1(f:t)
+ =>
+  p_st_1(f:SEQ(t)[n]);
+
+  p_st_1(f:t)
+ =>
+  p_st_1(f:SET(t)[n]);
+
+  p_st_0(X);
+
+  p_st_0(X)
+ =>
+  p_st_0(X;x);
+
+  p_st_0(X) &
+  p_st_1 bsmap m
+ =>
+  p_st_0(X;BASE b MANDATORY m END);
+
+  ReadFlattenedSETS(B) &
+  bsearch(b,B,C) &
+  GBSETSBaseNameClash(b) &
+  SetGenBaseError &
+  p_st_0(X) &
+  p_st_1 bsmap m
+ =>
+  p_st_0(X;BASE b MANDATORY m END);
+
+  p_st_0(X) &
+  p_st_1 bsmap o
+ =>
+  p_st_0(X;BASE b OPTIONAL o END);
+
+  ReadFlattenedSETS(B) &
+  bsearch(b,B,C) &
+  GBSETSBaseNameClash(b) &
+  SetGenBaseError &
+  p_st_0(X) &
+  p_st_1 bsmap o
+ =>
+  p_st_0(X;BASE b OPTIONAL o END);
+
+  p_st_0(X) &
+  p_st_1 bsmap o &
+  p_st_1 bsmap m
+ =>
+  p_st_0(X;BASE b OPTIONAL o MANDATORY m END);
+
+  ReadFlattenedSETS(B) &
+  bsearch(b,B,C) &
+  GBSETSBaseNameClash(b) &
+  SetGenBaseError &
+  p_st_0(X) &
+  p_st_1 bsmap m &
+  p_st_1 bsmap o
+ =>
+  p_st_0(X;BASE b OPTIONAL o MANDATORY m END);
+
+  p_st_0(X) &
+  p_st_1 bsmap m &
+  p_st_1 bsmap o
+ =>
+  p_st_0(X;BASE b MANDATORY m OPTIONAL o END);
+
+  ReadFlattenedSETS(B) &
+  bsearch(b,B,C) &
+  GBSETSBaseNameClash(b) &
+  SetGenBaseError &
+  p_st_0(X) &
+  p_st_1 bsmap m &
+  p_st_1 bsmap o
+=>
+  p_st_0(X;BASE b MANDATORY m OPTIONAL o END);
+
+  p_st_0(X) &
+  p_st_1 bsmap g
+ =>
+  p_st_0(X;GLOBAL g END);
+
+
+
+  p_fstr(x);
+
+  GBOptFStr((c:FSTRING[N])) &
+  SetGenBaseError
+ =>
+  p_fstr(b,(c:FSTRING[N]));
+
+  
+
+  ReadBaseNames(B) &
+  ModifyBaseNames((B,b))
+ =>
+  p_bn_4(b)(?);
+
+  ReadBaseNames(B) &
+  bsearch(b,B,C) &
+  GBRepetitionBaseNames(b) &
+  SetGenBaseError
+ =>
+  p_bn_4(b)(?);
+
+  p_bn_4(b)(A)
+ =>
+  p_bn_4(b)(A|B);
+
+  GBBaseNameUnderscore(b) &
+  SetGenBaseError
+ =>
+  p_bn_4(b)(X|W;Y;Z);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  p_bn_3(b);
+
+  bget(".Bcom",Y) &
+  p_bn_4(b)(Y)
+ =>
+  p_bn_3(b);
+
+  bident(b) &
+  bshell(bcatl("echo ",b," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  p_bn_3(b)
+ =>
+  p_bn_2(b);
+
+  GBIdentifier(b) &
+  SetGenBaseError
+ =>
+  p_bn_1(BASE b MANDATORY m OPTIONAL o END);
+
+  bident(b) &
+  p_bn_2(b)
+ =>
+  p_bn_1(BASE b MANDATORY m OPTIONAL o END);
+
+  bsearch(b,(STRING,CHAR,ID,NAT,SCALAR,FSTRING,BOOL),S) &
+  GBIllegalBaseName(b) &
+  SetGenBaseError
+ =>
+  p_bn_1(BASE b MANDATORY m OPTIONAL o END);
+
+  ReadSystemName(b) &
+  GBSystemBaseNameClash(b) &
+  SetGenBaseError
+ =>
+  p_bn_1(BASE b MANDATORY m OPTIONAL o END);
+
+
+
+  GBSyntaxError(5,X) &
+  SetGenBaseError
+ =>
+  p_bn_0(X);
+
+  p_bn_0(?);
+
+  p_bn_0(X) &
+  GBSyntaxError(6,a) &
+  SetGenBaseError
+ =>
+  p_bn_0(X;a);
+
+
+
+
+
+  p_bn_0(X) &
+  p_bn_1(BASE b MANDATORY ? OPTIONAL o END) &
+  p_fstr(b) bsmap o
+ =>
+  p_bn_0(X;BASE b OPTIONAL o END);
+
+  p_bn_0(X) &
+  p_bn_1(BASE b MANDATORY m OPTIONAL ? END)
+ =>
+  p_bn_0(X;BASE b MANDATORY m END);
+
+  p_bn_0(X) &
+  p_bn_1(BASE b MANDATORY m OPTIONAL o END) &
+  p_fstr(b) bsmap o
+ =>
+  p_bn_0(X;BASE b OPTIONAL o MANDATORY m END);
+
+  p_bn_0(X) &
+  p_bn_1(BASE b MANDATORY m OPTIONAL o END) &
+  p_fstr(b) bsmap o
+ =>
+  p_bn_0(X;BASE b MANDATORY m OPTIONAL o END);
+
+  ReadBaseNames(B) &
+  ModifyBaseNames((B,(GLOBAL ? END))) &
+  p_bn_0(X)
+ =>
+  p_bn_0(X;GLOBAL g END);
+
+
+/***/
+HERE(("OPERATIONS ignored":O)) =>
+/***/
+  p_bn_ops(O);
+
+  p_bn_0(X) &
+  p_bn_1(BASE b MANDATORY ? OPTIONAL o END) &
+  p_bn_ops(O) &
+  p_fstr(b) bsmap o
+ =>
+  p_bn_0(X;BASE b OPTIONAL o OPERATIONS O END);
+
+  p_bn_0(X) &
+  p_bn_1(BASE b MANDATORY m OPTIONAL ? END) &
+  p_bn_ops(O)
+ =>
+  p_bn_0(X;BASE b MANDATORY m OPERATIONS O END);
+
+  p_bn_0(X) &
+  p_bn_1(BASE b MANDATORY m OPTIONAL o END) &
+  p_bn_ops(O) &
+  p_fstr(b) bsmap o
+ =>
+  p_bn_0(X;BASE b OPTIONAL o MANDATORY m OPERATIONS O END);
+
+  p_bn_0(X) &
+  p_bn_1(BASE b MANDATORY m OPTIONAL o END) &
+  p_bn_ops(O) &
+  p_fstr(b) bsmap o
+ =>
+  p_bn_0(X;BASE b MANDATORY m OPTIONAL o OPERATIONS O END);
+
+
+
+
+  p_sn_2(a)(Y);
+
+  GBSystemNameUnderscore(a) &
+  SetGenBaseError
+ =>
+  p_sn_2(a)(X|W;Y;Z);
+
+  GBSystemNameUnderscore(a) &
+  SetGenBaseError
+ =>
+  p_sn_2(a)(W;Y;Z|X);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  p_sn_1(a);
+
+  bget(".Bcom",Y) &
+  p_sn_2(a)(Y)
+ =>
+  p_sn_1(a);
+
+
+
+  GBIdentifier(s) &
+  SetGenBaseError
+ =>
+  p_sp(s);
+
+  bident(s)
+ =>
+  p_sp(s);
+
+  GBSupportsSyntax(S JOK2 s) &
+  SetGenBaseError
+ =>
+  p_sp(S JOK2 s);
+
+  GBIdentifier(s) &
+  SetGenBaseError &
+  p_sp(S)
+ =>
+  p_sp(S,s);
+
+  bident(s) &
+  p_sp(S)
+ =>
+  p_sp(S,s);
+
+  ReadRawSUPPORTSClause(S) &
+  ReadRawISClause(X) &
+  WriteDot &
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  ModifySupports(S) &
+  p_sp(S) &
+  WriteDot &
+  p_sn_1(a) &
+  WriteDot &
+  p_bn_0(bflat(?;X)) &
+  WriteDot &
+  p_st_0(bflat(?;X)) &
+  WriteDot &
+  p_fn_0(bflat(?;X))   /* check for ID here */
+ =>
+  p_0;
+
+  ReadRawSUPPORTSClause(?) &
+  ReadRawISClause(X) &
+  WriteDot &
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  ModifySupports(?) &
+  p_sn_1(a) &
+  WriteDot &
+  p_bn_0(bflat(?;X)) &
+  WriteDot &
+  p_st_0(bflat(?;X)) &
+  WriteDot &
+  p_fn_0(bflat(?;X))   /* check for ID here */
+ =>
+  p_0
+
+END
+
+&
+
+THEORY GBStoreUnionOfTypesX IS
+
+#define GBsutTac (MAP;((MODR;FLAT;MAP;RULE)~;GBStoreUnionOfTypesX))
+
+#define GBStoreUnionOfTypes(x) bcall(GBsutTac: sut_1 bsmap x)
+
+  ?;  /* 1. all types - no repetitions */
+
+  ?;  /* 2. string types with dimension */
+
+  ?;  /* 3. seq types with dimension */
+
+  ?;  /* 4. set types with dimension */
+
+  ?;  /* 5. all constants with types */
+
+  ?;  /* 6. nat types */
+
+  ?;  /* 7. set types */
+
+  ?;  /* 8. fstring types with dimension */
+
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bcrer(GBConstantsTypeStoX,a(T))
+ =>
+  sut_ConstWithTyp_1(a);
+
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bmodr(GBStoreUnionOfTypesX.5,(T;(x|set(y))))
+ =>
+  sut_ConstWithTyp_0(a,(x:y));
+
+  ReadSystemName(B) &
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bmodr(GBStoreUnionOfTypesX.5,(T;(x|nat(B))))
+ =>
+  sut_ConstWithTyp_0(a,(x:SCALAR));
+
+  ReadSystemName(B) &
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bmodr(GBStoreUnionOfTypesX.5,(T;(x|nat(B))))
+ =>
+  sut_ConstWithTyp_0(a,(x:NAT));
+
+  ReadSystemName(B) &
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bmodr(GBStoreUnionOfTypesX.5,(T;(x|fstrobj(B))))
+ =>
+  sut_ConstWithTyp_0(a,(x:FSTRING[N]));
+
+  ReadSystemName(B) &
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bmodr(GBStoreUnionOfTypesX.5,(T;(x|strobj(B))))
+ =>
+  sut_ConstWithTyp_0(a,(x:STRING[N]));
+
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bmodr(GBStoreUnionOfTypesX.5,(T;(x|setobj(y))))
+ =>
+  sut_ConstWithTyp_0(a,(x:SET(y)[N]));
+
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bmodr(GBStoreUnionOfTypesX.5,(T;(x|seqobj(y))))
+ =>
+  sut_ConstWithTyp_0(a,(x:SEQ(y)[N]));
+
+  ReadBaseNames(N) &
+  bsearch(y,N,M) &
+  brule(GBStoreUnionOfTypesX.5,T) &
+  bmodr(GBStoreUnionOfTypesX.5,(T;(x|fncobj(y))))
+ =>
+  sut_ConstWithTyp_0(a,(x:y));
+
+  brule(GBStoreUnionOfTypesX.7,T) &
+  bcrer(GBSETTypeStoX,a(T))
+ =>
+  sut_SETONE(a);
+
+  brule(GBStoreUnionOfTypesX.6,T) &
+  bcrer(GBNATTypeStoX,a(T))
+ =>
+  sut_NAT(a);
+
+  brule(GBStoreUnionOfTypesX.4,T) &
+  bcrer(GBSETOBJTypeStoX,a(T))
+ =>
+  sut_SETOBJ(a);
+
+  brule(GBStoreUnionOfTypesX.3,T) &
+  bcrer(GBSEQOBJTypeStoX,a(T))
+ =>
+  sut_SEQOBJ(a);
+
+  brule(GBStoreUnionOfTypesX.8,T) &
+  bcrer(GBFSTROBJTypeStoX,a(T))
+ =>
+  sut_FSTROBJ(a);
+
+  brule(GBStoreUnionOfTypesX.2,T) &
+  bcrer(GBSTROBJTypeStoX,a(T))
+ =>
+  sut_STROBJ(a);
+
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bcrer(GBTypeStoX,a(T))
+ =>
+  sut_UnionTyp_1(a);
+
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bmodr(GBStoreUnionOfTypesX.1,(T,set(y))) &
+  brule(GBStoreUnionOfTypesX.7,V) &
+  bmodr(GBStoreUnionOfTypesX.7,(V,y))
+ =>
+  sut_UnionTyp_0(a,(x:y));
+
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bsearch(set(y),T,U) &
+  brule(GBStoreUnionOfTypesX.7,V) &
+  bmodr(GBStoreUnionOfTypesX.7,(V,y))
+ =>
+  sut_UnionTyp_0(a,(x:y));
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bmodr(GBStoreUnionOfTypesX.1,(T,nat(S))) &
+  brule(GBStoreUnionOfTypesX.6,V) &
+  bmodr(GBStoreUnionOfTypesX.6,(V,NAT))
+ =>
+  sut_UnionTyp_0(a,(x:SCALAR));
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bmodr(GBStoreUnionOfTypesX.1,(T,nat(S))) &
+  brule(GBStoreUnionOfTypesX.6,V) &
+  bmodr(GBStoreUnionOfTypesX.6,(V,NAT))
+ =>
+  sut_UnionTyp_0(a,(x:NAT));
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bsearch(nat(S),T,U) &
+  brule(GBStoreUnionOfTypesX.6,V) &
+  bmodr(GBStoreUnionOfTypesX.6,(V,NAT))
+ =>
+  sut_UnionTyp_0(a,(x:NAT));
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bsearch(nat(S),T,U) &
+  brule(GBStoreUnionOfTypesX.6,V) &
+  bmodr(GBStoreUnionOfTypesX.6,(V,NAT))
+ =>
+  sut_UnionTyp_0(a,(x:SCALAR));
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bmodr(GBStoreUnionOfTypesX.1,(T,fstrobj(S))) &
+  brule(GBStoreUnionOfTypesX.8,V) &
+  bmodr(GBStoreUnionOfTypesX.8,(V,FSTRING[N])) &
+  brule(GBFSTRSIZEX.1,X) &
+  bmodr(GBFSTRSIZEX.1,(X,x(N)))
+ =>
+  sut_UnionTyp_0(a,(x:FSTRING[N]));
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bmodr(GBStoreUnionOfTypesX.1,(T,strobj(S))) &
+  brule(GBStoreUnionOfTypesX.2,V) &
+  bmodr(GBStoreUnionOfTypesX.2,(V,STRING[N]))
+ =>
+  sut_UnionTyp_0(a,(x:STRING[N]));
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bsearch(fstrobj(S),T,U) &
+  brule(GBStoreUnionOfTypesX.8,V) &
+  bmodr(GBStoreUnionOfTypesX.8,(V,FSTRING[N])) &
+  brule(GBFSTRSIZEX.1,X) &
+  bmodr(GBFSTRSIZEX.1,(X,x(N)))
+ =>
+  sut_UnionTyp_0(a,(x:FSTRING[N]));
+
+  ReadSystemName(S) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bsearch(strobj(S),T,U) &
+  brule(GBStoreUnionOfTypesX.2,V) &
+  bmodr(GBStoreUnionOfTypesX.2,(V,STRING[N]))
+ =>
+  sut_UnionTyp_0(a,(x:STRING[N]));
+
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bmodr(GBStoreUnionOfTypesX.1,(T,setobj(y))) &
+  brule(GBStoreUnionOfTypesX.4,V) &
+  bmodr(GBStoreUnionOfTypesX.4,(V,SET[y][N]))
+ =>
+  sut_UnionTyp_0(a,(x:SET(y)[N]));
+
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bsearch(setobj(y),T,U) &
+  brule(GBStoreUnionOfTypesX.4,V) &
+  bmodr(GBStoreUnionOfTypesX.4,(V,SET[y][N]))
+ =>
+  sut_UnionTyp_0(a,(x:SET(y)[N]));
+
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bmodr(GBStoreUnionOfTypesX.1,(T,seqobj(y))) &
+  brule(GBStoreUnionOfTypesX.3,V) &
+  bmodr(GBStoreUnionOfTypesX.3,(V,SEQ[y][N]))
+ =>
+  sut_UnionTyp_0(a,(x:SEQ(y)[N]));
+
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bsearch(seqobj(y),T,U) &
+  brule(GBStoreUnionOfTypesX.3,V) &
+  bmodr(GBStoreUnionOfTypesX.3,(V,SEQ[y][N]))
+ =>
+  sut_UnionTyp_0(a,(x:SEQ(y)[N]));
+
+  ReadBaseNames(N) &
+  bsearch(y,N,M) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bmodr(GBStoreUnionOfTypesX.1,(T,fncobj(y)))
+ =>
+  sut_UnionTyp_0(a,(x:y));
+
+  ReadBaseNames(N) &
+  bsearch(y,N,M) &
+  brule(GBStoreUnionOfTypesX.1,T) &
+  bsearch(fncobj(y),T,U)
+ =>
+  sut_UnionTyp_0(a,(x:y));
+
+   
+  GenBaseErrorFlagged
+ =>
+  x;
+
+
+  v(ID) == v;
+
+  bmodr(GBStoreUnionOfTypesX.1,?) &
+  bmodr(GBStoreUnionOfTypesX.2,?) &
+  bmodr(GBStoreUnionOfTypesX.3,?) &
+  bmodr(GBStoreUnionOfTypesX.4,?) &
+  bmodr(GBStoreUnionOfTypesX.6,?) &
+  bmodr(GBStoreUnionOfTypesX.7,?) &
+  bmodr(GBStoreUnionOfTypesX.8,?) &
+  sut_UnionTyp_0(GLOBAL ? END) bsmap (a) &
+  sut_UnionTyp_1(GLOBAL ? END) &
+  bmodr(GBStoreUnionOfTypesX.5,?) &
+  sut_FSTROBJ(GLOBAL ? END) &
+  sut_STROBJ(GLOBAL ? END) &
+  sut_SEQOBJ(GLOBAL ? END) &
+  sut_SETOBJ(GLOBAL ? END) &
+  sut_NAT(GLOBAL ? END) &
+  sut_SETONE(GLOBAL ? END) &
+  sut_ConstWithTyp_0(GLOBAL ? END) bsmap (a) &
+  sut_ConstWithTyp_1(GLOBAL ? END)
+ =>
+  sut_1(GLOBAL a END);
+
+  bmodr(GBStoreUnionOfTypesX.1,?) &
+  bmodr(GBStoreUnionOfTypesX.2,?) &
+  bmodr(GBStoreUnionOfTypesX.3,?) &
+  bmodr(GBStoreUnionOfTypesX.4,?) &
+  bmodr(GBStoreUnionOfTypesX.6,?) &
+  bmodr(GBStoreUnionOfTypesX.7,?) &
+  bmodr(GBStoreUnionOfTypesX.8,?) &
+  sut_UnionTyp_0(a) bsmap (b) &
+  sut_UnionTyp_1(a) &
+  bmodr(GBStoreUnionOfTypesX.5,?) &
+  sut_FSTROBJ(a) &
+  sut_STROBJ(a) &
+  sut_SEQOBJ(a) &
+  sut_SETOBJ(a) &
+  sut_NAT(a) &
+  sut_SETONE(a) &
+  sut_ConstWithTyp_0(a) bsmap (b) &
+  sut_ConstWithTyp_1(a)
+ =>
+  sut_1(BASE a MANDATORY b END);
+
+  bmodr(GBStoreUnionOfTypesX.1,?) &
+  bmodr(GBStoreUnionOfTypesX.2,?) &
+  bmodr(GBStoreUnionOfTypesX.3,?) &
+  bmodr(GBStoreUnionOfTypesX.4,?) &
+  bmodr(GBStoreUnionOfTypesX.6,?) &
+  bmodr(GBStoreUnionOfTypesX.7,?) &
+  bmodr(GBStoreUnionOfTypesX.8,?) &
+  sut_UnionTyp_0(a) bsmap (b) &
+  sut_UnionTyp_1(a) &
+  bmodr(GBStoreUnionOfTypesX.5,?) &
+  sut_FSTROBJ(a) &
+  sut_STROBJ(a) &
+  sut_SEQOBJ(a) &
+  sut_SETOBJ(a) &
+  sut_NAT(a) &
+  sut_SETONE(a) &
+  sut_ConstWithTyp_0(a) bsmap (b) &
+  sut_ConstWithTyp_1(a)
+ =>
+  sut_1(BASE a OPTIONAL b END);
+
+  bmodr(GBStoreUnionOfTypesX.1,?) &
+  bmodr(GBStoreUnionOfTypesX.2,?) &
+  bmodr(GBStoreUnionOfTypesX.3,?) &
+  bmodr(GBStoreUnionOfTypesX.4,?) &
+  bmodr(GBStoreUnionOfTypesX.6,?) &
+  bmodr(GBStoreUnionOfTypesX.7,?) &
+  bmodr(GBStoreUnionOfTypesX.8,?) &
+  sut_UnionTyp_0(a) bsmap (bflat(b;c)) &
+  sut_UnionTyp_1(a) &
+  bmodr(GBStoreUnionOfTypesX.5,?) &
+  sut_FSTROBJ(a) &
+  sut_STROBJ(a) &
+  sut_SEQOBJ(a) &
+  sut_SETOBJ(a) &
+  sut_NAT(a) &
+  sut_SETONE(a) &
+  sut_ConstWithTyp_0(a) bsmap (bflat(b;c)) &
+  sut_ConstWithTyp_1(a)
+ =>
+  sut_1(BASE a OPTIONAL b MANDATORY c END);
+
+  bmodr(GBStoreUnionOfTypesX.1,?) &
+  bmodr(GBStoreUnionOfTypesX.2,?) &
+  bmodr(GBStoreUnionOfTypesX.3,?) &
+  bmodr(GBStoreUnionOfTypesX.4,?) &
+  bmodr(GBStoreUnionOfTypesX.6,?) &
+  bmodr(GBStoreUnionOfTypesX.7,?) &
+  bmodr(GBStoreUnionOfTypesX.8,?) &
+  sut_UnionTyp_0(a) bsmap (bflat(b;c)) &
+  sut_UnionTyp_1(a) &
+  bmodr(GBStoreUnionOfTypesX.5,?) &
+  sut_FSTROBJ(a) &
+  sut_STROBJ(a) &
+  sut_SEQOBJ(a) &
+  sut_SETOBJ(a) &
+  sut_NAT(a) &
+  sut_SETONE(a) &
+  sut_ConstWithTyp_0(a) bsmap (bflat(b;c)) &
+  sut_ConstWithTyp_1(a)
+ =>
+  sut_1(BASE a MANDATORY b OPTIONAL c END);
+
+  sut_1(BASE X  END)
+ =>
+  sut_1(BASE X OPERATIONS O END)
+
+END
+
+&
+
+THEORY GBStoreVarNamesX IS
+
+#define GBsvnTac    ((ARI~;FLAT;MODR)~;GBStoreVarNamesX)~
+
+#define GBStoreVarNames bcall(GBsvnTac: sv_0)
+
+  bmodr(GBFreshVarX.2,X)
+ =>
+  sv_2(X);
+
+  bsearch(?,X,Y) &
+  sv_2(Y)
+ =>
+  sv_2(X);
+
+  sv_2(bflat(X))
+ =>
+  sv_1(M)(N)(X);
+
+  sctocm(a) == (a);
+
+  sctocm(a;b) == (sctocm(a),b);
+
+  brule(GBConstantsStoX.M,(S|b(A))) &
+  brule(GBConstantsStoX.N,(T|b(B))) &
+  sv_1(M+2)(N+2)(X,b,sctocm(A),sctocm(B))
+ =>
+  sv_1(M)(N)(X);
+
+  brule(GBConstantsStoX.M,(S|(GLOBAL ? END)(A))) &
+  brule(GBConstantsStoX.N,(T|(GLOBAL ? END)(B))) &
+  sv_1(M+2)(N+2)(X,sctocm(A),sctocm(B))
+ =>
+  sv_1(M)(N)(X);
+
+  sv_1(1)(2)(?)
+ =>
+  sv_0
+
+END
+
+&
+
+THEORY GBStoreConstantsX IS
+
+#define GBscTac (((ARI~;MODR;MAP;RULE)~;GBStoreConstantsX)~)
+
+#define GBStoreConstants(a) bcall(GBscTac:(sc_1 bsmap (a) & sto_max_fn_len_0))
+
+  chk(x);
+
+  setBITFlag
+ =>
+  chk(BITS);
+
+  setCHARFlag
+ =>
+  chk(CHAR);
+
+  bcrer(GBConstantsStoX,(1|p(V)))
+ =>
+  sc4(1|p(V)|?);
+
+  sc4(1|p(V;v)|X)
+ =>
+  sc4(1|p(V)|X;v);
+
+  sc4(1|p(v)|X)
+ =>
+  sc3(1|p(v)|X);
+
+  sc4(1|p(v)|X)
+ =>
+  sc3(1|p(v(ID))|X);
+
+  sc3(1|p(V)|X;v)
+ =>
+  sc3(1|p(V;v)|X);
+
+  sc3(1|p(V)|X;v)
+ =>
+  sc3(1|p(V;v(ID))|X);
+
+  sc3(1|p(V)|?)
+ =>
+  sc2(1|p(V));
+
+  bcrer(GBConstantsStoX,(0|p(V)))
+ =>
+  sc2(0|p(V));
+
+  bsearch(v(ID),(V;?),M) &
+  IDMustBeMandatory(p,v) &
+  SetGenBaseError
+ =>
+  sc2(0|p(V));
+
+  a:b == a;
+
+  setCHARFlag
+ =>
+  a:CHAR == a;
+
+  setBITFlag
+ =>
+  a:BITS == a;
+
+  setSEQFlag &
+  chk bsmap S
+ =>
+  a:SEQ(S)[N] == a;
+
+  setSETFlag &
+  chk bsmap S
+ =>
+  a:SET(S)[N] == a;
+
+  setFSTRINGFlag
+ =>
+  a:FSTRING[N] == a;
+
+  setSTRINGFlag
+ =>
+  a:STRING[N] == a;
+
+  sc2(1|(GLOBAL ? END)(a)) &
+  sc2(0|(GLOBAL ? END)(?))
+ =>
+  sc_1(GLOBAL a END);
+
+  sc2(1|a(b)) &
+  sc2(0|a(?))
+ =>
+  sc_1(BASE a MANDATORY b END);
+
+  sc2(1|a(?)) &
+  sc2(0|a(b))
+ =>
+  sc_1(BASE a OPTIONAL b END);
+
+  sc2(0|a(b)) &
+  sc2(1|a(c))
+ =>
+  sc_1(BASE a OPTIONAL b MANDATORY c END);
+
+  sc2(1|a(b)) &
+  sc2(0|a(c))
+ =>
+  sc_1(BASE a MANDATORY b OPTIONAL c END);
+
+
+
+  sc_1(BASE X  END)
+ =>
+  sc_1(BASE X OPERATIONS O END);
+
+
+  sto_max_fn_len2(n);
+
+  ReadMaxFieldNameLength(m) &
+  btest(m<n) &
+  ModifyMaxFieldNameLength(n)
+ =>
+  sto_max_fn_len2(n);
+
+  sto_max_fn_len2(blen(f))
+ =>
+  sto_max_fn_len1(f);
+
+  sto_max_fn_len(N);
+
+  brule(GBConstantsStoX.N,(M|b(F))) &
+  sto_max_fn_len1 bsmap F &
+  sto_max_fn_len(N+1)
+ =>
+  sto_max_fn_len(N);
+
+  ModifyMaxFieldNameLength(0) &
+  sto_max_fn_len(1)
+ =>
+  sto_max_fn_len_0
+
+END
+
+&
+
+THEORY GBAddUnderscoreX IS
+
+#define GBauTac ((NEWV;MODR)~;GBAddUnderscoreX)~
+
+#define GBAddMbr(x) bcall(GBauTac: am_0(x))
+
+#define GBAddNat(x) bcall(GBauTac: an_0(x))
+
+#define GBAddVal(x) bcall(GBauTac: av_0(x))
+
+#define GBAddFncTok(x) bcall(GBauTac: afnct_0(x))
+
+#define GBAddSetTok(x) bcall(GBauTac: asett_0(x))
+
+#define GBAddSeqTok(x) bcall(GBauTac: aseqt_0(x))
+
+#define GBAddStrTok(x) bcall(GBauTac: astrt_0(x))
+
+#define GBAddFStrTok(x) bcall(GBauTac: afstrt_0(x))
+
+
+#define GBReadAddTok(x) brule(GBAddUnderscoreX.1,x)
+
+
+  ?;
+
+  bmodr(GBAddUnderscoreX.1,(FStr))
+  =>
+  afstrt_0(x);
+
+  bmodr(GBAddUnderscoreX.1,(Str))
+  =>
+  astrt_0(x);
+
+  bmodr(GBAddUnderscoreX.1,(Seq))
+  =>
+  aseqt_0(x);
+
+  bmodr(GBAddUnderscoreX.1,(Set))
+ =>
+  asett_0(x);
+
+  bmodr(GBAddUnderscoreX.1,bnewv(Base_,x))
+=>
+  afnct_0(x);
+
+  bmodr(GBAddUnderscoreX.1,(Nat))
+ =>
+  an_0(x);
+
+  bmodr(GBAddUnderscoreX.1,bnewv(Elem_,x))
+ =>
+  am_0(x);
+
+  bmodr(GBAddUnderscoreX.1,(nat))
+ =>
+  am_0(SCALAR);
+
+  bmodr(GBAddUnderscoreX.1,bnewv(Val_,x))
+ =>
+  av_0(x)
+
+END
+
+&
+
+THEORY GBFreshVarX IS
+
+#define GBvTac (((NEWV;MODR;WRITE)~;GBFreshVarX)~)
+
+#define GBGetFreshVar(x)    bcall(GBvTac: fv_0(x))
+
+#define GBPrintFreshVar(x)  bcall(GBvTac: p_fv_0(x))
+
+#define GBReadFreshVar(x)    brule(GBFreshVarX.1,x)
+
+#define GBEmptyAccumulatedVariables    bmodr(GBFreshVarX.3,?)
+
+#define GBRemoveFreshVar(x)  bcall(GBvTac: rm_f_v(x))
+
+  ?;
+
+  ?;  /* all variables of SYSTEM */
+
+  ?;  /* accumulated local variables of operation */
+
+  brule(GBFreshVarX.3,V) &
+  bsearch(v,V,W) &
+  bmodr(GBFreshVarX.3,W)
+ =>
+  rm_f_v(v);
+  
+  brule(GBFreshVarX.3,V) &
+  bmodr(GBFreshVarX.3,(V,a))
+ =>
+  p_fv_1(a);
+
+  brule(GBFreshVarX.3,?) &
+  bmodr(GBFreshVarX.3,a)
+ =>
+  p_fv_1(a);
+
+  p_fv_0(bnewv(a,x))
+ =>
+  p_fv_0(a);
+
+  brule(GBFreshVarX.2,v) &
+  brule(GBFreshVarX.3,w) &
+  a\v &
+  a\w &
+  p_fv_1(a) &
+  bmodr(GBFreshVarX.1,a) &
+  bprintf("%",a)
+ =>
+  p_fv_0(a);
+
+  brule(GBFreshVarX.2,v) &
+  brule(GBFreshVarX.3,?) &
+  a\v &
+  p_fv_1(a) &
+  bmodr(GBFreshVarX.1,a) &
+  bprintf("%",a)
+ =>
+  p_fv_0(a);
+
+  fv_0(bnewv(a,x))
+ =>
+  fv_0(a);
+
+  brule(GBFreshVarX.2,v) &
+  brule(GBFreshVarX.3,w) &
+  a\v &
+  a\w &
+  p_fv_1(a) &
+  bmodr(GBFreshVarX.1,a)
+ =>
+  fv_0(a);
+
+  brule(GBFreshVarX.2,v) &
+  brule(GBFreshVarX.3,?) &
+  a\v &
+  p_fv_1(a) &
+  bmodr(GBFreshVarX.1,a)
+ =>
+  fv_0(a)
+
+END
+
+&
+
+THEORY GBTokX IS
+
+#define GBPrintMbr(x) bcall((GBTokX~;MODR;WRITE): p_mbr_0(x))
+
+#define GBGetMbr(x) bcall((GBTokX~;MODR;WRITE): g_mbr_0(x))
+
+#define GBPrintNat(x) bcall((GBTokX~;MODR;WRITE): p_nat_0(x))
+
+#define GBGetNat(x) bcall((GBTokX~;MODR;WRITE): g_nat_0(x))
+
+#define GBPrintVal(x) bcall((GBTokX~;MODR;WRITE): p_val_0(x))
+
+#define GBGetVal(x) bcall((GBTokX~;MODR;WRITE): g_val_0(x))
+
+#define GBPrintFncTok(x) bcall((GBTokX~;MODR;WRITE): p_fnc_tok_0(x))
+
+#define GBGetFncTok(x) bcall((GBTokX~;MODR;WRITE): g_fnc_tok_0(x))
+
+#define GBPrintSetTok(x) bcall((GBTokX~;MODR;WRITE): p_set_tok_0(x))
+
+#define GBGetSetTok(x) bcall((GBTokX~;MODR;WRITE): g_set_tok_0(x))
+
+#define GBPrintSeqTok(x) bcall((GBTokX~;MODR;WRITE): p_seq_tok_0(x))
+
+#define GBGetSeqTok(x) bcall((GBTokX~;MODR;WRITE): g_seq_tok_0(x))
+
+#define GBPrintFStrTok(x) bcall((GBTokX~;MODR;WRITE): p_fstr_tok_0(x))
+
+#define GBPrintStrTok(x) bcall((GBTokX~;MODR;WRITE): p_str_tok_0(x))
+
+#define GBGetFStrTok(x) bcall((GBTokX~;MODR;WRITE): g_fstr_tok_0(x))
+
+#define GBGetStrTok(x) bcall((GBTokX~;MODR;WRITE): g_str_tok_0(x))
+
+
+#define GBReadTok(x) brule(GBTokX.1,x)
+
+  ?;
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t)
+ =>
+  g_nat_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  g_nat_2
+ =>
+  g_nat_1;
+
+  GBAddNat(a) &
+  g_nat_1
+ =>
+  g_nat_0(a);
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t) &
+  bprintf("%",t)
+ =>
+  p_nat_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  p_nat_2
+ =>
+  p_nat_1;
+
+  GBAddNat(a) &
+  p_nat_1
+ =>
+  p_nat_0(a);
+
+
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t)
+ =>
+  g_mbr_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  g_mbr_2
+ =>
+  g_mbr_1;
+
+  GBAddMbr(a) &
+  g_mbr_1
+ =>
+  g_mbr_0(a);
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t) &
+  bprintf("%",t)
+ =>
+  p_mbr_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  p_mbr_2
+ =>
+  p_mbr_1;
+
+  GBAddMbr(a) &
+  p_mbr_1
+ =>
+  p_mbr_0(a);
+
+
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t)
+ =>
+  g_val_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  g_val_2
+ =>
+  g_val_1;
+
+  GBAddVal(a) &
+  g_val_1
+ =>
+  g_val_0(a);
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t) &
+  bprintf("%",t)
+ =>
+  p_val_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  p_val_2
+ =>
+  p_val_1;
+
+  GBAddVal(a) &
+  p_val_1
+ =>
+  p_val_0(a);
+
+
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t)
+ =>
+  g_fnc_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  g_fnc_tok_2
+ =>
+  g_fnc_tok_1;
+
+  GBAddFncTok(a) &
+  g_fnc_tok_1
+ =>
+  g_fnc_tok_0(a);
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t) &
+  bprintf("%",t)
+ =>
+  p_fnc_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  p_fnc_tok_2
+ =>
+  p_fnc_tok_1;
+
+  GBAddFncTok(a) &
+  p_fnc_tok_1
+ =>
+  p_fnc_tok_0(a);
+
+
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t)
+ =>
+  g_set_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  g_set_tok_2
+ =>
+  g_set_tok_1;
+
+  GBAddSetTok(a) &
+  g_set_tok_1
+ =>
+  g_set_tok_0(a);
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t) &
+  bprintf("%",t)
+ =>
+  p_set_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  p_set_tok_2
+ =>
+  p_set_tok_1;
+
+  GBAddSetTok(a) &
+  p_set_tok_1
+ =>
+  p_set_tok_0(a);
+
+
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t)
+ =>
+  g_seq_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  g_seq_tok_2
+ =>
+  g_seq_tok_1;
+
+  GBAddSeqTok(a) &
+  g_seq_tok_1
+ =>
+  g_seq_tok_0(a);
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t) &
+  bprintf("%",t)
+ =>
+  p_seq_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  p_seq_tok_2
+ =>
+  p_seq_tok_1;
+
+  GBAddSeqTok(a) &
+  p_seq_tok_1
+ =>
+  p_seq_tok_0(a);
+
+
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t)
+ =>
+  g_fstr_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  g_fstr_tok_2
+ =>
+  g_fstr_tok_1;
+
+  GBAddFStrTok(a) &
+  g_fstr_tok_1
+ =>
+  g_fstr_tok_0(a);
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t) &
+  bprintf("%",t)
+ =>
+  p_fstr_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  p_fstr_tok_2
+ =>
+  p_fstr_tok_1;
+
+  GBAddFStrTok(a) &
+  p_fstr_tok_1
+ =>
+  p_fstr_tok_0(a);
+
+
+
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t)
+ =>
+  g_str_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  g_str_tok_2
+ =>
+  g_str_tok_1;
+
+  GBAddStrTok(a) &
+  g_str_tok_1
+ =>
+  g_str_tok_0(a);
+
+  GBReadFreshVar(t) &
+  bmodr(GBTokX.1,t) &
+  bprintf("%",t)
+ =>
+  p_str_tok_2;
+
+  GBReadAddTok(t) &
+  GBGetFreshVar(t) &
+  p_str_tok_2
+ =>
+  p_str_tok_1;
+
+  GBAddStrTok(a) &
+  p_str_tok_1
+ =>
+  p_str_tok_0(a)
+
+END
+
+&
+
+THEORY GBGetStructurePREANYX IS
+
+#define GBgspaTac  (GBGetStructurePREANYX~;MODR;WRITE)~
+
+#define GBGetStructurePREANY(x,y) bcall(GBgspaTac: gspa_0(x)(y))
+
+#define GBReadRenamedStructurePRE(x) \
+	brule(GBGetStructurePREANYX.1,x)
+
+#define GBReadRenamedStructureANY(x) \
+	brule(GBGetStructurePREANYX.2,x)
+
+#define GBReadRenamedStructurePREANY(x) \
+	brule(GBGetStructurePREANYX.3,x)
+
+
+  ?;?;?;   /* PRE;ANY;both;idx */
+
+  gspa_7;
+
+  brule(GBGetStructurePREANYX.3,X) &
+  bsearch(?,X,Y) &
+  bmodr(GBGetStructurePREANYX.3,Y)
+ =>
+  gspa_7;
+
+  gspa_6;
+
+  brule(GBGetStructurePREANYX.2,X) &
+  bsearch(?,X,Y) &
+  bmodr(GBGetStructurePREANYX.2,Y)
+ =>
+  gspa_6;
+
+  gspa_5;
+
+  brule(GBGetStructurePREANYX.1,X) &
+  bsearch(?,X,Y) &
+  bmodr(GBGetStructurePREANYX.1,Y)
+ =>
+  gspa_5;
+
+  GBReadTok(F) &
+  brule(GBGetStructurePREANYX.1,P) &
+  bmodr(GBGetStructurePREANYX.1,(P&s:F:NAT)) &
+  brule(GBGetStructurePREANYX.3,Q) &
+  bmodr(GBGetStructurePREANYX.3,(Q;F))
+ =>
+  gspa_4(s)(nat(t));
+
+  GBReadTok(F) &
+  brule(GBGetStructurePREANYX.1,P) &
+  bmodr(GBGetStructurePREANYX.1,(P&s:F:t)) &
+  brule(GBGetStructurePREANYX.3,Q) &
+  bmodr(GBGetStructurePREANYX.3,(Q;F))
+ =>
+  gspa_4(s)(set(t));
+
+  GBReadTok(F) &
+  brule(GBGetStructurePREANYX.1,P) &
+  bmodr(GBGetStructurePREANYX.1,(P&s:F:t)) &
+  brule(GBGetStructurePREANYX.3,Q) &
+  bmodr(GBGetStructurePREANYX.3,(Q;F))
+ =>
+  gspa_4(s)(fncobj(t));
+
+  GBReadTok(F) &
+  brule(GBGetStructurePREANYX.2,P) &
+  bmodr(GBGetStructurePREANYX.2,(P&s:F:POW(t))) &
+  brule(GBGetStructurePREANYX.3,Q) &
+  bmodr(GBGetStructurePREANYX.3,(Q;{})) &
+  brule(GBGetStructurePREANYX.4,R) &
+  bmodr(GBGetStructurePREANYX.4,(R,s))
+ =>
+  gspa_4(s)(setobj(t));
+
+  GBReadTok(F) &
+  brule(GBGetStructurePREANYX.2,P) &
+  bmodr(GBGetStructurePREANYX.2,(P&s:F:SEQ(t))) &
+  brule(GBGetStructurePREANYX.3,Q) &
+  bmodr(GBGetStructurePREANYX.3,(Q;<>)) &
+  brule(GBGetStructurePREANYX.4,R) &
+  bmodr(GBGetStructurePREANYX.4,(R,s))
+ =>
+  gspa_4(s)(seqobj(t));
+
+  GBReadTok(F) &
+  brule(GBGetStructurePREANYX.2,P) &
+  bmodr(GBGetStructurePREANYX.2,(P&s:F:FSTRING)) &
+  brule(GBGetStructurePREANYX.3,Q) &
+  bmodr(GBGetStructurePREANYX.3,(Q;<>)) &
+  brule(GBGetStructurePREANYX.4,R) &
+  bmodr(GBGetStructurePREANYX.4,(R,s))
+ =>
+  gspa_4(s)(fstrobj(t));
+
+  GBReadTok(F) &
+  brule(GBGetStructurePREANYX.2,P) &
+  bmodr(GBGetStructurePREANYX.2,(P&s:F:STRING)) &
+  brule(GBGetStructurePREANYX.3,Q) &
+  bmodr(GBGetStructurePREANYX.3,(Q;<>)) &
+  brule(GBGetStructurePREANYX.4,R) &
+  bmodr(GBGetStructurePREANYX.4,(R,s))
+ =>
+  gspa_4(s)(strobj(t));
+
+  GBGetVal(s) &
+  gspa_4(s)(nat(t))
+ =>
+  gspa_3(s)(nat(t));
+
+  GBGetVal(s) &
+  gspa_4(s)(set(t))
+ =>
+  gspa_3(s)(set(t));
+
+  GBGetFncTok(s) &
+  gspa_4(s)(fncobj(t))
+ =>
+  gspa_3(s)(fncobj(t));
+
+  GBGetSetTok(s) &
+  gspa_4(s)(setobj(t))
+ =>
+  gspa_3(s)(setobj(t));
+
+  GBGetSeqTok(s) &
+  gspa_4(s)(seqobj(t))
+ =>
+  gspa_3(s)(seqobj(t));
+
+  GBGetFStrTok(s) &
+  gspa_4(s)(fstrobj(t))
+ =>
+  gspa_3(s)(fstrobj(t));
+
+  GBGetStrTok(s) &
+  gspa_4(s)(strobj(t))
+ =>
+  gspa_3(s)(strobj(t));
+
+  brule(GBConstantsTypeStoX.N,b(T)) &
+  bsearch((s|t),T,U) &
+  gspa_3(s)(t)
+ =>
+  gspa_2(b)(s);
+
+  gspa_2(b)(s)
+ =>
+  gspa_1(b)(s);
+
+  gspa_1(b)(S) &
+  gspa_2(b)(s)
+ =>
+  gspa_1(b)(S;s);
+
+  bmodr(GBGetStructurePREANYX.1,?) &
+  bmodr(GBGetStructurePREANYX.2,?) &
+  bmodr(GBGetStructurePREANYX.3,?) &
+  gspa_1(b)(S) &
+  gspa_5 &
+  gspa_6 &
+  gspa_7
+ =>
+  gspa_0(b)(S)
+
+END
+
+&
+
+THEORY GBLoadOpFileX IS
+
+#define GBLoadOpFileTac          ((CATL;MAP;MODR;SHELL)~;GBLoadOpFileX)~
+
+#define GBLoadOpFile             bcall(GBLoadOpFileTac: lof_0)
+
+#define GBReadRequiredOps(x)     brule(GBLoadOpFileX.1,x)
+
+#define GBModrRequiredOps(x)     bmodr(GBLoadOpFileX.1,x)
+
+#define GBCheckRequiredOp(x,y) \
+	bcall((GBLoadOpFileX;NEWV;GBLoadOpFileX): cro_0(x)(y))
+
+#define GBCheckRequiredCopyOp(x,y,z) \
+	bcall((GBLoadOpFileX;CATL;SHELL;(NEWV~;GBLoadOpFileX)~): \
+		cro_copy_0(x)(y)(z))
+
+#define GBModrIsRequiredOp       bcall(MODR: bmodr(GBLoadOpFileX.2,1))
+
+#define GBModrIsNotRequiredOp    bcall(MODR: bmodr(GBLoadOpFileX.2,0))
+
+#define GBIsRequiredOp           brule(GBLoadOpFileX.2,1)
+
+#define GBIsNotRequiredOp        brule(GBLoadOpFileX.2,0)
+
+  ?;?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  GBModrIsNotRequiredOp
+ =>
+  cro_1(o);
+
+  GBReadRequiredOps(O) &
+  bsearch(o,O,P) &
+  GBModrIsRequiredOp
+ =>
+  cro_1(o);
+
+  cro_1(bnewv(o,b))
+ =>
+  cro_0(o)(b);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cro_copy_1(o)(c);
+
+  cro_1(bnewv(o,x))
+ =>
+  cro_copy_2(o)(x);
+
+  bget(".Bcom",b) &
+  cro_copy_2(o)(bnewv(b,c))
+ =>
+  cro_copy_1(o)(c);
+
+  bshell(bcatl("$BKIT/BLIB/LIB_Addunderscore ",b)) &
+  cro_copy_1(o)(c)
+ =>
+  cro_copy_0(o)(b)(c);
+
+  lof_3;
+
+  GBReadRequiredOps(?) &
+  InformNoOpsReqd &
+  SetGenBaseError
+ =>
+  lof_3;
+
+  lof_2(o);
+
+  bident(o) &
+  GBReadRequiredOps(O) &
+  GBModrRequiredOps((O,o))
+ =>
+  lof_2(o);
+
+  GBReadRequiredOps(O) &
+  GBModrRequiredOps((O,o))
+ =>
+  lof_2(o(b));
+
+  GBReadRequiredOps(O) &
+  GBModrRequiredOps((O,o))
+ =>
+  lof_2(a<--o);
+
+  GBReadRequiredOps(O) &
+  GBModrRequiredOps((O,o)) &
+  lof_3
+ =>
+  lof_2(a<--o(b));
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lof_1(f);
+
+  bget(f,O) &
+  lof_2 bsmap O &
+  lof_3
+ =>
+  lof_1(f);
+
+  ReadSystemName(b) &
+  lof_1(bcatl("CFG/",b,".ops"))
+ =>
+  lof_0;
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY CheckLengthsX IS
+
+#define CheckLengths  bcall(((MAP;ARI)~;CheckLengthsX)~ : cl_0(1))
+
+
+  cl_fname_1(m)(b)(n);
+
+  bident(b) &
+  FieldNameTooLong(m,b) &
+  SetGenBaseError
+ =>
+  cl_fname_1(m)(b)(n);
+
+  bident(b) &
+  FieldNameTooLongGlobal(b) &
+  SetGenBaseError
+ =>
+  cl_fname_1(GLOBAL ? END)(b)(n);
+
+  bident(b) &
+  btest(n<35)
+ =>
+  cl_fname_1(m)(b)(n);
+
+  cl_fname_1(m)(b)(blen(b))
+ =>
+  cl_fname_0(m,b);
+
+  cl_fname_0(m,?);
+
+  cl_sname_1(b)(n);
+
+  bident(b) &
+  SetNameTooLong(b) &
+  SetGenBaseError
+ =>
+  cl_sname_1(b)(n);
+
+  bident(b) &
+  btest(n<35)
+ =>
+  cl_sname_1(b)(n);
+
+  cl_sname_1(b)(blen(b))
+ =>
+  cl_sname_0(b);
+
+  cl_sname_0(?);
+
+  cl_bname_1(b)(n);
+
+  bident(b) &
+  BaseNameTooLong(b) &
+  SetGenBaseError
+ =>
+  cl_bname_1(b)(n);
+
+  bident(b) &
+  btest(n<30)
+ =>
+  cl_bname_1(b)(n);
+
+  cl_bname_1(b)(blen(b))
+ =>
+  cl_bname_0(b);
+
+  cl_bname_0(GLOBAL ? END);
+
+  cl_bname_0(?);
+
+  cl_0(N);
+
+  brule(GBConstantsStoX.N,(m|a(b))) &
+  cl_fname_0(a) bsmap b &
+  cl_0(N+1)
+ =>
+  cl_0(N);
+
+  brule(GBConstantsStoX.1,(m|a(b))) &
+  ReadBaseNames(B) &
+  ReadAllSetNames(S) &
+  cl_bname_0 bsmap B &
+  cl_fname_0(a) bsmap b &
+  cl_sname_0 bsmap S &
+  cl_0(2)
+ =>
+  cl_0(1)
+
+END
+
+&
+
+THEORY StoreSetsX IS
+
+#define StoreSetstac   (((FLAT;MODR)~;StoreSetsX)~)
+
+#define StoreSETS(x)   bcall(StoreSetstac : (ss_0(x) & ss_2))
+
+  ss_3(?);
+
+  RepetitionFlattenedSETS(l) &
+  SetGenBaseError
+ =>
+  ss_3(L,l);
+
+  l\L &
+  ss_3(L)
+ =>
+  ss_3(L,l);
+
+  ReadFlattenedSETS(F) &
+  ss_3(F)
+ =>
+  ss_2;
+
+  ReadSETS(S) &
+  ModifySETS((S;s(e))) &
+  ReadFlattenedSETS(F) &
+  ModifyFlattenedSETS((bflat(F,s,e)))
+ =>
+  ss_1(s(e));
+
+  GBSETSSyntaxError(X) &
+  SetGenBaseError
+ =>
+  ss_0(X);
+
+  SETSListIdentifiers((e)) &
+  SetGenBaseError
+ =>
+  ss_0(S={e});
+
+  blident(e) &
+  SETSIdentifier(S) &
+  SetGenBaseError
+ =>
+  ss_0(S={e});
+
+  bident(S) &
+  blident(e) &
+  ss_1(S(e))
+ =>
+  ss_0(S={e});
+
+  SETSSemiColon &
+  SetGenBaseError
+ =>
+  ss_0(S={h},f={e});
+
+  SETSSemiColon &
+  SetGenBaseError
+ =>
+  ss_0(S=e&g);
+
+  SETSSemiColon &
+  SetGenBaseError
+ =>
+  ss_0(S=e,f);
+
+  SETSSemiColon &
+  SetGenBaseError
+ =>
+  ss_0(S&s);
+
+  SETSSemiColon &
+  SetGenBaseError
+ =>
+  ss_0(S,s);
+
+  ss_0(S) &
+  ss_0(s)
+ =>
+  ss_0(S;s)
+
+END
+
+&
+
+THEORY GenBaseFromUserX IS
+
+  0; /* 1. 1=> remake, 0=> not */
+
+  ?; /* 2. raw SETS clause */
+
+  ?; /* 3. raw SUPPORTS clause */
+
+  ?; /* 4. raw IS clause */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  GetJobs(X) &
+  UpdateDepGenBaseMchImp(a,b,a,b) &
+  AddJobs(X,((a.mch:BT_NML:0);(b.imp:BT_NML:0)))
+ =>
+  update_managers_jobs_0(a)(b);
+
+/***
+update_managers_jobs_0(a)(b);
+***/
+
+
+  GetJobs(X) &
+  UpdateDepGenBaseMchImp(a,b,c,d) &
+  AddJobs(X,((b.mch:BT_NML:0);(a.mch:BT_NML:0);(d.imp:BT_NML:0);(c.imp:BT_NML:0)))
+ =>
+  update_managers_jobs_0(a)(b)(c)(d);
+
+/***
+update_managers_jobs_0(a)(b)(c)(d);
+***/
+
+/***
+junk=>x;
+***/
+
+  GetJobs(X) &
+  AddJobs(X,((b,ffnc_obj):BT_LIB_FRC:0))
+ =>
+  intro_obj1(b);
+
+  ReadSystemName(a) &
+  GetJobs(X) &
+  AddJobs(X,((a,Vffnc):BT_LIB_FRC:0))
+ =>
+  intro_obj1(GLOBAL ? END);
+
+  intro_obj1(?);
+
+  ReadBaseNames(B) &
+  intro_obj1 bsmap B
+ =>
+  intro_obj;
+
+  intro_seq;
+
+  SEQFlagset &
+  ReadSystemName(a) &
+  GetJobs(X) &
+  AddJobs(X,((a,seq_obj):BT_LIB_FRC:0))
+ =>
+  intro_seq;
+
+  intro_set;
+
+  SETFlagset &
+  ReadSystemName(a) &
+  GetJobs(X) &
+  AddJobs(X,((a,set_obj):BT_LIB_FRC:0))
+ =>
+  intro_set;
+
+  intro_bit;
+
+  BITFlagset &
+  GetJobs(X) &
+  AddJobs(X,((?,Bit_TYPE):BT_LIB_FRC:0))
+ =>
+  intro_bit;
+
+  intro_fstr;
+
+  FSTRINGFlagset &
+  ReadSystemName(a) &
+  GetJobs(X) &
+  AddJobs(X,(((?,String_TYPE):BT_LIB_FRC:0);((?,basic_io):BT_LIB_FRC:0)))
+ =>
+  intro_fstr;
+
+  intro_str;
+
+  STRINGFlagset &
+  ReadSystemName(a) &
+  GetJobs(X) &
+  AddJobs(X,(((?,String_TYPE):BT_LIB_FRC:0);((?,basic_io):BT_LIB_FRC:0);((a,str_obj):BT_LIB_FRC:0)))
+ =>
+  intro_str;
+
+  ReadSystemName(a) &
+  GetJobs(X) &
+  AddJobs(X,((?,Bool_TYPE):BT_LIB_FRC:0);((?,Scalar_TYPE):BT_LIB_FRC:0);((a,file_dump):BT_LIB_FRC:0)) &
+  intro_str &
+  intro_fstr &
+  intro_bit &
+  intro_set &
+  intro_seq &
+  intro_obj
+ =>
+  intro_force;
+
+
+/***
+PrintTHEORY(GBConstantsStoX)&
+PrintTHEORY(GBConstantsTypeStoX)&
+PrintTHEORY(GBSETTypeStoX)&
+PrintTHEORY(GBNATTypeStoX)&
+PrintTHEORY(GBSETOBJTypeStoX)&
+PrintTHEORY(GBSEQOBJTypeStoX)&
+PrintTHEORY(GBFSTROBJTypeStoX)&
+PrintTHEORY(GBSTROBJTypeStoX)&
+PrintTHEORY(GBTypeStoX)&
+PrintTHEORYUpTo(GenBaseParseX,11)&
+***/
+  intro_force &
+  update_managers_jobs_0(a)(bnewv(a,Ctx))(bnewv(a,I))(bnewv(bnewv(a,Ctx),I)) &
+  Writef(("\n\n    Generated:\n      %Ctx.mch\n      %CtxI.imp\n      %.mch\n      %I.imp\n",a))
+ =>
+  check_parse_error_mch_imp1(a.bse);
+
+
+  CtxMchNotRequired &
+  intro_force &
+  update_managers_jobs_0(a)(bnewv(a,I)) &
+  Writef(("\n\n    Generated:\n      %.mch\n      %I.imp\n",a))
+ =>
+  check_parse_error_mch_imp1(a.bse);
+
+  GenBaseErrorFlagged &
+  OfferGenBaseFailureOptions
+ =>
+  check_parse_error_mch_imp1(a.bse);
+
+  GBLoadOpFile &
+  bcall(GenBaseMchX: gbm_0) &
+  bcall(GenBaseImpX: gbi_0) &
+  check_parse_error_mch_imp1(a.bse)
+ =>
+  check_parse_error_mch_imp(a.bse);
+
+
+
+  GenBaseErrorFlagged &
+  OfferGenBaseFailureOptions
+ =>
+  check_parse_error_mch_imp(a.bse);
+
+
+
+  ReadRawISClause(y) &
+  WriteDot &
+  clearBITFlag &
+  clearFSTRINGFlag &
+  clearSTRINGFlag &
+  clearSETFlag &
+  clearSEQFlag &
+/*
+  GBStoreBaseNames(y) &
+*/
+  GBStoreConstants(y) &
+  GBStoreUnionOfTypes(y) &
+  GBStoreVarNames &
+  CheckFileConstructName &
+  check_parse_error_mch_imp(a.bse)
+ =>
+  gb_mch_imp_5(a.bse);
+
+
+
+  ModifySystemName(s) &
+  ModifyRawISClause(y)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s IS y END);
+
+  ModifySystemName(s) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s SUPPORTS T IS y END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawISClause(y) &
+  StoreSETS(S)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s SETS S IS y END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s SETS S SUPPORTS T IS y END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s SUPPORTS T SETS S IS y END);
+
+
+  ModifySystemName(s) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s IS y SUPPORTS T END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawISClause(y) &
+  StoreSETS(S)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s IS y SETS S END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s IS y SETS S SUPPORTS T END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s IS y SUPPORTS T SETS S END);
+
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s SETS S IS y SUPPORTS T END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S)
+ =>
+  gb_mch_imp_4(a.bse)(SYSTEM s SUPPORTS T IS y SETS S END);
+
+
+  ReadExtSyntaxRemoved(b) &
+  gb_mch_imp_4(a.bse)(b)
+ =>
+  gb_mch_imp_3_3(a.bse);
+
+  ProcessExtSyntax(b) &
+  gb_mch_imp_3_3(a.bse)
+ =>
+  gb_mch_imp_3_2(a.bse)(b); 
+
+
+  ReadProcessedDefinitions(b) &
+/***
+HERE((4:b))&
+***/
+  gb_mch_imp_3_2(a.bse)(b) &
+  GBParse &
+  gb_mch_imp_5(a.bse)
+ =>
+  gb_mch_imp_3_1(a.bse);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gb_mch_imp_3(a.bse)(f);
+
+  bstring(f) &
+  bget(f,x) &
+/***
+HERE((3:x))&
+***/
+  ProcessDefinitions(x) &
+  gb_mch_imp_3_1(a.bse)
+ =>
+  gb_mch_imp_3(a.bse)(f);
+
+
+
+  bcall(RULE: bcrer(FileNameX,a)) & 
+  InformGeneratingBse(a) &
+  ClearGenBaseError &
+  gb_mch_imp_3(a.bse)(bcatl("CFG/",a,".bse"))
+ =>
+  gb_mch_imp_2(a.bse);
+
+  gb_mch_imp_2(a.bse)
+ =>
+  gb_mch_imp_0(a.bse);
+
+  gb_mch_imp_0(a.bse)
+ =>
+  gb_mch_imp_chk_bse_edt_0(a.bse);
+
+
+
+  bcall(MODR:bmodr(GenBaseFromUserX.1,1)) &      /* Remake */
+  gb_mch_imp_chk_bse_edt_0(a.bse)
+ =>
+  gb_mch_imp_chk_bse_edt_rem_0(a.bse);
+
+
+
+
+
+
+
+  bcall(GenBaseOpsX: gbo_0) &
+  UpdateDepGenBaseOps(a.bse) &
+  Writef((" done\n"))
+/***
+&PrintTHEORY(GBConstantsStoX)&
+PrintTHEORY(GBConstantsTypeStoX)&
+PrintTHEORY(GBSETTypeStoX)&
+PrintTHEORY(GBNATTypeStoX)&
+PrintTHEORY(GBSETOBJTypeStoX)&
+PrintTHEORY(GBSEQOBJTypeStoX)&
+PrintTHEORY(GBFSTROBJTypeStoX)&
+PrintTHEORY(GBSTROBJTypeStoX)&
+PrintTHEORY(GBTypeStoX)&
+PrintTHEORYUpTo(GenBaseParseX,11)
+***/
+/*
+types: set nat fstrobj strobj setobj seqobj fncobj 
+
+GBConstantsStoX:
+   1 | b(name1;name2)        mandatory
+   0 | b(name3;name4;name6)  optional
+
+GBConstantsTypeStoX:
+   b(?;(name|fncobj(type));(name|strobj(type));(name|set(type)))
+
+GBTypeStoX:
+   b(?,fncobj(type),strobj(type),set(type),...) - 1 entry for each base b
+
+GenBaseParseX
+   .1 system name 
+   .2 base names
+   .3 field names
+   .4 set names
+   .5 SUPPORTS
+   .6 SETS
+   .7 Flattened SETS
+   .8 IDs ... etc up to 11
+*/
+ =>
+  check_parse_error_ops(a.bse);
+
+
+  WriteDot &
+  GBParse &
+  clearBITFlag &
+  clearFSTRINGFlag &
+  clearSTRINGFlag &
+  clearSETFlag &
+  clearSEQFlag &
+/*
+  GBStoreBaseNames(y) &
+*/
+  GBStoreConstants(y) &
+  GBStoreUnionOfTypes(y) &
+  GBStoreVarNames &
+  CheckLengths &
+  CheckFileConstructName &
+  CheckReservedWords &
+  CheckReverseLinks &
+  check_parse_error_ops(a.bse)
+ =>
+  gb_ops_6(a.bse)(y);
+
+
+  GBSyntaxError(7,e) &
+  SetGenBaseError
+ =>
+  gb_ops_5(a.bse)(e);
+
+
+  ModifySystemName(s) &
+  ModifyRawISClause(y) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s IS y END);
+
+  ModifySystemName(s) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s SUPPORTS T IS y END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawISClause(y) &
+  StoreSETS(S) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s SETS S IS y END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s SETS S SUPPORTS T IS y END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s SUPPORTS T SETS S IS y END);
+
+
+  ModifySystemName(s) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s IS y SUPPORTS T END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawISClause(y) &
+  StoreSETS(S) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s IS y SETS S END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s IS y SETS S SUPPORTS T END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s IS y SUPPORTS T SETS S END);
+
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s SETS S IS y SUPPORTS T END);
+
+  ModifySystemName(s) &
+  ModifyRawSETSClause(S) &
+  ModifyRawSUPPORTSClause(T) &
+  ModifyRawISClause(y) &
+  StoreSETS(S) &
+  gb_ops_6(a.bse)(y)
+ =>
+  gb_ops_5(a.bse)(SYSTEM s SUPPORTS T IS y SETS S END);
+
+
+  ReadExtSyntaxRemoved(b) &
+  gb_ops_5(a.bse)(b)
+ =>
+  gb_ops_4_1(a.bse);
+
+/***
+HERE((1:b))&
+***/
+  ProcessExtSyntax(b) &
+  gb_ops_4_1(a.bse)
+ =>
+  gb_ops_4(a.bse)(b); 
+
+  ReadProcessedDefinitions(b) &
+/***
+HERE((2:b))&
+***/
+  gb_ops_4(a.bse)(b)  
+ =>
+  gb_ops_3_1(a.bse);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gb_ops_3(a.bse)(f);
+
+  bstring(f) &
+  bget(f,x) &
+/***
+HERE((1:x))&
+***/
+  ProcessDefinitions(x) &
+  gb_ops_3_1(a.bse)
+ =>
+  gb_ops_3(a.bse)(f);
+
+
+
+  bcall(RULE: bcrer(FileNameX,a)) &
+  InformGeneratingOps(a) &
+  ClearGenBaseError &
+  gb_ops_3(a.bse)(bcatl("CFG/",a,".bse"))
+ =>
+  gb_ops_2(a.bse);
+
+  gb_ops_2(a.bse)
+ =>
+  gb_ops_0(a.bse);
+
+/***
+PrintTHEORY(GBConstantsStoX)&
+PrintTHEORY(GBConstantsTypeStoX)&
+PrintTHEORY(GBSETTypeStoX)&
+PrintTHEORY(GBNATTypeStoX)&
+PrintTHEORY(GBSETOBJTypeStoX)&
+PrintTHEORY(GBSEQOBJTypeStoX)&
+PrintTHEORY(GBFSTROBJTypeStoX)&
+PrintTHEORY(GBSTROBJTypeStoX)&
+PrintTHEORY(GBTypeStoX)&
+PrintTHEORYUpTo(GenBaseParseX,11)&
+***/
+  GenBaseErrorFlagged &
+  OfferGenBaseFailureOptions
+ =>
+  x
+
+END
+
+&
+
+THEORY GBFSTRSIZEX IS ? END

@@ -1,0 +1,110 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Generic1_op)
+;
+(Rename_Generic1_op)
+;
+(Rename_Generic1(REPORT):(card(REPORT) : NAT1):(?))
+;
+(
+(
+ (Rename_Generic1_op)
+;
+ (? , Val_Op , NonDet_Op , (case_hit , crr <-- Rename_Generic1_op(op)))
+;
+ (op)
+;
+ (case_hit , crr)
+;
+ (
+ (op : NAT)
+ |
+ (
+ (BEGIN
+ case_hit :: BOOL ||
+ crr :: REPORT
+ END)
+ )
+ )
+;
+ (
+ (op : NAT)
+ |
+ (
+ (
+ @(case_hitx).
+ (
+ (
+ (case_hitx : BOOL)
+ )
+ ==>
+ (
+ (case_hit := case_hitx)
+ )
+ )
+ )
+ ||
+ (
+ @(crrx).
+ (
+ (
+ (crrx : REPORT)
+ )
+ ==>
+ (
+ (crr := crrx)
+ )
+ )
+ )
+ )
+ )
+)
+)

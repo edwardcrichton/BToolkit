@@ -1,0 +1,172 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Server">
+  <TITLE>The Rename_Server machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>               Rename_Server(TOK,inbufsize,outbufsize)
+
+<A NAME="SEES"><B>SEES</B></A>                  <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>             in,inptr,outptr,no_of_saves
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  in : 0..inbufsize &
+  inptr : 0..in &
+  outptr : 0..outbufsize &
+  no_of_saves : NAT
+   
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>        in,inptr,outptr,no_of_saves := 0,0,0,0         
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+
+  /*** operation to initialise the socket ***/
+
+  rep <-- <A NAME="OPNAME!Rename_INIT">Rename_INIT</A>(lockfile : <A HREF="String_TYPE.mch.html#SETS">STRING</A> & port : NAT & bufsavefile : <A HREF="String_TYPE.mch.html#SETS">STRING</A>) =
+  <B>PRE</B> size(lockfile) < 256 & size(bufsavefile) < 256 <B>THEN</B> rep :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> <B>END</B>;
+
+
+
+   /*** operations on the socket ***/
+
+  rep <-- <A NAME="OPNAME!Rename_ACCEPT">Rename_ACCEPT</A> = <B>BEGIN</B> rep :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> <B>END</B>; 
+
+  rep,pp <-- <A NAME="OPNAME!Rename_READ">Rename_READ</A>  = 
+  <B>ANY</B> bufsize <B>WHERE</B>  bufsize : 0..inbufsize <B>THEN</B>
+    <B>CHOICE</B>
+      rep := TRUE || pp := bufsize || in := bufsize || inptr := 0
+    <B>OR</B>
+      rep := FALSE || pp := 0
+    <B>END</B>
+  <B>END</B>;
+
+  rep <-- <A NAME="OPNAME!Rename_WRITE">Rename_WRITE</A> = <B>BEGIN</B> rep :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> || outptr := 0 <B>END</B>;
+
+  rep <-- <A NAME="OPNAME!Rename_CLOSE">Rename_CLOSE</A> = <B>BEGIN</B> rep :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> <B>END</B>;
+
+
+
+  /*** operations to read from the input buffer ***/
+
+  tok <-- <A NAME="OPNAME!Rename_GET_TOK">Rename_GET_TOK</A>(toksize : 1..4 ) =  
+  <B>IF</B> inptr+toksize <= in <B>THEN</B>
+    tok :: TOK || inptr := inptr + toksize
+  <B>ELSE</B>
+    tok :: TOK
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!Rename_GET_STR">Rename_GET_STR</A> = 
+  <B>IF</B> inptr + 3 <= in <B>THEN</B>
+    <B>ANY</B> str, newptr  <B>WHERE</B>
+      str : <A HREF="String_TYPE.mch.html#SETS">STRING</A> &  newptr = inptr + size(str) + 3
+    <B>THEN</B>
+      ss := str || inptr := newptr
+    <B>END</B>
+  <B>ELSE</B>
+    ss :: <A HREF="String_TYPE.mch.html#SETS">STRING</A>
+  <B>END</B>;
+
+
+  /*** operations to to write the output buffer ***/
+
+  <A NAME="OPNAME!Rename_PUT_TOK">Rename_PUT_TOK</A>(tok : TOK & toksize : 1..4 ) = 
+  <B>IF</B> outptr+toksize <= outbufsize <B>THEN</B>
+    outptr := outptr+toksize
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_PUT_STR">Rename_PUT_STR</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A>) = 
+  <B>IF</B> outptr+size(ss)+3 <= outbufsize <B>THEN</B>
+    outptr := outptr+size(ss)+3 
+  <B>END</B>; 
+
+
+
+  /*** operations to get and set the input buffer pointer ***/
+
+  <A NAME="OPNAME!Rename_SET_IN_PTR">Rename_SET_IN_PTR</A>(ptr : NAT) = <B>PRE</B> ptr <= inptr <B>THEN</B> inptr := ptr <B>END</B>;
+
+  ptr <-- <A NAME="OPNAME!Rename_GET_IN_PTR">Rename_GET_IN_PTR</A> = <B>BEGIN</B> ptr := inptr <B>END</B>;
+
+
+
+  /*** operations to get and set the output buffer pointer ***/
+
+  <A NAME="OPNAME!Rename_SET_OUT_PTR">Rename_SET_OUT_PTR</A>(ptr : NAT) =  <B>PRE</B> ptr <= outptr <B>THEN</B> outptr := ptr <B>END</B>;
+
+  ptr <-- <A NAME="OPNAME!Rename_GET_OUT_PTR">Rename_GET_OUT_PTR</A> = <B>BEGIN</B> ptr := outptr <B>END</B>;
+
+
+
+
+  /*** Client initialisation ***/
+
+  /* opens file, and appends its data until EOF to out_buf;
+     then appends a null; gives FALSE if this fails.
+  */
+  rep <-- <A NAME="OPNAME!Rename_PUT_FILE">Rename_PUT_FILE</A>(filename: <A HREF="String_TYPE.mch.html#SETS">STRING</A>) = 
+  <B>CHOICE</B> 
+    rep := TRUE || outptr :: outptr..outbufsize
+  <B>OR</B>  
+    rep := FALSE  
+  <B>END</B>;
+
+
+
+  /*** Buffer saving and restoring ***/
+
+  /* appends in_buf to bufsavefile of saved in buffers
+  */
+  rep, num_saves <-- <A NAME="OPNAME!Rename_SAV_BUF">Rename_SAV_BUF</A> =
+  <B>CHOICE</B> 
+    rep := TRUE || num_saves := no_of_saves + 1 
+  <B>OR</B>  
+    rep := FALSE || num_saves := 0
+  <B>END</B>;
+
+  /* Empty bufsavefile
+  */
+  <A NAME="OPNAME!Rename_SAV_RMV">Rename_SAV_RMV</A> = <B>BEGIN</B> no_of_saves := 0 <B>END</B>;
+
+  /* returns TRUE if bufsavefile not empty, else returns FALSE
+  */
+  rep <-- <A NAME="OPNAME!Rename_RST_BUF">Rename_RST_BUF</A> = <B>BEGIN</B> rep :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> <B>END</B>;
+ 
+  /* restores next saved buffer in inbuf; returns FALSE if finished
+  */
+  rep <-- <A NAME="OPNAME!Rename_NXT_BUF">Rename_NXT_BUF</A> = 
+  <B>SELECT</B> true <B>THEN</B>  
+    rep := FALSE
+  <B>WHEN</B> no_of_saves &gt; 0 <B>THEN</B> 
+    no_of_saves := no_of_saves - 1 || rep := TRUE || 
+    inptr := 0 || in :: 0..inbufsize
+  <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:14 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

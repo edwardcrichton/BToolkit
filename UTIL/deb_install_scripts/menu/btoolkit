@@ -1,0 +1,3 @@
+?package(btoolkit):command="/usr/bin/BToolkit" icon="/usr/share/pixmaps/B.xpm" needs="X11" \
+	section="Apps/Programming" title="The BToolkit" hints="Specification" \
+	hotkey="BToolkit"

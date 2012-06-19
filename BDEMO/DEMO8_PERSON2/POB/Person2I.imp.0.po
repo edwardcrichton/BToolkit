@@ -1,0 +1,286 @@
+THEORY PropertiesX IS
+  ctx(Person2I$1) => PERSON = personbase_ABSOBJ;
+  ctx(Person2I$1) => card(PERSON) : NAT1;
+  ctx(Person2I$1) => SEX = {male , female};
+  ctx(Person2I$1) => card(SEX) = 2;
+  ctx(Person2I$1) => ctx(String_TYPE);
+  ctx(String_TYPE) => STRING = {ss | ss : seq(CHAR) & size(ss) <= 1000};
+  ctx(String_TYPE) => card(STRING) : NAT1;
+  ctx(Person2I$1) => ctx(Bool_TYPE);
+  ctx(Person2I$1) => ctx(Scalar_TYPE);
+  ctx(Scalar_TYPE) => SCALAR = 0..2147483646;
+  ctx(Scalar_TYPE) => card(SCALAR) = 2147483647;
+  ctx(Scalar_TYPE) => card(SCALAR) : NAT1;
+  ctx(Person2I$1) => ctx(Person2BaseCtx);
+  ctx(Person2BaseCtx) => card(personbase_ABSOBJ) : NAT1;
+  ctx(String_TYPE) => CHAR = {B_SOH , B_STX , B_ETX , B_EOT , B_ENQ , B_ACK , B_BEL , B_BS , B_HT , B_LF , B_VT , B_FF , B_CR , B_SO , B_SI , B_DLE , B_DC1 , B_DC2 , B_DC3 , B_DC4 , B_NAK , B_SYN , B_ETB , B_CAN , B_EM , B_SUB , B_ESC , B_FS , B_GS , B_RS , B_US , B_SPACE , B_EXCL , B_QUOT , B_HSH , B_DOLL , B_PCT , B_AMP , B_SQUOT , B_OPAR , B_CPAR , B_MUL , B_PLUS , B_COM , B_MINUS , B_DOT , B_DIV , '0' , '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , B_COL , B_SCOL , B_LESS , B_EQL , B_GTR , B_QUERY , B_CADD , 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' , B_OBRK , B_SLSH , B_CBRK , B_HAT , B_UNL , B_BSQ , 'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' , 'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' , 'q' , 'r' , 's' , 'u' , 'v' , 'w' , 'x' , 'y' , 'z' , B_OBRC , B_BAR , B_CBRC , B_TLD , B_DEL};
+  ctx(String_TYPE) => card(CHAR) = 126;
+  ctx(Bool_TYPE) => BOOL = {FALSE , TRUE};
+  ctx(Bool_TYPE) => card(BOOL) = 2;
+  ctx(Person2I$1) => ctx(Person2Base)
+END
+&
+THEORY EnumerateX IS
+  binhyp(ctx(Person2I$1)) => SEX == {male , female};
+  binhyp(ctx(String_TYPE)) => CHAR == {B_SOH , B_STX , B_ETX , B_EOT , B_ENQ , B_ACK , B_BEL , B_BS , B_HT , B_LF , B_VT , B_FF , B_CR , B_SO , B_SI , B_DLE , B_DC1 , B_DC2 , B_DC3 , B_DC4 , B_NAK , B_SYN , B_ETB , B_CAN , B_EM , B_SUB , B_ESC , B_FS , B_GS , B_RS , B_US , B_SPACE , B_EXCL , B_QUOT , B_HSH , B_DOLL , B_PCT , B_AMP , B_SQUOT , B_OPAR , B_CPAR , B_MUL , B_PLUS , B_COM , B_MINUS , B_DOT , B_DIV , '0' , '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , B_COL , B_SCOL , B_LESS , B_EQL , B_GTR , B_QUERY , B_CADD , 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' , B_OBRK , B_SLSH , B_CBRK , B_HAT , B_UNL , B_BSQ , 'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' , 'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' , 'q' , 'r' , 's' , 'u' , 'v' , 'w' , 'x' , 'y' , 'z' , B_OBRC , B_BAR , B_CBRC , B_TLD , B_DEL};
+  binhyp(ctx(Bool_TYPE)) => BOOL == {FALSE , TRUE}
+END
+&
+THEORY NotEqualX IS
+  binhyp(SEX = {male , female}) & binhyp(card(SEX) = 2) => not(male = female);
+  binhyp(SEX = {male , female}) & binhyp(card(SEX) = 2) => not(female = male);
+  binhyp(BOOL = {FALSE , TRUE}) & binhyp(card(BOOL) = 2) => not(FALSE = TRUE);
+  binhyp(BOOL = {FALSE , TRUE}) & binhyp(card(BOOL) = 2) => not(TRUE = FALSE)
+END
+&
+THEORY RewriteToFalseOrTrueX IS
+  binhyp(SEX = {male , female}) & binhyp(card(SEX) = 2) => male = female == false;
+  binhyp(SEX = {male , female}) & binhyp(card(SEX) = 2) => female = male == false;
+  binhyp(BOOL = {FALSE , TRUE}) & binhyp(card(BOOL) = 2) => FALSE = TRUE == false;
+  binhyp(BOOL = {FALSE , TRUE}) & binhyp(card(BOOL) = 2) => TRUE = FALSE == false
+END
+&
+THEORY FwdContra0X IS
+  female = male & ctx(Person2I$1) => bfalse;
+  x = female & x = male & ctx(Person2I$1) => bfalse;
+  x = female & y = x & y = male & ctx(Person2I$1) => bfalse;
+  x = male & x = female & ctx(Person2I$1) => bfalse;
+  x = male & y = x & y = female & ctx(Person2I$1) => bfalse;
+  TRUE = FALSE & ctx(Bool_TYPE) => bfalse;
+  x = TRUE & x = FALSE & ctx(Bool_TYPE) => bfalse;
+  x = TRUE & y = x & y = FALSE & ctx(Bool_TYPE) => bfalse;
+  x = FALSE & x = TRUE & ctx(Bool_TYPE) => bfalse;
+  x = FALSE & y = x & y = TRUE & ctx(Bool_TYPE) => bfalse
+END
+&
+THEORY FwdEqual1X IS
+  male = x => x = male;
+  female = x => x = female;
+  not(male = x) & ctx(Person2I$1) => x = female;
+  not(x = male) & ctx(Person2I$1) => x = female;
+  not(female = x) & ctx(Person2I$1) => x = male;
+  not(x = female) & ctx(Person2I$1) => x = male;
+  B_SOH = x => x = B_SOH;
+  B_STX = x => x = B_STX;
+  B_ETX = x => x = B_ETX;
+  B_EOT = x => x = B_EOT;
+  B_ENQ = x => x = B_ENQ;
+  B_ACK = x => x = B_ACK;
+  B_BEL = x => x = B_BEL;
+  B_BS = x => x = B_BS;
+  B_HT = x => x = B_HT;
+  B_LF = x => x = B_LF;
+  B_VT = x => x = B_VT;
+  B_FF = x => x = B_FF;
+  B_CR = x => x = B_CR;
+  B_SO = x => x = B_SO;
+  B_SI = x => x = B_SI;
+  B_DLE = x => x = B_DLE;
+  B_DC1 = x => x = B_DC1;
+  B_DC2 = x => x = B_DC2;
+  B_DC3 = x => x = B_DC3;
+  B_DC4 = x => x = B_DC4;
+  B_NAK = x => x = B_NAK;
+  B_SYN = x => x = B_SYN;
+  B_ETB = x => x = B_ETB;
+  B_CAN = x => x = B_CAN;
+  B_EM = x => x = B_EM;
+  B_SUB = x => x = B_SUB;
+  B_ESC = x => x = B_ESC;
+  B_FS = x => x = B_FS;
+  B_GS = x => x = B_GS;
+  B_RS = x => x = B_RS;
+  B_US = x => x = B_US;
+  B_SPACE = x => x = B_SPACE;
+  B_EXCL = x => x = B_EXCL;
+  B_QUOT = x => x = B_QUOT;
+  B_HSH = x => x = B_HSH;
+  B_DOLL = x => x = B_DOLL;
+  B_PCT = x => x = B_PCT;
+  B_AMP = x => x = B_AMP;
+  B_SQUOT = x => x = B_SQUOT;
+  B_OPAR = x => x = B_OPAR;
+  B_CPAR = x => x = B_CPAR;
+  B_MUL = x => x = B_MUL;
+  B_PLUS = x => x = B_PLUS;
+  B_COM = x => x = B_COM;
+  B_MINUS = x => x = B_MINUS;
+  B_DOT = x => x = B_DOT;
+  B_DIV = x => x = B_DIV;
+  '0' = x => x = '0';
+  '1' = x => x = '1';
+  '2' = x => x = '2';
+  '3' = x => x = '3';
+  '4' = x => x = '4';
+  '5' = x => x = '5';
+  '6' = x => x = '6';
+  '7' = x => x = '7';
+  '8' = x => x = '8';
+  '9' = x => x = '9';
+  B_COL = x => x = B_COL;
+  B_SCOL = x => x = B_SCOL;
+  B_LESS = x => x = B_LESS;
+  B_EQL = x => x = B_EQL;
+  B_GTR = x => x = B_GTR;
+  B_QUERY = x => x = B_QUERY;
+  B_CADD = x => x = B_CADD;
+  'A' = x => x = 'A';
+  'B' = x => x = 'B';
+  'C' = x => x = 'C';
+  'D' = x => x = 'D';
+  'E' = x => x = 'E';
+  'F' = x => x = 'F';
+  'G' = x => x = 'G';
+  'H' = x => x = 'H';
+  'I' = x => x = 'I';
+  'J' = x => x = 'J';
+  'K' = x => x = 'K';
+  'L' = x => x = 'L';
+  'M' = x => x = 'M';
+  'N' = x => x = 'N';
+  'O' = x => x = 'O';
+  'P' = x => x = 'P';
+  'Q' = x => x = 'Q';
+  'R' = x => x = 'R';
+  'S' = x => x = 'S';
+  'T' = x => x = 'T';
+  'U' = x => x = 'U';
+  'V' = x => x = 'V';
+  'W' = x => x = 'W';
+  'X' = x => x = 'X';
+  'Y' = x => x = 'Y';
+  'Z' = x => x = 'Z';
+  B_OBRK = x => x = B_OBRK;
+  B_SLSH = x => x = B_SLSH;
+  B_CBRK = x => x = B_CBRK;
+  B_HAT = x => x = B_HAT;
+  B_UNL = x => x = B_UNL;
+  B_BSQ = x => x = B_BSQ;
+  'a' = x => x = 'a';
+  'b' = x => x = 'b';
+  'c' = x => x = 'c';
+  'd' = x => x = 'd';
+  'e' = x => x = 'e';
+  'f' = x => x = 'f';
+  'g' = x => x = 'g';
+  'h' = x => x = 'h';
+  'i' = x => x = 'i';
+  'j' = x => x = 'j';
+  'k' = x => x = 'k';
+  'l' = x => x = 'l';
+  'm' = x => x = 'm';
+  'n' = x => x = 'n';
+  'o' = x => x = 'o';
+  'p' = x => x = 'p';
+  'q' = x => x = 'q';
+  'r' = x => x = 'r';
+  's' = x => x = 's';
+  'u' = x => x = 'u';
+  'v' = x => x = 'v';
+  'w' = x => x = 'w';
+  'x' = x => x = 'x';
+  'y' = x => x = 'y';
+  'z' = x => x = 'z';
+  B_OBRC = x => x = B_OBRC;
+  B_BAR = x => x = B_BAR;
+  B_CBRC = x => x = B_CBRC;
+  B_TLD = x => x = B_TLD;
+  B_DEL = x => x = B_DEL;
+  FALSE = x => x = FALSE;
+  TRUE = x => x = TRUE;
+  not(FALSE = x) & ctx(Bool_TYPE) => x = TRUE;
+  not(x = FALSE) & ctx(Bool_TYPE) => x = TRUE;
+  not(TRUE = x) & ctx(Bool_TYPE) => x = FALSE;
+  not(x = TRUE) & ctx(Bool_TYPE) => x = FALSE
+END
+&
+THEORY ExpandHypX IS
+  inv(Person2I$1) => inv(String_TYPE);
+  inv(Person2I$1) => inv(Bool_TYPE);
+  inv(Person2I$1) => inv(Scalar_TYPE);
+  inv(Person2I$1) => inv(Person2BaseCtx);
+  inv(Person2) => person <: PERSON;
+  inv(Person2) => card(person) <= max_person;
+  inv(Person2) => names <: STRING;
+  inv(Person2) => person_name : person >->> names;
+  inv(Person2) => person_age : person --> SCALAR;
+  inv(Person2) => person_sex : person --> SEX;
+  pre(Add_person) => name_inp : STRING-names;
+  pre(Add_person) => age_inp : SCALAR;
+  pre(Add_person) => sex_inp : SEX;
+  pre(Add_person) => card(person) < max_person;
+  pre(Get_person_details) => name_inp : STRING;
+  pre(Remove_person) => name_inp : STRING;
+  inv(Person2I$1) => inv(Person2);
+  asn(Person2I$1) => asn(Person2);
+  inv(Person2I$1) => person = personbase$1;
+  inv(Person2I$1) => person_name = name$1;
+  inv(Person2I$1) => person_age = age$1;
+  inv(Person2I$1) => person_sex = sex$1;
+  inv(Person2I$1) => personbase$1 <: personbase_ABSOBJ;
+  inv(Person2I$1) => card(personbase$1) <= max_person;
+  inv(Person2I$1) => locate_personbase$1 : 1..card(personbase$1) >->> personbase$1;
+  inv(Person2I$1) => name$1 : personbase$1 --> STRING;
+  inv(Person2I$1) => age$1 : personbase$1 --> SCALAR;
+  inv(Person2I$1) => sex$1 : personbase$1 --> SEX;
+  cst(Person2I$1) => max_person : 1..2147483646
+END
+&
+THEORY Initialisation
+END
+&
+THEORY Add_person IS
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => card(personbase$1) < max_person;
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => (Base_personbasex : personbase_ABSOBJ-personbase$1 & loc : 1..card(personbase$1)+1 >->> personbase$1 \/ {Base_personbasex} => Base_personbasex : personbase$1 \/ {Base_personbasex});
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => (Base_personbasex : personbase_ABSOBJ-personbase$1 & loc : 1..card(personbase$1)+1 >->> personbase$1 \/ {Base_personbasex} => name_inp : STRING);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => (Base_personbasex : personbase_ABSOBJ-personbase$1 & loc : 1..card(personbase$1)+1 >->> personbase$1 \/ {Base_personbasex} => #new_person.(new_person : PERSON-personbase$1 & sex$1 \/ {new_person |-> sex_inp} = sex$1 <+ {Base_personbasex |-> sex_inp} & personbase$1 \/ {new_person} = personbase$1 \/ {Base_personbasex} & name$1 \/ {new_person |-> name_inp} = name$1 <+ {Base_personbasex |-> <>} <+ {Base_personbasex |-> name_inp} & age$1 \/ {new_person |-> age_inp} = age$1 <+ {Base_personbasex |-> age_inp}));
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => (Base_personbasex : personbase_ABSOBJ-personbase$1 & loc : 1..card(personbase$1)+1 >->> personbase$1 \/ {Base_personbasex} & locate_personbasexx : 1..card((personbase$1 \/ {Base_personbasex})-{Base_personbasex}) >->> (personbase$1 \/ {Base_personbasex})-{Base_personbasex} => Base_personbasex : personbase$1 \/ {Base_personbasex});
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => (Base_personbasex : personbase_ABSOBJ-personbase$1 & loc : 1..card(personbase$1)+1 >->> personbase$1 \/ {Base_personbasex} & locate_personbasexx : 1..card((personbase$1 \/ {Base_personbasex})-{Base_personbasex}) >->> (personbase$1 \/ {Base_personbasex})-{Base_personbasex} => personbase$1 = (personbase$1 \/ {Base_personbasex})-{Base_personbasex});
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => (Base_personbasex : personbase_ABSOBJ-personbase$1 & loc : 1..card(personbase$1)+1 >->> personbase$1 \/ {Base_personbasex} & locate_personbasexx : 1..card((personbase$1 \/ {Base_personbasex})-{Base_personbasex}) >->> (personbase$1 \/ {Base_personbasex})-{Base_personbasex} => name$1 = {Base_personbasex} <<| (name$1 <+ {Base_personbasex |-> <>}));
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => (Base_personbasex : personbase_ABSOBJ-personbase$1 & loc : 1..card(personbase$1)+1 >->> personbase$1 \/ {Base_personbasex} & locate_personbasexx : 1..card((personbase$1 \/ {Base_personbasex})-{Base_personbasex}) >->> (personbase$1 \/ {Base_personbasex})-{Base_personbasex} => age$1 = {Base_personbasex} <<| (age$1 <+ {Base_personbasex |-> age_inp}));
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Add_person) => (Base_personbasex : personbase_ABSOBJ-personbase$1 & loc : 1..card(personbase$1)+1 >->> personbase$1 \/ {Base_personbasex} & locate_personbasexx : 1..card((personbase$1 \/ {Base_personbasex})-{Base_personbasex}) >->> (personbase$1 \/ {Base_personbasex})-{Base_personbasex} => sex$1 = {Base_personbasex} <<| (sex$1 <+ {Base_personbasex |-> sex_inp}))
+END
+&
+THEORY Get_person_details IS
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Get_person_details) => (not(name_inp : ran(name$1)) & Base_personbasexx : personbase_ABSOBJ => not(name_inp : names));
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Get_person_details) => (not(name_inp : ran(name$1)) & Base_personbasexx : personbase_ABSOBJ => 0 : SCALAR);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Get_person_details) => (not(name_inp : ran(name$1)) & Base_personbasexx : personbase_ABSOBJ => male : SEX);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Get_person_details) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp => name_inp : names);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Get_person_details) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp => sex$1(Base_personbasex) = sex$1(name$1~(name_inp)));
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Get_person_details) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp => age$1(Base_personbasex) = age$1(name$1~(name_inp)))
+END
+&
+THEORY Remove_person IS
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & name_inp : names => personbase$1-{name$1~(name_inp)} = personbase$1-{Base_personbasex});
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & name_inp : names => name$1 |>> {name_inp} = {Base_personbasex} <<| name$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & name_inp : names => {name$1~(name_inp)} <<| age$1 = {Base_personbasex} <<| age$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & name_inp : names => {name$1~(name_inp)} <<| sex$1 = {Base_personbasex} <<| sex$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & not(name_inp : names) => personbase$1 = personbase$1-{Base_personbasex});
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & not(name_inp : names) => name$1 = {Base_personbasex} <<| name$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & not(name_inp : names) => age$1 = {Base_personbasex} <<| age$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & not(name_inp : names) => sex$1 = {Base_personbasex} <<| sex$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (name_inp : ran(name$1) & Base_personbasex : personbase$1 & name$1(Base_personbasex) = name_inp & locate_personbasexx : 1..card(personbase$1-{Base_personbasex}) >->> personbase$1-{Base_personbasex} & not(name_inp : names) => false);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (not(name_inp : ran(name$1)) & Base_personbasexx : personbase_ABSOBJ & name_inp : names => personbase$1-{name$1~(name_inp)} = personbase$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (not(name_inp : ran(name$1)) & Base_personbasexx : personbase_ABSOBJ & name_inp : names => name$1 |>> {name_inp} = name$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (not(name_inp : ran(name$1)) & Base_personbasexx : personbase_ABSOBJ & name_inp : names => {name$1~(name_inp)} <<| age$1 = age$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (not(name_inp : ran(name$1)) & Base_personbasexx : personbase_ABSOBJ & name_inp : names => {name$1~(name_inp)} <<| sex$1 = sex$1);
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Remove_person) => (not(name_inp : ran(name$1)) & Base_personbasexx : personbase_ABSOBJ & name_inp : names => false)
+END
+&
+THEORY Save_Person
+END
+&
+THEORY Restore_Person IS
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Restore_Person) => (repx : BOOL & personbasex <: personbase_ABSOBJ & card(personbasex) <= max_person & locate_personbasex : 1..card(personbasex) >->> personbasex & namex : personbasex --> STRING & agex : personbasex --> SCALAR & sexx : personbasex --> SEX => #rst_names.(namex : personbasex >->> rst_names & rst_names <: STRING));
+  cst(Person2I$1) & ctx(Person2I$1) & inv(Person2I$1) & asn(Person2I$1) & pre(Restore_Person) => (repx : BOOL & personbasex <: personbase_ABSOBJ & card(personbasex) <= max_person & locate_personbasex : 1..card(personbasex) >->> personbasex & namex : personbasex --> STRING & agex : personbasex --> SCALAR & sexx : personbasex --> SEX => personbasex <: PERSON)
+END
+&
+THEORY Context
+END
+&
+THEORY Assertions
+END
+&
+THEORY Constraints IS
+  cst(Person2I$1) & ctx(Person2I$1) => card(SEX) : NAT1
+END

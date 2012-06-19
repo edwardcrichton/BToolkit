@@ -1,0 +1,41 @@
+IMPLEMENTATION
+
+  MaxSoFarI
+
+REFINES
+
+  MaxSoFarR
+
+IMPORTS
+
+/*" The abstract variable {\em MAX\_scvv\/} from the
+instanciated library machine {\em MAX\_int\/} is used
+as store for the variable {\em maxnum\/}.
+
+The operations {\em MAX\_STO\_NVAR\/}, {\em MAX\_GTR\_NVAR\/}
+and {\em MAX\_VAL\_NVAR\/}
+are used in the algorithms which implements the refinement.
+"*/
+
+  MAX_Nvar(max_val)
+
+SEES
+
+  Bool_TYPE
+
+INVARIANT
+
+  maxnum = MAX_Nvar
+
+OPERATIONS
+
+  enter(new) =
+   VAR bb IN
+     bb <-- MAX_GTR_NVAR(new);
+     IF bb = FALSE THEN MAX_STO_NVAR(new) END
+   END;
+
+  mx <-- maximum =
+    BEGIN mx <-- MAX_VAL_NVAR END
+
+END

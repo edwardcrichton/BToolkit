@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+  <TITLE>The BitsN_TYPE machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre><A NAME="MACHINE">MACHINE</A>           BitsN_TYPE
+
+SEES
+
+   <A HREF="Bit_TYPE.mch.html#MACHINE">Bit_TYPE</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="CONSTANTS">CONSTANTS</A>
+
+  BITSN,
+  tsb
+
+<A NAME="PROPERTIES">PROPERTIES</A>
+
+  BITSN : (1 .. 32) --&gt; POW(1..32 +-&gt; <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) &
+
+  (!nn. (nn : 1..32 =&gt; BITSN(nn) = 1..nn --&gt; <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>)) &
+
+
+  tsb =  {(FALSE|-&gt;FALSE) |-&gt; FALSE,
+         (FALSE|-&gt;TRUE ) |-&gt; FALSE, 
+         (TRUE|-&gt;FALSE ) |-&gt; TRUE,
+         (TRUE |-&gt;TRUE ) |-&gt; FALSE }
+  
+END
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

@@ -1,0 +1,214 @@
+                     
+                         POPULATION
+                         ----------
+
+  Demonstration Aim
+
+      To show the proof capabilities of the B-Toolkit.
+
+  The following tools are demonstrated
+
+      B-Introduce from SRC
+      B-Analyser           (anl)
+      B-Browser
+      B-POGenerator        (pog) Provers Environment
+      B-AutoProver         (prv)
+      B-InterProver        (prv) 
+      B-ToolProver         (prv)
+      B-Remake
+      B-Status             (sts) Main Environment
+
+
+
+  State Variables
+
+  The demonstration illustrates the specification of a
+  population, with state variables: 
+
+    o person  - the total number of people in the population.
+
+    o sex     - a total function from people to SEX
+                (everyone is either a man or a woman)
+
+    o status  - a total function from people to STATUS
+                (everyone is either living or dead)
+
+    o mother  - a partial function from people to women
+                (some women are mothers)
+
+    o husband - a partial injection from women to men
+                (some women[men] are married; each married woman[man]
+                 is associated with exaclty one man[woman])
+
+
+
+  The Demonstration
+
+  1.  Start the development
+
+      After entering the DEMO3_POPULATION demonstration directory,
+      run the B-Toolkit to create a new development directory.
+
+  2. Introduce from SRC
+
+     Introduce both constructs from SRC: `person_data_base.mch' and
+     `data_base_context.mch'. 
+
+  3. Open for Inspection
+
+     Open `person_data_base.mch' for inspection. Read and understand
+     the `INVARIANT', the `INITIALISATION' and the OPERATIONS
+     `newborn' and  `death.
+
+  4. Analyse
+
+     Analyse both machines (anl).
+
+  5. Hypertext Browse
+
+    Examine the structure of the specification by invoking the 
+    `Browser' -> HyperText. A particular HyperText Viewer can be 
+    selected by setting the `Editor/Viewer/Shell Options'.
+
+  6. Generate Proof Obligations
+
+     Generate Proof Obligations (pog) for `person_data_base.mch'.
+
+  7. Print & Mark Up Proof Obligations
+
+     Print proof obligations (ppf) from the Provers Environment.
+     This creates a `.prf' file in ASCII format which can be opened 
+     for inspection.
+     (Alternatively, this file can be marked-up for printing (LaTeX) 
+     by using the `dmu' option in the Documents environment, and 
+     viewed on the screen using `shw').
+     Note and understand in the following obligations:
+         Initialisation.2 .. => {}: 1..0 --> SEX
+         newborn.1        .. => person+1: 0..maxpers
+         death.1          .. => status<+{xx|->dead}: 1..person --> STATUS
+
+  8. AutoProve
+
+    Submit `person_data_base.mch' for automatic proof (apr).  
+     1 proof obligation remains.
+
+  9. InterProve
+
+     Submit `person_data_base.mch 'for interactive proof (ipr)
+
+ 10. Create InterProof Lemma
+
+     Select the proof obligation `newborn.5' - you are now in the 
+     interactive prover environment, and do the following:
+         `Run InterProver'       ... failed to prove ...
+         `Show Hypotheses'   ... and examine useful hypothesis ....
+         `Create Lemma'         ... the goal is made a lemma
+
+ 11. Prove the Lemma
+
+     Select `InterProverLemmas.1'.  You need to supply an additional rule 
+     to prove it. 
+     (This rule is already present in the Current PROOFMETHOD file.)
+     The  User Theory from the  Current PROOFMETHOD file is automatically 
+     loaded when lemmas are selected for proof.
+     The  Current PROOFMETHOD file can be inspected using 
+     `Edit Current PROOFMETHOD file'.
+                
+     `Run InterProver' and select `Backtrack' 5 times to investigate whether
+     the new rule will help to discharge the lemma. No proof are
+     actually stored by the system, since the interproving environment
+     is a `browsing' environment to establish the User Theory required.
+
+ 12. Commit the Proof
+
+     On exiting from the InterProver you are invited to 'Commit Proofs' 
+     which will submit `person_data_base.mch' for automatic proof; the User Theory
+     established during the interproof is now loaded to supplement the
+     toolkit's library of mathematical rules. The last proof 
+     obligation is now discharged.
+
+ 13. Print the Proof
+
+     Submit `person_data_base.mch' to ProofPrinter (ppf). Choose to 
+     print the single proof at level 1. Inspect the proof by opening
+     the generated file. (The proof can be marked-up for Latex printing
+     using the `dmu' option in the Documents environment. Note, that
+     the last proof line is too long. Fix this by inserting \\
+     after the >+> symbol in the '.prf' file, before marking up the
+     proof again).
+
+ 14. Check Status
+
+     Return to the Main Environment and request status (sts) of 
+     `person_data_base.mch'. Check that the 'Remake Options'
+     include `POGenerator', `AutoProver', `ProofPrinter'
+     and `DocumentMarkUp'.
+
+ 15. Introduce Error
+
+     Open person_data_base.mch for editing.
+     Add the following precondition to `death':
+         sex ( xx ) = female
+     THIS IS AN ERROR ( `female' should be `woman' )
+     Remember to save the edits using you editor's save function,
+     and commit (cmt).
+
+ 16. Remake - fixing errors
+
+     Select the Remake tool from the tool bar.
+     Remake all constructs - fix any errors using Mini-Remake - and
+     the system is automatically rebuilt with NO regression.
+
+
+ 17. Reset Level & invoke BToolProver
+
+     Enter the `Provers' environment again and reset (rsl) the
+     person_data_base specification to Level 1 so the one
+     Proof Obligation is remaining.
+     Now do the proof again using the `BToolProver'
+
+
+ 18. Perform DED
+
+     Used deduction (DED) as the 1st proof step.
+     The current hypothesis can be inspected by `clicking'
+     on `H'; the current goal can also be inspected by 
+     `clicking' it. 
+
+ 19. Apply Rule
+
+     `Show Applicable rules' will identify the rule from
+     the Users Theory as being applicable.
+     Apply it by `clicking' on the shown rule.
+     3 `sub-goals' result from the above rule application.
+
+
+ 20. Apply INHYP
+
+     The 1st is in the Hypothesis (apply INHYP to discharge it)
+
+ 21. Complete Proof
+
+     The  2nd and 3rd sub-goal are discharged by applying rules
+     from the system library of rules.
+     NOTE THAT THE PROOF IS NOW CONSTRUCTED BY YOU, AND IF YOU
+     DO NOT SELECT THE APPLICABLE RULES CAREFULLY THEN YOU WILL NEED
+     TO USE 'Undo' SEVERAL TIMES TO PERFORM BACKTRACKING AND 
+     COMPLETE THE PROOF.
+     (In the InterProver the 'backtracking' was automatic.)
+   
+
+ 
+  Exercise
+
+  1.  Change the person_data_base specification so that the
+      newborn operation also changes the mother state variable
+      (i.e. remove the mod_mother operation, merging it with the
+      current newborn operation).  `Remake' so that all proof
+      obligations are discharged (no new theory is required).
+
+
+  2.  Further change the person_data_base specification so that initially
+      there is one living man and one living woman. `Remake' so that
+      all proof obligations are discharged (add any new theory required
+      through the BToolProver).

@@ -1,0 +1,226 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_sseq)
+;
+(Rename_sseq)
+;
+(Rename_sseq : seq(VALUE) & size(Rename_sseq) <= maxlen)
+;
+(Rename_sseq : seq(VALUE) & size(Rename_sseq) <= maxlen)
+;
+(?)
+;
+(Rename_sseq := <>)
+;
+(Rename_sseq := <>)
+;
+(Rename_BiSSeq_LEN,Rename_BiSSeq_VAL,Rename_BiSSeq_FILL,Rename_BiSSeq_CHG,Rename_BiSSeq_APP,Rename_BiSSeq_KEEP)
+;
+(Rename_BiSSeq_LEN , Rename_BiSSeq_VAL , Rename_BiSSeq_FILL , Rename_BiSSeq_CHG , Rename_BiSSeq_APP , Rename_BiSSeq_KEEP)
+;
+(Rename_BiSSeq(VALUE , maxlen):(maxlen : 1..255 & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_BiSSeq_LEN)
+;
+ (? , Val_Op , Det_Op , (ll <-- Rename_BiSSeq_LEN))
+;
+ (?)
+;
+ (ll)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ ll := n2b(size(Rename_sseq))
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (ll := n2b(size(Rename_sseq)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSSeq_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_BiSSeq_VAL(idx)))
+;
+ (idx)
+;
+ (vv)
+;
+ (
+ (idx : BYTE & b2n(idx) : 1..size(Rename_sseq))
+ |
+ (
+ (vv := Rename_sseq(b2n(idx)))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx : n2b[1..size(Rename_sseq)])
+ |
+ (
+ (vv := Rename_sseq(b2n(idx)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSSeq_FILL)
+;
+ (? , Val_Op , NonDet_Op , Rename_BiSSeq_FILL(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE & size(Rename_sseq) = 0)
+ |
+ (
+ (Rename_sseq : (Rename_sseq : seq(VALUE) & card(Rename_sseq) = maxlen & ran(Rename_sseq) = {vv}))
+ )
+ )
+;
+ (
+ (vv : VALUE & size(Rename_sseq) = 0)
+ |
+ (
+ @(Rename_sseqx).
+ (
+ (
+ (Rename_sseqx : seq(VALUE) & card(Rename_sseqx) = maxlen & ran(Rename_sseqx) = {vv})
+ )
+ ==>
+ (
+ (Rename_sseq := Rename_sseqx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BiSSeq_CHG)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSSeq_CHG(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : BYTE & vv : VALUE & b2n(idx) : 1..size(Rename_sseq))
+ |
+ (
+ (Rename_sseq(b2n(idx)) := vv)
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : VALUE & idx : n2b[1..size(Rename_sseq)])
+ |
+ (
+ (Rename_sseq := Rename_sseq <+ {b2n(idx) |-> vv})
+ )
+ )
+)
+,
+(
+ (Rename_BiSSeq_APP)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSSeq_APP(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE & size(Rename_sseq) < maxlen)
+ |
+ (
+ (Rename_sseq := Rename_sseq <- vv)
+ )
+ )
+;
+ (
+ (vv : VALUE & size(Rename_sseq) < maxlen)
+ |
+ (
+ (Rename_sseq := Rename_sseq <- vv)
+ )
+ )
+)
+,
+(
+ (Rename_BiSSeq_KEEP)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSSeq_KEEP(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx : BYTE & b2n(idx) : 0..size(Rename_sseq))
+ |
+ (
+ (Rename_sseq := Rename_sseq /|\ b2n(idx))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx : n2b[0..size(Rename_sseq)])
+ |
+ (
+ (Rename_sseq := Rename_sseq /|\ b2n(idx))
+ )
+ )
+)
+)

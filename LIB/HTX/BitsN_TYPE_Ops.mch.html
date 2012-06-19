@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+  <TITLE>The BitsN_TYPE_Ops machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre><A NAME="MACHINE">MACHINE</A>   BitsN_TYPE_Ops
+
+SEES       <A HREF="Bit_TYPE.mch.html#MACHINE">Bit_TYPE</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="BitsN_TYPE.mch.html#MACHINE">BitsN_TYPE</A>
+
+<A NAME="OPERATIONS">OPERATIONS</A>
+
+  rr &lt;-- <A NAME="OPNAME!NO_BTSN">NO_BTSN</A>(len) = 
+  PRE
+    len : 1..32
+  THEN
+    rr := (1..len) * {FALSE}
+  END;
+
+  rr &lt;-- <A NAME="OPNAME!STO_BTSN">STO_BTSN</A>(len,reg,nn,bb) =
+  PRE
+    len : 1 .. 32 &
+    reg : <A HREF="BitsN_TYPE.mch.html#CONSTANTS">BITSN</A> (len) &
+    nn : 1 .. len &
+    bb : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+  THEN
+    rr := reg &lt;+ {nn |-&gt; bb}
+  END;
+
+  bb &lt;-- <A NAME="OPNAME!VAL_BTSN">VAL_BTSN</A>(len,reg,nn) =
+  PRE
+    len : 1 .. 32 &
+    reg : <A HREF="BitsN_TYPE.mch.html#CONSTANTS">BITSN</A> (len) &
+    nn : 1 .. len
+  THEN
+    bb := reg (nn)
+  END;
+
+  rr &lt;-- <A NAME="OPNAME!CPL_BTSN">CPL_BTSN</A>(len,reg) =
+  PRE
+    len : 1 .. 32 &
+    reg : <A HREF="BitsN_TYPE.mch.html#CONSTANTS">BITSN</A> (len) 
+  THEN
+    rr := (reg ; <A HREF="Bit_TYPE.mch.html#CONSTANTS">tcp</A>)
+  END;
+
+  rr &lt;-- <A NAME="OPNAME!SUB_BTSN">SUB_BTSN</A>(len,reg1,reg2) =
+  PRE
+    len : 1 .. 32 &
+    reg1 : <A HREF="BitsN_TYPE.mch.html#CONSTANTS">BITSN</A> (len) &
+    reg2 : <A HREF="BitsN_TYPE.mch.html#CONSTANTS">BITSN</A> (len) 
+  THEN
+    rr := ((reg1 &gt;&lt; reg2) ; <A HREF="BitsN_TYPE.mch.html#CONSTANTS">tsb</A>)
+  END
+
+
+
+END
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

@@ -1,0 +1,59 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(CHAR , STRING)
+;
+(CHAR , STRING)
+;
+(?)
+;
+(?)
+;
+(STRING = {ss | ss : seq(CHAR) & size(ss) <= 1000} & card(CHAR) : NAT1 & card(STRING) : NAT1)
+;
+(STRING = {ss | ss : seq(CHAR) & size(ss) <= 1000} & card(CHAR) : NAT1 & card(STRING) : NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(String_TYPE(?):(?):(?))
+;
+(
+?
+)

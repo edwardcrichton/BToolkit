@@ -1,0 +1,160 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_BiArr_File">
+  <TITLE>The Rename_BiArr_File machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.02
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             27/01/01
+***/
+
+/*
+Description: Renamable Library variable machine
+             encapsulating an NVRAM array of Byte
+
+History :
+030698 v0.01 : Created as Rename_BiArr
+
+270101 v0.01 : Renamed to Rename_BiArr_File for DecCo8
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>          Rename_BiArr_File(VALUE,lb,ub)
+
+/*"
+A parameterised renamable encapsulation of an NVRAM
+{\em BYTE}-indexed array.
+
+The values to be stored in the array stored appear as the {\em
+VALUE\/} parameter which may be instantiated to any valid PASP type.
+
+The array indices are set through the instantiation of the {\em lb\/}
+and {\em ub\/} parameters, which may be instantiated to any natural
+numbers in the range {\em 0\/} to {\em 255\/}.
+
+Four operations are provided for this general purpose machine, {\em
+IDX\/}, {\em VAL\/}, {\em STO\/} and {\em EQ\/}; it is thus
+envisaged that all arithmetic operations on the values stored are
+achieved by first copying those values into local variables (using
+{\em VAL\/}) and subsequently updating the array (using {\em STO\/}).
+
+The specification array variable has the name {\em Rename\/} and, as
+with the single variable machines, the initialisation is
+nondeterministic, in line with the current practice of the programmer
+explicitly initialising all variables. Thus the invariant is
+specified as a {\em partial\/} mapping into {\em VALUE\/} and the
+initialisation allows {\em any\/} configuration consistent with that
+requirement.
+
+The variable array name will appear in the translated code as the
+identifier given for the rename, and importing this machine results in
+a global data declaration for the array. For example importing `{\em
+control\_BiBArr(BYTE,10,20)\/}' will result in the global data
+declaration:\\[1ex]
+\hspace*{3em}{\tt VAR control : ARRAY [10..20] OF BYTE;}\\[1ex]
+Thus the initialisation requires no translation
+since the above declaration achieves the nondeterminism specified.
+"*/
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>      lb&gt;=0 & ub&lt;=255
+
+<A NAME="SEES"><B>SEES</B></A>             <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>        Rename
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>        Rename : lb..ub +-&gt; VALUE
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>   Rename :: lb..ub +-&gt; VALUE
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf  Rename\_IDX}\\[.5ex]
+The operation returns a boolean indicating whether or not the index
+input parameter is within the bounds of the array, using the AMN {\sf
+bool} operator (which returns the boolean value of its argument) - the
+precondition ensures that the index input parameter has type {\em
+BYTE\/}; translated as:\\
+{\tt bb := (BGE(idx,lb) AND BLE(idx,ub))}
+\newpage
+"*/
+  bb <-- <A NAME="OPNAME!Rename_IDX">Rename_IDX</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B> bb := <B>bool</B>(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx): lb..ub) <B>END</B>;
+
+/*"
+{\bf  Rename\_VAL}\\[.5ex]
+The operation to retrieve a value stored at a particular array index -
+the precondition ensures that the index input parameter has type {\em
+BYTE\/}, is within the bounds of the array and the array at that index
+has been initialised; translated as:\\
+{\tt vv := prefix [idx]}
+"*/
+  vv <-- <A NAME="OPNAME!Rename_VAL">Rename_VAL</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename) <B>THEN</B>
+      vv := Rename(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx))
+    <B>END</B>;
+
+/*"
+{\bf  Rename\_STO}\\[.5ex]
+The operation to store a value at a particular array index -
+the precondition ensures that the index input parameter has type {\em
+BYTE\/} and is within the bounds of the array, and that the value
+parameter is of the right type; translated as:\\
+{\tt prefix [idx] := vv}
+"*/
+  <A NAME="OPNAME!Rename_STO">Rename_STO</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : VALUE) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : lb..ub <B>THEN</B>
+      Rename(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := vv
+    <B>END</B>;
+
+/*"
+{\bf  Rename\_EQ}\\[.5ex]
+The operation returns a boolean indicating whether or not the value
+input parameter is the same as that currently stored at the at the
+array location at the index parameter, using the AMN {\sf bool}
+operator (which returns the boolean value of its argument) - the
+precondition ensures that the both input parameters have the right
+type and that additionally the array at that index has been
+initialised; if, for example, {\em VALUE\/} is instantiated to {\em
+BYTE\/}, translated as:\\ {\tt bb := BEQ(prefix [idx], vv)} "*/
+
+  bb <--  <A NAME="OPNAME!Rename_EQ">Rename_EQ</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : VALUE) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename) <B>THEN</B>
+      bb := <B>bool</B>(Rename(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) = vv)
+    <B>END</B>
+
+
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:06:48 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

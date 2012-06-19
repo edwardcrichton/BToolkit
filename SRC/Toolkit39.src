@@ -1,0 +1,157 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+
+#include "GlobalDefs.src"
+
+
+THEORY BTOOLKITINIT END   /* Theory # 2 */
+
+&
+
+#include "Utils.src"
+
+&
+
+#include "PrettyPrint.src"
+
+&
+
+#include "CreatePmdTemplate.src"
+
+&
+
+#include "Standardize.src"
+
+&
+
+#include "CommonTheory.src"
+
+&
+
+#include "SetOfRules_core"
+
+&
+
+#include "LoadUnloadProofMethod.src"
+
+&
+
+#include "SwitchBTP.src"
+
+&
+
+#include "BToolProver.src"
+
+&
+
+#include "Toolkit_core.src"
+
+&
+
+THEORY ParseInitX IS
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformUnknownEnvironment(x) &
+  PFZ
+ =>  
+  pi$x;
+
+
+  Writef(("\n  BToolProver: Proof Level % for % does",n-1,a.b)) &
+  Writef(("\n               not exist - can't BToolProve Level %!\n",n)) &
+  LoadToolkit(1)
+ => 
+  run_btl_aup_ini(a.b.n);
+
+  Writef(("\n  BToolProver: Proof Obligations for % do",a.b)) &
+  Writef(("\n               not exist - can't BToolProve Level 0!\n")) &
+  LoadToolkit(1)
+ => 
+  run_btl_aup_ini(a.b.0);
+
+  IsLvl(a.b(n)) &
+  BToolProverAutoProofIni(a.b.n.po)
+ => 
+  run_btl_aup_ini(a.b.n);
+
+  BToolProverDirect(a.b.n.po)
+ => 
+  run_btl(a.b.n);
+
+  BToolProverFiniDirect(a.b.n)
+ => 
+  btl_fini(a.b.n);
+
+  CreReloadSrcFileForBToolProver(a.b.n)
+ => 
+  run_btl_rld(a.b.n);
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_RLD_REQ:0),X,Y) &
+  ModifyJobs(Y) &
+  run_btl_rld(x) &
+  LoadToolkit(1)
+ => 
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_AUP_INI:0),X,Y) &
+  ModifyJobs(Y) &
+  run_btl_aup_ini(x) &
+  LoadToolkit(1)
+ => 
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_FINI:0),X,Y) &
+  ModifyJobs(Y) &
+  btl_fini(x) &
+  LoadToolkit(1)
+ => 
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_INI:0),X,Y) &
+  ModifyJobs(Y) &
+  run_btl(x) &
+  LoadToolkit(1)
+ => 
+  run;
+
+  bnum(x) &
+  btest(1<=x) &
+  btest(5>=x) &
+  run
+ =>  
+  pi$x;
+
+  bnum(n) &
+  bmodr(ParseEnvX.2,n) &
+  LoadJobs &
+  pi$n
+ =>
+  n$toolkit$n$n
+
+END

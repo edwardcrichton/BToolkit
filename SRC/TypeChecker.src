@@ -1,0 +1,8954 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define ThisConstructIsUsrVHDL_store (TypeCheckerFromUserX.6)
+#define ModifyThisConstructIsUsrVHDL_yes \
+                bcall(MODR:bmodr(ThisConstructIsUsrVHDL_store,1))
+#define ModifyThisConstructIsUsrVHDL_no  \
+                bcall(MODR:bmodr(ThisConstructIsUsrVHDL_store,0))
+#define ThisConstructIsUsrVHDL brule(ThisConstructIsUsrVHDL_store,1)
+
+
+#define inc <:
+#define incl <<:
+#define e_r_r bsrv ? berv
+
+#define clean_stack(l) bcall((RULE;ARI;cleanX)~: clean_1_stack(l))
+
+
+THEORY TooManyErrorsX IS
+
+#define UpdateErrorsNum bcall((ARI;MODR;TooManyErrorsX)~: uen)
+
+#define TooManyErrors   brule(TooManyErrorsX.1,1)
+
+#define ClearErrorNum   bcall((MODR;TooManyErrorsX)~: cen)
+
+
+  ?; /* master error */
+
+  ?; /* num errors */
+
+  bmodr( TooManyErrorsX.1,0) &
+  bmodr(TooManyErrorsX.2,0)
+ =>
+  cen;
+
+  bmodr(TooManyErrorsX.1,1)
+ =>
+  uen;
+
+  brule(TooManyErrorsX.2,n) &
+  btest(n>=0) &
+  bmodr(TooManyErrorsX.2,(n+1))
+ =>
+  uen
+
+END
+
+&
+
+#define Has_error_message \
+   TypeCheckerErrorFlagged
+#define Set_error_message \
+   bcall(MODR:bmodr(TypeCheckerMessageX.1,1)) & UpdateErrorsNum
+#define Reset_error_message \
+   bcall(MODR:bmodr(TypeCheckerMessageX.1,0))
+   
+
+
+THEORY cleanX IS
+
+bpop(reg) &
+clean_2_stack(l,m-1)
+=>
+clean_2_stack(l,m)
+;
+clean_2_stack(l,l)
+;
+
+blent(reg.m) &
+clean_2_stack(l,m)
+=>
+clean_1_stack(l)
+
+END
+
+&
+
+
+#define tcfuTac (((ARI;CATL;MODR;WRITE;MAP;CATL~;SHELL;CATL)~;TypeCheckerFromUserX)~)
+
+#define TypeCheckerDirect(x) bcall(tcfuTac:tcfu100(x))
+
+#define errout  /* PrintTHEORY(ObjX)&*/ bcall(MODR:bmodr(ObjX.2,false))
+#define errin   bcall(MODR:bmodr(ObjX.2,true))
+#define iserrin brule(ObjX.2,true)
+
+THEORY VariablesWithNoTypeX IS
+
+#define ReadVariablesWithNoType(W) brule(VariablesWithNoTypeX.1,W)
+
+#define ResetVariablesWithNoType  bcall(MODR:bmodr(VariablesWithNoTypeX.1,bX_aU_sP_iX_s))
+
+#define AddToVariablesWithNoType(U)\
+                              brule(VariablesWithNoTypeX.1,W) & \
+                              bcall(MODR:bmodr(VariablesWithNoTypeX.1,(W,U)))
+
+#define AddToVariablesWithNoTypeFirstTime(U)\
+                              brule(VariablesWithNoTypeX.1,bX_aU_sP_iX_s) & \
+                              bcall(MODR:bmodr(VariablesWithNoTypeX.1,(U)))
+ bX_aU_sP_iX_s
+
+END
+
+&
+
+THEORY WarningX IS
+
+
+#define warn_sto            (WarningX.1)
+#define ReadWarningStore(x) brule(warn_sto,x)
+#define ModrWarningStore(x) bmodr(warn_sto,x)
+#define ClearWarningStore bcall(MODR: bmodr(warn_sto,?))
+
+#define NoTypeWarning(x) bcall(((WRITE;MODR)~;WarningX)~: print_warn((x),1))
+#define UnknownOpWarning(x) bcall(((WRITE;MODR)~;WarningX)~: print_warn((x),2))
+#define NoSetTypeWarning(x) bcall(((WRITE;MODR)~;WarningX)~: print_warn((x),3))
+#define TypeWarning(x,y) bcall(((WRITE;MODR)~;WarningX)~: print_warn(x,y,4))
+#define StructureWarning(x,y) bcall(((WRITE;MODR)~;WarningX)~: print_warn(x,y,5))
+#define NotNatWarning(x) bcall(((WRITE;MODR)~;WarningX)~: print_warn((x),6))
+#define StructurePassing(x,y) bcall(((WRITE;MODR)~;WarningX)~: print_warn(x,y,7))
+  ?;
+
+  print_warn(a,1);
+ 
+  bident(a) &
+  ReadWarningStore(S) &
+  ModrWarningStore((S,a)) &
+  AddToVariablesWithNoType(a) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: problems giving type to % ",bsrv a berv))
+ =>
+  print_warn(a,1);
+
+
+  ReadWarningStore(S) &
+  ModrWarningStore((S,a)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % Inappropriate Operator ",bsrv a berv))
+ =>
+  print_warn(a,2);
+
+  print_warn(a,3);
+
+  bident(a) &
+  ReadWarningStore(S) &
+  ModrWarningStore((S,a)) &
+  AddToVariablesWithNoType(a) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % not typed correctly ",bsrv a berv))
+ =>
+  print_warn(a,3);
+
+  ReadWarningStore(S) &
+  ModrWarningStore((S,a)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: Type % is taken as % ", a,b ))
+ =>
+  print_warn(a,b,4);
+
+  ReadWarningStore(S) &
+  ModrWarningStore((S,a)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: '%' contains a reference to a structure of type ", b)) &
+  bcall(TypeCheckerMessageX:MESSAGE("         '%' ",a ))
+ =>
+  print_warn(a,b,5);
+
+  ReadWarningStore(S) &
+  ModrWarningStore((S,a)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % used in relational expression ", a ))
+ =>
+  print_warn(a,6);
+
+  ReadWarningStore(S) &
+  ModrWarningStore((S,a)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: structure '%' passed to machine: ",a)) &
+  bcall(TypeCheckerMessageX:MESSAGE("         '%'",b)) 
+ =>
+  print_warn(a,b,7);
+
+
+  ReadWarningStore(S) &
+  bsearch(a,S,T)              /* warning already printed */
+ =>
+  print_warn(a,b,n);
+
+  ReadWarningStore(S) &
+  bsearch(a,S,T)              /* warning already printed */
+ =>
+  print_warn(a,n);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+
+
+THEORY OfferTypeCheckerFailureOptionsX IS
+
+#define OfferTypeCheckerFailureOptions \
+      bcall(((FLAT;MODR;OfferTypeCheckerFailureOptionsX)~):otcfo0)
+
+
+  otcfo0;
+
+  brule(TypeCheckerFromUserX.2,a.b) &
+  ModifyCurrentJob((a.b:BT_NML:0)) &
+  GetJobs(X) &
+  bsearch((a.b:BT_TYP:0),X,Y) &
+  AddJobs(Y,((a.b:BT_EDT_NML:0))) &
+  Writef(("\n"))
+ =>
+  otcfo0
+
+END
+
+&
+
+THEORY CurrentClauseX IS
+
+#define SetCurrentClause(x)   bcall(MODR: bmodr(CurrentClauseX.1,x))
+
+#define ReadCurrentClause(x)  brule(CurrentClauseX.1,x)
+
+#define SetLastClause(x)      bcall(MODR: bmodr(CurrentClauseX.2,x))
+
+#define ReadLastClause(x)     brule(CurrentClauseX.2,x)
+
+#define ClearCurrentClause  \
+  bcall( MODR: bmodr(CurrentClauseX.1,?) ) & \
+  bcall( MODR: bmodr(CurrentClauseX.2,?)  )
+
+  ?;?
+
+ 
+END
+&
+THEORY RangeCheckX IS
+
+#define SetRangeCheck     bcall( MODR: bmodr(RangeCheckX.1,1) )
+#define ResetRangeCheck   bcall( MODR: bmodr(RangeCheckX.1,0) )
+#define NoRangeCheck      brule(RangeCheckX.1,0)
+
+ 0
+
+END
+&
+
+
+/***
+THEORY CreateAbstractionX IS
+
+#define cre_abs_tac \
+	((REV;FLAT~;NEWV;CATL;SHELL;WRITE;ARI;MODR;SUB;MAP)~;CreateAbstractionX)~
+
+#define CreateAbstraction(r)   bcall(cre_abs_tac: cre_abs_0(r))
+
+
+
+#define ClearAbstractionFlag     bcall(MODR:bmodr(CreateAbstractionX.2,0)) 
+
+#define SetAbstractionFlag       bcall(MODR:bmodr(CreateAbstractionX.2,1)) 
+
+#define AbstractionFlagIsNotSet  brule(CreateAbstractionX.2,0) 
+
+#define AbstractionFlagIsSet     brule(CreateAbstractionX.2,1) 
+
+
+#define OpNamesStore     CreateAbstractionX.4
+
+#define ClearCreateAbstraction \
+ bcall( MODR: bmodr(CreateAbstractionX.1,?) ) & \
+ bcall( MODR: bmodr(CreateAbstractionX.2,?) ) & \
+ bcall( MODR: bmodr(CreateAbstractionX.3,?) ) & \
+ bcall( MODR: bmodr(CreateAbstractionX.4,?) ) 
+
+  ?;
+
+  ?;
+
+  ?;
+
+  ?;
+
+  blident(a) &
+  bmodr(CreateAbstractionX.1,a) &
+  bprintf("%",a)
+ =>
+  a;
+
+  
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  newvar(y) == (bnewv(y,var));
+
+  newvar(x,y) == (newvar(x),bnewv(y,var));
+
+
+  brule(OpNamesStore,O) &
+  bmodr(OpNamesStore,(O,o))
+ =>
+  sto_opname(o);
+
+  brule(OpNamesStore,?) &
+  bmodr(OpNamesStore,o)
+ =>
+  sto_opname(o);
+
+
+  cre_abs_anl_5(o,O)
+ =>
+  cre_abs_anl_5(o,(O;p));
+
+  bprintf("(%;(?,Val_Op,Det_Op,(%));?;?;(true | skip);(true | skip))",o,o)
+ =>
+  cre_abs_anl_5(o,(O;(o=skip)));
+
+  bprintf("(%;(?,Val_Op,Det_Op,(%(%)));%;?;(% | skip);(% | skip))",o,o,t,t,p,p)
+ =>
+  cre_abs_anl_5(o,(O;(o(t)=PRE p THEN skip END)));
+
+  bprintf("(%;(?,Val_Op,NonDet_Op,(%<--%));?;%;(true | %);(true | %))",o,s,o,s,(ANY a WHERE w THEN x END),(@a.(w==>x)))
+ =>
+  cre_abs_anl_5(o,(O;(s<--o=ANY a WHERE w THEN x END)));
+
+  bprintf("(%;(?,Val_Op,NonDet_Op,(%<--%(%)));%;%;(% | %);(% | %))",o,s,o,t,t,s,p,(ANY a WHERE w THEN x END),p,(@a.(w==> x)))
+ =>
+  cre_abs_anl_5(o,(O;(s<--o(t)=PRE p THEN ANY a WHERE w THEN x END END)));
+
+  WriteDot &
+  cre_abs_anl_5(o,O) &
+  bprintf("\n,\n")
+ =>
+  cre_abs_anl_4(O,o,m,n);
+
+  WriteDot &
+  cre_abs_anl_5(o,O) &
+  bprintf("\n")
+ =>
+  cre_abs_anl_4(O,o,n,n);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cre_abs_anl_3(O)(f);
+
+  bget(f,MACHINE X OPERATIONS Y END) &
+  cre_abs_anl_4(bflat(?;Y)) bnmap O
+ =>
+  cre_abs_anl_3(O)(f);
+
+  brule(StoreOpsX.1,x) &
+  brule(OpNamesStore,O) &
+  bprintf("(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(%)\n;\n(%)\n;\n(%(?):(?):(?))\n;\n(\n",O,O,a) &
+  cre_abs_anl_3(O)(bcatl("CFG/",a,".mch")) &
+  bprintf(")\n")
+ =>
+  cre_abs_anl_2(a);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cre_abs_anl_1(a)(f);
+
+  bconnect(f) &
+  cre_abs_anl_2(a)
+ =>
+  cre_abs_anl_1(a)(f);
+
+  cre_abs_anl_1(a)(bcatl("ANL/",a,".mch.anl"))
+ =>
+  cre_abs_anl_0(a);
+
+
+
+  InformCantConnect(g) &
+  PFZ
+ =>
+  cre_abs_typ_2(a)(f)(S);
+
+  bconnect(f) &
+  bprintf("%\n|\ntrue\n|\n(?)\n",S)
+ =>
+  cre_abs_typ_2(a)(f)(S);
+
+  InformCantConnect(g) &
+  PFZ
+ =>
+  cre_abs_typ_1(a)(f)(g);
+
+  bget(g,(S|R|T)) &
+  cre_abs_typ_2(a)(f)(S)
+ =>
+  cre_abs_typ_1(a)(f)(g);
+
+  brule(TypeCheckerFromUserX.2,i.imp) &
+  cre_abs_typ_1(a)(bcatl("TYP/",a,".mri.typ"))(bcatl("TYP/",i,".mri.typ"))
+ =>
+  cre_abs_typ_0(a);
+
+
+
+
+  print_pre_pred_1(?)(T);
+
+  bsearch((v:t),T,U) &
+  bprintf(" &\n      % ",(v:t)) &
+  print_pre_pred_1(V)(U)
+ =>
+  print_pre_pred_1(V,v)(T);
+
+  bsearch((v:t),T,U) &
+  bprintf("\n      % ",(v:t)) &
+  print_pre_pred_1(V)(U)
+ =>
+  print_pre_pred_0(V,v)(T);
+
+
+
+  print_pred_1(?)(T);
+
+  bsearch((v:t),T,U) &
+  bprintf(" &\n        % ",(v:t)) &
+  print_pred_1(V)(U)
+ =>
+  print_pred_1(V,v)(T);
+
+  bsearch((v:t),T,U) &
+  bprintf("\n        % ",(v:t)) &
+  print_pred_1(V)(U)
+ =>
+  print_pred_0(V,v)(T);
+
+
+
+
+  print_pred_0(bflat(?,brev(Y)))(bflat(?&T))
+ =>
+  print_where_1(Y)(T); 
+
+  brule(CreateAbstractionX.1,Y) &
+  print_where_1(Y)([y:=Y]T)
+ =>
+  print_where_0(y)(T);
+
+
+  brule(CreateAbstractionX.1,Y) &
+  bprintf("        % := % ",y,Y)
+ =>
+  print_sub(y);
+
+  bprintf("  %<--%(%) =\n    PRE",x,o,y) &
+  sto_opname(o) &
+  print_pre_pred_0(bflat(?,brev(y)))(bflat(?&t)) &
+  bprintf("\n    THEN\n      ANY ") &
+  newvar(x) &
+  bprintf(" WHERE") &
+  print_where_0(x)(t) &
+  bprintf("\n      THEN\n") &
+  print_sub(x) &
+  bprintf("\n      END\n    END")  
+ =>
+  cre_op((o(x;y)==t));
+
+  bprintf("  %<--% =\n",x,o) &
+  sto_opname(o) &
+  bprintf("      ANY ") &
+  newvar(x) &
+  bprintf(" WHERE") &
+  print_where_0(x)(t) &
+  bprintf("\n      THEN\n") &
+  print_sub(x) &
+  bprintf("\n      END")  
+ =>
+  cre_op((o(x;?)==t));
+
+  bprintf("  %(%) =\n    PRE",o,y) &
+  sto_opname(o) &
+  print_pre_pred_0(bflat(?,brev(y)))(bflat(?&t)) &
+  bprintf("\n    THEN\n      skip\n    END")  
+ =>
+  cre_op((o(?;y)==t));
+
+  bprintf("  % = skip",o) &
+  sto_opname(o)
+ =>
+  cre_op((o(?;?)==t));
+
+  bprintf("\nEND")
+ =>
+  cre_abs_5(n);
+
+  brule(StoreOpsX.n,x) &
+  WriteDot &
+  bprintf(";\n\n") &
+  cre_op(x) &
+  cre_abs_5(n+1)
+ =>
+  cre_abs_5(n);
+
+  brule(StoreOpsX.1,x) &
+  WriteDot &
+  bprintf("OPERATIONS\n\n") &
+  cre_op(x) &
+  cre_abs_5(2)
+ =>
+  cre_abs_5(1);
+
+  bprintf("MACHINE\n\n  %\n\n",a) &
+  cre_abs_5(1)
+ =>
+  cre_abs_4(a);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cre_abs_3A(a)(f);
+
+  bconnect(f) &
+  bmodr(CreateAbstractionX.3,a) &
+  cre_abs_4(a)
+ =>
+  cre_abs_3A(a)(f);
+
+  cre_abs_3A(a)(bcatl("CFG/",a,".mch")) &
+  cre_abs_anl_0(a) &
+  cre_abs_typ_0(a)
+/?
+ &
+  cre_abs_amend_imp_anl_0
+?/
+ =>
+  cre_abs_3(a)(1);
+
+
+  InformAbstractionAlreadyExisis(a) &
+  Set_error_message
+ =>
+  cre_abs_3(a)(0);
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cre_abs_2(a);
+
+  bget(".Bcom",n) &
+  cre_abs_3(a)(n)
+ =>
+  cre_abs_2(a);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".mch SRC")) &
+  cre_abs_2(a)
+ =>
+  cre_abs_1(a);
+
+  IsCfg(a.mch) &
+  InformAbstractionAlreadyConfigured(a) &
+  Set_error_message
+ =>
+  cre_abs_1(a);
+
+  cre_abs_0(r);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  InformCreatingAbstraction &
+  cre_abs_1(bnewv(a,ABS)) &
+  SetAbstractionFlag
+ =>
+  cre_abs_0(?);
+
+  TypeCheckerErrorFlagged
+ =>
+  cre_abs_0(r);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+***/
+
+
+THEORY TreatVariableAndInvariantX IS
+
+#define First_time_in_treat_variable_and_invariant \
+   bcall(MODR:bmodr(TreatVariableAndInvariantX.1,1))
+#define Is_first_time_in_treat_variable_and_invariant \
+   brule(TreatVariableAndInvariantX.1,1)
+#define Is_first_or_second_time_in_treat_variable_and_invariant \
+   brule(TreatVariableAndInvariantX.1,n) & \
+   btest(n<=2)
+#define Is_outside_treat_variable_and_invariant \
+   brule(TreatVariableAndInvariantX.1,4)
+#define Last_time_in_treat_variable_and_invariant \
+   bcall(MODR:bmodr(TreatVariableAndInvariantX.1,3))
+#define Outside_treat_variable_and_invariant \
+   bcall(MODR:bmodr(TreatVariableAndInvariantX.1,4))
+#define Second_time_in_treat_variable_and_invariant \
+   bcall(MODR:bmodr(TreatVariableAndInvariantX.1,2))
+#define Reset_error_in_treat_variable_and_invariant \
+   bcall(MODR:bmodr(TreatVariableAndInvariantX.2,0)) & \
+   bcall(MODR:bmodr(TreatVariableAndInvariantX.3,10000))
+#define Clear_error_in_treat_variable_and_invariant \
+   bcall(MODR:bmodr(TreatVariableAndInvariantX.2,0)) & \
+   bcall(MODR:bmodr(TreatVariableAndInvariantX.3,e))
+#define Mark_error_in_treat_variable_and_invariant \
+   brule(TreatVariableAndInvariantX.2,e) & \
+   bcall((ARI;MODR):bmodr(TreatVariableAndInvariantX.2,e+1))
+#define Has_error_in_treat_variable_and_invariant \
+   brule(TreatVariableAndInvariantX.2,e) & \
+   btest(e/=0)
+#define Less_error_in_treat_variable_and_invariant \
+   brule(TreatVariableAndInvariantX.3,f) & \
+   btest(e<f)
+
+  4;  /* 1: first time; 2: second time; 3: last time; 4: normal */
+  
+  0; /* error counter */
+  
+  10000; /* old error counter */
+  
+  SetCurrentClause("INVARIANT") &
+  brule(TreatVariableAndInvariantX.2,e) &
+  brule(TreatVariableAndInvariantX.3,f) &
+  Last_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext) &
+  Outside_treat_variable_and_invariant
+ =>
+  treat_variable_and_invariant2(n,v);
+  
+  Has_error_in_treat_variable_and_invariant &
+  brule(TreatVariableAndInvariantX.3,f) &
+  Second_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  SetCurrentClause("INVARIANT") &
+  Last_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext) &
+  Outside_treat_variable_and_invariant
+ => 
+  treat_variable_and_invariant2(n,v);
+  
+  Has_error_in_treat_variable_and_invariant &
+  Less_error_in_treat_variable_and_invariant &
+  Clear_error_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  treat_variable_and_invariant2(n+1,v)
+ =>
+  treat_variable_and_invariant2(n,v);
+  
+  Reset_error_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  treat_variable_and_invariant2(1,v)
+ =>
+  treat_variable_and_invariant(v);
+
+  errin &
+  treat_variable_and_invariant(v)
+ =>
+  treat_variable_and_invariant1(v);
+  
+  iserrin &
+/*
+  Writef(("\n")) &
+*/
+  Outside_treat_variable_and_invariant
+ =>  
+  treat_variable_and_invariant1(v);
+  
+  SetCurrentClause("VARIABLES") &
+  First_time_in_treat_variable_and_invariant &
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(v)) &
+  treat_variable_and_invariant1(v)
+ =>
+  treat_variable_and_invariant0(v);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY TreatConstantsAndPropertiesX IS
+
+  SetCurrentClause("PROPERTIES") &
+  brule(TreatVariableAndInvariantX.2,e) &
+  brule(TreatVariableAndInvariantX.3,f) &
+  Last_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext) &
+  Outside_treat_variable_and_invariant
+ =>
+  treat_variable_and_invariant2(n,v);
+  
+  Has_error_in_treat_variable_and_invariant &
+  brule(TreatVariableAndInvariantX.3,f) &
+  Second_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  SetCurrentClause("PROPERTIES") &
+  Last_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext) &
+  Outside_treat_variable_and_invariant
+ => 
+  treat_variable_and_invariant2(n,v);
+  
+  Has_error_in_treat_variable_and_invariant &
+  Less_error_in_treat_variable_and_invariant &
+  Clear_error_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  treat_variable_and_invariant2(n+1,v)
+ =>
+  treat_variable_and_invariant2(n,v);
+  
+  Reset_error_in_treat_variable_and_invariant &
+  First_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  treat_variable_and_invariant2(1,v)
+ =>
+  treat_constant_and_properties(v);
+  
+  errin &
+  treat_constant_and_properties(v)
+ =>
+  treat_constant_and_properties1(v);
+  
+  iserrin &
+/*
+  Writef(("\n")) &
+*/
+  Outside_treat_variable_and_invariant
+ =>  
+  treat_constant_and_properties1(v);
+  
+  SetCurrentClause("CONSTANTS") &
+  First_time_in_treat_variable_and_invariant &
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(v)) &
+  treat_constant_and_properties1(v)
+ =>
+  treat_constant_and_properties0(v);
+
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+
+THEORY TreatParametersAndPreconditionX IS
+
+#define Is_in_TreatParametersAndPrecondition \
+   brule(TreatParametersAndPreconditionX.1,1)
+#define Set_in_TreatParametersAndPrecondition \
+   bcall(MODR:bmodr(TreatParametersAndPreconditionX.1,1))
+#define Reset_in_TreatParametersAndPrecondition \
+   bcall(MODR:bmodr(TreatParametersAndPreconditionX.1,0))
+
+  0;
+  
+  brule(TreatVariableAndInvariantX.2,e) &
+  brule(TreatVariableAndInvariantX.3,f) &
+  Last_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext) &
+  Outside_treat_variable_and_invariant &
+  Reset_in_TreatParametersAndPrecondition
+ =>
+  treat_variable_and_invariant2(n,v);
+  
+  Has_error_in_treat_variable_and_invariant &
+  brule(TreatVariableAndInvariantX.3,f) &
+  Second_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  Last_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext) &
+  Outside_treat_variable_and_invariant &
+  Reset_in_TreatParametersAndPrecondition
+ => 
+  treat_variable_and_invariant2(n,v);
+  
+  Has_error_in_treat_variable_and_invariant &
+  Less_error_in_treat_variable_and_invariant &
+  Clear_error_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  treat_variable_and_invariant2(n+1,v)
+ =>
+  treat_variable_and_invariant2(n,v);
+  
+  Set_in_TreatParametersAndPrecondition &
+  Reset_error_in_treat_variable_and_invariant &
+  First_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  treat_variable_and_invariant2(1,v)
+ =>
+  treat_parameters_and_precondition(v);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+
+THEORY TreatVariableAndQuantifierX IS
+
+#define ClearTreatVariableAndQuantifier \
+  bcall(MODR: bmodr(TreatVariableAndQuantifierX.1,0) )
+
+  0;
+  
+  brule(TreatVariableAndInvariantX.2,e) &
+  brule(TreatVariableAndInvariantX.3,f) &
+  Last_time_in_treat_variable_and_invariant &
+  bcall((RULE;MAP;StorePropertiesX)~:store_more_properties(Q)) &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext) &
+  Outside_treat_variable_and_invariant &
+  Reset_in_TreatParametersAndPrecondition
+ =>
+  treat_variable_and_invariant2(n,v;Q);
+  
+  Has_error_in_treat_variable_and_invariant &
+  brule(TreatVariableAndInvariantX.3,f) &
+  Second_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  Last_time_in_treat_variable_and_invariant &
+  bcall((RULE;MAP;StorePropertiesX)~:store_more_properties(Q)) &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext) &
+  Outside_treat_variable_and_invariant &
+  Reset_in_TreatParametersAndPrecondition
+ => 
+  treat_variable_and_invariant2(n,v;Q);
+  
+  Has_error_in_treat_variable_and_invariant &
+  Less_error_in_treat_variable_and_invariant &
+  Clear_error_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  treat_variable_and_invariant2(n+1,v;Q)
+ =>
+  treat_variable_and_invariant2(n,v;Q);
+  
+  Set_in_TreatParametersAndPrecondition &
+  Reset_error_in_treat_variable_and_invariant &
+  First_time_in_treat_variable_and_invariant &
+  bcall((MAP;DED;ARI;PredCtxPX)~,fwdX:wellcontext(v)) &
+  treat_variable_and_invariant2(1,v;Q)
+ =>
+  treat_variable_and_quantifier(v;Q);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+
+THEORY TypeCheckerMessageX IS
+
+#define ClearTypeCheckerMessage \
+  bcall(MODR: bmodr(TypeCheckerMessageX.1,0)) & \
+  bcall(MODR: bmodr(TypeCheckerMessageX.2,?)   )
+
+   0;
+
+   ?;
+
+   brule(TreatOperationsX.1,o) &
+   bcall(MODR: bmodr(TypeCheckerMessageX.2,o)) &
+   Set_error_message &
+   ClearWarningStore  &
+   Writef(("\n\n    OPERATION  % ",o)) &
+   Writef(("\n    ")) &
+   Writef((m)) &
+   Writef((" "))
+  =>
+   ERROR_MESSAGE(m);
+   
+   brule(TreatOperationsX.1,o) &
+   brule(TypeCheckerMessageX.2,o) &
+   Set_error_message &
+   ClearWarningStore &
+   Writef(("\n    ")) &
+   Writef((m)) &
+   Writef((" "))
+  =>
+   ERROR_MESSAGE(m);
+   
+   brule(TreatOperationsX.1,?) &
+   ReadCurrentClause(c) &
+   SetLastClause(c) &
+   Set_error_message &
+   ClearWarningStore &
+   Writef(("\n\n    ")) &
+   Writef((c)) &
+   Writef(("\n    ")) &
+   Writef((m)) &
+   Writef((" "))
+  =>
+   ERROR_MESSAGE(m);
+   
+   brule(TreatOperationsX.1,?) &
+   ReadCurrentClause(c) &
+   ReadLastClause(c) &
+   Set_error_message &
+   ClearWarningStore &
+   Writef(("\n    ")) &
+   Writef((m)) &
+   Writef((" "))
+  =>
+   ERROR_MESSAGE(m);
+   
+   
+   brule(TreatOperationsX.1,o) &
+   bcall(MODR: bmodr(TypeCheckerMessageX.2,o)) &
+   Writef(("\n\n    OPERATION  % ",o)) &
+   Writef(("\n    ")) &
+   Writef((m)) &
+   Writef((" "))
+  =>
+   MESSAGE(m);
+
+   brule(TreatOperationsX.1,o) &
+   brule(TypeCheckerMessageX.2,o) &
+   Writef(("\n    ")) &
+   Writef((m)) &
+   Writef((" "))
+  =>
+   MESSAGE(m);
+
+   brule(TreatOperationsX.1,?) &
+   ReadCurrentClause(c) &
+   SetLastClause(c) &
+   Writef(("\n\n    ")) &
+   Writef((c)) &
+   Writef(("\n    ")) &
+   Writef((m)) &
+   Writef((" "))
+  =>
+   MESSAGE(m);
+
+   brule(TreatOperationsX.1,?) &
+   ReadCurrentClause(c) &
+   ReadLastClause(c) &
+   Writef(("\n    ")) &
+   Writef((m)) &
+   Writef((" "))
+  =>
+   MESSAGE(m);
+
+  TooManyErrors
+ =>
+  x
+
+ 
+END
+
+&
+
+THEORY TreatAbstractSetX IS
+
+  Writef((".")) &
+  bcrelr(StoreHypX,given(p))
+ =>
+  treat_abstract_set(p);
+  
+  treat_abstract_set bsmap b
+ =>
+  treat_abstract_set0(b);
+  
+  treat_abstract_set0(?);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY TreatEnumeratedSetX IS
+/*
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("List % is not made of distinct identifiers\n",bsrv l berv))
+ =>
+  treat_enumerated_set(s(l));
+*/
+
+  Writef((".")) &
+  bcrelr(StoreHypX,given(p))
+ =>
+  treat_enumerated_set(p);
+
+/*
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("List % is not made of distinct identifiers",bsrv l berv))
+ =>
+  treat_enumerated_set(s(l));
+
+  
+  bvrb(l) &
+*/
+
+  Writef((".")) &
+  bcrelr(StoreHypX,given(s)) &
+  bcrelr(StoreHypX,given_enum(s(l))) &
+  treat_element(s) bsmap l
+ =>
+  treat_enumerated_set(s(l));
+
+
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Dimension % must be a Number",bsrv l berv))
+ =>
+  treat_enumerated_set(p[l]);
+
+  bnum(n) &
+  Writef((".")) &
+  bcrelr(StoreHypX,given(p)) &
+  bcrelr(StoreHypX,given(p[n]))
+ =>
+  treat_enumerated_set(p[n]);
+
+
+  
+  bcrelr(StoreHypX,(a:s))
+ =>
+  treat_element(s,a);
+  
+  treat_enumerated_set bsmap b
+/*
+ &
+  Writef(("\n"))
+*/
+ =>
+  treat_enumerated_set0(b);
+  
+/*
+  Writef(("\n"))
+ =>
+*/
+  treat_enumerated_set0(?);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY SubTestX IS
+
+ 
+ subtest(a;m;l;r);
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Construct % improperly instantiated",a,bsrv m berv))
+ =>
+  subtest(a;m;(K,l);r);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Construct % improperly instantiated",a,bsrv m berv))
+ =>
+  subtest(a;m;l;(S,r));
+  
+  subtest(a;m;K;S)   
+ =>
+  subtest(a;m;(K,l);(S,r));
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY SubTestOpsX IS
+
+#define reset_trans_param_error \
+  bcall(MODR:bmodr(SubTestOpsX.1,no_error))
+#define set_trans_param_error \
+  bcall(MODR:bmodr(SubTestOpsX.1,error))
+#define is_trans_param_error \
+  brule(SubTestOpsX.1,error)
+  
+  no_error;
+  
+  subtestops(o;l;r);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("% is an improper call",bsrv o berv)) &
+  set_trans_param_error
+ =>
+  subtestops(o;?;r);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("% is an improper call",bsrv o berv)) &
+  set_trans_param_error
+ =>
+  subtestops(o;(K,l);r);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("% is an improper call",bsrv o berv)) &
+  set_trans_param_error
+ =>
+  subtestops(o;l;(S,r));
+  
+  subtestops(o;K;S)
+ =>
+  subtestops(o;(K,l);(S,r));
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("% is an improper call",bsrv o berv)) &
+  set_trans_param_error
+ =>
+  subtestops(o;(K,?);(S,r));
+
+  TooManyErrors
+ =>
+  x
+END
+
+&
+
+THEORY StoreDepInfoX IS
+
+#define sto_dep_info_tac ((NEWV;RULE~); StoreDepInfoX)~
+
+#define StoreDepInfo(x)  bcall(sto_dep_info_tac: sto_dep_info(x))
+
+
+  bcrer(dep_REFINESX,a)
+ =>
+  sto_dep_REFINES(a);
+
+  bcrer(dep_INCLUDESX,a)
+ =>
+  sto_dep_INCLUDES(a);
+
+  bcrer(dep_USESX,a)
+ =>
+  sto_dep_USES(a);
+
+  bcrer(dep_SEESX,a)
+ =>
+  sto_dep_SEES(a);
+
+  (r(s):t:(u,v,w)) == r;
+
+/*
+  (R.r(s):t:(u,v,w)) == bnewv(R,r);
+*/
+  (R.r(s):t:(u,v,w)) == (R.r);
+
+  sto_dep_SEES(A) &
+  sto_dep_USES(B) &
+  sto_dep_INCLUDES(b) &
+  sto_dep_REFINES(r)  
+ =>
+  sto_dep_info(A,B,b,r);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+
+THEORY AbsInvStoreX IS
+
+#define ClearAbsInvStore   bcall(MODR: bmodr(AbsInvStoreX.1,true) )
+
+ true
+
+ END
+
+&
+
+THEORY StoreAbsInvX IS
+
+    brule(AbsInvStoreX.1,P) &
+    bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) 
+   =>
+    check_absinv;
+
+    store_absinv1(e);
+
+    brule(StoreHypX.n,(e:T)) &
+    brule(AbsInvStoreX.1,P) &
+    bcall(MODR: bmodr(AbsInvStoreX.1,(P & e:T)))
+   =>
+    store_absinv1(e);
+  
+    store_absinv1 bsmap d
+   =>
+    store_absinv(d)
+
+END
+
+&
+
+#define DoImplementation2(z,Z)   bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) & \
+  bcall(RULE~:(bcrelr(StoreHypX,1) & \
+               bcrelr(ObjX,done) &  \
+               bcrelr(ObjX,true))) & \
+  bcall(MODR: bmodr(TreatOperationsX.1,?)) & \
+  Writef(("    Type checking ")) & \
+  SetCurrentClause("SEES") & \
+  bcall((LMAP;MAP;RULE;CATL~;TreatSeenMachineX)~:treat_seen_machine0(2;z;A)) & \
+  SetCurrentClause("USES") & \
+  bcall((LMAP;MAP;RULE;CATL~;TreatSeenMachineX)~:treat_seen_machine0(2;z;B)) & \
+  bcall((WriteStoreX;MODR):store_size_StoreHypX) & \
+  SetCurrentClause("CONSTRAINTS") & \
+  bcall((MAP;RULE;TreatFormalParameterX)~:treat_formal_parameter0(l,m,z)) & \
+  SetCurrentClause("SETS") & \
+  bcall((MAP;RULE;TreatEnumeratedSetX)~:treat_enumerated_set0(D)) & \
+  SetCurrentClause("CONSTRAINTS") & \
+  bcall((MAP;RULE;CATL~;TreatAbstractionX)~:treat_abstraction(2;z;r)) & \
+  bcall((RULE;MAP;StoreAbsInvX)~:store_absinv(d)) &  \
+  SetCurrentClause("PROPERTIES") & \
+  bcall((RULE;MAP;StorePropertiesX)~:store_properties(H)) & \
+  SetCurrentClause("IMPORTS") & \
+  bcall((MAP;RULE;CATL~;TreatActualParamsX)~:treat_actual_parameters(b)) & \
+  SetCurrentClause("PROPERTIES") & \
+  bcall((((FLAT;REV)~;ARI;TreatConstantsAndPropertiesX)~):treat_constant_and_properties0(F)) & \
+  SetCurrentClause("IMPORTS") & \
+  bcall((MAP;RULE;CATL~;TreatIncludedMachineX)~:treat_included_machine0(2;z;b)) & \
+  SetCurrentClause("INVARIANT") & \
+  bcall((REV;RULE;MAP;StorePropertiesX)~:store_properties(brev(e))) & \
+  bcall((REV;(ARI;TreatVariableAndInvariantX)~):treat_variable_and_invariant0(brev(Q))) & \
+  bcall((RULE;MAP;StoreAbsInvX)~:check_absinv) &  \
+  SetCurrentClause("ASSERTIONS") & \
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(g)) & \
+  SetCurrentClause("INITIALISATION") & \
+  bcall(MODR: bmodr(OperationVarX.1,(?;k))) & \
+  bcall(MODR: bmodr(OperationVarX.2,(?|?))) & \
+  bcall((FLAT~;GEN;SUB~;DED;MAP;ARI;REV;StmtX)~,fwdX:wellstostmtBegin(h)) & \
+  bcall((MAP;RULE;ARI;TreatOperationsX)~: endbody) & \
+  SetCurrentClause("OPERATIONS") & \
+  bcall((MAP;RULE;ARI;TreatOperationsX)~:treat_operations(c;n,?)) & \
+  bcall((ARI;DumpStoreX)~:epilog2) & \
+  bcall((CATL;WRITE;ARI;WriteStoreX)~:epilog22(z,l)) & \
+  StoreDepInfo((A,B,b,r)) &\
+  bcall(MODR: bmodr(TreatOperationsX.2,(c,?)) )
+/*
+  ClearAbstractionFlag & \
+  CreateAbstraction(r)
+*/
+
+  
+
+#define DoRefinement2(z,Z)   bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) & \
+  bcall(RULE~:(bcrelr(StoreHypX,1) & \
+               bcrelr(ObjX,done) &  \
+               bcrelr(ObjX,true))) & \
+  bcall(MODR: bmodr(TreatOperationsX.1,?)) & \
+  Writef(("    Type checking ")) & \
+  SetCurrentClause("SEES") & \
+  bcall((LMAP;MAP;RULE;CATL~;TreatSeenMachineX)~:treat_seen_machine0(2;z;A)) & \
+  SetCurrentClause("USES") & \
+  bcall((LMAP;MAP;RULE;CATL~;TreatSeenMachineX)~:treat_seen_machine0(2;z;B)) & \
+  bcall((WriteStoreX;MODR):store_size_StoreHypX) & \
+  SetCurrentClause("CONSTRAINTS") & \
+  bcall((MAP;RULE;TreatFormalParameterX)~:treat_formal_parameter0(l,m,z)) & \
+  SetCurrentClause("SETS") & \
+  bcall((MAP;RULE;TreatEnumeratedSetX)~:treat_enumerated_set0(C)) & \
+  bcall((MAP;RULE;CATL~;TreatAbstractionX)~:treat_abstraction(2;z;r)) & \
+  SetCurrentClause("INCLUDES") & \
+  bcall((MAP;RULE;CATL~;TreatIncludedMachineX)~:treat_included_machine0(2;z;b)) & \
+  SetCurrentClause("PROPERTIES") & \
+  bcall((RULE;MAP;StorePropertiesX)~:store_properties(/* G*/ H)) & \
+  bcall((REV;(ARI;TreatConstantsAndPropertiesX)~):treat_constant_and_properties0(/* E*/ F)) & \
+  SetCurrentClause("INVARIANT") & \
+  bcall((REV;RULE;MAP;StorePropertiesX)~:store_properties(brev(e))) & \
+  bcall((REV;(ARI;TreatVariableAndInvariantX)~):treat_variable_and_invariant0(brev(Q))) & \
+  SetCurrentClause("ASSERTIONS") & \
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(g)) & \
+  SetCurrentClause("INITIALISATION") & \
+  bcall((FLAT~;GEN;SUB~;DED;MAP;ARI;REV;StmtX)~,fwdX:wellstostmt(h)) & \
+  SetCurrentClause("OPERATIONS") & \
+  bcall((MAP;RULE;ARI;TreatOperationsX)~:treat_operations(c;n,?)) & \
+  bcall((ARI;DumpStoreX)~:epilog2) & \
+  bcall((CATL;WRITE;ARI;WriteStoreX)~:epilog22(z,l)) & \
+  StoreDepInfo((A,B,b,r))
+/*
+  ClearAbstractionFlag
+*/
+
+/*
+ bcall((MAP;RULE;TreatFormalParameterX)~:treat_formal_parameter0(l,m,z)) & \
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(m)) & \
+2. moved from after INCLUDES to check before seing
+1. treat_formal_parameter duplicated
+*/
+
+#define DoMachine2(z,Z)   bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) & \
+  bcall(RULE~:(bcrelr(StoreHypX,1) & \
+               bcrelr(ObjX,done) &  \
+               bcrelr(ObjX,true))) & \
+  bcall(MODR: bmodr(TreatOperationsX.1,?)) & \
+  Writef(("    Type checking ")) & \
+  SetCurrentClause("CONSTRAINTS") & \
+  bcall((MAP;RULE;TreatFormalParameterX)~:treat_formal_parameter0(l,m,z)) & \
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(m)) & \
+  SetCurrentClause("SEES") & \
+  bcall((LMAP;MAP;RULE;CATL~;TreatSeenMachineX)~:treat_seen_machine0(2;z;A)) & \
+  bcall((LMAP;MAP;RULE;CATL~;TreatSeenMachineX)~:treat_seen_machine0(2;z;B)) & \
+  SetCurrentClause("CONSTRAINTS") & \
+  bcall((WriteStoreX;MODR):store_size_StoreHypX) & \
+  bcall((MAP;RULE;TreatFormalParameterX)~:treat_formal_parameter0(l,m,z)) & \
+  SetCurrentClause("SETS") & \
+  bcall((MAP;RULE;TreatEnumeratedSetX)~:treat_enumerated_set0(D)) & \
+  SetCurrentClause("PROPERTIES") & \
+  bcall((RULE;MAP;StorePropertiesX)~:store_properties(H)) & \
+  SetCurrentClause("INCLUDES") & \
+  bcall((MAP;RULE;CATL~;TreatActualParamsX)~:treat_actual_parameters(b)) & \
+  SetCurrentClause("PROPERTIES") & \
+  bcall((((FLAT;REV)~;ARI;TreatConstantsAndPropertiesX)~):treat_constant_and_properties0(F)) & \
+  SetCurrentClause("INCLUDES") & \
+  bcall((MAP;RULE;CATL~;TreatIncludedMachineX)~:treat_included_machine0(2;z;b)) & \
+  SetCurrentClause("INVARIANT") & \
+  bcall((REV;RULE;MAP;StorePropertiesX)~:store_properties( brev(e) ) ) & \
+  bcall((REV;(ARI;TreatVariableAndInvariantX)~):treat_variable_and_invariant0(brev(Q))) & \
+  SetCurrentClause("ASSERTIONS") & \
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(g)) & \
+  SetCurrentClause("INITIALISATION") & \
+  bcall((FLAT~;GEN;SUB~;DED;MAP;ARI;REV;StmtX)~,fwdX:wellstostmt(h)) & \
+  SetCurrentClause("OPERATIONS") & \
+  bcall((MAP;RULE;ARI;TreatOperationsX)~:treat_operations(c;n,?)) & \
+  bcall((ARI;DumpStoreX)~:epilog2) & \
+  bcall((CATL;WRITE;ARI;WriteStoreX)~:epilog22(z,l)) & \
+  StoreDepInfo((A,B,b,r))
+/*
+  ClearAbstractionFlag
+*/
+
+
+
+
+
+  
+THEORY StorePropertiesX IS
+
+  bcrelr(StorePrpX,d)
+ =>
+  store_individual_property(d);
+  
+  bclean(StorePrpX) &
+  store_individual_property bsmap d
+ =>
+  store_properties(d);
+  
+  store_individual_property bsmap d
+ =>
+  store_more_properties(d);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+
+THEORY TreatFormalParameterX IS
+
+/* 98;01:31 start*/
+
+  ?;
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Formal parameter % is not typed",z,bsrv p berv))
+ =>
+  treat_formal_parameter2(c,k,p);
+
+  brule(reg.n,y) &
+  bpop(reg) &
+  bcall(RULE: bcrelr(StoreHypX,(p:y)))
+ =>
+  store_param_type(p);
+
+  bsearch((p:s),c,x) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  store_param_type(p)
+ => 
+  treat_formal_parameter2(c,k,p);
+
+  ThisConstructIsUsrVHDL &
+  bsearch((p:NAT),c,x) &
+  bcall(RULE: bcrelr(StoreHypX,(p:(p..p))))
+ => 
+  treat_formal_parameter2(c,k,p);
+
+  treat_formal_parameter2(c,k,?);
+
+  brule(TreatFormalParameterX.1,k) &           
+  treat_formal_parameter2(c,k) bsmap k &         
+  bcall(MODR: bmodr(TreatFormalParameterX.1,?))   
+ =>
+  treat_formal_parameter_remain(z,c,l);
+ 
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Formal parameter % is not typed",z,bsrv p berv))
+ =>
+  treat_formal_parameter(z,c,l,p);
+
+  bsearch((p:s),c,x) &
+  brule(TreatFormalParameterX.1,k) & 
+  bcall(MODR: bmodr(TreatFormalParameterX.1,(k,p)))
+ =>
+  treat_formal_parameter(z,c,l,p);
+
+  bUpident(p) &
+  bcrelr(StoreHypX,given(p)) 
+ =>
+  treat_formal_parameter(z,c,l,p);
+
+  treat_formal_parameter(z,(c & true),l) bsmap l &
+  treat_formal_parameter_remain(z,(c & true),l)        /*******  98;01:31 ********/
+ =>
+  treat_formal_parameter0(l,c,z);
+    
+  treat_formal_parameter0(?,c,z);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+THEORY StoreOpsMchX END
+
+&
+
+THEORY MchOpsX IS
+
+#define StoreOpsMch(m,l) bcall((FLAT~;SUB~;MchOpsX;MAP;ARI)~: smo(m,l)) 
+
+  HERE(( smop(m,o) )) => smop(m,o);
+ 
+ bcall(RULE:bcrelr(StoreOpsMchX,(o:m))) 
+ =>
+  smop(m,( o(p)==t ) );
+
+  smo(m,l);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  smop(m) bsmap l 
+ =>
+  smo(m,l)
+
+END
+
+&
+
+THEORY TreatIncludedMachineX IS
+
+
+
+/*
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Machine % does not exist",q,bsrv z berv))
+ =>
+  get_included_machine2(q,z)(Z);
+  
+  DoMachine2(z,Z) &
+  UpdateCptTypeChecker(z.mch) &
+  UpdateCrtTypeChecker(z.mch)
+ =>
+  get_included_machine2(q,z)(Z);
+  
+  get_included_machine2(a,m)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  get_included_machine11(A,a,m,p,S)(f);
+
+  get_included_machine2(a,m)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  get_included_machine11(A,a,n.m,p,S)(f);
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Machine % is not well typed",a,bsrv m berv))
+ =>
+  get_included_machine11(2,a,m,p,S)(f);
+*/
+
+
+
+/***************
+  Dave 93:01:17
+****************/
+
+  IsCfg(m.mch) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  get_included_machine11(A,a,m,p,S)(f);
+
+/************* Equate Used-Types with Actual  ********************/
+
+UsedPar ( m:(F),(A) );
+
+bUpident(F) &
+bcall( RULE:bcrelr(StoreHypX,(m.F==A)) ) 
+=>
+UsedPar ( m:(F),(A) );
+
+UsedPar ( m:(K,F),(p,A) );
+
+bUpident(F) &
+bcall( RULE :bcrelr(StoreHypX,(m.F==A)) )  &
+UsedPar ( m:(K),(p) ) 
+=>  
+UsedPar ( m:(K,F),(p,A) );
+
+/***************************************************************
+  next 4 rules has been duplicated to deal with inclusion of machines
+  with no params.......12/12/92 Ib
+******************************************************************/
+
+
+  IsCfg(m.mch) &
+  bget(f,(M|K)) & 
+  bcall((SubTestX~;SUB~;RULE):(subtest(a;m;K;p) & bcrelr(StoreHypX,[K:=p][S]M)))  &
+UsedPar ( m:(K),(p) )
+ =>
+  get_included_machine11(A,a,m,p,S)(f);
+
+
+  IsCfg(m.mch) &
+  bget(f,(M|K)) & 
+  bcall((SubTestX~;SUB;RULE):(subtest(a;m;K;p) & bcrelr(StoreHypX,[K:=p]M)))  &
+UsedPar ( m:(K),(p) )
+ =>
+  get_included_machine11(A,a,m,p,(?:=v))(f);
+
+  
+
+  IsCfg(m.mch) &
+  bget(f,(L|M|K)) & 
+  bcall((SubTestX~;SUB~;RULE):(subtest(a;m;K;p) & bcrelr(StoreHypX,[K:=p][S]M))) &
+  StoreOpsMch(m,([K:=p][S]L)) & 
+  bcall((SUB~;RULE):bcrelr(StoreUsedX,[K:=p][S]L))  &
+UsedPar ( m:(K),(p) )
+ =>
+  get_included_machine11(A,a,m,p,S)(f);
+
+
+  IsCfg(m.mch) &
+  bget(f,(L|M|K)) & 
+  bcall((SubTestX~;SUB;RULE):(subtest(a;m;K;p) & bcrelr(StoreHypX,[K:=p]M))) & 
+  StoreOpsMch(m,([K:=p]L)) &
+  bcall((SUB;RULE):bcrelr(StoreUsedX,[K:=p]L)) &
+UsedPar ( m:(K),(p) )
+ =>
+  get_included_machine11(A,a,m,p,(?:=v))(f);
+
+/**** Duplication **********************************************************/ 
+
+
+  IsCfg(m.mch) &
+  bget(f,(M|(?))) & 
+  bcall((SubTestX~;SUB~;RULE):(subtest(a;m;(?);p) & bcrelr(StoreHypX,[S]M)))
+ =>
+  get_included_machine11(A,a,m,p,S)(f);
+
+
+  IsCfg(m.mch) &
+  bget(f,(M|(?))) & 
+  bcall((SubTestX~;SUB;RULE):(subtest(a;m;(?);p) & bcrelr(StoreHypX,M)))
+ =>
+  get_included_machine11(A,a,m,p,(?:=v))(f);
+
+  
+
+  IsCfg(m.mch) &
+  bget(f,(L|M|(?))) & 
+  bcall((SubTestX~;SUB~;RULE):(subtest(a;m;(?);p) & bcrelr(StoreHypX,[S]M))) &
+  StoreOpsMch(m,([S]L)) & 
+  bcall((SUB~;RULE):bcrelr(StoreUsedX,[S]L))
+ =>
+  get_included_machine11(A,a,m,p,S)(f);
+
+
+  IsCfg(m.mch) &
+  bget(f,(L|M|(?))) & 
+  bcall((SubTestX~;SUB;RULE):(subtest(a;m;(?);p) & bcrelr(StoreHypX,M))) & 
+StoreOpsMch(m,(L)) &
+  bcall((SUB;RULE):bcrelr(StoreUsedX,L))
+ =>
+  get_included_machine11(A,a,m,p,(?:=v))(f);
+
+/*************************************************************************/
+
+  get_included_machine11(A,a,m,p,S)(f)
+ =>
+  get_included_machine1(A,a,m,p,S)(f);
+  
+  get_included_machine1(A,a,r,p,S)(bcatl("TYP/",r,".mri.typ"))
+ =>
+  treat_included_machine(A,a,r,p,S);
+    
+  brule(reg.n,p) &
+  bcall(RULE:bpop(reg)) &
+  treat_included_machine(2,a,r,p,S) 
+ =>
+  treat_included_machine2(2,a,r,S);
+ 
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(t))  & /* Ib */
+  bcall(MODR:bmodr(ObjX.1,expression(a,p))) &
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:supers(p)) &
+  treat_included_machine2(2,a,r,(u:=v)) 
+ =>
+  treat_included_machine1(2,a,(r(p):t:(u,v,w)));
+
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(t))  & /* Ib */  
+  bcall(MODR:bmodr(ObjX.1,expression(a,p))) &
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:supers(p)) &
+  treat_included_machine2(2,a,r,(u:=v)) 
+ =>
+  treat_included_machine1(2,a,(n.r(p):t:(u,v,w)));
+
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(t))  &  /* Ib */
+  treat_included_machine(1,a,r,p,(u:=v))  
+ =>
+  treat_included_machine1(1,a,(r(p):t:(u,v,w)));
+
+  treat_included_machine(1,a,r,p,(u:=v)) 
+ =>
+  treat_included_machine1(1,a,(n.r(p):t:(u,v,w)));
+
+
+  treat_included_machine1(A,a) bsmap b
+ =>
+  treat_included_machine0(A;a;b);
+    
+  treat_included_machine0(A;a;?);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+
+&
+
+THEORY TreatActualParamsX IS
+
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:supers0(p))
+ =>
+  treat_actual_parameters1(r(p):t:w);
+   
+  treat_actual_parameters1(r(?):t:w);
+
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:supers0(p)) 
+ =>
+  treat_actual_parameters1(r.n(p):t:w);
+   
+  treat_actual_parameters1(r.n(?):t:w);
+
+  treat_actual_parameters1 bsmap b
+ =>
+  treat_actual_parameters(b);
+    
+  treat_actual_parameters(?);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+
+THEORY TreatAbstractionX IS
+
+/*
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Abstraction % does not exist",q,bsrv z berv))
+ =>
+  get_abstraction22(q,z)(Z);
+  
+  DoMachine2(z,Z) &
+  UpdateCptTypeChecker(z.mch) &
+  UpdateCrtTypeChecker(z.mch)
+ =>
+  get_abstraction22(q,z)(Z);
+  
+  get_abstraction22(q,z)(bcatl("ANL/",z,".mch.anl"))
+ =>
+  get_abstraction21(q,z,p)(F);
+  
+  DoRefinement2(z,Z) &
+  UpdateCptTypeChecker(z.ref) &
+  UpdateCrtTypeChecker(z.ref)
+ =>
+  get_abstraction21(q,z,p)(Z);
+  
+  get_abstraction21(a,m,p)(bcatl("ANL/",m,".ref.anl"))
+ =>
+  get_abstraction11(A,a,m,p)(f);
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Abstraction % is not well typed",a,bsrv m berv))
+ =>
+  get_abstraction11(2,a,m,p)(f);
+*/
+
+
+/***************
+  Dave 93:01:17
+****************/
+
+/*
+  ReadCurrentState(C) &
+  bsearch(m.mch(1,J,u,v,w),C,s) &
+*/
+  IsCfg(m.mch) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  get_abstraction11(2,a,m,p)(f);
+
+  
+
+
+/*
+  ReadCurrentState(C) &
+  bsearch(m.mch(1,J,u,v,w),C,s) &
+*/
+  IsCfg(m.mch) &
+  bget(f,(M|K)) &
+  bcall(RULE:bcrelr(StoreHypX,M)) &
+  bcall(RULE:bcrelr(StoreUsedX,L))
+ =>
+  get_abstraction11(2,a,m,p)(f);
+  
+/*
+  ReadCurrentState(C) &
+  bsearch(m.ref(1,J,u,v,w),C,s) &
+*/
+  IsCfg(m.ref) &
+  bget(f,(M|K)) &
+  bcall(RULE:bcrelr(StoreHypX,M)) &
+  bcall(RULE:bcrelr(StoreUsedX,L))
+ =>
+  get_abstraction11(2,a,m,p)(f);
+    
+/*
+  ReadCurrentState(C) &
+  bsearch(m.mch(1,J,u,v,w),C,s) &
+*/
+  IsCfg(m.mch) &
+  bget(f,(L|M|K)) &
+  bcall(RULE:bcrelr(StoreHypX,M)) &
+  bcall(RULE:bcrelr(StoreUsedX,L))
+ =>
+  get_abstraction11(2,a,m,p)(f);
+  
+/*
+  ReadCurrentState(C) &
+  bsearch(m.ref(1,J,u,v,w),C,s) &
+*/
+  IsCfg(m.ref) &
+  bget(f,(L|M|K)) &
+  bcall(RULE:bcrelr(StoreHypX,M)) &
+  bcall(RULE:bcrelr(StoreUsedX,L))
+ =>
+  get_abstraction11(2,a,m,p)(f);
+  
+/*
+  ReadCurrentState(C) &
+  bsearch(m.ref(1,J,u,v,w),C,s)
+*/
+  IsCfg(m.ref)
+ =>
+  get_abstraction11(1,a,m,p)(f);
+  
+/*
+  ReadCurrentState(C) &
+  bsearch(m.mch(1,J,u,v,w),C,s)
+*/
+  IsCfg(m.mch)
+ =>
+  get_abstraction11(1,a,m,p)(f);
+  
+  get_abstraction11(A,a,m,p)(f)
+ =>
+  get_abstraction1(A,a,m,p)(f);
+  
+  get_abstraction1(A,a,r,p)(bcatl("TYP/",r,".mri.typ"))
+ =>
+  treat_abstraction(A;a;r);
+  
+  treat_abstraction(A;a;?);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY TreatSeenMachineX IS
+
+/*
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Seen Machine % does not exist",q,bsrv z berv))
+ =>
+  get_seen_machine22(q,z)(Z);
+  
+  DoMachine2(z,Z) &
+  UpdateCptTypeChecker(z.mch) &
+  UpdateCrtTypeChecker(z.mch)
+ =>
+  get_seen_machine22(q,z)(Z);
+  
+  get_seen_machine22(q,z)(bcatl("ANL/",z,".mch.anl"))
+ =>
+  get_seen_machine11(A,q,z,S)(F);
+  
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: Seen Machine % is not well typed",a,bsrv m berv))
+ =>
+  get_seen_machine11(2,a,m,S)(f);
+*/
+
+
+/***************
+  Dave 93:01:17
+****************/
+
+/**************  parameter renaming is necessary ****************
+*								*
+* if this is removed change					*
+*    treat_seen_machine(A,a,(r(?):t:(u,v,w)));   and		*
+*    treat_seen_machine(A,a,(n.r(?):t:(u,v,w))); 		*
+*								*
+* below by replacing ? with p					*
+*								*
+**************  parameter renaming is necessary ****************/
+
+
+  get_seen_Pmachine11( r, (u:=v), (p:= pbind(r) bslmap (p) )  )(bcatl("TYP/",r,".mri.typ")) 
+ =>
+  treat_seen_machine(A,a,(r(p):t:(u,v,w)));
+
+  get_seen_Pmachine11( r, (u:=v), (p:= pbind(n.r) bslmap (p) ) )(bcatl("TYP/",r,".mri.typ"))
+ =>
+  treat_seen_machine(A,a,(n.r(p):t:(u,v,w)));
+
+  IsCfg(m.mch) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  get_seen_Pmachine11(m,S,P)(f);
+  
+  IsCfg(m.mch) &
+  bget(f,(M|K)) & 
+  bcall((SUB~;RULE):(bcrelr(StoreHypX,[S]([P]M))))
+ =>
+  get_seen_machine11(m,S,P)(f);
+
+  IsCfg(m.mch) &
+  bget(f,(M|K)) & 
+  bcall((SUB;RULE):(bcrelr(StoreHypX,[P]M)))
+ =>
+  get_seen_Pmachine11(m,(?:=v),P)(f);
+
+  IsCfg(m.mch) &
+  bget(f,(L|M|K)) & 
+  StoreOpsMch(m,([S]L)) &
+  bcall((SUB~;RULE):(bcrelr(StoreHypX,[S]([P]M)))) & 
+  bcall((SUB~;RULE):bcrelr(StoreUsedX,[S]([P]L)))
+ =>
+  get_seen_Pmachine11(m,S,P)(f);
+
+  IsCfg(m.mch) &
+  bget(f,(L|M|K)) & 
+  StoreOpsMch(m,(L)) &
+  bcall((SUB;RULE):(bcrelr(StoreHypX,[P]M))) & 
+  bcall((SUB;RULE):bcrelr(StoreUsedX,[P]L))
+ =>
+  get_seen_Pmachine11(m,(?:=v),P)(f);
+
+  pbind(r,v) == r.v;
+
+
+/* end param renaming *************************************************** */ 
+
+  IsCfg(m.mch) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  get_seen_machine11(2,a,m,S)(f);
+  
+  IsCfg(m.mch) &
+  bget(f,(M|K)) & 
+  bcall((SUB;RULE):(bcrelr(StoreHypX,[S]M)))
+ =>
+  get_seen_machine11(2,a,m,S)(f);
+
+  IsCfg(m.mch) &
+  bget(f,(M|K)) & 
+  bcall((RULE):(bcrelr(StoreHypX,M)))
+ =>
+  get_seen_machine11(2,a,m,(?:=v))(f);
+
+  IsCfg(m.mch) &
+  bget(f,(L|M|K)) & 
+  StoreOpsMch(m,([S]L)) &
+  bcall((SUB;RULE):(bcrelr(StoreHypX,[S]M))) & 
+  bcall((SUB;RULE):bcrelr(StoreUsedX,[S]L))
+ =>
+  get_seen_machine11(2,a,m,S)(f);
+
+  IsCfg(m.mch) &
+  bget(f,(L|M|K)) & 
+  StoreOpsMch(m,(L)) &
+  bcall((RULE):(bcrelr(StoreHypX,M))) & 
+  bcall((RULE):bcrelr(StoreUsedX,L))
+ =>
+  get_seen_machine11(2,a,m,(?:=v))(f);
+  
+  IsCfg(m.mch)
+ =>
+  get_seen_machine11(1,a,m,S)(f);
+
+  get_seen_machine11(A,a,r,(u:=v))(bcatl("TYP/",r,".mri.typ")) 
+ =>
+  treat_seen_machine(A,a,(r(?):t:(u,v,w)));
+
+  get_seen_machine11(A,a,r,(u:=v))(bcatl("TYP/",r,".mri.typ"))
+ =>
+  treat_seen_machine(A,a,(n.r(?):t:(u,v,w)));
+
+
+  treat_seen_machine(A,a) bsmap b
+=>
+  treat_seen_machine0(A;a;b);
+  
+  treat_seen_machine0(A;a;?);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY TestVarX IS
+
+  testeql21(x,(l=1));
+
+  errin &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Parameter % is too short", bsrv x berv))
+ =>
+  testeql21(x,(1=1));
+  
+  testeql21(x,(blen(x)=1))
+ =>
+  testvar21(x);
+  
+  testvar21(?);
+  
+  testeql11(x,(l=1));
+
+  errin &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Variable % is too short", bsrv x berv))
+ =>
+  testeql11(x,(1=1));
+  
+  testeql11(x,(blen(x)=1))
+ =>
+  testvar11(x);
+  
+  testvar11(?);
+  
+  testvar21 bsmap v &
+  testvar21 bsmap u
+ =>
+  testvar2(v,u);
+  
+  testvar11 bsmap v
+ =>
+  testvar1(v);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY OperationVarX IS
+
+#define ClearOperationVar \
+  bcall(MODR: bmodr(OperationVarX.1,?)) & \
+  bcall(MODR: bmodr(OperationVarX.2,?) )
+                               
+/*
+
+
+  OperationVarX.1 contains Local variable type information in the format:
+
+   (? ; Op1(? | VAR(?, VAR(?), VAR(?, VAR(aa) ,bb), cc) )
+
+   where bb and cc has type seq(CHAR);
+
+*/
+ 
+
+
+  ?;
+  ?
+
+END
+
+&
+
+THEORY TreatOperationsX IS
+
+#define ClearTreatOperations \
+  bcall(MODR: bmodr(TreatOperationsX.1,?) ) &\
+  bcall(MODR: bmodr(TreatOperationsX.2,?) )
+
+  ?;
+  ?;
+
+
+  treat_individual_operationp(b) bsmap l
+ =>
+  treat_operations(b;l);
+
+  blent(StoreHypX.n) &
+  bcall((RULE;MAP;StorePropertiesX)~:store_properties(w)) &
+  bcall((REV;(ARI;TreatParametersAndPreconditionX)~):treat_parameters_and_precondition(brev(u))) &
+  treat_output_param(v) &
+  treat_body(x,s(v;u),n)
+ =>
+  treat_individual_operation(s;t;u;v;(w|x);(y|z));
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("% % ",bsrv Improperly berv,bsrv promoted berv))
+ =>
+  treat_individual_operationr(s;t;u;v;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  brule(StoreUsedX.a,(s(v;u) == P)) &
+  StoreFormalParam(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_bodyp(x,s(v;u),n)
+ =>
+  treat_individual_operationr(s;t;u;v;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  brule(StoreUsedX.a,(s(v;u) == P)) &
+  StoreFormalParam(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_body(x,s(v;u),n)
+ =>
+  treat_individual_operation(s;t;u;v;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_output_param(v) &
+  treat_body(x,s(v;?),n)
+ =>
+  treat_individual_operation(s;t;?;v;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  brule(StoreUsedX.a,(s(v;?) == P)) &
+  StoreFormalParam(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_bodyp(x,s(v;?),n)
+ =>
+  treat_individual_operationr(s;t;?;v;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  brule(StoreUsedX.a,(s(v;?) == P)) &
+  StoreFormalParam(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_body(x,s(v;?),n)
+ =>
+  treat_individual_operation(s;t;?;v;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  bcall((RULE;MAP;StorePropertiesX)~:store_properties(w)) &
+  bcall((REV;(ARI;TreatParametersAndPreconditionX)~):treat_parameters_and_precondition(brev(u))) &
+  treat_body(x,s(?;u),n)
+ =>
+  treat_individual_operation(s;t;u;?;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  brule(StoreUsedX.a,(s(?;u) == P)) &
+  StoreFormalParam(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_bodyp(x,s(?;u),n)
+ =>
+  treat_individual_operationr(s;t;u;?;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  brule(StoreUsedX.a,(s(?;u) == P)) &
+  StoreFormalParam(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_body(x,s(?;u),n)
+ =>
+  treat_individual_operation(s;t;u;?;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_body(x,s(?;?),n)
+ =>
+  treat_individual_operation(s;t;?;?;(w|x);(y|z));
+
+  blent(StoreHypX.n) &
+  brule(StoreUsedX.a,(s(?;?) == P)) &
+  StoreFormalParam(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_bodyp(x,s(?;?),n)
+ =>
+  treat_individual_operationr(s;t;?;?;(w|x);(y|z));
+  
+  blent(StoreHypX.n) &
+  brule(StoreUsedX.a,(s(?;?) == P)) &
+  StoreFormalParam(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(w)) &
+  treat_body(x,s(?;?),n)
+ =>
+  treat_individual_operation(s;t;?;?;(w|x);(y|z));
+  
+  errin &
+  treat_individual_operation(s;t;u;v;(w|x);(y|z))
+ =>
+  treat_individual_operationq(s;t;u;v;(w|x);(y|z));
+  
+  iserrin
+ =>
+  treat_individual_operationq(s;t;u;v;(w|x);(y|z));
+  
+  errout &
+/*
+  Writef(("    %\n",t)) &
+*/
+  Writef((".")) &
+  bcall(MODR: bmodr(TreatOperationsX.1,s)) & 
+  bcall((MAP;ARI;TestVarX)~:testvar2(v,u)) &
+  treat_individual_operationq(s;t;u;v;(w|x);(y|z)) 
+ =>
+  treat_individual_operationp(b,(s;(j,t);u;v;(w|x);(y|z)));
+
+  
+  bsearch(s,(b,a),q) &
+/*
+  Writef(("    %  (%)\n",t,promoted)) &
+*/
+  Writef((".")) &
+  bcall(MODR: bmodr(TreatOperationsX.1,s)) &
+  treat_individual_operationr(s;t;u;v;(w|x);(y|z)) 
+ =>
+  treat_individual_operationp((b,a),(s;(j,t);u;v;(w|x);(y|z)));
+
+  
+/*  Writef(("    %  (%)\n",t,promoted)) & */
+
+  Writef((".")) &
+  bcall(MODR: bmodr(TreatOperationsX.1,b)) &
+  treat_individual_operationr(b;(j,t);u;v;(w|x);(y|z))
+ =>
+  treat_individual_operationp(b,(b;(j,t);u;v;(w|x);(y|z)));
+  
+  treat_individual_operationp(b,?);
+  
+  bcrelr(StoreHypX,p)
+ =>
+  treat_individual_formal_param(p);
+
+ 
+  
+  treat_individual_formal_param bsmap P
+ =>
+  StoreFormalParam(P);
+
+  StoreFormalParam(?);
+  
+  bcrelr(StoreHypX,(p:?))
+ =>
+  treat_individual_output_param(p);
+  
+  treat_individual_output_param bsmap l
+ =>
+  treat_output_param(l);
+  
+  treat_output_param(?);
+  
+  blent(StoreHypX.u) &
+  bcall((FLAT~;GEN;SUB~;DED;MAP;ARI;REV;StmtX)~,fwdX:wellstostmt(z)) &
+  check_output_typing(v) &
+  bcall((RULE;ARI~;CleanStoreHypX)~:cleanStoreHyp(t(v;w),u-s,?))
+ =>
+  treat_body(z,t(v;w),s);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  blent(StoreHypX.u) &
+/* initialise the stringtype store */
+  brule(OperationVarX.1,L) &
+  bcall(MODR: bmodr(OperationVarX.1,(L;t))) &
+  bcall(MODR: bmodr(OperationVarX.2,(?|?))) &
+  bcall((FLAT~;GEN;SUB~;DED;MAP;ARI;REV;StmtX)~,fwdX:wellstostmtBegin(z)) &
+  endbody &
+  check_output_typing(v) &
+  bcall((RULE;ARI~;CleanStoreHypX)~:cleanStoreHyp(t(v;w),u-s,?))
+ =>
+  treat_body(z,t(v;w),s);
+
+
+  brule(OperationVarX.1,(L;o)) &
+  brule(OperationVarX.2,(k|c)) &
+  bcall(MODR: bmodr(OperationVarX.1,(L;o(k|VBL(c)))))
+ =>
+  endbody;
+  
+  blent(StoreHypX.u) &
+  bcall((RULE;ARI~;CleanStoreHypX)~:cleanStoreHyp(t,u-s,?))
+ =>
+  treat_bodyp(z,t,s);
+  
+  check_individual_output(x);   /* TreatOperationsX.29 */
+
+  brule(StoreHypX.m,(x:?)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv))
+ =>
+  check_individual_output(x);
+
+
+  check_individual_output bsmap v
+ =>
+  check_output_typing(v);
+  
+  check_output_typing(?);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY CleanStoreHypX IS
+
+  brule(StoreHypX.m,(x:t)) &
+  bpop(StoreHypX) &
+  cleanStoreHyp(a,n-1,(p&(x:t)))
+ =>
+  cleanStoreHyp(a,n,p);
+
+  brule(TypeCheckerFromUserX.2,b.imp) &
+  brule(StoreHypX.m,(x:t)) &
+  brule(StoreHypX.k,(t=s)) &
+  bpop(StoreHypX) &
+  cleanStoreHyp(a,n-1,(p&(x:s)))
+ =>
+  cleanStoreHyp(a,n,p);
+  
+  brule(StoreHypX.m,(x:t)) &
+  bpop(StoreHypX) &
+  cleanStoreHyp(a,n-1,(x:t))
+ =>
+  cleanStoreHyp(a,n,?);
+
+  brule(TypeCheckerFromUserX.2,b.imp) &
+  brule(StoreHypX.m,(x:t)) &
+  brule(StoreHypX.k,(t=s)) &
+  bpop(StoreHypX) &
+  cleanStoreHyp(a,n-1,(x:s))
+ =>
+  cleanStoreHyp(a,n,?);
+  
+  bcall(RULE:bcrelr(StoreOpsX,(a == p)))
+ =>
+  cleanStoreHyp(a,0,p);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY DumpStoreX IS
+
+  /*blent(StoreHypX.s) &
+  blent(StoreOpsX.t) &
+  Writef(("\nFinal Results: %\n\n")) &
+  DumpStoreOps(1,t) & 
+  DumpStoreHyp(1,s) &
+  Writef(("\n"))
+ =>*/
+  epilog2;
+  
+  brule(StoreHypX.m,h) &
+  Writef(("% & ",h)) &
+  DumpStoreHyp(m+1,n)
+ =>
+  DumpStoreHyp(m,n);
+
+  btest(m>n)
+ =>
+  DumpStoreHyp(m,n);
+  
+  brule(StoreHypX.m,h) &
+  Writef(("% \n",h))
+ =>
+  DumpStoreHyp(n,n);
+  
+  brule(StoreOpsX.m,h) &
+  Writef(("%\n",h)) &
+  DumpStoreOps(m+1,n)
+ =>
+  DumpStoreOps(m,n);
+  
+  btest(m>n)
+ =>
+  DumpStoreOps(m,n);
+
+  brule(StoreOpsX.m,h) &
+  Writef(("%\n\n",h))
+ =>
+  DumpStoreOps(n,n);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY WriteStoreX IS
+
+/**************************** Printing no duplicates ******************/
+
+  ?;
+  ?;
+#define AlreadyPrintedStore      WriteStoreX.1
+#define ReadAlreadyPrinted(x)    brule(AlreadyPrintedStore,(x))
+#define ModifyAlreadyPrinted(x)  bcall(MODR:bmodr(AlreadyPrintedStore,(x)))
+#define ResetWriteStore		 bcall(MODR:bmodr(WriteStoreX.1,?)) & \
+                                 bcall(MODR:bmodr(WriteStoreX.2,?))
+
+  bcall(MODR:bmodr(WriteStoreX.2,1)) => sc;
+
+  brule(WriteStoreX.2,1) & bprintf(";\n") => sc;
+  
+  ReadAlreadyPrinted(H) &
+  ModifyAlreadyPrinted(H&(h)) &
+  sc &
+  bprintf("(%)",h) 
+ =>
+  PrintHyp(h);
+
+  ReadAlreadyPrinted(H) &
+  bsearch(h,H,I) 
+ =>
+  PrintHyp(h);
+
+  bnum(N) 
+ =>
+  PrintHyp((N:NAT));
+
+/**********************************************************************/
+
+  blent(StoreHypX.n) &
+  bmodr(StoreHypX.1,n)
+ =>
+  store_size_StoreHypX;
+  
+  brule(StoreHypX.m,h) &
+ /* bprintf("(%);\n",h) & */ PrintHyp(h) &
+  WriteStoreHyp(m+1,n)
+ =>
+  WriteStoreHyp(m,n);
+
+  btest(m>n) &
+  bprintf("true\n",h) 
+ =>
+  WriteStoreHyp(m,n);
+  
+  brule(StoreHypX.m,h) &
+ /* bprintf("(%)\n",h) */ PrintHyp(h)
+ =>
+  WriteStoreHyp(n,n);
+  
+  brule(StoreOpsX.m,h) &
+  bprintf("(%);\n",h) &
+  WriteStoreOps(m+1,n)
+ =>
+  WriteStoreOps(m,n);
+
+  btest(m>n)
+ =>
+  WriteStoreOps(m,n);
+  
+  brule(StoreOpsX.m,h) &
+  bprintf("(%)\n|\n",h)
+ =>
+  WriteStoreOps(n,n);
+  
+  bconnect(f) &
+  blent(StoreOpsX.s) &
+  WriteStoreOps(1,s)
+ =>
+  epilog23(f);
+  
+  brule(StoreHypX.1,d) &
+  blent(StoreHypX.s) &
+  WriteStoreHyp(d+1,s) &
+  bprintf("|\n(%)\n",l)
+ =>
+  epilog24(l);
+  
+  brule(StoreHypX.1,d) &
+  blent(StoreHypX.s) &
+  WriteStoreHyp(d+1,s) &
+  bprintf("|\n(%)\n",e_r_r)
+ =>
+  epilog24(?);
+  
+  bconnect(g) &
+  brule(StoreHypX.1,d) &
+  blent(StoreHypX.s) &
+  WriteStoreHyp(d+1,s)
+ =>
+  epilog25(g);
+
+  epilog23(bcatl("TYP/",z,".mri.typ")) &
+  epilog24(l) &
+  bclose
+ =>
+  epilog22(z,l);
+  
+  Has_error_message
+ =>
+  epilog22(z,l);
+  
+  epilog25(bcatl("TYP/",z,".ctx.typ")) &
+  bclose
+ =>
+  epilog21(z);
+  
+  Has_error_message
+ =>
+  epilog21(z);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+#define pr1(e)   super(e) & bcall(((evlX;RULE;MODR)~;sinkX):evlpr1)
+#define pr2(e)   super(e) & bcall(((evlX;RULE;MODR)~;sinkX):evlpr2)
+#define isset(s) super(s) & bcall(RULE:bpop(reg))
+#define isrel(e) type(e)  & bcall(((evlX;RULE;MODR)~;sinkX):evlisrel)
+#define isseq(e) type(e)  & bcall(((evlX;RULE;MODR)~;sinkX):evlisseq)
+#define isnat(i) type(i)  & bcall(((evlX;RULE;MODR)~;sinkX):evlnat)
+#define isint(i) type(i)  & bcall(((evlX;RULE;MODR)~;sinkX):evlint)
+
+THEORY StoreMchX END
+
+&
+
+
+THEORY StorePrpX END
+
+&
+
+
+THEORY StoreVarX END
+
+&
+
+THEORY StoreCtxX END
+
+&
+
+THEORY StoreHypX  END 
+
+&
+
+THEORY StoreOpsX END
+
+&
+
+THEORY StoreUsedX END
+
+&
+
+THEORY PrintVariableTypeX IS
+
+/*
+#define PrintVariableTypes(f) bcall((PrintVariableTypeX;ARI)~: pvt(f))
+*/
+
+#define PrintVariableTypes(x) \
+  bcall(((MAP;MODR;ARI)~;PrintVariableTypeX)~:pvt_dave(x))
+
+#define PrintOperationType(f,o,i) bcall((FLAT~;SUB~;PrintVariableTypeX;MAP;ARI)~: pot(f,o,i))
+
+  ?;
+#define ModifyVarsPrinted(x)  bmodr(PrintVariableTypeX.1,x)
+#define ReadVarsPrinted(x)    brule(PrintVariableTypeX.1,x)
+
+  potl(e);
+
+  Writef(("\n            % : % ",x,t))
+ => 
+  potl(x:t);
+
+  potl bsmap t
+ =>
+  prot(t);
+
+  Writef(("\n            % : % ",x,t))
+ =>
+  prot(x:t);
+
+  pot(o);
+
+  brule(StoreUsedX.n,(f(x;y) == t)) &
+  Writef(("\n        Operation % expects parameter types to be :",bsrv f berv)) &
+  prot([bflat(x,y):=bflat(o,i)]t) 
+ =>
+  pot(f,o,i);
+
+  brule(StoreUsedX.n,(f(x;y) == t)) &
+  Writef(("\n        Operation % expects parameter types to be :",bsrv f berv)) &
+  prot([y:=i]t) 
+ =>
+  pot(f,?,i);
+
+  brule(StoreUsedX.n,(f(x;y) == t)) &
+  Writef(("\n        Operation % expects parameter : ",bsrv f berv)) &
+  prot([x:=o]t) 
+ =>
+  pot(f,o,?);
+ 
+
+  pvt2(N)(f)(n);
+
+  brule(StoreHypX.N,t) &
+  pvt2(N-1)(f)(n)
+ =>
+  pvt2(N)(f)(n);
+
+  brule(StoreHypX.N,(v:t)) &
+  bident(v) &
+  v\n &
+  Writef(("\n        % : %  ",v,t)) &
+  pvt2(N-1)(f)(n,v)
+ =>
+  pvt2(N)(f)(n);
+
+
+  brule(StoreHypX.N,(v:t)) &
+  bident(v) &
+  v\n &
+  binhyp(v:s) &   /* local variable */
+  Writef(("\n        % : %  ",v,s)) &
+  pvt2(N-1)(f)(n,v)
+ =>
+  pvt2(N)(f)(n);
+
+
+  brule(StoreHypX.N,(v:e_r_r)) &
+  v\n &
+  Writef(("\n        % : undefined  ",v)) &
+  pvt2(N-1)(f)(n,v)
+ =>
+  pvt2(N)(f)(n);
+
+  brule(StoreHypX.N,(v:?)) &
+  v\n &
+  Writef(("\n        % : undefined  ",v)) &
+  pvt2(N-1)(f)(n,v)
+ =>
+  pvt2(N)(f)(n);
+
+  brule(StoreHypX.N,(v:t)) &
+  v\f &
+  pvt2(N-1)(f)(n)
+ =>
+  pvt2(N)(f)(n);
+
+  brule(StoreHypX.K,v) &
+  pvt2(K)(f)(n)
+ =>
+  pvt1(N)(f)(n);
+
+  brule(StoreVarX.N,t) &
+  pvt1(N+1)(f)(n)
+ =>
+  pvt1(N)(f)(n);
+
+  brule(StoreVarX.N,(v:t)) &
+  bident(v) &
+  v\n &
+  Writef(("\n        % : %  ",v,t)) &
+  pvt1(N+1)(f)(n,v)
+ =>
+  pvt1(N)(f)(n);
+
+  brule(StoreVarX.N,(v:t)) & 
+  bident(v) &
+  v\n &
+  binhyp(v:s) &   /* local variable */
+  Writef(("\n        % : %  ",v,s)) &
+  pvt1(N+1)(f)(n,v)
+ =>
+  pvt1(N)(f)(n);
+
+  brule(StoreVarX.N,(v:e_r_r)) &
+  v\n &
+  Writef(("\n        % : undefined  ",v)) &
+  pvt1(N+1)(f)(n,v)
+ =>
+  pvt1(N)(f)(n);
+
+  brule(StoreVarX.N,(v:?)) &
+  v\n &
+  Writef(("\n        % : undefined  ",v)) &
+  pvt1(N+1)(f)(n,v)
+ =>
+  pvt1(N)(f)(n);
+
+
+  brule(StoreVarX.N,(v:t)) &
+  v\f &
+  pvt1(N+1)(f)(n)
+ =>
+  pvt1(N)(f)(n);
+
+  pvt1(1)(f)(n)
+ =>
+  pvt0(f,h,n); /* was pvt(f) */
+
+
+  v\n &
+  Writef(("\n        % : %  ",v,t)) &
+  pvt1(1)(f)(n,v)
+ =>
+  pvt0(f,(v:t),n);
+
+  bsearch((v:t),(h),r) &
+  v\n &
+  Writef(("\n        % : %  ",v,t)) &
+  pvt0(f,r,(n,v))
+ =>
+  pvt0(f,h,n);
+
+
+  v\f &
+  pvt1(1)(f)(n)
+ =>
+  pvt0(f,(v:t),n);
+
+  bsearch((v:t),(h),r) &
+  v\f &
+  pvt0(f,r,n)
+ =>
+  pvt0(f,h,n);
+
+  pvt1(1)(f)(NAT)
+ =>
+  pvt(f);
+
+  bgetallhyp(h) &
+  pvt0(f,h,NAT)
+ =>
+  pvt(f);
+
+
+
+
+
+
+  /***** print if not already printed *****/
+
+  ReadVarsPrinted(V) &
+  ModifyVarsPrinted((V,v)) &
+  Writef(("\n        % : %  ",v,t))
+ =>
+  pvt_dave_print(v:t);
+
+  ReadVarsPrinted(V) &
+  ModifyVarsPrinted((V,v)) &
+  Writef(("\n        % : undefined  ",v))
+ =>
+  pvt_dave_print(v:e_r_r);
+
+  ReadVarsPrinted(V) &
+  ModifyVarsPrinted((V,v)) &
+  Writef(("\n        % : undefined  ",v))
+ =>
+  pvt_dave_print(v:?);
+
+  ReadVarsPrinted(V) &
+  bsearch(v,V,W)           /* already printed */
+ =>
+  pvt_dave_print(v:t);
+
+
+
+  /***** StoreVarX/StoreHypX *****/
+
+
+  pvt_dave_storevar_storehyp(f)(T)(N);
+
+  brule(T.N,x) &            /* rule not of form v:t where v is bident */
+  pvt_dave_storevar_storehyp(f)(T)(N+1)
+ =>
+  pvt_dave_storevar_storehyp(f)(T)(N);
+
+  brule(T.N,(v:t)) &
+  bident(v) &               /* v is relevant */
+  pvt_dave_print(v:t) &
+  pvt_dave_storevar_storehyp(f)(T)(N+1)
+ =>
+  pvt_dave_storevar_storehyp(f)(T)(N);
+
+  brule(T.N,(v:t)) &
+  v\f &                     /* v is not relevant */
+  pvt_dave_storevar_storehyp(f)(T)(N+1)
+ =>
+  pvt_dave_storevar_storehyp(f)(T)(N);
+
+
+
+  /***** the hypothesis *****/
+
+  pvt_dave_hyp(f,x);        /* hyp not of form v:t where v is biden */
+
+  bident(v) &               /* v is relevant */
+  pvt_dave_print(v:t)
+ =>
+  pvt_dave_hyp(f,(v:t));
+
+  v\f                       /* v is not relevant */
+ =>
+  pvt_dave_hyp(f,(v:t));
+
+
+
+  /* bgetallhyp fails */
+  ModifyVarsPrinted(?) &    /* reset vars printed list */
+  pvt_dave_storevar_storehyp(f)(StoreVarX)(1) &
+  pvt_dave_storevar_storehyp(f)(StoreHypX)(1)
+ =>
+  pvt_dave(f);              /* formula that doesn't type */
+
+  /* bgetallhyp succeeds */
+  ModifyVarsPrinted(?) &    /* reset vars printed list */
+  bgetallhyp(h) &
+  pvt_dave_hyp(f) bsmap h &
+  pvt_dave_storevar_storehyp(f)(StoreVarX)(1) &
+  pvt_dave_storevar_storehyp(f)(StoreHypX)(1)
+ =>
+  pvt_dave(f)               /* formula that doesn't type */
+
+END
+
+&
+
+
+THEORY ObjX END
+
+&
+
+#define haserror brule(ObjX.1,done)
+
+THEORY sinkX IS
+
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(S)) &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  Set_error_message 
+ =>
+  P;
+  
+  brule(ObjX.2,true) &
+  brule(ObjX.1,predicate(Q)) &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  Set_error_message 
+ =>
+  P;
+  
+  brule(ObjX.2,true) &
+  brule(ObjX.1,expression(a,s)) &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  Set_error_message 
+ =>
+  P;
+
+
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(S)) &
+  W\S &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv S berv)) &
+  PrintVariableTypes(S)
+ =>
+  P;
+
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(S(p))) &
+  bident(S) &
+  W\S &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv S(p) berv)) &
+  PrintVariableTypes(S(p)) &
+  PrintOperationType(S,?,(p))
+ =>
+  P;
+
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(p<--S)) &
+  bident(S) &
+  W\S &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv p<--S berv)) &
+  PrintVariableTypes(p<--S) &
+  PrintOperationType(S,(p),?)
+ =>
+  P;
+
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(q<--S(p))) &
+  bident(S) &
+  W\S &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv q<--S(p) berv)) &
+  PrintVariableTypes(q<--S(p)) &
+  PrintOperationType(S,(q),(p))
+ =>
+  P;
+
+
+
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(ANY v WHERE p THEN s END)) &
+  W\(ANY v WHERE p THEN s END) &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv v berv)) &
+  PrintVariableTypes(v)
+ =>
+  P;
+ 
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(x:=e)) &
+  W\(x:=e) &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x:=e berv)) &  
+  bcall(TypeCheckerMessageX:MESSAGE("Error: types of lhs and rhs disagree")) &
+  PrintVariableTypes(x:=e)  
+ =>
+  P;
+
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(x:=bool(e))) &
+  W\(x:=bool(e)) &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv bool(e) berv)) &  
+  bcall(TypeCheckerMessageX:MESSAGE("Error: construct `bool' is not allowed in IMPLEMENTATIONS"))  
+ =>
+  P;
+
+
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,statement(x::e)) &
+  W\(x::e) &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x::e berv)) &  
+  bcall(TypeCheckerMessageX:MESSAGE("Error: types of lhs and rhs disagree")) &
+  PrintVariableTypes(x:=e)  
+ =>
+  P;
+  
+  
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,predicate(Q)) &
+  W\Q &
+  bcall(MODR:bmodr(ObjX.1,done)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv Q berv)) &
+  PrintVariableTypes(Q)
+ =>
+  P;
+  
+  
+  ReadVariablesWithNoType(W) &
+  brule(ObjX.2,true) &
+  brule(ObjX.1,expression(a,s)) &
+  W\s &
+  bcall(MODR:bmodr(ObjX.1,done)) &  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv s berv))  &
+  PrintVariableTypes(s)
+ =>
+  P;
+  
+  haserror 
+ =>
+  P;
+  
+  brule(ObjX.2,true) &
+  Is_first_or_second_time_in_treat_variable_and_invariant &
+  bcall(MODR:bmodr(ObjX.1,done))
+ =>
+  P;
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY reg END
+
+&
+
+THEORY fwdX IS
+
+  l,x:L*S
+ =>
+  l:L & x:S;
+  
+  x:seq(s)
+ =>
+  x:POW(NAT*s);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+THEORY TX IS
+
+#define Clear_TU bcall(MODR:bmodr(TX.1,0))
+
+#define Is_TU  brule(TX.1,0)
+
+#define Set_TU_Error bcall(MODR:bmodr(TX.1,1))
+
+ 0;
+
+/* bcall(TypeCheckerMessageX:ERROR_MESSAGE("% used in type union, but is not a TYPE ",bsrv x berv)) */
+ Set_TU_Error
+=>
+ isTYPE(x);
+
+/*..*/
+ IsVHDL => isTYPE((t..u));
+
+/********* INTEGER ***********/
+
+ isTYPE(INTEGER);
+
+ isTYPE(NAT);
+
+ brule(StoreHypX.n,given(x))
+=>
+ isTYPE(x); 
+
+/*
+ brule(StoreHypX.n,given(x)) &
+ brule(StoreHypX.m,(x==t)) & 
+ bcall(TypeCheckerMessageX:ERROR_MESSAGE("% used in type construction, but is not a TYPE ",bsrv x berv)) &
+ Set_TU_Error
+=>
+ isTYPE(x);
+*/
+
+ isTYPE(x)
+=>
+ isTYPE(POW(x));
+ 
+ isTYPE(x)
+=>
+ isTYPE(seq(x));
+
+ isTYPE(x) &
+ isTYPE(y)
+=>
+ isTYPE(x*y);
+
+ isTYPE(x) &
+ isTYPE(y)
+=>
+ isTYPE(x\/y);  /* union overloaded as type constructor */
+
+/* following rules for given set with dimentional attribute */
+
+ brule(StoreHypX.n,given(y[k])) &
+ bcall(TypeCheckerMessageX:ERROR_MESSAGE("% and % incompatible Types",bsrv x berv,bsrv y berv)) &
+ Set_TU_Error
+=>
+ isTYPE(x\/y);
+
+ 
+ brule(StoreHypX.n,given(x[k])) &
+ bcall(TypeCheckerMessageX:ERROR_MESSAGE("% and % incompatible Types",bsrv x berv,bsrv y berv)) &
+ Set_TU_Error
+=>
+ isTYPE(x\/y);
+
+ 
+ brule(StoreHypX.n, given(x[k]) ) &
+ brule(StoreHypX.m, given(y[k]) ) 
+=>
+ isTYPE(x\/y)
+
+END
+&
+
+THEORY StoreEqlX END
+
+&
+
+THEORY TX2 IS
+
+/* replaced in3.4.1 
+
+ bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+ bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql3(t)) 
+=>
+ setTYPE(y,t); 
+ 
+ bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+ bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql3(t)) &
+ setTYPE(x,t) 
+=>
+ setTYPE(x\/y,t) 
+
+*/
+
+  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql3(t)) 
+ =>
+  setTYPE1(y,t); 
+ 
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql3(t)) &
+  setTYPE1(x,t) 
+ =>
+  setTYPE1(x\/y,t);  
+
+  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql_eql(t))
+ => 
+  setTYPE(y,t);
+
+  bcall(RULE: bcrelr(StoreHypX,given(x\/y))) &
+  
+  setTYPE1(x\/y,t)
+ => 
+  setTYPE(x\/y,t);
+
+  (a\/(b\/c)) == (a\/b\/c)
+
+END
+
+&
+
+THEORY bX IS
+
+/* Types and Super-set of global variables Stored in StoreHyp ************/
+  
+  brule(StoreHypX.n,given(s)) &
+  bcall(RULE:bcrelr(reg,POW(s)))
+ =>
+  type(s);
+
+  brule(StoreHypX.n,given(s)) &
+  brule(StoreHypX.m,(s=t)) &   
+  bcall(RULE:bcrelr(reg,POW(t)))
+ =>
+  type(s);
+    
+  brule(StoreHypX.n,(x:s)) &
+  bcall(RULE:bcrelr(reg,s))
+ =>
+  type(x);
+
+/* inserted by Ib 3-3-93 to deal with sequence-types */
+
+  brule(StoreHypX.n,(x:seq(s))) &
+  bcall(RULE:bcrelr(reg,seq(s)))
+ =>
+  type(x);
+
+  brule(StoreHypX.n,(x:s)) &
+  brule(StoreHypX.k,given(s)) &
+  brule(StoreHypX.m,(s=t)) &  
+  bcall(RULE:bcrelr(reg,t))
+ =>
+  type(x);
+
+
+/********/
+  
+  brule(StoreHypX.n,given(s)) &
+  bcall(RULE:bcrelr(reg,s))
+ =>
+  super(s);
+
+/* Super of given defined sets !!!!! */
+
+  brule(StoreHypX.n,given(s)) &
+  brule(StoreHypX.m,(s==t)) &
+  bcall(RULE:bcrelr(reg,t))
+ =>
+  super(s);
+
+/******/
+
+  brule(StoreHypX.n,(x:seq(s))) &
+  bcall(RULE:bcrelr(reg,(NAT*s)))
+ =>
+  super(x);
+
+  brule(StoreHypX.n,(x:t)) &
+  brule(StoreHypX.k,(t=POW(s))) &  
+  bcall(RULE:bcrelr(reg,s))
+ =>
+  super(x);
+
+  brule(StoreHypX.n,(x:t)) &
+  brule(StoreHypX.k,(t=seq(s))) &  
+  bcall(RULE:bcrelr(reg,(NAT*s)))
+ =>
+  super(x);
+ 
+  brule(StoreHypX.n,(x:POW(s))) &
+  bcall(RULE:bcrelr(reg,s))
+ =>
+  super(x);
+
+  brule(StoreHypX.n,(x:POW(s))) &
+  brule(StoreHypX.k,given(s)) &
+  brule(StoreHypX.m,(s=t)) &   
+  bcall(RULE:bcrelr(reg,t))
+ =>
+  super(x);
+
+
+/* Local variable stored in StoreVar ********************* */
+
+ 
+  brule(StoreVarX.n,given(x)) &
+  bcall(RULE:bcrelr(reg,POW(x)))
+ =>
+  type(x);
+
+  brule(StoreVarX.n,given(x)) &
+  brule(StoreHypX.m,(x=t)) &   
+  bcall(RULE:bcrelr(reg,POW(t)))
+ =>
+  type(x);
+    
+  brule(StoreVarX.n,(x:s)) &
+  bcall(RULE:bcrelr(reg,s)) 
+ =>
+  type(x);
+
+  brule(StoreVarX.n,(x:s)) &
+  brule(StoreHypX.k,given(s)) &
+  brule(StoreHypX.m,(s=t)) &    
+  bcall(RULE:bcrelr(reg,t))
+ =>
+  type(x);
+
+/******/
+
+  brule(StoreVarX.n,(x:t)) &
+  brule(StoreHypX.k,(t=POW(s))) &  
+  bcall(RULE:bcrelr(reg,s))
+ =>
+  super(x);
+
+  brule(StoreVarX.n,(x:t)) &
+  brule(StoreHypX.k,(t=seq(s))) &  
+  bcall(RULE:bcrelr(reg,(NAT*s)))
+ =>
+  super(x);
+
+  brule(StoreVarX.n,(x:seq(s))) &
+  bcall(RULE:bcrelr(reg,(NAT*s)))
+ =>
+  super(x);
+
+  brule(StoreVarX.n,(x:POW(s))) &
+  bcall(RULE:bcrelr(reg,s))
+ =>
+  super(x);
+
+
+  brule(StoreVarX.n,(x:POW(s))) &
+  brule(StoreHypX.k,given(s)) &
+  brule(StoreHypX.m,(s=t)) &    
+  bcall(RULE:bcrelr(reg,t))
+ =>
+  super(x);
+
+ 
+/* Quantified vars stored in Hyp   *********************** */
+
+  
+  binhyp(given(x)) &
+  bcall(RULE:bcrelr(reg,POW(x)))
+ =>
+  type(x);
+
+  binhyp(given(x)) &
+  brule(StoreHypX.n,(x=t)) &  
+  bcall(RULE:bcrelr(reg,POW(t)))
+ =>
+  type(x);
+   
+  binhyp(x:s) &
+  bcall(RULE:bcrelr(reg,s))
+ =>
+  type(x);
+    
+  binhyp(x:s) &
+  brule(StoreHypX.k,given(s)) &
+  brule(StoreHypX.n,(s=t)) &  
+  bcall(RULE:bcrelr(reg,t))
+ =>
+  type(x);
+
+
+/*********/
+
+ binhyp(x:seq(s)) &
+  bcall(RULE:bcrelr(reg,(NAT*s)))
+ =>
+  super(x); 
+
+  binhyp(x:POW(s)) &
+  bcall(RULE:bcrelr(reg,s))
+ =>
+  super(x);
+
+  binhyp(x:s) &
+  brule(StoreHypX.m,(s=POW(t))) &   
+  bcall(RULE:bcrelr(reg,t))
+ =>
+  super(x);
+
+  binhyp(x:s) &
+  brule(StoreHypX.m,(s=seq(t))) &   
+  bcall(RULE:bcrelr(reg,(NAT*t)))
+ =>
+  super(x);
+
+  binhyp(x:POW(s)) &
+  brule(StoreHypX.k,given(s)) &
+  brule(StoreHypX.m,(s=t)) &   
+  bcall(RULE:bcrelr(reg,t))
+ =>
+  super(x);
+
+
+/* ***************** moved from above StoreHypX ********** */
+
+/* *************  INTEGER *****************/
+
+  bcall(RULE: bcrelr(reg,INTEGER))
+ =>
+  super(INTEGER);
+
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  super(NAT);
+  
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  super(NAT1);
+
+  
+/* BOOL and CHAR not built in 
+
+  bcall(RULE: bcrelr(reg,BOOL))
+ =>
+  super(BOOL);
+
+  bcall(RULE: bcrelr(reg,CHAR))
+ =>
+  super(CHAR);
+   
+  bcall(RULE:bcrelr(reg,BOOL))
+ =>
+  type(TRUE);
+  
+  bcall(RULE:bcrelr(reg,BOOL))
+ =>
+  type(FALSE);
+
+*/
+
+
+  bcall(RULE:bcrelr(reg,POW(NAT*NAT)))
+ =>
+  type(pred);
+  
+  bcall(RULE:bcrelr(reg,POW(NAT*NAT)))
+ =>
+  type(succ);
+  
+  bcall(RULE:bcrelr(reg,NAT*NAT))
+ =>
+  super(pred);
+  
+  bcall(RULE:bcrelr(reg,NAT*NAT))
+ =>
+  super(succ);
+  
+  bcall(RULE:bcrelr(reg,POW(NAT*POW(NAT*NAT))))
+ =>
+  type(plus);
+  
+  bcall(RULE:bcrelr(reg,POW(NAT*POW(NAT*NAT))))
+ =>
+  type(multiply);
+  
+  bcall(RULE:bcrelr(reg,POW(NAT*POW(NAT*NAT))))
+ =>
+  type(divide);
+  
+  bcall(RULE:bcrelr(reg,POW(NAT*POW(NAT*NAT))))
+ =>
+  type(minus);
+  
+  bcall(RULE:bcrelr(reg,NAT*POW(NAT*NAT)))
+ =>
+  super(plus);
+  
+  bcall(RULE:bcrelr(reg,NAT*POW(NAT*NAT)))
+ =>
+  super(multiply);
+  
+  bcall(RULE:bcrelr(reg,NAT*POW(NAT*NAT)))
+ =>
+  super(divide);
+  
+  bcall(RULE:bcrelr(reg,NAT*POW(NAT*NAT)))
+ =>
+  super(minus);
+
+  TooManyErrors
+ =>
+  x
+      
+END
+
+&
+
+THEORY evlX IS
+
+#define Set_Search bcall(MODR:bmodr(evlX.1,0)) & bcall(MODR:bmodr(evlX.2,1))
+
+#define Clear_Eql bcall(MODR:bmodr(evlX.1,0))
+
+#define Clear_Search bcall(MODR:bmodr(evlX.2,0))
+
+#define Is_Eql  brule(evlX.1,1)
+
+#define Searching  brule(evlX.2,1)
+
+#define Not_searching brule(evlX.2,0)
+
+#define Set_Eql bcall(MODR:bmodr(evlX.1,1))
+
+ 0;
+ 0;
+
+ Searching   => a=b;
+
+/*  4 cases for confusing SET[n] with seq[NAT] */
+
+  brule(StoreHypX.m,given(a[n]))  &
+  TypeWarning(a[n],seq(NAT)) &
+  Set_Eql
+ =>
+  a=seq(NAT);
+
+  brule(StoreHypX.m,given(a[n])) &
+  TypeWarning(a[n],seq(NAT)) &
+  Set_Eql
+ =>
+  seq(NAT)=a;
+
+
+  brule(StoreHypX.m,given(a[n]))  &
+  TypeWarning(a[n],seq(NAT)) &
+  Set_Eql
+ =>
+  a=POW(NAT*NAT);
+
+  brule(StoreHypX.m,given(a[n])) &
+  TypeWarning(a[n],seq(NAT)) &
+  Set_Eql
+ =>
+  POW(NAT*NAT)=a;
+
+  Not_searching &                               
+  brule(StoreHypX.n,given(a)) &
+  brule(StoreHypX.m,(a=c)) &
+  Check_Eql( b, c)
+ =>
+  b = a;
+  
+  Not_searching &
+  brule(StoreHypX.n,given(a)) &
+  brule(StoreHypX.m,(a=c)) &
+  Check_Eql(c, b)
+ =>
+  a = b;
+
+
+  Not_searching &
+  brule(StoreHypX.n,given(a)) &
+  brule(StoreHypX.m,(a=c)) &   /* ib 17-3-92 */
+  Check_Eql(NAT, c)
+ =>
+  NAT = a;
+
+  Not_searching &
+  brule(StoreHypX.n,given(a)) &
+  brule(StoreHypX.m,(a=c)) &   /* ib 17-3-92 */
+  Check_Eql(c, NAT)
+ =>
+  a = NAT;  
+ 
+  Set_Eql => NAT = SCALAR;
+
+  Set_Eql => SCALAR = NAT;
+
+/******* INTEGER/INT the same type ***********/
+
+  Set_Eql => INTEGER = INT;
+
+  Set_Eql => INT = INTEGER;
+
+/*****  subtyping for VHDL mixing with nonVHDL *****************/
+
+  IsVHDL & Set_Eql 
+ => 
+  CHAR = std_logic;
+
+  IsVHDL & Set_Eql 
+ => 
+  std_logic = CHAR;
+  
+
+/*****  subtyping for VHDL ************************************/
+
+
+  IsVHDL & Set_Eql 
+ => 
+  NAT = (t..u);
+
+  IsVHDL & Set_Eql 
+ => 
+  (t..u) = NAT;
+
+  IsVHDL 
+ => 
+  (t..u) = (t..u);
+
+
+  IsVHDL & NoRangeCheck 
+ => 
+  (t..u) = (r..s);
+
+  IsVHDL & bident(t)   => (t..u) = (r..u);
+
+  IsVHDL & bident(u)   => (t..u) = (t..s);
+
+  IsVHDL & bident(r)    => (t..s) = (r..s);
+
+  IsVHDL & bident(s)    => (r..u) = (r..s);
+
+  IsVHDL & blident(r)    => (r..r) = (t..u);
+     
+  IsVHDL & blident(t)    => (r..s) = (t..t);
+
+  IsVHDL & blident(r,s)    => (r..s) = (t..u);
+     
+  IsVHDL & blident(t,u)    => (r..s) = (t..u);
+
+
+  IsVHDL &
+  bnum(y) & bnum(n) &
+  btest(n<=y) &
+  Set_Eql 
+ =>
+  (n..n) = (x..y);
+  
+  IsVHDL &
+  bnum(x) & bnum(n) &
+  btest(x<=n) &
+  Set_Eql 
+ =>
+  (n..n) = (x..y);
+
+  IsVHDL &
+  bnum(y) & bnum(n) &
+  btest(n<=y) &
+  Set_Eql 
+ =>
+  (x..y) = (n..n);
+
+  IsVHDL &
+  bnum(x) & bnum(n) &
+  btest(x<=n) &
+  Set_Eql 
+ =>
+  (x..y) = (n..n);
+  
+  IsVHDL &
+  bnum(x) & bnum(y) & bnum(n) &
+  btest(n<=y) & btest(x<=n) &
+  Set_Eql 
+ =>
+  (n..n) = (x..y);
+
+  IsVHDL &
+  bnum(x) & bnum(y) & bnum(n) &
+  btest(n<=y) & btest(x<=n) &
+  Set_Eql 
+ =>
+  (x..y) = (n..n);
+
+  IsVHDL &
+  bnum(x) & bnum(y) &  
+  Set_Eql 
+ =>
+  (x..x) = (y..y);
+
+
+/***************************************************************/
+  
+/***** Cartesian product */
+
+  Check_Eql3(b , d);
+
+  Is_Eql & Clear_Eql & Check_Eql(b , d) => Check_Eql3(b , d);
+  
+  Check_Eql(a , c) &
+  Check_Eql3(b , d)
+ =>
+  a*b = c*d;
+
+/***** POW and seq */  
+
+ 
+  Check_Eql(a, b) 
+ =>
+  POW(a) = POW(b);
+
+  brule(StoreHypX.m,(a=seq(c))) &
+  Check_Eql(c , b)
+ =>
+  a = POW(NAT*b);
+  
+  brule(StoreHypX.m,(a=seq(c))) &
+  Check_Eql(b , c)
+ =>
+  POW(NAT*b) = a;
+
+  brule(StoreHypX.m,(a=POW(NAT*c))) &
+  Check_Eql(c , b)
+ =>
+  a = POW(NAT*b);
+  
+  brule(StoreHypX.m,(a=POW(NAT*c))) &
+  Check_Eql(b , c)
+ =>
+  POW(NAT*b) = a;
+
+
+  Check_Eql(a,POW(NAT*b)) => a = seq(b);
+
+  Check_Eql(POW(NAT*b),a) => seq(b) = a;
+  
+
+/*********/
+
+  a = l  => Check_Eql(a,l);
+
+  Set_Eql => Check_Eql(a,a);
+
+/********* set up the search for a type match ***********/
+ 
+  Set_Search &
+  Check_Eql(a,b) &
+  Clear_Search &
+  Check_Eql2(a,l)
+ =>
+  a = l\/b;
+
+  Set_Search &
+  Check_Eql(a,b) &
+  Clear_Search &
+  Check_Eql2(l,b)
+ =>
+  l\/a = b;
+
+/* STILL NEED WORK: might NEVER be needed but can FAIL */
+
+/* HERE((entry : l\/a = k\/b)) & */
+  Set_Search &
+  Check_Eql(a,b) &
+  Clear_Search &
+  Check_Eql2(l,k\/b)
+ =>
+  l\/a = k\/b;
+ 
+/* second check skipped if match already found */
+
+  a = b  => Check_Eql2(a,b);
+
+  Check_Eql2(b,b);
+
+  Is_Eql &
+  Clear_Eql 
+ =>
+  Check_Eql2(l,b);
+
+
+/* ************************************************************************ */
+ 
+
+  Set_Eql => {} = s;
+  
+  Set_Eql => s = {};
+
+  Check_Eql(a , b)
+ =>
+  seq(a) = seq(b);
+
+  brule(StoreHypX.m,(a=seq(b)))  & 
+  Set_Eql
+ =>
+  a = POW(NAT*b);
+  
+  brule(StoreHypX.m,(b=seq(a)))  &
+  Set_Eql 
+ =>
+  POW(NAT*a) = b;
+
+
+  brule(StoreHypX.m,(a===seq(b)))  & 
+  Set_Eql
+ =>
+  a = POW(NAT*b);
+  
+  brule(StoreHypX.m,(b===seq(a)))  &
+  Set_Eql 
+ =>
+  POW(NAT*a) = b;
+
+/* from type setting : Abstract Type = concrete set 
+   and from type confusion T1\/T2 = T3           */
+
+  brule(StoreHypX.m,(a=b))  & 
+  Set_Eql
+ =>
+  a = b;
+
+  
+  brule(StoreHypX.m,(b=a))  &
+  Set_Eql 
+ =>
+  a = b;
+
+/* Next 2 Rules Used-Type instanciation */
+
+  brule(StoreHypX.m,(r.b==a))  & 
+  Set_Eql 
+ =>
+  a = r.b;
+
+  brule(StoreHypX.m,(r.a==b))  &  
+  Set_Eql 
+ =>
+  r.a = b;
+
+/* from Type confusion T1 \/ T2 = T3 gives T1===T3 and T2 ===T3 */
+
+
+  brule(StoreHypX.m,(a===b))  & 
+  Set_Eql
+ =>
+  a = b;
+
+  
+  brule(StoreHypX.m,(b===a))  &
+  Set_Eql 
+ =>
+  a = b;
+
+
+
+
+/* ************************************************************************* */
+ 
+  brule(reg.n,y) &
+  bpop(reg) &
+  bcall(RULE: bcrelr(StoreHypX,(x=y))) &
+  bcall(RULE: bcrelr(StoreHypX,(y=x)))
+ =>
+  store_given_eql_eql(x);
+
+  brule(reg.n,y) &
+  bpop(reg) &
+  bcall(RULE: bcrelr(StoreHypX,(x=y)))
+ =>
+  store_given_eql(x);
+
+  brule(reg.n,x) &
+  bpop(reg) 
+ =>
+  store_given_eql(x);
+
+  brule(reg.n,y) &
+  bpop(reg) &
+  bcall(RULE: bcrelr(StoreHypX,(x=y))) &
+  bcall(RULE: bcrelr(StoreHypX,(x==y)))    
+ =>
+  store_given_eql2(x);
+
+  brule(reg.n,x) &
+  bpop(reg) 
+ =>
+  store_given_eql2(x);
+
+  brule(reg.n,y) &
+  bpop(reg) &
+  bcall(RULE: bcrelr(StoreHypX,(y=x))) &
+  bcall(RULE: bcrelr(StoreHypX,(x===y))) 
+ =>
+  store_given_eql3(x);
+
+  blent(reg.n) &
+  brule(reg.n,?) &    /* ib  23-3-92 */
+  bpop(reg) 
+ =>
+  store_given_eql(x);
+  
+  brule(reg.n,A) &
+  bpop(reg) &
+  A=NAT 
+ =>
+  evlnat;
+
+/************ INTEGER ***********/
+
+  brule(reg.n,A) &
+  bpop(reg) &
+  A=INTEGER 
+ =>
+  evlint;
+  
+  brule(reg.n,A) &
+  bpop(reg) &
+  evleql(A)
+ =>
+  evleql;
+
+   IsVHDL &
+   brule(reg.n,A) &
+   bpop(reg) &
+   evleql(A)
+  => 
+   evlsub;
+ 
+   IsVHDL &
+   blent(reg.n) &
+   brule(reg.n,(l..u)) &
+   bpop(reg) &
+   evlsub(l..u)
+  =>
+   evlsub;
+
+  evleql => evleql_rstrc(x);
+
+  brule(reg.n,A) &
+  evleql(e_r_r) 
+ =>
+  evleql(x,?);
+
+  brule(reg.n,?) &
+  bpop(reg) 
+ =>
+  evleql(x,?);
+
+  blent(reg.n) &
+  brule(reg.n,?) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Error: Undefined value assigned to % ",bsrv x berv)) &
+  bpop(reg) &
+  evleql(x,?)
+ =>
+  evleql_rstrc(x);
+ 
+  blent(reg.n) &
+  brule(reg.n,POW(NAT*CHAR)) &
+  bpop(reg) &
+  evleql(e_r_r) &
+  bcall(TypeCheckerMessageX:MESSAGE("Use % to copy a string to % ",bsrv CPY_STR berv,bsrv x berv)) 
+ =>
+  evleql_rstrc(x);
+
+  blent(reg.n) &
+  brule(reg.n,seq(CHAR)) &
+  bpop(reg) &
+  evleql(e_r_r) &
+  bcall(TypeCheckerMessageX:MESSAGE("Use % to copy a string to % ",bsrv CPY_STR berv,bsrv x berv))
+ =>
+  evleql_rstrc(x);
+
+
+  brule(reg.n,W) &
+  brule(StoreHypX.m,given(W[k])) &
+  bpop(reg) &
+  evleql(e_r_r) &
+  bcall(TypeCheckerMessageX:MESSAGE("Use % to copy a segment to % ",bsrv CPY_SEG(k) berv,bsrv x berv)) 
+ =>
+  evleql_rstrc(x);
+  
+ /* Ib 5-6-94  inbuilt overload of + */
+   
+
+#define overload_JOK2s ( (? = ?),(? + ?),(? - ?),(? * ?),(? / ?),(? mod ?),(? | ?),(? ^ ?),(? & ?) )
+
+/****
+20-12-2001 4 rules to allow arith operators to be used if types compatiple 
+( A \/ B = C  makes A and C compatiple ) ; 
+an the following 5 rules disallow overloading of compatiple types
+
+  brule(reg.n,A) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  A = NAT &
+  bmodr(reg.n, NAT)                       
+ =>
+  overload(? JOK2 NAT);
+
+  brule(reg.n,A) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  SCALAR = A &
+  bmodr(reg.n,NAT)                       
+ =>
+  overload(? JOK2 SCALAR);
+
+  blent(reg.n) &
+  brule(reg.n,NAT) &   
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  A = NAT                         
+ =>
+  overload(? JOK2 A);
+
+  blent(reg.n) &
+  brule(reg.n,SCALAR) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  SCALAR = A &
+  bmodr(reg.n,NAT)                        
+ =>
+  overload(? JOK2 A);
+****/
+
+  blent(reg.n) &
+  bmodr(reg.n,?) 
+ =>
+  overload(? JOK2 A);
+
+  blent(reg.n) &
+  brule(reg.n,NAT) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  SCALAR = NAT                       
+ =>
+  overload(? JOK2 SCALAR);
+
+  blent(reg.n) &
+  brule(reg.n,SCALAR) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  bmodr(reg.n,NAT)                       
+ =>
+  overload(? JOK2 SCALAR);
+
+  blent(reg.n) &
+  brule(reg.n,NAT) &   
+  bsearch((? JOK2 ?),overload_JOK2s,X)                         
+ =>
+  overload(? JOK2 NAT);
+
+  blent(reg.n) &
+  brule(reg.n,SCALAR) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  SCALAR = NAT &
+  bmodr(reg.n,NAT)                        
+ =>
+  overload(? JOK2 NAT);
+
+/********************************************************************/
+
+/****** INTEGER/INT overload build in  *******/
+
+  brule(reg.n,A) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  A = INTEGER
+ =>
+  overload(? JOK2 INTEGER);
+
+  brule(reg.n,A) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  A = INT
+ =>
+  overload(? JOK2 INT);
+
+/****** end INTEGER/INT overload build in  *******/
+
+  IsPASPToolkit &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,UNSIGNED)
+ =>
+  overload(? JOK2 UNSIGNED);
+
+  IsPASPToolkit &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,BYTE)
+ =>
+  overload(? JOK2 BYTE);
+
+/*****  built in overload operator for range types in VHDL **************/
+ 
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,(z..w)) &
+  bmodr(reg.n,NAT)
+ =>
+  overload(? JOK2 (x..y));
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,(x..y))
+ =>
+  overload(? JOK2 (x..y));
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,(z..z)) &
+  btest(x<=z) & btest(z<=y) &
+  bmodr(reg.n,(x..y))
+ =>
+  overload(? JOK2 (x..y));
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,NAT) 
+ =>
+  overload(? JOK2 (x..y));
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,(x..y)) &
+  btest(x<=z) & btest(z<=y)
+ =>
+  overload(? JOK2 (z..z));
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,(t..t)) &
+  bnum(z) & bnum(t) &
+  bcall( (ARI~;MODR):bmodr(reg.n,( (t JOK2 z)..(t JOK2 z) ) ) )
+ =>
+  overload(? JOK2 (z..z));
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  bsearch((? JOK2 ?),overload_JOK2s,X) &
+  brule(reg.n,(x..y)) &
+  bmodr(reg.n,NAT)
+ =>
+  overload(? JOK2 NAT);
+
+
+/**********************************************************************/
+
+
+  brule(reg.n,A) &
+  brule(StoreHypX.m,((? JOK2 ?):A*B --> C)) &
+  bmodr(reg.n,C)
+ =>
+  overload(? JOK2 B);
+
+  brule(reg.n,A) &
+  brule(StoreHypX.m,((? JOK2 ?):A*B +-> C)) &
+  bmodr(reg.n,C)
+ =>
+  overload(? JOK2 B);
+
+
+  brule(reg.n,B) &
+  bpop(reg) &
+  overload(? JOK2 B)
+ =>
+  overload(? JOK2 ?);
+  
+  brule(reg.n,B) &
+  bpop(reg) &
+  A=B
+ =>
+  evleql(A);
+
+  
+   IsVHDL &
+   brule(reg.n,B) &
+   bpop(reg) &
+   A=B
+ =>
+   evlsub(A);
+ 
+  IsVHDL &
+  blent(reg.n) &
+  brule(reg.n,(x..y)) &
+  btest(l<=x) & btest(y<=u) &
+  bpop(reg) 
+ =>
+  evlsub(l..u); 
+  
+  brule(reg.n,A) &
+  bpop(reg) &
+  evleqlnopop(A)
+ =>
+  evleqlnopop;
+  
+  brule(reg.n,B) &
+  A=B
+ =>
+  evleqlnopop(A);
+  
+  brule(reg.n,A) &
+  bpop(reg) &
+  evleqlp(A)
+ =>
+  evleqlp;
+  
+  brule(reg.n,B) &
+  bpop(reg) &
+  POW(A)=B
+ =>
+  evleqlp(A);
+
+  brule(reg.n,A) &
+  bpop(reg) &
+  evleqlpnopop(A)
+ =>
+  evleqlpnopop;
+  
+  brule(reg.n,B) &
+  A=POW(B)
+ =>
+  evleqlpnopop(A);
+
+  brule(reg.n,A) &
+  bmodr(reg.n,POW(A)) 
+ =>
+  evlpow;
+  
+  IsVHDL &
+  blent(reg.n) &
+  brule(reg.n,(n..n)) &
+  bmodr(reg.n,POW(NAT)) 
+ =>
+  evlpow;
+
+  blent(req.n) & brule(reg.n,e_r_r)  => evlpow;
+  
+  brule(reg.n,A) &
+  bmodr(reg.n,seq(A))
+ =>
+  evlseq;
+
+  brule(reg.n,e_r_r)  => evlseq;
+  
+  brule(reg.n,B) &
+  bpop(reg) &
+  evlcross(B)
+ =>
+  evlcross;
+  
+  brule(reg.n,A) &
+  bmodr(reg.n,(A*B))
+ =>
+  evlcross(B);
+  
+  brule(reg.n,B) &
+  bpop(reg) &
+  evlunion(B)
+ =>
+  evlunion;
+  
+  brule(reg.n,A) &
+  bmodr(reg.n,(A\/B))
+ =>
+  evlunion(B);
+
+
+/*  brule(reg.n,B) &     Ib inserted to simplify union of Types with elememts 
+   bmodr(reg.n,(B))      and deleted
+  =>
+   evlunion(B); */
+
+  
+  brule(reg.n,B) &
+  bpop(reg) &
+  evlcomma(B)
+ =>
+  evlcomma;
+  
+  brule(reg.n,A) &
+  bmodr(reg.n,(A,B))
+ =>
+  evlcomma(B);
+
+  brule(reg.n,A) &
+  bmodr(reg.n,(A*A))
+ =>
+  evlcross2;
+    
+  brule(reg.n,B) &
+  bpop(reg) &
+  evlrel(B)
+ =>
+  evlrel;
+  
+  brule(reg.n,A) &
+  bmodr(reg.n,POW(A*B))
+ =>
+  evlrel(B);
+  /*
+  blent(reg.n) &
+  brule(reg.n,POW(A*C)) &
+  bpop(reg) &
+  evlcurriedfnc(POW(A*C))
+ =>
+  evlcurriedfnc;
+  */
+
+  /* jra 5-3-92 */
+
+  brule(reg.n,A) &
+  bpop(reg) &
+  evlcurriedfnc(A)
+ =>
+  evlcurriedfnc;
+
+  blent(reg.n) &
+  brule(reg.n,POW(B*C)) &
+  bmodr(reg.n,POW(B*A*C))
+ =>
+  evlcurriedfnc(A);
+
+  /*
+  brule(reg.n,B) &
+  bmodr(reg.n,POW(A*B*C))
+ =>
+  evlcurriedfnc(A);
+ */
+  /*
+  blent(reg.n) &
+  brule(reg.n,(A*C)) &
+  bpop(reg) &
+  evlcurriedcross(A*C)
+ =>
+  evlcurriedcross;
+  */
+  brule(reg.n,A) &
+  bpop(reg) &
+  evlcurriedcross(A)
+ =>
+  evlcurriedcross;
+
+
+  blent(reg.n) &
+  brule(reg.n,B*C) &
+  bmodr(reg.n,(B*A*C))
+ =>
+  evlcurriedcross(A);
+
+  /*
+  brule(reg.n,B) &
+  bmodr(reg.n,(A*B*C))
+ =>
+  evlcurriedcross(A*C);
+  */
+
+  brule(reg.n,A) &
+  bmodr(reg.n,A) &
+  bcall(sinkX:A)
+ =>
+  evlpr1;
+
+/* to cope with empty sets of pairs 9-03-94 */
+
+  blent(reg.n) &
+  brule(reg.n,?) &
+  bmodr(reg.n,?)
+ =>
+  evlpr1;
+
+/* WHAT removed : allowed dom(rubish)
+  blent(reg.n) &
+  brule(reg.n,t) &
+  bmodr(reg.n,A)
+ =>
+  evlpr1;
+*/
+
+  blent(reg.n) &
+  brule(reg.n,A*B) &
+  bmodr(reg.n,A)
+ =>
+  evlpr1;
+
+
+
+  brule(reg.n,A) &
+  bmodr(reg.n,A) &
+  bcall(sinkX:A)
+ =>
+  evlpr2;
+
+/* to cope with empty sets of pairs  9-03-94 */
+
+  blent(reg.n) &
+  brule(reg.n,?) &
+  bmodr(reg.n,?)
+ =>
+  evlpr2; 
+
+  
+  blent(reg.n) &
+  brule(reg.n,A*B) &
+  bmodr(reg.n,B)
+ =>
+  evlpr2;
+
+
+
+  blent(reg.n) &
+  brule(reg.n,A) &
+  bmodr(reg.n,A) &
+  bcall(sinkX:A)
+ =>
+  evllow;
+
+  blent(reg.n) &
+  brule(reg.n,seq(A)) &
+  bmodr(reg.n,(NAT*A))
+ =>
+  evllow;
+      
+  blent(reg.n) &
+  brule(reg.n,POW(A)) &
+  bmodr(reg.n,A)
+ =>
+  evllow;
+  
+  brule(reg.n,A) &
+  bmodr(reg.n,A) &
+  bcall(sinkX:A)
+ =>
+  evllowseq;
+    
+  blent(reg.n) &
+  brule(reg.n,A*seq(B)) &
+  bmodr(reg.n,A*B)
+ =>
+  evllowseq;
+ 
+  brule(reg.n,A) &
+  bpop(reg) &
+  bcall(sinkX:A)
+ =>
+  evlisrel;
+
+  brule(reg.n,A) &
+  bpop(reg) &
+  bcall(sinkX:A) 
+ =>
+  evlisseq;
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &                 
+  brule(reg.n,t) &
+  brule(StoreHypX.m, (t=POW((1..u)*A))) &
+  bpop(reg)
+ =>
+  evlisseq;
+
+  blent(reg.n) &                  /* rule IB 13-7-95 */
+  brule(reg.n,t) &
+  brule(StoreHypX.m, (t=POW(NAT*A))) &
+  bpop(reg)
+ =>
+  evlisseq;
+
+  blent(reg.n) & 
+  brule(reg.n,S) &
+  brule(StoreHypX.m,(S=seq(A))) &
+  bpop(reg)
+ =>
+  evlisseq;
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &                 
+  brule(reg.n,POW((1..u)*A)) &
+  bpop(reg)
+ =>
+  evlisseq;
+
+  blent(reg.n) &                  /* rule IB 21-4-95 */
+  brule(reg.n,POW(NAT*A)) &
+  bpop(reg)
+ =>
+  evlisseq;
+
+  blent(reg.n) & /* line IB 21-4-95 */
+  brule(reg.n,seq(s)) &
+  bpop(reg)
+ =>
+  evlisseq;
+
+  blent(reg.n) &                  /* rule IB 4-9-97 */
+  brule(reg.n,t) &
+  brule(StoreHypX.m, (t=POW(A*B))) &
+  bpop(reg)
+ =>
+  evlisrel;
+  
+  blent(reg.n) &
+  brule(reg.n,seq(A)) &
+  bpop(reg)
+ =>
+  evlisrel;
+  
+  blent(reg.n) &
+  brule(reg.n,POW(A*B)) &
+  bpop(reg)
+ =>
+  evlisrel;
+  
+  brule(reg.n,s) &
+  bpop(reg) &
+  bcall((GEN;SUB~;DED;(bX~;REV;cX;DED)~;sinkX),fwdX:!x.(x:s => P))
+ =>
+  evluniv(x,P);
+
+  brule(reg.n,s) &
+  bpop(reg) &
+  bcall((GEN;SUB~;DED;(bX~;REV;cX;DED)~;sinkX),fwdX:!x.(x:POW(s) => P))
+ =>
+  evlunivp(x,P);
+  
+  brule(reg.n,s) &
+  bcall((GEN;SUB~;DED;(bX~;REV;cX;DED)~;sinkX),fwdX:!x.(x:s => P))
+ =>
+  evluniv_nopop(x,P);
+  
+  brule(reg.n,s) &
+  bcall((GEN;SUB~;DED;(bX~;REV;cX;DED)~;sinkX),fwdX:!x.(x:POW(s) => P))
+ =>
+  evlunivp_nopop(x,P);
+
+  TooManyErrors
+ =>
+  x
+  
+  
+END
+
+&
+
+THEORY PredX IS
+
+                           /* PREDICATE */
+  brule(reg.n,A) &
+  Writef(("Val of n is % and Type of % is %\n",n,x,A))
+ => 
+  writetype(x);
+  
+  brule(reg.n,A) &
+  Writef(("Val of n is % and Super of % is %\n",n,x,A))
+ => 
+  writesuper(x);
+  
+  brule(reg.n,s) &
+  bcall(RULE: bpop(reg)) &
+  !x.(x:s => P)
+ =>
+  evluniv(x,P);
+  
+  brule(reg.n,s) &
+  bcall(RULE: bpop(reg)) &
+  !x.(x:POW(s) => P)
+ =>
+  evlunivp(x,P);
+  
+  brule(reg.n,s) &
+  !x.(x:s => P)
+ =>
+  evluniv_nopop(x,P);
+  
+  brule(reg.n,s) &
+  !x.(x:POW(s) => P)
+ =>
+  evlunivp_nopop(x,P);
+  
+  
+ bcall(sinkX:P)
+ =>
+  wellpred(P);
+ 
+  UnknownOpWarning(_ JOK2 _) & 
+  bcall(sinkX:(x JOK2 y)) 
+ =>
+  wellpred(x JOK2 y);
+ 
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv))
+ =>
+  wellpred1(!x.P);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv)) &
+  wellpred1(!l.P)
+ =>
+  wellpred1(!(l,x).P);
+  
+  bsearch((x inc s),P,R) &
+  x\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x inc s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evlunivp(x,wellstopred(R => Q))
+ =>
+  wellpred1(!x.(P => Q));
+  
+  bsearch((x incl s),P,R) &
+  x\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x incl s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evlunivp(x,wellstopred(R => Q))
+ =>
+  wellpred1(!x.(P => Q));
+  
+  bsearch((x = s),P,R) &
+  x\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x = s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:type(s)) &
+  evluniv(x,wellstopred(R => Q))
+ =>
+  wellpred1(!x.(P => Q));
+  
+  bsearch((x:s),P,R) &
+  x\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x : s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evluniv(x,wellstopred(R => Q))
+ =>
+  wellpred1(!x.(P => Q));
+
+  bsearch((x inc s),P,R) &
+  (l,x)\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x inc s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evlunivp(x,wellpred1(!l.(R => Q)))
+ =>
+  wellpred1(!(l,x).(P => Q));
+  
+  bsearch((x incl s),P,R) &
+  (l,x)\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x incl s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evlunivp(x,wellpred1(!l.(R => Q)))
+ =>
+  wellpred1(!(l,x).(P => Q));
+  
+  bsearch((x = s),P,R) &
+  (l,x)\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x = s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:type(s)) &
+  evluniv(x,wellpred1(!l.(R => Q)))
+ =>
+  wellpred1(!(l,x).(P => Q));
+  
+  bsearch((x:s),P,R) &
+  (l,x)\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x : s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evluniv(x,wellpred1(!l.(R => Q)))
+ =>
+  wellpred1(!(l,x).(P => Q));
+  
+  x\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x inc s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evlunivp(x,wellstopred(Q))
+ =>
+  wellpred1(!x.(x inc s => Q));
+  
+  x\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x incl s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evlunivp(x,wellstopred(Q))
+ =>
+  wellpred1(!x.(x incl s => Q));
+  
+  x\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x = s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:type(s)) &
+  evluniv(x,wellstopred(Q))
+ =>
+  wellpred1(!x.(x = s => Q));
+  
+  x\s &
+  bcall(MODR:bmodr(ObjX.1,predicate(x : s))) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(s)) &
+  evluniv(x,wellstopred(Q))
+ =>
+  wellpred1(!x.(x:s => Q));
+
+  errin &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Predicate  % implication (=>) expected",bsrv P berv))
+ =>
+  wellpred0(!x.P);
+
+  errin &
+  wellpred1(!x.(P=>Q))
+ =>
+  wellpred0(!x.(P=>Q));
+  
+  iserrin
+ =>  
+  wellpred0(!x.P);
+  
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(x)) &
+  wellpred0(!(brev(x)).P)
+ =>
+  wellpred(!x.P);
+
+  wellpred(!x.(P => true))
+ =>
+  wellpred(#x.P);
+  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & super(s))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x:s);
+  
+  blent(reg.l)&
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:(errout & wellpred(x:t) & errin) |
+        (GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:(errin & clean_stack(l) & wellpred(x:s)))
+ =>
+  wellpred(x:(s\/t));
+  
+  bcall(RULE: bcrelr(StoreHypX,(? JOK2 ?:s))) 
+ =>
+  wellpred(? JOK2 ?:s);
+  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & super(s))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x/:s);
+  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:(super(s) & super(t))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(s incl t);
+
+  
+  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:(super(s) & super(t))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(s inc t);
+
+/* IB 9-11-92: error for given sets 
+
+  brule(StoreHypX.n,given(s))  &
+  brule(StoreHypX.m,given(t))  &
+   bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:(super(s) & super(t))) &
+     bcall(((evlX;RULE;MODR)~;sinkX):evleql) & 
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Given sets % ,  % must be independent",bsrv s berv,bsrv t berv))
+ =>
+  wellpred(s inc t);
+*/
+
+
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:(super(s) & super(t))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(s /<<: t);
+  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:(super(s) & super(t))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(s /<: t);
+
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(y))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x=y);
+
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(y))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x=y);
+  
+/******* given set concretisation next rules; needs to be re-done ? ***********/
+
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(y))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  welleql(x,y);
+
+  
+  Is_TU  &
+  bcall((TX2~):setTYPE(x,y)) 
+ =>
+  welleql(x,y);
+ 
+/*  brule(TypeCheckerFromUserX.2,a.imp) & */
+
+  brule(StoreHypX.n,given(y)) &
+  Clear_TU &  
+  bcall((TX~):isTYPE(x)) &
+  welleql(x,y)
+ =>
+  wellpred(x=y);
+ 
+/*  brule(TypeCheckerFromUserX.2,a.imp) &   */
+
+
+  bUpident(x) &  /* r is a seen machine x is a parameter of r */
+  brule(StoreHypX.n,given(r.x)) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql(r.x))
+ =>
+  wellpred(r.x=y);
+
+
+  bident(x) &
+  brule(StoreHypX.n,given(x)) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql(x))
+ =>
+  wellpred(x=y);
+
+  brule(TypeCheckerFromUserX.2,a.mch) &  
+  bident(x) &
+  brule(StoreHypX.n,given(x)) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql2(x)) 
+ =>
+  wellpred(x=y);
+
+
+/*
+  brule(TypeCheckerFromUserX.2,a.imp) &  
+  brule(StoreHypX.n,given(x[W])) &
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(y))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x=y);
+
+*/
+
+/*  brule(TypeCheckerFromUserX.2,a.imp) &  */
+ 
+  brule(StoreHypX.n,given(x[W])) &
+  brule(StoreHypX.m,given(y)) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(seq(y))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql(x))
+ =>
+  wellpred(x=seq(y));
+
+/*  brule(TypeCheckerFromUserX.2,a.imp) & */
+ 
+  brule(StoreHypX.n,given(x[W])) &
+  brule(StoreHypX.m,given(y[W])) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql(x))
+ =>
+  wellpred(x=y);
+
+
+/* fix for Scalar - not necessary anymore 
+  
+  brule(StoreHypX.n,given(SCALAR)) &  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:super(0..2147483646)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):store_given_eql(SCALAR))
+ =>
+  wellpred(SCALAR = 0..2147483646);
+*/
+
+
+/* given set already given a value */
+
+  brule(StoreHypX.n,given(x)) &
+  brule(StoreHypX.m,(x=z)) &
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(y))) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: given set % already given a value",bsrv x berv)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x=y); 
+
+/* given set already given a value - enumerated */ 
+
+
+  brule(StoreHypX.n,given_enum(x(l))) &
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(y))) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: enumerated set % cannot be given a new value ",bsrv x berv)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x=y); 
+  
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(y))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x/=y);
+  
+  wellstopred bsmap (P&Q)
+ =>
+  wellpred(P&Q);
+  
+  wellstopred(P) &
+  wellstopred(Q)
+ =>
+  wellpred(P or Q);
+  
+  wellstopred(P) &
+  wellstopred(Q)
+ =>
+  wellpred(P => Q);
+  
+  wellstopred(P) &
+  wellstopred(Q)
+ =>
+  wellpred(P <=> Q);
+  
+  wellpred(P)
+ =>
+  wellpred(not(P));
+
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(y))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(not(x=y));
+  
+
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:type(x)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:type(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) 
+ =>
+  wellpred(x<y); 
+
+/* relational oprerator should work for all given sets ib + fernado */
+
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:type(x)) &
+  bcall(((cX;RULE)~;sinkX):isbasicsetnp) &
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:type(y)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellpred(x<y);
+  
+  wellpred(x<y)
+ =>
+  wellpred(x<=y);
+  
+  wellpred(x<y)
+ =>
+  wellpred(x>y);
+  
+  wellpred(x<y)
+ =>
+  wellpred(x>=y);
+
+  wellpred(false);
+  
+  wellpred(true);
+  
+  wellpred(?);
+  
+  bcall(MODR:bmodr(ObjX.1,predicate(P))) &
+  wellpred(P)
+ =>
+  wellstopred(P);
+
+  Is_first_or_second_time_in_treat_variable_and_invariant &
+  wellpred(P)
+ =>
+  wellstopred(P);
+
+  wellstopred(true);
+  
+  wellstopred(?);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+THEORY PredCtxPX IS
+ 
+                      /* PREDICATE IN A CONTEXT */
+                            
+                    /*(Properties with constants)*/
+                    /*(Invariant with variables)*/
+                 /*(Pre-condition of an operation) */
+  
+  bcall(RULE: bcrelr(StoreHypX,P)) &
+  bcall(MODR: bmodr(StorePrpX.n,_d_o_n_e_))
+ =>
+  StoreDecl(n;P);
+
+/* modified by Ib 27-11-92 to enhance error message) */
+
+  AddToVariablesWithNoType(x) &
+  haserror &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % as % ",bsrv x berv,(s))) 
+ =>
+  StoreDecl(n;(x:s));
+
+  AddToVariablesWithNoTypeFirstTime(x) &
+  haserror &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % as % ",bsrv x berv,(s)))
+ =>
+  StoreDecl(n;(x:s));
+  
+  haserror &
+  Is_first_time_in_treat_variable_and_invariant &
+  Mark_error_in_treat_variable_and_invariant
+ =>
+  StoreDecl(n;P);
+  
+  bcall(RULE: bcrelr(StoreHypX,P))
+ =>
+  StoreDeclp(P);
+  
+  haserror
+ =>
+  StoreDeclp(P);
+    
+  brule(reg.n,s) &
+  bcall(RULE: bpop(reg)) &
+  StoreDecl(m;(x:s))
+ =>
+  evlctx(x;m);
+
+  blent(reg.n) &
+  brule(reg.n,seq(s)) &
+  bcall(RULE: bpop(reg)) &
+  StoreDeclp(x:POW(NAT*s)) &
+  StoreDecl(m;(x:seq(s)))
+ =>
+  evlctx(x;m);
+
+  brule(reg.n,s) &
+  bcall(RULE: bpop(reg)) &
+  StoreDecl(m;(x:POW(s)))
+ =>
+  evlctxp(x;m);
+  
+/*
+  Writef(("\n"))
+ =>
+*/
+  wellprop(n);
+  
+  Is_in_TreatParametersAndPrecondition
+ =>
+  wellprop(n);
+  
+  brule(StorePrpX.n,P) &
+  Writef((".")) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  wellprop(n+1)
+ =>
+  wellprop(n);
+  
+  brule(StorePrpX.n,P) &
+  Is_in_TreatParametersAndPrecondition &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  wellprop(n+1)
+ =>
+  wellprop(n);
+  
+  brule(StorePrpX.n,_d_o_n_e_) &
+  wellprop(n+1)
+ =>
+  wellprop(n);
+  
+  brule(StorePrpX.n,?) &
+  wellprop(n+1)
+ =>
+  wellprop(n);
+  
+  wellprop(1)
+ =>
+  wellcontext;
+  
+  Is_first_time_in_treat_variable_and_invariant
+ =>
+  wellcontext;
+
+  AddToVariablesWithNoType(c) & 
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't determine type for % from predicate clause",bsrv c berv))
+ =>
+  wellconstant(c);
+
+  AddToVariablesWithNoTypeFirstTime(c) & 
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't determine type for % from predicate clause",bsrv c berv))
+ =>
+  wellconstant(c);
+
+ 
+  Is_first_time_in_treat_variable_and_invariant &
+  Mark_error_in_treat_variable_and_invariant
+ =>
+  wellconstant(c);
+
+
+  brule(StorePrpX.n,(c=s)) &
+  bcall(MODR:bmodr(ObjX.1,predicate(c=s))) &
+  bcall((bX~;REV;cX;DED)~,fwdX:type(s)) &
+  evlctx(c;n)
+ =>
+  wellconstant(c);
+
+  ThisConstructIsUsrVHDL &
+  brule(StorePrpX.n,(c=k)) &
+  bnum(k) &
+  bcall(MODR:bmodr(ObjX.1,predicate(c=k))) &
+  StoreDecl(n;(c:k..k )) 
+ =>
+  wellconstant(c);
+    
+  brule(StorePrpX.n,(c inc s)) &
+  bcall(MODR:bmodr(ObjX.1,predicate(c inc s))) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlctxp(c;n)
+ =>
+  wellconstant(c);
+ 
+  brule(StorePrpX.n,(c incl s)) &
+  bcall(MODR:bmodr(ObjX.1,predicate(c incl s))) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlctxp(c;n)
+ =>
+  wellconstant(c);
+   
+  brule(StorePrpX.n,(c:s)) &
+  bcall(MODR:bmodr(ObjX.1,predicate(c:s))) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlctx(c;n)
+ =>
+  wellconstant(c);
+ 
+  brule(StoreHypX.n,(c:s))
+ =>
+  wellconstant(c);
+               
+  Writef((".")) &
+  wellconstant(c)
+ =>
+  wellconstant1(c);
+
+  brule(StoreHypX.n,(c:s)) &
+  /* may be needed : brule(TypeCheckerFromUserX.2,a.mch) & */
+  Is_first_time_in_treat_variable_and_invariant &
+  Mark_error_in_treat_variable_and_invariant
+ =>
+  wellconstant1(c);
+
+  
+  Is_in_TreatParametersAndPrecondition &
+  wellconstant(c)
+ =>
+  wellconstant1(c);
+  
+  wellconstant1(?);
+               
+  wellconstant1 bsmap l
+ =>
+  wellcontext(l);
+
+  TooManyErrors
+ =>
+  x
+  
+END
+
+&
+
+
+THEORY TypeX IS
+
+#define ClearType   bcall(MODR: bmodr(TypeX.1,?) )
+
+#define TypeXTac ((REV;FLAT;TypeX~;MODR)~)
+
+#define  FindDefiningPredicate(L,P) bcall(TypeXTac: typ_sub(L,?)(bflat(?&brev(P))) )
+
+
+  ?;
+
+
+  typ_sub(L)(bflat(p&P))
+ =>
+  typ_sub(L)(P&p);
+ 
+  bmodr(TypeX.1,(?,(L),(P)) )
+ =>
+  typ_sub(L,?)(P&?);
+
+  bmodr(TypeX.1,(?,(L),?) )
+ =>
+  typ_sub(L,?)(?);
+
+
+
+  L\T &
+  bsearch(?,(P),R) &
+  bsearch(v,L,M) &
+  bmodr(TypeX.1,((v incl T),(M),(R)) )
+ =>
+  typ_sub(L,?)(P&v incl T);
+
+  L\T &
+  bsearch(v,L,M) &
+  bmodr(TypeX.1,((v incl T),(M),?) )
+ =>
+  typ_sub(L,?)(?&v incl T);
+
+  v\T &
+  bsearch(?,(P),R) &
+  bmodr(TypeX.1,((v incl T),?,(R)))
+ =>
+  typ_sub(v,?)(P&v incl T);
+
+  v\T &
+  bmodr(TypeX.1,((v incl T),?,?))
+ =>
+  typ_sub(v,?)(?&v incl T);
+
+
+
+
+  L\T &
+  bsearch(?,(P),R) &
+  bsearch(v,L,M) &
+  bmodr(TypeX.1,((v inc  T),(M),(R)) )
+ =>
+  typ_sub(L,?)(P&v inc  T);
+
+  L\T &
+  bsearch(v,L,M) &
+  bmodr(TypeX.1,((v inc  T),(M),?) )
+ =>
+  typ_sub(L,?)(?&v inc  T);
+
+  v\T &
+  bsearch(?,(P),R) &
+  bmodr(TypeX.1,((v inc  T),?,(R)))
+ =>
+  typ_sub(v,?)(P&v inc  T);
+
+  v\T &
+  bmodr(TypeX.1,((v inc  T),?,?))
+ =>
+  typ_sub(v,?)(?&v inc  T);
+
+
+
+  L\T &
+  bsearch(?,(P),R) &
+  bsearch(v,L,M) &
+  bmodr(TypeX.1,((v=T),(M),(R)) )
+ =>
+  typ_sub(L,?)(P&v=T);
+
+  L\T &
+  bsearch(v,L,M) &
+  bmodr(TypeX.1,((v=T),(M),?) )
+ =>
+  typ_sub(L,?)(?&v=T);
+
+  v\T &
+  bsearch(?,(P),R) &
+  bmodr(TypeX.1,((v=T),?,(R)))
+ =>
+  typ_sub(v,?)(P&v=T);
+
+  v\T &
+  bmodr(TypeX.1,((v=T),?,?))
+ =>
+  typ_sub(v,?)(?&v=T);
+
+
+
+
+  L\T &
+  bsearch(?,(P),R) &
+  bsearch(v,L,M) &
+  bmodr(TypeX.1,((v:T),(M),(R)) )
+ =>
+  typ_sub(L,?)(P&v:T);
+
+  L\T &
+  bsearch(v,L,M) &
+  bmodr(TypeX.1,((v:T),(M),?) )
+ =>
+  typ_sub(L,?)(?&v:T);
+
+  v\T &
+  bsearch(?,(P),R) &
+  bmodr(TypeX.1,((v:T),?,(R)))
+ =>
+  typ_sub(v,?)(P&v:T);
+
+  v\T &
+  bmodr(TypeX.1,((v:T),?,?))
+ =>
+  typ_sub(v,?)(?&v:T);
+
+ 
+  typ_sub(L)(bflat((x JOK2 {})&P))
+ =>
+  typ_sub(L)(P&(x JOK2 {}))
+
+END
+
+&
+
+THEORY CheckExpX IS
+
+/* #define Pasp_conv_safe (b2n,b2bs,u2n,u2bs,b2u) all references are commented out!
+dsn 24/02/99
+*/
+
+#define Pasp_conv (n2b,b2n,b2bs,bs2b,n2u,u2n,u2bs,bs2u,b2u,u2b,b2bl,bl2b,bb2u,n2bl,bl2n)
+
+#define CheckExp(g) bcall(CheckExpX~ : cex_0(g))
+
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: expression % may cause run-time error\n",bsrv g berv))
+ =>
+  cex_1(g);
+
+  IsPASPToolkit & bsearch(f,Pasp_conv,r) => cex_1(f(x));
+
+/*
+  IsPASPToolkit & bsearch(f,Pasp_conv_safe,r) => cex_1(f(x));
+
+  IsPASPToolkit & bnum(n) & btest(n<=255) => cex_1(n2b(n)); 
+
+  IsPASPToolkit & bnum(n) & btest(n<=65535) => cex_1(n2u(n)); 
+
+  IsPASPToolkit & bnum(n) & btest(n<=255) => cex_1(u2b(u));
+*/
+
+  bident(h) => cex_1(h);
+
+  bnum(h) => cex_1(h);
+
+  cex_1(g) &  cex_1(h) => cex_1(g mod h);
+
+  cex_1(g) &  cex_1(h) => cex_1(g * h);
+
+  cex_1(g) & cex_1(h) => cex_1(g / h);
+
+  cex_1(g) &  cex_1(h) => cex_1(g - h);
+
+  cex_1(g) & cex_1(h) =>  cex_1(g + h);
+
+
+  brule(TreatOperationsX.1,s) &
+  brule(TreatOperationsX.2,l) &
+  bsearch(s,(l),r)
+ =>
+  cex_1(g);
+
+  cex_0(g);
+
+  brule(TypeCheckerFromUserX.2,i.imp) &    /* check for imp only */
+  cex_1(g)
+ =>
+  cex_0(g);
+
+  TooManyErrors
+ =>
+  cex_0(g)
+
+END
+
+&
+
+THEORY CheckGuardX IS
+
+
+#define CheckGuard(g) bcall((CheckGuardX;CheckExpX)~ : cg_0(g))
+
+  cg_4(h);
+
+ blent(reg.m) &
+ brule(reg.m,(s*t)) &
+ bcall(TypeCheckerMessageX:MESSAGE("Warning: guard % may cause translation error",bsrv h berv)) &
+  bcall(RULE:bpop(reg))
+ =>
+  cg_4(h);
+
+ blent(reg.m) &
+ brule(reg.m,POW(t)) &
+ bcall(TypeCheckerMessageX:MESSAGE("Warning: guard % may cause translation error",bsrv h berv)) &
+  bcall(RULE:bpop(reg))
+ =>
+  cg_4(h);
+
+ blent(reg.m) &
+ brule(reg.m,seq(t)) &
+ bcall(TypeCheckerMessageX:MESSAGE("Warning: guard % may cause translation error",bsrv h berv)) &
+  bcall(RULE:bpop(reg))
+ =>
+  cg_4(h);
+
+
+ bcall(TypeCheckerMessageX:MESSAGE("Warning: guard % may cause run-time error",bsrv h berv))
+ =>
+  cg_3(h);
+
+  IsPASPToolkit & bsearch(f,Pasp_conv,r) => cg_3(f(x));
+
+/*
+  
+  IsPASPToolkit & bsearch(f,Pasp_conv_safe,r) => cg_3(f(x));
+
+  IsPASPToolkit & bnum(n) & btest(n<=255) => cg_3(n2b(n)); 
+
+  IsPASPToolkit & bnum(n) & btest(n<=65535) => cg_3(n2u(n)); 
+
+  IsPASPToolkit & bnum(n) & btest(n<=255) => cg_3(u2b(u));
+*/
+
+  bnum(h)
+ =>
+  cg_3(h);
+
+  bident(h) &
+  bcall((bX~;REV;cX;DED)~,fwdX:type(h)) &
+  cg_4(h)
+ =>
+  cg_3(h);
+
+
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: expression % in guard may not translate",bsrv h berv))
+ =>
+  cg_2(h);
+
+  IsPASPToolkit & bsearch(f,Pasp_conv,r) => cg_2(f(x));
+ 
+/* 
+  IsPASPToolkit & bsearch(f,Pasp_conv_safe,r) => cg_2(f(x));
+
+  IsPASPToolkit & bnum(n) & btest(n<=255) => cg_2(n2b(n)); 
+
+  IsPASPToolkit & bnum(n) & btest(n<=65535) => cg_2(n2u(n)); 
+
+  IsPASPToolkit & bnum(n) & btest(n<=255) => cg_2(u2b(u));
+*/
+
+  bnum(h) => cg_2(h);
+
+  bident(h) => cg_2(h);
+
+
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: expression % in guard may not translate",bsrv g berv))
+ =>
+  cg_1(g);
+
+  cg_2(g) &  cg_2(h) => cg_1(g <= h);
+
+  cg_2(g) &  cg_2(h) => cg_1(g < h);
+
+  cg_2(g) &  cg_2(h) => cg_1(g >= h);
+
+  cg_2(g) & cg_2(h) => cg_1(g > h);
+
+  cg_3(g) &  cg_3(h) => cg_1(g /= h);
+
+  cg_3(g) & cg_3(h) =>  cg_1(g = h);
+
+
+
+  cg_1(g) & cg_1(h) => cg_1(g or h);
+
+  cg_1(g) & cg_1(h) => cg_1(g&h);
+
+  cg_1(g) => cg_1(not(g));
+
+
+  brule(TreatOperationsX.1,s) &
+  brule(TreatOperationsX.2,l) &
+  bsearch(s,(l),r)
+ =>
+  cg_1(g);
+
+  cg_0(g);
+
+  brule(TypeCheckerFromUserX.2,i.imp) &    /* check for imp only */
+  cg_1(g)
+ =>
+  cg_0(g);
+
+  TooManyErrors
+ =>
+  cg_0(g)
+
+END
+
+&
+
+THEORY StmtX IS 
+
+                            /* STATEMENT */
+  
+
+  bcall(RULE:bcrelr(StoreVarX,(x:e_r_r))) &
+  NoTypeWarning(x) &
+  P
+ =>
+  evluniv(x,P);
+
+  bcall(RULE:bcrelr(StoreVarX,(x:?))) &
+  NoTypeWarning(x) &
+  P
+ =>
+  evluniv(x,P);
+
+  brule(reg.n,s) &  
+  bcall(RULE: bpop(reg)) &
+  bcall(RULE:bcrelr(StoreVarX,(x:s))) &
+  P
+ =>
+  evluniv(x,P);
+
+  blent(reg.n) &
+  brule(reg.n,seq(h)) &  
+  bcall(RULE: bpop(reg)) &
+  bcall(RULE:bcrelr(StoreVarX,(x:POW(NAT*h)))) &
+  bcall(RULE:bcrelr(StoreVarX,(x:seq(h)))) &
+  P
+ =>
+  evluniv(x,P);
+  
+  brule(reg.n,s) &  
+  bcall(RULE: bpop(reg)) &
+  bcall(RULE:bcrelr(StoreVarX,(x:POW(s)))) &
+  P
+ =>
+  evlunivp(x,P);
+  
+  bcall(sinkX:S)
+ =>
+  wellstmt(S);
+
+  brule(StoreUsedX.n,(S(a;c) == b))  & 
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("% is an improper call",bsrv S berv))
+ =>
+  wellstmt(S);
+  
+  brule(StoreUsedX.n,(S(?;?) == b))  
+ =>
+  wellstmt(S);
+  
+ bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellpred(x:E))
+ =>
+  wellcallelem(x:E);
+
+/* Next Rule Used-Type instanciation */
+ 
+  brule( StoreHypX.n,(m.E==T) ) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellpred(x:T))
+ =>
+  wellcallelem(x:m.E);
+  
+  blent(reg.l) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:(errout & wellpred(x:F) & errin) |
+        (FLAT~;GEN;SUB~;DED;MAP;ARI;StmtX)~,fwdX:(errin & clean_stack(l) & wellcallelem(x:E)))
+ =>
+  wellcallelem(x:E\/F);
+
+/* Check that  input is typed 4-12-2001 */
+
+  welldefelem(S,x);
+
+  brule(StoreVarX.n,(x:?)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Error: input % to %  has no type",bsrv x berv,bsrv S  berv)) 
+ =>
+  welldefelem(S,x);
+
+  welldefelem(S) bsmap (s)  =>  welldef(S,(s));
+
+/****************************/
+
+  
+  brule(StoreVarX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(E)) &
+  store_type_of_var(n,x)
+ =>
+  wellcallelem(x:E);
+  
+  brule(StoreHypX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(E)) &
+  store_type_of_output(n,x)
+ =>
+  wellcallelem(x:E);
+
+  wellcallelem(([s]x) : E)
+ =>
+  wellcallelem0(s,(x:E));
+
+  wellcallelem0(s) bsmap b &
+  reset_trans_param_error
+ =>
+  wellcall(s,b);
+  
+  is_trans_param_error &
+  reset_trans_param_error
+ =>
+  wellcall(s,b);
+  
+  brule(StoreUsedX.n,(S(?;a) == b)) &
+  bcall(SubTestOpsX~:subtestops(S(y);a;y)) &
+  welldef(S,(y)) &
+  wellcall((a:=y),(b)) 
+ =>
+  wellstmt(S(y));
+  
+  bvrb(x) &
+  brule(StoreUsedX.n,(S(a;?) == b)) &
+  bcall(SubTestOpsX~:subtestops((x <-- S);a;x)) &
+  wellcall((a:=x),(b))
+ =>
+  wellstmt(x <-- S);
+  
+  bvrb(x) &
+  brule(StoreUsedX.n,(S(a;b) == c)) &
+  bcall((FLAT~;SubTestOpsX~):subtestops((x <-- S(y));bflat(a,b);bflat(x,y))) &
+  welldef(S,(y)) &
+  wellcall((bflat(a,b):=bflat(x,y)),(c)) 
+ =>
+  wellstmt(x <-- S(y));
+
+/************ More checking for operation calls in implementations ***********/
+
+/* input machine taging  */
+
+  welltag(x,M);
+ 
+  brule(StoreVarX.n,(x:T));
+/*
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: structure '%' passed to machine: ",x)) &
+  bcall(TypeCheckerMessageX:MESSAGE("         '%'",M)) 
+*/
+  StructurePassing(x,M)
+  =>
+  welltag(x,M);
+
+  brule(StoreVarX.n,(x::M)) => welltag(x,M);
+  
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellpred(x:E))
+ =>
+  wellcallelemM(M,(x:E));
+
+  bcall( (GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellpred(x:(E*F)) ) &
+  welltag(x,M)
+ =>
+  wellcallelemM(M,(x:(E*F)));
+
+  bcall( (GEN;SUB~;DED;MAP;REV;PredX)~ ,fwdX:wellpred(x:seq(E) ) ) &
+  welltag(x,M)
+ =>
+  wellcallelemM(M,(x:seq(E)));
+
+/* HERE(( x:(POW(E)*M) )) & */
+  bcall( (GEN;SUB~;DED;MAP;REV;PredX)~ ,fwdX:wellpred(x:POW(E) ) ) &
+  welltag(x,M)
+ =>
+  wellcallelemM(M,(x:POW(E)));
+
+  bcall( (GEN;SUB~;DED;MAP;REV;PredX)~ ,fwdX:wellpred(x:(seq(CHAR))) )
+ =>
+  wellcallelemM(M,(x:seq(CHAR)));
+
+  bcall( (GEN;SUB~;DED;MAP;REV;PredX)~ ,fwdX:wellpred(x:(POW(E*BOOL))) )
+ =>
+  wellcallelemM(M,(x:POW(E*BOOL)));
+
+
+  bcall( (GEN;SUB~;DED;MAP;REV;PredX)~ ,fwdX:wellpred(x:(POW(E*CHAR))) )
+ =>
+  wellcallelemM(M,(x:POW(E*CHAR)));
+
+  blent(reg.l) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:(errout & wellpred(x:F) & errin) |
+        (FLAT~;GEN;SUB~;DED;MAP;ARI;StmtX)~,fwdX:(errin & clean_stack(l) & wellcallelem(x:E)))
+ =>
+  wellcallelemM(M,(x:E\/F));
+
+/** setting of type and tag **/
+  
+  brule(StoreVarX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(E)) &
+  store_type_of_varM(M,n,x)
+ =>
+  wellcallelemM(M,(x:E));
+
+/** might need work **/
+ 
+  brule(StoreHypX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(E)) &
+  store_type_of_output(n,x)
+ =>
+  wellcallelemM(M,(x:E));
+
+/* 5-8-97 wellcallelemM0 introduced */
+
+  wellcallelemM(M,(([s]x):E))
+ =>
+  wellcallelemM0(M,s,(x:E));
+
+/******/
+
+  HERE(( wellcallM(S,b) )) => wellcallM(S,b);
+
+  brule(TypeCheckerFromUserX.2,M.imp) &
+/* HERE (( wellcallM(S,s,b) : M )) & */  
+  wellcallelemM0(M,s) bsmap b &
+  reset_trans_param_error
+ =>
+  wellcallM(S,s,b);
+  
+  brule(StoreOpsMchX.n,(S:M)) &
+/*  HERE (( wellcallM(S,s,b) : M )) &   */
+  wellcallelemM0(M,s) bsmap b &
+  reset_trans_param_error
+ =>
+  wellcallM(S,s,b);
+  
+  is_trans_param_error &
+  reset_trans_param_error
+ =>
+  wellcallM(S,s,b);
+
+
+/****/
+
+  brule(TypeCheckerFromUserX.2,i.imp) &
+  brule(StoreUsedX.n,(S(?;a) == b)) &
+  bcall(SubTestOpsX~:subtestops(S(y);a;y)) &
+  welldef(S,(y)) &
+  wellcallM(S,(a:=y),(b)) 
+ =>
+  wellstmt(S(y));
+
+  brule(TypeCheckerFromUserX.2,i.imp) &
+  bvrb(x) &
+  brule(StoreUsedX.n,(S(a;?) == b)) &
+  bcall(SubTestOpsX~:subtestops((x <-- S);a;x)) &
+/* HERE(( wellcallM(S,([a:=x]b)) )) & */
+  wellcallM(S,(a:=x),(b))
+ =>
+  wellstmt(x <-- S);
+  
+  brule(TypeCheckerFromUserX.2,i.imp) &
+  bvrb(x) &
+  brule(StoreUsedX.n,(S(a;b) == c)) &
+  bcall((FLAT~;SubTestOpsX~):subtestops((x <-- S(y));bflat(a,b);bflat(x,y))) &
+/* HERE((wellcallM(S,([bflat(a,b):=bflat(x,y)]c)) )) & */
+  welldef(S,(y)) &
+  wellcallM(S,(bflat(a,b):=bflat(x,y)),(c))
+ =>
+  wellstmt(x <-- S(y));
+
+
+/********************************************************/
+  
+  wellstostmt(S) &
+  wellstostmt(T)
+ =>                    
+  wellstmt(S [] T);
+  
+  wellstostmt bsmap (S;T)
+ =>                    
+  wellstmt(S ; T);
+  
+  wellstostmt(S) &
+  wellstostmt(T)
+ =>                    
+  wellstmt(S || T);
+  
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  wellstostmt(S)
+ =>                    
+  wellstmt(P ==> S);
+  
+  ResetRangeCheck &
+HERE(( ResetRangeCheck:P )) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX: wellstopred(P)) &
+  wellstostmt(S) 
+ =>                    
+  wellstmt(P|S);
+
+  wellstostmt(S)
+ =>  
+  wellstmt(BEGIN S END);
+
+ 
+  brule(OperationVarX.2,(s|L|c)) &
+  bcall(MODR: bmodr(OperationVarX.2, (s| (L,VBL(c)) ) ))
+ =>
+  endbegin;
+
+/* no blocks for BEGIN ... END
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(OperationVarX.2,L) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|?))) &
+  wellstostmt(S) &
+  endbegin
+ =>  
+  wellstmt(BEGIN S END);
+*/
+  
+/* Ib
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  wellstostmt(S)
+ =>  
+  wellstmt(WHILE P DO S END);
+*/
+  
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  wellstostmt(S) &
+  CheckGuard(P) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:(wellstopred(I) & wellstopred(V:NAT)))
+ =>  
+  wellstmt(WHILE P DO S INVARIANT I VARIANT V END);
+
+  wellstmt(WHILE P DO S INVARIANT I VARIANT V END)
+ =>  
+  wellstmt(WHILE P DO S VARIANT V INVARIANT I END);
+  
+  wellstmt(skip);
+  
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellstmt(x:=E);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  bcall(((bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql_rstrc(x)) &
+  CheckExp(E)
+ =>
+  wellstmt(x:=E);
+  
+  
+  bcall((MAP;(bX~;REV;cX;DED)~;sinkX),fwdX:(type(x) & super(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)
+ =>
+  wellstmt(x::E);
+
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P))
+ =>
+  wellstmt(x:P);
+  
+  brule(StoreVarX.n,(x:?)) &  
+  bcall((bX~;REV;cX;DED)~,fwdX:super(E)) & 
+  store_type_of_var(n,x)
+ =>
+  wellstmt(x::E);
+  
+  brule(StoreVarX.n,(x:?)) &  
+  bcall((bX~;REV;cX;DED)~,fwdX:type(E)) &
+  store_type_of_var(n,x)
+ =>
+  wellstmt(x:=E);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:type(E)) &
+  store_type_of_var_rstrc(n,x)
+ =>
+  wellstmt(x:=E);
+
+  brule(StoreVarX.n,(x:?)) &
+  bsearch((x inc s),P,R) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  store_type_of_var(n,x)
+ =>
+  wellstmt(x:P);
+  
+  brule(StoreVarX.n,(x:?)) &
+  bsearch((x incl s),P,R) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  store_type_of_var(n,x)
+ =>
+  wellstmt(x:P);
+  
+  brule(StoreVarX.n,(x:?)) &
+  bsearch((x:s),P,R) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  store_type_of_var(n,x)
+ =>
+  wellstmt(x:P);
+     
+  brule(StoreVarX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  store_type_of_var(n,x)
+ =>
+  wellstmt(x:(x inc s));
+  
+  brule(StoreVarX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  store_type_of_var(n,x)
+ =>
+  wellstmt(x:(x incl s));
+  
+  brule(StoreVarX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  store_type_of_var(n,x)
+ =>
+  wellstmt(x:(x:s));
+
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: No type assigned to output %",bsrv x berv)) 
+ =>
+  store_type_of_output(n,x);
+  
+  brule(reg.m,t) &     /* StmtX.36 */
+  bcall(MODR:bmodr(StoreHypX.n,(x:t))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_output(n,x);
+
+  brule(reg.m,t) &     /* IHs 13-7-95 */
+  brule(StoreHypX.k,(t==T)) & 
+  bcall(MODR:bmodr(StoreHypX.n,(x:T))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_output(n,x);
+
+
+/* IB 13-11-92 don't store incomplete type information */
+  
+  blent(reg.m) &
+  brule(reg.m,seq({}))  & 
+  bcall(MODR:bmodr(StoreHypX.n,(x:seq({})))) &
+bcall(TypeCheckerMessageX:MESSAGE("Warning: No type assigned to output %",bsrv x berv)) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_output(n,x);
+
+  blent(reg.m) &
+  brule(reg.m,POW({}))  & 
+  bcall(MODR:bmodr(StoreHypX.n,(x:POW({})))) &
+bcall(TypeCheckerMessageX:MESSAGE("Warning: No type assigned to output %",bsrv x berv)) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_output(n,x);
+
+  blent(reg.m) &
+  brule(reg.m,?)  &
+bcall(TypeCheckerMessageX:MESSAGE("Warning: Undefined value assigned to output %",bsrv x berv)) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_output(n,x);
+
+/** for tagging **/
+
+  store_type_of_var(n,x) => store_type_of_varM(M,n,x);
+
+  blent(reg.m) &
+  brule(reg.m,(t*w)) &
+  bcall( MODR:bmodr(StoreVarX.n,(x:(t*w)) ) ) &
+  bcall(RULE:bcrelr(StoreVarX,(x::M))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_varM(M,n,x);
+
+  blent(reg.m) &
+  brule(reg.m,seq(t)) &
+/* HERE(( x:(POW(t)*M) )) & */
+  bcall(MODR:bmodr(StoreVarX.n,( x:seq(t) ))) &
+  bcall(RULE:bcrelr(StoreVarX,(x::M))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_varM(M,n,x);
+
+  blent(reg.m) &
+  brule(reg.m,POW(t)) &
+/* HERE(( x:(POW(t)*M) )) & */
+  bcall(MODR:bmodr(StoreVarX.n,( x:POW(t) ))) &
+  bcall(RULE:bcrelr(StoreVarX,(x::M))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_varM(M,n,x);
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Error: Undefined value assigned to %",bsrv x berv)) 
+ =>
+  store_type_of_var(n,x);
+
+  brule(reg.m,t) &
+  bcall(MODR:bmodr(StoreVarX.n,(x:t))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_var(n,x);
+
+  brule(reg.m,t) &
+  brule(StoreHypX.k,(t==T)) &
+  bcall(MODR:bmodr(StoreVarX.n,(x:T))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_var(n,x);
+
+  blent(reg.m) &
+  brule(reg.m,?) &
+  bcall(MODR:bmodr(StoreVarX.n,(x:?))) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Error: Undefined value assigned to %",bsrv x berv)) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_var(n,x);
+
+  store_type_of_var(n,x) => store_type_of_var_rstrc(n,x);
+  
+  blent(reg.m) &
+  brule(reg.m,POW(NAT*CHAR)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Use % for copying string structures",bsrv CPY_STR berv)) &
+  bcall(MODR:bmodr(StoreVarX.n,(x:e_r_r))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_var_rstrc(n,x);
+
+  blent(reg.m) &
+  brule(reg.m,seq(CHAR)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Use % for copying string structures",bsrv CPY_STR berv)) &
+  bcall(MODR:bmodr(StoreVarX.n,(x:e_r_r))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_var_rstrc(n,x);
+ 
+  brule(reg.m,W) &
+  brule(StoreHypX.l,given(W[k])) &
+  bcall(TypeCheckerMessageX:MESSAGE("Use % for copying segments",bsrv CPY_SEG(k) berv)) &
+  bcall(MODR:bmodr(StoreVarX.n,(x:e_r_r))) &
+  bcall(RULE:bpop(reg))
+ =>
+  store_type_of_var_rstrc(n,x);
+   
+  brule(StoreHypX.n,(x:?)) &   /* StmtX.38 */
+  bcall((bX~;REV;cX;DED)~,fwdX:type(E)) &
+  store_type_of_output(n,x)
+ =>
+  wellstmt(x:=E);
+  
+  brule(StoreHypX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(E)) & 
+  store_type_of_output(n,x)
+ =>
+  wellstmt(x::E);
+  
+  brule(StoreHypX.n,(x:?)) &
+  bsearch((x inc s),P,R) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  store_type_of_output(n,x)
+ =>
+  wellstmt(x:P);
+  
+  brule(StoreHypX.n,(x:?)) &
+  bsearch((x incl s),P,R) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  store_type_of_output(n,x)
+ =>
+  wellstmt(x:P);
+  
+  brule(StoreHypX.n,(x:?)) &
+  bsearch((x:s),P,R) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  store_type_of_output(n,x)
+ =>
+  wellstmt(x:P);
+  
+  brule(StoreHypX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  store_type_of_output(n,x)
+ =>
+  wellstmt(x:(x inc s));
+  
+  brule(StoreHypX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  store_type_of_output(n,x)
+ =>
+  wellstmt(x:(x incl s));
+  
+  brule(StoreHypX.n,(x:?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  store_type_of_output(n,x)
+ =>
+  wellstmt(x:(x:s));
+
+/* new treatment of : 15-Oct 1996 */
+
+
+  ReadColonRewrites(R) &
+  brule(TreatOperationsX.1,O) &
+  bsearch((O|x:P|N),R,Q)  &
+  wellstmt(N)
+ =>
+  wellstmt(x:P);
+
+/* end new treatment of : 15-0ct 1996  */
+
+ 
+  wellstostmt(x:=E) &
+  wellstostmt(l:=L)
+ =>
+  wellstmt(l,x:=L,E);
+
+
+  
+  bcall(RULE:bcrelr(StoreVarX,(x:?))) &
+  wellstostmt(S)
+ =>
+  wellstmt(@x.S);
+  
+  bcall(RULE:bcrelr(StoreVarX,(x:?))) &
+  wellstmt(@l.S)
+ =>
+  wellstmt(@(l,x).S);
+
+
+/****************** NEW Type Determining Algorithm 4:9:93 *****/
+
+
+/* errors : no defining predicate */
+
+  brule(TypeX.1,(?,(l),R)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type : % , no type given",bsrv l berv))  &
+  wellstmt(@l.S)
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,(?,(l),?)) &
+   bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type : % no type given",bsrv l berv)) &
+  wellstmt(@l.S)
+ =>
+  wllstmt(L)(S);
+
+
+
+/* more variables, and more Predicates */
+
+  brule(TypeX.1,((x=s),(l),R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:type(s)) &
+  evluniv(x,wellstmt(@l.(R ==> S)))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x incl s),(l),R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlunivp(x,wellstmt(@l.(R ==> S)))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x inc  s),(l),R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlunivp(x,wellstmt(@l.(R ==> S)))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x:s),(l),R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evluniv(x,wellstmt(@l.(R ==> S)))
+ =>
+  wllstmt(L)(S);
+
+
+
+/* error : no predicate left, still variables left */
+
+  brule(TypeX.1,((x=s),(l),?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:type(s)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % requires a type",bsrv l berv)) &
+  evluniv(x,wellstmt(@l.S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x incl s),(l),?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % requires a type",bsrv l berv)) &
+  evlunivp(x,wellstmt(@l.S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x inc  s),(l),?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % requires a type",bsrv l berv)) &
+  evlunivp(x,wellstmt(@l.S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x:s),(l),?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % requires a type",bsrv l berv)) &
+  evluniv(x,wellstmt(@l. S))
+ =>
+  wllstmt(L)(S);
+
+ 
+
+/* no variables left */
+
+  brule(TypeX.1,((x=s),?,R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:type(s)) &
+  evluniv(x,wellstmt(R ==> S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x incl s),?,R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlunivp(x,wellstostmt(R ==> S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x inc  s),?,R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlunivp(x,wellstostmt(R ==> S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x:s),?,R)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evluniv(x,wellstostmt(R ==> S))
+ =>
+  wllstmt(L)(S);
+
+
+
+/* no variables left, no predicate left */
+
+  brule(TypeX.1,((x = s),?,?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:type(s)) &
+  evluniv(x,wellstostmt(S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x  incl  s),?,?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlunivp(x,wellstostmt(S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x  inc   s),?,?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evlunivp(x,wellstostmt(S))
+ =>
+  wllstmt(L)(S);
+
+  brule(TypeX.1,((x:s),?,?)) &
+  bcall((bX~;REV;cX;DED)~,fwdX:super(s)) &
+  evluniv(x,wellstostmt(S))
+ =>
+  wllstmt(L)(S);
+
+
+
+  FindDefiningPredicate(l,P) &
+  wllstmt(l)(S)
+ =>
+  wellstmt(@l.(P ==> S));
+
+
+/*********** end New algorithm *****************/
+
+  errin &  
+  wellstmt(@x.S)
+ =>
+  wellstmt1(@x.S);
+  
+  iserrin
+ =>  
+  wellstmt1(@x.S);
+
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(x)) &
+  wellstmt1(@(brev(x)).S)
+ =>
+  wellstmt0(@x.S);
+
+/************************** PRE *******************************************/
+
+  ResetRangeCheck &
+/* HERE(( resetRangeCHECTk:(P) )) & */
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  wellstostmt(S)
+ =>  
+  wellstmt(PRE P THEN S END);
+
+
+/* ************************ IF  ELSIF ************************************* */
+
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  CheckGuard(P)
+ =>
+  wellifstmt(P);
+
+  wellifstmt(P) &
+  wellstostmt(S)
+ =>
+  wellifstmt(P THEN S);
+
+  wellifstmt(S) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(Q)) &
+  CheckGuard(Q)
+ =>  
+  wellifstmt(S ELSIF Q);
+  
+  wellifstmt(P) &
+  wellstostmt(S)
+ =>
+  wellstmt(IF P THEN S END);
+  
+  wellifstmt(T) &
+  wellstostmt(S)
+ =>  
+  wellstmt(IF T ELSE S END);
+
+/* *************************** SELECT    *****************************/
+
+  
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  CheckGuard(P)
+ =>
+  wellselstmt(P);
+
+  wellselstmt(P) &
+  wellstostmt(S)
+ =>
+  wellselstmt(P THEN S);
+
+  wellselstmt(S) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(Q)) &
+  CheckGuard(P)
+ =>  
+  wellselstmt(S WHEN Q);
+   
+  wellselstmt(T) &
+  wellstostmt(S)
+ =>
+  wellstmt(SELECT T THEN S END);
+  
+  wellselstmt(T) &
+  wellstostmt(S)
+ =>
+  wellstmt(SELECT T ELSE S END);
+
+
+/* *********************** CHOICE ( ib 4-3-92 ) ************************ */
+  
+  wellstostmt(S)
+ =>
+  wellchoosestmt(S); 
+
+  wellchoosestmt(T) &                    
+  wellstostmt(S)
+ =>
+  wellchoosestmt(T OR S);
+
+  wellstostmt(S)
+ =>
+  wellstmt(CHOICE S END);
+
+  wellchoosestmt(T) &                   
+  wellstostmt(S)
+ =>
+  wellstmt(CHOICE T OR S END);
+
+
+/* ************************ CASE ***************************************** */ 
+
+  brule(reg.n,t) &
+  bcall(MODR:bmodr(ObjX.1,statement(e:t))) &
+  bcall((bX~;REV;cX;DED)~,fwdX:type(e)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlnopop)
+ =>
+  wellelmt(e);
+
+  wellelmt bsmap l  
+ =>
+  wellelmstmt(l);
+
+  wellelmstmt(T) &                        
+  wellstostmt(S)
+ =>
+  wellelmstmt(T THEN S); 
+
+  wellelmt bsmap l &
+  wellelmstmt(S)                        
+ =>
+  wellelmstmt(S OR l);
+                   
+  bcall(sinkX:S)
+ =>
+  wellelm1stmt(S);
+
+  wellelmstmt(T) &
+  wellstostmt(S)                         
+ =>
+  wellelm1stmt(EITHER T THEN S END);
+  
+  wellelmstmt(T) &                           
+  wellstostmt(S)
+ =>
+  wellelm1stmt(EITHER T ELSE S END);         
+  
+  bcall((bX~;REV;cX;DED)~,fwdX:type(E)) &
+  wellelm1stmt(S) &                         
+  bcall(RULE:bpop(reg))
+ =>
+  wellstmt(CASE E OF S END);
+
+bcall((bX~;REV;cX;DED)~,fwdX:type(E)) &
+  wellelm1stmt(S) &                         
+  bcall(RULE:bpop(reg))
+ =>
+  wellstmt(CASE E OF S END);
+
+/*  *************************** CASE END ******************************** */
+
+/********************* local variable type information ***************
+
+   information given :
+
+   0) no occurance                - type is INTEGER
+      (no type given - variable not used - any type will do)            
+   1) variable_name(`type_name')  - type is `type_name'
+      in C all will be treated as 'int'
+      in typed languages take special action.
+   2) variable_name               - type is string (1000 characters ) 
+   3) variable_name('number')     - type is integer array ['number`]
+
+
+
+************************ Types of local variables interpreted ******** */
+ 
+  brule(StoreVarX.n,h) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:S)) &
+  brule(OperationVarX.2,(L|c)) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x(S))))) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:?)) &
+bcall(TypeCheckerMessageX:MESSAGE("Warning: % has not been given a type ",bsrv x berv)) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+
+/* ************************ Structure Warning ********* ******** */
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:POW(X))) &
+  StructureWarning(POW(X),x) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:(X*Y))) &
+  StructureWarning((X*Y),x) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+/***** Structure Warning and provide type info for translation **/
+ 
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:S)) &
+  brule(StoreHypX.m,(S=POW(NAT*NAT))) &
+  brule(OperationVarX.2,(L|c)) &
+  StructureWarning(POW(NAT*NAT),x) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x(S))))) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+  
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:POW(NAT*NAT))) &
+  brule(StoreHypX.m,(S=POW(NAT*NAT))) &
+  brule(OperationVarX.2,(L|c)) &
+  StructureWarning(POW(NAT*NAT),x) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x(S))))) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+ 
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:S)) &
+  brule(StoreHypX.m,(S=POW(NAT*BOOL))) &
+  brule(OperationVarX.2,(L|c)) &
+  StructureWarning(POW(NAT*BOOL),x) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x(S))))) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+  
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:POW(NAT*BOOL))) &
+  brule(StoreHypX.m,(S=POW(NAT*BOOL))) &
+  brule(OperationVarX.2,(L|c)) &
+  StructureWarning(POW(NAT*BOOL),x) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x(S))))) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+ 
+/***********  string type - next four rules ************************/
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:S)) &
+  brule(StoreHypX.m,(S=seq(CHAR))) &
+  brule(OperationVarX.2,(L|c)) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x)))) & 
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:S)) &
+  brule(StoreHypX.m,(S=POW(NAT*CHAR))) &
+  brule(OperationVarX.2,(L|c)) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x)))) & 
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+/**** ^ 2 rules was taken out in 4.1, - reinserted as BAM will not work without it.
+e.g. EVENT = STRING must cause the right 'imp' information  to be generated */
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:seq(CHAR))) &
+  brule(OperationVarX.2,(L|c)) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x)))) & 
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:POW(NAT*CHAR))) &
+  brule(OperationVarX.2,(L|c)) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x)))) & 
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+
+/***************** Multiple Word control ****************************/
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:t)) &
+  brule(StoreHypX.m, given(t[W]) ) &
+  brule(OperationVarX.2,(L|c)) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x(W))))) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n); 
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(StoreVarX.n,(x:t)) &
+  brule(StoreHypX.k, (t=s) ) &
+  brule(StoreHypX.m, given(s[W]) ) &
+  brule(OperationVarX.2,(L|c)) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|(c,x(W))))) &
+  bcall(RULE:bpop(StoreVarX)) &
+  popStoreVar(n-1)
+ =>
+  popStoreVar(n);
+
+/******************* end multiple word types ************************/
+
+  brule(StoreVarX.n,_M_A_R_K_) &
+  bcall(RULE:bpop(StoreVarX))
+ =>
+  popStoreVar(n);
+ 
+  blent(StoreVarX.h) &
+  popStoreVar(h)
+ =>
+  popStoreVar;
+
+  bcall(RULE:bcrelr(StoreVarX,_M_A_R_K_)) &
+  wellstmt0(@P.S) &
+  popStoreVar
+   =>
+  wellstmt(VAR P IN S END);
+
+/* start inner block */
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(OperationVarX.2,L) &
+  bcall(MODR: bmodr(OperationVarX.2,(L|?))) &
+  bcall(RULE:bcrelr(StoreVarX,_M_A_R_K_)) &
+  wellstmt0(@P.S) &
+  popStoreVar &
+  endbegin
+   =>
+  wellstmt(VAR P IN S END);
+
+  
+  bcall(RULE:bcrelr(StoreVarX,_M_A_R_K_)) &
+  wellstmt0(@P.(S ==> T)) &
+  popStoreVar
+ =>
+  wellstmt(ANY P WHERE S THEN T END);
+   
+  bcall(RULE:bcrelr(StoreVarX,_M_A_R_K_)) &
+  wellstmt0(@P.(S ==> T)) &
+  popStoreVar
+ =>
+  wellstmt(LET P BE S IN T END);
+   
+  SetRangeCheck &
+  bcall(MODR:bmodr(ObjX.1,statement(S))) &
+  wellstmt(S) 
+ =>
+  wellstostmt(S);
+
+/* 3 rules added to deal with outermost block 26-8-94 */
+
+  wellstostmt(S) => wellstostmtBegin(S);
+
+  SetRangeCheck &
+  bcall(MODR:bmodr(ObjX.1,statement(S))) &
+  wellstmt(S) 
+ =>
+  wellstostmtBegin(BEGIN S END);
+
+  SetRangeCheck &
+  bcall(MODR:bmodr(ObjX.1,statement(S))) &
+  bcall(RULE:bcrelr(StoreVarX,_M_A_R_K_)) &
+  wellstmt0(@P.S) &
+  popStoreVar 
+   =>
+  wellstostmtBegin(VAR P IN S END);
+  
+  wellstostmt(?);
+
+  TooManyErrors
+ =>
+  x
+
+END
+
+&
+
+THEORY cX IS  
+                            /* TYPE */
+
+  brule(reg.n,A) &
+  Writef(("Val of n is % and Type of % is %\n",n,x,A))
+ => 
+  writetype(x);
+  
+  brule(reg.n,A) &
+  Writef(("Val of n is % and Super of % is %\n",n,x,A))
+ => 
+  writesuper(x);
+   
+  super(e) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>                   
+  type(e);
+
+  type(x) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq)
+ =>
+  type([x]);
+  
+  type([l]) &
+  type(x) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlnopop)
+ =>
+  type([l,x]);
+  
+  isrel(f) &
+  typepair(x) &
+  pr1(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  pr2(f)
+ =>
+  type(f(x));
+
+  ThisConstructIsUsrVHDL &
+  isrel(f) &
+  typepair(x) &
+  pr1(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlsub) &
+  pr2(f)
+ =>
+  type(f(x)); 
+
+  ThisConstructIsUsrVHDL &
+  bnum(x) &
+  isrel(f) &
+  bcall(RULE: bcrelr(reg,(x..x))) &
+  pr1(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  pr2(f)
+ =>
+  type(f(x));
+  
+/*  
+  super(r[s]) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  type(r[s]);
+*/
+
+  blent(reg.l) &                        /* JRA 13-8-92 */
+  bcall( (bX~;REV;cX;DED)~,fwdX:(errout & super11(r[s]) & bcall(( (evlX;RULE;MODR)~;sinkX):evlpow) )  
+        |
+        ((bX~;REV;cX;DED)~;sinkX),fwdX:
+         (clean_stack(l)  &/* Ib 13-3-92 */
+          isrel(r) &
+          type([s]) &
+          pr1(r) &
+          bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+          pr2(r) ) ) 
+ =>
+  type(r[s]);
+
+  iserrin &                          /* JRA 13-8-92 */
+  blent(reg.l) &  /* Ib 13-3-92 */
+  bcall((bX~;REV;cX;DED)~,fwdX:(errout & super11(r[s]) & bcall(((evlX;RULE;MODR)~;sinkX):evlpow) & errin) |
+       ((bX~;REV;cX;DED)~;sinkX),fwdX:
+        (errin &
+         clean_stack(l)  &/* Ib 13-3-92 */
+         isrel(r) &
+         type([s]) &
+         pr1(r) &
+         bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+         pr2(r)))
+ =>
+  type(r[s]);
+
+  brule(TypeCheckerFromUserX.2,a.ref) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  super(BOOL)  /* BOOL only known when Bool_TYPE is seen */
+ =>
+  type(bool(P));
+
+  brule(TypeCheckerFromUserX.2,a.mch) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:wellstopred(P)) &
+  super(BOOL)  /*  BOOL only known when Bool_TYPE is seen */
+ =>
+  type(bool(P));
+  
+  super(id(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  type(id(s));  
+  
+  super(seq(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  type(seq(s));
+  
+  super(seq(s)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  type(seq1(s));
+   
+  isseq([s]) &
+  isnat(i) &
+  pr2([s])
+ =>
+  type([s]i);
+  
+  isseq([s]) &
+  isnat(i) &
+  pr2([s])
+ =>
+  type([s] evl (i));
+  
+  super(s)
+ =>
+  type(choice(s));
+  
+  super(s) 
+ =>
+  type(union(s));
+  
+  super(s) 
+ =>
+  type(inter(s));
+  
+  pr2(s)
+ =>
+  type(conc(s));
+  
+  bcall(RULE: bcrelr(reg, seq({}) ))
+ =>
+  type(conc(<>));
+  
+  type(x) &
+  type(y) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  type(x|->y);
+
+/*  IB 14-8-92 */
+ 
+  type(x)
+ =>
+  typepair(x);
+
+  typepair(x) &
+  type(y) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  typepair(x,y);
+
+  type(x) &
+  type(y) &
+  bcall(((evlX;RULE;MODR)~;sinkX):overload(? + ?))
+ =>
+  type(x+y);
+  
+  isset(s) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type(card(s));
+
+  brule(reg.n,x) &
+  brule(StoreHypX.m,given(x)) &
+  bcall(RULE: bpop(reg))
+ =>
+  isgivenset;
+
+  brule(reg.n,x) &
+  brule(StoreHypX.m,given(x)) &
+  NotNatWarning(x)
+ =>
+  isbasicsetnp;
+
+  IsVHDL &
+  blent(reg.n) &
+  brule(reg.n,(x..y))
+ =>
+  isbasicsetnp;
+
+  blent(reg.n) &
+  brule(reg.n,NAT)
+ =>
+  isbasicsetnp;
+
+  blent(reg.n) &
+  brule(reg.n,SCALAR)
+ =>
+  isbasicsetnp;
+
+/******************** INTEGER/INT  **************/
+
+  blent(reg.n) &
+  brule(reg.n,INTEGER)
+ =>
+  isbasicsetnp;
+
+  blent(reg.n) &
+  brule(reg.n,INT)
+ =>
+  isbasicsetnp;
+ 
+  type(s) &
+  isgivenset &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type(ord(s));
+  
+  isset(s) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type(crd(s));
+  
+  isseq(s) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type(size(s));
+
+  type(x) &
+  type(y) &
+  bcall(((evlX;RULE;MODR)~;sinkX):overload(? mod ?))
+ =>
+  type(x mod y);
+  
+  type(x) &
+  type(y) &
+  bcall(((evlX;RULE;MODR)~;sinkX):overload(?/?))
+ =>
+  type(x/y);
+  
+/* 4 rules below as per JRA FAX 145 (26-05-92) */
+
+  blent(reg.l) &   /* Ib 13-3-92 */
+  bcall((bX~;REV;cX;DED)~,fwdX:(errout & super(x*y) & bcall(((evlX;RULE;MODR)~;sinkX):evlpow)) |
+        ((bX~;REV;cX;DED)~;sinkX),fwdX:
+         (clean_stack(l) &   /* Ib 13-3-92 */
+          type(x) &
+          type(y) &
+          bcall(((evlX;RULE;MODR)~;sinkX):overload(?*?))))
+ =>
+  type(x*y);
+  
+  blent(reg.l) &  /* Ib 13-3-92 */
+ bcall((bX~;REV;cX;DED)~,fwdX:(errout & super(x-y) & bcall((evlX;RULE;MODR)~:evlpow)) 
+        |
+        ((bX~;REV;cX;DED)~;sinkX),fwdX:
+         (clean_stack(l)  &/* Ib 13-3-92 */
+          type(x) &
+          type(y) &
+          bcall(((evlX;RULE;MODR)~;sinkX):overload(?-?))))
+ =>
+  type(x-y);
+  
+  iserrin &
+  blent(reg.l) &   /* Ib 13-3-92 */
+  bcall((bX~;REV;cX;DED)~,fwdX:(errout & super(x*y) & bcall(((evlX;RULE;MODR)~;sinkX):evlpow) & errin) |
+        ((bX~;REV;cX;DED)~;sinkX),fwdX:
+         (errin &
+          clean_stack(l) &   /* Ib 13-3-92 */
+          type(x) &
+          type(y) &
+          bcall(((evlX;RULE;MODR)~;sinkX):overload(?*?))))
+ =>
+  type(x*y);
+  
+  iserrin &
+  blent(reg.l) &  /* Ib 13-3-92 */
+ bcall((bX~;REV;cX;DED)~,fwdX:(errout & super(x-y) & bcall((evlX;RULE;MODR)~:evlpow) & errin) 
+        |
+        ((bX~;REV;cX;DED)~;sinkX),fwdX:
+         (errin & 
+          clean_stack(l)  &/* Ib 13-3-92 */
+          type(x) &
+          type(y) &
+          bcall(((evlX;RULE;MODR)~;sinkX):overload(?-?))))
+ =>
+  type(x-y);
+
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  /* bcall(RULE: bcrelr(reg,NAT)) replaced by: */
+  super(s)
+ =>
+  type(min(s));
+  
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  /* bcall(RULE: bcrelr(reg,NAT))  replaced by:*/
+  super(s)
+ =>
+  type(max(s));
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv))
+ =>
+  type1(%x.E);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv))
+ =>
+  type1(%(l,x).E);
+    
+  bsearch((x inc s),P,R) &
+  x\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  type1(%x.(P | E));
+  
+  bsearch((x incl s),P,R) &
+  x\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  type1(%x.(P | E));
+  
+  bsearch((x = s),P,R) &
+  x\s &
+  type(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  type1(%x.(P | E));
+  
+  bsearch((x:s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  type1(%x.(P | E));
+  
+  bsearch((x inc s),P,R) &  /*5-3-92*/
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp/*_nopop*/(x,type1(%l.(R | E)))) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedfnc)
+ =>
+  type1(%(l,x).(P | E));
+  
+  bsearch((x incl s),P,R) &  /* 5-3-92 */
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp/*_nopop*/(x,type1(%l.(R | E)))) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedfnc)
+ =>
+  type1(%(l,x).(P | E));
+
+  bsearch((x = s),P,R) &  /*5-3-92*/
+  (l,x)\s &
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,type1(%l.(R | E)))) &
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedfnc)
+ =>
+  type1(%(l,x).(P | E));
+
+  bsearch((x:s),P,R) &  /* 5-3-92 */
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,type1(%l.(R | E)))) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedfnc)
+ =>
+  type1(%(l,x).(P | E));
+
+  bsearch((l,x:r),P,R) &             /* 5-3-92 */
+  (l,x)\r &
+  pr2(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,type1(%l.(R & (l:dom(r)) | E)))) &
+  pr2(r) &                           
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedfnc)
+ =>
+  type1(%(l,x).(P | E));
+
+  bsearch((l,x:t*s),P,R) &             /* 5-3-92 */
+  (l,x)\(t*s) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,type1(%l.(R & (l:t) | E)))) &
+  super(s) &                           
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedfnc)
+ =>
+  type1(%(l,x).(P | E));
+
+  super(s) &
+  x\s  &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  type1(%x.(x inc s | E));
+
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  type1(%x.(x incl s | E));
+  
+  type(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  type1(%x.(x = s | E));
+  
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  type1(%x.(x:s | E));
+  
+  pr2(r) &  /* 5-3-92 */ 
+  (l,x)\r &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,type1(%l.(true & (l:dom(r)) | E)))) &
+  pr2(r) &                           
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedfnc)
+ =>
+  type1(%(l,x).(l,x:r | E));
+
+  super(s) &  /* 5-3-92 */
+  (l,x)\(t*s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,type1(%l.(true & (l:t) | E)))) &
+  super(s) &                           
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedfnc)
+ =>
+  type1(%(l,x).(l,x:t*s | E));
+
+  errin &
+  type1(%x.E)
+ =>
+  type0(%x.E);
+  
+  iserrin
+ =>  
+  type0(%x.E);
+  
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(x)) &
+  type0(%(/* brev(x)   ib 5-3-92 */x).E)
+ =>
+  type(%x.E);
+  
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv)) &
+  bcall(RULE: bcrelr(reg,?))
+ =>
+  type1(SIGMA(x).E);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv)) &
+  bcall(RULE: bcrelr(reg,?))
+ =>
+  type1(SIGMA(l,x).E);
+    
+  bsearch((x inc s),P,R) &
+  x\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type1(SIGMA(x).(P | E));
+  
+  bsearch((x incl s),P,R) &
+  x\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type1(SIGMA(x).(P | E));
+  
+  bsearch((x = s),P,R) &
+  x\s &
+  type(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type1(SIGMA(x).(P | E));
+  
+  bsearch((x:s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E))) &     /* ib 13-2-92 */
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type1(SIGMA(x).(P | E));
+  
+  bsearch((x inc s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,type1(SIGMA(l).(R | E))))
+ =>
+  type1(SIGMA(l,x).(P | E));
+  
+  bsearch((x incl s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,type1(SIGMA(l).(R | E))))
+ =>
+  type1(SIGMA(l,x).(P | E));
+  
+  bsearch((x = s),P,R) &
+  (l,x)\s &
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type1(SIGMA(l).(R | E))))
+ =>
+  type1(SIGMA(l,x).(P | E));
+  
+  bsearch((x:s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type1(SIGMA(l).(R | E))))
+ =>
+  type1(SIGMA(l,x).(P | E));
+  
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type1(SIGMA(x).(x inc s | E));
+
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type1(SIGMA(x).(x incl s | E));
+  
+  type(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type1(SIGMA(x).(x = s | E));
+  
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type1(SIGMA(x).(x:s | E));
+  
+  errin &
+  type1(SIGMA(x).E)
+ =>
+  type0(SIGMA(x).E);
+  
+  iserrin
+ =>  
+  type0(SIGMA(x).E);
+  
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(x)) &
+  type0(SIGMA(brev(x)).E)
+ =>
+  type(SIGMA(x).E);
+  
+  type(SIGMA(x).E)
+ =>
+  type(PI(x).E);
+  
+  
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv))
+ =>
+  type1(UNION(x).E);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv))
+ =>
+  type1(UNION(l,x).E);
+
+/* `_nopop` inserted in 4 next rules 6-2-95 */
+    
+  bsearch((x inc s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evlunivp_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,type(E)))
+ =>
+  type1(UNION(x).(P | E));
+  
+  bsearch((x incl s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evlunivp_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,type(E)))
+ =>
+  type1(UNION(x).(P | E));
+  
+  bsearch((x = s),P,R) &
+  x\s &
+  type(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E)))
+ =>
+  type1(UNION(x).(P | E));
+  
+  bsearch((x:s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E)))
+ =>
+  type1(UNION(x).(P | E));
+  
+  bsearch((x inc s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,type1(UNION(l).(R | E))))
+ =>
+  type1(UNION(l,x).(P | E));
+  
+  bsearch((x incl s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,type1(UNION(l).(R | E))))
+ =>
+  type1(UNION(l,x).(P | E));
+  
+  bsearch((x = s),P,R) &
+  (l,x)\s &
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type1(UNION(l).(R | E))))
+ =>
+  type1(UNION(l,x).(P | E));
+  
+  bsearch((x:s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type1(UNION(l).(R | E))))
+ =>
+  type1(UNION(l,x).(P | E));
+  
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,type(E)))
+ =>
+  type1(UNION(x).(x inc s | E));
+
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,type(E)))
+ =>
+  type1(UNION(x).(x incl s | E));
+  
+  type(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E)))
+ =>
+  type1(UNION(x).(x = s | E));
+  
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,type(E)))
+ =>
+  type1(UNION(x).(x:s | E));
+  
+  errin &
+  type1(UNION(x).E)
+ =>
+  type0(UNION(x).E);
+  
+  iserrin
+ =>  
+  type0(UNION(x).E);
+  
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(x)) &
+  type0(UNION(brev(x)).E)
+ =>
+  type(UNION(x).E);
+  
+  type(UNION(x).E)
+ =>
+  type(INTER(x).E);
+  
+  isseq(s) &
+  type(x) &
+  pr2(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlnopop) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq)
+ =>
+  type(x->s);
+  
+  isseq(s) &
+  type(x) &
+  pr2(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlnopop) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq)
+ =>
+  type(s<-x);
+  
+  isseq(s) &
+  isseq(t) &
+  type(s) &
+  type(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlnopop)
+ =>
+  type(s^t);
+  
+  isseq(s) &
+  isnat(n) &
+  type(s)
+ =>
+  type(s/|\n);
+  
+  isseq(s) &
+  isnat(n) &
+  type(s)
+ =>
+  type(s\|/n);
+  
+  isseq(s) &
+  type(s)
+ =>
+  type(rev(s));
+  
+  isseq(s) &
+  pr2(s)
+ =>
+  type(first(s));
+  
+  isseq(s) &
+  pr2(s)
+ =>
+  type(last(s));
+  
+  isseq(s) &
+  type(s)
+ =>
+  type(tail(s));
+  
+  isseq(s) &
+  type(s)
+ =>
+  type(front(s));
+
+  isrel(r) &
+  type(r)
+ =>
+  type(closure(r));
+
+  isnat(n) &
+  isrel(r) &
+  type(r)
+ =>
+  type(iterate(r,n));
+
+  bcall(RULE: bcrelr(reg,seq({})))
+ =>
+  type(<>);
+
+/***************** INTEGER OPERATORS ***************/
+  
+   isint(x) &
+   bcall(RULE: bcrelr(reg,INTEGER))
+  =>
+   type(-x);
+
+   isint(x) &
+   bcall(RULE: bcrelr(reg,INTEGER))
+  =>
+   type(+x);
+
+/************* Literals NUMBERS INTEGERS STRINGS ******/
+
+  bstring(s) &
+  bcall(RULE: bcrelr(reg,seq(CHAR))) 
+ =>
+  type(s);
+
+  bint(s) &
+  bcall(RULE: bcrelr(reg,INTEGER))
+ =>
+  type(s);
+
+  bnum(s) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  type(s); 
+
+  ThisConstructIsUsrVHDL & 
+  bnum(x) &
+  bcall(RULE: bcrelr(reg,(x..x)))
+ =>
+  type(x);
+
+  bbitstring(s) &
+  bcall((ARI~;RULE): bcrelr(reg, POW( (0..(blen(s)-3))*std_logic) )) 
+ =>
+  type(s);
+  
+  ThisConstructIsUsrVHDL &
+  bbitstring(s) &
+  bcall((ARI~;RULE): bcrelr(reg, POW( (0..(blen(s)-3))*std_logic) )) 
+ =>
+  type(s);
+
+  bcall(RULE: bcrelr(reg,POW({})))
+ =>
+  type({});
+
+  bvrb(x) &
+  type(x)
+ =>
+  type(x$0);
+  
+                          /* SUPER  */
+  
+  bcall(sinkX:x) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super(x);
+
+/* 
+ ib 16-05-95 
+ THESE 2 next rules could GIVE MISLEADING INFORMATION ????
+*/
+
+  ReadVariablesWithNoType(W) &
+  W\x & 
+  bcall(sinkX:x) &
+  bcall(RULE:bcrelr(reg,e_r_r)) &
+  NoSetTypeWarning(x)  
+ =>
+  super(x);
+
+  ReadVariablesWithNoType(W) &
+  W\x & 
+  bvrb(x) &
+  bcall(sinkX:x) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+  &
+  NoTypeWarning(x)  
+ =>
+  super(x);
+
+  ReadVariablesWithNoType(W) &
+  W\x & 
+  W\y &
+  bcall(sinkX:x JOK2 y) &
+  bcall(RULE:bcrelr(reg,e_r_r)) &
+  UnknownOpWarning((_ JOK2 _))  
+ =>
+  super(x JOK2 y);
+
+/* next two rules guard warning above */
+
+  bcall(sinkX:x+y) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super(x+y);
+
+  Is_first_time_in_treat_variable_and_invariant &
+  bcall(sinkX:x) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super(x);
+
+  brule(StoreHypX.n,(x:s)) &
+  bcall(sinkX:x) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super(x);
+
+/****************************************/
+ 
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super(?);
+         
+  bcall(RULE: bcrelr(reg,{}))
+ =>
+  super({});
+  
+  super(NAT) &
+  bcall(RULE: bcrelr(reg,{})) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(<>);
+
+/* 12-8-92   IB & JRA  17-8-95 IB*/
+
+  bstring(s) &
+  super(NAT) &
+  bcall(RULE: bcrelr(reg,/*NAT*/ CHAR)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(s);
+
+  ThisConstructIsUsrVHDL &   
+  bbitstring(s) &
+  super(0..(blen(s)-3)) &
+  bcall(RULE: bcrelr(reg,/*NAT*/ std_logic)) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(s);
+    
+  isrel(f) &
+  typepair(x) &
+  pr1(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  pr2(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow)
+ =>
+  super(f(x));
+
+  ThisConstructIsUsrVHDL &
+  isrel(f) &
+  typepair(x) &
+  pr1(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlsub) &
+  pr2(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow)
+ =>
+  super(f(x));
+   
+  ThisConstructIsUsrVHDL & 
+  isrel(f) &
+  bnum(x) &
+  bcall(RULE: bcrelr(reg,(x..x))) &
+  pr1(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  pr2(f) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow)
+ =>
+  super(f(x));
+  
+  isseq([s]) &
+  isnat(i) &
+  pr2([s]) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow) 
+ =>
+  super([s] evl (i));
+ 
+  isseq([s]) &
+  isnat(i) &
+  pr2([s]) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow) 
+ =>
+  super([s]i);
+ 
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow)
+ =>
+  super(choice(s));
+  
+  super(s) &
+  super(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(s*t);
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  super(POW(s));
+  
+  super(POW(s))
+ =>
+  super(POW1(s));
+  
+  super(POW(s))
+ =>
+  super(FIN(s));
+  
+  super(POW(s))
+ =>
+  super(FIN1(s));
+  
+/*
+  super(POW(s))
+ =>
+  super(FINI(s));
+  
+  super(POW(s))
+ =>
+  super(FINI1(s));
+
+*/
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq)
+ =>
+  super(seq(s));
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq)
+ =>
+  super(seq1(s));
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq)
+ =>
+  super(iseq(s));
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq)
+ =>
+  super(perm(s));
+  
+  super(s) &
+  super(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlnopop)
+ =>
+  super(s\/t);
+
+
+/* inserted to capture union types Ib 5-4-93 */
+
+  
+  brule(StoreHypX.n,given(s\/t)) &
+  bcall(RULE:bcrelr(reg,(s\/t)))    
+ =>
+  super(s\/t);
+
+   blent(reg.l) &
+   bcall((bX~;REV;cX;DED)~,fwdX:(errout & super(s) & errin) |
+         ((bX~;REV;cX;DED)~;sinkX),fwdX:(errin & clean_stack(l) & type(s)))
+ =>
+  supers(s);
+
+/* added by jra 2 sept 92. I think this is wrong - not type(s) simply 
+bcall(RULE: bcrelr(reg,s)) */
+
+   blent(reg.l) &
+   bcall((bX~;REV;cX;DED)~,fwdX:(errout & super(s)) |
+         ((bX~;REV;cX;DED)~;sinkX),fwdX:(clean_stack(l) & bcall(RULE: bcrelr(reg,s)))) 
+ =>
+  supers(s);
+
+   iserrin &
+   blent(reg.l) &
+   bcall((bX~;REV;cX;DED)~,fwdX:(errout & super(s) & errin) |
+         ((bX~;REV;cX;DED)~;sinkX),fwdX:(errin & clean_stack(l) & bcall(RULE: bcrelr(reg,s))))
+ =>
+  supers(s);
+
+  brule(StoreHypX,(s:NAT)) & /* extra rule could be deleted now ? */
+  bcall(RULE: bcrelr(reg,s))
+ =>
+  supers(s);
+  
+  bnum(s) &
+  bcall(RULE: bcrelr(reg,s))
+ =>
+  supers(s);
+
+/* removed by jra 2 sept 92 */
+/*
+  bident(s) &
+  type(s)
+ =>
+  supers(s);
+*/  
+
+/* 
+  bUpident(s) &  /? carefull old rule - delete ? ?/
+  super(s)
+ =>
+  supers(s);
+*/
+ 
+  supers(s) &   /* ???? */
+  super(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunion) 
+ =>
+  supers(s\/t);
+
+  bcall(RULE: bcrelr(reg,(s\/t))) &
+  brule(StoreHypX.m,given(s\/t))
+ =>
+  supers(s\/t);
+  
+  supers(s) &
+  supers(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcomma)
+ =>
+  supers(s,t);
+
+/************   Actual Set parameters are introduced  **********/
+   
+  bcall(RULE : bpop(reg))
+ =>
+  import_Check;
+
+  blen(reg,l) & brule(reg.l,POW(seq(s))) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("seq(%) is an improper parameter type",s)) &
+  bcall(RULE : bpop(reg))
+ =>
+  import_Check;
+
+  blen(reg,l) & brule(reg.l,POW(POW(s))) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("POW(%) is an improper parameter type",s)) &
+  bcall(RULE : bpop(reg))
+ =>
+  import_Check;
+
+  blen(reg,l) & brule(reg.l,POW(s*t)) &
+  bident(s) & bident(t) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%*% is an improper parameter type",s,t)) &
+  bcall(RULE : bpop(reg))
+ =>
+  import_Check;
+
+  blen(reg,l) & brule(reg.l,POW(STRING)) &
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("STRING is an improper parameter type")) &
+  bcall(RULE : bpop(reg))
+ =>
+  import_Check;
+
+  supers0(s);
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  type(s) &
+  import_Check
+ =>
+  supers0(s);
+
+  bcall((TX~):isTYPE(s\/t)) &
+  bcall(RULE: bcrelr(StoreHypX,given(s\/t)))
+ =>
+  supers0(s\/t);
+
+  supers0(s) &
+  supers0(t) 
+ =>
+  supers0(s,t);
+
+
+
+/*************************************************************/
+  
+  super(s\/t)
+ =>
+  super(s/\t);
+  
+  super(s\/t)
+ =>
+  super(s-t);
+  
+  type(x)
+ =>
+  super({x});
+  
+  type(y) &
+  type({l}) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlpnopop) 
+ =>
+  super({l,y});
+
+  super(NAT) &
+  type(x) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super([x]);
+  
+  /*super(NAT) &*/
+  type([l]) &
+  type(y) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlseq) & 
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql/*nopop*/) &
+  super(NAT) & /*   ib 4-3-92 */ 
+  type(y) &   /* ib 4-3-92 */
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super([l,y]);
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv))&  
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % has no Constraining Predicate",bsrv x berv)) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super1({x|P});
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv))&  
+  bcall(TypeCheckerMessageX:MESSAGE("Warning: % has no Constraining Predicate",bsrv x berv)) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super1({l,x|P});
+
+  bsearch((x = s),P,R) &
+  x\s &
+  type(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R)))
+ =>
+  super1({x|P});
+  
+  bsearch((x inc s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evlunivp_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  super1({x|P});
+  
+  bsearch((x incl s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evlunivp_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  super1({x|P});
+  
+  bsearch((x:s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R)))
+ =>
+  super1({x|P});
+
+  bsearch((x = s),P,R) &
+  (l,x)\s &
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop */(x,super1({l|R}))) &
+  type(s) &                              /* 28-2-92 */
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1({l,x|P});
+  
+  bsearch((x inc s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp/*_nopop*/(x,super1({l|R}))) &
+  super(s) &                             /* 28-2-92 */
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1({l,x|P});
+  
+  bsearch((x incl s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp/*_nopop*/(x,super1({l|R}))) &
+  super(s) &                             /* 28-2-92 */
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1({l,x|P});
+  
+  bsearch((x:s),P,R) &  /* 28-2-92 */
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,super1({l|R}))) &
+  super(s) &     
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1({l,x|P});
+
+
+  bsearch((l,x:r),P,R) &             /* 28.2.92 */
+  (l,x)\r &
+  pr2(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,super1({l | R & (l:dom(r))}))) &
+  pr2(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1({l,x|P});
+
+
+  bsearch((l,x:t*s),P,R) &  /* 27.2.92 */
+  (l,x)\(t*s) &             
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,super1({l | R & (l:t)}))) &
+  super(s) &                             /* 28-2-92 */
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1({l,x|P});
+
+  x\s &
+  type(s) /*& 
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellpred(true)))*/
+ =>
+  super1({x|x = s});
+  
+  x\s &
+  super(s) & /*
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evlunivp_nopop(x,wellpred(true))) &*/
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  super1({x|x inc s});
+  
+  x\s &
+  super(s) & /*
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evlunivp_nopop(x,wellpred(true))) &*/
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  super1({x|x incl s});
+  
+  x\s &
+  super(s) /* &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellpred(true)))*/
+ =>
+  super1({x|x:s});
+
+  errin &
+  super1({x|P})
+ =>
+  super0({x|P});
+  
+  iserrin
+ =>  
+  super0({x|P});
+  
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(x)) &
+  super0({/*brev(x)*/x|P})                            /* 28-2-92 */
+ =>
+  super({x|P});
+  
+  super(s) &
+  super(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow)
+ =>
+  super(s<->t);
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross2)
+ =>
+  super(id(s));
+  
+  pr1(r)
+ =>
+  super(dom(r));
+
+  super({}) => super(dom({}));
+  
+  pr2(r)
+ =>
+  super(ran(r));
+
+  super({}) => super(ran({}));
+  
+  super(s) &
+  super(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ => 
+  super(prj1(s,t));                /* ib 16-3-92 */
+
+  super(s) &
+  super(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross) &
+  super(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(prj2(s,t));                /* ib 16-3-92 */
+
+  pr1(s) &                                                  /* ib 28-2-92 */
+  pr1(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)&                       
+  pr1(s)  &
+  pr2(s) &
+  pr2(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(s><t);
+
+  pr1(s) &                                                   /* ib 28-2-92 */
+  pr1(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)&
+  pr2(s) &
+  pr2(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(s||t);
+
+
+  pr2(s) &
+  pr1(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &                  /*  ib 28-2-92 */
+  pr1(s) &
+  pr2(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(s;t);
+
+  pr2(s) &
+  pr1(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &                  /*  ib 10-3-92 */
+  pr1(s) &
+  pr2(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(t circ s);
+  
+  blent(reg.l) &
+  bcall((bX~;REV;cX;DED)~,fwdX:(errout & super11(r[s])) |
+        ((bX~;REV;cX;DED)~;sinkX),fwdX:
+         (clean_stack(l)  &
+          isrel(f) &
+          type(x) &
+          pr1(f) &
+          bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+          pr2(f) &
+          bcall(((evlX;RULE;MODR)~;sinkX):evllow)))
+ =>
+  super(r[s]);
+
+  iserrin &
+  blent(reg.l) &
+  bcall((bX~;REV;cX;DED)~,fwdX:(errout & super11(r[s]) & errin) |
+        ((bX~;REV;cX;DED)~;sinkX),fwdX:
+         (errin &
+          clean_stack(l)  &
+          isrel(r) &
+          type([s]) &
+          pr1(r) &
+          bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+          pr2(r) &
+          bcall(((evlX;RULE;MODR)~;sinkX):evllow)))
+ =>
+  super(r[s]);
+/*
+  super(s)  &
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  pr2(r)
+ =>
+  super(r[s]);
+*/
+  super(s)  &
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  pr2(r)
+ =>
+  super11(r[s]);
+  
+  super(p) &
+  pr2(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  super(r)
+ =>
+  super(r|>p);
+  
+  super(p) &
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  super(r)
+ =>
+  super(p<|r);
+  
+  super(p) &
+  pr2(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  super(r)
+ =>
+  super(r|>>p);
+  
+  super(p) &
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  super(r)
+ =>
+  super(p<<|r);
+  
+  isrel(r) &
+  pr2(r) &
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(r~);
+
+  isrel(r) &
+  pr1(r) &                                                  /* ib 28-2-92 */
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)&
+  pr2(r) &
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(closure(r));
+  
+  isnat(n) &
+  isrel(r) &
+  pr1(r) &                                                  /* ib 28-2-92 */
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql)&
+  pr2(r) &
+  pr1(r) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super(iterate(r,n));
+  
+  isrel(f) &
+  super(f) & 
+  super(g) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlnopop)
+ =>
+  super(f<+g);
+  
+  isrel(f) &
+  super(f) & 
+  super(g) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleqlnopop)
+ =>
+  super(f+>g);
+  
+  super(s) &
+  super(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlrel)
+ =>
+  super(s-->t);
+  
+  super(s-->t)
+ =>
+  super(s+->t);
+  
+  super(s-->t)
+ =>
+  super(s>->t);
+  
+  super(s-->t)
+ =>
+  super(s>+>t);
+  
+  super(s-->t)
+ =>
+  super(s-->>t);
+  
+  super(s-->t)
+ =>
+  super(s+->>t);
+  
+  super(s-->t)
+ =>
+  super(s>->>t);
+  
+  type(x) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  type(y) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  super(x..y);
+
+/*..*/
+
+  ThisConstructIsUsrVHDL &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  range_chk2(l..y);
+
+/** bnumorident:  causes problems
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  brule(reg.n, (u..u) ) &
+  bnumorident(l) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,(l..u)))
+ =>
+  range_chk2(l..y);
+
+*/
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  brule(reg.n, (u..u) ) &
+  bnum(l) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,(l..u)))
+ =>
+  range_chk2(l..y);
+
+ ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  brule(reg.n, (u..u) ) &
+  bident(l) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,(l..u)))
+ =>
+  range_chk2(l..y);
+
+/***************************/
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  brule(reg.n, (u..u) ) &
+  bident(u) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,(l..u)))
+ =>
+  range_chk2(l..y);
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  brule(reg.n, (u..u) ) &
+  btest(l<=u) &
+  bnum(u) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,(l..u)))
+ =>
+  range_chk2(l..y);
+
+  ThisConstructIsUsrVHDL &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  type(y) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  bcall(RULE: bcrelr(reg,NAT))
+ =>
+  range_chk1(x..y);
+
+  ThisConstructIsUsrVHDL &
+  blent(reg.n) &
+  brule(reg.n, (l..l) ) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlnat) &
+  type(y) &
+  range_chk2(l..y)
+ =>
+  range_chk1(x..y);
+
+  ThisConstructIsUsrVHDL &
+  type(x) &
+  range_chk1(x..y)
+ =>
+  super(x..y);
+
+  ThisConstructIsUsrVHDL &
+  bnum(x) &
+  bnum(y) &
+  bcall(RULE: bcrelr(reg,(x..y)))
+ =>
+  super(x..y);
+
+/*..*/
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv)) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super1(%x.E);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv)) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super1(%(l,x).E);
+
+  bsearch((x = s),P,R) &
+  x\s &
+  type(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1(%x.(P | E));
+     
+  bsearch((x inc s),P,R) &
+  x\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1(%x.(P | E));
+  
+  bsearch((x incl s),P,R) &
+  x\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1(%x.(P | E));
+  
+  bsearch((x:s),P,R) &
+  x\s &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1(%x.(P | E));
+
+  bsearch((x = s),P,R) &
+  (l,x)\s &
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,super1(%l.(R | E)))) &
+                                        /*5-3-92*/
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedcross)
+ =>
+  super1(%(l,x).(P | E));
+    
+  bsearch((x inc s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp/*_nopop*/(x,super1(%l.(R | E)))) &
+                                       /*5-3-92*/
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedcross)
+ =>
+  super1(%(l,x).(P | E));
+  
+  bsearch((x incl s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp/*_nopop*/(x,super1(%l.(R | E)))) &
+                                        /* 5-3-92 */
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedcross)
+ =>
+  super1(%(l,x).(P | E));
+  
+  bsearch((x:s),P,R) &
+  (l,x)\s &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,super1(%l.(R | E)))) &
+                                       /* 5-3-92 */
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedcross)
+ =>
+  super1(%(l,x).(P | E));
+
+  bsearch((l,x:t*s),P,R) &             /* 5-3-92 */
+  (l,x)\(t*s) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv/*_nopop*/(x,super1(%l.(R & (l:t)| E)))) &
+  super(s) &                           /* 5-3-92 */
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcurriedcross)
+ =>
+  super1(%(l,x).(P | E));
+
+  type(s) &
+  x\s  &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1(%x.(x = s | E));
+  
+  super(s) &
+  x\s  &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1(%x.(x inc s | E));
+  
+  super(s) &
+  x\s  &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlpow) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1(%x.(x incl s | E));
+  
+  super(s) &
+  x\s &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv_nopop(x,type(E))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlcross)
+ =>
+  super1(%x.(x:s | E));
+
+  errin &
+  super1(%x.E)
+ =>
+  super0(%x.E);
+  
+  iserrin
+ =>  
+  super0(%x.E);
+  
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(x)) &
+  super0(%(/*brev(x)*/x).E)
+ =>
+  super(%x.E);
+  
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv)) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super1(UNION(x).E);
+  
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("Can't type % ",bsrv x berv)) &
+  bcall(RULE:bcrelr(reg,e_r_r))
+ =>
+  super1(UNION(l,x).E);
+
+
+/* 'nopop' added 6-2-95 */
+
+  bsearch((x = s),P,R) &
+  type(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,super(E)))
+ =>
+  super1(UNION(x).(P | E));
+     
+  bsearch((x inc s),P,R) &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evlunivp_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,super(E)))
+ =>
+  super1(UNION(x).(P | E));
+  
+  bsearch((x incl s),P,R) &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evlunivp_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,super(E)))
+ =>
+  super1(UNION(x).(P | E));
+  
+  bsearch((x:s),P,R) &
+  super(s) &
+  bcall((GEN;SUB~;DED;MAP;REV;PredX)~,fwdX:evluniv_nopop(x,wellstopred(R))) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,super(E)))
+ =>
+  super1(UNION(x).(P | E));
+
+  bsearch((x = s),P,R) &
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,super1(UNION(l).(R | E))))
+ =>
+  super1(UNION(l,x).(P | E));
+    
+  bsearch((x inc s),P,R) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,super1(UNION(l).(R | E))))
+ =>
+  super1(UNION(l,x).(P | E));
+  
+  bsearch((x incl s),P,R) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,super1(UNION(l).(R | E))))
+ =>
+  super1(UNION(l,x).(P | E));
+  
+  bsearch((x:s),P,R) &
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,super1(UNION(l).(R | E))))
+ =>
+  super1(UNION(l,x).(P | E));
+
+  type(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,super(E)))
+ =>
+  super1(UNION(x).(x = s | E));
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,super(E)))
+ =>
+  super1(UNION(x).(x inc s | E));
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evlunivp(x,super(E)))
+ =>
+  super1(UNION(x).(x incl s | E));
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evluniv(x,super(E)))
+ =>
+  super1(UNION(x).(x:s | E));
+
+  errin &
+  super1(UNION(x).E)
+ =>
+  super0(UNION(x).E);
+  
+  iserrin
+ =>  
+  super0(UNION(x).E);
+  
+  errout &
+  bcall((MAP;ARI;TestVarX)~:testvar1(x)) &
+  super0(UNION(brev(x)).E)
+ =>
+  super(UNION(x).E);
+  
+  super(UNION(x).E)
+ =>
+  super(INTER(x).E);
+  
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow)
+ =>
+  super(union(s));
+   
+  super(union(s))
+ =>
+  super(inter(s));
+
+  super(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllowseq)
+ =>
+  super(conc(s));
+    
+  isseq(s) &
+  type(x) &
+  pr2(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  super(s)
+ =>
+  super(x->s);
+  
+  isseq(s) &
+  type(x) &
+  pr2(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  super(s)
+ =>
+  super(s<-x);
+  
+  isseq(s) &
+  isseq(t) &
+  type(s) &
+  type(t) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evleql) &
+  super(s)
+ =>
+  super(s^t);
+  
+  isseq(s) &
+  isnat(n) &
+  super(s)
+ =>
+  super(s/|\n);
+  
+  isseq(s) &
+  isnat(n) &
+  super(s)
+ =>
+  super(s\|/n);
+  
+  isseq(s) &
+  super(s)
+ =>
+  super(rev(s));
+  
+
+  isseq(s) &
+  pr2(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow)
+ =>
+  super(first(s));
+  
+  isseq(s) &
+  pr2(s) &
+  bcall(((evlX;RULE;MODR)~;sinkX):evllow)
+ =>
+  super(last(s));
+  
+  isseq(s) &
+  super(s)
+ =>
+  super(tail(s));
+  
+  isseq(s) &
+  super(s)
+ =>
+  super(front(s));
+
+  bvrb(x) &
+  super(x)
+ =>
+  super(x$0);
+
+  TooManyErrors
+ =>
+  x
+  
+    
+END
+
+&
+
+
+THEORY TypeCheckerFromUserX IS
+
+#define ClearTypeCheckerFromUser \
+  bcall(MODR: bmodr(TypeCheckerFromUserX.1,?) ) & \
+  bcall(MODR: bmodr(TypeCheckerFromUserX.2,?) )
+
+  ?;  /* 1. shell flag */
+
+  ?;  /* 2. construct - a.b */
+
+  ?;  /* 3. IptClosureOK result */
+
+  ?;  /* 4. u.mch - the top abs name (if typechecking an imp) */
+
+  ?;  /* 5. (s;i) (sees;imports) for check_error */
+
+  ?;  /* 6. ThisConstructIsUsrVHDL (defined at top ) */
+
+
+  brule(TypeCheckerFromUserX.1,f) &
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(a);
+
+/***
+  brule(TypeCheckerFromUserX.2,a.b) &
+  brule(dep_SEESX.1,s) &
+  brule(dep_USESX.1,t) &
+  brule(CreateAbstractionX.3,u) &
+  brule(dep_INCLUDESX.1,v) &
+  UpdateDepTypeCheckerAbstracts((a.b,s,t,u,v))
+ =>
+  process_dep;
+
+  AbstractionFlagIsNotSet &
+***/
+  brule(TypeCheckerFromUserX.2,a.b) &
+  brule(dep_SEESX.1,s) &
+  brule(dep_USESX.1,t) &
+  brule(dep_REFINESX.1,u) &
+  brule(dep_INCLUDESX.1,v) &
+  UpdateDepTypeChecker((a.b,s,t,u,v))
+ =>
+  process_dep;
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  WriteVar(f);
+
+  bconnect(f) &
+  brule(OperationVarX.1,t) &
+  bprintf("(%)\n",t)
+ =>
+  WriteVar(f);
+
+
+
+  brule(TypeCheckerFromUserX.2,a.b) &
+  GetJobs(X) &
+  bsearch((a.b:BT_TYP:0),X,Y) &
+  ModifyJobs((Y)) &
+  Writef(("\n\n  Analysis complete\n"))
+ =>
+  design_ok;
+
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  GetJobs(X) &
+  bsearch((a.b:BT_TYP:0),X,Y) &
+  ModifyJobs((Y)) &
+  WriteVar(bcatl("TYP/",a,".imp.typ")) &
+  Writef(("\n\n  Analysis complete\n"))
+ =>
+  design_ok;
+
+
+
+
+
+/*  
+  brule(TypeCheckerFromUserX.3,d.D) &     /? duplicate import ?/
+  Writef(("\n    Design checking .\n\n  Duplicate imports!\n    %\n  appears more than once in recursive import list ...\n",bsrv d berv)) &
+  ClearJobs  
+ =>
+  check_error_4;
+*/
+
+  brule(TypeCheckerFromUserX.3,(j.J;i.I;m.M)) &
+  Writef(("\n\n    Duplicate imports!\n\n      %\n\n        IMPORTED by\n\n      % and %\n",bsrv m berv,bsrv j berv,bsrv i berv )) &
+  ClearJobs  
+ =>
+  check_error_4;
+
+  brule(TypeCheckerFromUserX.3,1) &     /* IptDesignCheckOK */
+  Writef((".")) &
+  design_ok &
+  process_dep
+ =>
+  check_error_4;
+
+  brule(TypeCheckerFromUserX.4,b.mch) &
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(TypeCheckerFromUserX.5,(s;i)) &
+  Writef((".")) &
+  FifoWrite_Store((BT_DUP_IPT_CHK_M,(a;b;s;i),0),(TypeCheckerFromUserX.3)) &
+  check_error_4
+ =>
+  check_error_3;
+
+
+
+  brule(TypeCheckerFromUserX.3,(i.I,m.M)) &     /* bad design */
+  Writef(("\n\n    Bad design!\n\n      % IMPORTS %\n      but % is SEEN at a higher level\n",bsrv i berv,bsrv m berv, m )) &
+  ClearJobs  
+ =>
+  check_error_2;
+
+  brule(TypeCheckerFromUserX.3,1) &     /* IptDesignCheckOK */
+  Writef((".")) &
+  check_error_3
+ =>
+  check_error_2;
+
+  brule(TypeCheckerFromUserX.4,b.mch) &
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  brule(TypeCheckerFromUserX.5,(s;i)) &
+  Writef((".")) &
+  FifoWrite_Store((BT_IPT_DSGN_CHK_M,(a;b;s;i),0),(TypeCheckerFromUserX.3)) &
+  check_error_2
+ =>
+  check_error_1;
+
+
+
+  brule(TypeCheckerFromUserX.3,2) &     /* recursive import */
+  brule(TypeCheckerFromUserX.4,b.mch) &
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  Writef(("\n    Design checking .\n\n  Circularity in design!\n\n  % is reachable through the recursive\n  IMPORTS/SEES structure of %\n",bsrv b berv,bsrv a berv)) &
+  ClearJobs  
+ =>
+  check_error_0;
+
+  brule(TypeCheckerFromUserX.3,1) &     /* IptClosureOK */
+  Writef(("\n    Design checking .")) &
+  check_error_1
+ =>
+  check_error_0;
+
+
+
+  brule(TypeCheckerFromUserX.4,b.mch) &
+  brule(TypeCheckerFromUserX.2,a.imp) &
+  bcall(MODR:bmodr(TypeCheckerFromUserX.5,(s;i))) &
+  FifoWrite_Store((BT_IPT_CLOSURE_M,(a;b;s;i),0),(TypeCheckerFromUserX.3))
+ =>
+  check_error_00(s;i);
+
+  bsearch(?,B,D) &
+  check_error_00(a;D)
+ =>
+  check_error_00(a;B);
+
+  bsearch(?,A,C) &
+  check_error_00(C;b)
+ =>
+  check_error_00(A;b);
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  check_error_get_top_abs$(N+1)(r)
+ =>
+  check_error_get_top_abs1$N(a);
+
+  Bget(("ANL/",u,".ref.anl")) &
+  check_error_get_top_abs1$N(u)
+ =>
+  check_error_get_top_abs$N(u);
+
+  IsCfg(u.mch) &
+  bmodr(TypeCheckerFromUserX.4,u.mch)
+ =>
+  check_error_get_top_abs$N(u);
+
+
+  design_ok &
+  process_dep
+ =>
+  check_error;
+
+  brule(TypeCheckerFromUserX.2,a.imp) &        /* check ipt closure only for imps */
+  brule(dep_SEESX.1,s) &
+  brule(dep_USESX.1,t) &
+  brule(dep_REFINESX.1,u) &
+  brule(dep_INCLUDESX.1,v) &
+  check_error_get_top_abs$1(u) &
+  bcall((FLAT;TypeCheckerFromUserX):check_error_00(bflat(s,t);v)) &
+  check_error_0
+ =>
+  check_error;
+
+
+
+  TypeCheckerErrorFlagged &
+  brule(TypeCheckerFromUserX.2,a.b) &
+  Writef(("\n")) &
+  OfferTypeCheckerFailureOptions &
+  bshell(bcatl("rm -f TYP/",a,".mri.typ"))
+ =>
+  check_error;
+
+  TypeCheckerErrorFlagged &
+  TooManyErrors &
+  brule(TypeCheckerFromUserX.2,a.b) &
+  Writef(("\n\n    Too many errors\n")) &
+  OfferTypeCheckerFailureOptions &
+  bshell(bcatl("rm -f TYP/",a,".mri.typ"))
+ =>
+  check_error;
+
+  bcall(TypeCheckerMessageX:ERROR_MESSAGE("%: This construct does not exist any more",bsrv z.i berv)) &
+  PFZ
+ =>
+  tcfu7(z.i)(Z);
+  
+
+
+/*
+  brule(CreateAbstractionX.3,u) &
+  UpdateCptTypeCheckerAbstracts(x,u) &
+  UpdateCrtTypeCheckerAbstracts(x,u)
+ =>
+  tcfu78(x);
+
+  AbstractionFlagIsNotSet &
+  UpdateCptTypeChecker(x) &
+  UpdateCrtTypeChecker(x)
+ =>
+*/
+  tcfu78(x);
+
+  TypeCheckerErrorFlagged
+ =>
+  tcfu78(x);
+
+
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  tcfu77(z.mch)(Z);
+  
+  DoMachine2(z,Z) &
+  tcfu78(z.mch)
+ =>
+  tcfu77(z.mch)(Z);
+  
+  Writef(("\n")) &
+  tcfu77(z.mch)(F)
+ =>
+  tcfu7(z.mch)(F);
+
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  tcfu77(z.ref)(Z);
+  
+  DoRefinement2(z,Z) &
+  tcfu78(z.ref)
+ =>
+  tcfu77(z.ref)(Z);
+  
+  Writef(("\n")) &
+  tcfu77(z.ref)(F)
+ =>
+  tcfu7(z.ref)(F);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  tcfu77(z.imp)(Z);
+  
+  DoImplementation2(z,Z) &
+  tcfu78(z.imp)
+ =>
+  tcfu77(z.imp)(Z);
+  
+  Writef(("\n")) &
+  tcfu77(z.imp)(F)
+ =>
+  tcfu7(z.imp)(F);
+
+/*
+  ResetVariablesWithNoType &
+  Reset_error_message &
+  ClearErrorNum &
+  bmodr(TypeCheckerFromUserX.2,a.b) &
+  tcfu7(a.b)(bcatl("ANL/",a,".",b,".anl")) &
+  bcall(RULE~:(bclean(StoreVarX) &
+               bclean(StoreHypX) &
+               bclean(StoreOpsX) & 
+               bclean(StoreUsedX) &
+               bclean(OperationVarX) &
+               bclean(StoreEqlX) &
+               bclean(ObjX))) &
+  check_error
+ => 
+  tcfu100(a.b.anl)
+
+*/
+
+
+
+  ModifyThisConstructIsUsrVHDL_no
+ =>
+  set_type_system(a.b);
+
+  IsUsrVHDL(a.b) & /*  28-10-99  */
+  ModifyThisConstructIsUsrVHDL_yes
+ =>
+  set_type_system(a.b);
+
+
+
+
+  set_type_system(a.b) &
+
+  ClearTypeCheckerFromUser &
+  ClearType &
+  ClearTreatOperations &
+  ClearOperationVar &
+  reset_trans_param_error &
+  ClearTypeCheckerMessage &
+
+  ClearTreatVariableAndQuantifier &
+  Reset_in_TreatParametersAndPrecondition &
+  Reset_error_in_treat_variable_and_invariant &
+  Outside_treat_variable_and_invariant &
+
+  ClearCurrentClause &
+  ClearWarningStore &
+
+  ResetWriteStore &
+  ResetRangeCheck &
+
+  ClearAbsInvStore &
+  ResetVariablesWithNoType &
+  Reset_error_message &
+  ClearErrorNum &
+  Clear_Search &
+  Clear_Eql &
+  bmodr(TypeCheckerFromUserX.2,a.b) &
+  tcfu7(a.b)(bcatl("ANL/",a,".",b,".anl")) &
+  bcall(RULE~:(bclean(StoreVarX) &
+               bclean(StoreHypX) &
+               bclean(StoreOpsX) & 
+               bclean(StoreUsedX) &
+               bclean(StoreOpsMchX) &
+               bclean(OperationVarX) &
+               bclean(ObjX)  &
+               bclean(StoreMchX) &
+               bclean(StorePrpX) &
+               bclean(StoreCtxX) &
+               bclean(reg)  )) & 
+               
+  check_error
+ => 
+  tcfu100(a.b.anl)
+
+END

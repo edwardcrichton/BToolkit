@@ -1,0 +1,858 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The B-Platform</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="B-Platform"></A>
+<H1>
+The B-Platform</H1>
+The B-Platform is the proof engine that underpins the <A HREF="BToolkit.html#B-Toolkit">B-Toolkit</A>,
+many parts of which are implemented in the&nbsp;<A NAME="B-Theory_Language"></A>B-Theory
+Language (B-TL) which the B-Platform supports.
+
+<P>B-TL can be viewed as a kind of logic/functional programming language,
+whose program statements, called <A HREF="BPlatform.html#Theory">``Theories''</A>
+consist of ordered sets of inference rules. A natural-deduction-style proof
+engine uses <A HREF="BPlatform.html#Inference!Backwards">backwards</A>
+and <A HREF="BPlatform.html#Inference!Forwards">forwards</A> inference
+to evaluate programs. <A HREF="BPlatform.html#Inference!Rewriting">Rewriting</A>
+is treated as a special form of backwards inference.
+
+<P>A <A HREF="BPlatform.html#Tactic">tactic language</A> is used to add
+additional control to the inference mechanism.
+
+<P>B-TL is also the language used to supply additional user theories to
+the B-Toolkit's <A HREF="Animator.html#Users_Theory!in_Animator">Animator</A>
+and <A HREF="InterProver.html#Users_Theory!InterProver">InterProver</A>.
+
+<P>Although no explicit interface to the B-Platform is visible through
+the B-Toolkit, experienced B-Toolkit users will need to have knowledge
+of the syntax of B-TL and the proof mechanisms used in the B-Platform.
+
+<P>The B-Platform is best viewed as a ``Proof Assistant'' in constructing
+formal proofs. It is not a true ``Theorem Prover'', because inference rules
+supplied by the user do not have to be proved in terms of some basic set
+of axioms. The B-Platform just mechanises the application of rules, and
+assists with some of the house-keeping.
+
+<P>The B-Platform can be purchased separately from B-Core (UK) Ltd. in
+their product called the B-Tool (rather than B-Toolkit). It is useful for
+playing with and learning about proof, as well as for implementing advanced
+tools such as provers; the B-Platform is also sometimes referred to as
+the B-Kernel.
+
+<P>For the purposes of B-Toolkit users, a limited knowledge the syntax
+of a formula in B-TL is all that is required; other aspects of the language
+are not relevant. What follows below is not intended to be a thorough description
+of the B-Platform, or a complete syntax for B-TL, but rather a summary
+of those aspects that are essential to a working knowledge for the B-Toolkit
+user.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+Inference Rules</H2>
+An&nbsp;<A NAME="Inference_Rules"></A>Inference Rule in <A HREF="BPlatform.html#B-Theory_Language">B-TL</A>
+is a&nbsp;<A NAME="Formula"></A>Formula written broadly according to the
+syntax of the <A HREF="MathsNotation.html#Mathematical_Notation">mathematical
+notation</A> of <A HREF="AMNotation.html#AMN">AMN</A>. An important concept
+is that of a ``Joker'', which is used in AMN only in the <A HREF="AMNotation.html#DEFINITIONS_Clause">DEFINITIONS
+clause</A>.
+
+<P>A&nbsp;<A NAME="Joker"></A>Joker can be any single upper or lower-case
+letter. A Joker is true variable which can be replaced by any Formula.
+It is to be distinguished from AMN variables, which appear as <A HREF="BPlatform.html#Identifier">identifiers</A>
+in B-TL, which have to be at least two characters long.
+
+<P>Identifiers can be modified by appending a <TT>Number</TT>. This is
+to allow tools to create new variables when copying formulae. In the B-Toolkit,
+it is used to distinguish between copies of the same state variable in
+different contexts (inside and outside of a loop, for instance).
+
+<P>Three major types of rules are distinguished, `` <A HREF="BPlatform.html#Inference_Rules!Simple">simple
+rules</A>'', `` <A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite
+rules</A>'' and `` <A HREF="BPlatform.html#Inference_Rules!Forward">forward
+rules</A>'', which, despite being syntactically similar, are applied in
+very different ways. Simple rules and rewrite rules are both used in backwards
+inference, and so are grouped as ``<A HREF="BPlatform.html#Inference_Rules!Backward">backward
+rules</A>''.
+
+<P>
+<HR WIDTH="40%">
+<H3>
+Simple Rules</H3>
+A&nbsp;<A NAME="Inference_Rules!Simple"></A>Simple Rule has the following
+syntax:-
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Simple_Rule"></A>Simple_Rule&nbsp;&nbsp;&nbsp; ::= Antecedents => Consequent&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Consequent
+
+&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Antecedents"></A>Antecedents&nbsp;&nbsp;&nbsp; ::= Antecedents &amp; Formula&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula
+
+&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Consequent"></A>Consequent&nbsp;&nbsp;&nbsp;&nbsp; ::= Formula</PRE>
+An example of a simple rule is:-
+<PRE>&nbsp;&nbsp;&nbsp; a <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c &amp;
+&nbsp;&nbsp;&nbsp; b <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; a <A HREF="MathsNotation.html#Sets!Union">\/</A> b <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c</PRE>
+This rule states, in effect, that a goal of the form
+<PRE>&nbsp;&nbsp;&nbsp; a \/ b &lt;: c</PRE>
+can be proved if the two goals
+<PRE>&nbsp;&nbsp;&nbsp; a &lt;: b &amp;
+&nbsp;&nbsp;&nbsp; a &lt;: c</PRE>
+can both be proved.
+
+<P>In this example, <TT>a</TT>, <TT>b</TT> and <TT>c</TT> are Jokers which
+stand for any formula. So applying this rule to the goal
+<PRE>&nbsp;&nbsp;&nbsp; STAFF \/ CUSTOMER &lt;: PERSON</PRE>
+has the effect of applying the rule
+<PRE>&nbsp;&nbsp;&nbsp; STAFF &lt;: PERSON &amp;
+&nbsp;&nbsp;&nbsp; CUSTOMER &lt;: PERSON
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; STAFF \/ CUSTOMER &lt;: PERSON</PRE>
+Simple rules are used for&nbsp;<A NAME="Inference!Backwards"></A>Backwards
+Inference. They are applied as follows:-
+<OL>
+<LI>
+The <A HREF="BPlatform.html#Consequent">Consequent</A> is <A HREF="BPlatform.html#Pattern_Match">matched</A>
+to the current goal by substituting a formula for each Joker which makes
+the Consequent identical to the goal. If no such match can be found, the
+rule cannot be applied.</LI>
+
+<LI>
+If the match is successful, the same substitution of formulae for Jokers
+is applied to the <A HREF="BPlatform.html#Antecedents">Antecedents</A>
+(if any).</LI>
+
+<LI>
+The current goal is replaced by a set of new goals which are the new Antecedents
+(if any).</LI>
+</OL>
+Note that Simple Rules need not have <A HREF="BPlatform.html#Antecedents">Antecedents</A>,
+in which case their application is said to ``discharge'' a goal: the goal
+is replaced by an empty set of goals. For example:-
+<PRE>&nbsp;&nbsp;&nbsp; a : {a}</PRE>
+could match and discharge the goal
+<PRE>&nbsp;&nbsp;&nbsp; percy : {percy}</PRE>
+
+<PRE>
+<HR WIDTH="40%"></PRE>
+
+<H3>
+Rewrite Rules</H3>
+A&nbsp;<A NAME="Inference_Rules!Rewrite"></A>Rewrite Rule has the following
+syntax:-
+<PRE>&nbsp;&nbsp;&nbsp; Rewrite_Rule&nbsp;&nbsp; ::= <A HREF="BPlatform.html#Antecedents">Antecedents</A> => Rewrite&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Rewrite
+
+&nbsp;&nbsp;&nbsp; Rewrite&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= Formula == Formula</PRE>
+An example of a rewrite rule is:-
+<PRE>&nbsp;&nbsp;&nbsp; not(s = {})&nbsp;
+&nbsp;&nbsp; =>&nbsp;
+&nbsp;&nbsp;&nbsp; max({max(s),x}) == max(s\/{x})</PRE>
+This rule states, in effect, that, if <TT>not(s = {})</TT> can be proved,
+any sub-formula of the current goal that has the form <TT>max({max(s),x})</TT>
+can be rewritten as <TT>max(s\/{x})</TT>.
+
+<P>The Jokers <TT>s</TT> and <TT>x</TT> can be replaced by any formula,
+so that applying this rule to the goal
+<PRE>&nbsp;&nbsp;&nbsp; max({max({0}),new}) == max({0}\/{new})</PRE>
+has the effect of applying the rule
+<PRE>&nbsp;&nbsp;&nbsp; not({0} = {})&nbsp;
+&nbsp;&nbsp; =>&nbsp;
+&nbsp;&nbsp;&nbsp; max({max({0}),new}) == max({0}\/{new})</PRE>
+<A NAME="Inference!Rewriting"></A>Rewrite rules are used for <A HREF="BPlatform.html#Inference!Backwards">Backwards
+Inference</A>, and are applied as follows:-
+<OL>
+<LI>
+The left-hand side of the <A HREF="BPlatform.html#Inference_Rules!Rewrite">Rewrite</A>
+is <A HREF="BPlatform.html#Pattern_Match">matched</A> to any sub-formula
+of the current goal by substituting a formula for each Joker which makes
+the Consequent identical to the goal. If no such match can be found, the
+rule cannot be applied.</LI>
+
+<LI>
+If the match is successful, the same substitution of formulae for Jokers
+is applied to the right-hand side of the Rewrite, and to <A HREF="BPlatform.html#Antecedents">Antecedents</A>
+(if any).</LI>
+
+<LI>
+The current goal is replaced by a set of goals which comprises:-</LI>
+
+<UL>
+<LI>
+the new goal resulting from applying the Rewrite to the matched sub-formula
+of the current goal; and</LI>
+
+<LI>
+the new Antecedents (if any).</LI>
+</UL>
+</OL>
+Note that a Rewrite Rule need not have <A HREF="BPlatform.html#Antecedents">Antecedents</A>.
+
+<P>
+<HR WIDTH="40%">
+<H3>
+Forward Rules</H3>
+A&nbsp;<A NAME="Inference_Rules!Forward"></A>Forward Rule has the following
+syntax:-
+<PRE>&nbsp;&nbsp;&nbsp; Forward_Rule ::= <A HREF="BPlatform.html#Antecedents">Antecedents</A> => <A HREF="BPlatform.html#Consequent">Consequent</A></PRE>
+An example of a Forward Rule is :-
+<PRE>&nbsp;&nbsp;&nbsp; not(a:T) &amp;
+&nbsp;&nbsp;&nbsp; a:(S\/T)
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; a:S</PRE>
+This rule states, in effect, that, if it is known that <TT>not(a:T)</TT>
+and that <TT>a:(S\/T)</TT>, then it is also known that <TT>a:S</TT>.
+
+<P>The Jokers <TT>a</TT>, <TT>S</TT> and <TT>T</TT> can be replaced by
+any formula, so that applying this rule to the hypotheses
+<PRE>&nbsp;&nbsp;&nbsp; not(percy:STAFF) &amp;&nbsp;
+&nbsp;&nbsp;&nbsp; percy:(CUSTOMER\/STAFF)</PRE>
+has the effect of applying the rule
+<PRE>&nbsp;&nbsp;&nbsp; not(percy:STAFF) &amp;
+&nbsp;&nbsp;&nbsp; percy:(CUSTOMER\/STAFF)
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; percy:CUSTOMER</PRE>
+Forward rules are used for&nbsp;<A NAME="Inference!Forwards"></A>Forwards
+Inference, which is used every time a new hypothesis is introduced into
+the set of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>.
+
+<P>Forwards rules are applied as follows:-
+<OL>
+<LI>
+The <A HREF="BPlatform.html#Antecedents">Antecedents</A> are <A HREF="BPlatform.html#Pattern_Match">matched</A>
+to the current set of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>
+by substituting a formula for each Joker which makes each Antecedent identical
+to one of the hypotheses. If no complete match can be found, the rule cannot
+be applied.</LI>
+
+<LI>
+If the match is successful, the same substitution of formulae for Jokers
+is applied to the <A HREF="BPlatform.html#Consequent">Consequent</A>.</LI>
+
+<LI>
+The new consequent is added to the current set of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>.</LI>
+</OL>
+Note that a Forwards Rule must always have <A HREF="BPlatform.html#Antecedents">Antecedents</A>.
+
+<P>
+<HR WIDTH="40%">
+<H3>
+Backward Rules</H3>
+<A NAME="Inference_Rules!Backward"></A>Backwards Rules are <A HREF="BPlatform.html#Inference_Rules!Simple">Simple
+Rules</A> or <A HREF="BPlatform.html#Inference_Rules!Rewrite">Rewrite Rules</A>.&nbsp;<A NAME="Pattern_Match"></A>
+
+<P>
+<HR WIDTH="60%">
+<H2>
+Pattern Matching</H2>
+The presence of <A HREF="BPlatform.html#Joker">jokers</A> in formulae allow
+pattern matching to take place. A formula <TT>f</TT> matches a formula
+<TT>g</TT> if a substitution <TT>S</TT> of formulae for the jokers of <TT>f</TT>
+can be found such that <TT>[S]f</TT> is identical to <TT>g</TT>.
+
+<P>For example, matching the formula
+<PRE>&nbsp;&nbsp;&nbsp; age(p):T</PRE>
+to the formula
+<PRE>&nbsp;&nbsp;&nbsp; age(percy) : 0..120</PRE>
+is achieved using the substitution
+<PRE>&nbsp;&nbsp;&nbsp; p , T <A HREF="MathsNotation.html#Substitutions!Simultaneous">:=</A> percy , (0..120)</PRE>
+Special care must be taken with the matching to comma-separated lists.
+The comma operator is treated just like other left-associative infix operators.
+So the formula <TT>{p}</TT> can match the formula <TT>{1,2,3}</TT> with
+substitution
+<PRE>&nbsp;&nbsp;&nbsp; p := 1,2,3</PRE>
+whereas <TT>{P,p}</TT> would match as
+<PRE>&nbsp;&nbsp;&nbsp; P , p := (1,2) , 3</PRE>
+
+<PRE>
+<HR WIDTH="60%"></PRE>
+<A NAME="Guards"></A>
+<H2>
+Guards</H2>
+Guards are a special kind of <A HREF="BPlatform.html#Antecedents">Antecedent</A>
+for backwards rules that are evaluated in a different way during proof
+construction. The proof mechanism prevents rules from being applied if
+the guards do not evaluate to true.
+
+<P>Guards also provide a means of making inference rules more generic.
+Their syntax is as follows:
+<PRE>&nbsp;&nbsp;&nbsp; Guards&nbsp;&nbsp;&nbsp;&nbsp; ::= Guards &amp; Guard&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Guard
+
+&nbsp;&nbsp;&nbsp; Guard&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= "binhyp" ( Formula )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "bnum" ( Formula )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "bident" ( Formula )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "bstring" ( Formula )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "btest" ( Number Comparison Number )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "bsearch" ( Formula , ( Formula_List ) , Formula ) |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "breade" ( Formula , Formula_List , Formula )
+
+&nbsp;&nbsp;&nbsp; Comparison ::=&nbsp; &lt;&nbsp; |&nbsp; &lt;=&nbsp; |&nbsp; >&nbsp; |&nbsp; >=&nbsp; |&nbsp; =&nbsp; |&nbsp; /=</PRE>
+In this context, a <TT>Number</TT> is any Natural number less than 2^32.
+A <TT>Formula_List</TT> is comma (or in some cases ``<TT>&amp;</TT>'',
+``<TT>or</TT>'' or ``<TT>;</TT>'') separated list of Formulae.
+
+<P>A brief explanation of these guards is as follows:-
+<DL>
+<DL>
+<DT>
+<A NAME="Guards!binhyp"></A><TT>binhyp(x)</TT></DT>
+
+<DD>
+&nbsp;succeeds if there is a hypothesis which matches <TT>x</TT>. For example,
+application of the following the simple rule</DD>
+
+<PRE>&nbsp;&nbsp;&nbsp; binhyp(f:S<A HREF="MathsNotation.html#Functions!Total">--></A>T) &amp;
+&nbsp;&nbsp;&nbsp; x:S
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; f(x) : T</PRE>
+to the formula
+<PRE>&nbsp;&nbsp;&nbsp; age(pers) : 0..120</PRE>
+in the presence of the hypothesis
+<PRE>&nbsp;&nbsp;&nbsp; age:PERSON-->0..120</PRE>
+behaves as if the following rule is applied:-
+<PRE>&nbsp;&nbsp;&nbsp; age:PERSON-->0..120 &amp;
+&nbsp;&nbsp;&nbsp; pers:PERSON
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; age(pers) : 0..120</PRE>
+
+<DT>
+<A NAME="Guards!btest"></A><TT>btest( x > y )</TT></DT>
+
+<DD>
+&nbsp;succeeds if <TT>x</TT> and <TT>y</TT> are valid <A HREF="BPlatform.html#Number">numbers</A>,
+and <TT>x</TT> is greater than <TT>y</TT> (and similarly for the other
+comparison operators). For example:-</DD>
+
+<PRE>&nbsp;&nbsp;&nbsp; btest(a/=b)
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; not(a:{b})</PRE>
+
+<DT>
+<A NAME="Guards!bsearch"></A><TT>bsearch(x,(l),r)</TT></DT>
+
+<DD>
+&nbsp;succeeds if the formula <TT>x</TT> matches a formula in the list
+<TT>l</TT>, and <TT>r</TT> is the list <TT>l</TT> with the matched formula
+removed. The list can be separated by commas, ``<TT>&amp;</TT>'' or ``<TT>or</TT>''.</DD>
+
+
+<P>For example, a typical use of this guard is as follows:-
+<PRE>&nbsp;&nbsp;&nbsp; bsearch((x &lt; y),P,Q) &amp;
+&nbsp;&nbsp;&nbsp; [x,y := 1,2]P
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; #(x,y).P</PRE>
+This rule can be used to attempt to prove an existential quantifier in
+which <TT>P</TT> contains the constraint <TT>x &lt; y</TT> by selecting
+specific values for <TT>x</TT> and <TT>y</TT>, namely <TT>1</TT> and <TT>2</TT>.
+
+<P>The antecedent <TT>[x,y := 1,2]P</TT> is a predicate identical to <TT>P</TT>
+with all <A HREF="MathsNotation.html#Freeness">free occurrences</A> of
+<TT>x</TT> and <TT>y</TT> replaced by <TT>1</TT> and <TT>2</TT> respectively.
+So applying this rule to the goal
+<PRE>&nbsp;&nbsp;&nbsp; #(a,b).( a:NAT &amp; b:NAT &amp; a &lt; b )</PRE>
+has the same effect as applying the rule
+<PRE>&nbsp;&nbsp;&nbsp; 1:NAT &amp; 2:NAT &amp; 1 &lt; 2
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; #(a,b).( a:NAT &amp; b:NAT &amp; a &lt; b )</PRE>
+Careful attention is, of course, given to the renaming of variables to
+ensure that clashes with <A HREF="MathsNotation.html#Freeness">free variables</A>
+are avoided.
+<DT>
+<A NAME="Guards!breade"></A><TT>breade(f,l,x)</TT></DT>
+
+<DD>
+&nbsp;displays the list of formulae <TT>l</TT> on the screen according
+to the format given in the quoted string <TT>f</TT>, and succeeds if <TT>x</TT>
+matches the response typed by the user.</DD>
+
+
+<P>The format string <TT>f</TT> works on the same kind of principle as
+<TT>printf</TT> function in C. The <TT>%</TT> character is used to mark
+the position of formulas in the output, and various escape characters are
+allowed, such as follows:-
+<UL>
+<UL>
+<LI>
+<TT>\n</TT> line feed</LI>
+
+<LI>
+<TT>\t</TT> tabulation</LI>
+
+<LI>
+<TT>\E</TT> escape</LI>
+
+<LI>
+<TT>\B</TT> bell</LI>
+
+<LI>
+<TT>\"</TT> double quote</LI>
+
+<LI>
+<TT>\\</TT> back slash</LI>
+
+<LI>
+<TT>\%</TT> percent</LI>
+</UL>
+</UL>
+This guard can be used to assist in the selection of values in the proof
+of existential quantification, or quite simply to trace the application
+of user-defined rules.
+
+<P>For example, another way of treating the existential quantification
+above is by providing the rule:-
+<PRE>&nbsp;&nbsp;&nbsp; breade("\n -- Choose values for %,% which satisfy % : ",x,y,P,(s,t)) &amp;
+&nbsp;&nbsp;&nbsp; [x,y <A HREF="MathsNotation.html#Substitutions!Simultaneous">:=</A> s,t]Q
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Quantification!Existential">#</A>(x,y).P</PRE>
+Attempted application of this rule to the goal
+<PRE>&nbsp;&nbsp;&nbsp; #(a,b).( a:NAT &amp; b:NAT &amp; a&lt;b )</PRE>
+would result in the following message being displayed on the screen:-
+<PRE>&nbsp;-- Choose values for a,b which satisfy (a:NAT &amp; b:NAT &amp; a&lt;b) :</PRE>
+to which the user may respond by typing <TT>1,2</TT> for the same effect
+of the <TT>bsearch</TT> example above.
+
+<P>The interactive tracing of attempted rule applications can be achieved
+by including antecedents of the following form:-
+<PRE>&nbsp;&nbsp;&nbsp; breade("\n *** APPLYING MY SPECIAL RULE TO % : ",(#(x,y).P),v) &amp;
+&nbsp;&nbsp;&nbsp; bsearch((x &lt; y),P,Q) &amp;
+&nbsp;&nbsp;&nbsp; [x,y := 1,2]Q
+&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp; #(x,y).P</PRE>
+
+<DT>
+<A NAME="Guards!bident"></A><TT>bident(x)</TT></DT>
+
+<DD>
+&nbsp;succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Identifier"></A>identifier
+(a string of length greater than 1 comprising upper or lower-case letters,
+digits and the underscore character, and containing at least one letter).</DD>
+
+<DT>
+<TT>bnum(x)</TT></DT>
+
+<DD>
+&nbsp;succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Number"></A>number
+(a Natural number less than 2^32).</DD>
+
+<DT>
+<TT>bstring(x)</TT></DT>
+
+<DD>
+&nbsp;succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Quoted_String"></A>quoted
+string (any character string enclosed in double quotes).</DD>
+
+
+<P>An example is:-
+<PRE>&nbsp;&nbsp;&nbsp; bident(b)&nbsp;
+&nbsp;&nbsp; =>&nbsp;
+&nbsp;&nbsp;&nbsp; {a} \/ {b} == {a,b}</PRE>
+</DL>
+</DL>
+Note the subtle difference in the syntax for <TT>bsearch</TT> and <TT>breade</TT>.
+The second argument of <TT>bsearch</TT> must be a list enclosed in brackets,
+whereas the list in <TT>breade</TT> does not, giving rise, in effect, to
+a variable number of arguments (rather like the <TT>printf</TT> function
+in C). The <TT>x</TT> thus refers, in fact, to the last argument.
+
+<P>
+<HR WIDTH="60%">
+<BR><A NAME="Theory"></A>
+<H2>
+Theories</H2>
+A Theory is a container for inference rules. A forward theory contains
+forward rules, and a backward theory contains backwards rules.
+<PRE>&nbsp;&nbsp;&nbsp; Theory&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= THEORY <A HREF="BPlatform.html#Theory_Name">Theory_Name</A> IS Rule_List END
+
+&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Theory_Name"></A>Theory_Name ::= <A HREF="BPlatform.html#Identifier">Identifier</A>&nbsp;
+
+&nbsp;&nbsp;&nbsp; Rule_List&nbsp;&nbsp; ::= Rule_List ; <A HREF="BPlatform.html#Inference_Rules">Inference_Rule</A>&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="BPlatform.html#Inference_Rules">Inference_Rule</A></PRE>
+In the <A HREF="InterProver.html#PROOFMETHOD_File">Proof Method</A> files
+presented by the user to the <A HREF="InterProver.html#InterProver">InterProver</A>,
+backwards rules and forwards rules are presented in two theories, usually
+called <TT>UsersTheory</TT> and <TT>FwdUsersTheory</TT> respectively. There
+is no reason, however, why users should not present any number of theories
+with others names, as long as the appropriate <A HREF="BPlatform.html#Tactic">tactics</A>
+are also amended.
+
+<P>The order of rules in a theory is significant. (See <A HREF="BPlatform.html#Inference_Rules!Ordering">Ordering
+Rules in Theories</A> below for a discussion of this.)
+
+<P>
+<HR WIDTH="60%">
+<H2>
+Tactics</H2>
+<A HREF="BPlatform.html#B-Theory_Language">B-TL</A> provides a very simple
+tactic language which guides proof construction. The language describes
+sequencing and iteration of theory applications, and names some basic atomic
+tactics. The syntax is as follows:-
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Tactic"></A>Tactic&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= Atomic_Tactic&nbsp;&nbsp;&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tactic ; Tactic&nbsp; |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tactic~
+
+&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Tactic!Atomic"></A>Atomic_Tactic ::= DED&nbsp; |&nbsp; GEN&nbsp; |&nbsp; SUB&nbsp; |&nbsp; HYP&nbsp; |&nbsp; FEQL&nbsp; |&nbsp; <A HREF="BPlatform.html#Theory_Name">Theory_Name</A></PRE>
+The semicolon indicated sequencing of actions, and the tilda indicates
+repetition. The following is an example of a tactic:-
+<PRE>&nbsp;&nbsp;&nbsp; ( Theory1 ; DED ) ~ ; Theory2~</PRE>
+which says, in effect:-
+<OL>
+<LI>
+First attempt to apply any rule from theory <TT>Theory1</TT>, then apply
+the special tactic <TT>DED</TT>.</LI>
+
+<LI>
+Repeat 1 until no more rules apply.</LI>
+
+<LI>
+Then repeatedly apply any rules from <TT>Theory2</TT> until no more apply.</LI>
+</OL>
+In the <A HREF="InterProver.html#PROOFMETHOD_File">Proof Method</A> files
+used by the <A HREF="InterProver.html#InterProver">InterProver</A>, two
+tactics are named in the <TT><A HREF="InterProver.html#USETAC_Clause">USETAC</A></TT>
+clause (see section on <A HREF="InterProver.html#Tactic!User">InterProver</A>).
+The first is the tactic to be used for <A HREF="BPlatform.html#Inference!Backwards">backwards
+inference</A>, and the second is for <A HREF="BPlatform.html#Inference!Forwards">forwards
+inference</A>.
+
+<P>By <A HREF="InterProver.html#Tactic!Default">default</A>, these two
+tactics are presented as:-
+<PRE>&nbsp;&nbsp;&nbsp; (UsersTheory~),
+&nbsp;
+&nbsp;&nbsp;&nbsp; (FwdUsersTheory~/*;FEQL~*/)</PRE>
+and the user is expected to present backwards rules in a theory called
+<TT>UsersTheory</TT> and forwards rules in <TT>FwdUsersTheory</TT>.
+
+<P>Note that the application of the special tactic <A HREF="BPlatform.html#Tactic!FEQL">FEQL</A>
+is commented out by the annotation marks <TT>/*</TT> and <TT>*/</TT>. It
+is placed there to remind users that a frequently desired modification
+of the forward tactic is to include the ``<A HREF="BPlatform.html#Tactic!FEQL">forwards
+equality</A>'' tactic. In some applications, this modification helps to
+push proofs through, often without providing additional rules. It is left
+out of the default for efficiency reasons.
+
+<P>The&nbsp;<A NAME="Tactic!Special"></A>special tactics are described
+as follows:-
+<DL>
+<DL>
+<DT>
+<A NAME="Tactic!DED"></A><TT>DED</TT></DT>
+
+<DD>
+&nbsp;The deduction tactic, <TT>DED</TT>, acts on goals of the form</DD>
+
+<PRE>&nbsp;&nbsp;&nbsp; H1 &amp; H2 &amp; ... Hn&nbsp; =>&nbsp; G</PRE>
+by placing the formulae <TT>H1</TT>, <TT>H2</TT> ... <TT>Hn</TT> into the
+current set of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>,
+and making <TT>G</TT> the current goal.
+<DT>
+<A NAME="Tactic!GEN"></A><TT>GEN</TT></DT>
+
+<DD>
+&nbsp;The generalisation tactic, <TT>GEN</TT>, acts on goals of the form</DD>
+
+<PRE>&nbsp;&nbsp;&nbsp; !v.G</PRE>
+by renaming all the variable <TT>v</TT> in <TT>G</TT> to avoid <A HREF="MathsNotation.html#Freeness">free
+occurrences</A> in the current set of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>,
+and making the renamed <TT>G</TT> the new goal.
+<DT>
+<A NAME="Tactic!SUB"></A><TT>SUB</TT></DT>
+
+<DD>
+&nbsp;The substitution tactic, <TT>SUB</TT>, acts on goals with contain
+sub-formulae of the form</DD>
+
+<PRE>&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Substitutions!Application">[v:=F]</A>G</PRE>
+by performing the <A HREF="MathsNotation.html#Substitutions!Generalised">substitution</A>
+on <TT>G</TT>, and making the rewritten goal the new goal.
+<DT>
+<A NAME="Tactic!HYP"></A><TT>HYP</TT></DT>
+
+<DD>
+&nbsp;The ``hypothesis'' tactic, <TT>HYP</TT>, can act in a number of ways.
+Suppose the current goal is <TT>Q</TT>:-</DD>
+
+<UL>
+<LI>
+When there is a <A HREF="BPlatform.html#Hypotheses!Current_set">hypothesis</A>
+in the current set of the form</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp; P1 &amp; P2 ... Pn => Q</PRE>
+the current goal <TT>Q</TT> is replaced by <TT>P1</TT>, <TT>P2</TT> ...
+and <TT>Pn</TT>.
+<LI>
+When there is a hypothesis of the form</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Quantification!Universal">!</A>v.G</PRE>
+where <TT>G</TT> is identical to <TT>Q</TT> for some value of <TT>v</TT>,
+then the current goal <TT>Q</TT> is discharged.</UL>
+
+<DT>
+<A NAME="Tactic!FEQL"></A><TT>FEQL</TT></DT>
+
+<DD>
+&nbsp;The ``forward equality'' tactic, <TT>FEQL</TT> is a <A HREF="BPlatform.html#Tactic!Forward">forward
+tactic</A> which generates new hypotheses from the <A HREF="BPlatform.html#Hypotheses!Current_set">set
+of current hypotheses</A> by calculating the transitive closure of equality.</DD>
+
+
+<P>For example, if the <A HREF="BPlatform.html#Hypotheses!Current_set">set
+of current hypotheses</A> contains
+<PRE>&nbsp;&nbsp;&nbsp; newperson = percy
+&nbsp;&nbsp;&nbsp; newage = 23
+&nbsp;&nbsp;&nbsp; age <A HREF="MathsNotation.html#Relations!Overriding">+></A> {newperson <A HREF="MathsNotation.html#Ordered_Pair">|-></A> newage} <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> PERSON <A HREF="MathsNotation.html#Functions!Total">--></A> AGE</PRE>
+then the FEQL tactic would have the effect of expanding the set to
+<PRE>&nbsp;&nbsp;&nbsp; newperson = percy
+&nbsp;&nbsp;&nbsp; newage = 23
+&nbsp;&nbsp;&nbsp; age +> {newperson |-> newage} &lt;: PERSON --> AGE
+&nbsp;&nbsp;&nbsp; age +> {percy |-> 23} &lt;: PERSON --> AGE</PRE>
+
+<PRE>
+<HR WIDTH="60%"></PRE>
+</DL>
+</DL>
+<A NAME="Proof!Construction"></A>
+<H2>
+Proof Construction</H2>
+Proofs are constructed in the context of:-
+<UL>
+<LI>
+A&nbsp;<A NAME="Goals!Set"></A>set of goals, one of which is the&nbsp;<A NAME="Goals!Current"></A>current
+goal.</LI>
+
+<LI>
+A set of current&nbsp;<A NAME="Hypotheses!Current_set"></A>hypotheses.</LI>
+
+<LI>
+A&nbsp;<A NAME="Tactic!Normal"></A>normal <A HREF="BPlatform.html#Tactic">tactic</A>,
+with a current position.</LI>
+
+<LI>
+A&nbsp;<A NAME="Tactic!Forward"></A>forwards <A HREF="BPlatform.html#Tactic">tactic</A>,
+with a current position.</LI>
+
+<LI>
+A set of theories.</LI>
+</UL>
+At the start of proof:-
+<UL>
+<LI>
+A single goal exists in the set of goals, which is selected as the current
+goal.</LI>
+
+<LI>
+The set of current <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>
+is empty.</LI>
+
+<LI>
+<A HREF="BPlatform.html#Tactic!Normal">Normal</A> and <A HREF="BPlatform.html#Tactic!Forward">forwards</A>
+tactic positions are pointing at the first theory or special tactic.</LI>
+</UL>
+As proof proceeds, the set of current <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>,
+the set of goals, the choice of current goal, and the tactic positions
+are manipulated as follows:-
+<OL>
+<LI>
+An attempt is made to find a rule from the theory named at the current
+current <A HREF="BPlatform.html#Tactic!Normal">normal tactic</A> position
+which matches the current goal.</LI>
+
+<LI>
+If a matching backwards rule is found, it is applied, which may result
+in the addition of hypotheses to the set of current <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>,
+and to manipulation of the set of goals, as described in the section describing
+<A HREF="BPlatform.html#Inference!Backwards">backwards inference</A>.</LI>
+
+<LI>
+If the set of goals is now empty, proof is concluded with success.</LI>
+
+<LI>
+If new hypotheses are introduced, forward inference is applied as described
+below.</LI>
+
+<LI>
+The <A HREF="BPlatform.html#Tactic!Normal">normal tactic</A> position is
+incremented, taking repetition into account.</LI>
+
+<LI>
+If the end of the <A HREF="BPlatform.html#Tactic!Normal">normal tactic</A>
+is reached, proof terminates unsuccessfully.</LI>
+
+<LI>
+A new <A HREF="BPlatform.html#Goals!Current">current goal</A> is selected
+(usually a child of the last current goal).</LI>
+
+<LI>
+Proof construction is repeated from 1.</LI>
+</OL>
+The <A HREF="BPlatform.html#Inference!Forwards">forward inference</A> process
+referenced in step 4 above is as follows:-
+<OL>
+<LI>
+An attempt is made to find a rule from the theory (or special tactic) named
+at the current <A HREF="BPlatform.html#Tactic!Forward">forwards tactic</A>
+position which matches formulae from the set of current <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>.</LI>
+
+<LI>
+If a matching forwards rule is found, it is applied, which may result in
+the addition of hypotheses to the set of current <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>.</LI>
+
+<LI>
+The <A HREF="BPlatform.html#Tactic!Forward">forwards tactic</A> position
+is incremented, taking repetition into account.</LI>
+
+<LI>
+Forward inference is repeated from 1.</LI>
+
+<LI>
+When the end of the <A HREF="BPlatform.html#Tactic!Forward">forwards tactic</A>
+is reached, forwards inference terminates.</LI>
+</OL>
+
+<HR WIDTH="60%">
+<BR><A NAME="Proof!Guidelines"></A>
+<H2>
+Guidelines for Proof</H2>
+The following notes are intended to guide the B-Toolkit in constructing
+theories for use with the InterProver.
+
+<P><A NAME="Inference_Rules!Ordering"></A>
+<H3>
+Ordering Rules in Theories</H3>
+When applying rules from a theory, rules are matched in strict biblical
+order: the last first, and the first last. This allows a further aspect
+of control over which rules are applied: a rule is applied only if all
+other rules below it in the theory have not matched.
+
+<P>For example, consider the following theory:-
+<PRE>&nbsp;&nbsp;&nbsp; THEORY max IS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max({p}) == p
+&nbsp;&nbsp;&nbsp; ;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max({max(P)}\/Q) == max(P\/Q)
+&nbsp;&nbsp;&nbsp; ;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max({P,p}) == maxel({P,p},0)
+&nbsp;&nbsp;&nbsp; ;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxel({p},q) == p
+&nbsp;&nbsp;&nbsp; ;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="BPlatform.html#Guards!btest">btest</A>(q>p)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxel({p},q) == p
+&nbsp;&nbsp;&nbsp; ;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxel({P,p},q) == maxel({P},p)
+&nbsp;&nbsp;&nbsp; ;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="BPlatform.html#Guards!btest">btest</A>(q>p)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxel({P,p},q) == maxel({P},q)
+&nbsp;&nbsp;&nbsp; END</PRE>
+The last rule is attempted first. This rule is guarded by a <TT><A HREF="BPlatform.html#Guards!btest">btest</A></TT>.
+If this fails, then the next rule above is attempted.
+
+<P>The <A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite</A> in
+the next rule has an identical left-hand side, so the rule will match exactly
+when the bottom rule does. This time, however, there is no guard, but we
+know from the failure of the rule below that it will only apply when <TT>q&lt;=p</TT>.
+
+<P>Together, these last two rules cover all cases when there are at least
+two elements in the set in the first argument of <TT>maxel</TT>.
+
+<P>The next rule up has a rewrite with a different (more general) left-hand
+side. The formula <TT>{p}</TT> can match any set, including those of the
+form <TT>{P,p}</TT> (see <A HREF="BPlatform.html#Pattern_Match">Pattern
+Matching</A>). But we know that, since the previous rules did not match,
+the only pattern that remains to be matched is the single set, in which&nbsp;<TTp</TT>matches
+a single element, and not a comma-separated list. A similar argument applies
+to the top rule.
+
+<P>
+<HR WIDTH="40%">
+<H3>
+Using Guards in Rewrite Rules</H3>
+The use of <A HREF="BPlatform.html#Guards">guards</A> is strongly advised
+for rewrite rules. This is because there is limited backtracking through
+rewrite rules: once they are applied, they cannot be unapplied through
+backtracking. There is a need, therefore, to have careful control over
+the application of rewrite rules.
+
+<P>The first control over the application of a rewrite rule is through
+pattern matching: the rule will only apply if the shape of the left-hand
+side of the <A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite</A>
+matches a sub-formula of the current goal.
+
+<P>A second level of control is by judicious ordering of rewrite rules
+in the theory. (See <A HREF="BPlatform.html#Inference_Rules!Ordering">Ordering
+Rules in Theories</A> above.)
+
+<P>A third level of control is by using guards in the <A HREF="BPlatform.html#Antecedent">antecedent</A>
+of the rule: if guards evaluate to false, the rule is not applied.
+
+<P>A better version of the <A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite
+rule</A> example given above is thus:-
+<PRE>&nbsp;&nbsp;&nbsp; binhyp(not(s = {}))&nbsp;
+&nbsp;&nbsp; =>&nbsp;
+&nbsp;&nbsp;&nbsp; max({max(s),x}) == max(s\/{x})</PRE>
+since this only allows rewriting when it is known from the current set
+of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A> that
+<BR><TT>not(s = {})</TT>.
+
+<P>
+<HR WIDTH="40%">
+<H3>
+Backwards versus Forwards Inference</H3>
+<A HREF="BPlatform.html#Inference!Backwards">Backwards inference</A> is
+goal-oriented, in that rules matched against the current goal. It is therefore
+inherently more efficient than <A HREF="BPlatform.html#Inference!Forwards">forwards
+inference</A>, which is not goal-directed, since it blindly propagates
+knowledge from the <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>.
+
+<P>It is therefore recommended that <A HREF="BPlatform.html#Inference_Rules!Simple">simple
+rules</A> and <A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite
+rules</A> are used in preference to <A HREF="BPlatform.html#Inference_Rules!Forward">forwards
+rules</A> where ever possible.
+
+<P>
+<HR WIDTH="40%">
+<H3>
+Supplying Rules for Animation</H3>
+For the purposes of Animation of AMN specifications in the B-Toolkit, a
+<A HREF="Animator.html#Users_Theory!in_Animator">theory file</A> can be
+supplied containing only guarded or unguarded rewrite rules. Other kinds
+of rules would interfere with the animation mechanism. (See section on
+the Animator entitled <A HREF="Animator.html#Users_Theory!in_Animator">Providing
+More Rewrite Rules</A>.)
+
+<P>
+<HR WIDTH="60%">
+
+<P><A NAME="B-Platform!Memory"></A>
+<H2>
+Running Out of Memory</H2>
+When conducting really large proofs, it is possible for the B-Platform
+to run out of memory. If this occurs, an error message is displayed in
+the AutoProver or InterProver panel, and the proof session is aborted.
+Hopefully, this situation will not arise, as memory is allocated through
+the<I> malloc </I> utility; more memory may be freed by shutting down
+other processes, or increasing the swap space of the machine on which
+it is running - see your System Administrator.
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

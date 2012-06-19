@@ -1,0 +1,422 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Abstract Machine Notation</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#66FFFF" VLINK="#FF6666" ALINK="#FF0000">
+
+<H1>
+<A NAME="AMN"></A><FONT COLOR="#33CCFF">Abstract Machine Notation</FONT></H1>
+
+<H3>
+Overview</H3>
+This description of the Abstract Machine Notation is organised as follows:-
+<UL>
+<LI>
+<A HREF="AMNotation.html#AMN!Substitutions">AMN Substitutions</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#AMN!Operations">AMN Operations</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#Abstract_Machines">Machines</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#REFINEMENT">Refinements</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#IMPLEMENTATION">Implementations</A></LI>
+</UL>
+Some constructs require the use of a&nbsp;<A NAME="Type_determining_predicate"></A>type-determining
+predicate to be well-formed. A type-determining predicate <TT>P</TT> must
+contain a constraining predicate of the form <TT>xx: S</TT>, <TT>xx &lt;
+S</TT>, <TT>xx &lt;: S</TT> or <TT>xx = E</TT>, where <TT>xx\S</TT>, <TT>xx\E</TT>.
+
+<P>
+<HR WIDTH=60%>
+<H3>
+<A NAME="AMN!Substitutions"></A>AMN Substitutions</H3>
+The generic syntactic variables are as follows: P, Q, R for predicates;
+S, T, U, V for AMN substitutions, E,F for expressions; ff, xx, yy for variables;
+l, m, n for lists of expressions; vlx for variable lists; opn for AMN operation
+names; asub for AMN substitutions. z\E indicates that there are no free
+occurrences in E of the variables in z. The definitions below are given
+in terms of <A HREF="MathsNotation.html#Substitutions!Generalised">Generalised
+Substitutions</A>. The syntax is presented informally, and occurrences
+of `...' mean that any number of the surrounding construct can occur.
+<PRE>&nbsp;BEGIN S END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; S
+
+&nbsp;<A NAME="PRE_Clause"></A>PRE P THEN S END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; P | S
+
+&nbsp;IF P THEN S ELSE T END =&nbsp;&nbsp; (P ==> S) [] (not(P) ==> T)
+
+&nbsp;IF P THEN S END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN S ELSE skip END
+
+
+&nbsp;IF P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN
+&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;
+&nbsp;ELSIF Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IF Q THEN
+&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
+&nbsp;ELSIF R THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp; U&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+&nbsp;ELSE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IF R THEN
+&nbsp;&nbsp; V&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; U
+&nbsp;END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; V
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+
+&nbsp;IF P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN&nbsp;
+&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S
+&nbsp;ELSIF Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSIF Q THEN
+&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
+&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;ELSIF R THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSIF R THEN
+&nbsp;&nbsp; U&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; U
+&nbsp;END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; skip
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+
+&nbsp;CHOICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; S [] T [] ... U
+&nbsp;&nbsp; S
+&nbsp;OR
+&nbsp;&nbsp; T
+&nbsp;OR&nbsp;
+&nbsp; ...
+&nbsp;OR
+&nbsp;&nbsp; U&nbsp;
+&nbsp;END
+
+
+&nbsp;SELECT P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; P ==> S []
+&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Q ==> T []
+&nbsp;WHEN Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ... []
+&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R ==> U
+&nbsp;...
+&nbsp;WHEN R THEN&nbsp;
+&nbsp;&nbsp; U
+&nbsp;END
+
+
+&nbsp;SELECT P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; SELECT P THEN&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S
+&nbsp;WHEN Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHEN Q THEN
+&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
+&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;WHEN R THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHEN R THEN
+&nbsp;&nbsp; U&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; U
+&nbsp;ELSE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHEN not(P) &amp; not(Q) &amp; ... &amp; not(R) THEN
+&nbsp;&nbsp; V&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; V
+&nbsp;END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+
+&nbsp;CASE E OF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; SELECT E: {l} THEN
+&nbsp;&nbsp; EITHER l THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S
+&nbsp;&nbsp;&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHEN E: {m} THEN
+&nbsp;&nbsp; OR m THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
+&nbsp;&nbsp;&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp; ...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHEN E: {n} THEN
+&nbsp;&nbsp; OR n THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; U
+&nbsp;&nbsp;&nbsp;&nbsp; U&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+&nbsp;&nbsp; ELSE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; V
+&nbsp;&nbsp;&nbsp;&nbsp; V&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+&nbsp;&nbsp; END
+&nbsp;END
+
+
+&nbsp;CASE E OF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; SELECT E: {l} THEN
+&nbsp; EITHER l THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S
+&nbsp;&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHEN E: {m} THEN
+&nbsp; OR m THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
+&nbsp;&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp; ...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHEN E: {n} THEN
+&nbsp; OR n THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; U
+&nbsp;&nbsp;&nbsp; U&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+&nbsp; END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; skip
+&nbsp;END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+&nbsp;VAR xx IN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx.S
+&nbsp;&nbsp; S&nbsp;
+&nbsp;END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+&nbsp;<A NAME="Non_Determinism"></A>ANY xx WHERE P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx.(P ==> S). P must contain a&nbsp;
+&nbsp;THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#Type_determining_predicate">type determining predicate</A>.
+&nbsp;&nbsp; S
+&nbsp;END
+
+&nbsp;LET xx BE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx.(xx = E ==> S), where xx\E.
+&nbsp;&nbsp; xx = E
+&nbsp;IN&nbsp;
+&nbsp;&nbsp; S&nbsp;
+&nbsp;END
+
+
+&nbsp;S || T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Parallel substitution (S and T are substitutions on&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; disjoint sets of variables.
+
+&nbsp;xx:= E || yy:= F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; xx,yy:= E,F
+
+&nbsp;<A NAME="Substitutions!Parameterised"></A>opn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; An AMN substitution, with name opn.
+
+&nbsp;opn(vl1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A parameterised AMN substitution, with input vl1.
+
+&nbsp;vl2 &lt;-- opn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A parameterised AMN substitution, with output vl2.
+
+&nbsp;vl2 &lt;-- opn(vl1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A parameterised AMN substitution, with input vl1 and
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output vl2.
+
+
+&nbsp;xx:=&nbsp;<A NAME="bool"></A>bool(P)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xx:= TRUE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xx:= FALSE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+
+&nbsp;<A NAME="skip"></A>skip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No-op
+
+&nbsp;<A NAME="Substitutions!Postconditioned"></A>xx:: E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx'(xx': E ==> xx:= xx')
+
+&nbsp;xx: P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx'.([xx:= xx']P ==> xx:= xx'). P must contain a&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#Type_determining_predicate">type determining predicate</A>.
+
+
+&nbsp;ff(xx):= E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; ff:= ff &lt;+ {xx|->E}
+
+&nbsp;S;T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identical to its Generalised Substitution
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; counterpart, S;T.
+
+
+&nbsp;S;WHILE P DO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; S, followed by looping on T so long as the guard P&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; holds, with loop variant E and loop invariant Q.
+&nbsp;&nbsp; INVARIANT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; Q
+&nbsp;&nbsp; VARIANT
+&nbsp;&nbsp;&nbsp;&nbsp; E
+&nbsp;&nbsp; END</PRE>
+
+<HR WIDTH=60%><A NAME="AMN!Operations"></A>
+<H3>
+AMN Operations</H3>
+The generic variables are as follows: <TT>vlx</TT> for variable lists;
+<TT>opn</TT> for operation names; <TT>asub</TT> for AMN substitutions.
+AMN operations have the following forms:
+<PRE>&nbsp;opn = asub
+
+&nbsp;opn(vl1) = asub
+
+&nbsp;vl2 &lt;-- opn = asub
+
+&nbsp;vl2 &lt;-- opn(vl1) = asub</PRE>
+
+<HR WIDTH=60%><A NAME="Abstract_Machines"></A>
+<H3>
+Abstract Machines</H3>
+Abstract Machine constructs are described by the following BNF-like syntax;
+the order in which optional clauses appear is not significant.
+
+<P>Here, the syntax
+<BR><TT>exp1 | exp2</TT> indicates <TT>exp1</TT> or <TT>exp2</TT> (choice),
+<BR><TT>&lt; exp ></TT> indicates zero or one occurrence of <TT>exp</TT>
+(optionality) and
+<BR><TT>&lt;&lt; exp >></TT> indicates zero or more occurrences of <TT>exp</TT>
+(repetition).
+
+<P><A HREF="BPlatform.html#Identifier">Identifier</A>, <A HREF="BPlatform.html#Identifier">UpperCaseIdentifier</A>,
+<A HREF="BPlatform.html#Inference_Rules">Rule</A>, <A HREF="BPlatform.html#Number">Bnumber</A>,
+<A HREF="BPlatform.html#Formula">Formula</A> and ProgramLikeFormula are
+as defined in the section on the <A HREF="BPlatform.html#B-Platform">B-Platform<LATEX="\ (section~\ref{B-Platform})"></A>
+and in the B-Tool Reference Manual.
+
+<P>
+<HR WIDTH=60%><A NAME="MACHINE"></A>
+<H3>
+Machines</H3>
+
+<PRE>&nbsp; MACHINE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier &lt; ( param_list ) >
+
+&nbsp; &lt;&nbsp;<A NAME="CONSTRAINTS_Clause"></A>CONSTRAINTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >&nbsp;&nbsp;&nbsp;&nbsp;
+
+&nbsp; &lt;&nbsp;<A NAME="USES_Clause!Syntax"></A>USES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rnm_machine_ref&nbsp; &lt;&lt; , rnm_machine_ref >> >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+&nbsp; &lt;&nbsp;<A NAME="SEES_Clause!Syntax"></A>SEES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rnm_machine_ref&nbsp; &lt;&lt; , rnm_machine_ref >> >&nbsp;
+
+&nbsp; &lt;&nbsp;<A NAME="INCLUDES_Clause!Syntax"></A>INCLUDES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rnm_machine_ref &lt; ( param_list ) >&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;&lt; , rnm_machine_ref &lt; ( param_list ) > >> >
+
+&nbsp; &lt;&nbsp;<A NAME="PROMOTES_Clause!Syntax"></A>PROMOTES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rnm_operation_ref &lt;&lt; , rnm_operation_ref >> >
+
+&nbsp; &lt;&nbsp;<A NAME="EXTENDS_Clause!Syntax"></A>EXTENDS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rnm_machine_ref &lt; ( param_list ) >
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;&lt; , rnm_machine_ref &lt; ( param_list ) > >> >
+
+&nbsp; &lt;&nbsp;<A NAME="SETS_Clause"></A>SETS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UpperCaseIdentifier &lt;&lt; ; UpperCaseIdentifier >> > |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enumerated_set &lt;&lt; ; enumerated_set >> >
+
+&nbsp; &lt;&nbsp;<A NAME="CONSTANTS_Clause"></A>CONSTANTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier &lt;&lt; , Identifier >> >
+
+&nbsp; &lt;&nbsp;<A NAME="PROPERTIES_Clause"></A>PROPERTIES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+
+&nbsp; &lt;&nbsp;<A NAME="VARIABLES_Clause"></A>VARIABLES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier &lt;&lt; , Identifier >> >
+
+&nbsp; &lt;&nbsp;<A NAME="INVARIANT_Clause"></A>INVARIANT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+
+&nbsp; &lt;&nbsp;<A NAME="ASSERTIONS_Clause"></A>ASSERTIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+
+&nbsp; &lt;&nbsp;<A NAME="DEFINITIONS_Clause"></A>DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >>
+&nbsp;
+&nbsp; &lt;&nbsp;<A NAME="INITIALISATION_Clause"></A>INITIALISATION&nbsp;&nbsp;&nbsp; Formula >
+
+&nbsp; &lt;&nbsp;<A NAME="OPERATIONS_Clause"></A>OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt; ; operation >> >
+
+&nbsp; END
+
+
+&nbsp; param_list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >>
+
+
+&nbsp; enumerated_set&nbsp;&nbsp;&nbsp; ::=&nbsp; UpperCaseIdentifier = { set_contents }&nbsp;
+
+
+&nbsp; set_contents&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> > |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bnumber &lt;&lt; , Bnumber >></PRE>
+<A NAME="Renaming!INCLUDES"></A>.
+<PRE>&nbsp; rnm_machine_ref&nbsp;&nbsp; ::=&nbsp; &lt; rename_prefix . > Identifier&nbsp;
+
+
+&nbsp; rnm_operation_ref ::=&nbsp; &lt; rename_prefix . > Identifier
+
+
+&nbsp; rename_prefix&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier
+
+
+&nbsp; operation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; &lt; param_list &lt;-- > Identifier &lt; ( param_list ) >
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ProgramLikeFormula</PRE>
+
+<HR WIDTH=60%><A NAME="REFINEMENT"></A>
+<H3>
+Refinements</H3>
+
+<PRE>&nbsp; REFINEMENT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier&nbsp;&nbsp;
+
+<A NAME="REFINES_Clause"></A>&nbsp; REFINES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; machine_ref
+
+&nbsp; &lt; SEES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; machine_ref&nbsp; &lt;&lt; , machine_ref >> >&nbsp;
+
+&nbsp; &lt; SETS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UpperCaseIdentifier &lt;&lt; ; UpperCaseIdentifier >> > |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enumerated_set &lt;&lt; ; enumerated_set >> >
+
+&nbsp; &lt; CONSTANTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier &lt;&lt; , Identifier >> >
+
+&nbsp; &lt; PROPERTIES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+&nbsp;
+&nbsp; &lt; VARIABLES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier &lt;&lt; , Identifier >> >
+
+&nbsp; &lt; INVARIANT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+
+&nbsp; &lt; ASSERTIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+
+&nbsp; &lt; DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >>
+&nbsp;
+&nbsp; &lt; INITIALISATION&nbsp;&nbsp;&nbsp; Formula >
+
+&nbsp; &lt; OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt; ; operation >> >&nbsp;
+
+&nbsp; END
+
+
+&nbsp; param_list&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >>
+
+
+&nbsp; enumerated_set ::=&nbsp; UpperCaseIdentifier = { set_contents }&nbsp;
+
+
+&nbsp; set_contents&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> > |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bnumber &lt;&lt; , Bnumber >>
+
+
+&nbsp; machine_ref&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier&nbsp;
+
+
+&nbsp; operation_ref&nbsp; ::=&nbsp; Identifier
+
+
+&nbsp; operation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; &lt; param_list &lt;-- > Identifier &lt; ( param_list ) >
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ProgramLikeFormula</PRE>
+
+<HR WIDTH=60%><A NAME="IMPLEMENTATION"></A>
+<H3>
+Implementations</H3>
+
+<PRE>&nbsp; IMPLEMENTATION&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier&nbsp;
+
+&nbsp; REFINES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; machine_ref
+
+&nbsp; &lt; SEES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; machine_ref&nbsp; &lt;&lt; , machine_ref >> >&nbsp;
+
+&nbsp; &lt;&nbsp;<A NAME="IMPORTS_Clause!Syntax"></A>IMPORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; machine_ref &lt; ( act_param_list ) >&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;&lt; , machine_ref &lt; ( act_param_list ) >> > >
+
+&nbsp; &lt; PROMOTES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation_ref &lt;&lt; , operation_ref >> >
+
+&nbsp; &lt; SETS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UpperCaseIdentifier &lt;&lt; ; UpperCaseIdentifier >> > |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enumerated_set &lt;&lt; ; enumerated_set >> >
+
+&nbsp; &lt; CONSTANTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier &lt;&lt; , Identifier >> >
+
+&nbsp; &lt; PROPERTIES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+
+&nbsp; &lt; INVARIANT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+
+&nbsp; &lt; ASSERTIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
+
+&nbsp; &lt; DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >>
+&nbsp;
+&nbsp; &lt; INITIALISATION&nbsp;&nbsp;&nbsp; Formula >
+
+&nbsp; &lt; OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt; ; operation >> >&nbsp;
+
+&nbsp; END
+
+
+&nbsp; param_list&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >>
+
+
+&nbsp; act_param_list ::=&nbsp; act_param &lt;&lt; , act_param >>
+
+
+&nbsp; act_param&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Bnumber | Identifier | Formula |&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bnumber .. Bnumber | { set_contents }
+
+
+&nbsp; enumerated_set ::=&nbsp; UpperCaseIdentifier = { set_contents }&nbsp;
+
+
+&nbsp; set_contents&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> > |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bnumber &lt;&lt; , Bnumber >>
+
+
+&nbsp; machine_ref&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier</PRE>
+
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25  ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core(UK)
+Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B></CENTER>
+
+<CENTER>
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

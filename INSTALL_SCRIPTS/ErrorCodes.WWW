@@ -1,0 +1,30 @@
+
+Error codes:
+
+  13242-3    Licence expired
+  
+  13244      Number of users exceeds that licenced
+             (run BKIT/BToolkitd_util)
+             
+  8-xxxx,
+  9-xxxx     BToolkitd not authorised to run on this platform
+
+  13246-7    Platform not authorised
+  
+  13249      BToolkitd restarted? Quit and restart BToolkit
+
+  12224-6,
+  13771-3,
+  13812-6,
+  13821-5,
+  13933      Bad return code from system call; contact B-Core
+
+  13934      Cant execute a BToolkit shell; contact B-Core
+
+  15281-9    Run `$BKIT/BProcessInfo'; contact B-Core
+
+  18011      Licence expired
+  
+
+  All other codes, please contact B-Core
+

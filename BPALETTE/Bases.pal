@@ -1,0 +1,89 @@
+   *****
+   BASES
+   *****
+
+SYSTEM
+ systemname
+IS
+
+  SUPPORTS
+    imp,...,imp
+
+  SETS
+    enumset={...};
+    ...;
+    enumset={...}
+
+  GLOBAL
+    var: type;
+    ...;
+    var: type
+  END;
+
+  BASE
+    basename
+  MANDATORY
+    var: type;
+   ...;
+    var: type
+  OPTIONAL
+    var: type;
+    ...;
+    var: type
+  END;
+
+  ...;
+
+  BASE
+    basename
+  MANDATORY
+    var: type;
+   ...;
+    var: type
+  OPTIONAL
+    var: type;
+   ...;
+    var: type
+  END
+
+END
+
+
+Notes:
+-----
+
+The SUPPORTS clause is
+an optional list of
+IMPLEMENTATION names.
+
+Each `var' and `basename'
+is an identifier.
+
+`type' for GLOBAL may be:
+    STRING [dim]
+    FSTRING [dim]
+    SEQ (identifier) [dim]
+    SET (identifier) [dim]
+
+`type' for MANDATORY may be:
+    STRING [dim]
+    FSTRING [dim]
+    SEQ (identifier) [dim]
+    SET (identifier) [dim]
+    identifier
+
+`type' for OPTIONAL may be:
+    STRING [dim]
+    SEQ (identifier) [dim]
+    SET (identifier) [dim]
+    identifier
+
+The identifier may be the
+name of another base.
+
+
+For an example, see
+DEMO9_PERSON3.
+
+See Top Bar help for GenBase
+for more information.

@@ -1,0 +1,56 @@
+#! /bin/csh -f
+
+#
+#
+#
+
+set curdir = `pwd`
+
+cd ..
+
+echo ""
+
+ls_diff $1
+
+cd $curdir
+
+foreach dir ( \
+    BDEMO       \
+    BEESRC      \
+    BHELP       \
+    BPALETTE    \
+    C           \
+    LEX         \
+    LIB         \
+    MOTIF       \
+    SCRIPTS     \
+    SRC         \
+    UTIL        \
+    WWW_DEMOS   \
+             )
+
+  if ( -x /usr/demo/SOUND/play ) then
+    /usr/demo/SOUND/play /usr/demo/SOUND/sounds/whistle.au
+  endif
+  echo "  <CR> to continue "
+  echo ""
+  set answer=$<
+  echo ""
+
+  cd ../$dir
+
+  echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  echo ""
+  echo "    $dir "
+  echo ""
+
+  ls_diff $1/$dir
+
+  file_diff $1/$dir
+
+end
+
+echo ""
+echo "  Done "
+echo ""

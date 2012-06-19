@@ -1,0 +1,8 @@
+PACKAGE
+	command=BToolkit
+	name=The BToolkit
+	can_open_multiple_files=false
+	expects_uris=non-file
+	requires_terminal=false
+	mime_types=text/x-b
+

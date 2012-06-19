@@ -1,0 +1,365 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+get_line_nbr_macfunc()
+#define get_line_nbr_mac get_line_nbr_macfunc()
+{register int n,c ;
+  c=get_input_fil;
+  c=get_input_fil;
+  n=0;
+  while( c!=' ' ){
+    n=n*10+(c-'0');
+    c=get_input_fil;
+  }
+; return n;
+}
+
+get_file_macfunc()
+#define get_file_mac get_file_macfunc()
+{register int fic,c ;
+  c=get_input_fil;
+  c=get_input_fil;
+  fic=cre_fic_err;
+  while( c!='"' ){
+    psh_fic_err(fic,c);
+    c=get_input_fil;
+  }
+; return fic;
+}
+
+macTRUE_read_tcp ( ss )
+char * ss;
+{
+  register int line, fic, state, ii;
+  state = 1;
+  ii = 0;
+  line = 1;
+  fic = 0;
+  mod_lin_lex ( fic, line );
+  while( ( ss [ ii ] != '\0' ) && ( val_too_many_err == FALSE ) ){
+    ana_lex ( ss [ ii ] );
+    state = 0;
+    ii++;
+  }
+  if( val_too_many_err == FALSE ){
+    ana_lex ( ord (' ') );
+    ana_lex ( BLK_sym );
+    ana_lex ( EOT_sym );
+  }
+}
+
+macTRUEfunc()
+#define macTRUE macTRUEfunc()
+{register int line,c,fic,state ;
+  state=1;
+  c=get_input_fil;
+  line=1;
+  fic=0;
+  mod_lin_lex(fic,line);
+  while( (c!=EOF) && (val_too_many_err==FALSE) ){
+    if( c=='\n' ){
+      ana_lex(ord(' '));
+      line=line+1;
+      mod_lin_lex(fic,line);
+      state=1;
+    } else if( c == '`' ){
+      if( state == 1 ){
+        ini_name_cod;
+        c=get_input_fil;
+        while( c!='\n' ){
+          enter_name_cod(c);
+          c=get_input_fil;
+        };
+        term_name_cod;
+        ana_lex(ord(' '));
+        line=line+1;
+        mod_lin_lex(fic,line);
+      } else {
+        ana_lex(c);
+      };
+    } else if( c=='#' ){
+      if( state == 1 ){
+        line=get_line_nbr_mac;
+        fic=get_file_mac;
+        c=get_input_fil;
+        while( c!='\n' ){
+          c=get_input_fil;
+        };
+        mod_lin_lex(fic,line);
+      } else {
+        ana_lex(c);
+      };
+    } else if( c=='\t' ){
+      ana_lex(ord(' '));
+      state=0;
+    } else if( (c>=32) && (c<=126) ){
+      ana_lex(c);
+      state=0;
+    };
+    if( c!=EOF ){ c=get_input_fil ;};
+  };
+  if( val_too_many_err==FALSE ){
+    ana_lex(ord(' '));
+    ana_lex(BLK_sym);
+    ana_lex(EOT_sym);
+  };
+}
+
+macTRUEspefunc()
+#define macTRUEspe macTRUEspefunc()
+{register int line,c,fic,state ;
+  state=1;
+  c=get_input_fil;
+  line=1;
+  fic=0;
+  mod_lin_lex(fic,line);
+  while( (c!=EOF) && (val_too_many_err==FALSE) ){
+    if( c=='\n' ){
+      ana_lex(ord(' '));
+      line=line+1;
+      mod_lin_lex(fic,line);
+      state=1;
+    } else if( c=='\t' ){
+      ana_lex(ord(' '));
+      state=0;
+    } else if( (c>=32) && (c<=126) ){
+      ana_lex(c);
+      state=0;
+    };
+    if( c!=EOF ){ c=get_input_fil ;};
+  };
+  if( val_too_many_err==FALSE ){
+    ana_lex(ord(' '));
+    ana_lex(BLK_sym);
+    ana_lex(EOT_sym);
+  };
+}
+
+read_frmfunc()
+#define read_frm read_frmfunc()
+{register int b,n,c ;
+  dst=cre(100);
+  b=TRUE;
+  while( b==TRUE ){
+    c=reset_input_fil(2);
+    reset_err;
+    reset_lex;
+    clr(dst);
+    n=nbr_sym;
+    macTRUEspe;
+    if( nbr_err>0 ){
+      b=TRUE;
+      fprintf(stderr,"\n");
+      write_lst_err;
+      fprintf(stderr,"\n");
+      rmv_sym(n);
+    } else {
+      b=FALSE;
+    } ;
+    close_input_fil;
+  };
+  reset_err
+; return dst;
+}
+
+read_eol_frmfunc()
+#define read_eol_frm read_eol_frmfunc()
+{register int b,n,c ;
+  dst=cre(100);
+  b=TRUE;
+  while( b==TRUE ){
+    c=reset_input_fil(3);
+    reset_err;
+    reset_lex;
+    clr(dst);
+    n=nbr_sym;
+    macTRUEspe;
+    if( nbr_err>0 ){
+      b=TRUE;
+      fprintf(stderr,"\n");
+      write_lst_err;
+      fprintf(stderr,"\n");
+      rmv_sym(n);
+    } else {
+      b=FALSE;
+    } ;
+    close_input_fil;
+  };
+  reset_err
+; return dst;
+}
+
+#ifdef bplatform
+
+read_tcpfunc ()
+#define read_tcp read_tcpfunc()
+{
+  int n, read_tcp_res;
+  char ss [ 250000 ];
+  int sock_buf_len;
+  char * sock_buf_ptr;
+  dst = cre ( 10000 );
+  /***
+  read may come in many pieces
+  ***/
+  sock_buf_len = 250000;
+  sock_buf_ptr = ss;
+  while ( ( n = read ( sock_num, sock_buf_ptr, sock_buf_len ) ) > 0 ) {
+/***
+fprintf ( stdout, "\n                                      bplatform: read_tcp - " );
+fflush ( stdout );
+***/
+    sock_buf_ptr += n;
+    sock_buf_len -= n;
+  }
+  close ( sock_num );
+  ss [ 250000 - sock_buf_len ] = '\0';
+/***
+{
+int i,n;
+i = 0;
+n = 0;
+while ( ss [ i ] != ':' && ss [ i ] != '\0' ) i++;
+if ( ss [ i ] != '\0' ) i++;
+while ( ss [ i ] != ':' && ss [ i ] != '\0' ) { n = ( n * 10 ) + ss [ i ] - '0'; i++; }
+fprintf ( stdout, "%d (%d/%d)", n, 250000 - sock_buf_len, 250000 );
+fprintf ( stdout, "\n                                                            %s\n", ss );
+fprintf ( stdout, "\n" );
+if ( n <= 0 || n >= 200 ) system ( "$BKIT/BLIB/BPrompt \"  bplatform read_tcp BT_NUM error  \"" );
+}
+***/
+
+  reset_err;
+  reset_lex;
+  clr ( dst );
+  n = nbr_sym;
+  macTRUE_read_tcp ( ss );
+  if( nbr_err > 0 ){
+    write_lst_err;
+    fprintf ( stdout,"\n");
+fprintf(stdout,"\n  Error in tcp read\n");
+fprintf ( stdout, "-->%s<--\n", ss );
+system ( "$BKIT/BLIB/BPrompt \"  bplatform - Error in tcp read\"  " );
+    read_tcp_res = 0;
+  }
+  else {
+    read_tcp_res = dst;
+  }
+  reset_err;
+  if( read_tcp_res == 0 ) {
+    kil ( dst );
+  }
+  return read_tcp_res;
+}
+
+#endif /* bplatform */
+
+read_file_frmfunc()
+#define read_file_frm read_file_frmfunc()
+{register int b,n,read_file_frm_res ;
+  dst=cre(10000);
+  b=TRUE;
+  while( b==TRUE ){
+    if( reset_input_fil(1)==FALSE ){
+      b=FALSE;
+      read_file_frm_res=0;
+    } else {
+      reset_err;
+      reset_lex;
+      clr(dst);
+      n=nbr_sym;
+      macTRUE;
+      if( nbr_err>0 ){
+        fprintf(stderr,"\n");
+        write_lst_err;
+        if( val_batch_sys == FALSE ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Again? ");
+          rmv_sym(n);
+          if( yes_no==YES ){
+            b=TRUE;
+          } else {
+            b=FALSE;
+            read_file_frm_res=0;
+          };
+        } else {
+          fprintf(stderr,"\n");
+          b=FALSE;
+          read_file_frm_res=0;
+        };
+      } else {
+        b=FALSE;
+        read_file_frm_res=dst;
+      } ;
+      close_input_fil;
+    };
+    reset_err;
+  };
+  if( read_file_frm_res == 0 ){
+    kil(dst);
+  }
+; return read_file_frm_res;
+}
+
+read_load_file_frmfunc()
+#define read_load_file_frm read_load_file_frmfunc()
+{register int b,n,read_file_frm_res ;
+  dst=cre(10000);
+  b=TRUE;
+  while( b==TRUE ){
+    if( reset_load_input_fil(1)==FALSE ){
+      b=FALSE;
+      read_file_frm_res=0;
+    } else {
+      reset_err;
+      reset_lex;
+      clr(dst);
+      n=nbr_sym;
+      macTRUE;
+      if( nbr_err>0 ){
+        fprintf(stderr,"\n");
+        write_lst_err;
+        if( val_batch_sys == FALSE ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Again? ");
+          rmv_sym(n);
+          if( yes_no==YES ){
+            b=TRUE;
+          } else {
+            b=FALSE;
+            read_file_frm_res=0;
+          };
+        } else {
+          fprintf(stderr,"\n");
+          b=FALSE;
+          read_file_frm_res=0;
+        };
+      } else {
+        b=FALSE;
+        read_file_frm_res=dst;
+      } ;
+      close_input_fil;
+    };
+    reset_err;
+  };
+  if( read_file_frm_res == 0 ){
+    kil(dst);
+  }
+; return read_file_frm_res;
+}
+

@@ -1,0 +1,59 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(BITS)
+;
+(BITS)
+;
+(tcp , tnd , tor , txr)
+;
+(tcp , tnd , tor , txr)
+;
+(BITS = 1..32 --> BOOL & tcp = {TRUE |-> FALSE , FALSE |-> TRUE} & tnd = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> FALSE , TRUE |-> FALSE |-> FALSE , TRUE |-> TRUE |-> TRUE} & tor = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> TRUE , TRUE |-> FALSE |-> TRUE , TRUE |-> TRUE |-> TRUE} & txr = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> TRUE , TRUE |-> FALSE |-> TRUE , TRUE |-> TRUE |-> FALSE} & card(BITS) : NAT1)
+;
+(BITS = 1..32 --> BOOL & tcp = {TRUE |-> FALSE , FALSE |-> TRUE} & tnd = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> FALSE , TRUE |-> FALSE |-> FALSE , TRUE |-> TRUE |-> TRUE} & tor = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> TRUE , TRUE |-> FALSE |-> TRUE , TRUE |-> TRUE |-> TRUE} & txr = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> TRUE , TRUE |-> FALSE |-> TRUE , TRUE |-> TRUE |-> FALSE} & card(BITS) : NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Bit_TYPE(?):(?):(?))
+;
+(
+?
+)

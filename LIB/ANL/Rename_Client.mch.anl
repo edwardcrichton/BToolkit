@@ -1,0 +1,707 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(String_TYPE(?):(?):((?),(?),(?)))
+,
+(Scalar_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(in , inptr , outptr)
+;
+(in , inptr , outptr)
+;
+(in : SCALAR & inptr : 0..in & outptr : SCALAR)
+;
+(in : SCALAR & inptr : 0..in & outptr : SCALAR)
+;
+(?)
+;
+(in , inptr , outptr := 0 , 0 , 0)
+;
+(in , inptr , outptr := 0 , 0 , 0)
+;
+(Rename_INIT,Rename_CONNECT,Rename_WRITE,Rename_READ,Rename_CLOSE,Rename_GET_TOK,Rename_GET_STR,Rename_GET_FIL,Rename_PUT_TOK,Rename_PUT_STR,Rename_SET_IN_PTR,Rename_GET_IN_PTR,Rename_SET_OUT_PTR,Rename_GET_OUT_PTR)
+;
+(Rename_INIT , Rename_CONNECT , Rename_WRITE , Rename_READ , Rename_CLOSE , Rename_GET_TOK , Rename_GET_STR , Rename_GET_FIL , Rename_PUT_TOK , Rename_PUT_STR , Rename_SET_IN_PTR , Rename_GET_IN_PTR , Rename_SET_OUT_PTR , Rename_GET_OUT_PTR)
+;
+(Rename_Client(TOK , default_inbufsize , default_outbufsize):(default_inbufsize >= 4 & default_outbufsize >= 4 & default_outbufsize : NAT & default_inbufsize : NAT & card(TOK) : NAT1):(?))
+;
+(
+(
+ (Rename_INIT)
+;
+ (? , Mod_Op , NonDet_Op , (rep <-- Rename_INIT(ipaddress , port)))
+;
+ (ipaddress , port)
+;
+ (rep)
+;
+ (
+ (ipaddress : STRING & port : NAT)
+ |
+ (
+ (BEGIN
+ in , inptr , outptr := 0 , 0 , 0 ||
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (ipaddress : STRING & port : NAT)
+ |
+ (
+ (
+ (in , inptr , outptr := 0 , 0 , 0)
+ )
+ ||
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_CONNECT)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_CONNECT))
+;
+ (?)
+;
+ (rep)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_WRITE)
+;
+ (? , Mod_Op , NonDet_Op , (rep <-- Rename_WRITE))
+;
+ (?)
+;
+ (rep)
+;
+ (
+ (true)
+ |
+ (
+ (CHOICE
+ rep := TRUE ||
+ outptr := 0
+ OR
+ rep := FALSE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (rep , outptr := TRUE , 0)
+ )
+ []
+ (
+ (rep := FALSE)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_READ)
+;
+ (? , Mod_Op , NonDet_Op , (rep , pp <-- Rename_READ))
+;
+ (?)
+;
+ (rep , pp)
+;
+ (
+ (true)
+ |
+ (
+ (ANY bufsize WHERE
+ bufsize : SCALAR
+ THEN
+ CHOICE
+ rep := TRUE ||
+ pp := bufsize ||
+ in := bufsize ||
+ inptr := 0
+ OR
+ rep := FALSE ||
+ pp := 0
+ END
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(bufsize).
+ (
+ (
+ (bufsize : SCALAR)
+ )
+ ==>
+ (
+ (
+ (rep , pp , in , inptr := TRUE , bufsize , bufsize , 0)
+ )
+ []
+ (
+ (rep , pp := FALSE , 0)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_CLOSE)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_CLOSE))
+;
+ (?)
+;
+ (rep)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_GET_TOK)
+;
+ (? , Mod_Op , NonDet_Op , (rep , tok <-- Rename_GET_TOK(toksize)))
+;
+ (toksize)
+;
+ (rep , tok)
+;
+ (
+ (toksize : 1..4)
+ |
+ (
+ (IF inptr+toksize <= in THEN
+ tok :: TOK ||
+ inptr := inptr+toksize ||
+ rep := TRUE
+ ELSE
+ tok :: TOK ||
+ rep := FALSE
+ END)
+ )
+ )
+;
+ (
+ (toksize : 1..4)
+ |
+ (
+ (
+ (
+ (inptr+toksize <= in)
+ )
+ ==>
+ (
+ (
+ (
+ @(tokx).
+ (
+ (
+ (tokx : TOK)
+ )
+ ==>
+ (
+ (tok := tokx)
+ )
+ )
+ )
+ ||
+ (
+ (inptr := inptr+toksize)
+ )
+ )
+ ||
+ (
+ (rep := TRUE)
+ )
+ )
+ )
+ []
+ (
+ (
+ (in < inptr+toksize)
+ )
+ ==>
+ (
+ (
+ @(tokx).
+ (
+ (
+ (tokx : TOK)
+ )
+ ==>
+ (
+ (tok := tokx)
+ )
+ )
+ )
+ ||
+ (
+ (rep := FALSE)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_GET_STR)
+;
+ (? , Mod_Op , NonDet_Op , (rep , ss <-- Rename_GET_STR))
+;
+ (?)
+;
+ (rep , ss)
+;
+ (
+ (true)
+ |
+ (
+ (IF inptr+3 <= in THEN
+ ANY str , newptr WHERE
+ str : STRING &
+ newptr = inptr+size(str)+3
+ THEN
+ ss := str ||
+ inptr := newptr ||
+ rep := TRUE
+ END
+ ELSE
+ ss :: STRING ||
+ rep := FALSE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (inptr+3 <= in)
+ )
+ ==>
+ (
+ @(str , newptr).
+ (
+ (
+ (str : STRING & newptr = inptr+size(str)+3)
+ )
+ ==>
+ (
+ (ss , inptr , rep := str , newptr , TRUE)
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ (in < inptr+3)
+ )
+ ==>
+ (
+ (
+ @(ssx).
+ (
+ (
+ (ssx : STRING)
+ )
+ ==>
+ (
+ (ss := ssx)
+ )
+ )
+ )
+ ||
+ (
+ (rep := FALSE)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_GET_FIL)
+;
+ (? , Mod_Op , NonDet_Op , (rep , filesize <-- Rename_GET_FIL(filename)))
+;
+ (filename)
+;
+ (rep , filesize)
+;
+ (
+ (filename : STRING)
+ |
+ (
+ (CHOICE
+ ANY newptr WHERE
+ newptr : 0..in &
+ newptr > inptr
+ THEN
+ inptr := newptr ||
+ filesize :: SCALAR ||
+ rep := TRUE
+ END
+ OR
+ filesize :: SCALAR ||
+ rep := FALSE
+ END)
+ )
+ )
+;
+ (
+ (filename : STRING)
+ |
+ (
+ (
+ @(newptr).
+ (
+ (
+ (newptr : 0..in & inptr < newptr)
+ )
+ ==>
+ (
+ (
+ (
+ (inptr := newptr)
+ )
+ ||
+ (
+ @(filesizex).
+ (
+ (
+ (filesizex : SCALAR)
+ )
+ ==>
+ (
+ (filesize := filesizex)
+ )
+ )
+ )
+ )
+ ||
+ (
+ (rep := TRUE)
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ @(filesizex).
+ (
+ (
+ (filesizex : SCALAR)
+ )
+ ==>
+ (
+ (filesize := filesizex)
+ )
+ )
+ )
+ ||
+ (
+ (rep := FALSE)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_TOK)
+;
+ (? , Mod_Op , NonDet_Op , (rep <-- Rename_PUT_TOK(tok , toksize)))
+;
+ (tok , toksize)
+;
+ (rep)
+;
+ (
+ (tok : TOK & toksize : 1..4)
+ |
+ (
+ (CHOICE
+ outptr := outptr+toksize ||
+ rep := TRUE
+ OR
+ rep := FALSE
+ END)
+ )
+ )
+;
+ (
+ (tok : TOK & toksize : 1..4)
+ |
+ (
+ (
+ (outptr , rep := outptr+toksize , TRUE)
+ )
+ []
+ (
+ (rep := FALSE)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_STR)
+;
+ (? , Mod_Op , NonDet_Op , (rep <-- Rename_PUT_STR(ss)))
+;
+ (ss)
+;
+ (rep)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (CHOICE
+ outptr := outptr+size(ss)+3 ||
+ rep := TRUE
+ OR
+ rep := FALSE
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (
+ (outptr , rep := outptr+size(ss)+3 , TRUE)
+ )
+ []
+ (
+ (rep := FALSE)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SET_IN_PTR)
+;
+ (? , Mod_Op , Det_Op , Rename_SET_IN_PTR(ptr))
+;
+ (ptr)
+;
+ (?)
+;
+ (
+ (ptr : NAT & ptr <= inptr)
+ |
+ (
+ (inptr := ptr)
+ )
+ )
+;
+ (
+ (ptr : NAT & ptr <= inptr)
+ |
+ (
+ (inptr := ptr)
+ )
+ )
+)
+,
+(
+ (Rename_GET_IN_PTR)
+;
+ (? , Val_Op , Det_Op , (ptr <-- Rename_GET_IN_PTR))
+;
+ (?)
+;
+ (ptr)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ ptr := inptr
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (ptr := inptr)
+ )
+ )
+)
+,
+(
+ (Rename_SET_OUT_PTR)
+;
+ (? , Mod_Op , Det_Op , Rename_SET_OUT_PTR(ptr))
+;
+ (ptr)
+;
+ (?)
+;
+ (
+ (ptr : NAT & ptr <= outptr)
+ |
+ (
+ (outptr := ptr)
+ )
+ )
+;
+ (
+ (ptr : NAT & ptr <= outptr)
+ |
+ (
+ (outptr := ptr)
+ )
+ )
+)
+,
+(
+ (Rename_GET_OUT_PTR)
+;
+ (? , Val_Op , Det_Op , (ptr <-- Rename_GET_OUT_PTR))
+;
+ (?)
+;
+ (ptr)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ ptr := outptr
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (ptr := outptr)
+ )
+ )
+)
+)

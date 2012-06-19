@@ -1,0 +1,157 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY Seq_Exercises IS
+
+      bunproved(s^<> = s);
+      bunproved(s^(t^u) = s^t^u);
+      bunproved(s^(t<-y) = s^t<-y);
+      bunproved(s^(y->t) = s<-y^t);      
+      bunproved((s<-y)~ = y->s~);  
+      bunproved((s^t)~ = t~^s~); 
+      bunproved(s~~ = s);
+      bunproved(!t.(s++t = s~^t))
+      
+TAC
+
+      proversX
+
+END
+
+&
+
+
+THEORY Tree_Exercises IS
+
+      bunproved(_fl(_mir(s))    = _fl(s)~);
+      bunproved(!t.(_flat2(s,t) = _fl(s)^t))
+      
+TAC
+
+      provertX
+      
+END
+
+&
+
+THEORY ssX IS
+
+  /* Recursive definition of ^ */
+      
+      <>^t   == t;
+      x->s^t == x->(s^t);
+
+
+  /* Recursive definition of <- */
+      
+      <><-y   == y-><> ;
+      x->s<-y == x->(s<-y);
+      
+  /* Recursive definition of ~ */
+      
+      <>~     == <>;
+      (x->s)~ == s~<-x;
+
+  /* Recursive definition of ++ */
+      
+      <>++t     == t;
+      (x->s)++t == s++(x->t)
+
+   
+END
+
+&
+
+THEORY ttX IS
+
+  /* Recursive definition of _fl */
+      
+      _fl(_NT)        == <>;
+      _fl(_tr(a,x,b)) == _fl(a)^(x->_fl(b));
+
+  /* Recursive definition of _mir */
+      
+      _mir(_NT)        == _NT;
+      _mir(_tr(a,x,b)) == _tr(_mir(b),x,_mir(a));
+      
+  /* Recursive definition of _flat2 */
+
+      _flat2(_NT,s)        == s;
+      _flat2(_tr(a,x,b),s) == _flat2(a,x->_flat2(b,s))
+
+END
+
+&
+
+THEORY inducsX IS
+
+  /* Induction rule for sequences */
+
+      bvrb(s,y,t,u,x,y) => [s:=<>]P & !s.(P => !x.[s:=x->s]P) 
+     => 
+      P
+END
+
+&
+
+THEORY inductX IS
+
+  /* Induction rule for binary trees */
+
+      bvrb(s,t,a,b,c) 
+      =>
+      [s:=_NT]P & 
+      !(a,b).([s:=a]P & [s:=b]P => !c.[s:=_tr(a,c,b)]P) 
+     => 
+      P
+
+END
+
+&
+
+THEORY proversX IS
+
+      bcall((inducsX;DED;(GEN;SUB~;DED;HYP;ssX)~): (a=b)) &
+      bcall(RULE: bcrer(ssX,(a==b)))
+     =>
+      a=b;
+      
+      bcall((inducsX;DED;(GEN;SUB~;DED;HYP;ssX)~): !t.(a=b)) &
+      bcall(RULE:bcrer(ssX,(a==b)))
+     =>
+      !t.(a=b)
+      
+END
+
+&  
+
+THEORY provertX IS
+
+      bcall((inductX;DED;(GEN;SUB~;DED;HYP;ttX;ssX)~): (a=b)) &
+      bcall(RULE: bcrer(ttX,(a==b)))
+     =>
+      a=b;
+      
+      bcall((inductX;DED;(GEN;SUB~;DED;HYP;ttX;ssX)~): !t.(a=b)) &
+      bcall(RULE:bcrer(ttX,(a==b)))
+     =>
+      !t.(a=b)
+      
+END
+
+

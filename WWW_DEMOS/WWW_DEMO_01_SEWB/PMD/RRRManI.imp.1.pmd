@@ -1,0 +1,41 @@
+PROOFMETHOD RRRManI.imp.1.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~ /* ;FEQL~ */ )
+
+  REASONING_DEPTH 2
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    binhyp(not(e:s)) & 
+    binhyp(s<:S) & 
+    e:S &
+    card(S)<=n
+   =>
+    card(s) < n
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END
+
+DEFINITIONS
+
+  ?
+
+INCLUSIONS
+
+  "PMD/RRRManI.imp.0.pmd"

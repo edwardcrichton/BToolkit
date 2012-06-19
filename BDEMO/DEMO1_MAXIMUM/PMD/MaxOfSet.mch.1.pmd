@@ -1,0 +1,38 @@
+PROOFMETHOD MaxOfSet.mch.1.pmd IS
+
+  USETAC (UsersTheory~;BToolUsersTheory~),
+         (FwdUsersTheory~;FwdBToolUsersTheory~ /* ;FEQL~ */ )
+
+  REASONING_DEPTH 2
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    ?
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END
+
+DEFINITIONS
+
+  ?
+
+INCLUSIONS
+
+  "PMD/MaxOfSet.mch.0.pmd"
+  ,
+  "PMD/MaxOfSet.mch.0.btl.pmd"

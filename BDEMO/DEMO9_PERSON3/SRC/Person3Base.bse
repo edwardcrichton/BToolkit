@@ -1,0 +1,20 @@
+SYSTEM
+
+  Person3Base
+
+SUPPORTS
+
+  Person3_1
+
+IS
+
+  BASE
+    personbase
+  MANDATORY
+    name: STRING[20];
+    age: NAT;
+    sex: SEX
+  END
+
+END
+

@@ -1,0 +1,76 @@
+#! /bin/csh -f
+
+#
+# b created
+#
+
+set curdir = `pwd`
+cd ../BEESRC
+
+echo ""
+echo "  ----------------------------------------------------------"
+echo "  This script creates an interactive (non-release) b (malloc)"
+echo "  as `pwd`/b "
+echo "  and copies SYMBOL into "
+echo "  $BKIT/BPLAT "
+echo "  ----------------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+cd ../BEESRC
+
+../UTIL/_copy_B-Core_to_c
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_non_Motif \ "
+echo "      -o b \ "
+echo "      b.c \ "
+echo "      $ALL_FLAGS \ "
+echo "      $CC_non_X_incl_dir \ "
+echo "      $CC_non_X_link_lib"
+$CC \
+    $CC_opt_non_Motif \
+     -o b \
+     b.c \
+     $ALL_FLAGS \
+     $CC_non_X_incl_dir \
+     $CC_non_X_link_lib
+
+if ($status != "0") then
+  echo ""
+  ../UTIL/_rem_copied_to_c
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+../UTIL/_rem_copied_to_c
+
+if ( ! -d $BKIT/BPLAT ) then
+  mkdir $BKIT/BPLAT
+endif
+
+rm -f $BKIT/BPLAT/SYMBOL $BKIT/BPLAT/AMNSYMBOL
+cp SYMBOL $BKIT/BPLAT
+cp ../SRC/AMNSYMBOL $BKIT/BPLAT
+chmod a+r $BKIT/BPLAT/SYMBOL $BKIT/BPLAT/AMNSYMBOL
+
+rm -f b.o
+
+echo ""
+echo "  Interactive (non-release) b (malloc) for B-Core created"
+echo "  in `pwd`/b "
+echo "  SYMBOL    -> $BKIT/BPLAT "
+echo "  AMNSYMBOL -> $BKIT/BPLAT "
+echo ""

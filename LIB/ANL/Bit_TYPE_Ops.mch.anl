@@ -1,0 +1,394 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Bit_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(NO_BITS,LFT_BTS,RHT_BTS,CPL_BTS,LND_BTS,LOR_BTS,LXR_BTS,MSK_BTS,VMS_BTS,MMS_BTS,VAL_BTS,STO_BTS)
+;
+(NO_BITS , LFT_BTS , RHT_BTS , CPL_BTS , LND_BTS , LOR_BTS , LXR_BTS , MSK_BTS , VMS_BTS , MMS_BTS , VAL_BTS , STO_BTS)
+;
+(Bit_TYPE_Ops(?):(?):(?))
+;
+(
+(
+ (NO_BITS)
+;
+ (? , Val_Op , Det_Op , (ss <-- NO_BITS))
+;
+ (?)
+;
+ (ss)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ ss := (1..32)*{FALSE}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (ss := (1..32)*{FALSE})
+ )
+ )
+)
+,
+(
+ (LFT_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- LFT_BTS(tt , nn)))
+;
+ (tt , nn)
+;
+ (ss)
+;
+ (
+ (tt : BITS & nn : 1..32)
+ |
+ (
+ (ss := tt \|/ nn ^ (1..nn)*{FALSE})
+ )
+ )
+;
+ (
+ (tt : BITS & nn : 1..32)
+ |
+ (
+ (ss := tt \|/ nn ^ (1..nn)*{FALSE})
+ )
+ )
+)
+,
+(
+ (RHT_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- RHT_BTS(tt , nn)))
+;
+ (tt , nn)
+;
+ (ss)
+;
+ (
+ (tt : BITS & nn : 1..32)
+ |
+ (
+ (ss := (1..nn)*{first(tt)} ^ (tt /|\ 32-nn))
+ )
+ )
+;
+ (
+ (tt : BITS & nn : 1..32)
+ |
+ (
+ (ss := (1..nn)*{first(tt)} ^ (tt /|\ 32-nn))
+ )
+ )
+)
+,
+(
+ (CPL_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- CPL_BTS(tt)))
+;
+ (tt)
+;
+ (ss)
+;
+ (
+ (tt : BITS)
+ |
+ (
+ (ss := (tt;
+tcp))
+ )
+ )
+;
+ (
+ (tt : BITS)
+ |
+ (
+ (ss := (tt;
+tcp))
+ )
+ )
+)
+,
+(
+ (LND_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- LND_BTS(tt , uu)))
+;
+ (tt , uu)
+;
+ (ss)
+;
+ (
+ (tt : BITS & uu : BITS)
+ |
+ (
+ (ss := (tt >< uu;
+tnd))
+ )
+ )
+;
+ (
+ (tt : BITS & uu : BITS)
+ |
+ (
+ (ss := (tt >< uu;
+tnd))
+ )
+ )
+)
+,
+(
+ (LOR_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- LOR_BTS(tt , uu)))
+;
+ (tt , uu)
+;
+ (ss)
+;
+ (
+ (tt : BITS & uu : BITS)
+ |
+ (
+ (ss := (tt >< uu;
+tor))
+ )
+ )
+;
+ (
+ (tt : BITS & uu : BITS)
+ |
+ (
+ (ss := (tt >< uu;
+tor))
+ )
+ )
+)
+,
+(
+ (LXR_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- LXR_BTS(tt , uu)))
+;
+ (tt , uu)
+;
+ (ss)
+;
+ (
+ (tt : BITS & uu : BITS)
+ |
+ (
+ (ss := (tt >< uu;
+txr))
+ )
+ )
+;
+ (
+ (tt : BITS & uu : BITS)
+ |
+ (
+ (ss := (tt >< uu;
+txr))
+ )
+ )
+)
+,
+(
+ (MSK_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- MSK_BTS(mm , nn)))
+;
+ (mm , nn)
+;
+ (ss)
+;
+ (
+ (mm : 0..32 & nn : 0..32 & mm <= nn)
+ |
+ (
+ (ss := (1..32)*{FALSE} <+ (mm..nn)*{TRUE})
+ )
+ )
+;
+ (
+ (mm : 0..32 & nn : 0..32 & mm <= nn)
+ |
+ (
+ (ss := (1..32)*{FALSE} <+ (mm..nn)*{TRUE})
+ )
+ )
+)
+,
+(
+ (VMS_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- VMS_BTS(bb , mm , nn)))
+;
+ (bb , mm , nn)
+;
+ (ss)
+;
+ (
+ (bb : BITS & mm : 1..32 & nn : 1..32 & mm <= nn)
+ |
+ (
+ (ss := (1..32)*{FALSE} <+ (bb \|/ mm-1 /|\ nn-mm+1))
+ )
+ )
+;
+ (
+ (bb : BITS & mm : 1..32 & nn : 1..32 & mm <= nn)
+ |
+ (
+ (ss := (1..32)*{FALSE} <+ (bb \|/ mm-1 /|\ nn-mm+1))
+ )
+ )
+)
+,
+(
+ (MMS_BTS)
+;
+ (? , Val_Op , NonDet_Op , (ss <-- MMS_BTS(bb , mm , nn , vv)))
+;
+ (bb , mm , nn , vv)
+;
+ (ss)
+;
+ (
+ (bb : BITS & mm : 1..32 & nn : 1..32 & vv : BITS & mm <= nn)
+ |
+ (
+ (LET cc BE
+ cc = vv \|/ 32-nn+mm-1
+ IN
+ ss := bb /|\ mm-1 ^ cc ^ (bb \|/ nn)
+ END)
+ )
+ )
+;
+ (
+ (bb : BITS & mm : 1..32 & nn : 1..32 & vv : BITS & mm <= nn)
+ |
+ (
+ @(cc).
+ (
+ (
+ (cc = vv \|/ 32-nn+mm-1)
+ )
+ ==>
+ (
+ (ss := bb /|\ mm-1 ^ cc ^ (bb \|/ nn))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (VAL_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- VAL_BTS(bb , nn)))
+;
+ (bb , nn)
+;
+ (ss)
+;
+ (
+ (bb : BITS & nn : 1..32 & bb(nn) : BOOL)
+ |
+ (
+ (ss := bb(nn))
+ )
+ )
+;
+ (
+ (bb : BITS & nn : 1..32 & bb(nn) : BOOL)
+ |
+ (
+ (ss := bb(nn))
+ )
+ )
+)
+,
+(
+ (STO_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- STO_BTS(bb , nn , vv)))
+;
+ (bb , nn , vv)
+;
+ (ss)
+;
+ (
+ (bb : BITS & nn : 1..32 & vv : BOOL)
+ |
+ (
+ (ss := bb <+ {nn |-> vv})
+ )
+ )
+;
+ (
+ (bb : BITS & nn : 1..32 & vv : BOOL)
+ |
+ (
+ (ss := bb <+ {nn |-> vv})
+ )
+ )
+)
+)

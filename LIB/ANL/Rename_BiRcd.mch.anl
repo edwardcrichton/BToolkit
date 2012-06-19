@@ -1,0 +1,302 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(Rename_BiRcd)
+;
+(Rename_BiRcd)
+;
+(?)
+;
+(?)
+;
+(card(Rename_BiRcd) = maxrcd & card(Rename_BiRcd) : NAT1)
+;
+(card(Rename_BiRcd) = maxrcd & card(Rename_BiRcd) : NAT1)
+;
+(?)
+;
+(?)
+;
+(Rename_rcd , Rename_rcd_fnc)
+;
+(Rename_rcd , Rename_rcd_fnc)
+;
+(Rename_rcd <: Rename_BiRcd & Rename_rcd_fnc : Rename_rcd --> (1..numfld +-> VALUE))
+;
+(Rename_rcd <: Rename_BiRcd & Rename_rcd_fnc : Rename_rcd --> (1..numfld +-> VALUE))
+;
+(?)
+;
+(ANY Rename_rcdx , Rename_rcd_fncx WHERE
+ Rename_rcdx <: Rename_BiRcd &
+ Rename_rcd_fncx : Rename_rcdx --> (1..numfld +-> VALUE)
+ THEN
+ Rename_rcd , Rename_rcd_fnc := Rename_rcdx , Rename_rcd_fncx
+ END)
+;
+(@(Rename_rcdx , Rename_rcd_fncx).(Rename_rcdx <: Rename_BiRcd & Rename_rcd_fncx : Rename_rcdx --> (1..numfld +-> VALUE) ==> Rename_rcd , Rename_rcd_fnc := Rename_rcdx , Rename_rcd_fncx))
+;
+(Rename_BiRcd_RST,Rename_BiRcd_IDX,Rename_BiRcd_FULL,Rename_BiRcd_CRE,Rename_BiRcd_KILL,Rename_BiRcd_VLD,Rename_BiRcd_STO,Rename_BiRcd_VAL)
+;
+(Rename_BiRcd_RST , Rename_BiRcd_IDX , Rename_BiRcd_FULL , Rename_BiRcd_CRE , Rename_BiRcd_KILL , Rename_BiRcd_VLD , Rename_BiRcd_STO , Rename_BiRcd_VAL)
+;
+(Rename_BiRcd(VALUE , numfld , maxrcd):(numfld > 0 & maxrcd > 0 & numfld*maxrcd < 256 & maxrcd : NAT & numfld : NAT & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_BiRcd_RST)
+;
+ (? , Mod_Op , Det_Op , Rename_BiRcd_RST)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_rcd := {} ||
+ Rename_rcd_fnc := {}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_rcd , Rename_rcd_fnc := {} , {})
+ )
+ )
+)
+,
+(
+ (Rename_BiRcd_IDX)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiRcd_IDX(idx)))
+;
+ (idx)
+;
+ (bb)
+;
+ (
+ (idx : BYTE)
+ |
+ (
+ (BEGIN
+ bb := bool(b2n(idx) : 0..numfld)
+ END)
+ )
+ )
+;
+ (
+ (idx : BYTE)
+ |
+ (
+ (bb := bool(b2n(idx) : 0..numfld))
+ )
+ )
+)
+,
+(
+ (Rename_BiRcd_FULL)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiRcd_FULL))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_rcd = Rename_BiRcd)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(Rename_rcd = Rename_BiRcd))
+ )
+ )
+)
+,
+(
+ (Rename_BiRcd_CRE)
+;
+ (? , Mod_Op , NonDet_Op , (rr <-- Rename_BiRcd_CRE))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (Rename_rcd /= Rename_BiRcd)
+ |
+ (
+ (ANY new_rcd WHERE
+ new_rcd : Rename_BiRcd-Rename_rcd
+ THEN
+ Rename_rcd := Rename_rcd \/ {new_rcd} ||
+ Rename_rcd_fnc(new_rcd) := {} ||
+ rr := new_rcd
+ END)
+ )
+ )
+;
+ (
+ (not(Rename_rcd = Rename_BiRcd))
+ |
+ (
+ @(new_rcd).
+ (
+ (
+ (new_rcd : Rename_BiRcd-Rename_rcd)
+ )
+ ==>
+ (
+ (Rename_rcd , Rename_rcd_fnc , rr := Rename_rcd \/ {new_rcd} , Rename_rcd_fnc <+ {new_rcd |-> {}} , new_rcd)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BiRcd_KILL)
+;
+ (? , Mod_Op , Det_Op , Rename_BiRcd_KILL(rr))
+;
+ (rr)
+;
+ (?)
+;
+ (
+ (rr : Rename_BiRcd & rr : Rename_rcd)
+ |
+ (
+ (
+ (Rename_rcd := Rename_rcd-{rr})
+ )
+ ||
+ (
+ (Rename_rcd_fnc := {rr} <<| Rename_rcd_fnc)
+ )
+ )
+ )
+;
+ (
+ (rr : Rename_BiRcd & rr : Rename_rcd)
+ |
+ (
+ (Rename_rcd , Rename_rcd_fnc := Rename_rcd-{rr} , {rr} <<| Rename_rcd_fnc)
+ )
+ )
+)
+,
+(
+ (Rename_BiRcd_VLD)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiRcd_VLD(rr)))
+;
+ (rr)
+;
+ (bb)
+;
+ (
+ (rr : Rename_BiRcd)
+ |
+ (
+ (BEGIN
+ bb := bool(rr : Rename_rcd)
+ END)
+ )
+ )
+;
+ (
+ (rr : Rename_BiRcd)
+ |
+ (
+ (bb := bool(rr : Rename_rcd))
+ )
+ )
+)
+,
+(
+ (Rename_BiRcd_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_BiRcd_STO(rr , idx , vv))
+;
+ (rr , idx , vv)
+;
+ (?)
+;
+ (
+ (rr : Rename_BiRcd & idx : BYTE & vv : VALUE & rr : Rename_rcd & b2n(idx) : 1..numfld)
+ |
+ (
+ (Rename_rcd_fnc(rr)(b2n(idx)) := vv)
+ )
+ )
+;
+ (
+ (rr : Rename_BiRcd & idx : BYTE & vv : VALUE & rr : Rename_rcd & b2n(idx) : 1..numfld)
+ |
+ (
+ (Rename_rcd_fnc := Rename_rcd_fnc <+ {rr |-> (Rename_rcd_fnc(rr) <+ {b2n(idx) |-> vv})})
+ )
+ )
+)
+,
+(
+ (Rename_BiRcd_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_BiRcd_VAL(rr , idx)))
+;
+ (rr , idx)
+;
+ (vv)
+;
+ (
+ (rr : Rename_BiRcd & idx : BYTE & rr : Rename_rcd & b2n(idx) : 1..numfld)
+ |
+ (
+ (vv := Rename_rcd_fnc(rr)(b2n(idx)))
+ )
+ )
+;
+ (
+ (rr : Rename_BiRcd & idx : BYTE & rr : Rename_rcd & b2n(idx) : 1..numfld)
+ |
+ (
+ (vv := Rename_rcd_fnc(rr)(b2n(idx)))
+ )
+ )
+)
+)

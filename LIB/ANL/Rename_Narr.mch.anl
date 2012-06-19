@@ -1,0 +1,1342 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Narr)
+;
+(Rename_Narr)
+;
+(Rename_Narr : 1..maxidx --> 0..maxint)
+;
+(Rename_Narr : 1..maxidx --> 0..maxint)
+;
+(?)
+;
+(Rename_Narr :: 1..maxidx --> 0..maxint)
+;
+(@Rename_Narrx.(Rename_Narrx : 1..maxidx --> 0..maxint ==> Rename_Narr := Rename_Narrx))
+;
+(Rename_TST_IDX_NARR,Rename_MAX_IDX_NARR,Rename_MIN_IDX_NARR,Rename_VAL_NARR,Rename_STO_NARR,Rename_ADD_NARR,Rename_MUL_NARR,Rename_SUB_NARR,Rename_DIV_NARR,Rename_MOD_NARR,Rename_EQL_NARR,Rename_NEQ_NARR,Rename_GTR_NARR,Rename_GEQ_NARR,Rename_SMR_NARR,Rename_LEQ_NARR,Rename_SCH_LO_EQL_NARR,Rename_SCH_LO_NEQ_NARR,Rename_SCH_LO_GEQ_NARR,Rename_SCH_LO_GTR_NARR,Rename_SCH_LO_LEQ_NARR,Rename_SCH_LO_SMR_NARR,Rename_SCH_HI_EQL_NARR,Rename_SCH_HI_NEQ_NARR,Rename_SCH_HI_GEQ_NARR,Rename_SCH_HI_GTR_NARR,Rename_SCH_HI_LEQ_NARR,Rename_SCH_HI_SMR_NARR,Rename_SRT_ASC_NARR,Rename_SRT_DSC_NARR,Rename_REV_NARR,Rename_RHT_NARR,Rename_LFT_NARR,Rename_SWP_NARR,Rename_SAV_NARR,Rename_RST_NARR,Rename_SAVN_NARR,Rename_RSTN_NARR)
+;
+(Rename_TST_IDX_NARR , Rename_MAX_IDX_NARR , Rename_MIN_IDX_NARR , Rename_VAL_NARR , Rename_STO_NARR , Rename_ADD_NARR , Rename_MUL_NARR , Rename_SUB_NARR , Rename_DIV_NARR , Rename_MOD_NARR , Rename_EQL_NARR , Rename_NEQ_NARR , Rename_GTR_NARR , Rename_GEQ_NARR , Rename_SMR_NARR , Rename_LEQ_NARR , Rename_SCH_LO_EQL_NARR , Rename_SCH_LO_NEQ_NARR , Rename_SCH_LO_GEQ_NARR , Rename_SCH_LO_GTR_NARR , Rename_SCH_LO_LEQ_NARR , Rename_SCH_LO_SMR_NARR , Rename_SCH_HI_EQL_NARR , Rename_SCH_HI_NEQ_NARR , Rename_SCH_HI_GEQ_NARR , Rename_SCH_HI_GTR_NARR , Rename_SCH_HI_LEQ_NARR , Rename_SCH_HI_SMR_NARR , Rename_SRT_ASC_NARR , Rename_SRT_DSC_NARR , Rename_REV_NARR , Rename_RHT_NARR , Rename_LFT_NARR , Rename_SWP_NARR , Rename_SAV_NARR , Rename_RST_NARR , Rename_SAVN_NARR , Rename_RSTN_NARR)
+;
+(Rename_Narr(maxint , maxidx):(maxint > 0 & maxint <= 2147483646 & maxidx <= 2147483646 & maxidx : NAT & maxint : NAT):(?))
+;
+(
+(
+ (Rename_TST_IDX_NARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_TST_IDX_NARR(ii)))
+;
+ (ii)
+;
+ (bb)
+;
+ (
+ (ii : NAT)
+ |
+ (
+ (bb := bool(ii : 1..maxidx))
+ )
+ )
+;
+ (
+ (ii : NAT)
+ |
+ (
+ (bb := bool(ii : 1..maxidx))
+ )
+ )
+)
+,
+(
+ (Rename_MAX_IDX_NARR)
+;
+ (? , Val_Op , NonDet_Op , (vv <-- Rename_MAX_IDX_NARR(ii , jj)))
+;
+ (ii , jj)
+;
+ (vv)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ran(ii..jj <| Rename_Narr) /= {})
+ |
+ (
+ (vv :: Rename_Narr~[{max(ran(ii..jj <| Rename_Narr))}])
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & not(ran(ii..jj <| Rename_Narr) = {}))
+ |
+ (
+ @(vvx).
+ (
+ (
+ (vvx : Rename_Narr~[{max(ran(ii..jj <| Rename_Narr))}])
+ )
+ ==>
+ (
+ (vv := vvx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_MIN_IDX_NARR)
+;
+ (? , Val_Op , NonDet_Op , (vv <-- Rename_MIN_IDX_NARR(ii , jj)))
+;
+ (ii , jj)
+;
+ (vv)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ran(ii..jj <| Rename_Narr) /= {})
+ |
+ (
+ (vv :: Rename_Narr~[{min(ran(ii..jj <| Rename_Narr))}])
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & not(ran(ii..jj <| Rename_Narr) = {}))
+ |
+ (
+ @(vvx).
+ (
+ (
+ (vvx : Rename_Narr~[{min(ran(ii..jj <| Rename_Narr))}])
+ )
+ ==>
+ (
+ (vv := vvx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_VAL_NARR)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_NARR(ii)))
+;
+ (ii)
+;
+ (vv)
+;
+ (
+ (ii : 1..maxidx)
+ |
+ (
+ (vv := Rename_Narr(ii))
+ )
+ )
+;
+ (
+ (ii : 1..maxidx)
+ |
+ (
+ (vv := Rename_Narr(ii))
+ )
+ )
+)
+,
+(
+ (Rename_STO_NARR)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_NARR(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (Rename_Narr(ii) := vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (Rename_Narr := Rename_Narr <+ {ii |-> vv})
+ )
+ )
+)
+,
+(
+ (Rename_ADD_NARR)
+;
+ (? , Mod_Op , Det_Op , Rename_ADD_NARR(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx & Rename_Narr(ii)+vv <= maxint)
+ |
+ (
+ (Rename_Narr(ii) := Rename_Narr(ii)+vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx & Rename_Narr(ii)+vv <= maxint)
+ |
+ (
+ (Rename_Narr := Rename_Narr <+ {ii |-> Rename_Narr(ii)+vv})
+ )
+ )
+)
+,
+(
+ (Rename_MUL_NARR)
+;
+ (? , Mod_Op , Det_Op , Rename_MUL_NARR(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx & Rename_Narr(ii)*vv <= maxint)
+ |
+ (
+ (Rename_Narr(ii) := Rename_Narr(ii)*vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx & Rename_Narr(ii)*vv <= maxint)
+ |
+ (
+ (Rename_Narr := Rename_Narr <+ {ii |-> Rename_Narr(ii)*vv})
+ )
+ )
+)
+,
+(
+ (Rename_SUB_NARR)
+;
+ (? , Mod_Op , Det_Op , Rename_SUB_NARR(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx & Rename_Narr(ii) >= vv)
+ |
+ (
+ (Rename_Narr(ii) := Rename_Narr(ii)-vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx & vv <= Rename_Narr(ii))
+ |
+ (
+ (Rename_Narr := Rename_Narr <+ {ii |-> Rename_Narr(ii)-vv})
+ )
+ )
+)
+,
+(
+ (Rename_DIV_NARR)
+;
+ (? , Mod_Op , Det_Op , Rename_DIV_NARR(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (vv : 1..maxint & ii : 1..maxidx)
+ |
+ (
+ (Rename_Narr(ii) := Rename_Narr(ii)/vv)
+ )
+ )
+;
+ (
+ (vv : 1..maxint & ii : 1..maxidx)
+ |
+ (
+ (Rename_Narr := Rename_Narr <+ {ii |-> Rename_Narr(ii)/vv})
+ )
+ )
+)
+,
+(
+ (Rename_MOD_NARR)
+;
+ (? , Mod_Op , Det_Op , Rename_MOD_NARR(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (vv : 1..maxint & ii : 1..maxidx)
+ |
+ (
+ (Rename_Narr(ii) := Rename_Narr(ii)-vv*(Rename_Narr(ii)/vv))
+ )
+ )
+;
+ (
+ (vv : 1..maxint & ii : 1..maxidx)
+ |
+ (
+ (Rename_Narr := Rename_Narr <+ {ii |-> Rename_Narr(ii)-vv*(Rename_Narr(ii)/vv)})
+ )
+ )
+)
+,
+(
+ (Rename_EQL_NARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL_NARR(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) = vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) = vv))
+ )
+ )
+)
+,
+(
+ (Rename_NEQ_NARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_NEQ_NARR(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) /= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(not(Rename_Narr(ii) = vv)))
+ )
+ )
+)
+,
+(
+ (Rename_GTR_NARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_GTR_NARR(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) > vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(vv < Rename_Narr(ii)))
+ )
+ )
+)
+,
+(
+ (Rename_GEQ_NARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_GEQ_NARR(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) >= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(vv <= Rename_Narr(ii)))
+ )
+ )
+)
+,
+(
+ (Rename_SMR_NARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_SMR_NARR(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) < vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) < vv))
+ )
+ )
+)
+,
+(
+ (Rename_LEQ_NARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_LEQ_NARR(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) <= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Narr(ii) <= vv))
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_EQL_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_EQL_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxidx})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxidx}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_NEQ_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_NEQ_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[(0..maxint)-{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxidx})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[(0..maxint)-{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxidx}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_GEQ_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_GEQ_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[vv..maxint]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxidx})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[vv..maxint])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxidx}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_GTR_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_GTR_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[vv+1..maxint]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxidx})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[vv+1..maxint])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxidx}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_LEQ_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_LEQ_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[0..vv]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxidx})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[0..vv])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxidx}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_SMR_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_SMR_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[0..vv-1]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxidx})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[0..vv-1])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxidx}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_EQL_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_EQL_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_NEQ_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_NEQ_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[(0..maxint)-{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[(0..maxint)-{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_GEQ_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_GEQ_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[vv..maxint]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[vv..maxint])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_GTR_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_GTR_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[vv+1..maxint]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[vv+1..maxint])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_LEQ_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_LEQ_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[0..vv]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[0..vv])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_SMR_NARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_SMR_NARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Narr~[0..vv-1]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Narr~[0..vv-1])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SRT_ASC_NARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_SRT_ASC_NARR(ii , jj))
+;
+ (ii , jj)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii <= jj)
+ |
+ (
+ (ANY ff , aa , bb , cc WHERE
+ ff : ii..jj >->> ii..jj &
+ bb : NAT +-> 0..maxint &
+ bb = (ff;
+ Rename_Narr) &
+ !kk.(kk : ii..jj-1 => bb(kk) <= bb(kk+1)) &
+ aa = 1..ii-1 <| Rename_Narr &
+ cc = jj+1..maxidx <| Rename_Narr
+ THEN
+ Rename_Narr := aa \/ bb \/ cc
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii <= jj)
+ |
+ (
+ @(ff , aa , bb , cc).
+ (
+ (
+ (ff : ii..jj >->> ii..jj & bb : NAT +-> 0..maxint & bb = (ff;
+Rename_Narr) & !kk.(kk : ii..jj-1 => bb(kk) <= bb(kk+1)) & aa = 1..ii-1 <| Rename_Narr & cc = jj+1..maxidx <| Rename_Narr)
+ )
+ ==>
+ (
+ (Rename_Narr := aa \/ bb \/ cc)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SRT_DSC_NARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_SRT_DSC_NARR(ii , jj))
+;
+ (ii , jj)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii <= jj)
+ |
+ (
+ (ANY ff , aa , bb , cc WHERE
+ ff : ii..jj >->> ii..jj &
+ bb : NAT +-> 0..maxint &
+ bb = (ff;
+ Rename_Narr) &
+ !kk.(kk : ii..jj-1 => bb(kk) >= bb(kk+1)) &
+ aa = 1..ii-1 <| Rename_Narr &
+ cc = jj+1..maxidx <| Rename_Narr
+ THEN
+ Rename_Narr := aa \/ bb \/ cc
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii <= jj)
+ |
+ (
+ @(ff , aa , bb , cc).
+ (
+ (
+ (ff : ii..jj >->> ii..jj & bb : NAT +-> 0..maxint & bb = (ff;
+Rename_Narr) & !kk.(kk : ii..jj-1 => bb(kk+1) <= bb(kk)) & aa = 1..ii-1 <| Rename_Narr & cc = jj+1..maxidx <| Rename_Narr)
+ )
+ ==>
+ (
+ (Rename_Narr := aa \/ bb \/ cc)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_REV_NARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_REV_NARR(ii , jj))
+;
+ (ii , jj)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii <= jj)
+ |
+ (
+ (LET aa , bb , cc BE
+ aa = 1..ii-1 <| Rename_Narr &
+ bb = %kk.(kk : ii..jj | Rename_Narr(jj+ii-kk)) &
+ cc = jj+1..maxidx <| Rename_Narr
+ IN
+ Rename_Narr := aa \/ bb \/ cc
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii <= jj)
+ |
+ (
+ @(aa , bb , cc).
+ (
+ (
+ (aa = 1..ii-1 <| Rename_Narr & bb = %kk.(kk : ii..jj | Rename_Narr(jj+ii-kk)) & cc = jj+1..maxidx <| Rename_Narr)
+ )
+ ==>
+ (
+ (Rename_Narr := aa \/ bb \/ cc)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_RHT_NARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RHT_NARR(ii , jj , nn))
+;
+ (ii , jj , nn)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & nn : 1..maxidx & ii <= jj)
+ |
+ (
+ (LET aa , bb , cc BE
+ aa = 1..ii+nn-1 <| Rename_Narr &
+ bb = %kk.(kk : ii+nn..min({maxidx , jj+nn}) | Rename_Narr(kk-nn)) &
+ cc = jj+nn+1..maxidx <| Rename_Narr
+ IN
+ Rename_Narr := aa \/ bb \/ cc
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & nn : 1..maxidx & ii <= jj)
+ |
+ (
+ @(aa , bb , cc).
+ (
+ (
+ (aa = 1..ii+nn-1 <| Rename_Narr & bb = %kk.(kk : ii+nn..min({maxidx , jj+nn}) | Rename_Narr(kk-nn)) & cc = jj+nn+1..maxidx <| Rename_Narr)
+ )
+ ==>
+ (
+ (Rename_Narr := aa \/ bb \/ cc)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_LFT_NARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_LFT_NARR(ii , jj , nn))
+;
+ (ii , jj , nn)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii <= jj & nn : 1..maxidx)
+ |
+ (
+ (LET aa , bb , cc BE
+ aa = 1..ii-nn-1 <| Rename_Narr &
+ bb = %kk.(kk : max({1 , ii-nn})..jj-nn | Rename_Narr(kk+nn)) &
+ cc = jj-nn+1..maxidx <| Rename_Narr
+ IN
+ Rename_Narr := aa \/ bb \/ cc
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii <= jj & nn : 1..maxidx)
+ |
+ (
+ @(aa , bb , cc).
+ (
+ (
+ (aa = 1..ii-nn-1 <| Rename_Narr & bb = %kk.(kk : max({1 , ii-nn})..jj-nn | Rename_Narr(kk+nn)) & cc = jj-nn+1..maxidx <| Rename_Narr)
+ )
+ ==>
+ (
+ (Rename_Narr := aa \/ bb \/ cc)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SWP_NARR)
+;
+ (? , Mod_Op , Det_Op , Rename_SWP_NARR(ii , jj))
+;
+ (ii , jj)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx)
+ |
+ (
+ (Rename_Narr := Rename_Narr <+ {ii |-> Rename_Narr(jj) , jj |-> Rename_Narr(ii)})
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx)
+ |
+ (
+ (Rename_Narr := Rename_Narr <+ {ii |-> Rename_Narr(jj) , jj |-> Rename_Narr(ii)})
+ )
+ )
+)
+,
+(
+ (Rename_SAV_NARR)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_NARR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_NARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_NARR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Narr :: 1..maxidx --> 0..maxint
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Narrx).
+ (
+ (
+ (Rename_Narrx : 1..maxidx --> 0..maxint)
+ )
+ ==>
+ (
+ (Rename_Narr := Rename_Narrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_NARR)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_NARR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_NARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_NARR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Narr :: 1..maxidx --> 0..maxint
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Narrx).
+ (
+ (
+ (Rename_Narrx : 1..maxidx --> 0..maxint)
+ )
+ ==>
+ (
+ (Rename_Narr := Rename_Narrx)
+ )
+ )
+ )
+ )
+)
+)

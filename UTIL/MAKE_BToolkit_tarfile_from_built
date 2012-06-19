@@ -1,0 +1,207 @@
+#! /bin/csh -f
+
+#  MAKE_BToolkit_tarfile_from_built
+
+#
+#  After the remote system has been built and
+#  tested, this script creates the single
+#  ftp-able compressed tarfile:
+#
+#    BT_tarfile BT_`platform'.`release_version'.tar.gz
+#
+#  All src files should be removed after
+#  running this script
+#
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+switch ( $VERSION )
+
+  case SUNOS_VERSION
+    set plat=SunOS
+    breaksw
+  case SOLARIS_VERSION
+    set plat=Solaris
+    breaksw
+  case LINUX_VERSION
+    set plat=Linux
+    breaksw
+  case OSF1_VERSION
+    set plat=DecAlpha
+    breaksw
+  case IRIX_VERSION
+    set plat=Indy
+    breaksw
+  case AIX_VERSION
+    set plat=Aix
+    breaksw
+  default:
+    echo ""
+    echo "  VERSION $PLATFORM not recognized"
+    echo "  Aborted"
+    echo ""
+    exit
+    breaksw
+
+endsw
+
+echo ""
+echo "  Which binding?"
+echo ""
+echo "  -- 1 $plat dynamically bound"
+echo "  -- 2 $plat statically  bound"
+echo ""
+echo -n "  ** Number? "
+set answer=$<
+echo ""
+if ($answer != "1" && $answer != "2" ) then
+  echo "  Aborted"
+  echo ""
+  exit
+endif
+if ($answer == "1" ) then
+  set binding=""
+else
+  set binding="m"
+endif
+
+# set filename=BT"_"$BT_VERSION_NUM"_"$plat"_"$binding"_"`uname -m`
+
+set filename=BT"_"$BT_VERSION_NUM$binding"_"$plat"_"`uname -r`"_"`uname -m`
+
+### echo $filename
+### exit
+
+echo ""
+echo "         ------------------------------"
+echo ""
+echo "  This script creates the gzipped tar file: "
+echo ""
+echo "       $filename.tar.gz "
+echo ""
+echo "  comprising: "
+echo ""
+echo "      $filename/bkit.tar"
+echo "      $filename/READ_ME"
+echo "      $filename/binstall"
+echo ""
+echo "  It should be used on the remote site, after"
+echo "  the installation has been built and tested."
+echo ""
+echo "  After running thyis script, the all src files"
+echo "  should be removed from the remote system"
+
+echo ""
+echo ""
+echo "  -- 1  Continue"
+echo "  -- 2  Abort"
+
+echo ""
+echo -n "  ** Number [1]? "
+set answer=$<
+
+if ($answer != "1" && $answer != "") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+cd ..
+
+if ( ! -d ../RELEASE ) then
+  mkdir ../RELEASE
+endif
+
+if ( ! -d ../RELEASE/$filename ) then
+  mkdir ../RELEASE/$filename
+endif
+
+rm -f ../RELEASE/$filename/*
+
+#
+# We must avoid copying B_server or B_port !!!!!
+#
+
+  echo ""
+  echo "    tar cvf ../RELEASE/$filename/bkit.tar "
+  echo "        BKIT/BD* "
+  echo "        BKIT/BH* "
+  echo "        BKIT/BL* "
+  echo "        BKIT/BP* "
+  echo "        BKIT/BT* "
+  echo "        BKIT/BU* "
+  echo "        BKIT/E* "
+  echo "        BKIT/X* "
+  echo "        BDEMO "
+  echo ""
+
+  tar cvf ../RELEASE/$filename/bkit.tar \
+      BKIT/BD* \
+      BKIT/BH* \
+      BKIT/BL* \
+      BKIT/BP* \
+      BKIT/BT* \
+      BKIT/BU* \
+      BKIT/E* \
+      BKIT/X* \
+      BDEMO
+
+  if ( $status != 0 ) then
+    echo ""
+    echo "  Make aborted"
+    echo ""
+    exit ( 1 )
+  endif
+
+
+cp INSTALL_SCRIPTS/binstall  ../RELEASE/$filename/binstall
+cp INSTALL_SCRIPTS/READ_ME   ../RELEASE/$filename/READ_ME
+
+cd ../RELEASE
+
+echo ""
+ls -l $filename/*
+echo ""
+echo "    tar cvf $filename.tar $filename ... "
+echo ""
+tar cvf $filename.tar $filename
+if ( $status != 0 ) then
+  echo ""
+  echo "  Make aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+ls -l $filename.tar
+echo ""
+echo "    gzip $filename.tar ... "
+echo ""
+gzip $filename.tar
+if ( $status != 0 ) then
+  rm $filename.tar*
+  echo ""
+  echo "  Make aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+rm -f $filename.tar
+
+rm -fr $filename
+
+echo ""
+echo ""
+echo "Contents of `pwd`: "
+echo ""
+ls -l
+
+echo ""
+echo "  ftp-able gzipped tarfile RELEASE/$filename.tar.gz made "
+echo ""
+echo ""

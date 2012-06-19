@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The B-Method</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="B-Method"></A>
+<H1>
+The B-Method</H1>
+The B-Method is a collection of mathematically based techniques for the
+specification, design and implementation of software components. Systems
+are modelled as a collection of interdependent <A HREF="AMNotation.html#Abstract_Machines">Abstract
+Machines</A>, for which an object-based approach is employed at all stages
+of development.
+
+<P>An Abstract Machine is described using the <A HREF="AMNotation.html#AMN">Abstract
+Machine Notation (AMN)</A>. A uniform notation is used at all levels of
+description, from specification, through design, to implementation.
+
+<P>AMN is a state-based formal specification language in the same school
+as VDM and Z. An <A HREF="AMNotation.html#Abstract_Machines">Abstract Machine</A>
+comprises a state together with operations on that state. In a specification
+and a design of an Abstract Machine the state is modelled using notions
+like sets, relations, functions, sequences etc.. The operations are modelled
+using Pre- and Post-conditions using AMN.
+
+<P>In an implementation of an abstract machine the state is again modelled
+using a set-theoretical model, but this time we already have an implementation
+for the model. The operations are described using a pseudo-programming
+notation that is a subset of AMN.
+
+<P>The B-Method prescribes how to check the specification for consistency
+(preservation of invariant) and how to check designs and implementations
+for correctness (correctness of data refinement and correctness of algorithmic
+refinement).
+
+<P>The B-Method further prescribes how to structure large designs and large
+developments, and promotes the re-use of specification models and software
+modules, with object orientation central to specification construction
+and implementation design.
+
+<P>A great deal of attention has been paid to making the notational aspect
+of the method as simple as possible. To the engineer, the formal notation
+looks like a simple pseudo programming notation. And as mentioned above,
+there is no real distinction between the specification notation and the
+programming notation.
+
+<P>The method and the notation have been designed together with the <A HREF="BToolkit.html#B-Toolkit">B-Toolkit</A>
+that supports them, so that every aspect of the method has been validated
+by the possibility of providing significant help to the engineer in using
+computer based tools to write, verify and maintain software. Most theoretical
+aspects of the method, such as formulation of proof obligations, are done
+automatically by the tools. The provers are also designed to run automatically
+and reference a large library of mathematical rules, provided with the
+system.
+
+<P>Separate (object based) techniques within the method support the design
+of (large) specification construction and that of (large) program construction.
+The complex dependencies within such big systems are automatically controlled
+by the tools.
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

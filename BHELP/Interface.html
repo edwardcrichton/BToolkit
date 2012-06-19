@@ -1,0 +1,184 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Interface Generator</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Interface!Generator"></A>
+<H1>
+The Interface Generator (itf)</H1>
+The Interface tool is invoked from the <A HREF="BToolkit.html#Environments!Generators">Generators
+Environment</A> and takes as input a source interface description file,
+with file extension `.itf'.
+
+<P>An option to introduce an `Interface of Implemented Machine' is available
+under the <A HREF="BToolkit.html#Tool_Bar">Tool Bar</A> <A HREF="Introduce.html#Introduce">Introduce</A>.
+
+<P>The general form of an interface description is given in a BNF-like
+syntax as follows:
+<BR>the syntax <TT>exp1 | exp2</TT> indicates <TT>exp1</TT> or <TT>exp2</TT>
+(choice),
+<BR><TT>&lt;&lt; exp >></TT> indicates zero or more occurrences of <TT>exp</TT>
+(repetition) and
+<BR><TT>[| exp |]</TT> indicates optionality.
+<PRE>&nbsp; interface_description ::=&nbsp;&nbsp; INTERFACE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; interface_name | interface_name(params)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IMPORTS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; imp_construct &lt;&lt; , imp_construct >>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPERATIONS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation_list
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+&nbsp; interface_name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; <A HREF="MathsNotation.html#Identifier">Identifier
+
+</A>&nbsp; imp_construct&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; <A HREF="MathsNotation.html#Identifier">Identifier</A> ( param &lt;&lt; , param >> )
+
+&nbsp; param&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; <A HREF="MathsNotation.html#Identifier">Identifier</A> |&nbsp; Bnumber
+
+&nbsp; operation_list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; <A HREF="MathsNotation.html#Identifier">Identifier</A> &lt;&lt; , <A HREF="MathsNotation.html#Identifier">Identifier</A> >></PRE>
+The interface name must be that of a <A HREF="AMNotation.html#MACHINE">MACHINE</A>
+for which an appropriate <A HREF="Analyser.html#Analyser">analysed</A>
+<A HREF="AMNotation.html#IMPLEMENTATION">implementation</A> exists (see
+below). The OPERATIONS clause identifies those operations which the user
+wants to appear in the interface (i.e. be `in-scope' for testing) and should
+be valid operations of the referenced specification; an error will be reported
+otherwise.
+
+<P>If the MACHINE is parameterised, the parameters must be set in the INTERFACE;
+an error will be reported otherwise.
+
+<P>Since the interface is the top level of a development, all machines
+which are <A HREF="Structuring.html#SEES_Clause!Using">SEEN</A> but not
+<A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTED</A> at a lower
+level need to be imported at this interface level. If such a machine is
+parameterised, actual parameters must, of course, be supplied at import,
+and so the optional IMPORTS clause provides the point at which such parameters
+may be set.
+
+<P>The introduction of an `Interface of Implemented Machine' option described
+above automatically provides the correct description - in template form
+- of the interface, including the introduction of the IMPORTS clause where
+necessary. This is the recommended method of introducing an interface into
+a development; the only task for the user is to provide (where necessary)
+actual parameters, and the interface is the built completely automatically.
+
+<P>Two types of interface may be built, dictated by the setting of the
+<A HREF="Options.html#Options!Interface">Interface Option</A>.
+
+<P><A NAME="Interface!Generator!Non_Motif"></A>
+<HR WIDTH="60%">
+<H2>
+The non-Motif Interface</H2>
+The Interface tool will generate an implementation which allows the user
+to test the named operations of the implementation developed by the user
+and corresponding to the named specification. That implementation should
+be built using the <A HREF="SystemLibrary.html#System_Library">SLIB</A>
+constructs and data types; other concrete data types will not be recognised
+by the Interface generator and will result in an error. Where the user's
+operations require input/have output, the interface implementation will
+produce appropriate prompts and call the relevant library procedures.
+
+<P>The Interface generator produces two specification/implementation pairs:
+for example if the INTERFACE name if `fifi', the following constructs are
+generated:
+<OL>
+<LI>
+<TT>fifiIo.mch</TT> and <TT>fifiIoI.imp</TT></LI>
+
+<BR>This specification/implementation pair concerns the i/o relating to
+the `in-scope' operations; the specification comprises an enumerated set
+of operation names, with weakest specification operations to display the
+menu of operation names, and to select one of the names from the set. The
+implementation is achieved by importing using the `basic_io' SLIB machine.
+<LI>
+<TT>fifiItf.mch</TT> and <TT>fifiItfI.imp</TT></LI>
+
+<BR>This pair has a single operation `main' (specified as `skip') and is
+implemented by importing (or seeing, depending on the way the user has
+built the implementation of the original specification) the specification
+for which the interface is being generated, the generated i/o machine,
+and the <A HREF="SystemLibrary.html#System_Library">SLIB</A> constructs
+`basic_io', `file_dump', `token_io' and `Bool_TYPE'; another generated
+construct, EnumItf is also imported, if required. The operation is implemented
+as an initialised loop, enabling the user to quit, display the menu or
+select an operation (calling the i/o machine), prompting for input (where
+appropriate), calling the selected operation of the users development,
+and displaying output (where appropriate).</OL>
+The construct `<TT><A HREF="Enumerator.html#Enumerator">EnumItf.enm</A></TT>'
+will also be produced if the user's specification contains an enumerated
+set. The ENUMERATION, if produced, enables i/o to be constructed for the
+user's enumerated sets (by using the <A HREF="Enumerator.html#Enumerator">Enumerator
+tool</A>).
+
+<P>After each of these constructs have been generated, the appropriate
+jobs are placed on the job queue (enumeration, analysis, translation and
+linking), and, if the process is successful, it will result in executable
+code, accessed through the <A HREF="BToolkit.html#Environments!Translators">Translators
+Environment</A> by calling the <A HREF="Run.html#Run">`Run' tool</A> with
+the generated interface implementation. Errors are dealt with in the usual
+way:
+
+<P><A HREF="non_motif_itf.gif#"><IMG SRC="non_motif_itf_icon.gif" ALT="Non-Motif Interface"  ALIGN=CENTER></A><A HREF="non_motif_itf.gif#">
+See figure<LATEX="\ \ref{non_motif_itf.fig}">.</A>
+
+<P><A NAME="Interface!Generator!Motif"></A>
+<HR WIDTH="60%">
+<H2>
+The Motif Interface</H2>
+The Interface tool will generate and compile Motif source code directly;
+the resulting code may be accessed in the <A HREF="BToolkit.html#Environments!Translators">Translators
+Environment</A> by calling the <A HREF="Run.html#Run">`Run' tool</A> with
+the generated interface.
+
+<P>This option is much faster than the <A HREF="Interface.html#Interface!Generator!Non_Motif">non-Motif</A>
+version (since no intermediate Abstract Machines are generated, and there
+is consequently no need for enumeration, analysis, and translation).
+
+<P>A Motif development environment must be installed on the user's system
+for this option to function, and the <A HREF="Options.html#Options!X_Link">X
+Link Libraries</A> setting of the <A HREF="Options.html#Options">Options</A>
+should reflect the version of X installed.
+
+<P>The resulting Motif interface pops up a window presenting a push-button
+menu of operation names:
+
+<P><A HREF="itf_motif_ops.gif#"><IMG SRC="itf_motif_ops_icon.gif" ALT="Motif Interface Operations Menu"  ALIGN=CENTER></A><A HREF="itf_motif_ops.gif#">
+See figure<LATEX="\ \ref{itf_motif_ops.fig}">.</A>
+
+<P>and prompts for input as a form (i.e. operations with more than one
+input variable appear as a single form to fill in), with enumerations appearing
+as cascading menus:
+
+<P><A HREF="itf_motif_inp.gif#"><IMG SRC="itf_motif_inp_icon.gif" ALT="Motif Interface Input"  ALIGN=CENTER></A><A HREF="itf_motif_inp.gif#">
+See figure<LATEX="\ \ref{itf_motif_inp.fig}">.</A>
+
+<P>Output is displayed in the <A HREF="BToolkit.html#Display_Area">Display
+Area</A>:
+
+<P><A HREF="itf_motif_display.gif#"><IMG SRC="itf_motif_display_icon.gif" ALT="Motif Interface Display"  ALIGN=CENTER></A><A HREF="itf_motif_display.gif#">
+See figure<LATEX="\ \ref{itf_motif_display.fig}">.</A>
+
+<P>
+<HR WIDTH="60%">
+<CENTER>&nbsp;</CENTER>
+
+<CENTER>&nbsp;</CENTER>
+
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

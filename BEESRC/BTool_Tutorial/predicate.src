@@ -1,0 +1,174 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define tactic ((redX~;redpX;GEN;SUB~;HYP)~;DED)~
+
+THEORY exercises IS
+
+ bvrb(x) & x\a => (!x.(a => b) <=> (a => !x.b));
+	 
+ bvrb(x) & x\b => (!x.(a => b) <=> (#x.a => b));
+	 
+ bvrb(x) => (#x.(a => b) <=> (!x.a => #x.b));
+	 
+ bvrb(x) & x\a => (#x.(a => b) <=> (a => #x.b));
+	 
+ bvrb(x) & x\b => (#x.(a => b) <=> (!x.a => b));
+	 
+ bvrb(x) & x\a => (!x.(a or b) <=> (a or !x.b));
+	 
+ bvrb(x) & x\a => (#x.(a & b) <=> (a & #x.b));
+	 
+ bvrb(x) & !x.(a => b) => (#x.a => #x.b);
+	 
+ bvrb(x) & #x.A & !x.B => #x.(A & B);
+	 
+ bvrb(x,y) & x\B & y\A => (!(x,y).(A & B) <=> (!x.A & !y.B));
+	 
+ bvrb(x) & #x.(A & R) => #x.R;
+	 
+ bvrb(x) & !x.R => !x.(A => R);
+	 
+ bvrb(x) & !x.(R => A) => (#x.R <=> #x.(A & R));
+	 
+ bvrb(x) & !x.(not(R) => A) => (!x.R <=> !x.(A => R));
+	 
+ bvrb(x) & [x:=T]A & [x:=T]R => #x.(A & R);
+	 
+ bvrb(x) & [x:=T]A & !x.(A => R) => [x:=T]R;	 
+	 
+ bvrb(z,t) & t\p & t\q => #z.((p => q) => !t.((q => r) => (p => r)));
+ 
+ bvrb(x) & #x.(P or Q) => #x.(Q or P);
+	 
+ bvrb(x) & #x.(P & Q) => #x.(Q & P);
+	 
+ bvrb(x) & #x.(P => Q) => #x.(not(Q) => not(P));
+	 
+ bvrb(x) & x\E => (#x.(x=E & P) <=> [x:=E]P);
+	 
+ bvrb(x) & x\E => (!x.(x=E => P) <=> [x:=E]P)
+ 
+TAC
+
+  tactic 
+
+FTAC
+
+  fwdX;fwdpX
+
+END
+&
+THEORY fwdX IS
+
+  P & not(P) => bfalse;
+  not(P) & P => bfalse     
+
+END
+   
+&
+
+THEORY fwdpX IS
+  P & not(P) => bfalse;
+  not(P) & P => bfalse;
+  P & !x.not(P) => bfalse;
+  !x.not(P) & P => bfalse;
+  not(P) & !x.P => bfalse;
+  !x.P & not(P) => bfalse;
+  !x.(P => Q) & P & not(Q) => bfalse;
+  !x.(P => Q) & not(Q) & P => bfalse;
+  P & !x.(P => Q) & not(Q) => bfalse;
+  P & not(Q) & !x.(P => Q) => bfalse;
+  not(Q) & !x.(P => Q) & P => bfalse;
+  not(Q) & P & !x.(P => Q) => bfalse;
+  
+  !x.(P => Q) & !x.P => !x.Q;
+  !x.P & !x.(P => Q) => !x.Q;
+  !x.(P & Q) => !x.P & !x.Q;
+  !x.(P or Q) => !x.(not(P) => Q);
+  !x.not(P & Q) => !x.(P => not(Q));
+  !x.not(P & not(Q)) => !x.(P => Q);
+  !x.not(P or Q) => !x.not(P) & !x.not(Q);
+  !x.not(not(P)) => !x.P;
+  !x.(P => Q) & !x.(not(P) => Q) => !x.Q;
+  !x.(not(P) => Q) & !x.(P => Q) => !x.Q;
+  !x.(P => Q) & !x.(not(Q) => P) => !x.Q;
+  !x.(not(Q) => P) & !x.(P => Q) => !x.Q
+
+END
+   
+&
+
+THEORY redX IS
+
+  P                             => not(not(P));
+  (P => not(Q))                 => not(P &  Q);
+  P & not(Q)                    => not(P => Q);
+  (not(P) => Q) & (Q => not(P)) => not(P<=>Q);
+  not(P) &  not(Q)              => not(P or Q);
+  (P => R)                                    => (not(not(P)) => R);  
+  (not(P) => R) & (not(Q) => R)               => (not(P &  Q) => R);
+  (P => (not(Q) => R))                        => (not(P => Q) => R);
+  (P => (not(Q) => R)) & (Q => (not(P) => R)) => (not(P<=>Q) => R);
+  (not(P) => (not(Q) => R))                   => (not(P or Q) => R);
+  (P => (Q => R))                             => (P &  Q => R);
+  (not(P) => R) & (Q => R)                    => (P => Q => R);
+  (not(P) => (not(Q) => R)) & (P => (Q => R)) => (P<=>Q => R);
+  (P => R) & (Q => R)                         => (P or Q => R);
+  (P => Q) & (Q => P) => (P<=>Q);
+  (not(P) => Q)       => (P or Q)
+
+END
+
+&
+
+THEORY askX IS
+
+  breade("\nInstantiate  %  in  \"%\": ",x,P,E) & [x:=E]P => #x.P
+
+END
+
+&
+
+THEORY redpX IS
+
+  (P => (A => B)) => (A & P => B);
+  x\A & x\B & !x.(A & P => B) => (A & #x.P => B);
+  x\A & x\B & !x.(A & not(P) => B) => (A & not(!x.P) => B);
+  x\A & !x.(P => A) => (#x.P => A);
+  x\A & !x.(not(P) => A) => (not(!x.P) => A);
+  (A & !x.not(P) => B) => (A & not(#x.P) => B);
+  (!x.not(P) => B) => (not(#x.P) => B);
+  bcall(tactic,(fwdX;fwdpX): P | 
+        (askX;tactic),(fwdX;fwdpX): #x.P |
+        WRITE: bwritef("\nCan't prove that predicate\n"))
+  =>
+  #x.P;
+  (!x.not(P) => #x.Q) => #x.(P or Q);
+  (!x.P => #x.Q) => #x.(P => Q);
+  !x.not(P) => not(#x.P);
+  !x.P => not(#x.not(P));
+  #x.not(Q) => not(!x.Q);
+  #x.Q => not(!x.not(Q));
+  binhyp(!x.P) => P;
+  binhyp(x=E) & P => [x:=E]P;
+  binhyp(!x.P) => [x:=E]P;
+  binhyp(!x.(P => Q)) & [x:=E]P => [x:=E]Q;
+  binhyp(x=E) & binhyp([x:=E]P) => P
+
+END

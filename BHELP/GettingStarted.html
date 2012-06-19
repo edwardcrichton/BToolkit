@@ -1,0 +1,163 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>Getting Started</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Getting_Started"></A>
+<H1>
+Getting Started</H1>
+Before using the <A HREF="BToolkit.html#B-Toolkit">B-Toolkit</A> the <A HREF="BEnvironment.html#Environment">$BKIT</A>
+environment variable must be correctly set, and the licence daemon
+<A HREF="BToolkitd.html">BToolkitd</A> must be running.
+
+<P>Other settings should then be made through the <A HREF="Options.html#Options">Options</A>
+once the B-Toolkit has been started.
+
+<P>The B-Toolkit is invoked by issuing the command <TT>$BKIT/BToolkit</TT>
+(or just <TT>BToolkit</TT> if the directory <TT>$BKIT</TT> is in the current
+path) from a suitable development directory - any directory in which you
+have read-write permission and which you intend to be the top-level directory
+for all new specification, design and implementation source files in this
+development.
+
+<A NAME="firstTimeInvocation"></A>
+<P>If the toolkit is invoked for the first time in a directory where
+there is no existing development environment, the 
+<A HREF="ChangeDirectory.html">Change Directory</A> file selection panel
+appears; if the subsequently selected directory is not already
+an existing BToolkit development directory, a motif panel appears to
+ask the user whether a new environment should be created.
+
+
+<P><A HREF="initmotif.gif#"><IMG SRC="initmotif_icon.gif" ALT="The B-Toolkit environment creation panel"  ALIGN=CENTER></A><A HREF="initmotif.gif#">
+See figure<LATEX=" \ref{initmotif.fig}">.</A>
+
+<P>If the reply
+is <TT><U>C</U>ancel</TT> then the toolkit is exited (unless
+called through <TT><A HREF="ChangeDirectory.html">TopBar->Utils->ChangeDirectory</A> </TT>); if the reply is <TT>OK</TT>
+a new development environment is created, consisting of a set of <A HREF="BToolkit.html#Development_Environment">development
+directories</A> and configuration files.&nbsp;<LATEX="(See Section~\ref{Development_Environment}).">
+
+<P>
+<HR WIDTH="60%">
+<H2>
+The Windows</H2>
+The <A HREF="BToolkit.html#Interface!Motif">Motif interface</A> to the
+B-Toolkit consists of two windows: the session window (the window from
+which the toolkit is invoked) and the B-Toolkit Motif panel (which is created).
+All interaction takes place in the main panel.&nbsp;<LATEX="\begin{figure}
+\label{mainpanel}
+\leavevmode\epsfbox{interface.eps}
+\caption{The B-Toolkit main panel}
+\end{figure}">
+
+<P>On start-up, the B-Toolkit Motif panel appears<LATEX="as portrayed in Figure~\ref{mainpanel}">.
+The panel is divided into a number of distinct areas as follows, starting
+from the top:
+<UL>
+<LI>
+The <TT><A HREF="BToolkit.html#Top_Bar">Top Bar</A></TT> which gives access
+to a number of general facilities.</LI>
+
+<LI>
+The <A HREF="BToolkit.html#EnvironmentPanel">Environment Panel</A> for
+changing environments (initially the <A HREF="BToolkit.html#Environments!Main">Main
+Environment</A>) including the <A HREF="BToolkit.html#B_Logo">B Logo</A>.</LI>
+
+<LI>
+A Panel displaying the set of command tools appropriate to the current
+environment.</LI>
+
+<LI>
+The <TT><A HREF="BToolkit.html#Constructs!Area">Constructs Area</A></TT>
+which lists, down the right-hand side, all of the constructs currently
+under configuration management. The term ``construct'' is used to refer
+to the different types of Abstract Machine (machine, refinement or implementation)
+and also to ``system bases'', ``set enumerations'', ``interfaces'', ``documents'',
+``proof files'' and so on. A number of different files may be associated
+with each construct. Down the left-hand side are columns of buttons for
+the invocation of various commands on the corresponding construct. These
+commands are indicated in the <TT><A HREF="BToolkit.html#Command_Bar">Command
+Bar</A></TT> above the constructs area. Only those commands whose buttons
+are in full colour can be invoked; this serves to indicate, also, the status
+of each construct.</LI>
+
+<LI>
+The <TT><A HREF="BToolkit.html#Display_Area">Display Area</A></TT> which
+serves to display messages from the toolkit relating to its current activity.</LI>
+</UL>
+The <TT><A HREF="BToolkit.html#Constructs!Area">Constructs Area</A></TT>
+and <TT><A HREF="BToolkit.html#Display_Area">Display Area</A></TT> together
+form a paned window; their relative sizes can be altered by vertically
+sliding the grip that appears on the right between them.&nbsp;<A NAME="Mouse"></A>
+
+<P>
+<HR WIDTH="60%">
+<H2>
+The Mouse</H2>
+Only the left-hand mouse button is used in the B-Toolkit interface. It
+is used to select menus, tools and commands by a single click. Clicking
+on many of the main panel entities will also bring up on-line help information.
+Double-clicking on items in selection boxes is a short-cut for a single
+click on that item, followed by clicking on the OK button to perform the
+default action.
+<BR>&nbsp;
+<H2>
+Subsidiary Panels</H2>
+Some of the commands activated from the Main panel popup a subsidiary panel
+associated with output from the <A HREF="BPlatform.html#B-Platform">B-Platform<LATEX="(see
+section~\ref{B-Platform})"></A>.
+This panel displays information as the tool is executed, after which it
+is popped down leaving a copy of the display in the Display area in the
+Main panel.
+
+<P>Other panels are described under the appropriate tool descriptions.
+<H2>
+The Top Bar</H2>
+Except for <TT><U>I</U>nterrupt</TT>, each item on the Menu bar activates
+a pull-down menu; selection is either by clicking with the mouse, or from
+the keyboard by using the 'command' key (marked with a diamond) simultaneously
+with the underlined letter in the menu name (its mnemonic).
+
+<P>Whilst a pull-down menu is activated, little other screen or keyboard
+action is permitted other than to select an item on that menu with the
+mouse. A menu can be de-activated by clicking elsewhere on the Menu bar.
+All pull-down menus may be ``torn off'' and displayed in a separate window
+(the resource setting <TT>tearOffModel</TT> should be set to <TT>TEAR_OFF_ENABLED</TT>
+in the <A HREF="BEnvironment.html#Environment!XBMotif">XBMotif</A> resource
+file).
+<BR>&nbsp;
+<BR>&nbsp;
+
+<P><A NAME="Help"></A>
+<H2>
+On-line Help</H2>
+Extensive on-line help information is available through the <TT>Help</TT>
+menu, which displays a list of subjects. Selecting a subject calls up an
+editor window to display the corresponding text.
+
+<P>Other on-line help can be obtained by clicking with the mouse on many
+of the entities on the main panel. (Try clicking, for instance, on the
+environment name.)
+
+<P>
+<HR WIDTH="60%">
+<CENTER><I><FONT COLOR="#33CCFF"></FONT></I>&nbsp;</CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF"></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

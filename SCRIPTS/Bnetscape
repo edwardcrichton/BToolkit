@@ -1,0 +1,15 @@
+#! /bin/sh
+
+if [ -r $1 ]
+then
+  if [ "`ls $HOME/.netscape|grep lock`" = "" ]
+  then
+    netscape $1 &
+  else
+    netscape -remote "openFile($1)" &
+  fi
+  exit 0
+else
+  printf "\n  Bnetscape:\n\n   %s\n\n  does not exist\n\n" $1
+  exit 1
+fi

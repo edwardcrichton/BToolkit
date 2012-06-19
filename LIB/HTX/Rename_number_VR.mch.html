@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+  <TITLE>The Rename_number_VR machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre>           /*** VHDL Variable Rename_number_VR ***/
+
+<A NAME="MACHINE">MACHINE</A>           Rename_number_VR(maxnum)
+
+SEES              <A HREF="std_number_PK.mch.html#MACHINE">std_number_PK</A>
+
+<A NAME="CONSTANTS">CONSTANTS</A>         Rename_Ran 
+
+/*" {\em 0 .. maxnum\/} also recognized as {\em Rename\_Ran} "*/
+
+PROPERTIES        Rename_Ran = 0..maxnum 
+
+VARIABLES         Rename_num
+
+<A NAME="INVARIANT">INVARIANT</A>         Rename_num : Rename_Ran
+
+OPERATIONS
+
+/* need all other ops from Scalar_type */
+
+  <A NAME="OPNAME!Rename_EXP">Rename_EXP</A>(num : 0..maxnum & p1 : 0..maxnum) =
+  PRE
+    Rename_num ** p1 : 0..maxnum
+  THEN
+    Rename_num := num ** p1
+  END
+
+END
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

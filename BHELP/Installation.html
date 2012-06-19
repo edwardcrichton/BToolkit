@@ -1,0 +1,472 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>B-Toolkit Installation</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Installation"></A>
+<H1>
+B-Toolkit Installation</H1>
+Installation of the B-Toolkit Release 4.x is either from the file<TT> BT_bbb.ppppp.4.vv.tgz
+</TT>(where<TT> bbb </TT>is the Motif binding type,&nbsp;<TT> ppppp </TT>is
+the platform type and<TT> vv </TT>the Release version - for example<TT>
+BT_Linux.dyn.4.0.tgz w</TT>ould indicate version 4.0 for Linux with the
+Motif libraries dynamically bound) or from a&nbsp; set of floppy disks.
+
+<P>This document describes:
+<UL>
+<LI>
+The contents of the <A HREF="#File_Contents">installation file</A>/<A HREF="#Disk_Contents">installation
+disks</A>.</LI>
+
+<LI>
+How to <A HREF="Installation.html#B-Toolkit!Installation">install</A> the
+<A HREF="BToolkit.html#B-Toolkit">B-Toolkit</A> .</LI>
+
+<LI À- The run-time <A HREF="Installation.html#B-Toolkit!Library_Requirements">
+library requirements of the <A HREF="BToolkit.html#B-Toolkit">B-Toolkit</A>.</LI>
+
+<LI>
+How to install the <A HREF="Installation.html#Licence_File">licence file</A>.</LI>
+
+<LI>
+How to <A HREF="Installation.html#B-Toolkit!Running">run</A> the B-Toolkit.</LI>
+
+<LI>
+The <A HREF="Installation.html#B-Platform!Capacity">memory capacity</A> of the B-Toolkit.</LI>
+</UL>
+Note that<TT> gunzip </TT>is used in the installation process; if you do
+not have gzip/gunzip on your system, it is available from <B><I><FONT COLOR="#33CCFF"><A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A></FONT></I></B> or the ftp site from which you obtained
+the installation file.
+<H2>
+
+<HR WIDTH="60%"></H2>
+
+<H2>
+<A NAME="InstallationDir"></A>The B-Toolkit Installation Directory</H2>
+The B-Toolkit installation directory should be a directory in which you
+have write permission (it may be necessary to become<TT> super-user </TT>to
+do this).
+
+<P>The top-level directory of the B-Toolkit is<TT> BKIT </TT>so if the
+installation directory is, for example,<TT> /usr/local/tools/BT4 </TT>the
+files described below should be copied to that directory (when the<TT>
+BKIT </TT>directory will be automatically created during the installation
+process) and the <A HREF="BEnvironment.html#Environment">BKIT</A> Environment
+Variable should be set to<TT> <A HREF="BEnvironment.html">/usr/local/tools/BT4/BKIT</A>.</TT>
+<BR>&nbsp;
+<H2>
+
+<HR WIDTH="60%"></H2>
+
+<H2>
+<A NAME="File_Contents"></A>Extracting the Contents of the B-Toolkit Installation
+File</H2>
+The file<TT> BT_bbb.ppppp.4.vv.tgz </TT>comprises a single compressed tar
+file (usually obtained by ftp from <B><I><FONT COLOR="#33CCFF"><A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A></FONT></I></B>) and may be upacked&nbsp; into a temporary
+working directory with a command like:
+<BLOCKQUOTE><TT>gunzip -c BT_bbb.ppppp.4.vv.tgz | tar xvf -</TT></BLOCKQUOTE>
+This will produce the files:
+<UL>
+<LI>
+<TT>BT_bbb.ppppp.4.vv/READ_ME</TT></LI>
+
+<LI>
+<TT>BT_bbb.ppppp.4.vv/binstall</TT></LI>
+
+<LI>
+<TT>BT_bbb.ppppp.4.vv/bkit.tar</TT></LI>
+</UL>
+Note that if the directory&nbsp;<TT> BT_bbb.ppppp.4.vv </TT>does not exist
+it is created.
+
+<P>Now copy the files:
+<UL>
+<LI>
+<TT>binstall</TT></LI>
+
+<LI>
+<TT>bkit.tar</TT></LI>
+</UL>
+into the <A HREF="#InstallationDir">installation directory</A> , when <A HREF="#B-Toolkit!Installation">installation</A>
+may proceed.
+<BR>&nbsp;
+<H2>
+
+<HR WIDTH="60%"></H2>
+
+<H2>
+<A NAME="Disk_Contents"></A>Extracting the Contents of the B-Toolkit Floppy
+Disks</H2>
+The floppies should be extracted into a temporary working directory ; this
+process is platform-dependent ,but would typically be done under<TT> Solaris
+</TT>using the<TT> Floppy File Manager </TT>and under other Unix systems
+using&nbsp; a command like:
+<BLOCKQUOTE><TT>tar xvf /dev/fd0</TT></BLOCKQUOTE>
+This will produce the files:
+<UL>
+<LI>
+<TT>BT_bbb.ppppp.4.vv/READ_ME</TT></LI>
+
+<LI>
+<TT>BT_bbb.ppppp.4.vv/binstall</TT></LI>
+
+<LI>
+<TT>BT_bbb.ppppp.4.vv/bkit_aa</TT></LI>
+
+<LI>
+<TT>BT_bbb.ppppp.4.vv/bkit_ab</TT></LI>
+
+<LI>
+<TT>BT_bbb.ppppp.4.vv/bkit_ac</TT></LI>
+
+<LI>
+<TT>...</TT></LI>
+</UL>
+(the exact number of<TT> bkit_a* </TT>files depends on the platform and
+B-Toolkit version) . Note that if the directory&nbsp;<TT> BT_bbb.ppppp.4.vv&nbsp;</TT>
+does not exist it is created.
+
+<P>Now copy the files:
+<UL>
+<LI>
+<TT>binstall</TT></LI>
+
+<LI>
+<TT>bkit_aa</TT></LI>
+
+<LI>
+<TT>bkit_ab</TT></LI>
+
+<LI>
+<TT>bkit_ac</TT></LI>
+
+<LI>
+<TT>...</TT></LI>
+</UL>
+into the <A HREF="#InstallationDir">installation directory</A> , when <A HREF="#B-Toolkit!Installation">installation</A>
+may proceed.
+<BR>&nbsp;
+<H2>
+
+<HR WIDTH="60%"></H2>
+
+<H2>
+<A NAME="B-Toolkit!Installation"></A>Installation</H2>
+Having copied the files to the <A HREF="#InstallationDir">installation
+directory</A>,<TT> cd </TT>to that directory and run the script
+<BLOCKQUOTE><TT>./binstall</TT></BLOCKQUOTE>
+which will build the B-Toolkit installation; the log file<TT> BT4vv.log
+</TT>is created.
+
+<P>A single directory<TT> BKIT </TT>is created containing:
+<UL>
+<LI>
+<TT>BDEMO</TT></LI>
+
+<BR>a directory containing cases studies of Abstract Machine developments.
+Each demonstration has a <TT>READ_ME</TT> describing its aims, and instructions
+on how to proceed.
+<LI>
+<TT>BHELP</TT></LI>
+
+<BR>a directory containing hypertext <A HREF="Contents.html">on-line help
+files</A>.
+<LI>
+<TT>BLIB</TT></LI>
+
+<BR>the B-Toolkit library directory.
+<LI>
+<TT>BPALETTE</TT></LI>
+
+<BR>a directory containing on-line <A HREF="Palette.html#Palettes">palette
+files</A>.
+<LI>
+<TT>BPLAT</TT></LI>
+
+<BR>the <A HREF="BPlatform.html">bplatform</A> directory.
+<LI>
+<TT>BProcessInfo</TT></LI>
+
+<BR>the display <A HREF="BProcessInfo.html#BProcessInfo">B processes</A>
+information facility.
+<LI>
+<TT>BTool</TT></LI>
+
+<BR>the stand-alone <A HREF="BToolProver.html">BToolProver</A>
+<LI>
+<TT>BTool_Tutorial</TT></LI>
+
+<BR>a directory containing tutorial examples for the <A HREF="BToolProver.html">BToolProver</A>
+<LI>
+<TT>BToolkit</TT></LI>
+
+<BR>the script that the user invokes to run the <A HREF="BToolkit.html">B-Toolkit</A>.
+<LI>
+<TT>BToolkitd</TT></LI>
+
+<BR>the B-Toolkit <A HREF="BToolkitd.html">licence manager daemon</A>.
+<LI>
+<TT>BToolkitd_util</TT></LI>
+
+<BR>the B-Toolkit <A HREF="BToolkitd.html#BToolkitd#BToolkitd_util">licence
+manager daemon utility</A>
+<LI>
+<TT>BUnlock</TT></LI>
+
+<BR>the <A HREF="BUnlock.html#BUnlock">Unlock</A> facility.
+<LI>
+<TT>ErrorCodes</TT></LI>
+
+<BR>a file containing <A HREF="ErrorCodes.html">error codes</A> relating
+to problems encountered in running the B-Toolkit.
+<LI>
+<TT>XBMotif</TT></LI>
+
+<BR>the B-Toolkit <A HREF="BEnvironment.html#Environment!XBMotif">X resource</A>
+file.
+<LI>
+<TT>XBMotif.mono</TT></LI>
+
+<BR>the monochrome B-Toolkit <A HREF="BEnvironment.html#Environment!XBMotif">X
+resource</A> file.</UL>
+
+
+<P>The distribution does&nbsp; <B>not </B>contain the ``<A HREF="Installation.html#Licence_File">B
+licence file</A>, <TT>B.licence</TT>, which is necessary to run the <A HREF="BToolkitd.html">BToolkit
+daemon licence manager</A> (and hence the B-Toolkit), and which is separately
+supplied to every customer.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+Installation - Sample Output</H2>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --------------------------------
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Script for installation of B-Toolkit&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --------------------------------
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Installing B-Toolkit in:&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /usr/local/tools/BT4/BKIT
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concatenating ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gunzipping ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; extracting (this may take a while) ...
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Installation complete.
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---------------
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B-Toolkit installation log
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---------------</PRE>
+<I>&lt; list of extraced files ></I>
+<BR>&nbsp;
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---------------
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B-Toolkit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Information
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---------------
+
+
+&nbsp; All B-Toolkit users should set the BKIT environment variable:&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; setenv BKIT /usr/local/tools/BT4/BKIT
+
+&nbsp; If necessary, LD_LIBRARY_PATH should include X/Motif libraries, e.g.:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; setenv LD_LIBRARY_PATH /usr/lib:/usr/openwin/lib:/usr/dt/lib
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---------------
+
+
+&nbsp; The BToolkit licence daemon must be started before the B-Toolkit&nbsp;
+&nbsp; will run:&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp; /usr/local/tools/BT4/BKIT/BToolkitd \&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /usr/local/tools/BT4/BKIT&nbsp;
+
+&nbsp; However the licence file "B.licence" should first be copied into&nbsp;
+&nbsp; the BKIT directory (without it the daemon will not start):&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cp B.licence /usr/local/tools/BT4/BKIT&nbsp;
+
+&nbsp; The licence file is usually despatched separately - see the
+&nbsp; installation documentation.
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---------------
+
+
+&nbsp; Before starting the B-Toolkit, you should consult the on-line help;
+&nbsp; it may be viewed outside the B-Toolkit through an appropriate browser:&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; netscape \&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /usr/local/tools/BT4/BKIT/BHELP/GettingStarted.html&amp;&nbsp;
+
+
+&nbsp; Full details of the licence daemon are contained in:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /usr/local/tools/BT4/BKIT/BHELP/BToolkitd.html&nbsp;
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---------------
+
+&nbsp; Note:&nbsp;
+&nbsp; Couldn't copy the XBMotif resource file into /usr/lib/X11/app-defaults;&nbsp;
+&nbsp; alternatively, it may be copied into your top-level directory (it has&nbsp;
+&nbsp; been left in /usr/local/tools/BT4).&nbsp;
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---------------
+
+
+&nbsp; The above information is contained in the file:
+&nbsp; /usr/local/tools/BT4/BToolkit.log</PRE>
+
+<PRE>
+<HR WIDTH="60%"></PRE>
+<A NAME="B-Toolkit!Library_Requirements"></A>
+<H2>
+Run-time Library Requirements</H2>
+The B-Toolkit requires dynamic linking to various <TT>X</TT> and <TT>Motif</TT>
+run-time libraries.
+
+<P>You can find out about the B-Toolkit's requirements for run-time libraries
+by setting the <TT><A HREF="BEnvironment.html#Environment">BKIT</A></TT>
+variable as described above, and issuing the command:
+<PRE>&nbsp;&nbsp; ldd&nbsp; $BKIT/BLIB/BMotif</PRE>
+If there are required libraries that are not found, then ask your system
+administrator to help you locate them, and set the environment variable
+<TT>LD_LIBRARY_PATH</TT> accordingly.&nbsp;<A NAME="Licence_File"></A>
+
+<P>
+<HR WIDTH="25%">
+<H2>
+The B Licence File</H2>
+The <A HREF="BToolkitd.html#BToolkitd">B Licence file</A>, <TT>B.licence</TT>,
+is supplied separately; it must be located in the <TT>$BKIT</TT> directory;
+the toolkit will not run without it!&nbsp;<A NAME="B-Toolkit!Running"></A>
+
+<P>
+<HR WIDTH="25%">
+<H2>
+Running the B-Toolkit for the First Time</H2>
+After setting BKIT and positioning the B Licence file as described above,
+change to a convenient working directory (for example ``/fs/mydir/tmp''
+) and issue the command:
+<BR>&nbsp;
+<BLOCKQUOTE><TT>$BKIT/BToolkit</TT></BLOCKQUOTE>
+
+
+<P>The following should appear in the shell window:-
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B-Toolkit
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Release 4.0
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Copyright(c) 1985-98 B-Core(UK) Ltd</PRE>
+A panel should then appear containing the text:
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>&nbsp; <TT>Create new B-Toolkit directory in:</TT></PRE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE><TT>/fs/mydir/tmp</TT></PRE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+If you respond by clicking the mouse on the<TT> Create </TT>button, the
+shell window will display
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE><TT>Created new B-Toolkit development directory</TT></PRE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+and, after a few seconds, the main B-Toolkit Motif panel will appear on
+the screen.
+
+<P>More information about running the B-Toolkit can be found in <A HREF="GettingStarted.html#Getting_Started">Getting
+Started<LATEX=", section~\ref{Getting_Started}"></A>.&nbsp;<A NAME="Installation!Errors"></A>
+
+<P>
+<HR WIDTH="25%">
+<H2>
+Errors</H2>
+If the installation fails, a message similar to the following will appear.
+<PRE><TT>--&nbsp; Installation aborted
+&lt; reason ></TT></PRE>
+After correction of the problem, the installation should be restarted,
+by invoking&nbsp;<TT> ./binstall </TT>again.
+
+<P>If the following error occurs:
+<PRE>--&nbsp; <TT>Couldn't copy XBMotif resource file into /usr/lib/X11/app-defaults</TT></PRE>
+you may proceed without re-installing by copying the file <TT>$BKIT/BLIB/XBMotif</TT>
+into the home directory of B-Toolkit users. However this might not work
+on all systems, since it depends on the local set up, and the setting of
+the X files search path; if problems persist, consult your System Administrator.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+<A NAME="B-Platform!Capacity"></A>The Memory Capacity of the B-Toolkit</H2>
+The toolkit uses the memory allocation routine<tt> malloc </tt> and so
+its capacity is dictated by the physical memory of the machine on
+which it is running; if more memory is required, it is recommended that
+other processes are shut down, although it may be possible to increase the
+swap space of the machine - see your System Administrator.
+
+<P>
+<HR WIDTH="60%">
+<CENTER>&nbsp;</CENTER>
+
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated:22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+
+<P>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+</BODY>
+</HTML>

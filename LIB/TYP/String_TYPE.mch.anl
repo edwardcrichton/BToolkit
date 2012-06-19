@@ -1,0 +1,104 @@
+(?)
+;
+(?)
+;
+(CHAR,STRING)
+;
+(CHAR,STRING)
+;
+(EmptyString,CHARperWORD)
+;
+(EmptyString,CHARperWORD)
+;
+(STRING = {ss | ss: seq(CHAR) & size(ss)<=1000} & EmptyString: STRING & size(EmptyString) = 0 & EmptyString = <> & CHARperWORD = 4 & card(CHAR): NAT1 & card(STRING): NAT1)
+;
+(STRING = {ss | ss: seq(CHAR) & size(ss)<=1000} & EmptyString: STRING & size(EmptyString) = 0 & EmptyString = <> & CHARperWORD = 4 & card(CHAR): NAT1 & card(STRING): NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(ASSIGN_ANY_STR,CPY_STR)
+;
+(ASSIGN_ANY_STR,CPY_STR)
+;
+(String_TYPE(?):(?):(?))
+;
+(
+(
+ (ASSIGN_ANY_STR)
+;
+ (?,Val_Op,NonDet_Op,(rr <-- ASSIGN_ANY_STR))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rr:: STRING
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx: STRING)
+ )
+ ==>
+ (
+ (rr:=rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (CPY_STR)
+;
+ (?,Val_Op,Det_Op,(rr <-- CPY_STR(ss)))
+;
+ (ss)
+;
+ (rr)
+;
+ (
+ (ss: STRING & size(ss)<=1000)
+ |
+ (
+ (rr:=ss)
+ )
+ )
+;
+ (
+ (ss: STRING & size(ss)<=1000)
+ |
+ (
+ (rr:=ss)
+ )
+ )
+)
+)

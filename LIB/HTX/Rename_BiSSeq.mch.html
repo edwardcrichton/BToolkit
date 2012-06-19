@@ -1,0 +1,162 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_BiSSeq">
+  <TITLE>The Rename_BiSSeq machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+V1.0
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+***/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Rename_BiSSeq(VALUE,maxlen)
+
+/*"
+
+A parameterised renamable encapsulation of a machine which can hold a
+sequence; this is a simplified version of {\em Rename\_BiSeq\/},
+enabling a simpler (more efficient implementation), resulting in
+the  total length of the sequence not exceeding {\em 255\/}.
+
+The main differences between the two sequence machines is that
+this machine features a subset of six of the the operations of
+{\em Rename\_BiSeq\/}.
+
+The values to be stored appear as the {\em VALUE\/} parameter which
+may be instantiated to any valid PASP type; the {\em maxlen\/}
+parameter indicates the maximum length that the sequence may reach.
+
+This PASP library construct comprises this specification together with
+the PASP module {\em Rename\_BiSSeq.param\/}, which is also renamed and
+introduced into a development at the same time as the specification;
+it is built on an array modules, {\em Rename\_V\_BiArr.param\/} and
+a byte module {\em Rename\_L\_Byt.param\/} (the former holding the
+values of the sequence and the letter the current length of the sequence).
+
+From then on the library module is treated in exactly the same way as
+a PASP code module directly translated form an AMN implementation. The
+concrete variables are all provided through the above two modules.
+Attributes of these variables may be set in the {\em map\/} file in the
+usual way.
+"*/
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>       maxlen : 1 .. 255
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>         Rename_sseq
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_sseq : seq(VALUE) &
+  size(Rename_sseq) &lt;= maxlen
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>    Rename_sseq := <> 
+
+/*"
+\newpage
+"*/
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf Rename\_BiSSeq\_LEN}\\[1ex]
+Returns the length of the sequence: 
+"*/
+
+  ll <-- <A NAME="OPNAME!Rename_BiSSeq_LEN">Rename_BiSSeq_LEN</A> = <B>BEGIN</B> ll := <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(size(Rename_sseq)) <B>END</B>;
+
+/*"
+{\bf Rename\_BiSSeq\_VAL}\\[1ex]
+Returns the value of the {\em idx\/} element of the sequence, with
+precondition that {\em idx\/} is valid:
+"*/
+
+  vv <-- <A NAME="OPNAME!Rename_BiSSeq_VAL">Rename_BiSSeq_VAL</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 1..size(Rename_sseq) <B>THEN</B>
+      vv := Rename_sseq(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx))
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSSeq\_FILL}\\[1ex]
+Creates a sequence of length {\em len\/}, storing {\em vv\/} in
+each index; the sequence must initially be empty:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSSeq_FILL">Rename_BiSSeq_FILL</A>(vv : VALUE) =
+    <B>PRE</B>
+      size(Rename_sseq) = 0
+    <B>THEN</B>
+       Rename_sseq : (
+         Rename_sseq : seq(VALUE) &
+         card(Rename_sseq) = maxlen &
+         ran(Rename_sseq) = {vv}
+       )
+    <B>END</B>;
+
+/*"
+\newpage
+{\bf Rename\_BiSSeq\_CHG}\\[1ex]
+The operation to store a value at an {\em idx\/}, with precondition
+that the {\em idx\/} is valid:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSSeq_CHG">Rename_BiSSeq_CHG</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : VALUE) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 1..size(Rename_sseq) <B>THEN</B>
+      Rename_sseq(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := vv
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSSeq\_APP}\\[1ex]
+The operation to insert an element at the end of the sequence;
+the sequence must not be full:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSSeq_APP">Rename_BiSSeq_APP</A>(vv : VALUE) =
+    <B>PRE</B> size(Rename_sseq) < maxlen <B>THEN</B>
+      Rename_sseq := Rename_sseq &lt;- vv
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSSeq\_KEEP}\\[1ex]
+The operation to retain the first {\em idx\/} elements of the
+sequence; {\em idx\/}  must be valid:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSSeq_KEEP">Rename_BiSSeq_KEEP</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 0..size(Rename_sseq) <B>THEN</B>
+        Rename_sseq := Rename_sseq /|\ <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)
+    <B>END</B>
+
+<B>END</B>
+/*"
+\newpage
+"*/
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:07:16 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,257 @@
+#! /bin/sh
+
+platform=`cat .Bpla`
+
+curdir=`pwd`
+
+echo 0 > $curdir/.Bcom
+
+rm -f $curdir/.Bter
+
+if [ "$1" = "1" ]
+then
+  if [ "$BTEAMLIB" = "" ]
+  then
+    echo 1 > $curdir/.Bcom
+    exit 
+  fi
+  if [ ! -d $BTEAMLIB/CFG ]
+  then
+    echo 2 > $curdir/.Bcom
+    exit 
+  fi
+  if [ ! -d $BTEAMLIB/ANL ]
+  then
+    echo 3 > $curdir/.Bcom
+    exit 
+  fi
+  if [ ! -d $BTEAMLIB/TYP ]
+  then
+    echo 4 > $curdir/.Bcom
+    exit 
+  fi
+  if [ ! -d $BTEAMLIB/CDE/C ]
+  then
+    echo 5 > $curdir/.Bcom
+    exit 
+  fi
+  if [ ! -r $BTEAMLIB/.Bpda ]
+  then
+    echo 6 > $curdir/.Bcom
+    exit 
+  fi
+  if [ -r $BTEAMLIB/.BToolkitLock ]
+  then
+    echo 7 > $curdir/.Bcom
+    exit 
+  fi
+
+elif [ "$1" = "2" ]
+then
+
+  cp CFG/$2.mch $BTEAMLIB/CFG
+  if [ $? != 0 ]
+  then
+    echo 1 > $curdir/.Bcom
+    exit 
+  fi
+  cp ANL/$2.mch.anl $BTEAMLIB/ANL
+  if [ $? != 0 ]
+  then
+    echo 2 > $curdir/.Bcom
+    exit 
+  fi
+  cp TYP/$2.mri.typ $BTEAMLIB/TYP
+  if [ $? != 0 ]
+  then
+    echo 3 > $curdir/.Bcom
+    exit 
+  fi
+  cd CDE/C
+  cat $2.c >> C.c
+  if [ $? != 0 ]
+  then
+    echo 4 > $curdir/.Bcom
+    exit
+  fi
+
+
+elif [ "$1" = "3" ]
+then
+
+  cd CDE/C
+
+  if [ "$platform" = "Solaris" ]
+  then
+    /usr/ccs/lib/cpp -P $2.C > $2.i 2> $curdir/.Bter
+  else
+    /lib/cpp -P $2.C > $2.i 2> $curdir/.Bter
+  fi
+  if [ $? != 0 ]
+  then
+    echo 1 > $curdir/.Bcom
+    exit
+  else
+    $BKIT/BLIB/NLFilter < $2.i >> C.c 2> $curdir/.Bter
+    if [ $? != 0 ]
+    then
+      echo 2 > $curdir/.Bcom
+      exit 
+    fi
+  fi
+
+
+elif [ "$1" = "5" ]
+then
+
+  cd CDE/C
+  if [ "$platform" = "Solaris" ]
+  then
+    /usr/ccs/lib/cpp -P $2.g > $2.i 2> $curdir/.Bter
+  else
+    /lib/cpp -P $2.g > $2.i 2> $curdir/.Bter
+  fi
+  if [ $? != 0 ]
+  then
+    echo 1 > $curdir/.Bcom
+    exit
+  else
+    sed -e s+'\<int\>'+'static int'+g < $2.i | sed -e s+'\<char\>'+'static char'+g | $BKIT/BLIB/NLFilter >> C.c 2> $curdir/.Bter
+    if [ $? != 0 ]
+    then
+      echo 1 > $curdir/.Bcom
+      exit 
+    fi
+  fi
+
+
+elif [ "$1" = "30" ]
+then
+
+  cd CDE/C
+  $BKIT/BLIB/DFilter < $2.G | $BKIT/BLIB/NLFilter > $BTEAMLIB/CDE/C/$2.g 2> $curdir/.Bter
+  if [ $? != 0 ]
+  then
+    echo 1 > $curdir/.Bcom
+    exit
+  fi
+  $BKIT/BLIB/NLFilter < $2.H > $BTEAMLIB/CDE/C/$2.h 2> $curdir/.Bter
+  if [ $? != 0 ]
+  then
+     echo 2 > $curdir/.Bcom
+    exit
+  fi
+  rm -f C.d
+  $BKIT/BLIB/IFilter < $2.J > C.d 2> $curdir/.Bter
+  if [ $? != 0 ]
+  then
+    echo 3 > $curdir/.Bcom
+    exit
+  fi
+  cat C.c >> C.d
+  if [ $? != 0 ]
+  then
+    echo 3 > $curdir/.Bcom
+    exit
+  fi
+  rm -f C.c
+  mv C.d C.c
+  if [ $? != 0 ]
+  then
+    echo 3 > $curdir/.Bcom
+    exit
+  fi
+  if [ "$platform" = "Solaris" ]
+  then
+    /usr/ccs/lib/cpp -P C.c > C.i 2> $curdir/.Bter
+  else
+    /lib/cpp -P C.c > C.i 2> $curdir/.Bter
+  fi
+  if [ $? != 0 ]
+  then
+    echo 3 > $curdir/.Bcom
+    exit
+  else
+    echo '#include "'$2'.h"'  > $BTEAMLIB/CDE/C/$2.c
+    echo ''  >> $BTEAMLIB/CDE/C/$2.c
+    echo '#include <stdio.h>'  >> $BTEAMLIB/CDE/C/$2.c
+    echo ''  >> $BTEAMLIB/CDE/C/$2.c
+    echo 'extern FILE *dump_file;'  >> $BTEAMLIB/CDE/C/$2.c
+    $BKIT/BLIB/EFilter < C.i | $BKIT/BLIB/SFilter | $BKIT/BLIB/NLFilter >> $BTEAMLIB/CDE/C/$2.c 2> $curdir/.Bter
+    if [ $? != 0 ]
+    then
+      echo 4 > $curdir/.Bcom
+      exit 
+    fi
+  fi
+
+
+elif [ "$1" = "50" ]
+then
+
+  cd $BTEAMLIB/CDE/C
+  cp $2.h $2.H
+  if [ $? != 0 ]
+  then
+    echo ""
+    echo 1 > $curdir/.Bcom
+    rm -f $2.H
+    exit
+  fi
+  rm -f $2.h
+  cat $curdir/.BBcom > $2.h
+  rm -f $curdir/.BBcom
+  if [ $? != 0 ]
+  then
+    echo ""
+    echo 1 > $curdir/.Bcom
+    rm -f $2.H
+    exit
+  fi
+  cat $2.H >> $2.h
+  if [ $? != 0 ]
+  then
+    echo ""
+    echo 1 > $curdir/.Bcom
+    rm -f $2.H
+    exit
+  fi
+  if [ "$BCC" ]
+  then
+    $BCC -c $2.c 2> $curdir/.Bter
+    sta=$?
+  else
+    cc -c $2.c 2> $curdir/.Bter
+    sta=$?
+  fi
+  if [ $sta != 0 ]
+  then
+    echo 1 > $curdir/.Bcom
+    rm -f $2.H
+    exit
+  else
+    rm -f $2.h
+    mv $2.H $2.h
+  fi
+
+
+elif [ "$1" = "4" ]
+then
+
+  cd CDE/C
+  if [ "$BCC" ]
+  then
+    $BCC -c $2.c 2> $curdir/.Bter
+    sta=$?
+  else
+    cc -c $2.c 2> $curdir/.Bter
+    sta=$?
+  fi
+  if [ $sta != 0 ]
+  then
+    echo 1 > $curdir/.Bcom
+    exit 
+  fi
+
+
+fi

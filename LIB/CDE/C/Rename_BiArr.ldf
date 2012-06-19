@@ -1,0 +1,12 @@
+/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             27/01/01
+created from Rename_BiArr_File.c
+***/
+
+(VALUE,lb,ub,init_val)
+|
+(Byt_TYPE,Uns_TYPE,Bool_TYPE)

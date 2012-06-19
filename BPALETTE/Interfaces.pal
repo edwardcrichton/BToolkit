@@ -1,0 +1,32 @@
+     **********
+     INTERFACES
+     **********
+
+INTERFACE
+
+  interfacename(params)
+
+IMPORTS
+
+  mch(prm,...,prm),
+   ...,
+  mch(prm,...,prm)
+
+OPERATIONS
+
+  operationname,
+  ...,
+  operationname
+
+END
+
+
+Notes:
+-----
+
+The IMPORTS clause
+is optional.
+
+See Top Bar Help for
+Interfaces for more
+information.

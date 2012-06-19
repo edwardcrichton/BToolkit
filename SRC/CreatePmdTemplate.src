@@ -1,0 +1,187 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY CreatePmdTemplateX IS
+
+/*
+  creates a PROOFMETHOD template file if no. of unproved lemmas after
+  proof attempt is nonzero
+
+  invovation:
+    CreatePmdTemplate
+      TempX.14 contains no. of unproved lemmas
+      TempX.18 contains new pmd filename string
+      TempX.19 contains new non-string construct a.b.N
+  result
+    TempX.14/=0 ==> UpdateCfg(pmd)
+    TempX.14=0 ==> UpdateCfg(po)
+*/
+
+#define CreatePmdTemplate(k) \
+             bcall(((ARI;CATL;SHELL;WRITE)~;CreatePmdTemplateX)~: cpmdt0(k))
+
+  ?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  brule(CreatePmdTemplateX.1,s) &       /* apr/btl - global pmd file */
+  Append(f) &
+  bprintf("  %\n",s) &
+  bprintf("  ,\n  \"PMD/%.%.%.btl.pmd\"\n",a,b,n-1) &
+  Writef(("\n  ")) &
+  Writef((s)) &
+  Writef(("\n  INCLUSION in %\n",a.b.n.pmd))
+ =>
+  cpmdt3(a.b.n)(f); 
+
+  Writef(("\n  %\n INCLUSION in %\n",a.b.m.pmd,a.b.n.pmd))
+ =>
+  cpmdt3_1(a,b,n,m);
+
+  brule(CreatePmdTemplateX.1,"") &       /* apr/btl - no global pmd file */
+  Append(f) &
+  bprintf("  \"PMD/%.%.%.pmd\"\n",a,b,n-1) &
+  bprintf("  ,\n  \"PMD/%.%.%.btl.pmd\"\n",a,b,n-1) &
+  cpmdt3_1(a,b,n,n-1)
+ =>
+  cpmdt3(a.b.n)(f); 
+
+  brule(CreatePmdTemplateX.1,s) &        /* pob - global pmd file */
+  Append(f) &
+  bprintf("  %\n",s) &
+  Writef(("\n  ")) &
+  Writef((s)) &
+  Writef(("\n INCLUSION in %\n",a.b.0.pmd))
+ =>
+  cpmdt3(a.b.0)(f); 
+
+  brule(CreatePmdTemplateX.1,"") &       /* pob - no global pmd file */
+  Append(f) &
+  bprintf("  ?\n")
+ =>
+  cpmdt3(a.b.0)(f); 
+
+  bprintf("%",2)
+ =>
+  cpmdt2a(n); 
+
+  btest(n<=2) &
+  bprintf("%",n)
+ =>
+  cpmdt2a(n);
+
+  bprintf("%",2)
+ =>
+  cpmdt2a(n);
+
+  bprintf("PROOFMETHOD %.pmd IS\n\n  USETAC (UsersTheory~;BToolUsersTheory~),\n         (FwdUsersTheory~;FwdBToolUsersTheory~ /* ;FEQL~ */ )\n\n  REASONING_DEPTH ",a.b.n) &
+  cpmdt2a(n) &
+  bprintf("\n\n  ON ?\n\n  END\n\n  &\n\n  THEORY UsersTheory IS\n\n    ?\n\n  END\n\n  &\n\n  THEORY FwdUsersTheory IS\n\n    ?\n\n  END\n\nEND\n\nDEFINITIONS\n\n  ?\n\nINCLUSIONS\n\n") &
+  bclose &
+  FifoWrite_Store((BT_PMD_INCL_M,0,0),(CreatePmdTemplateX.1)) &
+  cpmdt3(a.b.n)(f) &
+  bclose
+ =>
+  cpmdt2(a.b.n)(f); 
+
+  brule(GetNextPOBFileX.2,r) &          /* "PMD/a.b.0.pmd" */
+  brule(LoadDotTheoriesX.3,a.b) &
+  Connect(r) &
+  cpmdt2(a.b.0)(r)
+ =>
+  cpmdt1(pog,1); 
+
+  brule(TempX.18,r) &                   /* "PMD/a.b.n.pmd" */
+  brule(TempX.19,a.b.n) &
+  Connect(r) &
+  cpmdt2(a.b.n)(r)
+ =>
+  cpmdt1(apr,1);
+
+
+  cpmdt1(k,0);                     /* file already exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cpmdt(k);
+
+  bget(".Bcom",x) &
+  cpmdt1(k,x)
+ =>
+  cpmdt(k);
+
+
+
+  brule(LoadDotTheoriesX.3,a.b) &                 /* pog */
+  Connect(bcatl("PMD/",a,".",b,".",0,".btl.pmd")) &
+  bprintf("PROOFMETHOD %.%.%.btl IS\n\n  THEORY BToolUsersTheory IS\n    ?\n  END\n  &\n  THEORY FwdBToolUsersTheory IS\n    ?\n  END\n\nEND\n",a,b,0) &
+  bclose
+ =>
+  cpmdt1_btl(pog,1);
+
+  brule(TempX.19,(a.b.N)) &                 /* apr/btl */
+  Connect(bcatl("PMD/",a,".",b,".",N,".btl.pmd")) &
+  bprintf("PROOFMETHOD %.%.%.btl IS\n\n  THEORY BToolUsersTheory IS\n    ?\n  END\n  &\n  THEORY FwdBToolUsersTheory IS\n    ?\n  END\n\nEND\n",a,b,N) &
+  bclose
+ =>
+  cpmdt1_btl(apr,1);
+
+  cpmdt1_btl(k,0);                     /* file already exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cpmdt_btl(k);
+
+  bget(".Bcom",x) &
+  cpmdt1_btl(k,x)
+ =>
+  cpmdt_btl(k);
+
+
+
+  brule(LoadDotTheoriesX.3,a.b) &           /* pog */
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",b,".0.pmd PMD")) &
+  cpmdt(k) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",b,".0.btl.pmd PMD")) &
+  cpmdt_btl(k)
+ =>
+  cpmdt0(k);
+
+  brule(TempX.19,(a.b.N)) &                 /* apr/btl */
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",b,".",N,".pmd PMD")) &
+  cpmdt(k) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",b,".",N,".btl.pmd PMD")) &
+  cpmdt_btl(k)
+ =>
+  cpmdt0(k);
+
+  /***
+  no unproved lemmas
+  ***/
+  brule(TempX.14,0) &
+  brule(TempX.20,0)
+ =>
+  cpmdt0(k)
+
+END

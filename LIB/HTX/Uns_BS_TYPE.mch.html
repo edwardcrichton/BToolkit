@@ -1,0 +1,132 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Uns_BS_TYPE">
+  <TITLE>The Uns_BS_TYPE machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+***/
+
+/*
+Description: Library Type machine extending Uns_TYPE to include BitString ops
+
+History :
+030698 v0.01 : Created.
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>       Uns_BS_TYPE
+
+EXTENDS       <A HREF="Uns_TYPE.mch.html#MACHINE">Uns_TYPE</A>
+
+/*"
+This specification is an extension of {\em Uns\_Type\/}, providing
+the four bit manipulation functions {\em UAND, UOR, UXOR and UNOT\/}.
+"*/
+
+<A NAME="SEES"><B>SEES</B></A>          <A HREF="Byt_BS_TYPE.mch.html#MACHINE">Byt_BS_TYPE</A>
+
+/*"
+Since one of the parameters of the {\em UXTR\/} and {\em USET\/}
+functions is a {\em BYTE\/}, we also have {\em Byt\_BS\_TYPE\/} in scope:
+"*/
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>
+
+/*"
+We now introduce the two conversion functions between {\em UNSIGNED\/}
+and their `bit-sequence' representation:
+"*/
+
+  u2bs, bs2u
+
+/*"
+Since {\em Byt\_BS\_TYPE\/} is in scope, we have access to the bit
+manipulation functions {\em bnd, bor, bxr\/} and {\em bcp\/}.
+"*/
+
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+/*"
+In order to provide the bit-manipulation operations we define {\em u2bs\/}
+as the bijection between {\em UNSIGNED\/} and its bit-sequence value, and
+{\em bs2u\/} as its inverse:
+"*/
+
+  u2bs : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> &gt;-&gt;&gt; /* {ss | ss : seq {0,1} & size(ss) = 16} */ (1..16 --&gt; {0,1}) &
+/* !bb.(bb:UNSIGNED =&gt; (bb = n2b(SIGMA(ii).(ii:1..16 | 2^^(16-ii) * b2s(bb))))) & */
+  bs2u = u2bs~ &
+
+/*"
+Finally we define the bit functions {\em bnd, bor, bxr\/} and {\em bcp\/}:
+\newpage
+"*/
+
+  <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bnd</A> = {(0|-&gt;0) |-&gt; 0, (0|-&gt;1) |-&gt; 0, (1|-&gt;0) |-&gt; 0, (1|-&gt;1) |-&gt; 1} &
+  <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bor</A> = {(0|-&gt;0) |-&gt; 0, (0|-&gt;1) |-&gt; 1, (1|-&gt;0) |-&gt; 1, (1|-&gt;1) |-&gt; 1} &
+  <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bxr</A> = {(0|-&gt;0) |-&gt; 0, (0|-&gt;1) |-&gt; 1, (1|-&gt;0) |-&gt; 1, (1|-&gt;1) |-&gt; 0} &
+  <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bcp</A> = {0 |-&gt; 1, 1 |-&gt; 0}
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+Each of the four bit manipulation operations has precondition that the
+ input variables are of type {\em UNSIGNED\/}; in each case an {\em UNSIGNED\/}
+value is returned.\\[1ex]
+
+{\bf UAND}:\ \ \  translated as:\\{\tt rr := UAND(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UAND">UAND</A>(aa : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> & bb : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>BEGIN</B> rr := bs2u((u2bs(aa) &gt;< u2bs(bb)) ; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bnd</A>) <B>END</B>;
+
+/*"
+\newpage
+{\bf UOR}:\ \ \  translated as:\\{\tt rr := UOR(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UOR">UOR</A>(aa : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> & bb : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>BEGIN</B> rr := bs2u((u2bs(aa) &gt;< u2bs(bb)) ; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bor</A>) <B>END</B>;
+
+/*"
+{\bf UXOR}:\ \ \  translated as:\\{\tt rr := UXOR(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UXOR">UXOR</A>(aa : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> & bb : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>BEGIN</B> rr := bs2u((u2bs(aa) &gt;< u2bs(bb)) ; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bxr</A>) <B>END</B>;
+
+/*"
+{\bf UNOT}:\ \ \  translated as:\\{\tt rr := UNOT(aa)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UNOT">UNOT</A>(aa : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>BEGIN</B> rr := bs2u(u2bs(aa) ; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bcp</A>) <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:06:09 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

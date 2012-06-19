@@ -1,0 +1,558 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Scalar_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(SCL,MIN,MAX,INC,DEC,ADD,MUL,SUB,DIV,MOD,EQL,NEQ,GTR,GEQ,SMR,LEQ,EQZ,RND)
+;
+(SCL , MIN , MAX , INC , DEC , ADD , MUL , SUB , DIV , MOD , EQL , NEQ , GTR , GEQ , SMR , LEQ , EQZ , RND)
+;
+(Scalar_TYPE_Ops(?):(?):(?))
+;
+(
+(
+ (SCL)
+;
+ (? , Val_Op , Det_Op , (uu <-- SCL(vv)))
+;
+ (vv)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR)
+ |
+ (
+ (BEGIN
+ uu := vv
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR)
+ |
+ (
+ (uu := vv)
+ )
+ )
+)
+,
+(
+ (MIN)
+;
+ (? , Val_Op , Det_Op , (uu <-- MIN(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (BEGIN
+ uu := min({vv , ww})
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (uu := min({vv , ww}))
+ )
+ )
+)
+,
+(
+ (MAX)
+;
+ (? , Val_Op , Det_Op , (uu <-- MAX(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (BEGIN
+ uu := max({vv , ww})
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (uu := max({vv , ww}))
+ )
+ )
+)
+,
+(
+ (INC)
+;
+ (? , Val_Op , Det_Op , (uu <-- INC(vv)))
+;
+ (vv)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & vv < 2147483646)
+ |
+ (
+ (uu := vv+1)
+ )
+ )
+;
+ (
+ (vv : SCALAR & vv < 2147483646)
+ |
+ (
+ (uu := vv+1)
+ )
+ )
+)
+,
+(
+ (DEC)
+;
+ (? , Val_Op , Det_Op , (uu <-- DEC(vv)))
+;
+ (vv)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & 0 < vv)
+ |
+ (
+ (uu := vv-1)
+ )
+ )
+;
+ (
+ (vv : SCALAR & 0 < vv)
+ |
+ (
+ (uu := vv-1)
+ )
+ )
+)
+,
+(
+ (ADD)
+;
+ (? , Val_Op , Det_Op , (uu <-- ADD(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & ww : SCALAR & vv+ww <= 2147483646)
+ |
+ (
+ (uu := vv+ww)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR & vv+ww <= 2147483646)
+ |
+ (
+ (uu := vv+ww)
+ )
+ )
+)
+,
+(
+ (MUL)
+;
+ (? , Val_Op , Det_Op , (uu <-- MUL(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & ww : SCALAR & vv*ww <= 2147483646)
+ |
+ (
+ (uu := vv*ww)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR & vv*ww <= 2147483646)
+ |
+ (
+ (uu := vv*ww)
+ )
+ )
+)
+,
+(
+ (SUB)
+;
+ (? , Val_Op , Det_Op , (uu <-- SUB(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & ww : SCALAR & ww <= vv)
+ |
+ (
+ (uu := vv-ww)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR & ww <= vv)
+ |
+ (
+ (uu := vv-ww)
+ )
+ )
+)
+,
+(
+ (DIV)
+;
+ (? , Val_Op , Det_Op , (uu <-- DIV(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & ww : SCALAR & 0 < ww)
+ |
+ (
+ (uu := vv/ww)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR & 0 < ww)
+ |
+ (
+ (uu := vv/ww)
+ )
+ )
+)
+,
+(
+ (MOD)
+;
+ (? , Val_Op , Det_Op , (uu <-- MOD(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : SCALAR & ww : SCALAR & 0 < ww)
+ |
+ (
+ (uu := vv-ww*(vv/ww))
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR & 0 < ww)
+ |
+ (
+ (uu := vv-ww*(vv/ww))
+ )
+ )
+)
+,
+(
+ (EQL)
+;
+ (? , Val_Op , Det_Op , (bb <-- EQL(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (BEGIN
+ bb := bool(vv = ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (bb := bool(vv = ww))
+ )
+ )
+)
+,
+(
+ (NEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- NEQ(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (BEGIN
+ bb := bool(vv /= ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (bb := bool(not(vv = ww)))
+ )
+ )
+)
+,
+(
+ (GTR)
+;
+ (? , Val_Op , Det_Op , (bb <-- GTR(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (BEGIN
+ bb := bool(vv > ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (bb := bool(ww < vv))
+ )
+ )
+)
+,
+(
+ (GEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- GEQ(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (BEGIN
+ bb := bool(vv >= ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (bb := bool(ww <= vv))
+ )
+ )
+)
+,
+(
+ (SMR)
+;
+ (? , Val_Op , Det_Op , (bb <-- SMR(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (BEGIN
+ bb := bool(vv < ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (bb := bool(vv < ww))
+ )
+ )
+)
+,
+(
+ (LEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- LEQ(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (BEGIN
+ bb := bool(vv <= ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR & ww : SCALAR)
+ |
+ (
+ (bb := bool(vv <= ww))
+ )
+ )
+)
+,
+(
+ (EQZ)
+;
+ (? , Val_Op , Det_Op , (bb <-- EQZ(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : SCALAR)
+ |
+ (
+ (BEGIN
+ bb := bool(vv = 0)
+ END)
+ )
+ )
+;
+ (
+ (vv : SCALAR)
+ |
+ (
+ (bb := bool(vv = 0))
+ )
+ )
+)
+,
+(
+ (RND)
+;
+ (? , Val_Op , NonDet_Op , (nn <-- RND(mm)))
+;
+ (mm)
+;
+ (nn)
+;
+ (
+ (mm : SCALAR)
+ |
+ (
+ (BEGIN
+ nn :: 0..mm
+ END)
+ )
+ )
+;
+ (
+ (mm : SCALAR)
+ |
+ (
+ @(nnx).
+ (
+ (
+ (nnx : 0..mm)
+ )
+ ==>
+ (
+ (nn := nnx)
+ )
+ )
+ )
+ )
+)
+)

@@ -1,0 +1,92 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Proof Obligation Generator</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Proof_Obligation!Generator"></A>
+<H1>
+The POGenerator (pog)</H1>
+The POGenerator (pog) is invoked from the <A HREF="BToolkit.html#Environments!Main">Main
+Environment</A>, and is applicable to all non-library, non-generated specifications
+refinements and implementations which are not currently generated; the
+<A HREF="Analyser.html#Analyser">Analyser</A> is invoked first, where necessary.
+
+<P>The tool automatically generates all the proof obligations which are
+required to be discharged in order to guarantee the internal consistency
+of a specification or the correctness of a refinement with respect to its
+abstraction. The POGenerator provides the same options as the <A HREF="Analyser.html#Analyser">Analyser</A>
+when a construct being currently edited differs from that of the committed
+version.
+
+<P><A NAME="Proof_Obligation"></A>The proof obligations are generated according
+to the correctness criteria which are required to hold within the <A HREF="BMethod.html">B-Method</A>.
+Thus, for example, the criteria require that an Abstract Machine initialisation
+must establish the invariant, and that each operation re-establish the
+invariant. Obligations are also generated to maintain the correct relationships
+between a machine and its refinements. (Full details of the proof obligations
+are given in the B-Technology Technical Overview.)
+
+<P>The following three-letter acronyms appear in B-Toolkit proof obligations:
+<UL>
+<LI>
+<TT>cst</TT></LI>
+
+<BR>the constraints of the construct (the predicates of the <A HREF="AMNotation.html#CONSTRAINTS_Clause">CONSTRAINTS</A>
+clause)
+<LI>
+<TT>ctx</TT></LI>
+
+<BR>the context of the construct (the predicates of the <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A>
+clause of the construct together with those of subordinate constructs)
+<LI>
+<TT>inv</TT></LI>
+
+<BR>the invariant of the construct (the predicates of the <A HREF="AMNotation.html#INVARIANT_Clause">INVARIANT</A>
+clause, together with abstract/concrete equalities of any algorithmically-refined
+variables)
+<LI>
+<TT>asn</TT></LI>
+
+<BR>the assertions of the construct (the predicates of the <A HREF="AMNotation.html#ASSERTIONS_Clause">ASSERTIONS</A>
+clause)
+<LI>
+<TT>pre</TT></LI>
+
+<BR>the precondition of the operation (the the predicates of the operation's
+<A HREF="AMNotation.html#PRE_Clause">PRE</A> clause)</UL>
+<A NAME="Proof_Obligation!File"></A>The generated proof obligations are
+stored in the environment directory <A HREF="BToolkit.html#Development_Environment">POB</A>,
+but some very simple obligations are discharged by the tool and do not
+appear in the proof obligation file.
+
+<P>If an error is detected during generation of the proof obligations then
+the <A HREF="MiniRemake.html#MiniRemake">Mini-remake</A> option is offered.
+
+<P>The current number of outstanding proof obligations and total number
+of proof obligations (where applicable) is displayed for each construct
+in the <A HREF="BToolkit.html#Constructs!Area">Constructs Area</A> in the
+<A HREF="BToolkit.html#Environments!Provers">Provers Environment</A> window
+under `pob' and `tot' respectively.
+<BR>&nbsp;
+
+<P>
+<HR WIDTH="60%">
+<CENTER>&nbsp;</CENTER>
+
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

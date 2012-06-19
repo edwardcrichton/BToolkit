@@ -1,0 +1,780 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define JokerizeSubOpPOG(x) \
+    bcall(((FLAT;SUB~)~;JokerizeSubOpPOGX)~:jso(x))
+
+
+#define ExpandMachineOps(x,y) \
+  bcall(((ARI;SUB;FLAT;NEWV;MODR;MAP;RULE;LMAP)~;ExpandMachineOpsX)~: emo_init(x)(y))
+
+
+THEORY RecursiveOpRenameX END &
+
+THEORY RecursiveVarRenameX END &
+
+THEORY FormalParamsX END &
+
+THEORY MachineParamsX END &
+
+THEORY ExpandMachineTmpOpsX END &
+
+THEORY MchColRenamedColNonRenamedIncIptX END &
+
+THEORY StoreMchColRenamedColNonRenamedIncIptX IS
+
+#define StoreMchColRenamedColNonRenamedIncIpt(x,y) \
+  bcall(((MAP;NEWV;RULE)~;StoreMchColRenamedColNonRenamedIncIptX)~: (smcii(x) bsmap y))
+
+  bcrer(MchColRenamedColNonRenamedIncIptX,(k:i:i))
+ =>
+  smcii(k,(i(s):t:U));
+
+  bcrer(MchColRenamedColNonRenamedIncIptX,(k:bnewv(r,i):i))
+ =>
+  smcii(k,(r.i(s):t:U));
+
+  smcii(k,?)
+
+END
+
+&
+
+THEORY ExpandMachineOpsIncX IS
+
+#define ExpandMachineOpsInc(x) \
+  bcall((ARI;MODR):bmodr(ExpandMachineOpsIncX.1,x))
+
+#define ReadRecursiveRenameInc(x) \
+  brule(ExpandMachineOpsIncX.1,x)
+
+  ?
+
+END &
+
+THEORY ExpandMachineOpsX IS
+
+  ?;
+
+  ?;
+
+  ?;
+
+  ?;
+
+  ?;
+
+  ?; /* 6. 1 => Animator, 2 => POGenerator */
+
+
+  bcrer(ExpandMachineTmpOpsX,(k:i:i:(true,true,(BEGIN s END))))
+ =>
+  emo_tmp_ini1(k)(i)(s);
+
+  brule(ExpandMachineTmpOpsX.N,(k:i:i:(true,true,(BEGIN s END))))
+ =>
+  emo_tmp_ini1(k)(i)(s);
+
+  emo_tmp_ini1(k)(i)(BEGIN s END)
+ =>
+  emo_tmp_ini1(k)(i)(BEGIN BEGIN s END END);
+
+  bcrer(ExpandMachineTmpOpsX,(k:i:i:(true,true,skip)))
+ =>
+  emo_tmp_ini1(k)(i)(?);
+
+  (? || s) == s;
+
+  (s || ?) == s;
+
+  (skip || s) == s;
+
+  (s || skip) == s;
+
+
+
+
+  brule(ExpandMachineOpsX.6,0) & /* pogenerator */
+  bcrer(ExpandMachineTmpOpsX,(r:n:s:(w,y,S))) &
+  JokerizeSubOpPOG(s=(y|S))
+ =>
+  emo_sto_renamed_ops5(r)(?)(n:s:(w,y,S));
+
+  brule(ExpandMachineOpsX.6,1) & /* animator */
+  bcrer(ExpandMachineTmpOpsX,(r:n:s:(w,y,S))) &
+/***
+HERE((2:(r:n:s:(w,y,S)))) &
+***/
+  bcrer(JokerizedSubOpX,((s)==(S))) &
+  bcrer(UnJokerizedSubOpX,((s)==(S)))
+ =>
+  emo_sto_renamed_ops5(r)(?)(n:s:(w,y,S));
+
+  
+  brule(ExpandMachineOpsX.6,0) & /* pogenerator */
+  bcrer(ExpandMachineTmpOpsX,(r:n:s:(w,y,S))) &
+  JokerizeSubOpPOG(s=(y|S))
+ =>
+  emo_sto_renamed_ops5(r)(?)([W:=W](n:s:(w,y,S))); /* old goal problem */
+
+  brule(ExpandMachineOpsX.6,1) & /* animator */
+/***
+HERE((1:(r:n:s:(w,y,S)))) &
+***/
+  bcrer(ExpandMachineTmpOpsX,(r:n:s:(w,y,S))) &
+  bcrer(JokerizedSubOpX,((s)==(S))) &
+  bcrer(UnJokerizedSubOpX,((s)==(S)))
+ =>
+  emo_sto_renamed_ops5(r)(?)([W:=W](n:s:(w,y,S))); /* old goal problem */
+
+
+  emo_sto_renamed_ops5(r)(S)([s](o))
+ =>
+  emo_sto_renamed_ops5(r)(S;s)(o);
+
+  emo_sto_renamed_ops5(r)(R;(aa:=aa))(o)
+ =>
+  emo_sto_renamed_ops4(r)(R)(o);
+
+  brule(FormalParamsX.N,(r(a:=b))) &
+  emo_sto_renamed_ops5(r)(R;(a:=b))(o)
+ =>
+  emo_sto_renamed_ops4(r)(R)(o);
+
+  emo_sto_renamed_ops4(r)(R;(aa:=aa))(o)
+ =>
+  emo_sto_renamed_ops3(r)(R)(o);
+
+  brule(RecursiveVarRenameX.N,(r(a:=b))) &
+  emo_sto_renamed_ops4(r)(R;(a:=b))(o)
+ =>
+  emo_sto_renamed_ops3(r)(R)(o);
+
+  emo_sto_renamed_ops3(r)(R;(aa:=aa))(o)
+ =>
+  emo_sto_renamed_ops2(r)(R)(o);
+
+  brule(RecursiveOpRenameX.N,(r(a:=b))) &
+  emo_sto_renamed_ops3(r)(R;(a:=b))(o)
+ =>
+  emo_sto_renamed_ops2(r)(R)(o);
+
+
+
+/***
+PrintTHEORY(ExpandMachineTmpOpsX)&
+PrintTHEORY(MchColRenamedColNonRenamedIncIptX)&
+PrintTHEORY(RecursiveOpRenameX)&
+jjj(emo_sto_renamed_ops1_search(r,o)(i)(N))
+ =>
+***/
+  emo_sto_renamed_ops1_search(r,o)(i)(N);
+
+
+  brule(MchColRenamedColNonRenamedIncIptX.N,a) &
+  emo_sto_renamed_ops1_search(r,o)(i)(N+1)
+ =>
+  emo_sto_renamed_ops1_search(r,o)(i)(N);
+
+  brule(MchColRenamedColNonRenamedIncIptX.N,(i:R:n)) &
+  brule(ExpandMachineTmpOpsX.J,(R:o:s:x)) &
+  emo_sto_renamed_ops2(r)(?)(o:s:x)
+ =>
+  emo_sto_renamed_ops1_search(r,o)(i)(N);
+
+
+
+/***
+PrintTHEORY(ExpandMachineTmpOpsX)&
+PrintTHEORY(MchColRenamedColNonRenamedIncIptX)&
+PrintTHEORY(RecursiveOpRenameX)&
+kkk(emo_sto_renamed_ops1(r,o)(i)(N))
+ =>
+***/
+  emo_sto_renamed_ops1(r,o);
+
+  brule(ExpandMachineTmpOpsX.J,(r:o:s:x)) &
+  emo_sto_renamed_ops2(r)(?)(o:s:x)
+ =>
+  emo_sto_renamed_ops1(r,o);
+
+  brule(MchColRenamedColNonRenamedIncIptX.I,(M:r:n)) &
+  emo_sto_renamed_ops1_search(r,o)(n)(1)
+ =>
+  emo_sto_renamed_ops1(r,o);
+
+  brule(MchColRenamedColNonRenamedIncIptX.I,(M:r:n)) &
+/***
+HERE(("orig" -- emo_sto_renamed_ops1(r,o) -- (M:r:n))) &
+***/
+  brule(ExpandMachineTmpOpsX.J,(n:o:s:x)) &
+  emo_sto_renamed_ops2(r)(?)(o:s:x)
+ =>
+  emo_sto_renamed_ops1(r,o);
+
+
+  emo_sto_renamed_ops(N);
+
+  ReadRecursiveRenameInc(N) &
+  emo_sto_renamed_ops(N)
+ =>
+  emo_sto_renamed_ops_(M);
+
+  brule(RecursiveOpRenameX.N,(r(o:=p))) &
+  emo_sto_renamed_ops1(r) bsmap o &
+  ExpandMachineOpsInc(N+1) &
+  emo_sto_renamed_ops_(N)
+ =>
+  emo_sto_renamed_ops(N);
+
+
+
+  [?:=?]a == a;
+
+  emo_var_rename(x);
+
+  bcrer(RecursiveVarRenameX,(r(u:=v)))
+ =>
+  emo_var_rename(r(s):t:(u,v,w));
+
+  brule(RecursiveVarRenameX.N,(r(u:=v)))
+ =>
+  emo_var_rename(r(s):t:(u,v,w));
+
+  emo_var_rename(bnewv(R,r)(s):t:(u,v,w))
+ =>
+  emo_var_rename(R.r(s):t:(u,v,w));
+
+
+
+  brule(MachineParamsX.M,(r(f))) &
+  bmodr(FormalParamsX.N,(r(f:=a)))
+ =>
+  emo_adj_formal_params1(N)(r(a));
+
+  brule(MachineParamsX.M,(r(f))) &
+  bmodr(FormalParamsX.N,(bnewv(R,r)(f:=a)))
+ =>
+  emo_adj_formal_params1(N)(R.r(a));
+
+  emo_adj_formal_params(N);
+
+  ReadRecursiveRenameInc(N) &
+  emo_adj_formal_params(N)
+ =>
+  emo_adj_formal_params_(M);
+
+  brule(FormalParamsX.N,x) &
+  emo_adj_formal_params1(N)(x) &
+  ExpandMachineOpsInc(N+1) &
+  emo_adj_formal_params_(N)
+ =>
+  emo_adj_formal_params(N);
+
+
+  emo_tmp_ini1(k)(i)(S)
+ =>
+  emo_tmp_ini(k)(i)(S)(?);
+
+  emo_tmp_ini1(k)(i)(S || bnewv(INI_,r))
+ =>
+  emo_tmp_ini(k)(i)(S)(r(s):t:(u,v,w));
+
+  emo_tmp_ini1(k)(i)(S || bnewv(R,bnewv(INI_,r)))
+ =>
+  emo_tmp_ini(k)(i)(S)(R.r(s):t:(u,v,w));
+
+  emo_tmp_ini(k)(i)(S || bnewv(INI_,r))(b)
+ =>
+  emo_tmp_ini(k)(i)(S)(b,(r(s):t:(u,v,w)));
+
+  emo_tmp_ini(k)(i)(S || bnewv(R,bnewv(INI_,r)))(b)
+ =>
+  emo_tmp_ini(k)(i)(S)(b,(R.r(s):t:(u,v,w)));
+
+
+
+  bcrer(ExpandMachineTmpOpsX,(k:o:p:s))
+ =>
+  emo_tmp_ops1(k:o:p:s);
+
+  brule(ExpandMachineTmpOpsX.N,(k:o:p:s))
+ =>
+  emo_tmp_ops1(k:o:p:s);
+
+  brule(ExpandMachineOpsX.6,0) & /* pogenerator */
+  emo_tmp_ops1(k:s:K:(w,y,z))
+ =>
+  emo_tmp_ops(k,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  brule(ExpandMachineOpsX.6,1) & /* animator */
+  emo_tmp_ops1(k:s:K:(w,y,x))
+ =>
+  emo_tmp_ops(k,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  emo_tmp_ops(k,(s;(?,I,J,K);u;v;(w|x);(y|skip)))
+ =>
+  emo_tmp_ops(k,(s;(?,I,J,K);u;v;(w|x);(y|?)));
+
+  emo_tmp_ops(k,(s;t;u;v;(w|skip);(y|z)))
+ =>
+  emo_tmp_ops(k,(s;t;u;v;(w|?);(y|z)));
+
+  emo_tmp_ops(k) bsmap (N,n)
+ =>
+  emo_tmp_ops(k,(N,n));
+
+  emo_tmp_ops(k,?);
+
+
+
+  bcrer(FormalParamsX,x)
+ =>
+  emo_formal_params1(x);
+
+  brule(FormalParamsX.N,x)
+ =>
+  emo_formal_params1(x);
+
+  emo_formal_params(k,?);
+
+  emo_formal_params1((r(s)))
+ =>
+  emo_formal_params(k,(r(s):t:(u,v,w)));
+
+  emo_formal_params1((R.r(s)))
+ =>
+  emo_formal_params(k,(R.r(s):t:(u,v,w)));
+
+
+
+  bcrer(MachineParamsX,k(l))
+ =>
+  emo_mch_param(k(l));
+
+  brule(MachineParamsX.N,k(l))
+ =>
+  emo_mch_param(k(l));
+
+
+  bsearch(?,S,U) &
+  bsearch(?,T,V) &
+  bcrer(RecursiveOpRenameX,(m)(U:=V))
+/***
+&HERE(("sto_RecursiveOpRename_fini"))
+&HERE((U))
+&HERE((V))
+***/
+ =>
+  sto_RecursiveOpRename_fini(m)(S:=T);
+
+  sto_RecursiveOpRename_fini(m)(S,a:=T,b)
+ =>
+  sto_RecursiveOpRename(m)(a:=b)(S:=T);
+
+  bsearch(a,S,U) &
+  sto_RecursiveOpRename_fini(m)(S:=T)
+ =>
+  sto_RecursiveOpRename(m)(a:=b)(S:=T);
+
+  sto_RecursiveOpRename(m)(A:=B)(S,a:=T,b)
+ =>
+  sto_RecursiveOpRename(m)(A,a:=B,b)(S:=T);
+
+  bsearch(a,S,U) &
+  sto_RecursiveOpRename(m)(A:=B)(S:=T)
+ =>
+  sto_RecursiveOpRename(m)(A,a:=B,b)(S:=T);
+
+
+
+/***
+HERE(("sto_RecursiveOpRename"))&
+HERE((S))&
+HERE((T))&
+***/
+  sto_RecursiveOpRename(m)(S:=T)(?:=?)
+ =>
+  emo17(m)(S:=T);
+
+  emo17(m)(o:=p) 
+ =>
+  emo16(m)(o)(p);
+
+  emo17(bnewv(R,m))(o:=p)
+ =>
+  emo16(R.m)(o)(p);
+
+  emo15(?);
+
+  brule(ExpandMachineOpsX.4,L) &
+  bsearch(m(o),L,M) &
+  emo16(m)(o)(o)
+ =>
+  emo15(m);
+
+  brule(ExpandMachineOpsX.4,L) &
+  bsearch(m(o),L,M) &
+  emo16(R.m)(o)(pre_(R) bslmap o)
+ =>
+  emo15(R.m);
+
+  emo15 bsmap i
+ =>
+  emo14(m(i));
+  
+  emo14(?);
+  
+  brule(ExpandMachineOpsX.1,L) &
+  emo14 bsmap L
+ =>
+  emo13;
+
+  brule(ExpandMachineOpsX.4,L) &
+  bmodr(ExpandMachineOpsX.4,(L,m(o)))
+ =>
+  emo11(m)(o);
+
+  bsearch(?,O,Q) &
+  emo11(m)(Q)
+  =>
+  emo11(m)(O);
+
+  brule(ExpandMachineOpsX.3,O) &
+  emo11(m)(bflat(O))
+ =>
+  emo10(m);
+
+  brule(ExpandMachineOpsX.3,O) &
+  bmodr(ExpandMachineOpsX.3,(O,o))
+ =>
+  emo9(o);
+
+  pre_(R,o) == bnewv(R,o);
+
+  
+  brule(ExpandMachineOpsX.4,L) &
+  bsearch(m(o),L,M) &
+  emo9(o)
+ =>
+  emo8(m);
+  
+  brule(ExpandMachineOpsX.4,L) &
+  bsearch(m(o),L,M) &
+  emo9(pre_(R) bslmap o)
+ =>
+  emo8(R.m);
+  
+  emo8(?);
+  
+  brule(ExpandMachineOpsX.2,L) &
+  bsearch(m(o),L,M) &
+  bmodr(ExpandMachineOpsX.3,o) &
+  emo8 bsmap i &
+  emo10(m)
+ =>
+  emo7(m(i));
+
+  emo7(?);
+
+  brule(ExpandMachineOpsX.1,L) &
+  emo7 bsmap L
+ =>
+  emo6;
+
+  brule(ExpandMachineOpsX.2,L) &
+  bmodr(ExpandMachineOpsX.2,(L,k(o)))
+ =>
+  emo5(k(o));
+
+  brule(ExpandMachineOpsX.2,L) &
+  bsearch(k(b),L,M)
+ =>
+  emo5(k(o));
+
+  brule(ExpandMachineOpsX.1,L) &
+  bmodr(ExpandMachineOpsX.1,(L,k(x)))
+ =>
+  emo4(k(x));
+
+  brule(ExpandMachineOpsX.1,L) &
+  bsearch(k(x),L,M)
+ =>
+  emo4(k(x));
+
+  get_ren_(?) == (?);
+
+  get_ren_(r(s):t:(u,v,w)) == (r);
+
+  get_ren_(R.r(s):t:(u,v,w)) == (R.r);
+
+
+/*
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  emo_var_rename bsmap ? &
+  emo_mch_param(k(l)) &
+  emo_tmp_ops(S,n)
+ =>
+  emo_seen_used1(S);
+
+  emo_seen_used(?);
+
+  Bget(("ANL/",r,".",mch,".anl")) &
+  emo_seen_used1(r)
+ =>
+  emo_seen_used(r(s):t:(u,v,w));
+
+  emo_seen_used(r(s):t:(u,v,w))
+ =>
+  emo_seen_used(R.r(s):t:(u,v,w));
+*/
+
+
+  emo3(?);
+
+  emo1(r)
+ =>
+  emo3(r(s):t:(u,v,w));
+
+  emo1(r)
+ =>
+  emo3(R.r(s):t:(u,v,w));
+
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  StoreMchColRenamedColNonRenamedIncIpt(k,b) &
+  emo3 bsmap b & /* loop back */
+  emo_var_rename bsmap b &
+  emo_mch_param(k(l)) &
+  emo_formal_params(k) bsmap b &
+  emo4(k(get_ren_ bslmap b)) & /* import lists */
+  emo5(k(j,bnewv(INI_,k))) &
+  emo_tmp_ini(k)(bnewv(INI_,k))(h)(b) &
+  emo_tmp_ops(k,n)
+ =>
+  emo2(k);
+
+  brule(AnimatorFromUserX.1,(k.mch)) & /* ReadCurrentConstruct(k.mch) */
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  StoreMchColRenamedColNonRenamedIncIpt(k,b) &
+  emo3 bsmap b & /* loop back */
+  emo3 bsmap A & /* loop back */
+  emo3 bsmap B & /* loop back */
+  emo_var_rename bsmap b &
+  emo_var_rename bsmap A &
+  emo_var_rename bsmap B &
+  emo_mch_param(k(l)) &
+  emo_formal_params(k) bsmap b &
+  emo_formal_params(k) bsmap A &
+  emo_formal_params(k) bsmap B &
+  emo4(k(get_ren_ bslmap b)) & /* import lists */
+  emo4(k(get_ren_ bslmap A)) & /* import lists */
+  emo4(k(get_ren_ bslmap B)) & /* import lists */
+  emo5(k(j,bnewv(INI_,k))) &
+  emo_tmp_ini(k)(bnewv(INI_,k))(h)(b) &
+  emo_tmp_ops(k,n)
+ =>
+  emo2(k);
+
+/*
+  brule(AnimatorFromUserX.1,(k.mch)) & /? ReadCurrentConstruct(k.mch) ?/
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  emo_var_rename bsmap bflat(A,B) & /? ... only for current construct ... ?/
+  emo_seen_used bsmap bflat(A,B) &
+  emo3 bsmap b & /? loop back ?/
+  emo_var_rename bsmap b &
+  emo_mch_param(k(l)) &
+  emo_formal_params(k) bsmap b &
+  emo4(k(get_ren_ bslmap b)) & /? import lists ?/
+  emo5(k(j,bnewv(INI_,k))) &
+  emo_tmp_ini(k)(bnewv(INI_,k))(h)(b) &
+  emo_tmp_ops(k,n)
+ =>
+  emo2(k);
+*/
+
+
+  Bget(("ANL/",m,".",mch,".anl")) &
+  emo2(m)
+ =>
+  emo1(m);
+
+  bclean(ExpandMachineTmpOpsX) &
+  bclean(MachineParamsX) &
+  bclean(FormalParamsX) &
+  bclean(RecursiveOpRenameX) &
+  bclean(RecursiveVarRenameX) &
+  bmodr(ExpandMachineOpsX.1,?) &
+  bmodr(ExpandMachineOpsX.2,?) &
+  bmodr(ExpandMachineOpsX.3,?) &
+  bmodr(ExpandMachineOpsX.4,?) &
+  bmodr(ExpandMachineOpsX.5,?) &
+  bmodr(ExpandMachineOpsX.6,z) &
+  emo1(m) &
+  emo6 &
+  emo13 &
+  emo_adj_formal_params(1) &
+  emo_sto_renamed_ops(1)
+/***
+&PrintARule(ExpandMachineOpsX.1)
+&PrintARule(ExpandMachineOpsX.2)
+&PrintARule(ExpandMachineOpsX.4)
+&PrintARule(ExpandMachineOpsX.5)
+&PrintTHEORY(MachineParamsX)
+&PrintTHEORY(FormalParamsX)
+&PrintTHEORY(RecursiveOpRenameX)
+&PrintTHEORY(RecursiveVarRenameX)
+&PrintTHEORY(ExpandMachineTmpOpsX)
+&PrintTHEORY(JokerizedSubOpX)
+&PrintTHEORY(UnJokerizedSubOpX)
+&PrintTHEORY(MchColRenamedColNonRenamedIncIptX)
+&stop
+***/
+ =>
+  emo_init(m)(z)
+
+END
+
+&
+
+THEORY JokerizeSubOpX IS
+
+#define JokerizeSubOp(N,x,y) \
+    bcall(((FLAT;(SUB~;SUB_seqX)~;MODR)~;JokerizeSubOpX)~:jso$N(x)(y))
+
+  [A:=a](z)
+ =>
+  jso1$N(A)(z);
+
+  [A,B:=a,b](z)
+ =>
+  jso1$N(A,B)(z);
+
+  [A,B,C:=a,b,c](z)
+ =>
+  jso1$N(A,B,C)(z);
+
+  [A,B,C,D:=a,b,c,d](z)
+ =>
+  jso1$N(A,B,C,D)(z);
+
+  [A,B,C,D,E:=a,b,c,d,e](z)
+ =>
+  jso1$N(A,B,C,D,E)(z);
+
+  [A,B,C,D,E,F:=a,b,c,d,e,f](z)
+ =>
+  jso1$N(A,B,C,D,E,F)(z);
+
+  [A,B,C,D,E,F,G:=a,b,c,d,e,f,g](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G)(z);
+
+  [A,B,C,D,E,F,G,H:=a,b,c,d,e,f,g,h](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H)(z);
+
+  [A,B,C,D,E,F,G,H,I:=a,b,c,d,e,f,g,h,i](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I)(z);
+
+  [A,B,C,D,E,F,G,H,I,J:=a,b,c,d,e,f,g,h,i,j](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K:=a,b,c,d,e,f,g,h,i,j,k](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L:=a,b,c,d,e,f,g,h,i,j,k,l](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M:=a,b,c,d,e,f,g,h,i,j,k,l,m](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O:=a,b,c,d,e,f,g,h,i,j,k,l,m,o](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v,w](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v,w,x](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X)(z);
+
+  [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X,Y:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v,w,x,y](z)
+ =>
+  jso1$N(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X,Y)(z);
+
+  jso$N(I)(n==s);
+
+  jso1$N(i)(bmodr(JokerizedSubOpX.I,(o<--n(i)==s)))
+ =>
+  jso$N(I)(n(i)=s);
+
+  jso1$N(o)(bmodr(JokerizedSubOpX.I,(o<--n(i)==s)))
+ =>
+  jso$N(I)(o<--n=s);
+
+  jso1$N(bflat(o,i))(bmodr(JokerizedSubOpX.I,(o<--n(i)==s)))
+ =>
+  jso$N(I)(o<--n(i)==s)
+
+END

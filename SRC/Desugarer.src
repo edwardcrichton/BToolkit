@@ -1,0 +1,4765 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define DesugarTac \
+	((((NEWV;SUB~;FLAT~;RULE;MODR)~;DecomposeX)~;ReconstructX)~;ChaosX)~
+
+
+#define DesugarParallelTac \
+	((((NEWV;SUB~;FLAT~;RULE;MODR;GEN)~;ParallelReconstructX~;DecomposeX)~;ReconstructX)~;ChaosX)~
+
+
+
+
+#define  ClearNormaliserError    bcall(MODR:bmodr(NormaliserErrorX.1,0))
+
+#define  FlagNormaliserError     bcall(MODR:bmodr(NormaliserErrorX.1,1))
+
+
+#define  NormaliserErrorFlagged  brule(NormaliserErrorX.1,1)
+
+
+#define ClearDesugarerError        bcall(MODR:bmodr(DesugarerErrorX.1,0))
+
+#define FlagDesugarerError         bcall(MODR:bmodr(DesugarerErrorX.1,1))
+
+#define DesugarerErrorFlagged      brule(DesugarerErrorX.1,1)
+
+
+
+#define ClearDesugarerInformFlag      bcall(MODR:bmodr(DesugarerErrorX.2,0))
+
+#define FlagDesugarerInformFlag       bcall(MODR:bmodr(DesugarerErrorX.2,1))
+
+#define DesugarerInformFlagFlagged    brule(DesugarerErrorX.1,1)
+
+
+
+#define CurrentConstructIsImp        brule(CurrentConstructX.1,O.imp)
+#define CurrentConstructIsRef        brule(CurrentConstructX.1,O.ref)
+#define CurrentConstructIsMch        brule(CurrentConstructX.1,O.mch)
+
+#define GetCurrentConstruct(x)       brule(CurrentConstructX.1,x)
+
+
+
+#define CurrentlyProcessing(K)   brule(DecomposeX.1,(Q,K))
+
+#define PushCurrentlyProcessing(K)  brule(DecomposeX.1,Q) & \
+                                    bmodr(DecomposeX.1,(Q,K))
+
+#define PopCurrentlyProcessing  brule(DecomposeX.1,(Q,K)) & \
+                                 bmodr(DecomposeX.1,Q)
+
+#define PushPopCurrentlyProcessing(K)  brule(DecomposeX.1,(Q,L)) & \
+                                       bmodr(DecomposeX.1,(Q,K))
+
+
+#define InformDistinctIdentifiers(b,c) Writef(("\n\n    Operation % error:\n    %\n    should be distinct identifiers (separated by commas) ",bsrv b berv, bsrv c berv))
+
+
+#define InformRep(v) Writef(("\n    (repetition of %) ",bsrv v berv))
+
+
+
+
+#define SetDontExpandOpFlag   bmodr(RebuildX.3,0)
+#define SetExpandOpFlag       bmodr(RebuildX.3,1)
+#define DontExpandOpFlagSet   brule(RebuildX.3,0)
+#define ExpandOpFlagSet       brule(RebuildX.3,1)
+
+
+#define InformNotAnIdentifierWithOp(x,y) \
+   Writef(("\n\n      OPERATION %:\n        % is not an identifier ",x,bsrv y berv))
+
+
+#define InformPredicateExpected Writef(("\n      Predicate expected "))
+
+
+#define InformDesugarerIdentifier(b,c) Writef(("\n\n    %: %  should be an identifier ",b,bsrv c berv)) & FlagDesugarerInformFlag 
+
+#define InformDesugarerIdentifierInit(c) Writef(("\n\n    INITIALISATION: %  should be an identifier ",bsrv c berv)) & FlagDesugarerInformFlag 
+
+
+
+#define InformOperationReferenceError(o,a) Writef(("\n\n    OPERATION %: operation reference error:\n      % ",o,bsrv a berv)) & FlagDesugarerInformFlag
+
+#define InformOperationReferenceErrorInit(a) Writef(("\n\n    INITIALISATION: operation reference error:\n      % ",bsrv a berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformCaseOverlap(x,y,z) Writef(("\n\n    OPERATION %: repetition of % in CASE:\n      % ",x,bsrv y berv,z)) & FlagDesugarerInformFlag
+
+
+#define InformCaseOverlapInit(y,z) Writef(("\n\n    INITIALISATION: repetition of % in CASE:\n      % ",x,bsrv y berv,z)) & FlagDesugarerInformFlag
+
+
+
+
+#define InformSemiHidingViolation(o,x) Writef(("\n\n    Semi-hiding violation in %:\n      % ",bsrv o berv,bsrv x berv)) & FlagDesugarerInformFlag
+
+#define InformSemiHidingViolationInit(x) Writef(("\n\n    Semi-hiding violation INITIALISATION:\n      % ",bsrv x berv)) & FlagDesugarerInformFlag
+
+
+
+
+#define InformSeesInvariantViolation(x) Writef(("\n\n    SEES violation:\n      INVARIANT: % ",bsrv x berv)) & FlagDesugarerInformFlag
+
+
+
+
+#define InformFullHidingViolationImportedVariables(o,m,v) Writef(("\n\n    Full-hiding violation in %:\n      Variable % of IMPORTED construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+#define InformFullHidingViolationImportedVariablesInit(m,v) Writef(("\n\n    Full-hiding violation in INITIALISATION:\n      Variable % of IMPORTED construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformFullHidingViolationSeenVariables(o,m,v) Writef(("\n\n    Full-hiding violation in %:\n      Variable % of SEEN construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+#define InformFullHidingViolationSeenVariablesInit(m,v) Writef(("\n\n    Full-hiding violation in INITIALISATION:\n      Variable % of SEEN construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformFullHidingViolationRefinedVariables(o,m,v) Writef(("\n\n    Full-hiding violation in %\n      Variable % of REFINED construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+#define InformFullHidingViolationRefinedVariablesInit(m,v) Writef(("\n\n    Full-hiding violation in INITIALISATION:\n      Variable % of REFINED construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformOperationUSESvalError(o,a) Writef(("\n\n    %: USES operation reference error:\n      % ",bsrv o berv,bsrv a berv)) & FlagDesugarerInformFlag
+
+#define InformOperationUSESvalErrorInit(a) Writef(("\n\n    INITIALISATION: USES operation reference error:\n      % ",bsrv a berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformOperationUSESmodError(o,a) Writef(("\n\n    %: USES operation reference error:\n      % ",bsrv o berv,bsrv a berv)) & FlagDesugarerInformFlag
+
+#define InformOperationUSESmodErrorInit(a) Writef(("\n\n    INITIALISATION: USES operation reference error:\n      % ",bsrv a berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformOperationSEESmodError(o,a) Writef(("\n\n    %: SEES operation reference error:\n      % modifies the state ",bsrv o berv,bsrv a berv)) & FlagDesugarerInformFlag
+
+#define InformOperationSEESmodErrorInit(a) Writef(("\n\n    INITIALISATION: SEES operation reference error:\n      % modifies the state ",bsrv a berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformOperationParamClash(o,a) Writef(("\n\n    OPERATION %: operation reference error:\n      % - formal/actual parameter name clash ",bsrv o berv,bsrv a berv)) & FlagDesugarerInformFlag
+
+#define InformOperationParamClashInit(a) Writef(("\n\n    INITIALISATION: operation reference error:\n      % - formal/actual parameter name clash ",bsrv a berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformOpParameterDiscrepancy(o,m,X,Y) Writef(("\n\n    OPERATION %:\n      formal/actual parameter discrepancy\n      in referenced operation %:\n        %\n        % ",bsrv o berv,bsrv m berv,bsrv X berv,bsrv Y berv)) & FlagDesugarerInformFlag
+
+#define InformOpParameterDiscrepancyOne(o,m,Y) Writef(("\n\n    OPERATION %:\n      formal/actual parameter discrepancy\n      in referenced operation %:\n        % ",bsrv o berv,bsrv m berv,bsrv Y berv)) & FlagDesugarerInformFlag
+
+
+#define InformNestedLoop(o) Writef(("\n\n    Operation %\n      Nested loop at the same level: ",bsrv o berv))  & FlagDesugarerInformFlag
+
+
+
+
+#define InformDesugarerSyntaxErrorInit(x) Writef(("\n\n    INITIALISATION\n      Syntax error: % ",bsrv x berv)) & FlagDesugarerInformFlag
+
+#define InformDesugarerSyntaxError(o,x) Writef(("\n\n    Operation %:\n      Syntax error % ",o,bsrv x berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformIllegalImplementationConstruct(o,s,x) \
+     Writef(("\n\n    Illegal IMPLEMENTATION construct `")) & \
+     Writef((s)) & \
+     Writef(("' in %:\n      % ",o,bsrv x berv)) & \
+     FlagDesugarerInformFlag
+
+#define InformIllegalRefinementConstruct(o,s,x) \
+     Writef(("\n\n    Illegal REFINEMENT construct `")) & \
+     Writef((s)) & \
+     Writef(("' in %:\n      % ",o,bsrv x berv)) & \
+     FlagDesugarerInformFlag
+
+#define InformIllegalMachineConstruct(o,s,x) \
+     Writef(("\n\n    Illegal MACHINE construct `")) & \
+     Writef((s)) & \
+     Writef(("' in %:\n      % ",o,bsrv x berv)) & \
+     FlagDesugarerInformFlag
+
+
+
+#define InformIllegalImplementationConstructInit(s,x) \
+     Writef(("\n\n    Illegal IMPLEMENTATION construct `")) & \
+     Writef((s)) & \
+     Writef(("' in INITIALISATION:\n      % ",bsrv x berv)) & \
+     FlagDesugarerInformFlag
+
+#define InformIllegalRefinementConstructInit(s,x) \
+     Writef(("\n\n    Illegal REFINEMENT construct `")) & \
+     Writef((s)) & \
+     Writef(("' in INITIALISATION:\n      % ",bsrv x berv)) & \
+     FlagDesugarerInformFlag
+
+#define InformIllegalMachineConstructInit(s,x) \
+     Writef(("\n\n    Illegal MACHINE construct `")) & \
+     Writef((s)) & \
+     Writef(("' in INITIALISATION:\n      % ",bsrv x berv)) & \
+     FlagDesugarerInformFlag
+
+
+
+
+
+#define InformUndeclaredSubstitutionViolation(o,x) Writef(("\n\n    Substitution error in %:\n      Undeclared variable % ",bsrv o berv,bsrv x berv)) & FlagDesugarerInformFlag
+
+#define InformUndeclaredSubstitutionViolationInit(x) Writef(("\n\n    Substitution error in INITIALISATION:\n      Undeclared variable % ",bsrv x berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformInvalidSubstitution(o,x) Writef(("\n\n    Invalid assignment in %:\n      % ",bsrv o berv,bsrv x berv)) & FlagDesugarerInformFlag
+
+#define InformRepetitionLHS(x) Writef(("\n\n    Repetition of % in left-hand side of substitution ",bsrv x berv))
+
+
+
+#define InformSubstituteViolation(m,v,o) \
+    Writef(("\n\n    Substitution error in %:\n      Variable % of referenced construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+#define InformSubstituteViolationInit(m,v) \
+    Writef(("\n\n    Substitution error in INITIALISATION:\n      Variable % of referenced construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformSubstituteViolationSEES(m,v,o) \
+    Writef(("\n\n    Substitution error in %:\n      Variable % of SEEN construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+#define InformSubstituteViolationInitSEES(m,v) \
+    Writef(("\n\n    Substitution error in INITIALISATION:\n      Variable % of SEEN construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformSubstituteViolationREFINES(m,v,o) \
+    Writef(("\n\n    Substitution error in %:\n      Variable % of REFINED construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+#define InformSubstituteViolationInitREFINES(m,v) \
+    Writef(("\n\n    Substitution error in INITIALISATION:\n      Variable % of REFINED construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformSubstituteViolationUSES(m,v,o) \
+    Writef(("\n\n    Substitution error in %:\n      Variable % of USED construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+#define InformSubstituteViolationInitUSES(m,v) \
+    Writef(("\n\n    Substitution error in INITIALISATION:\n      Variable % of USED construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformSubstituteViolationEXTENDS(m,v,o) \
+    Writef(("\n\n    Substitution error in %:\n      Variable % of EXTENDED construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+#define InformSubstituteViolationInitEXTENDS(m,v) \
+    Writef(("\n\n    Substitution error in INITIALISATION:\n      Variable % of EXTENDED construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformSubstituteViolationINCLUDES(m,v,o) \
+    Writef(("\n\n    Substitution error in %:\n      Variable % of INCLUDED construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+#define InformSubstituteViolationInitINCLUDES(m,v) \
+    Writef(("\n\n    Substitution error in INITIALISATION:\n      Variable % of INCLUDED construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformSubstituteViolationIMPORTS(m,v,o) \
+    Writef(("\n\n    Substitution error in %:\n      Variable % of IMPORTED construct % ",bsrv o berv,bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+#define InformSubstituteViolationInitIMPORTS(m,v) \
+    Writef(("\n\n    Substitution error in INITIALISATION:\n      Variable % of IMPORTED construct % ",bsrv v berv,bsrv m berv)) & FlagDesugarerInformFlag
+
+
+
+#define InformLETSyntaxErrorInit(x) \
+    Writef(("\n\n    LET syntax error in INITIALISATION:\n\n      %\n\n    Should be an ampersand list of equalities ",bsrv x berv)) & FlagDesugarerInformFlag
+
+#define InformLETSyntaxError(x,o) \
+    Writef(("\n\n    LET syntax error in %:\n\n      %\n\n    Should be an ampersand list of equalities ",bsrv o berv,bsrv x berv)) & FlagDesugarerInformFlag
+
+
+
+
+#define CheckIntersection(a,b,c,d,e) \
+                bcall(((CheckIntersectionX~;MODR): ci(a,b,c)(d)(e)))
+
+
+#define CheckIntersectionOp(o,a,b,c,d,e) \
+                bcall(((CheckIntersectionX~;MODR): ci_op(o)(a,b,c)(d)(e)))
+
+
+#define InformRewritingColon(f,g,h) \
+    Writef(("\n      Operation % - rewriting:\n        %\n      to:\n        % .",f,g,h))
+
+#define ReadColonRewrites(x)     brule(RebuildX.8,x)
+#define ModifyColonRewrites(x)   bcall(MODR:bmodr(RebuildX.8,x))
+  
+
+THEORY DesugarerErrorX IS 0;0 END &
+
+THEORY ChaosX IS
+
+  brule(RebuildX.2,o) &
+  InformDesugarerSyntaxError(o,x) &
+  FlagNormaliserError
+ =>
+  x;
+
+  brule(RebuildX.2,o) &
+  InformDesugarerSyntaxError(o,x) &
+  FlagNormaliserError
+ =>
+  f(x);
+
+  brule(RebuildX.2,Init) &
+  InformDesugarerSyntaxErrorInit(x) &
+  FlagNormaliserError
+ =>
+  x;
+
+  brule(RebuildX.2,Init) &
+  InformDesugarerSyntaxErrorInit(x) &
+  FlagNormaliserError
+ =>
+  f(x);
+
+  DesugarerInformFlagFlagged &
+  FlagNormaliserError
+ =>
+  x
+
+END
+
+&
+
+THEORY CheckRepetitionX IS
+
+#define chk_rep_tac  (CheckRepetitionX)~
+
+#define CheckRepetition(x)  bcall(chk_rep_tac: chk_rep_0(x))
+
+  chk_rep_0(x);
+
+  chk_rep_0(y,x);
+
+  InformRep(x)
+ =>
+  chk_rep_0(x,x);
+
+  chk_rep_0(X)
+ =>
+  chk_rep_0(X,x);
+
+  bsearch(x,X,Y) &
+  InformRep(x)
+ =>
+  chk_rep_0(X,x)
+
+END
+
+&
+
+THEORY InformAssgnViolX IS
+
+#define inform_assgn_viol_tac (InformAssgnViolX)~
+
+#define InformAssgnViol(m,x)  \
+		bcall(inform_assgn_viol_tac: inform_assgn_viol(m,x))
+
+
+  brule(RebuildX.2,o) &
+  InformSubstituteViolation(m,x,o) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,Init) &
+  InformSubstituteViolationInit(m,x) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+
+
+  brule(RebuildX.2,o) &
+  brule(REFINESX.1,m) &
+  brule(SUB_VARIABLESX.I,m(x)) &
+  InformSubstituteViolationREFINES(m,x,o) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,o) &
+  brule(REFINESX.1,m) &
+  brule(SUB_VARIABLESX.I,m(X)) &
+  bsearch(x,X,Y) &
+  InformSubstituteViolationREFINES(m,x,o) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,Init) &
+  brule(REFINESX.1,m) &
+  brule(SUB_VARIABLESX.I,m(x)) &
+  InformSubstituteViolationInitREFINES(m,x) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,Init) &
+  brule(REFINESX.1,m) &
+  brule(SUB_VARIABLESX.I,m(X)) &
+  bsearch(x,X,Y) &
+  InformSubstituteViolationInitREFINES(m,x) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+
+
+
+  brule(RebuildX.2,o) &
+  brule(DOTTED_SEESX.I,m) &
+  InformSubstituteViolationSEES(m,x,o) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,Init) &
+  brule(DOTTED_SEESX.I,m) &
+  InformSubstituteViolationInitSEES(m,x) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,o) &
+  brule(DOTTED_USESX.I,m) &
+  InformSubstituteViolationUSES(m,x,o) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,Init) &
+  brule(DOTTED_USESX.I,m) &
+  InformSubstituteViolationInitUSES(m,x) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,o) &
+  brule(DOTTED_EXTENDSX.I,m) &
+  InformSubstituteViolationEXTENDS(m,x,o) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,Init) &
+  brule(DOTTED_EXTENDX.I,m) &
+  InformSubstituteViolationInitEXTENDS(m,x) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,o) &
+  brule(DOTTED_INCLUDESX.I,m) &
+  InformSubstituteViolationINCLUDES(m,x,o) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  brule(RebuildX.2,Init) &
+  brule(DOTTED_INCLUDESX.I,m) &
+  InformSubstituteViolationInitINCLUDES(m,x) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  CurrentConstructIsImp &
+  brule(RebuildX.2,o) &
+  brule(DOTTED_INCLUDESX.I,m) &
+  InformSubstituteViolationIMPORTS(m,x,o) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x);
+
+  CurrentConstructIsImp &
+  brule(RebuildX.2,Init) &
+  brule(DOTTED_INCLUDESX.I,m) &
+  InformSubstituteViolationInitIMPORTS(m,x) &
+  FlagDesugarerError
+ =>
+  inform_assgn_viol(m,x)
+
+END
+
+&
+
+THEORY CheckFullyHiddenMacrosX IS
+
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+  DesugarerErrorFlagged
+ =>
+  x;
+
+ WHILE a DO b INVARIANT c VARIANT d END ==  WHILE a DO b END;
+
+ WHILE a DO b VARIANT d INVARIANT c END ==  WHILE a DO b END;
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b) == (bnewv(a,b));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)(g)(h)) == (bnewv(a,b)(c)(d)(e)(f)(g)(h));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)(g)) == (bnewv(a,b)(c)(d)(e)(f)(g));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)(f)) == (bnewv(a,b)(c)(d)(e)(f));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)(e)) == (bnewv(a,b)(c)(d)(e));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)(d)) == (bnewv(a,b)(c)(d));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)) == (bnewv(a,b)(c));
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b~[c]) == (bnewv(a,b)~[c]);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b[c]) == (bnewv(a,b)[c])
+
+END
+
+&
+
+THEORY CheckFullyHiddenAbstractVariablesX IS 
+
+#define CheckFullyHiddenAbstractVariables(a) \
+  bcall((CheckFullyHiddenMacrosX~;((ARI;NEWV~;SUB)~;CheckFullyHiddenAbstractVariablesX)~): \
+      chv(a))
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+  DesugarerErrorFlagged
+ =>
+  x;
+
+/*  Writef(("\n\n      %\n\n    ",a))
+ =>
+  chv_4(a); */
+
+  brule(RebuildX.2,o) &
+  InformFullHidingViolationRefinedVariables(o,m,v) &
+/*  chv_4([v:=bsrv v berv]a) & */
+  FlagDesugarerError
+ =>
+  chv_3(a)(m)(v);
+
+  brule(RebuildX.2,Init) &
+  InformFullHidingViolationRefinedVariablesInit(m,v) &
+/*  chv_4([v:=bsrv v berv]a) & */
+  FlagDesugarerError
+ =>
+  chv_3(a)(m)(v);
+
+  chv_3(a)(m)(v)
+  =>
+  chv_2(a)(m)(v);
+
+  v\a  
+ =>
+  chv_2(a)(m)(v);
+ 
+  chv_3(a)(m)(v) &
+  chv_2(a)(m)(V)
+  =>
+  chv_2(a)(m)(V,v);
+
+  v\a &
+  chv_2(a)(m)(V)  
+ =>
+  chv_2(a)(m)(V,v);
+ 
+
+  brule(REFINESX.1,r) &
+  brule(TRUE_ABS_VARIABLESX.1,v) &
+  chv_2(a)(r)(v)
+ =>
+  chv(a);
+
+  brule(TRUE_ABS_VARIABLESX.1,v) &
+  v\a
+ =>
+  chv(a);
+
+  brule(TRUE_ABS_VARIABLESX.1,?)
+ =>
+  chv(a);
+
+  (VAR x IN s END) == (!(x).s);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b) == bnewv(a,b);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)) == ((bnewv(a,b))(c));
+
+  brule(REFINESX.1,?)
+ =>
+  chv(a);
+
+  CurrentConstructIsMch
+ =>
+  chv(a)
+
+END
+
+&
+
+THEORY CheckFullyHiddenSeenVariablesX IS 
+
+#define CheckFullyHiddenSeenVariables(a) \
+  bcall((CheckFullyHiddenMacrosX~;((ARI;NEWV~;SUB)~;CheckFullyHiddenSeenVariablesX)~): \
+      chv(a))
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+  DesugarerErrorFlagged
+ =>
+  x;
+
+/*  Writef(("\n\n      %\n\n    ",a))
+ =>
+  chv_4(a); */
+
+  brule(RebuildX.2,o) &
+  InformFullHidingViolationSeenVariables(o,m,v) &
+/*  chv_4([v:=bsrv v berv]a) & */
+  FlagDesugarerError
+ =>
+  chv_3(a)(m)(v);
+
+  brule(RebuildX.2,Init) &
+  InformFullHidingViolationSeenVariablesInit(m,v) &
+/*  chv_4([v:=bsrv v berv]a) & */
+  FlagDesugarerError
+ =>
+  chv_3(a)(m)(v);
+
+  chv_3(a)(m)(v)
+  =>
+  chv_2(a)(m)(v);
+
+  v\a  
+ =>
+  chv_2(a)(m)(v);
+ 
+  chv_3(a)(m)(v)
+  =>
+  chv_2(a)(m)(V,v);
+
+  v\a &
+  chv_2(a)(m)(V)  
+ =>
+  chv_2(a)(m)(V,v);
+ 
+  brule(DOTTED_SEESX.n,m) &
+  brule(SUB_VARIABLESX.I,m$v) &
+  chv_2(a)(m)(v) &
+  chv_1(a)(n-1)
+ =>
+  chv_1(a)(n);
+
+  brule(DOTTED_SEESX.n,m) &
+  brule(SUB_VARIABLESX.I,m$v) &
+  v\a &
+  chv_1(a)(n-1)
+ =>
+  chv_1(a)(n);
+
+  brule(DOTTED_SEESX.n,m) &
+  brule(SUB_VARIABLESX.I,m$?) &
+  chv_1(a)(n-1)
+ =>
+  chv_1(a)(n);
+
+  chv_1(a)(0);
+
+  blent(DOTTED_SEESX.n) &
+  chv_1(a)(n)
+ =>
+  chv(a);
+
+  (VAR x IN s END) == (!(x).s);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b) == bnewv(a,b);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)) == ((bnewv(a,b))(c));
+
+  brule(DOTTED_SEESX.1,?)
+ =>
+  chv(a);
+
+  CurrentConstructIsRef
+ =>
+  chv(a);
+
+  CurrentConstructIsMch
+ =>
+  chv(a)
+
+END
+
+&
+
+THEORY CheckFullyHiddenImportedVariablesX IS 
+
+#define CheckFullyHiddenImportedVariables(a) \
+  bcall((CheckFullyHiddenMacrosX~;((ARI;NEWV~;SUB)~;CheckFullyHiddenImportedVariablesX)~): \
+      chv(a))
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+  DesugarerErrorFlagged
+ =>
+  x;
+
+/*  Writef(("\n\n      %\n\n    ",a))
+ =>
+  chv_4(a); */
+
+  brule(RebuildX.2,o) &
+  InformFullHidingViolationImportedVariables(o,m,v) &
+/*  chv_4([v:=bsrv v berv]a) & */
+  FlagDesugarerError
+ =>
+  chv_3(a)(m)(v);
+
+  brule(RebuildX.2,Init) &
+  InformFullHidingViolationImportedVariablesInit(m,v) &
+/*  chv_4([v:=bsrv v berv]a) & */
+  FlagDesugarerError
+ =>
+  chv_3(a)(m)(v);
+
+  chv_3(a)(m)(v)
+  =>
+  chv_2(a)(m)(v);
+
+  v\a  
+ =>
+  chv_2(a)(m)(v);
+ 
+  chv_3(a)(m)(v)
+  =>
+  chv_2(a)(m)(V,v);
+
+  v\a &
+  chv_2(a)(m)(V)  
+ =>
+  chv_2(a)(m)(V,v);
+ 
+  brule(DOTTED_INCLUDESX.n,m) &
+  brule(SUB_VARIABLESX.I,m$v) &
+  chv_2(a)(m)(v) &
+  chv_1(a)(n-1)
+ =>
+  chv_1(a)(n);
+
+  brule(DOTTED_INCLUDESX.n,m) &
+  brule(SUB_VARIABLESX.I,m$v) &
+  v\a &
+  chv_1(a)(n-1)
+ =>
+  chv_1(a)(n);
+
+  brule(DOTTED_INCLUDESX.n,m) &
+  brule(SUB_VARIABLESX.I,m$?) &
+  chv_1(a)(n-1)
+ =>
+  chv_1(a)(n);
+
+  chv_1(a)(0);
+
+  blent(DOTTED_INCLUDESX.n) &
+  chv_1(a)(n)
+ =>
+  chv(a);
+
+  (VAR x IN s END) == (!(x).s);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b) == bnewv(a,b);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a.b(c)) == ((bnewv(a,b))(c));
+
+  brule(DOTTED_INCLUDESX.1,?)
+ =>
+  chv(a);
+
+  CurrentConstructIsRef
+ =>
+  chv(a);
+
+  CurrentConstructIsMch
+ =>
+  chv(a)
+
+END
+
+&
+
+THEORY LocalVarListX END & 
+
+THEORY AddLocalVarListX IS
+
+#define AddLocalVarList(o,v) \
+	bcall(((RULE;FLAT;MODR)~;AddLocalVarListX)~: alv(o,v))
+
+#define UnloadVar bcall(((ARI;WRITE)~;AddLocalVarListX)~: uv_0)
+
+
+  uv(I);
+
+  brule(LocalVarListX.I,x) &
+  bprintf(";(%)\n",x) &
+  uv(I+1)
+ =>
+  uv(I);
+
+  InformCantConnect(".Bvar") &
+  PFZ
+ =>
+  uv_0;
+
+  bconnect(".Bvar") &
+  bprintf("?\n") &
+  uv(1)
+ =>
+  uv_0;
+
+  bcrer(LocalVarListX,(o:(v)))
+ =>
+  alv(o,v);
+
+  brule(LocalVarListX.I,(o:(V))) &
+  bmodr(LocalVarListX.I,(o:(bflat(V,v))))
+ =>
+  alv(o,v)
+
+END
+
+&
+
+THEORY CleanDesugarerX IS
+
+#define CleanDesugarer bcall((CleanDesugarerX;MODR~;RULE)~: clean_desg_0)
+
+
+  clean_desg_1;
+
+  brule(DesugarerStackX.1,x) &
+  bclean(DesugarerStackX)
+ =>
+  clean_desg_1;
+
+  bmodr(RebuildX.1,?) &
+  bmodr(RebuildX.3,1) &
+  bmodr(ConstructConjoinOfNegationX.1,?) &
+  bmodr(ConstructAlphaConversionX.1,?) &
+  bmodr(ConstructFreshVariableListX.1,?) &
+  bmodr(ConstructFreshVariableListWithRenameX.1,?) &
+  clean_desg_1
+ =>
+  clean_desg_0
+
+END
+
+&
+
+#define SetCurrentlyDesugaringLoopFlag      bcall(MODR: bmodr(RebuildX.7,1))
+
+#define SetNotCurrentlyDesugaringLoopFlag   bcall(MODR: bmodr(RebuildX.7,0))
+
+#define CurrentlyDesugaringLoop         brule(RebuildX.7,1)
+
+#define NotCurrentlyDesugaringLoop      brule(RebuildX.7,0)
+
+
+
+
+#define DesugarNoExpand(a) \
+  bcall(DesugarTac:( CleanDesugarer & \
+                     ClearDesugarerInformFlag & \
+                     SetNotCurrentlyDesugaringLoopFlag & \
+                     SetDontExpandOpFlag & \
+                     bmodr(RebuildX.5,Val_Op) & \
+                     bmodr(RebuildX.6,Det_Op) & \
+                     desugar(a) & \
+                     finiDesugar))
+
+
+
+#define Desugar(a) \
+  bcall(DesugarTac:( CleanDesugarer & \
+                     ClearDesugarerInformFlag & \
+                     SetNotCurrentlyDesugaringLoopFlag & \
+                     SetExpandOpFlag & \
+                     bmodr(RebuildX.5,Val_Op) & \
+                     bmodr(RebuildX.6,Det_Op) & \
+                     desugar(a) & \
+                     finiDesugar))
+
+
+
+#define print_Desugarer_database PrintTHEORY(REFINESX) & \
+                   PrintTHEORY(AnlHeaderX) & \
+                   PrintTHEORY(LOCAL_VARIABLESX) & \
+                   PrintTHEORY(DIST_SUB_VARIABLESX) & \
+                   PrintTHEORY(DOTTED_SEESX) & \
+                   PrintTHEORY(DOTTED_USESX) & \
+                   PrintTHEORY(DOTTED_EXTENDSX) & \
+                   PrintTHEORY(DOTTED_INCLUDESX) & \
+                   PrintTHEORY(TRUE_ABS_VARIABLESX) & \
+                   PrintTHEORY(LocalVarListX) & \
+                   PrintTHEORY(AnlFullVariablesX) & \
+                   PrintTHEORY(AnlLocalVariablesX) & \
+                   PrintTHEORY(SUB_SETSX) & \
+                   PrintTHEORY(SUB_CONSTANTSX) & \
+                   PrintTHEORY(SUB_VARIABLESX) & \
+                   PrintTHEORY(SUB_PARAMETERSX) & \
+                   PrintTHEORY(SUB_OPERATIONSX)
+
+
+THEORY ConstructConjoinOfNegationX IS
+
+/*
+  conjoin of negation of guards stored in TempX.1 for ELSE/OTHERS construct
+
+  input: ConstructConjoinOfNegation(a)
+    a of form  d==>e [] ... ... [] s==>t
+  result
+    not(d) & ... & not(s) stored in ConstructConjoinOfNegation.1
+*/
+
+#define ConstructConjoinOfNegation(a) \
+    bcall((ConstructConjoinOfNegationX~;REV):ccon1(a)(?)) 
+
+  ?;                     /* for result */
+
+  bcall((ARI;MODR):bmodr(ConstructConjoinOfNegationX.1,a))
+ =>
+  ccon2(a&?);
+
+
+  ccon2(brev(e&not(a)))
+ =>
+  ccon1(a|p==>b)(e);             /* should not be reachable */
+
+
+
+  ccon2(brev(e&not(a)))
+ =>
+  ccon1(a=>b|c==>s)(e);         /* precondition inside guard */
+
+
+
+  ccon2(brev(e&not(a)))
+ =>
+  ccon1(a==>b)(e);
+
+  ccon1(a)(e&not(c))
+ =>
+  ccon1(a[]c==>d)(e);
+
+
+  ccon1(a)(e&not(f))
+ =>
+  ccon1(a[](f=>b|c==>d))(e)     /* precondition inside guard */
+
+
+
+END
+
+&
+
+THEORY ConstructAlphaConversionX IS
+
+/*
+  perform alpha conversion: @a.b || c to @d.([a:=d]b || c) (d not free in c)
+
+  input: ConstructAlphaConversion(a,b,c)
+    a a variable list
+    b a generalised substitution
+    c a generalised substitution
+  result
+    @a.b || c to @d.([a:=d]b || c) (d not free in c)
+    stored in ConstructAlphaConversionX.1
+*/
+
+#define ConstructAlphaConversion(a,b,c) \
+  bcall(((NEWV;ConstructAlphaConversionX)~;REV;ConstructAlphaConversionX): \
+      cac1(a)(a)(?)(b)(c))
+
+
+  ?;                     /* for result */
+
+  bcall((ARI;MODR):bmodr(ConstructAlphaConversionX.1,(@a.([v:=a]b || c))))
+ =>
+  cac4(v)(a,?)(b)(c);
+
+  bident(c) &
+  cac3(v)(a,bnewv(c,x))(d)(e)
+ =>
+  cac3(v)(a,c)(d)(e);
+
+  c\e &
+  cac4(v)(brev(a,c))(d)(e)
+ =>
+  cac3(v)(a,c)(d)(e);
+
+  bident(a) &
+  cac3(v)(c,bnewv(a,x))(d)(e)
+ =>
+  cac1(v)(a)(c)(d)(e);
+
+  a\e &
+  cac4(v)(brev(c,a))(d)(e)
+ =>
+  cac1(v)(a)(c)(d)(e);
+
+  bident(c) &
+  cac2(v)(a)(b,bnewv(c,x))(d)(e)
+ =>
+  cac2(v)(a)(b,c)(d)(e);
+
+  c\e &
+  cac1(v)(a)(b,c)(d)(e)
+ =>
+  cac2(v)(a)(b,c)(d)(e);
+
+  bident(b) &
+  cac2(v)(a)(c,bnewv(b,x))(d)(e)
+ =>
+  cac1(v)(a,b)(c)(d)(e);
+
+  b\e &
+  cac1(v)(a)(c,b)(d)(e)
+ =>
+  cac1(v)(a,b)(c)(d)(e)
+
+END
+
+&
+
+THEORY  ConstructFreshVariableListX IS
+
+/*
+  also in Animator.src/PO...
+
+  fresh variable list constructed for :: construct
+
+  input: ConstructFreshVariableList(v,s)
+    v variable list
+    s set-theoretic expression
+  result
+    (v,x,p) stored in ConstructFreshVariableListX.1
+      v unchanged
+      x fresh variable list none of which appears free in v or s (x1,x2,...)
+      p the predicate x1:s & x2:s & ...
+*/
+
+
+#define BuildFreenessAggregate \
+   bcall(((MAP;ARI;MODR)~;ConstructFreshVariableListWithRenameX)~:aggreg_)
+
+#define ConstructFreshVariableList(v,s) \
+   BuildFreenessAggregate & \
+   bcall(((NEWV~;ConstructFreshVariableListX)~;REV~;ConstructFreshVariableListX):\
+         cfvl1(v)(s)(v | ? | ?))
+
+
+  ?;                     /* for result */
+
+  ?;  /* aggregate of FULL_SETSX, FULL_CONSTANTSX etc */
+#define ReadFreenessAggregate(x)     brule(ConstructFreshVariableListX.2,x)
+#define ModifyFreenessAggregate(x) \
+                bcall(MODR:bmodr(ConstructFreshVariableListX.2,x))
+
+  ?;  /* cfg form of curr mch */
+#define ReadCfgFormCurrMch(z)     brule(ConstructFreshVariableListX.3,z)
+#define ModifyCfgFormCurrMch(z) \
+                bcall(MODR:bmodr(ConstructFreshVariableListX.3,z))
+
+  bcall((ARI;MODR):bmodr(ConstructFreshVariableListX.1,(v,x,p)))
+ =>
+  cfvl4(v)(x,?)(p & ?);
+
+  bcall((ARI;REV;MODR):bmodr(ConstructFreshVariableListX.1,(v,x,(brev(p):s))))
+ =>
+  cfvl4(v)(x,?)(p:s & ?);
+
+  ExpandOpFlagSet &
+  FlagDesugarerError
+ =>
+  cfvl3(v)(s)(a,b | d);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  InformNotAnIdentifierWithOp(o,b) &
+  FlagDesugarerError
+ =>
+  cfvl3(v)(s)(a,b | d);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  InformNotAnIdentifierWithOp(o,b) &
+  FlagDesugarerError
+ =>
+  cfvl3(v)(s)(a,bnewv(b,x) | d);
+
+  bident(b) &
+  cfvl3(v)(s)(a,bnewv(b,x) | d)
+ =>
+  cfvl3(v)(s)(a,b | d);
+
+  ReadFreenessAggregate(F) &
+  b\F &
+  ReadCfgFormCurrMch(G) &
+  b\G &
+  b\v &
+  b\s &
+  cfvl4(v)(brev(a,b))(brev(d & b:s))
+ =>
+  cfvl3(v)(s)(a,b | d);
+
+  ReadFreenessAggregate(F) &
+  b\F &
+  ReadCfgFormCurrMch(G) &
+  b\G &
+  b\v &
+  b\s &
+  cfvl4(v)(brev(a,b))(brev(? & d,b:s))
+ =>
+  cfvl3(v)(s)(a,b | ? & d:s);
+
+  bident(c) &
+  cfvl2(v)(s)(a | b,bnewv(c,x) | d)
+ =>
+  cfvl2(v)(s)(a | b,c | d);
+
+  NormaliserErrorFlagged
+ =>
+  cfvl2(v)(s)(a | b,bnewv(c,x) | d);
+
+  DesugarerErrorFlagged
+ =>
+  cfvl2(v)(s)(a | b,bnewv(c,x) | d);
+
+  ReadFreenessAggregate(F) &
+  c\F &
+  ReadCfgFormCurrMch(G) &
+  c\G &
+  c\v &
+  c\s &
+  cfvl1(v)(s)(a | b,c | d & c:s)
+ =>
+  cfvl2(v)(s)(a | b,c | d);
+
+  ReadFreenessAggregate(F) &
+  c\F &
+  ReadCfgFormCurrMch(G) &
+  c\G &
+  c\v &
+  c\s &
+  cfvl1(v)(s)(a | b,c | ? & d,c:s)
+ =>
+  cfvl2(v)(s)(a | b,c | ? & d:s);
+
+  cfvl3(v)(s)(b,a | d)
+ =>
+  cfvl1(v)(s)(a | b | d);
+
+  cfvl2(v)(s)(a | c,b | d)
+ =>
+  cfvl1(v)(s)(a,b | c | d)
+
+END
+
+&
+
+THEORY  ConstructFreshVariableListWithRenameX IS
+
+/*
+  also in Animator.src/PO...
+
+  fresh variable list and predicate constructed for : construct
+  and stored in TempX.1
+
+  input: ConstructFreshVariableListWithRename(v,p)
+    v variable list
+    p predicate
+  result
+    (v,x,q) stored in ConstructFreshVariableListWithRenameX.1
+      v unchanged
+      x fresh variable list none of which appears free in v or p (x1,x2,...)
+      q the predicate [v,v0:=x,v]p
+*/
+
+#define ConstructFreshVariableListWithRename(v,p) \
+   BuildFreenessAggregate & \
+   bcall(((NEWV~;ConstructFreshVariableListWithRenameX)~;REV~;ConstructFreshVariableListWithRenameX;FLAT~;ConstructFreshVariableListWithRenameX):\
+           cfvlwr1(v)(p)(v | ? | ?))
+
+
+  ?;                     /* for result */
+
+  aggreg2_(t)(N);
+
+  brule(t.N,a) &
+  ReadFreenessAggregate(b) &
+  ModifyFreenessAggregate((b;a)) &
+  aggreg2_(t)(N+1)
+ =>
+  aggreg2_(t)(N);
+
+  aggreg2_(t)(1)
+ =>
+  aggreg1_(t);
+
+  aggreg_;  /* already built */
+
+  ReadFreenessAggregate(?) &
+  aggreg1_ bsmap
+      (SUB_SETSX,
+       SUB_CONSTANTSX,
+       SUB_VARIABLESX,
+       SUB_PARAMETERSX)
+ =>
+  aggreg_;
+
+
+
+  bvrb(a) &
+  bvrb(b) &
+  bcall((ARI;SUB;MODR):bmodr(ConstructFreshVariableListWithRenameX.1,(v,x,[a:=b]p)))
+ =>
+  cfvlwr5(v)(x)(p)(a)(b);
+
+  cfvlwr5(v)(x)(p)(bflat(v,e))(bflat(x,v))
+ =>
+  cfvlwr4(v)(p)(x,?)(e,?);
+
+  ExpandOpFlagSet &
+  FlagDesugarerError
+ =>
+  cfvlwr3(v)(p)(a,b | c);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  InformNotAnIdentifierWithOp(o,b) &
+  FlagDesugarerError
+ =>
+  cfvlwr3(v)(p)(a,b | c);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  InformNotAnIdentifierWithOp(o,b) &
+  FlagDesugarerError
+ =>
+  cfvlwr3(v)(p)(a,bnewv(b,x) | c);
+
+  bident(b) &
+  cfvlwr3(v)(p)(a,bnewv(b,x) | c)
+ =>
+  cfvlwr3(v)(p)(a,b | c);
+
+  NormaliserErrorFlagged
+ =>
+  cfvlwr3(v)(p)(a,bnewv(b,x) | c);
+
+  DesugarerErrorFlagged
+ =>
+  cfvlwr3(v)(p)(a,bnewv(b,x) | c);
+
+  ReadFreenessAggregate(F) &
+  b\F &
+  ReadCfgFormCurrMch(G) &
+  b\G &
+  b\v &
+  b\p &
+  cfvlwr4(v)(p)(brev(a,b))(brev(c))
+ =>
+  cfvlwr3(v)(p)(a,b | c);
+
+  bident(c) &
+  cfvlwr2(v)(p)(a | b,bnewv(c,x) | d)
+ =>
+  cfvlwr2(v)(p)(a | b,c | d);
+
+  ReadFreenessAggregate(F) &
+  c\F &
+  ReadCfgFormCurrMch(G) &
+  c\G &
+  c\v &
+  c\p &
+  cfvlwr1(v)(p)(a | b,c | d)
+ =>
+  cfvlwr2(v)(p)(a | b,c | d);
+
+  cfvlwr3(v)(p)(b,a | c,a$0)
+ =>
+  cfvlwr1(v)(p)(a | b | c);
+
+  cfvlwr2(v)(p)(a | c,b | d,b$0)
+ =>
+  cfvlwr1(v)(p)(a,b | c | d)
+
+END
+
+&
+
+THEORY CheckNumberOpParamsX IS
+
+/*
+  checks that number of input/output actual/formal parameters
+  are the same
+
+  invocation: CheckNumberOpParams(m,a,b)
+
+    m is operation name
+      a is formal parameter list
+      b is actual parameter list
+*/
+
+#define CheckNumberOpParams(m,a,b) \
+         bcall((CheckNumberOpParamsX~;MODR):cnop(m,a,b)(a)(b))
+
+
+  cnop(m,X,Y)(a)(b);
+
+  brule(RebuildX.2,o) &
+  InformOpParameterDiscrepancyOne(o,m,X) &
+  FlagDesugarerError
+ =>
+  cnop(m,X,Y)(a)(?);
+
+  brule(RebuildX.2,o) &
+  InformOpParameterDiscrepancyOne(o,m,Y) &
+  FlagDesugarerError
+ =>
+  cnop(m,X,Y)(?)(b);
+
+  brule(RebuildX.2,o) &
+  InformOpParameterDiscrepancy(o,m,X,Y) &
+  FlagDesugarerError
+ =>
+  cnop(m,X,Y)(a,s)(b);
+
+  brule(RebuildX.2,o) &
+  InformOpParameterDiscrepancyOne(o,m,X) &
+  FlagDesugarerError
+ =>
+  cnop(m,X,?)(a,s)(b);
+
+  brule(RebuildX.2,o) &
+  InformOpParameterDiscrepancy(o,m,X,Y) &
+  FlagDesugarerError
+ =>
+  cnop(m,X,Y)(a)(b,t);
+
+  brule(RebuildX.2,o) &
+  InformOpParameterDiscrepancyOne(o,m,Y) &
+  FlagDesugarerError
+ =>
+  cnop(m,?,Y)(a)(b,t);
+
+  cnop(m,X,Y)(a)(b)
+ =>
+  cnop(m,X,Y)(a,s)(b,t)
+
+END
+
+&
+
+THEORY RebuildX IS
+
+  ?;                  /* 1. result stored here */
+
+  ?;                  /* 2. operation name */
+
+  1;                  /* 3. 0=>don't expand, 1=>expand */
+
+  ?;                  /* 4. current bound variable list */
+
+  Val_Op;             /* 5. Mod_Op, Val_Op flag */
+
+  Det_Op;             /* 6. NonDet_Op, Det_Op flag */
+
+  0;                  /* 7. 1=>currently desugaring a loop, 0=>not ... */
+
+  ?                   /* 8. ColonRewrites (for TypeChecker) */
+
+END
+
+&
+
+THEORY DesugarerStackX END &
+
+THEORY GlueDotsDesugarerX IS
+
+  bident(a) &     /* since predicates not desugared! Dave added 08.06.92 */
+  bident(b)
+ =>
+  (a.b) == bnewv(a,b);
+
+  bident(a) &     /* since predicates not desugared! Dave added 08.06.92 */
+  bident(b)
+ =>
+  (a.b(c)) == (bnewv(a,b)(c))
+
+END
+
+&
+
+THEORY CheckNoCaseOverlapX IS
+
+#define CheckNoCaseOverlap(x) \
+            bcall(((MODR;MAP)~;CheckNoCaseOverlapX)~:cnco0(x))
+
+?;
+
+  ?;
+  
+  ?;
+  
+  ?;
+  
+  brule(CheckNoCaseOverlapX.1,T) &
+  bmodr(CheckNoCaseOverlapX.1,(T,t))
+ =>
+  cnco2(t);
+
+  brule(CheckNoCaseOverlapX.1,T) &
+  bsearch(t,T,U) &
+  brule(CheckNoCaseOverlapX.3,V) &
+  bmodr(CheckNoCaseOverlapX.3,(V,t)) &
+  brule(RebuildX.2,o) &
+  brule(CheckNoCaseOverlapX.2,c) &
+  InformCaseOverlap(o,t,c) &
+  FlagDesugarerError 
+ =>
+  cnco2(t);
+
+  brule(CheckNoCaseOverlapX.1,T) &
+  bsearch(t,T,U) &
+  brule(CheckNoCaseOverlapX.3,V) &
+  bmodr(CheckNoCaseOverlapX.3,(V,t)) &
+  brule(RebuildX.2,Init) &
+  brule(CheckNoCaseOverlapX.2,c) &
+  InformCaseOverlapInit(t,c) &
+  FlagDesugarerError 
+ =>
+  cnco2(t);
+
+  brule(CheckNoCaseOverlapX.1,T) &
+  bsearch(t,T,U) &
+  brule(CheckNoCaseOverlapX.3,V) &
+  bsearch(t,V,W)                  /* already reported */
+ =>
+  cnco2(t);
+
+  cnco2 bsmap t
+ =>
+  cnco1(t THEN u);
+
+  cnco2 bsmap t &
+  cnco1(s)
+ =>
+  cnco1(s OR t THEN u);
+
+  cnco1(s)
+ =>
+  cnco1(s ELSE t);
+
+  cnco0(x);
+
+  DontExpandOpFlagSet &
+  bmodr(CheckNoCaseOverlapX.1,?) &
+  bmodr(CheckNoCaseOverlapX.2,(CASE a OF EITHER b END END)) &
+  bmodr(CheckNoCaseOverlapX.3,?) &
+  cnco1(b)
+ =>
+  cnco0(CASE a OF EITHER b END END)
+
+END
+
+&
+
+THEORY DecomposeX IS
+
+  ?,Stm;   /* stack: Exp,Stm,Prd,Vrb,Lpt,Idl - default start: Stm */
+
+  chk_rep(v);
+
+  chk_rep(V)
+ =>
+  chk_rep(V,v);
+
+  InformRepetitionLHS(v)
+ =>
+  chk_rep(v,v);
+
+  bsearch(v,V,W) &
+  InformRepetitionLHS(v) &
+  chk_rep(W)
+ =>
+  chk_rep(V,v);
+
+  finiDesugar_1;
+
+  brule(DesugarerStackX.1,a) &
+  Writef(("\n      % % - %\n",bsrv Desugarer berv,bsrv Error berv,a))
+ =>
+  finiDesugar_1;
+
+
+
+  brule(DesugarerStackX.1,a) &
+  bpop(DesugarerStackX) &
+  bcall((GlueDotsDesugarerX~;NEWV~;MODR):bmodr(RebuildX.1,a)) &
+  finiDesugar_1
+ =>
+  finiDesugar;
+
+  ExpandOpFlagSet &
+  brule(DesugarerStackX.1,a) &
+  bpop(DesugarerStackX) &
+  bcall((GlueDotsDesugarerX~;NEWV~;MODR):bmodr(RebuildX.1,a)) &
+  finiDesugar_1 &
+  bcall(DesugarParallelTac : check_parallel(a))
+ =>
+  finiDesugar;
+
+  DesugarerErrorFlagged &
+  FlagNormaliserError
+ =>
+  finiDesugar;
+
+  NormaliserErrorFlagged
+ =>
+  finiDesugar;
+
+  PushCurrentlyProcessing(s)
+ =>
+  push_currently_processing(s);
+
+
+  PopCurrentlyProcessing
+ =>
+  pop_currently_processing;
+
+
+  PushPopCurrentlyProcessing(s)
+ =>
+  push_pop_currently_processing(s);
+
+
+
+  brule(RebuildX.2,o) &
+  InformDesugarerIdentifier(o,b) &
+  FlagDesugarerError 
+ =>
+  mod_bound(b);
+
+  brule(RebuildX.4,v) &
+  bsearch(b,v,w) &
+  bmodr(RebuildX.4,w)
+ =>
+  mod_bound(b);
+
+  brule(RebuildX.2,o) &
+  InformDesugarerIdentifier(o,b) &
+  FlagDesugarerError 
+ =>
+  mod_bound(a,b);
+
+  bident(b) &
+  brule(RebuildX.4,v) &
+  bsearch(b,v,w) &
+  bmodr(RebuildX.4,w) &
+  mod_bound(a)
+ =>
+  mod_bound(a,b);
+
+
+
+
+  desugar(b) &
+  desugar(a) &
+  rec$eql
+ =>
+  desugar(a=b);
+
+  CurrentlyProcessing(Stm) &
+  FlagDesugarerError
+ =>
+  desugar(a=b);
+
+  CurrentlyProcessing(Stm) &
+  FlagDesugarerError
+ =>
+  desugar(a=b);
+
+/*  ExpandOpFlagSet & */
+  CurrentlyProcessing(Stm) &
+  brule(RebuildX.2,o) &
+  InformDesugarerSyntaxError(o,(a=b)) &
+  FlagDesugarerError
+ =>
+  desugar(a=b);
+
+  ExpandOpFlagSet &
+  CurrentlyProcessing(Stm) &
+  brule(RebuildX.2,Init) &
+  InformDesugarerSyntaxErrorInit((a=b)) &
+  FlagDesugarerError
+ =>
+  desugar(a=b);
+
+
+
+
+  CurrentlyProcessing(Prd) &            /* can also appear in a guard */
+  push_currently_processing(Idl) &
+  desugar(a) &
+  desugar(f.g) &
+  pop_currently_processing &
+  rec$appl
+ =>
+  desugar(f.g(a));
+
+
+
+  CurrentlyProcessing(Stm) &
+  bident(a) &
+  bcrer(DesugarerStackX,a) &
+  rec$plainop
+ =>
+  desugar(a);
+
+  CurrentlyProcessing(Stm) &
+  push_currently_processing(Idl) &
+  desugar(a) &
+  desugar(f) &
+  pop_currently_processing &
+  rec$appl
+ =>
+  desugar(f(a));
+
+  CurrentlyProcessing(Stm) &
+  push_currently_processing(Idl) &
+  desugar(a) &
+  desugar(f.g) &
+  pop_currently_processing &
+  rec$appl
+ =>
+  desugar(f.g(a));
+
+  CurrentlyProcessing(Stm) &
+  push_currently_processing(Idl) &
+  desugar(f) &
+  desugar(r) &
+  pop_currently_processing &
+  rec$retn
+ =>
+  desugar(r<--f);
+
+  CurrentlyProcessing(Stm) &
+  push_currently_processing(Idl) &
+  desugar(f.g) &
+  desugar(r) &
+  pop_currently_processing &
+  rec$retn
+ =>
+  desugar(r<--f.g);
+
+  CurrentlyProcessing(Stm) &
+  push_currently_processing(Idl) &
+  desugar(s) &
+  desugar(f) &
+  desugar(r) &
+  pop_currently_processing &
+  rec$applretn
+ =>
+  desugar(r<--f(s));
+
+  CurrentlyProcessing(Stm) &
+  push_currently_processing(Idl) &
+  desugar(s) &
+  desugar(f.g) &
+  desugar(r) &
+  pop_currently_processing &
+  rec$applretn
+ =>
+  desugar(r<--f.g(s));
+
+
+
+  CurrentlyProcessing(Stm) &
+  NotCurrentlyDesugaringLoop &
+  SetCurrentlyDesugaringLoopFlag &
+  push_currently_processing(Prd) &
+  desugar(d) &
+  desugar(c) &
+  pop_currently_processing &
+  desugar(b) &
+  push_currently_processing(Prd) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$while &
+  SetNotCurrentlyDesugaringLoopFlag
+ =>
+  desugar(WHILE a DO b INVARIANT c VARIANT d END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsRef &
+  CurrentlyProcessing(Stm) &
+  InformIllegalRefinementConstruct(o,"WHILE",(WHILE a DO b INVARIANT c VARIANT d END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b INVARIANT c VARIANT d END))
+ =>
+  desugar(WHILE a DO b INVARIANT c VARIANT d END);
+
+  CurrentlyDesugaringLoop &
+  brule(RebuildX.2,o) &
+  InformNestedLoop(o) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b INVARIANT c VARIANT d END))
+ =>
+  desugar(WHILE a DO b INVARIANT c VARIANT d END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsRef &
+  CurrentlyProcessing(Stm) &
+  InformIllegalRefinementConstructInit("WHILE",(WHILE a DO b INVARIANT c VARIANT d END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b INVARIANT c VARIANT d END))
+ =>
+  desugar(WHILE a DO b INVARIANT c VARIANT d END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsRef &
+  CurrentlyProcessing(Stm) &
+  InformIllegalRefinementConstruct(o,"WHILE",(WHILE a DO b INVARIANT c VARIANT d END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b INVARIANT c VARIANT d END))
+ =>
+  desugar(WHILE a DO b INVARIANT c VARIANT d END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsMch &
+  CurrentlyProcessing(Stm) &
+  InformIllegalMachineConstruct(o,"WHILE",(WHILE a DO b INVARIANT c VARIANT d END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b INVARIANT c VARIANT d END))
+ =>
+  desugar(WHILE a DO b INVARIANT c VARIANT d END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsMch &
+  CurrentlyProcessing(Stm) &
+  InformIllegalMachineConstructInit("WHILE",(WHILE a DO b INVARIANT c VARIANT d END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b INVARIANT c VARIANT d END))
+ =>
+  desugar(WHILE a DO b INVARIANT c VARIANT d END);
+
+
+  desugar(WHILE a DO b INVARIANT c VARIANT d END)
+ =>
+  desugar(WHILE a DO b VARIANT d INVARIANT c END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsRef &
+  CurrentlyProcessing(Stm) &
+  InformIllegalRefinementConstruct(o,"WHILE",(WHILE a DO b VARIANT d INVARIANT c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b VARIANT d INVARIANT c END))
+ =>
+  desugar(WHILE a DO b VARIANT d INVARIANT c END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsRef &
+  CurrentlyProcessing(Stm) &
+  InformIllegalRefinementConstructInit("WHILE",(WHILE a DO b VARIANT d INVARIANT c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b VARIANT d INVARIANT c END))
+ =>
+  desugar(WHILE a DO b VARIANT d INVARIANT c END);
+
+  IsVHDL &
+  CurrentConstructIsRef &
+/*
+  CurrentConstructIsVHDL & RELAXED FOR WIL
+*/
+  CurrentlyProcessing(Stm) &
+  NotCurrentlyDesugaringLoop &
+  SetCurrentlyDesugaringLoopFlag &
+  push_currently_processing(Prd) &
+  desugar(d) &
+  desugar(c) &
+  pop_currently_processing &
+  desugar(b) &
+  push_currently_processing(Prd) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$while &
+  SetNotCurrentlyDesugaringLoopFlag
+ =>
+  desugar(WHILE a DO b VARIANT d INVARIANT c END);
+
+  IsVHDL &
+  CurrentConstructIsRef &
+/*
+  CurrentConstructIsVHDL & RELAXED FOR WIL
+*/
+  CurrentlyProcessing(Stm) &
+  NotCurrentlyDesugaringLoop &
+  SetCurrentlyDesugaringLoopFlag &
+  push_currently_processing(Prd) &
+  desugar(d) &
+  desugar(c) &
+  pop_currently_processing &
+  desugar(b) &
+  push_currently_processing(Prd) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$while &
+  SetNotCurrentlyDesugaringLoopFlag
+ =>
+  desugar(WHILE a DO b INVARIANT c VARIANT d END);
+
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsMch &
+  CurrentlyProcessing(Stm) &
+  InformIllegalMachineConstruct(o,"WHILE",(WHILE a DO b VARIANT d INVARIANT c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b VARIANT d INVARIANT c END))
+ =>
+  desugar(WHILE a DO b VARIANT d INVARIANT c END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsMch &
+  CurrentlyProcessing(Stm) &
+  InformIllegalMachineConstructInit("WHILE",(WHILE a DO b VARIANT d INVARIANT c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a DO b VARIANT d INVARIANT c END))
+ =>
+  desugar(WHILE a DO b VARIANT d INVARIANT c END);
+
+
+  CurrentlyProcessing(Stm) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  desugar(a) &
+  rec$choic
+ =>
+  desugar(CHOICE a END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"CHOICE",(CHOICE a END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(CHOICE a END))
+ =>
+  desugar(CHOICE a END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("CHOICE",(CHOICE a END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(CHOICE a END))
+ =>
+  desugar(CHOICE a END);
+
+  CurrentlyProcessing(Stm) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  desugar(b) &
+  rec$Or &
+  desugar(CHOICE a END)
+ =>
+  desugar(CHOICE a OR b END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"CHOICE",(CHOICE a OR b END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(CHOICE a OR b END))
+ =>
+  desugar(CHOICE a OR b END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("CHOICE",(CHOICE a OR b END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(CHOICE a OR b END))
+ =>
+  desugar(CHOICE a OR b END);
+
+
+
+
+
+
+  desugar(c) &
+  push_currently_processing(Prd) &
+/*  desugar(a=b) & */
+  desugar(a:{b}) &
+  pop_currently_processing &
+  rec$then &
+  rec$select
+ =>
+  desugar(a|EITHER b THEN c END);
+
+  desugar(c) &
+  push_currently_processing(Prd) &
+  desugar(a:{B,b}) &
+  pop_currently_processing &
+  rec$then &
+  rec$select
+ =>
+  desugar(a|EITHER (B,b) THEN c END);
+
+  desugar(c) &
+  push_currently_processing(Prd) &
+/*  desugar(a=b) & */
+  desugar(a:{b}) &
+  pop_currently_processing &
+  rec$then &
+  desugar(a|EITHER X END)
+ =>
+  desugar(a|EITHER X OR b THEN c END);
+
+  desugar(c) &
+  push_currently_processing(Prd) &
+  desugar(a:{B,b}) &
+  pop_currently_processing &
+  rec$then &
+  desugar(a|EITHER X END)
+ =>
+  desugar(a|EITHER X OR (B,b) THEN c END);
+
+  desugar(c) &
+  rec$else &
+  desugar(a|EITHER b END)
+ =>
+  desugar(a|EITHER b ELSE c END);
+
+  CurrentlyProcessing(Stm) &
+  CheckNoCaseOverlap(CASE a OF EITHER b END END) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  bcrer(DesugarerStackX,finiselect) &
+  desugar(a|EITHER b END)
+ =>
+  desugar(CASE a OF EITHER b END END);
+
+
+
+  CurrentlyProcessing(Stm) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  desugar(b) &
+  push_currently_processing(Prd) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$then &
+  rec$select
+ =>
+  desugar_sel(SELECT a THEN b END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"SELECT",(SELECT a THEN b END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(SELECT a THEN b END))
+ =>
+  desugar_sel(SELECT a THEN b END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("SELECT",(SELECT a THEN b END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(SELECT a THEN b END))
+ =>
+  desugar_sel(SELECT a THEN b END);
+
+  CurrentlyProcessing(Stm) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  desugar(c) &
+  push_currently_processing(Prd) &
+  desugar(b) &
+  pop_currently_processing &
+  rec$then &
+  desugar_sel(SELECT a END)
+ =>
+  desugar_sel(SELECT a WHEN b THEN c END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"SELECT",(SELECT a WHEN b THEN c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(SELECT a WHEN b THEN c END))
+ =>
+  desugar_sel(SELECT a WHEN b THEN c END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("SELECT",(SELECT a WHEN b THEN c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(SELECT a WHEN b THEN c END))
+ =>
+  desugar_sel(SELECT a WHEN b THEN c END);
+
+  CurrentlyProcessing(Stm) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  desugar(b) &
+  rec$else &
+  desugar_sel(SELECT a END)
+ =>
+  desugar_sel(SELECT a ELSE b END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"SELECT",(SELECT a ELSE b END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(SELECT a ELSE b END))
+ =>
+  desugar_sel(SELECT a ELSE b END);
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("SELECT",(SELECT a ELSE b END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(SELECT a ELSE b END))
+ =>
+  desugar_sel(SELECT a ELSE b END);
+
+
+  bcrer(DesugarerStackX,finiselect) &
+  desugar_sel(SELECT a END)
+ =>
+  desugar(SELECT a END);
+
+
+  CurrentlyProcessing(Stm) &
+  desugar(skip) &
+  rec$else &
+  desugar(b) &
+  push_currently_processing(Prd) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$then &
+  rec$if
+ =>
+  desugar(IF a THEN b END);
+
+  CurrentlyProcessing(Stm) &
+  desugar(c) &
+  rec$else &
+  desugar(b) &
+  push_currently_processing(Prd) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$then &
+  rec$if
+ =>
+  desugar(IF a THEN b ELSE c END);
+
+  desugar(IF a THEN b ELSE IF c THEN d ELSE e END END)
+ =>
+  desugar(IF a THEN b ELSIF c THEN d ELSE e END);
+
+  desugar(IF a THEN b ELSIF c THEN d ELSE skip END)
+ =>
+  desugar(IF a THEN b ELSIF c THEN d END);
+
+
+
+
+
+  CurrentlyProcessing(Prd) &
+  desugar(b) &
+  desugar(a) &
+  rec$NotPropSubset
+ =>
+  desugar(a/<<:b);
+
+
+
+  CurrentlyProcessing(Prd) &
+  desugar(b) &
+  desugar(a) &
+  rec$PropSubset
+ =>
+  desugar(a<<:b);
+
+
+
+  CurrentlyProcessing(Prd) &
+  desugar(b) &
+  desugar(a) &
+  rec$NotSubset
+ =>
+  desugar(a/<:b);
+
+
+
+  CurrentlyProcessing(Prd) &
+  desugar(b) &
+  desugar(a) &
+  rec$Subset
+ =>
+  desugar(a<:b);
+
+
+
+  CurrentlyProcessing(Prd) &
+  desugar(b) &
+  desugar(a) &
+  rec$NotIn
+ =>
+  desugar(a/:b);
+
+
+
+  CurrentlyProcessing(Prd) &
+  desugar(b) &
+  desugar(a) &
+  rec$In
+ =>
+  desugar(a:b);
+
+  CurrentlyProcessing(Stm) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  push_currently_processing(Prd) &
+  desugar(b) &
+  push_pop_currently_processing(Idl) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$(a:b)$col
+ =>
+  desugar(a:b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,":",(a:b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a:b))
+ =>
+  desugar(a:b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit(":",(a:b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a:b))
+ =>
+  desugar(a:b);
+
+
+
+  CurrentlyProcessing(Stm) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  push_currently_processing(ColCol) &
+  desugar(b) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$colcol
+ =>
+  desugar(a::b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"::",(a::b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a::b))
+ =>
+  desugar(a::b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("::",(a::b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a::b))
+ =>
+  desugar(a::b);
+
+  
+  brule(RebuildX.2,o) &
+  InformLETSyntaxError(P,o) &
+  FlagDesugarerError
+ =>
+  desugar_chk_LET(P);
+
+  brule(RebuildX.2,Init) &
+  InformLETSyntaxErrorInit(P) &
+  FlagDesugarerError
+ =>
+  desugar_chk_LET(P);
+
+  desugar_chk_LET(a=b);
+
+  desugar_chk_LET(P)
+ =>
+  desugar_chk_LET(P&a=b);
+
+  DontExpandOpFlagSet
+ =>
+  desugar_chk_LET(P);
+
+  brule(RebuildX.2,o) &
+  InformDistinctIdentifiers(o,a) &
+  CheckRepetition(a) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(LET a BE b IN c END))
+ =>
+  desugar(LET a BE b IN c END);
+
+  blident(a) &
+  CurrentlyProcessing(Stm) &
+  brule(RebuildX.2,o) &
+  AddLocalVarList(o,a) &
+  desugar_chk_LET(b) &
+  brule(RebuildX.4,v) &
+  bmodr(RebuildX.4,(bflat(v,a))) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  push_currently_processing(Stm) &
+  desugar(c) &
+  push_pop_currently_processing(Prd) &
+  desugar(b) &
+  push_pop_currently_processing(Vrb) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$any
+ =>
+  desugar(LET a BE b IN c END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"LET",(LET a BE b IN c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(LET a BE b IN c END))
+ =>
+  desugar(LET a BE b IN c END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("LET",(LET a BE b IN c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(LET a BE b IN c END))
+ =>
+  desugar(LET a BE b IN c END);
+
+  brule(RebuildX.2,o) &
+  InformDistinctIdentifiers(o,a) &
+  CheckRepetition(a) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(VAR a IN b END))
+ =>
+  desugar(VAR a IN b END);
+
+  blident(a) &
+  CurrentlyProcessing(Stm) &
+  brule(RebuildX.4,v) &
+  brule(RebuildX.2,o) &
+  bmodr(RebuildX.4,(bflat(v,a))) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  desugar(b) &
+  push_currently_processing(Vrb) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$var
+ =>
+  desugar(VAR a IN b END);
+
+  DontExpandOpFlagSet &
+  blident(a) &
+  CurrentlyProcessing(Stm) &
+  brule(RebuildX.4,v) &
+  brule(RebuildX.2,o) &
+  bmodr(RebuildX.4,(bflat(v,a))) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  AddLocalVarList(o,a) &
+  desugar(b) &
+  push_currently_processing(Vrb) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$var
+ =>
+  desugar(VAR a IN b END);
+
+  brule(RebuildX.2,o) &
+  InformDistinctIdentifiers(o,a) &
+  CheckRepetition(a) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(ANY a WHERE b THEN c END))
+ =>
+  desugar(ANY a WHERE b THEN c END);
+
+  blident(a) &
+  brule(RebuildX.4,v) &
+  bmodr(RebuildX.4,(bflat(v,a))) &
+  brule(RebuildX.2,o) &
+  bmodr(RebuildX.6,NonDet_Op) &
+  AddLocalVarList(o,a) &
+  push_currently_processing(Stm) &
+  desugar(c) &
+  push_pop_currently_processing(Prd) &
+  desugar(b) &
+  push_pop_currently_processing(Vrb) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$any
+ =>
+  desugar(ANY a WHERE b THEN c END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"ANY",(ANY a WHERE b THEN c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(ANY a WHERE b THEN c END))
+ =>
+  desugar(ANY a WHERE b THEN c END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("ANY",(ANY a WHERE b THEN c END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(ANY a WHERE b THEN c END))
+ =>
+  desugar(ANY a WHERE b THEN c END);
+
+  CurrentlyProcessing(Stm) &
+  desugar(b) &
+  push_currently_processing(Prd) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$bar
+ =>
+  desugar(PRE a THEN b END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  brule(REFINESX.1,r) &
+  bident(r) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"PRE",(PRE a THEN b END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(PRE a THEN b END))
+ =>
+  desugar(PRE a THEN b END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("PRE",(PRE a THEN b END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(PRE a THEN b END))
+ =>
+  desugar(PRE a THEN b END);
+
+  CurrentlyProcessing(Stm) &
+  desugar(b) &
+  push_currently_processing(Prd) &
+  desugar(true) &
+  pop_currently_processing &
+  rec$bar
+ =>
+  desugar(PRE true THEN b END);
+
+  CurrentlyProcessing(Stm) &
+  desugar(a)
+ =>
+  desugar(BEGIN a END);
+
+  desugar(a) &
+  rec$set
+ =>
+  desugar({a});
+
+  desugar(b) &
+  desugar(a) &
+  rec$mp
+ =>
+  desugar(a|->b);
+
+  desugar(b) &
+  desugar(a) &
+  rec$ovw
+ =>
+  desugar(a<+b);
+
+  CurrentlyProcessing(Stm) &
+  push_currently_processing(Lpt) &
+  desugar(b) &
+  push_pop_currently_processing(Rpt) &
+  desugar(a) &
+  pop_currently_processing &
+  rec$sub
+ =>
+  desugar(a:=b);
+
+  CurrentlyProcessing(Stm) &
+  desugar(a:=b) &
+  desugar(s:=t) &
+  rec$par
+ =>
+  desugar(s,a:=t,b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  brule(REFINESX.1,r) &
+  bident(r) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"multiple assignment",(s,a:=t,b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(s,a:=t,b))
+ =>
+  desugar(s,a:=t,b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("multiple assignment",(s,a:=t,b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(s,a:=t,b))
+ =>
+  desugar(s,a:=t,b);
+
+  CurrentlyProcessing(Stm) &
+  desugar(f:=f<+{a|->b})
+ =>
+  desugar(f(a):=b);
+
+
+/*
+  brule(RebuildX.2,o) &
+  InformDesugarerSyntaxError(o,((a:=b) JOK2 c)) &
+  FlagDesugarerError
+ =>
+  desugar((a:=b) JOK2 c);
+
+  brule(RebuildX.2,Init) &
+  InformDesugarerSyntaxErrorInit(((a:=b) JOK2 c)) &
+  FlagDesugarerError
+ =>
+  desugar((a:=b) JOK2 c);
+*/
+
+
+
+  desugar(b) &
+  desugar(a) &
+  rec$amp
+ =>
+  desugar(a&b);
+
+  CurrentlyProcessing(Stm) &
+  desugar(b) &
+  desugar(a) &
+  rec$sc
+ =>
+  desugar(a;b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsMch &
+  CurrentlyProcessing(Stm) &
+  InformIllegalMachineConstruct(o,";",(a;b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a;b))
+ =>
+  desugar(a;b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsMch &
+  CurrentlyProcessing(Stm) &
+  InformIllegalMachineConstructInit(";",(a;b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a;b))
+ =>
+  desugar(a;b);
+
+  CurrentlyProcessing(Stm) &
+  desugar(b) &
+  desugar(a) &
+  rec$par
+ =>
+  desugar(a||b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstruct(o,"||",(a||b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a||b))
+ =>
+  desugar(a||b);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,Init) &
+  CurrentConstructIsImp &
+  CurrentlyProcessing(Stm) &
+  InformIllegalImplementationConstructInit("||",(a||b)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a||b))
+ =>
+  desugar(a||b);
+
+  desugar(b) &
+  desugar(a) &
+  rec$com
+ =>
+  desugar(a,b)
+
+END
+
+&
+
+THEORY CheckValidSubstitutionX IS
+
+#define CheckValidSubstitutiontac ((MAP;SUB)~;CheckValidSubstitutionX)~
+
+#define CheckValidSubstitution(x) \
+	bcall(CheckValidSubstitutiontac: (chk_vld_assgn_1 bsmap (x)))
+
+
+/**** Inform assignment error ****/
+
+  DontExpandOpFlagSet &
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformDesugarerIdentifier(o,x)
+ =>
+  chk_vld_assgn_1(x);
+
+  bident(x) &
+  DontExpandOpFlagSet &
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformUndeclaredSubstitutionViolation(o,x)
+ =>
+  chk_vld_assgn_1(x);
+
+  DontExpandOpFlagSet &
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformUndeclaredSubstitutionViolationInit(x)
+ =>
+  chk_vld_assgn_1(x);
+
+
+
+
+  DontExpandOpFlagSet &
+  brule(SUB_VARIABLESX.I,(m$x)) &
+  InformAssgnViol(m,x)
+ =>
+  chk_vld_assgn_1(x);
+
+
+
+
+/**** Check local variables ****/
+
+  DontExpandOpFlagSet &
+  brule(LOCAL_VARIABLESX.1,v) &           /* >1 var */
+  bsearch(x,v,w)
+ =>
+  chk_vld_assgn_1(x);
+
+  DontExpandOpFlagSet &
+  brule(LOCAL_VARIABLESX.1,x)             /* 1 var */
+ =>
+  chk_vld_assgn_1(x);
+
+
+
+/**** Check bound variables ****/
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.4,v) &                  /* >1 var */
+  bsearch(x,v,w)
+ =>
+  chk_vld_assgn_1(x);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.4,x)                    /* 1 var */
+ =>
+  chk_vld_assgn_1(x);
+
+
+
+
+/**** ExpandOpFlagSet ****/
+
+  ExpandOpFlagSet
+ =>
+  chk_vld_assgn_1(x)                  /* don't check on expanded operations */
+
+
+END
+
+&
+
+THEORY ParallelReconstructX IS
+
+
+  (p|a) == a;
+
+  (g==>a) == a;
+
+  (@v.(g==>a)) == (@v.a);
+
+
+  desugar(a)
+ =>
+  desugar(p|a);
+
+  desugar(a)
+ =>
+  desugar(g==>a);
+
+  desugar(@v.a)
+ =>
+  desugar(@v.(g==>a));
+
+
+  desugar(b || a)
+ =>
+  desugar(a || b);
+
+
+  !a.(desugar(b))
+ =>
+  desugar(@a.b);
+
+
+  desugar((a || c) [] (b || c))
+ =>
+  desugar((a [] b) || c);
+
+  desugar((c || a) [] (c || b))
+ =>
+  desugar(c || (a [] b));
+
+  desugar((c || a || d) [] (c || b || d))
+ =>
+  desugar(c || (a [] b) || d);
+
+
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   desugar((@a.(c || b)) || d)
+ =>
+   desugar((x)(? || (@?.?) || d));
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   !a.desugar(c||b)
+ =>
+   desugar((x)(? || (@?.?)));
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   !a.desugar(b||c)
+ =>
+   desugar((x)((@?.?) || ?));
+
+   ConstructAlphaConversion(a,b,c) &
+   desugar(((@a.b) || c)((@?.?) || ?))
+ =>
+   desugar((@a.b) || c);
+
+   ConstructAlphaConversion(a,b,c) &
+   desugar((c || (@a.b))(? || (@?.?)))
+ =>
+   desugar(c || (@a.b));
+
+   ConstructAlphaConversion(a,b,c) &
+   desugar((c || (@a.b) || d)(? || (@?.?) || d))
+  =>
+   desugar(c || (@a.b) || d);
+
+   a\c &
+   !a.desugar(b||c)
+  =>
+   desugar((@a.b) || c);
+
+   a\c &
+   !a.desugar(c||b) 
+  =>
+   desugar(c || (@a.b));
+
+   a\c &
+   desugar((@a.(c||b)) || d)
+  =>
+   desugar(c || (@a.b) || d);
+
+   a\d &
+   desugar(c || (@a.(b||d)))
+  =>
+   desugar(c || (@a.b) || d);
+
+  desugar(a || b || c)
+ =>
+  desugar(a || (b || c));
+
+  desugar(b || c)
+ =>
+  desugar(skip ||b || c);
+
+  desugar(a || c)
+ =>
+  desugar(a || skip || c);
+
+  desugar(a || b)
+ =>
+  desugar(a || b || skip);
+
+
+  bident(a) &
+  bident(b) &
+  desugar(bflat(a,b):= bflat(x,y)|| c)
+ =>
+  desugar(a:=x || b:=y || c);
+
+  bident(a) &
+  bident(b) &
+  desugar(bflat(a,b):=bflat(x,y))
+ =>
+  desugar(a:=x || b:=y);
+
+  bident(a) &
+  bident(b) &
+  desugar(c || bflat(a,b):=bflat(x,y))
+ =>
+  desugar(a:=x || c || b:=y);
+
+  blident(a) &
+  blident(b) &
+  desugar(c || bflat(a,b):=bflat(x,y))
+ =>
+  desugar(c || a:=x || b:=y);
+
+
+
+  fini_check_parallel;
+
+  brule(DesugarerStackX.1,a) &
+  Writef(("\n      % % ",bsrv Desugarer berv,bsrv Error berv))
+ =>
+  fini_check_parallel;
+
+
+
+  check_parallel(a);
+
+  desugar(a || b) &
+  fini_parallel &
+  fini_check_parallel
+ =>
+  check_parallel(a || b);
+
+  desugar(a || b) &
+  bpop(DesugarerStackX) &
+  fini_check_parallel
+ =>
+  check_parallel(p | a || b)
+
+
+END
+
+&
+
+THEORY ReconstructX IS
+
+  NormaliserErrorFlagged
+ =>
+  x;
+
+  DesugarerErrorFlagged
+ =>
+  x;
+
+
+  Writef(("\n\n    OPERATION %:\n      can't call own operation % ",o,bsrv a berv))
+ =>
+  inform_use_own_op_illegal(o,a);
+
+
+
+  /************* operation reference erors ******************/
+
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformOperationSEESmodError(o,a)
+ =>
+  inform_SEES_mod_error(a);
+
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformOperationSEESmodErrorInit(a)
+ =>
+  inform_SEES_mod_error(a);
+
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformOperationUSESvalError(o,a)
+ =>
+  inform_USES_val_error(a);
+
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformOperationUSESvalErrorInit(a)
+ =>
+  inform_USES_val_error(a);
+
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformOperationUSESmodError(o,a)
+ =>
+  inform_USES_mod_error(a);
+
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformOperationUSESmodErrorInit(a)
+ =>
+  inform_USES_mod_error(a);
+
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformOperationReferenceError(o,a)
+ =>
+  inform_op_ref_error(a);
+
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformOperationReferenceErrorInit(a)
+ =>
+  inform_op_ref_error(a);
+
+
+  /************* parameter erors ******************/
+
+  brule(RebuildX.2,o) &
+  FlagNormaliserError &
+  InformOperationParamClash(o,a)
+ =>
+  inform_param_clash(a);
+
+  brule(RebuildX.2,Init) &
+  FlagNormaliserError &
+  InformOperationParamClashInit(a)
+ =>
+  inform_param_clash(a);
+
+
+
+  /********** check NonDet Mod ops from proc calls ***************/
+
+  chk_nondet(a,b,c,d);
+  
+  bmodr(RebuildX.6,NonDet_Op)
+ =>
+  chk_nondet(a,b,NonDet_Op,d);
+
+  chk_mod(a,b,c,d);
+
+  bmodr(RebuildX.5,Mod_Op)
+ =>
+  chk_mod(a,Mod_Op,c,d);
+
+
+
+
+
+  bcrer(DesugarerStackX,a)
+ =>
+  desugar(a);
+
+
+  DontExpandOpFlagSet &
+  CurrentlyProcessing(Prd) &
+  brule(RebuildX.2,o) &
+  InformDesugarerSyntaxError(o,(a THEN b)) &
+  InformPredicateExpected &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a THEN b))
+ =>
+  desugar(a THEN b);
+
+  DontExpandOpFlagSet &
+  CurrentlyProcessing(Prd) &
+  brule(RebuildX.2,Init) &
+  InformDesugarerSyntaxErrorInit(a THEN b) &
+  InformPredicateExpected &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(a THEN b))
+ =>
+  desugar(a THEN b);
+
+
+  DontExpandOpFlagSet &
+  CurrentlyProcessing(Stm) &
+  brule(RebuildX.2,o) &
+  InformDesugarerSyntaxError(o,a) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,a)
+ =>
+  desugar(a);
+
+  DontExpandOpFlagSet &
+  CurrentlyProcessing(Stm) &
+  brule(RebuildX.2,Init) &
+  InformDesugarerSyntaxErrorInit(a) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,a)
+ =>
+  desugar(a);
+
+
+  DontExpandOpFlagSet &
+  CurrentlyProcessing(Stm) &
+  bident(a) &
+  bcrer(DesugarerStackX,a)
+ =>
+  desugar(a);
+
+
+
+  CurrentlyProcessing(Stm) &
+  brule(RebuildX.2,Init) &
+  bcrer(DesugarerStackX,?)
+ =>
+  desugar(?);
+
+
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsMch &
+  InformIllegalMachineConstruct(o,"WHILE",(WHILE a END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a END))
+ =>
+  desugar(WHILE a END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsRef &
+  InformIllegalRefinementConstruct(o,"WHILE",(WHILE a END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a END))
+ =>
+  desugar(WHILE a END);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  CurrentConstructIsImp &
+  InformIllegalImplementationConstruct(o,"naked WHILE!",(WHILE a END)) &
+  FlagDesugarerError &
+  bcrer(DesugarerStackX,(WHILE a END))
+ =>
+  desugar(WHILE a END);
+
+
+
+
+  /********************* skip ****************************/
+
+  bcrer(DesugarerStackX,skip)
+ =>
+  desugar(skip);
+
+
+
+  /********************* plainops ****************************/
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$plainop$(y)
+ =>
+  rec$plainop;
+
+  inform_op_ref_error(a)
+ =>
+  rec$plainop$a;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.J,(r(o;X;E;L;A;B))) &
+  brule(SUB_OPERATIONSX.I,(r(a;Y;G;M;C;D))) &
+  inform_use_own_op_illegal(o,a) &
+  FlagDesugarerError
+ =>
+  rec$plainop$a;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.I,(r$X$(a;Z;u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  InformOpParameterDiscrepancyOne(o,a,u) &
+  InformOpParameterDiscrepancyOne(o,a,v) &
+  FlagDesugarerError
+ =>
+  rec$plainop$a;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.I,(r$X$(a;Z;u;?;(w|x);(y|z)))) &
+  blident(u) &
+  InformOpParameterDiscrepancyOne(o,a,u) &
+  FlagDesugarerError
+ =>
+  rec$plainop$a;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.I,(r$X$(a;Z;?;v;(w|x);(y|z)))) &
+  blident(v) &
+  InformOpParameterDiscrepancyOne(o,a,v) &
+  FlagDesugarerError
+ =>
+  rec$plainop$a;
+
+  bcrer(DesugarerStackX,skip)
+ =>
+  rec$plainop$skip;    /*** <<<<<<<<---- change in ELSE, etc   ***/
+
+  bcrer(DesugarerStackX,?)
+ =>
+  rec$plainop$?;    /* for e.g. no initialisation!*/
+
+  brule(SUB_OPERATIONSX.I,(r$Used_Op$(a;(Z,Val_Op,N,H);?;?;(w|x);(y|z)))) &
+  inform_USES_val_error(a)
+ =>
+  rec$plainop$a;
+
+  brule(SUB_OPERATIONSX.I,(r$Used_Op$(a;(Z,Mod_Op,N,H);?;?;(w|x);(y|z)))) &
+  inform_USES_mod_error(a)
+ =>
+  rec$plainop$a;
+
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(a;(Z,Mod_Op,N,H);?;?;(w|x);(y|z)))) &
+  inform_SEES_mod_error(a)
+ =>
+  rec$plainop$a;
+
+        /***************** above are errors ***************/
+
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(a;(Z,Val_Op,N,H);?;?;(w|x);(y|z)))) &
+  chk_nondet(Z,Val_Op,N,H) &
+  bcrer(DesugarerStackX,a)
+ =>
+  rec$plainop$a;
+
+  brule(SUB_OPERATIONSX.I,(r$Included_Op$(a;t;?;?;(w|x);(y|z)))) &
+  chk_nondet(t) &
+  chk_mod(t) &
+  bcrer(DesugarerStackX,a)
+ =>
+  rec$plainop$a;
+
+
+  /********************* appl: ops(s) ****************************/
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$appl$y
+ =>
+  rec$appl;
+
+  inform_op_ref_error(F)
+ =>
+  rec$appl$F;
+
+  CurrentlyProcessing(Prd) &   /* predicate ! */
+  bident(F) &
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,F(Y))
+ =>
+  rec$appl$F;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.J,(r(o;X;E;L;A;B))) &
+  brule(SUB_OPERATIONSX.I,(r(F;Y;G;M;C;D))) &
+  inform_use_own_op_illegal(o,F) &
+  FlagDesugarerError
+ =>
+  rec$appl$F;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.I,(r$X$(F;Z;u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  brule(DesugarerStackX.m,Y) &
+  InformOpParameterDiscrepancyOne(o,F,Y) &
+  CheckNumberOpParams(F,u,Y) &
+  FlagDesugarerError
+ =>
+  rec$appl$F;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.I,(r$X$(F;Z;?;v;(w|x);(y|z)))) &
+  blident(v) &
+  brule(DesugarerStackX.m,Y) &
+  InformOpParameterDiscrepancyOne(o,F,Y) &
+  InformOpParameterDiscrepancyOne(o,v,Y) &
+  FlagDesugarerError
+ =>
+  rec$appl$F;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.I,(r$X$(F;Z;?;?;(w|x);(y|z)))) &
+  brule(DesugarerStackX.m,Y) &
+  InformOpParameterDiscrepancyOne(o,F,Y) &
+  FlagDesugarerError
+ =>
+  rec$appl$F;
+
+  brule(SUB_OPERATIONSX.I,(r$Used_Op$(F;(Z,Val_Op,N,H);u;?;(w|x);(y|z)))) &
+  blident(u) &
+  inform_USES_val_error(F)
+ =>
+  rec$appl$F;
+
+  brule(SUB_OPERATIONSX.I,(r$Used_Op$(F;(Z,Mod_Op,N,H);u;?;(w|x);(y|z)))) &
+  blident(u) &
+  inform_USES_mod_error(F)
+ =>
+  rec$appl$F;
+
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(F;(Z,Mod_Op,N,H);u;?;(w|x);(y|z)))) &
+  blident(u) &
+  inform_SEES_mod_error(F)
+ =>
+  rec$appl$F;
+
+        /***************** above are errors ***************/
+
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(F;(Z,Val_Op,N,H);u;?;(w|x);(y|z)))) &
+  blident(u) &
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  CheckNumberOpParams(F,u,Y) &
+  chk_nondet(Z,Val_Op,N,H) &
+  bcrer(DesugarerStackX,F(Y))
+ =>
+  rec$appl$F;
+
+  brule(SUB_OPERATIONSX.I,(r$Included_Op$(F;t;u;?;(w|x);(y|z)))) &
+  blident(u) &
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  CheckNumberOpParams(F,u,Y) &
+  chk_nondet(t) &
+  chk_mod(t) &
+  bcrer(DesugarerStackX,F(Y))
+ =>
+  rec$appl$F;
+
+
+
+  /********************* retn: r<--ops ****************************/
+ 
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  CheckValidSubstitution(y) &
+  rec$retn$y
+ =>
+  rec$retn;
+
+  brule(DesugarerStackX.m,Y) &
+  inform_op_ref_error(Y)
+ =>
+  rec$retn$R;
+
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.J,(r(o;X;E;L;A;B))) &
+  brule(SUB_OPERATIONSX.I,(r(R;Z;G;M;C;D))) &
+  inform_use_own_op_illegal(o,R) &
+  FlagDesugarerError
+ =>
+  rec$retn$R;
+
+  brule(RebuildX.2,o) &
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$X$(Y;Z;u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  InformOpParameterDiscrepancyOne(o,Y,u) &
+  CheckNumberOpParams(Y,v,R) &
+  FlagDesugarerError
+ =>
+  rec$retn$R;
+ 
+  brule(RebuildX.2,o) &
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$X$(Y;Z;u;?;(w|x);(y|z)))) &
+  blident(u) &
+  InformOpParameterDiscrepancyOne(o,Y,u) &
+  InformOpParameterDiscrepancyOne(o,Y,R) &
+  FlagDesugarerError
+ =>
+  rec$retn$R;
+ 
+  brule(RebuildX.2,o) &
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$X$(Y;Z;?;?;(w|x);(y|z)))) &
+  InformOpParameterDiscrepancyOne(o,Y,R) &
+  FlagDesugarerError
+ =>
+  rec$retn$R;
+ 
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Used_Op$(Y;(Z,Val_Op,N,H);?;v;(w|x);(y|z)))) &
+  blident(v) &
+  inform_USES_val_error(Y)
+ =>
+  rec$retn$R;
+ 
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Used_Op$(Y;(Z,Mod_Op,N,H);?;v;(w|x);(y|z)))) &
+  blident(v) &
+  inform_USES_mod_error(Y)
+ =>
+  rec$retn$R;
+ 
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(Y;(Z,Mod_Op,N,H);?;v;(w|x);(y|z)))) &
+  blident(v) &
+  inform_SEES_mod_error(Y)
+ =>
+  rec$retn$R;
+ 
+        /***************** above are errors ***************/
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(Y;(Z,Val_Op,N,H);?;v;(w|x);(y|z)))) &
+  blident(v) &
+  CheckNumberOpParams(Y,v,R) &
+  chk_nondet(Z,Val_Op,N,H) &
+  bcrer(DesugarerStackX,(R<--Y))
+ =>
+  rec$retn$R;
+ 
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Included_Op$(Y;t;?;v;(w|x);(y|z)))) &
+  blident(v) &
+  CheckNumberOpParams(Y,v,R) &
+  chk_nondet(t) &
+  chk_mod(t) &
+  bcrer(DesugarerStackX,(R<--Y))
+ =>
+  rec$retn$R;
+
+
+
+  /********************* applretn: r<--ops(s) ****************************/
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  CheckValidSubstitution(y) &
+  rec$applretn$y
+ =>
+  rec$applretn;
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  rec$applretn$R$Y
+ =>
+  rec$applretn$R;
+
+  inform_op_ref_error(R)
+ =>
+  rec$applretn$S$R;
+
+  CurrentlyNormalisingImp &
+  brule(RebuildX.2,o) &
+  brule(SUB_OPERATIONSX.J,(r(o;X;E;L;A;B))) &
+  brule(SUB_OPERATIONSX.I,(r(R;Y;G;M;C;D))) &
+  inform_use_own_op_illegal(o,R) &
+  FlagDesugarerError
+ =>
+  rec$applretn$S$R;
+
+  brule(RebuildX.2,o) &
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(R;(Z,Val_Op,N,H);u;?;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  u\S &
+  v\Y &
+  InformOpParameterDiscrepancyOne(o,R,S) &
+  CheckNumberOpParams(R,u,Y) &
+  FlagDesugarerError
+ =>
+  rec$applretn$S$R;
+
+  brule(RebuildX.2,o) &
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(R;(Z,Val_Op,N,H);?;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  u\S &
+  v\Y &
+  InformOpParameterDiscrepancyOne(o,R,Y) &
+  CheckNumberOpParams(R,v,S) &
+  FlagDesugarerError
+ =>
+  rec$applretn$S$R;
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Used_Op$(R;(Z,Val_Op,N,H);u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  inform_USES_val_error(R)
+ =>
+  rec$applretn$S$R;
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Used_Op$(R;(Z,Mod_Op,N,H);u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  inform_USES_mod_error(R)
+ =>
+  rec$applretn$S$R;
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(R;(Z,Mod_Op,N,H);u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  inform_SEES_mod_error(R)
+ =>
+  rec$applretn$S$R;
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(R;(Z,Val_Op,N,H);u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  inform_param_clash(R) 
+ =>
+  rec$applretn$S$R;
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Included_Op$(R;t;u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  inform_param_clash(R)
+ =>
+  rec$applretn$S$R;
+
+        /***************** above are errors ***************/
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Seen_Op$(R;(Z,Val_Op,N,H);u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  CheckNumberOpParams(R,u,Y) &
+  CheckNumberOpParams(R,v,S) &
+  chk_nondet(Z,Val_Op,N,H) &
+  bcrer(DesugarerStackX,(S<--R(Y)))
+ =>
+  rec$applretn$S$R;
+
+  brule(DesugarerStackX.m,Y) &
+  bpop(DesugarerStackX) &
+  brule(SUB_OPERATIONSX.I,(r$Included_Op$(R;t;u;v;(w|x);(y|z)))) &
+  blident(u) &
+  blident(v) &
+  CheckNumberOpParams(R,u,Y) &
+  CheckNumberOpParams(R,v,S) &
+  chk_nondet(t) &
+  chk_mod(t) &
+  bcrer(DesugarerStackX,(S<--R(Y)))
+ =>
+  rec$applretn$S$R;
+
+
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$case$y
+ =>
+  rec$case;
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(EITHER x THEN y END)) &
+  bpop(DesugarerStackX) &
+  rec$case$a$(EITHER x THEN y END)
+ =>
+  rec$case$a;
+
+  bcrer(DesugarerStackX,(CASE a OF EITHER b END END))  
+ =>
+  rec$case$a$(EITHER b END);
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(? ELSE y)) &
+  bpop(DesugarerStackX) &
+  rec$case$a$(EITHER b ELSE y END)
+ =>
+  rec$case$a$(EITHER b END);
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(? ELSE y THEN z)) &
+  bpop(DesugarerStackX) &
+  rec$case$a$(EITHER b ELSE y THEN z END)
+ =>
+  rec$case$a$(EITHER b END);
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,Or(y))
+ =>
+  rec$Or;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$choic$y
+ =>
+  rec$choic;
+
+  bcrer(DesugarerStackX,a)
+ =>
+  rec$choic$a;
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,Or(y)) &
+  bpop(DesugarerStackX) &
+  rec$choic$(a[]y)
+ =>
+  rec$choic$a;
+
+/**** (a[](b|c)) == (b|(a[]d)) ****/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,Or(b|c)) &
+  bpop(DesugarerStackX) &
+  rec$choic$(b|(a[]c))
+ =>
+  rec$choic$(a);
+
+/**** ((a|b)[]c) == (a|(b[]c)) ****/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,Or(c)) &
+  bpop(DesugarerStackX) &
+  rec$choic$(a|(b[]c))
+ =>
+  rec$choic$(a|b);
+
+/**** ((a|b)[](c|d)) == ((a&c)|(b[]d)) ****/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,Or(c|d)) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,Or(d)) &
+  rec$choic$b &
+  bcrer(DesugarerStackX,bflat(a&c)) &
+  rec$bar
+ =>
+  rec$choic$(a|b);
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$(a:b)$col$y
+ =>
+  rec$(a:b)$col;
+
+/*
+  brule(ConstructFreshVariableListWithRenameX.1,(v,x,s)) &
+  bcrer(DesugarerStackX,(@x.(s==>v:=x)))
+ =>
+  rec$(a:b)$colres;
+
+  ExpandOpFlagSet &
+*/
+  brule(ConstructFreshVariableListWithRenameX.1,(v,x,s)) &
+  brule(RebuildX.2,o) &
+  InformRewritingColon(o,(a:b),ANY x WHERE s THEN v:=x END) &
+  ReadColonRewrites(R) &
+  ModifyColonRewrites((R;(o|(a:b)|(ANY x WHERE s THEN v:=x END)))) &
+  bcrer(DesugarerStackX,(@x.(s==>v:=x)))
+ =>
+  rec$(a:b)$colres;
+
+  brule(DesugarerStackX.m,y) &
+  brule(RebuildX.2,o) &
+  InformDesugarerSyntaxError(o,(a:y)) &
+  FlagDesugarerError
+ =>
+  rec$(s:t)$col$a;
+
+  blident(a) &
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  ConstructFreshVariableListWithRename(a,y) &
+  rec$(s:t)$colres
+ =>
+  rec$(s:t)$col$a;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+/*
+
+Tidy up :: and all operation substitutions like this:
+
+  CheckValidSubstitution(y) &
+*/
+  rec$colcol$y
+ =>
+  rec$colcol;
+
+  brule(ConstructFreshVariableListX.1,(v,x,s)) &
+  bcrer(DesugarerStackX,(@x.(s==>v:=x)))
+ =>
+  rec$colcolres;
+
+/*
+  brule(DesugarerStackX.m,y) &
+  brule(RebuildX.2,o) &
+  InformDesugarerSyntaxError(o,(a::y)) &
+  FlagDesugarerError
+ =>
+  rec$colcol$a;
+
+  blident(a) &
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  ConstructFreshVariableList(a,y) &
+  rec$colcolres
+ =>
+  rec$colcol$a;
+*/
+
+
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformDesugarerIdentifier(o,x)
+ =>
+  rec$colcol$x;
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformDesugarerIdentifierInit(x)
+ =>
+  rec$colcol$x;
+
+  bident(x) &
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformUndeclaredSubstitutionViolation(o,x)
+ =>
+  rec$colcol$x;
+
+  bident(x) &
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformUndeclaredSubstitutionViolationInit(x)
+ =>
+  rec$colcol$x;
+
+/**** check lhs of :: in full variables ****/
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(AnlFullVariablesX.I,s(v)) &
+  bsearch(x,(v,?),w) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformSemiHidingViolation(o,x)
+ =>
+  rec$colcol$x;
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(AnlFullVariablesX.I,s(v)) &
+  bsearch(x,(v,?),w) &
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformSemiHidingViolationInit(x)
+ =>
+  rec$colcol$x;
+
+/**** check lhs of :: in local variables ****/
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(AnlLocalVariablesX.I,s(v)) &
+  bsearch(x,(v,?),w) &
+  bmodr(RebuildX.5,Mod_Op) &
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x::y))
+ =>
+  rec$colcol$x;
+
+
+  DontExpandOpFlagSet &
+  brule(DIST_SUB_VARIABLESX.I,m(x)) &
+  InformAssgnViol(m,x)
+ =>
+  rec$colcol$x;
+
+/**** check lhs in local variables ****/
+
+  DontExpandOpFlagSet &
+  brule(LOCAL_VARIABLESX.1,v) &
+  bsearch(a,(v,?),w) &
+  bmodr(RebuildX.5,Mod_Op) &
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+/*
+  bcrer(DesugarerStackX,(a::y))
+*/
+  ConstructFreshVariableList(a,y) &
+  rec$colcolres
+ =>
+  rec$colcol$a;
+
+/**** check lhs in bound variables ****/
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.4,v) &
+  bsearch(a,(v,?),w) &
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+/*
+  bcrer(DesugarerStackX,(a::y))
+*/
+  ConstructFreshVariableList(a,y) &
+  rec$colcolres
+ =>
+  rec$colcol$a;
+
+
+
+
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$either$y
+ =>
+  rec$either;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(y ==> a))
+ =>
+  rec$either$a;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$eitherthen$y
+ =>
+  rec$eitherthen;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a ==> y))
+ =>
+  rec$eitherthen$a;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$elsethen$y
+ =>
+  rec$elsethen;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(? [] a ==> y))
+ =>
+  rec$elsethen$a;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(? ELSE a THEN y))
+ =>
+  rec$elsethen$a;
+
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$select$y
+ =>
+  rec$select;
+
+  bcrer(DesugarerStackX,a)          /* is this now redundant? */
+ =>
+  rec$select$a;
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,finiselect) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a))
+ =>
+  rec$select$(a);
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(g==>y)) &
+  bpop(DesugarerStackX) &
+  rec$select$(a[]g==>y)
+ =>
+  rec$select$a;
+
+/**** ((a|b)[]d) == (a|(b[]d)) ****/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(g==>y)) &
+  bpop(DesugarerStackX) &
+  rec$select$(a|(b[]g==>y))
+ =>
+  rec$select$(a|b);
+
+/**** (b[](c|d)) == (c|(b[]d)) ****/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(c|g==>y)) &
+  bpop(DesugarerStackX) &
+  rec$select$(c|(b[]g==>y))
+ =>
+  rec$select$(b);
+
+/**** ((a|b)[](c|d)) == ((a&c)|(b[]d)) ****/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(c|g==>y)) &
+  bpop(DesugarerStackX) &
+  rec$select$((a&c)|(b[]g==>y))
+ =>
+  rec$select$(a|b);
+
+
+
+
+/************ ****************/
+  brule(ConstructConjoinOfNegationX.1,n) &
+  bcrer(DesugarerStackX,(a[]n==>y))
+ => 
+  rec$select$neg$a$y;
+
+  brule(ConstructConjoinOfNegationX.1,n) &
+  bcrer(DesugarerStackX,(p|a[]n==>y))
+ => 
+  rec$select$neg$(p|a)$y;
+/************ ****************/
+
+
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,finiselect) &
+  bpop(DesugarerStackX) &
+  brule(ConstructConjoinOfNegationX.1,n) &
+  bcrer(DesugarerStackX,(a[]n==>y))
+ => 
+  rec$select$neg$a$y;
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,finiselect) &
+  bpop(DesugarerStackX) &
+  brule(ConstructConjoinOfNegationX.1,n) &
+  bcrer(DesugarerStackX,(p|a[]n==>y))
+ => 
+  rec$select$neg$(p|a)$y;
+
+
+/************ ****************/
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(?==>y)) &
+  bpop(DesugarerStackX) &
+  ConstructConjoinOfNegation(a) &
+  rec$select$neg$a$y
+ =>
+  rec$select$a;
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(?==>y)) &
+  bpop(DesugarerStackX) &
+  ConstructConjoinOfNegation(a) &
+  rec$select$neg$(p|a)$y
+ =>
+  rec$select$(p|a);
+/************ ****************/
+
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,finiselect) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a))
+ =>
+  rec$select$(a);
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$if$y
+ =>
+  rec$if;
+
+  bcrer(DesugarerStackX,a)  
+ =>
+  rec$if$a;
+
+  brule(ConstructConjoinOfNegationX.1,n) &
+  bcrer(DesugarerStackX,(a[]n==>y))
+ => 
+  rec$if$neg$a$y;
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(g==>y)) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a[]g==>y))
+ =>
+  rec$if$a;
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(?==>y)) &
+  bpop(DesugarerStackX) &
+  ConstructConjoinOfNegation(a) &
+  rec$if$neg$a$y
+ =>
+  rec$if$a;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$then$y
+ =>
+  rec$then;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a==>y))
+ =>
+  rec$then$a;
+
+/**** (a==>(b|c)) == ((a=>b)|(a==>c)) ****/
+
+/*
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(b|c)) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a==>c)) &
+  rec$bar$(a=>b)
+ =>
+  rec$then$(a);
+*/
+
+/**** (a==>(b==>c)) == ((a&b)==>c) ****/
+
+/*
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(b==>c)) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(bflat(a&b)==>c))
+ =>
+  rec$then$(a);
+*/
+
+/**** ((a or b)==>c) == ((a==>c)[](b==>c)) ****/
+
+/*
+  brule(DesugarerStackX.m,c) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,Or(b==>c)) &
+  bcrer(DesugarerStackX,c) &
+  rec$then$a &
+  rec$choic
+ =>
+  rec$then$(a or b);
+*/
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(?==>y))
+ =>
+  rec$else;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$while$y
+ =>
+  rec$while;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$while$a$y
+ =>
+  rec$while$a;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$while$a$b$y
+ =>
+  rec$while$a$b;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(WHILE a DO b INVARIANT c VARIANT y END))
+ =>
+  rec$while$a$b$c;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$any$y
+ =>
+  rec$any;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$any$a$y
+ =>
+  rec$any$a;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(@a.(b==>y))) &
+  mod_bound(a)
+ =>
+  rec$any$a$b;
+
+/*
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  brule(AnlHeaderX.J,(s$o(o)))
+  =>
+  check_var_inp_out(v);
+
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  brule(AnlHeaderX.J,(s$o(o(I)))) &
+  CheckIntersectionOp(o,s,localvars,inparams,v,I)
+  =>
+  check_var_inp_out(v);
+
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  brule(AnlHeaderX.J,(s$o(R<--o))) &
+  CheckIntersectionOp(o,s,localvars,outparams,v,R)
+  =>
+  check_var_inp_out(v);
+
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  brule(AnlHeaderX.J,(s$o(R<--o(I)))) &
+  CheckIntersectionOp(o,s,localvars,inparams,v,I) &
+  CheckIntersectionOp(o,s,localvars,outparams,v,R)
+  =>
+  check_var_inp_out(v);
+*/
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+/*
+  check_var_inp_out(y) &
+*/
+  rec$var$y
+ =>
+  rec$var;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(@a.y)) &
+  mod_bound(a)
+ =>
+  rec$var$a;
+
+/**** a\b => (@a.(@b.c)) == (@(a,b).c) ****/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(@b.c)) &
+  a\b &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(@(bflat(a,b)).c))
+ =>
+  rec$var$a;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$bar$y
+ =>
+  rec$bar;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a|y))
+ =>
+  rec$bar$a;
+
+/**** (a|(b|c)) == ((a&b)|c) ****/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(b|y)) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(bflat(a&b)|y))
+ =>
+  rec$bar$a;
+
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,({y}))
+ =>
+  rec$set;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$mp$y
+ =>
+  rec$mp;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x|->y))
+ =>
+  rec$mp$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$ovw$y
+ =>
+  rec$ovw;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x<+y))
+ =>
+  rec$ovw$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$eql$y
+ =>
+  rec$eql;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x=y))
+ =>
+  rec$eql$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformDistinctIdentifiers(o,y)
+ =>
+  rec$sub;
+
+
+  brule(DesugarerStackX.m,y) &
+  blident(y) &
+  bpop(DesugarerStackX) &
+  rec$sub$y
+ =>
+  rec$sub;
+
+
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$sub$x$y
+ =>
+  rec$sub$x;
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformDesugarerIdentifier(o,x)
+ =>
+  rec$sub$x;
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformDesugarerIdentifierInit(x)
+ =>
+  rec$sub$x;
+
+  bident(x) &
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformUndeclaredSubstitutionViolation(o,x)
+ =>
+  rec$sub$x;
+
+
+
+/**** Check Op for semi hiding violation ****/
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(AnlFullVariablesX.I,s(v)) &   /* >1 var */
+  bsearch(x,v,w) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformSemiHidingViolation(o,x)
+ =>
+  rec$sub$x;
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(AnlFullVariablesX.I,s(x)) &   /* 1 var */
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  InformSemiHidingViolation(o,x)
+ =>
+  rec$sub$x;
+
+
+
+/**** Check Init for semi hiding violation ****/
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(AnlFullVariablesX.I,s(v)) &   /* >1 var */
+  bsearch(x,v,w) &
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformSemiHidingViolationInit(x)
+ =>
+  rec$sub$x;
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.t) &
+  brule(AnlFullVariablesX.I,s(x)) &   /* 1 var */
+  brule(RebuildX.2,Init) &
+  FlagDesugarerError &
+  InformSemiHidingViolationInit(x)
+ =>
+  rec$sub$x;
+
+
+
+/**** Check Op (imp) for full hiding violation ****/
+
+
+
+  DontExpandOpFlagSet &
+  brule(DIST_SUB_VARIABLESX.I,m(x)) &
+  InformAssgnViol(m,x)
+ =>
+  rec$sub$x;
+
+/**** check lhs in local variables ****/
+
+  DontExpandOpFlagSet &
+  brule(LOCAL_VARIABLESX.1,v) &           /* >1 var */
+  bsearch(x,v,w) &
+  bmodr(RebuildX.5,Mod_Op) &
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x:=y))
+ =>
+  rec$sub$x;
+
+  DontExpandOpFlagSet &
+  brule(LOCAL_VARIABLESX.1,x) &           /* 1 var */
+  bmodr(RebuildX.5,Mod_Op) &
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x:=y))
+ =>
+  rec$sub$x;
+
+
+
+/**** check lhs in bound variables ****/
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.4,x) &               /* 1 var */
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x:=y))
+ =>
+  rec$sub$x;
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.4,v) &               /* >1 var */
+  bsearch(x,v,w) &
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x:=y))
+ =>
+  rec$sub$x;
+
+
+
+  bcrer(DesugarerStackX,(x:=y))
+ =>
+  rec$sub$x$y;
+
+
+
+/**** check rhs in full variables ****/
+
+  DontExpandOpFlagSet &               /* check on unexpanded operations */
+  GetCurrentConstruct(s.imp) &
+  brule(AnlFullVariablesX.I,s(v)) &
+  v\y &                               /* not in AnlFullVariablesX */
+  bcrer(DesugarerStackX,(x:=y))
+ =>
+  rec$sub$x$y;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$sc$y
+ =>
+  rec$sc;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x;y))
+ =>
+  rec$sc$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$par$y
+ =>
+  rec$par;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x||y))
+ =>
+  rec$par$x;
+
+/**** ((b|c)||a) == (b|(c||a)) ***/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(b|c)) &
+  bpop(DesugarerStackX) &
+  desugar(a) &
+  rec$par$c &
+  rec$bar$b
+ =>
+  rec$par$(a);
+
+/**** (a||(b|c)) == (b|(a||c)) ***/
+
+  brule(DesugarerStackX.m,c) &
+  bpop(DesugarerStackX) &
+  desugar(b) &
+  rec$par$c &
+  rec$bar$a
+ =>
+  rec$par$(a|b);
+
+/**** (a:=b||c:=d) == (a,c:=b,d) ***/
+
+  rec$par$err(a:=b)(d,e);
+
+  ExpandOpFlagSet &
+  InformInvalidSubstitution(d,e)
+ =>
+  rec$par$err(a:=b)(d,e);
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(c:=d)) &
+  brule(RebuildX.2,o) &
+  FlagDesugarerError &
+  rec$par$err(a:=b)(o,(bflat(a,c):=bflat(b,d))) &
+  chk_rep(bflat(a,c))
+ =>
+  rec$par$(a:=b);
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(c:=d)) &
+  a\c &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(bflat(a,c):=bflat(b,d)))
+ =>
+  rec$par$(a:=b);
+
+/**** (skip||a:=b) == (a:=b) ***/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(a:=b)) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a:=b))
+ =>
+  rec$par$(skip);
+
+/**** (skip||skip) == (skip) ***/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,(skip)) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(skip))
+ =>
+  rec$par$(skip);
+
+/**** (a:=b||skip) == (a:=b) ***/
+
+  blent(DesugarerStackX.m) &
+  brule(DesugarerStackX.m,skip) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(a:=b))
+ =>
+  rec$par$(a:=b);
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$com$y
+ =>
+  rec$com;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x,y))
+ =>
+  rec$com$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$amp$y
+ =>
+  rec$amp;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x&y))
+ =>
+  rec$amp$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$NotPropSubset$y
+ =>
+  rec$NotPropSubset;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x/<<:y))
+ =>
+  rec$NotPropSubset$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$PropSubset$y
+ =>
+  rec$PropSubset;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x<<:y))
+ =>
+  rec$PropSubset$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$NotSubset$y
+ =>
+  rec$NotSubset;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x/<:y))
+ =>
+  rec$NotSubset$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$Subset$y
+ =>
+  rec$Subset;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x<:y))
+ =>
+  rec$Subset$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$NotIn$y
+ =>
+  rec$NotIn;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x/:y))
+ =>
+  rec$NotIn$x;
+
+
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  rec$In$y
+ =>
+  rec$In;
+
+  brule(DesugarerStackX.m,y) &
+  bpop(DesugarerStackX) &
+  bcrer(DesugarerStackX,(x:y))
+ =>
+  rec$In$x;
+
+
+
+  bident(a) &
+  bident(b) &
+  desugar(bnewv(a,b))
+ =>
+  desugar(a.b);
+
+
+  bident(a) &
+  bident(b) &
+  desugar(bnewv(a,b)[c])
+ =>
+  desugar(a.b[c])
+
+END
+
+
+&
+
+THEORY TEST IS
+
+Desugar((
+IF aa=2 THEN xx:=3 THEN xx:=4 END
+))
+
+END
+
+/*
+&
+
+THEORY TEST IS
+
+Desugar((
+    CHOICE
+      skip
+    OR
+      ((true)
+ |
+ (
+ (BEGIN
+ sts:=st2
+ END)
+ )) ||
+      state := s2
+    OR
+      ((true)
+ |
+ (
+ (BEGIN
+ sts:=st1
+ END)
+ )) ||
+      state := s3
+    END
+))
+
+;
+
+Desugar((
+    SELECT true THEN
+        skip
+    ELSE
+        skip
+    END
+))
+
+;
+
+Desugar((
+PRE bb : AA THEN
+  IF bb=A3 THEN
+    BEGIN
+      aa := A1	||
+      SELECT 1 THEN skip
+        WHEN 2 THEN
+          CASE bb OF
+            EITHER A1 THEN
+              rr := A1
+            OR A2 THEN
+              IF 1000 THEN aa:=1000 ELSE aa:=20000 END
+            ELSE
+              aa:=50000 
+            END
+          END
+        ELSE
+        aa:=10000000
+      END
+    END
+  ELSE
+    aa := A2
+  END
+END
+));
+
+  Desugar((
+    SELECT 1 THEN skip
+      WHEN 2 THEN skip
+    END
+));
+
+
+  Desugar((
+    CASE bb OF
+      EITHER A1 THEN
+        rr := A1
+      OR A2 THEN
+        rr := A2
+      END
+    END
+));
+
+
+Desugar((
+ PRE bb : AA
+THEN
+  IF bb=A3
+  THEN
+
+BEGIN
+
+    aa := A1	||
+ 
+   CASE bb OF
+      EITHER A1 THEN
+        rr := A1
+      OR A2 THEN
+        rr := A2
+      END
+    END
+
+END
+
+  ELSE
+  aa := A2
+
+
+  END
+END
+))
+
+END
+*/

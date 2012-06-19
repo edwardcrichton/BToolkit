@@ -1,0 +1,54 @@
+#! /bin/csh -f
+
+# echo ""
+# echo "  ------------------------- "
+# echo "  This script compiles $1.c "
+# echo "  to `pwd`/$1.o "
+# echo "  ------------------------- "
+
+######################################
+# set all variables 
+######################################
+
+set cur=`pwd`
+cd ../UTIL
+source set_compile_variables 1
+cd $cur
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+cd ../MOTIF
+
+################################
+# compile file
+################################
+
+echo ""
+echo "  ----------------------------------"
+echo "  Compiling $1.c"
+echo ""
+
+echo "  $CC \ "
+echo "      $CC_opt_Motif \ "
+echo "      -c $1.c \ "
+echo "      -Dbmotif  -DBTOOLKIT_FLAG \ "
+echo "      -DBTOOL_FLAG -DBTOOLM_FLAG \ "
+echo "      $ALL_FLAGS  \ "
+  echo "      $CC_X_incl_dir "
+  $CC \
+      $CC_opt_Motif \
+      -c $1.c \
+      -Dbmotif -DBTOOLKIT_FLAG \
+      -DBTOOL_FLAG -DBTOOLM_FLAG \
+      $ALL_FLAGS \
+      $CC_X_incl_dir
+
+if ( $status != 0 ) then
+  echo ""
+  exit ( 1 )
+else
+  echo ""
+  exit ( 0 )
+endif

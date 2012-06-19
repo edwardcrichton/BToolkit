@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Uns_SEMANTICS">
+  <TITLE>The Uns_SEMANTICS machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.52
+  DATE:             12/07/99
+***/
+
+/*
+Description: Library Type semantics machine
+
+History :
+120799 v0.01 : Created.
+               semantic descriptions of the two operators n2u, n2n
+               moved here from Uns_TYPE to aid efficiency pf proof.
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Uns_SEMANTICS
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Uns_TYPE.mch.html#MACHINE">Uns_TYPE</A>
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+/*"
+We define the {\em NAT\/} to {\em UNSIGNED\/} conversion function
+as a bijection between natural numbers in the range {\em 0\/}
+to {\em 65535\/} and {\em UNSIGNED\/} (i.e.\  there is
+a 1-to-1 correspondence between the two);
+the {\em UNSIGNED\/} to {\em NAT\/} function
+may then be defined as the inverse:
+"*/
+
+  !uns.(uns:<A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> =&gt; <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(<A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(uns)) = uns) &
+  !nat.(nat:NAT&nat<=65535 => <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(<A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(nat)) = nat)
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:08:45 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

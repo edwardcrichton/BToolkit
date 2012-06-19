@@ -1,0 +1,69 @@
+
+#This script executes before that package will be unpacked from its Debian archive (".deb") file.
+#Many 'preinst' scripts stop services for packages which are being upgraded until their installation
+# or upgrade is completed (following the successful execution of the 'postinst' script).
+# rpm: 1 == install, 2 == upgrade
+
+echo "preinst $1 $2 $3"
+
+case "$1" in
+  upgrade|2)
+  
+  LSOF=`which lsof`
+  
+   if [ "$LSOF" != "" ] ; then
+    
+    BMOTIF=`$LSOF -tc BMotif` || true
+    
+     if [ "$BMOTIF" != "" ] ; then
+
+      echo "Stopping all B Toolkits"
+    
+      kill -9 $BMOTIF || true
+    
+      BTOOLKIT=`$LSOF -tc BToolkit` || true
+    
+      if [ "$BTOOLKIT" != "" ] ; then
+
+       kill -9 $BTOOLKIT || true
+ 
+      fi
+   
+      BSESSION=`$LSOF -tc BSession` || true
+    
+      if [ "$BSESSION" != "" ] ; then
+
+       kill -9 $BSESSION || true
+ 
+      fi
+   
+      BPLATFORM=`$LSOF -tc bplatform` || true
+    
+      if [ "$BPLATFORM" != "" ] ; then
+
+       kill -9 $BPLATFORM || true
+ 
+      fi
+   
+    fi
+   
+    BTOOLKITD=`$LSOF -tc BToolkitd` || true
+    
+    if [ "$BTOOLKITD" != "" ] ; then
+
+     echo "Stopping B Toolkit licence server"
+
+     kill -9 $BTOOLKITD || true
+ 
+    fi
+   
+   fi
+   
+   ;;
+   install|1)
+   echo
+    ;;
+  failed-upgrade|abort-upgrade)
+    echo
+    ;;
+esac

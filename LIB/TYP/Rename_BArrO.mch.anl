@@ -1,0 +1,484 @@
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+,
+(Uns_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(ARROBJ)
+;
+(ARROBJ)
+;
+(lb)
+;
+(lb)
+;
+(card(ARROBJ) = maxobj & lb = n2u(1) & card(ARROBJ): NAT1)
+;
+(card(ARROBJ) = maxobj & lb = n2u(1) & card(ARROBJ): NAT1)
+;
+(?)
+;
+(?)
+;
+(BAO_arr,BAO_arrtok,BAO_arrstruct,BAO_nxt)
+;
+(BAO_arr,BAO_arrtok,BAO_arrstruct,BAO_nxt)
+;
+(BAO_arr: u2n(lb)..ub +-> BYTE & BAO_arrtok <: ARROBJ & BAO_arrstruct: BAO_arrtok --> (u2n(lb)..ub +-> BYTE) & BAO_nxt: BAO_arrtok --> NAT)
+;
+(BAO_arr: u2n(lb)..ub +-> BYTE & BAO_arrtok <: ARROBJ & BAO_arrstruct: BAO_arrtok --> (u2n(lb)..ub +-> BYTE) & BAO_nxt: BAO_arrtok --> NAT)
+;
+(?)
+;
+(BAO_arr,BAO_arrtok,BAO_arrstruct,BAO_nxt:={},{},{},{})
+;
+(BAO_arr,BAO_arrtok,BAO_arrstruct,BAO_nxt:={},{},{},{})
+;
+(Rename_BAO_OBJ_FUL,Rename_BAO_XST,Rename_BAO_INI,Rename_BAO_CRE,Rename_BAO_VAL,Rename_BAO_NXT,Rename_BAO_EQL,Rename_BAO_STO,Rename_BAO_STO_NXT,Rename_BAO_CPY,Rename_BAO_FILL)
+;
+(Rename_BAO_OBJ_FUL,Rename_BAO_XST,Rename_BAO_INI,Rename_BAO_CRE,Rename_BAO_VAL,Rename_BAO_NXT,Rename_BAO_EQL,Rename_BAO_STO,Rename_BAO_STO_NXT,Rename_BAO_CPY,Rename_BAO_FILL)
+;
+(Rename_BArrO(maxobj,ub):(maxobj>0 & maxobj<256 & ub>0 & maxobj*ub<=32768 & ub: NAT & maxobj: NAT):(?))
+;
+(
+(
+ (Rename_BAO_OBJ_FUL)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_BAO_OBJ_FUL))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb:=bool(ARROBJ = BAO_arrtok)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb:=bool(ARROBJ = BAO_arrtok))
+ )
+ )
+)
+,
+(
+ (Rename_BAO_XST)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_BAO_XST(pp)))
+;
+ (pp)
+;
+ (bb)
+;
+ (
+ (pp: ARROBJ)
+ |
+ (
+ (bb:=bool(pp: BAO_arrtok))
+ )
+ )
+;
+ (
+ (pp: ARROBJ)
+ |
+ (
+ (bb:=bool(pp: BAO_arrtok))
+ )
+ )
+)
+,
+(
+ (Rename_BAO_INI)
+;
+ (?,Mod_Op,Det_Op,Rename_BAO_INI)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ BAO_arrtok,BAO_arrstruct,BAO_nxt:={},{},{}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (BAO_arrtok,BAO_arrstruct,BAO_nxt:={},{},{})
+ )
+ )
+)
+,
+(
+ (Rename_BAO_CRE)
+;
+ (?,Mod_Op,NonDet_Op,(bb,pp <-- Rename_BAO_CRE))
+;
+ (?)
+;
+ (bb,pp)
+;
+ (
+ (true)
+ |
+ (
+ (IF BAO_arrtok/=ARROBJ THEN
+ ANY qq WHERE
+ qq: ARROBJ-BAO_arrtok
+ THEN
+ BAO_arrstruct(qq):={} ||
+ BAO_nxt(qq):=u2n(lb) ||
+ BAO_arrtok:=BAO_arrtok\/{qq} ||
+ pp:=qq ||
+ bb:=TRUE
+ END
+ ELSE
+ bb:=FALSE ||
+ pp:: ARROBJ
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (not(BAO_arrtok = ARROBJ))
+ )
+ ==>
+ (
+ @(qq).
+ (
+ (
+ (qq: ARROBJ-BAO_arrtok)
+ )
+ ==>
+ (
+ (BAO_arrstruct,BAO_nxt,BAO_arrtok,pp,bb:=BAO_arrstruct<+{qq|->{}},BAO_nxt<+{qq|->u2n(lb)},BAO_arrtok\/{qq},qq,TRUE)
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ (BAO_arrtok = ARROBJ)
+ )
+ ==>
+ (
+ (
+ (bb:=FALSE)
+ )
+ ||
+ (
+ @(ppx).
+ (
+ (
+ (ppx: ARROBJ)
+ )
+ ==>
+ (
+ (pp:=ppx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BAO_VAL)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_BAO_VAL(pp,ii)))
+;
+ (pp,ii)
+;
+ (vv)
+;
+ (
+ (ii: UNSIGNED & pp: BAO_arrtok & u2n(ii): dom(BAO_arrstruct(pp)))
+ |
+ (
+ (vv:=BAO_arrstruct(pp)(u2n(ii)))
+ )
+ )
+;
+ (
+ (ii: UNSIGNED & pp: BAO_arrtok & u2n(ii): dom(BAO_arrstruct(pp)))
+ |
+ (
+ (vv:=BAO_arrstruct(pp)(u2n(ii)))
+ )
+ )
+)
+,
+(
+ (Rename_BAO_NXT)
+;
+ (?,Val_Op,Det_Op,(nn <-- Rename_BAO_NXT(pp)))
+;
+ (pp)
+;
+ (nn)
+;
+ (
+ (pp: BAO_arrtok)
+ |
+ (
+ (nn:=n2u(BAO_nxt(pp)))
+ )
+ )
+;
+ (
+ (pp: BAO_arrtok)
+ |
+ (
+ (nn:=n2u(BAO_nxt(pp)))
+ )
+ )
+)
+,
+(
+ (Rename_BAO_EQL)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_BAO_EQL(ss,tt)))
+;
+ (ss,tt)
+;
+ (bb)
+;
+ (
+ (tt: BAO_arrtok & ss: BAO_arrtok)
+ |
+ (
+ (bb:=bool(BAO_arrstruct(tt) = BAO_arrstruct(ss)))
+ )
+ )
+;
+ (
+ (tt: BAO_arrtok & ss: BAO_arrtok)
+ |
+ (
+ (bb:=bool(BAO_arrstruct(tt) = BAO_arrstruct(ss)))
+ )
+ )
+)
+,
+(
+ (Rename_BAO_STO)
+;
+ (?,Mod_Op,Det_Op,Rename_BAO_STO(pp,ii,vv))
+;
+ (pp,ii,vv)
+;
+ (?)
+;
+ (
+ (pp: BAO_arrtok & vv: BYTE & ii: UNSIGNED & u2n(ii): u2n(lb)..ub)
+ |
+ (
+ (
+ (BAO_arrstruct(pp)(u2n(ii)):=vv)
+ )
+ ||
+ (
+ (IF u2n(ii)<ub THEN
+ BAO_nxt(pp):=u2n(ii)+1
+ ELSE
+ BAO_nxt(pp):=u2n(lb)
+ END)
+ )
+ )
+ )
+;
+ (
+ (pp: BAO_arrtok & vv: BYTE & ii: UNSIGNED & u2n(ii): u2n(lb)..ub)
+ |
+ (
+ (
+ (BAO_arrstruct:=BAO_arrstruct<+{pp|->(BAO_arrstruct(pp)<+{u2n(ii)|->vv})})
+ )
+ ||
+ (
+ (
+ (
+ (u2n(ii)<ub)
+ )
+ ==>
+ (
+ (BAO_nxt:=BAO_nxt<+{pp|->u2n(ii)+1})
+ )
+ )
+ []
+ (
+ (
+ (ub<=u2n(ii))
+ )
+ ==>
+ (
+ (BAO_nxt:=BAO_nxt<+{pp|->u2n(lb)})
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BAO_STO_NXT)
+;
+ (?,Mod_Op,Det_Op,Rename_BAO_STO_NXT(pp,vv))
+;
+ (pp,vv)
+;
+ (?)
+;
+ (
+ (pp: BAO_arrtok & vv: BYTE)
+ |
+ (
+ (
+ (BAO_arrstruct(pp)(BAO_nxt(pp)):=vv)
+ )
+ ||
+ (
+ (IF BAO_nxt(pp)<ub THEN
+ BAO_nxt(pp):=BAO_nxt(pp)+1
+ ELSE
+ BAO_nxt(pp):=u2n(lb)
+ END)
+ )
+ )
+ )
+;
+ (
+ (pp: BAO_arrtok & vv: BYTE)
+ |
+ (
+ (
+ (BAO_arrstruct:=BAO_arrstruct<+{pp|->(BAO_arrstruct(pp)<+{BAO_nxt(pp)|->vv})})
+ )
+ ||
+ (
+ (
+ (
+ (BAO_nxt(pp)<ub)
+ )
+ ==>
+ (
+ (BAO_nxt:=BAO_nxt<+{pp|->BAO_nxt(pp)+1})
+ )
+ )
+ []
+ (
+ (
+ (ub<=BAO_nxt(pp))
+ )
+ ==>
+ (
+ (BAO_nxt:=BAO_nxt<+{pp|->u2n(lb)})
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BAO_CPY)
+;
+ (?,Mod_Op,Det_Op,Rename_BAO_CPY(pp,qq))
+;
+ (pp,qq)
+;
+ (?)
+;
+ (
+ (pp: BAO_arrtok & qq: BAO_arrtok)
+ |
+ (
+ (BAO_arrstruct(qq):=BAO_arrstruct(pp))
+ )
+ )
+;
+ (
+ (pp: BAO_arrtok & qq: BAO_arrtok)
+ |
+ (
+ (BAO_arrstruct:=BAO_arrstruct<+{qq|->BAO_arrstruct(pp)})
+ )
+ )
+)
+,
+(
+ (Rename_BAO_FILL)
+;
+ (?,Mod_Op,NonDet_Op,Rename_BAO_FILL(pp,vv))
+;
+ (pp,vv)
+;
+ (?)
+;
+ (
+ (pp: ARROBJ & vv: BYTE)
+ |
+ (
+ (BEGIN
+ ANY array WHERE
+ array: u2n(lb)..ub +-> BYTE &
+ card(array) = ub &
+ ran(array) = {vv}
+ THEN
+ BAO_arrstruct(pp):=array
+ END ||
+ BAO_nxt(pp):=u2n(lb)
+ END)
+ )
+ )
+;
+ (
+ (pp: ARROBJ & vv: BYTE)
+ |
+ (
+ (
+ @(array).
+ (
+ (
+ (array: u2n(lb)..ub +-> BYTE & card(array) = ub & ran(array) = {vv})
+ )
+ ==>
+ (
+ (BAO_arrstruct:=BAO_arrstruct<+{pp|->array})
+ )
+ )
+ )
+ ||
+ (
+ (BAO_nxt:=BAO_nxt<+{pp|->u2n(lb)})
+ )
+ )
+ )
+)
+)

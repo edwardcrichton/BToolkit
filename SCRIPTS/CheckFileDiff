@@ -1,0 +1,10 @@
+#! /bin/sh
+
+diff $1 $2 > .Berr
+Berr=`cat .Berr`
+if [ "$Berr" = "" ]
+then
+  echo 0 > .Bcom
+else
+  echo 1 > .Bcom
+fi

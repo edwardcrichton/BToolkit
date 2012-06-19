@@ -1,0 +1,184 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The BToolkit Licence Manager and Linux Hardware Licences</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="BToolkitd"></A>
+<H1>
+BToolkitd and <A HREF="BToolkitd.html#HardwareLicence">Linux Hardware Licences</A></H1>
+<A NAME="BToolkitd.html#BToolkitd"></A>BToolkitd is the licence daemon
+which must be running in order to execute the <A HREF="BToolkit.html#B-Toolkit">B-Toolkit</A>,
+(but see also <A HREF="BToolkitd.html#HardwareLicence">Linux Hardware Licences</A>).
+
+<P>During <A HREF="Installation.html">installation</A> BToolkitd is put
+in the <A HREF="BEnvironment.html#Environment">$BKIT</A> directory, but
+it may be moved to any convenient directory for execution; the licence
+file <A HREF="Installation.html#Licence_File">B.licence</A> (supplied separately
+from the B-Toolkit) may also reside in any convenient directory. If this
+licence file is not present, BToolkitd will not execute.
+
+<P>On invocation BToolkitd should be given the full path to the B.licence
+directory; so assuming that BToolkitd and B.licence are in /usr/local/bin
+and /usr/local/lib respectively, it may be invoked:
+<PRE>&nbsp;&nbsp;&nbsp; /usr/local/bin/BToolkitd /usr/local/lib</PRE>
+To ensure that the daemon runs on start-up the following text should be
+inserted in an appropriate start-up file (for example /etc/rc.local on
+SunOs4.x, /etc/rc2.d/s73nfs.client on Solaris, /etc/rc.d/rc.local on Linux):
+<PRE>&nbsp;&nbsp;&nbsp; #
+&nbsp;&nbsp;&nbsp; # start BToolkitd
+&nbsp;&nbsp;&nbsp; #
+&nbsp;&nbsp;&nbsp; if [ -f /usr/local/bin/BToolkitd ]; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /usr/local/bin/BToolkitd /usr/local/lib &amp; echo -n ' BToolkitd'
+&nbsp;&nbsp;&nbsp; fi</PRE>
+For convenience, the licence file may now have a name other than B.licence,
+in which case the full path to the licence (rather than to its directory)
+should be given: for example, if the licence is called B.licence_ultra5,
+and resides in the /usr/local/licences directory, it should be invoked:
+<PRE>&nbsp;&nbsp;&nbsp; /usr/local/bin/BToolkitd /usr/local/licences/B.licence_ultra5</PRE>
+Note that the following are equivalent:&nbsp;
+<PRE>&nbsp;&nbsp;&nbsp; /usr/local/bin/BToolkitd /usr/local/lib</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp; /usr/local/bin/BToolkitd /usr/local/lib/B.licence</PRE>
+
+
+<P>BToolkitd may take an optional port-number second argument
+(<A HREF="#BToolkitd#port">see below</A>)
+
+<P>
+<HR WIDTH="60%">
+<H3>
+<A NAME="BToolkitd#server">Running BToolkitd: the platform</H3>
+The BToolkitd daemon may be run on any (networked) platform; in a client-server
+installation it would typically be run on the server platform, and in this
+case the ipaddress of the server platform (in the usual dotted quad decimal
+notation) or the name of the server platform (when the name should be resolvable
+on all client machines to an ipaddress via "gethostbyname") should appear
+in the file:
+<PRE>&nbsp;&nbsp;&nbsp; $BKIT/B_server</PRE>
+(ie. in the BKIT directory of the B-Toolkit installation).
+The BToolkit will then use this file (together with the optional
+<A HREF="#BToolkitd#port"><TT>$BKIT/B_port</TT></A> file) to establish the
+platform/port on which the daemon is running, and attempt to
+establish a TCP/IP connection.
+<P>
+If the file <TT>$BKIT/B_server</TT> does not exists, it will be assumed that
+BToolkitd is running on the same platform as the BToolkit, as
+will be the case in a single-platform installation.
+same platform.
+
+<P>
+<HR WIDTH="60%">
+<H3>
+<A NAME="BToolkitd#port"></A>Running BToolkitd: the port</H3>
+BToolkitd establishes a TCP/IP connection: clients obtain the ipaddress
+from the <A HREF="#BToolkitd#server">$BKIT/B_server</A> file (or use their own
+ipaddress if this file is not present), and the port is established in one
+of three ways:
+<OL>
+<LI>
+If the <TT>/etc/services </TT>file contains a BToolkitd entry, this is
+the port number that is used; the entry would look something like:</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BToolkitd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2050/tcp&nbsp;&nbsp;&nbsp;&nbsp; # BToolkit daemon</PRE>
+If this method is used, all clients as well as the server, should have
+the same entry in their services file.
+<BR>&nbsp;
+<LI>
+If <TT>/etc/services </TT>does not contain a BToolkitd entry, and a second
+port-argument&nbsp; is given to BToolkitd, for example:</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usr/local/bin/BToolkitd /usr/local/licences/B.licence_ultra5 5000</PRE>
+then that port in taken. However in this case, the file
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $BKIT/B_port</PRE>
+should be created to contain the port , so that clients may contact the
+daemon on the correct port.
+<BR>&nbsp;
+<LI>
+Finally, if neither of the above apply, the default port 2107 is used.</LI>
+
+<BR>&nbsp;</OL>
+
+<HR WIDTH="60%">
+<H3>
+<A NAME="BToolkitd#BToolkitd_util"></A>BToolkitd utilities: BToolkitd_util</H3>
+These facilities are provided by <TT>BToolkitd_util </TT>(in the $BKIT
+directory) but should not normally be required.
+
+<P><TT>BToolkitd_util </TT>may be invoked in the following four ways:
+<OL>
+<LI>
+<TT>BToolkitd_util status</TT></LI>
+
+<BR>Displays the current status of the licence manager
+<BR>&nbsp;
+<LI>
+<TT>BToolkitd_util down</TT></LI>
+
+<BR>Stops BToolkitd gracefully
+<BR>&nbsp;
+<LI>
+<TT>BToolkitd_util remove lic_num [ lic_num ... ]</TT></LI>
+
+<BR>&nbsp;
+<LI>
+<TT>BToolkitd_util reread</TT></LI>
+<BR>Causes BToolkitd to reread the licence file after it has been updated
+
+<BR>Returns licences to the pool; lic_num is one of the licence numbers
+displayed through <TT>BToolkitd_util status</TT></OL>
+Note that the BToolkitd daemon uses <TT>syslogd</TT>, and so information
+is displayed in the console window of the platform on which it is running.
+<BR>&nbsp;
+
+
+<P>
+<HR WIDTH="60%">
+<H3>
+<A NAME="HardwareLicence"></A>Linux Hardware Licences</H3>
+As an alternative to running <A HREF="BToolkitd.html#BToolkitd">BToolkitd</A>,
+hardware evaluation licences may be obtained for stand-alone Linux installations. Note
+that networking does not need to be installed on such machines.
+
+<P>Obtaining and installing the licence
+is a four-part process (assuming you have already downloaded
+and installed the latest version of the B-Toolkit, and set the
+<A HREF="BEnvironment.html#Environment">BKIT</A> Environment
+Variable):
+
+<OL>
+<LI> Execute:
+     <PRE>    $BKIT/BToolkitd_util code</PRE>This will produce a file containing a dotted-quad hardware
+     code for your machine.<P>
+<LI> <P>Visit <A HREF="http://www.b-core.com">http://www.b-core.com</A>
+      and navigate to the section on Evaluation Licences.<BR>
+     Fill in and submit the form giving the hardware
+     code you obtained above.<P>
+<LI> <P>When the email arrives, save the mail message as the file:
+     <PRE>    BHW.mail </PRE> in the <tt>$BKIT</tt> directory.<P>
+<LI> Execute:
+     <PRE>    $BKIT/BToolkitd_util installBHW</PRE>This will install the hardware licence and you will
+     now be able to run the <A HREF="BToolkit.html#B-Toolkit">B-Toolkit</A>.<BR><P>
+</OL>
+
+
+
+<OL>
+<HR WIDTH="60%"><BR>
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25  ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002</I></FONT></B></CENTER>
+
+<CENTER>
+<HR WIDTH="60%"></CENTER>
+</OL>
+
+</BODY>
+</HTML>

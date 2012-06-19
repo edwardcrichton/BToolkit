@@ -1,0 +1,131 @@
+#! /bin/csh -f
+
+#  MAKE_WWW_tarfile_from_built
+
+#
+#  After the remote system has been built and
+#  tested, this script creates the single
+#  ftp-able BT_tarfile BT_`platform'.WWW_10.tgz
+#
+#  All src files should be removed after
+#  running this script
+#
+
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+switch ( $VERSION )
+
+  case SUNOS_VERSION
+    set plat=SunOS
+    breaksw
+  case SOLARIS_VERSION
+    set plat=Solaris
+    breaksw
+  case LINUX_VERSION
+    set plat=Linux
+    breaksw
+  case OSF1_VERSION
+    set plat=DecAlpha
+    breaksw
+  case IRIX_VERSION
+    set plat=Indy
+    breaksw
+  case AIX_VERSION
+    set plat=Aix
+    breaksw
+  default:
+    echo ""
+    echo "  VERSION $VERSION not recognized"
+    echo "  Aborted"
+    echo ""
+    exit
+    breaksw
+
+endsw
+
+setenv BT_VERSION WWW_10
+
+echo ""
+echo "         ------------------------------"
+echo ""
+echo "  This script creates the single ftp-able tgz file: "
+echo ""
+echo "       BT_$plat.$BT_VERSION.tgz "
+echo ""
+echo "  comprising: "
+echo ""
+echo "      BT_$plat.$BT_VERSION/BKIT"
+echo "      BT_$plat.$BT_VERSION/WWW_DEMOS"
+echo "      BT_$plat.$BT_VERSION/Run_WWW_Demos"
+echo "      BT_$plat.$BT_VERSION/INSTALL_WWW"
+echo ""
+echo ""
+echo "  It should be used on the remote site, after"
+echo "  the installation has been built and tested."
+echo ""
+echo "  After running this script, the all src files"
+echo "  should be removed from the remote system"
+
+echo ""
+echo ""
+echo "  -- 1  Continue"
+echo "  -- 2  Abort"
+
+echo ""
+echo -n "  ** Number? "
+set answer=$<
+
+if ($answer != "1") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+cd ..
+
+if ( ! -d BT_$plat.$BT_VERSION ) then
+  mkdir BT_$plat.$BT_VERSION
+endif
+
+rm -f BT_$plat.$BT_VERSION/*
+
+echo ""
+echo "    tar cvf BT_$plat.$BT_VERSION/BT_$plat.$BT_VERSION \ "
+echo "        BKIT WWW_DEMOS Run_WWW_Demos INSTALL_WWW ... "
+echo ""
+tar cvf BT_$plat.$BT_VERSION/BT_$plat.$BT_VERSION \
+    BKIT WWW_DEMOS Run_WWW_Demos -C INSTALL_SCRIPTS INSTALL_WWW
+if ( $status != 0 ) then
+  echo ""
+  echo "  Make aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+cd BT_$plat.$BT_VERSION
+
+echo ""
+echo "    gzip -S .tgz -v BT_$plat.$BT_VERSION/BT_$plat.$BT_VERSION ... "
+echo ""
+gzip -S .tgz -v BT_$plat.$BT_VERSION
+if ( $status != 0 ) then
+  echo ""
+  echo "  gzip aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+gzip -l BT_$plat.$BT_VERSION.tgz
+echo ""
+
+echo ""
+echo "  ftp-able BT_$plat.$BT_VERSION/BT_$plat.$BT_VERSION.tgz created "
+echo ""
+echo ""

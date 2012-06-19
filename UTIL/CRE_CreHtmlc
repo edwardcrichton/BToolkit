@@ -1,0 +1,60 @@
+#! /bin/csh -f
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script installs : "
+echo "    `pwd`/BKIT/BLIB/CreHtmlc "
+echo "  -----------------------------------------------------"
+
+source ./set_compile_variables
+
+cd ../C
+
+echo ""
+foreach file ( "CreHtmlc" )
+  echo "  creating $BKIT/BLIB/$file"
+  if ($file == "Proof") then
+    echo "  $CC \ "
+    echo "      $CC_opt_non_Motif \ "
+    echo "      $file.c \ "
+    echo "      -o $BKIT/BLIB/CheckAnnot \ "
+    echo "      $ALL_FLAGS \ "
+    echo "      $CC_non_X_link_lib "
+    $CC \
+        $CC_opt_non_Motif \
+        $file.c \
+        -o $BKIT/BLIB/CheckAnnot \
+        $ALL_FLAGS \
+        $CC_non_X_link_lib
+  else
+    echo "  $CC \ "
+    echo "      $CC_opt_non_Motif \ "
+    echo "      $file.c \ "
+    echo "      -o $BKIT/BLIB/$file \ "
+    echo "      $ALL_FLAGS \ "
+    echo "      $CC_non_X_link_lib "
+    $CC \
+        $CC_opt_non_Motif \
+        $file.c \
+        -o $BKIT/BLIB/$file \
+        $ALL_FLAGS \
+        $CC_non_X_link_lib
+  endif
+  if ( $status != 0 ) then
+    echo ""
+    echo "                            >>>>> $file NOT COMPILED <<<<<"
+  else
+    if ($file == "Proof") then
+      echo "  strip $BKIT/BLIB/CheckAnnot"
+      strip $BKIT/BLIB/CheckAnnot 
+    else
+      echo "  strip $BKIT/BLIB/$file"
+      strip $BKIT/BLIB/$file
+    endif 
+  endif
+  echo ""
+end
+
+echo ""
+echo "  Done"
+echo ""

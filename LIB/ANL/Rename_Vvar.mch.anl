@@ -1,0 +1,293 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Vvar)
+;
+(Rename_Vvar)
+;
+(Rename_Vvar : VALUE)
+;
+(Rename_Vvar : VALUE)
+;
+(?)
+;
+(Rename_Vvar :: VALUE)
+;
+(@Rename_Vvarx.(Rename_Vvarx : VALUE ==> Rename_Vvar := Rename_Vvarx))
+;
+(Rename_VAL_VAR,Rename_STO_VAR,Rename_EQL_VAR,Rename_NEQ_VAR,Rename_SAV_VAR,Rename_RST_VAR,Rename_SAVN_VAR,Rename_RSTN_VAR)
+;
+(Rename_VAL_VAR , Rename_STO_VAR , Rename_EQL_VAR , Rename_NEQ_VAR , Rename_SAV_VAR , Rename_RST_VAR , Rename_SAVN_VAR , Rename_RSTN_VAR)
+;
+(Rename_Vvar(VALUE):(card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_VAL_VAR)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_VAR))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv := Rename_Vvar
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (vv := Rename_Vvar)
+ )
+ )
+)
+,
+(
+ (Rename_STO_VAR)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_VAR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (Rename_Vvar := vv)
+ )
+ )
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (Rename_Vvar := vv)
+ )
+ )
+)
+,
+(
+ (Rename_EQL_VAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL_VAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (bb := bool(Rename_Vvar = vv))
+ )
+ )
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (bb := bool(Rename_Vvar = vv))
+ )
+ )
+)
+,
+(
+ (Rename_NEQ_VAR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_NEQ_VAR(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (bb := bool(Rename_Vvar /= vv))
+ )
+ )
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (bb := bool(not(Rename_Vvar = vv)))
+ )
+ )
+)
+,
+(
+ (Rename_SAV_VAR)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_VAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_VAR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_VAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Vvar :: VALUE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Vvarx).
+ (
+ (
+ (Rename_Vvarx : VALUE)
+ )
+ ==>
+ (
+ (Rename_Vvar := Rename_Vvarx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_VAR)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_VAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_VAR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_VAR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Vvar :: VALUE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Vvarx).
+ (
+ (
+ (Rename_Vvarx : VALUE)
+ )
+ ==>
+ (
+ (Rename_Vvar := Rename_Vvarx)
+ )
+ )
+ )
+ )
+)
+)

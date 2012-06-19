@@ -1,0 +1,124 @@
+<HTML>
+<HEAD>
+  <TITLE>The Rename_vector_VAR machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre><A NAME="MACHINE">MACHINE</A>           Rename_vector_VAR(length)
+
+SEES              <A HREF="std_numbers_PK.mch.html#MACHINE">std_numbers_PK</A>
+
+<A NAME="CONSTANTS">CONSTANTS</A>         
+
+    Rename_vector,
+    Rename_Vec2Nat,
+    Rename_Nat2Vec
+    
+PROPERTIES        
+
+   Rename_vector = 0..length --&gt; {0,1} &
+   Rename_Vec2Nat : Rename_vector --&gt; NAT &
+   Rename_Nat2Vec : NAT +-&gt; Rename_vector &
+
+   Rename_Vec2Nat = 
+           %(vec). ( vec : Rename_vector | (
+               SIGMA(nn).( nn:0..length | vec(nn) * <A HREF="std_numbers_PK.mch.html#CONSTANTS">exp</A>(2,nn) ) 
+           )) &
+
+   Rename_Nat2Vec = Rename_Vec2Nat~
+              
+VARIABLES
+
+  Rename_vec
+
+<A NAME="INVARIANT">INVARIANT</A>
+
+  Rename_vec : Rename_vector 
+
+OPERATIONS
+
+/* basic */
+
+  <A NAME="Rename_vec_STO">Rename_vec_STO</A>(vec:Rename_vector) =
+  BEGIN  Rename_vec := vec END;
+
+  vec &lt;-- <A NAME="Rename_vec_VAL">Rename_vec_VAL</A> =
+  BEGIN  vec := Rename_vec END;
+
+  st &lt;-- <A NAME="Rename_vec_EQL">Rename_vec_EQL</A>(vec:Rename_vector) =
+  IF vec=Rename_vec THEN st := 1 ELSE st := 0 END;
+
+
+/* conversions */
+
+  nn &lt;-- <A NAME="Rename_VEC2NAT">Rename_VEC2NAT</A> =
+  BEGIN
+    nn := Rename_Vec2Nat(Rename_vec)
+  END;
+
+  <A NAME="Rename_NAT2VEC">Rename_NAT2VEC</A>( nn : NAT ) =
+  PRE nn : dom(Rename_Nat2Vec) THEN
+    Rename_vec := Rename_Nat2Vec(nn)
+  END;
+
+/* initialising */
+
+  <A NAME="Rename_ALL1s">Rename_ALL1s</A> =
+  BEGIN
+    Rename_vec := (1..length) * {1}
+  END;
+
+  <A NAME="Rename_ALL0s">Rename_ALL0s</A> =
+  BEGIN
+    Rename_vec := (1..length) * {0}
+  END;
+
+/* inquiry */
+
+  bb &lt;-- <A NAME="Rename_VAL">Rename_VAL</A>(idx : 0..length) =
+  BEGIN
+    bb := Rename_vec(idx)
+  END;
+
+/* modifying */
+
+  <A NAME="Rename_SET1">Rename_SET1</A>(idx : 0..length) =
+  BEGIN
+    Rename_vec := Rename_vec &lt;+ {idx |-&gt; 1}
+  END;
+
+  <A NAME="Rename_SET0">Rename_SET0</A>(idx : 0..length) =
+  BEGIN
+    Rename_vec := Rename_vec &lt;+ {idx |-&gt; 0}
+  END;
+
+/* masking */
+
+  <A NAME="Rename_MASK">Rename_MASK</A>(lo : 0..length & up : 0..length) =
+  PRE lo &lt;= up THEN
+    Rename_vec := lo..up &lt;| Rename_vec 
+  END;
+
+  <A NAME="Rename_EXT">Rename_EXT</A>(lo : 0..length & up : 0..length) =
+  PRE lo &lt;= up THEN
+    Rename_vec := ( %(nn).(nn:lo..up | nn-lo) ; (lo..up &lt;| Rename_vec)) 
+  END
+
+END
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0Beta/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0Beta/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

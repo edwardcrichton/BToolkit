@@ -1,0 +1,110 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(String_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(CHK_QUERY)
+;
+(CHK_QUERY)
+;
+(QueryCheck(STATUS):(card(STATUS) : NAT1):(?))
+;
+(
+(
+ (CHK_QUERY)
+;
+ (? , Val_Op , NonDet_Op , (status , comment <-- CHK_QUERY(query)))
+;
+ (query)
+;
+ (status , comment)
+;
+ (
+ (query : STRING)
+ |
+ (
+ (BEGIN
+ status :: STATUS ||
+ comment :: STRING
+ END)
+ )
+ )
+;
+ (
+ (query : STRING)
+ |
+ (
+ (
+ @(statusx).
+ (
+ (
+ (statusx : STATUS)
+ )
+ ==>
+ (
+ (status := statusx)
+ )
+ )
+ )
+ ||
+ (
+ @(commentx).
+ (
+ (
+ (commentx : STRING)
+ )
+ ==>
+ (
+ (comment := commentx)
+ )
+ )
+ )
+ )
+ )
+)
+)

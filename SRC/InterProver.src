@@ -1,0 +1,2124 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define WorkDone         brule(InterProverFromUserX.16,1)
+#define ModifyWorkDone   bcall(MODR:bmodr(InterProverFromUserX.16,1))
+
+#define ModrMaxLengthThyName(x) bmodr(InterProverFromUserX.18,x)
+#define ReadMaxLengthThyName(x) brule(InterProverFromUserX.18,x)
+
+#define ModrMaxLengthThyTot(x) bmodr(InterProverFromUserX.20,x)
+#define ReadMaxLengthThyTot(x) brule(InterProverFromUserX.20,x)
+
+
+THEORY LoadBmfhX IS
+
+
+#define LoadBmfh bcall(LoadBmfhX:lbmfh)
+
+
+/*  lbmfh; */
+
+  bget("TMP/.Bmfh",n) &
+  bfwdprf(n)
+ =>
+  lbmfh
+
+END
+
+&
+
+THEORY StoreOrigProvedX IS
+
+#define StoreOrigProved bcall(((MAP;ARI;MODR)~;StoreOrigProvedX)~:sop)
+
+  ?;
+#define ReadOrigProvedList(x) brule(StoreOrigProvedX.1,x)
+#define ModrOrigProvedList(x) bmodr(StoreOrigProvedX.1,x)
+
+  sop2(t)(n);
+
+  brule(t.n,g) &
+  ReadOrigProvedList(L) &
+  ModrOrigProvedList((L,(t.n))) &
+  sop2(t)(n+1)
+ =>
+  sop2(t)(n);
+
+  brule(t.n,bunproved(g)) &
+  sop2(t)(n+1)
+ =>
+  sop2(t)(n);
+
+  sop2(t)(1)
+ =>
+  sop1(t);
+
+  ReadAllOriginalLemmaNames(L) &
+  sop1 bsmap L
+ =>
+  sop
+
+END
+
+&
+
+THEORY PrintUnprovedRangeTotalsX IS
+
+#define PrintUnprovedRangeTotals(N,x) \
+    bcall(((ARI~;MAP;MODR;WRITE)~;PrintUnprovedRangeTotalsX): \
+                                         ipfu_print_unproved_ran_tot1$N(x))
+
+  ?;
+#define ModifyUnprovedRangeTotalsList(x)  bmodr(PrintUnprovedRangeTotalsX.1,x)
+#define ReadUnprovedRangeTotalsList(x)    brule(PrintUnprovedRangeTotalsX.1,x)
+
+  Connect(bcatl("TMP/.",t,"_unp")) &
+  bprintf("%",T) &
+  bclose
+ =>
+  ipfu_print_unproved_ran_tot3$N(t)(T);
+
+  bsearch(?,T,P) &
+  ipfu_print_unproved_ran_tot3$N(t)(P)
+ =>
+  ipfu_print_unproved_ran_tot3$N(t)(T);
+
+  ReadUnprovedRangeTotalsList(T) &
+  ipfu_print_unproved_ran_tot3$N(t)(T)
+ =>
+  ipfu_print_unproved_ran_tot2$N(t);
+
+
+
+  ReadUnprovedRangeTotalsList(M) &
+  ModifyUnprovedRangeTotalsList((M;T))
+ =>
+  ipfu_print_unproved_ran_tot1$N(t)(m)(n)(T);
+
+  brule(t.m,x) &
+  ipfu_print_unproved_ran_tot1$N(t)(m+1)(n)(T)
+ =>
+  ipfu_print_unproved_ran_tot1$N(t)(m)(n)(T);
+
+  brule(t.m,bunproved(x)) &
+  ipfu_print_unproved_ran_tot1$N(t)(m+1)(n)(T+1)
+ =>
+  ipfu_print_unproved_ran_tot1$N(t)(m)(n)(T);
+
+
+
+  ReadUnprovedRangeTotalsList(M) &
+  ModifyUnprovedRangeTotalsList((M;T))
+ =>
+  ipfu_print_unproved_ran_tot1$N(t)(n)(n)(T);
+
+  brule(t.n,x) &
+  ReadUnprovedRangeTotalsList(M) &
+  ModifyUnprovedRangeTotalsList((M;T)) &
+  ipfu_print_unproved_ran_tot1$N(t)(n+1)(n+50)(0)
+ =>
+  ipfu_print_unproved_ran_tot1$N(t)(n)(n)(T);
+
+  brule(t.n,bunproved(x)) &
+  ReadUnprovedRangeTotalsList(M) &
+  ModifyUnprovedRangeTotalsList((M;T+1)) &
+  ipfu_print_unproved_ran_tot1$N(t)(n+1)(n+50)(0)
+ =>
+  ipfu_print_unproved_ran_tot1$N(t)(n)(n)(T);
+
+
+
+  ModifyUnprovedRangeTotalsList(?) &
+  ipfu_print_unproved_ran_tot1$N(t)(1)(50)(0) &
+  ipfu_print_unproved_ran_tot2$N(t)
+ =>
+  ipfu_print_unproved_ran_tot1$N(t)
+
+END
+
+&
+
+THEORY TheoryStringsX END &
+
+THEORY CreTheoryMenuX IS
+
+#define CreTheoryMenu bcall(((ARI~;MAP;MODR;CATL~)~;CreTheoryMenuX)~:ctm)
+
+  ?;
+#define ModrTheoryMenu(x) bmodr(CreTheoryMenuX.1,x)
+#define ReadTheoryMenu(x) brule(CreTheoryMenuX.1,x)
+
+/*
+#define thy_range 50
+
+  ctm_sto5(t)(N);
+
+  brule(t.N,x) &
+  ctm2(t)(N)(1)
+ =>
+  ctm_sto5(t)(N);
+
+  ReadTheoryMenu(S) &
+  ModrTheoryMenu((S;s)) &
+/???/
+HERE((s))&
+/???/
+  ctm_sto5(t)(N+1)
+ =>
+  ctm_sto4(s)(t)(N);
+
+  ReadTheoryMenu(?) &
+  ModrTheoryMenu((s)) &
+/???/
+HERE((s))&
+/???/
+  ctm_sto5(t)(N+1)
+ =>
+  ctm_sto4(s)(t)(N);
+
+
+
+  ctm_sto4(bcatl(s,U))(t)(N)
+ =>
+  ctm_sto3(s)(t)(N)(U);
+
+  btest(U<10) &
+  ctm_sto4(bcatl(s," ",U))(t)(N)
+ =>
+  ctm_sto3(s)(t)(N)(U);
+
+  ctm_sto3(bcatl(s,T,"    "))(t)(N)(U)
+ =>
+  ctm_sto2(s)(t)(N)(T)(U);
+
+  btest(T<10) &
+  ctm_sto3(bcatl(s," ",T,"    "))(t)(N)(U)
+ =>
+  ctm_sto2(s)(t)(N)(T)(U);
+
+
+
+  ctm_sto2(bcatl(s,"..",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  btest(N<100) &
+  ctm_sto2(bcatl(s," .. ",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  ctm_sto2(bcatl(s," ..",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  btest(N<10) &
+  ctm_sto2(bcatl(s," .. ",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  ReadMaxLengthThyTot(A) &
+  btest(A>9) &
+  ctm_sto2(bcatl(s," .. ",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  ReadMaxLengthThyTot(A) &
+  btest(A>9) &
+  btest(N<10) &
+  ctm_sto2(bcatl(s," ..  ",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  ReadMaxLengthThyTot(A) &
+  btest(A>99) &
+  ctm_sto2(bcatl(s," ..",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  ReadMaxLengthThyTot(A) &
+  btest(A>99) &
+  btest(N<1000) &
+  ctm_sto2(bcatl(s," .. ",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  ReadMaxLengthThyTot(A) &
+  btest(A>99) &
+  btest(N<100) &
+  ctm_sto2(bcatl(s," ..  ",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+  ReadMaxLengthThyTot(A) &
+  btest(A>99) &
+  btest(N<10) &
+  ctm_sto2(bcatl(s," ..   ",N,"        "))(t)(N)(T)(U)
+ =>
+  ctm_sto1b(s)(t)(N)(T)(U);
+
+
+  ctm_sto1b(bcatl(s,M))(t)(N)(T)(U)
+ =>
+  ctm_sto1a(s)(t)(M)(N)(T)(U);
+
+  btest(M<1000) &
+  ctm_sto1b(bcatl(s," ",M))(t)(N)(T)(U)
+ =>
+  ctm_sto1a(s)(t)(M)(N)(T)(U);
+
+  btest(M<100) &
+  ctm_sto1b(bcatl(s,"  ",M))(t)(N)(T)(U)
+ =>
+  ctm_sto1a(s)(t)(M)(N)(T)(U);
+
+  btest(M<10) &
+  ctm_sto1b(bcatl(s,"   ",M))(t)(N)(T)(U)
+ =>
+  ctm_sto1a(s)(t)(M)(N)(T)(U);
+
+  brule(TheoryStringsX.1,s) &
+  ctm_sto1a(s)(t)(M)(N)(T)(U)
+ =>
+  ctm_sto1(t)(M)(N)(T)(U);
+
+  brule(TheoryStringsX.J,(t:s)) &
+  ctm_sto1a(s)(t)(1)(N)(T)(U)
+ =>
+  ctm_sto1(t)(1)(N)(T)(U);
+
+  /?            endtotpob ?/
+  ctm_sto1(t)(1)(N)(N)(U)
+ =>
+  ctm_sto(t)(N)(U);  /? N is range end ?/
+
+  btest(N>=thy_range) &
+  /?             start      end    tot    pob ?/
+  ctm_sto1(t)(N-thy_range+1)(N)(thy_range)(U)
+ =>
+  ctm_sto(t)(N)(U);  /? N is range end - a multiple of thy_range ?/
+
+  ctm2(t)(N+1)(U)
+ =>
+  ctm2a(t)(N)(U)(M);
+
+  ctm_sto(t)(N)(U-1)
+ =>
+  ctm2a(t)(N)(U)(N);
+
+  /?                    start                  end                 tot        pob ?/
+  ctm_sto1(t)((((N-1)/thy_range)?thy_range)+1)(N-1)(N-((((N-1)/thy_range)?thy_range)+1))(U-1)
+ =>
+  ctm2(t)(N)(U);  /? N-1 is range end - not a multiple of thy_range ?/
+
+  ctm2(t)(1)(U);
+
+  brule(t.N,g) &
+  ctm2a(t)(N)(U)((N/thy_range)?thy_range)
+ =>
+  ctm2(t)(N)(U);
+
+  brule(t.N,bunproved(g)) &
+  ctm2a(t)(N)(U+1)((N/thy_range)?thy_range)
+ =>
+  ctm2(t)(N)(U);
+*/
+
+
+  
+  ReadTheoryMenu(S) &
+  ModrTheoryMenu((S;s))
+ =>
+  ctm5(s);
+
+  ReadTheoryMenu(?) &
+  ModrTheoryMenu((s))
+ =>
+  ctm5(s);
+
+  ctm5(bcatl(s,"      ",U))
+ =>
+  ctm4(s)(U);
+
+  btest(U>=10) &
+  ctm5(bcatl(s,"     ",U))
+ =>
+  ctm4(s)(U);
+
+  btest(U>=100) &
+  ctm5(bcatl(s,"    ",U))
+ =>
+  ctm4(s)(U);
+
+  ctm4(bcatl(s,"  ",N))(U)
+ =>
+  ctm3(s)(N)(U);
+
+  btest(N>=10) &
+  ctm4(bcatl(s," ",N))(U)
+ =>
+  ctm3(s)(N)(U);
+
+  btest(N>=100) &
+  ctm4(bcatl(s,N))(U)
+ =>
+  ctm3(s)(N)(U);
+
+
+  ctm3(s)(0)(0);
+
+  brule(TheoryStringsX.J,(t:s)) &
+  ctm3(s)(N-1)(U-1)
+ =>
+  ctm2(t)(N)(U);
+
+  brule(t.N,g) &
+  ctm2(t)(N+1)(U)
+ =>
+  ctm2(t)(N)(U);
+
+  brule(t.N,bunproved(g)) &
+  ctm2(t)(N+1)(U+1)
+ =>
+  ctm2(t)(N)(U);
+
+  ctm2(t)(1)(1)
+ =>
+  ctm1(t);
+
+  ModrTheoryMenu(?) &
+  ReadAllOriginalLemmaNames(L) &
+  ctm1 bsmap L
+ =>
+  ctm
+
+END
+
+&
+
+THEORY BackTrackNumX IS
+
+  0;  /* next (largest) backtrack num */
+
+  ?;  /* backtrack stack */
+
+  ReadBackTrackStack((S,s)) &
+  ModifyBackTrackStack(S)
+ =>
+  pop_bts;
+
+  ReadBackTrackStack(S) &
+  ReadBackTrackNum(s) &
+  ModifyBackTrackStack((S,s))
+ =>
+  push_bts
+
+END
+
+&
+
+THEORY InstantiateAndIncBackTrackNumX IS
+
+  brule(BackTrackNumX.1,J) &
+  bcall((ARI;MODR):bmodr(BackTrackNumX.1,(J+1))) &
+  [J_to_be_instantiated := J](a)
+ =>
+  delay(a)
+
+END
+
+&
+
+THEORY InterProverDepthX IS
+
+#define SetInterProverDepth    bcall((InterProverDepthX;MODR):sipl)
+
+#define InformInterProverDepth bcall((InterProverDepthX;MODR):iipl)
+
+  ?;
+
+  brule(InterProverDepthX.1,D) &
+  brule(InterProverFromUserX.5,p) &
+  Writef(("\n\n\n  Attempting %\n  InterProver Reasoning Depth %\n",p,D))
+ =>
+  iipl;
+
+  InformCantConnect(".Bipl") &
+  PFZ
+ =>
+  sipl;
+
+  bget(".Bipl",x) &
+  bmodr(InterProverDepthX.1,x)
+ =>
+  sipl
+
+END
+
+&
+
+THEORY InterProverLemmas END &
+
+THEORY InterProverLemmasHostX END &
+
+THEORY LemmaTraceX IS ? END
+
+&
+
+THEORY KillHypProcessX IS
+
+  SetHypNotCurrentlyDisplayed
+ =>
+  khp
+
+END
+
+&
+
+THEORY ShowHypX IS
+
+  0; /* 1 => HypCurrentlyDisplayed */
+
+  Connect("TMP/.Bhyp") &
+  bprintf(" %",H) &  /* space required! */
+  bclose
+ =>
+  show_hyp_h(H);
+
+  Connect("TMP/.Bgol") &
+  bprintf(" %",g) &  /* space required! */
+  bclose
+ =>
+  show_hyp_g(g);
+
+  ReadCurrentHyp(H) &
+  ReadCurrentGoal(g) &
+  SetHypCurrentlyDisplayed &
+  show_hyp_h(H) &
+  show_hyp_g(g) &
+  FifoWrite_NoStore((BT_IPR_HYP_M,0,0))
+ =>
+  show_hyp;
+
+  ReadCurrentHyp(H) &
+  bsearch(true,H,J) &
+  ReadCurrentGoal(g) &
+  SetHypCurrentlyDisplayed &
+  show_hyp_h(J) &
+  show_hyp_g(g) &
+  FifoWrite_NoStore((BT_IPR_HYP_M,0,0))
+ =>
+  show_hyp
+
+END
+
+&
+
+THEORY SwallowX IS
+
+  0  /* 1=>swallow goal  0=>don't */
+
+END
+
+&
+
+THEORY CleanInterProverX IS
+
+
+  ReadTheoryList(T) &
+  cip1 bsmap T &
+  ModifyCurrentGoal(?) &
+  ModifyCurrentHyp(?) &
+  ModifyPOFileName(?) &
+  ModifyPMDFileName(?) &
+  ModifyBtlPMDFileName(?) &
+  ModifyAllOriginalLemmaNames(InterProverLemmas) &
+  ModifyCurrentLemmaDotNum(?) &
+  ModifyOriginalLemma(?) &
+  ModifyEditProcessNum(?) &
+  ModifyAllTheoryNamesWithUnprovedPOB(?) &
+  ModifyLemmaFailureGoalSnapshot(?)
+ =>
+  cip2;
+
+  cip1(l);
+
+  brule(l.1,x) &
+  bclean(l)
+ =>
+  cip1(l);
+
+  ReadAllOriginalLemmaNames(l) &
+  cip1 bsmap l &
+  cip1(InterProverLemmas) &
+  cip1(InterProverLemmasHostX) &
+  cip1(PropertiesX) &
+  cip1(EnumerateX) &
+  cip1(NotEqualX) &
+  cip1(RewriteToFalseOrTrueX) &
+  cip1(FwdContra0X) &
+  cip1(FwdEqual1X) &
+  cip1(ExpandHypX) &
+  cip2
+ =>
+  cip
+
+END
+
+&
+
+THEORY CurrStateX IS
+
+  ?;  /* current goal */
+
+  ?   /* current hyp */
+
+END
+
+&
+
+THEORY CheckSnapshotX IS
+
+  IfInterProver &
+  LemmaFailureGoalAndHypSnapshotNotTaken &
+  bgetallhyp(H) &
+  FlagLemmaFailureGoalAndHypSnapshotTaken &
+  ModifyCurrentHyp(H) &
+  bcall(?:false_)
+ =>
+  false
+
+END
+
+&
+
+THEORY FailureX IS
+
+/* when theory is insufficient for `InterProve'*/
+
+  Writef("\n  Library has failed\n  `Backtrack' restores Original Proof Obligation\n") &
+  FlagTheoryInsufficient
+ =>
+  a;
+
+  AnotherTheoryRequested
+ =>
+  a;
+
+  ProversRequested
+ =>
+  a
+
+END
+
+&
+
+THEORY LemmaFailureX IS
+
+ 
+  ReadLemmaFailureGoalSnapshot(g) &
+  FlagTheoryInsufficient &
+  Writef("\n  Failed to prove lemma\n")
+ =>
+  a
+
+END
+
+&
+
+THEORY RemoveSisterInterProverLemmasX IS
+
+/***
+  mark all sister InterProverLemmas to be removed
+***/
+
+  0; /* sister lemma flag:
+         0=> no sister InterProverLemmas reset,
+         1=> sister InterProverLemmas reset
+     */
+
+  rsl1(J)(i)(l.n);                          /* search complete */
+
+  brule(InterProverLemmasHostX.i,(K|m.p)) & /* no match with current host pob ... */
+  rsl1(J)(i+1)(l.n)                         /* ... continue search */
+ =>
+  rsl1(J)(i)(l.n);
+
+  brule(InterProverLemmasHostX.i,(K|l.n)) &   /* match with current host pob ... */
+/*** Ib - remove when done ***
+Writef(("\n    ***NOT REMOVING lemma Node %***\n",K)) &
+****      up to here     ****/
+  rsl1(J)(i+1)(l.n)                   /* ... continue search */
+ =>
+  rsl1(J)(i)(l.n);
+
+  brule(InterProverLemmasHostX.i,(K|l.n)) &      /* match with current host pob ... */
+  btest(K>=J) &                       /* ... Node level ok ... */
+/*** Ib - remove when done ***
+Writef(("\n    ***REMOVING lemma Node %***\n",K)) &
+****      up to here     ****/
+  bmodr(InterProverLemmas.i,removed) &   /* ... remove lemma ... */
+  SetSisterInterProverLemmasFlag &
+  rsl1(J)(i+1)(l.n)                   /* ... continue search */
+ =>
+  rsl1(J)(i)(l.n);
+
+  brule(InterProverLemmasHostX.i,(K|l.n)) &   /* match with current host pob ... */
+  brule(InterProverLemmas.i,removed) &           /* ... lemma already removed ... */
+  rsl1(J)(i+1)(l.n)                           /* ... continue search */
+ =>
+  rsl1(J)(i)(l.n);
+
+  ReadCurrentLemmaDotNum((l.n)) &     /* get host pob ... */
+  ClearSisterInterProverLemmasFlag &
+  rsl1(J)(1)(l.n)               /* ... and start search at InterProverLemmas.1 */
+ =>
+  rsl(J)
+
+END
+
+&
+
+THEORY  RestoreOriginalPOBX IS
+
+  ReadOriginalLemma(a) &
+  ModifyCurrentGoal(a) &
+  ModifyCurrentHyp(true) &
+  ResetBackTrackNum &
+  Writef("\n  Restored Original Proof Obligation \n") &
+/*
+  RefreshHyp
+*/
+  KillHypProcess
+ =>
+  ropob
+
+END
+
+&
+
+THEORY ShowInterProveOptionsIPX IS
+
+  ?;  /* 0 => lemma creation allowed, 
+         1 => lemma creation not allowed
+      */
+
+  ReadInput(n) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,bcatl(n,": invalid input"),0)) &
+  so_InterProve_opt$(N+1)
+ =>
+  so_InterProve_check_number$N;
+
+  ReadInput(InterProve_max_fwd_Option)        /* input ok */
+ =>
+  so_InterProve_check_number$N;
+
+/*
+  lemma_creation_allowed &
+*/
+  ReadInput(InterProve_lem_Option)           /* input ok */
+ =>
+  so_InterProve_check_number$N;
+
+  ReadInput(InterProve_lem_and_prove_Option) /* input ok */
+ =>
+  so_InterProve_check_number$N;
+
+  HypNotCurrentlyDisplayed &
+  ReadInput(InterProve_hyp_Option)           /* input ok */
+ =>
+  so_InterProve_check_number$N;
+
+  ReadInput(InterProve_run_Option)           /* input ok */
+ =>
+  so_InterProve_check_number$N;
+
+  ReadInput(AnotherTheory_Option)            /* input ok */
+ =>
+  so_InterProve_check_number$N;
+
+
+
+  ReadCurrentGoal(g) &
+  bprintf("Current Goal:\n \n") &
+  PrettyPrint(g)
+ =>
+  so_InterProve_opt_curr_goal;
+
+
+
+  brule(l.n,bunproved(g)) &
+  bprintf("Proof Obligation:\n \n") &
+  PrettyPrint(g)
+ =>
+  so_InterProve_opt_orig_pob(l.n);
+
+
+
+  lemma_creation_not_allowed &        /* no hyp - first run - no lem */
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_InterProve_opt_orig_pob(l.n) &
+  bclose &
+  Connect(".Bcom") &
+  so_InterProve_opt_curr_goal &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_POB_R___M,l.n,a),(GetNumberFromUserX.1)) &
+  so_InterProve_check_number$N
+ =>
+  so_InterProve_opt$N;
+
+  lemma_creation_allowed &            /* no hyp */
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_InterProve_opt_orig_pob(l.n) &
+  bclose &
+  Connect(".Bcom") &
+  so_InterProve_opt_curr_goal &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_POB_R_L_M,l.n,a),(GetNumberFromUserX.1)) &
+  KillHypProcess &
+  so_InterProve_check_number$N
+ =>
+  so_InterProve_opt$N;
+
+  lemma_creation_not_allowed &        /* first run - no lem  */
+  HypNotCurrentlyDisplayed &
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_InterProve_opt_orig_pob(l.n) &
+  bclose &
+  Connect(".Bcom") &
+  so_InterProve_opt_curr_goal &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_POB_RH__M,l.n,a),(GetNumberFromUserX.1)) &
+  so_InterProve_check_number$N
+ =>
+  so_InterProve_opt$N;
+
+  lemma_creation_allowed &
+  HypNotCurrentlyDisplayed &
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_InterProve_opt_orig_pob(l.n) &
+  bclose &
+  Connect(".Bcom") &
+  so_InterProve_opt_curr_goal &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_POB_RHL_M,l.n,a),(GetNumberFromUserX.1)) &
+  so_InterProve_check_number$N
+ =>
+  so_InterProve_opt$N
+
+END
+
+&
+
+THEORY ShowProveLemmaOptionsIPX IS
+
+  ?;
+#define SetPMDNotParseInit    bcall(MODR:bmodr(ShowProveLemmaOptionsIPX.1,1))
+#define ReSetPMDNotParseInit  bcall(MODR:bmodr(ShowProveLemmaOptionsIPX.1,0))
+#define PMDNotParseInitIsSet  brule(ShowProveLemmaOptionsIPX.1,1)
+
+
+  ReadInput(n) &
+  Writef(("\n  %: invalid input\n",n)) &
+  so_ProveLemma_opt_1$(N+1)
+ =>
+  so_ProveLemma_check_number$N;
+
+  ReadInput(ProveLemma_rld_Option)          /* input ok */
+/***
+&HERE(("InterProver: ProveLemma_rld_Option"))
+***/
+ =>
+  so_ProveLemma_check_number$N;
+
+  ReadInput(ProveLemma_max_fwd_Option)          /* input ok */
+/***
+&HERE(("InterProver: ProveLemma_max_fwd_Option"))
+***/
+ =>
+  so_ProveLemma_check_number$N;
+
+  HypNotCurrentlyDisplayed &
+  ReadInput(ProveLemma_hyp_Option)          /* input ok */
+/***
+&HERE(("InterProver: ProveLemma_hyp_Option"))
+***/
+ =>
+  so_ProveLemma_check_number$N;
+
+  ReadInput(ProveLemma_run_Option)          /* input ok */
+/***
+&HERE(("InterProver: ProveLemma_run_Option"))
+***/
+ =>
+  so_ProveLemma_check_number$N;
+
+  ReadInput(ProveLemma_skip_Option)          /* input ok */
+/***
+&HERE(("InterProver: ProveLemma_skip_Option"))
+***/
+ =>
+  so_ProveLemma_check_number$N;
+
+  ReadInput(ProveLemma_run_Option) &
+  TheoryInsufficient &
+  Writef(("\n  %: invalid input\n",n)) &
+  so_ProveLemma_opt_1$(N+1)
+ =>
+  so_ProveLemma_check_number$N;
+
+  ReadInput(AnotherTheory_Option)          /* input ok */
+/***
+&HERE(("InterProver: AnotherTheory_Option"))
+***/
+ =>
+  so_ProveLemma_check_number$N;
+
+
+
+
+  ReadCurrentGoal(g) &
+  bprintf("Lemma:\n \n") &
+  PrettyPrint(g)
+ =>
+  so_ProveLemma_opt_lemma;
+
+
+  ReadCurrentLemmaDotNum((l.n)) &    /* run, no hyp, rld */
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_ProveLemma_opt_lemma &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_LEM_R_R_M,l.n,a),(GetNumberFromUserX.1)) &
+  so_ProveLemma_check_number$N
+ =>
+  so_ProveLemma_opt$N;
+
+  TheoryInsufficient &              /* no run, no hyp, rld */
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_ProveLemma_opt_lemma &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_LEM___R_M,l.n,a),(GetNumberFromUserX.1)) &
+  KillHypProcess &
+  so_ProveLemma_check_number$N
+ =>
+  so_ProveLemma_opt$N;
+
+  TheoryInsufficient &              /* no run, hyp, rld */
+  HypNotCurrentlyDisplayed &
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_ProveLemma_opt_lemma &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_LEM__HR_M,l.n,a),(GetNumberFromUserX.1)) &
+  so_ProveLemma_check_number$N
+ =>
+  so_ProveLemma_opt$N;
+
+  ReadCurrentLemmaDotNum((l.n)) &   /* run, hyp, rld */
+  HypNotCurrentlyDisplayed &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_ProveLemma_opt_lemma &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_LEM_RHR_M,l.n,a),(GetNumberFromUserX.1)) &
+  so_ProveLemma_check_number$N
+ =>
+  so_ProveLemma_opt$N;
+
+  PMDNotParseInitIsSet &            /* PMD not parse, initially */
+  ReSetPMDNotParseInit &
+  ReadCurrentLemmaDotNum((l.n)) &   /* run, hyp, rld */
+  HypNotCurrentlyDisplayed &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_ProveLemma_opt_lemma &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_LEM_RHR_NOT_PARSE_M,l.n,a),(GetNumberFromUserX.1)) &
+  so_ProveLemma_check_number$N
+ =>
+  so_ProveLemma_opt$N;
+
+  TheoryInsufficient &              /* no run, hyp, rld */
+  HypNotCurrentlyDisplayed &
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_ProveLemma_opt_lemma &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_LEM__HR_M,l.n,a),(GetNumberFromUserX.1)) &
+  so_ProveLemma_check_number$N
+ =>
+  so_ProveLemma_opt$N;
+
+  ReadInput(ProveLemma_rld_Option) &  /* last op ... */
+  ProofMethodNotLoaded &              /* ... and it didn't succeed */
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadIPConstructName(a) &
+  SetPrettyPrintToFile &
+  Connect(".Bsel") &
+  so_ProveLemma_opt_lemma &
+  bclose &
+  SetPrettyPrintToScreen &
+  FifoWrite_Store((BT_LEM____RLD_FAIL_M,l.n,a),(GetNumberFromUserX.1)) &
+  so_ProveLemma_check_number$N
+ =>
+  so_ProveLemma_opt$N
+
+END
+
+&
+
+THEORY CreateInterProverLemmaX IS
+
+  bmodr(InterProverLemmas.i,bunproved(g))
+ =>
+  cl(i)(g);
+
+  bsearch(ctx(m),H,J) &
+  bmodr(InterProverLemmas.i,bunproved(ctx(m)=>(J=>g)))
+ =>
+  cl(i)(H=>g);
+
+  bsearch(cst(m),H,I) &
+  bsearch(ctx(m),I,J) &
+  bmodr(InterProverLemmas.i,bunproved(cst(m)&ctx(m)=>(J=>g)))
+ =>
+  cl(i)(H=>g);
+
+  bsearch(ctx(m),H,J) &
+  bsearch(inv(m),J,K) &
+  bsearch(asn(m),K,L) &
+  bsearch(pre(o),L,M) &
+  bmodr(InterProverLemmas.i,bunproved(ctx(m)&inv(m)&asn(m)&pre(o)=>(M=>g)))
+ =>
+  cl(i)(H=>g);
+
+  bsearch(cst(m),H,I) &
+  bsearch(ctx(m),I,J) &
+  bsearch(inv(m),J,K) &
+  bsearch(asn(m),K,L) &
+  bsearch(pre(o),L,M) &
+  bmodr(InterProverLemmas.i,bunproved(cst(m)&ctx(m)&inv(m)&asn(m)&pre(o)=>(M=>g)))
+ =>
+  cl(i)(H=>g);
+
+  bmodr(InterProverLemmas.i,bunproved(ctx(m)=>g))
+ =>
+  cl(i)(ctx(m)=>g);
+
+  bmodr(InterProverLemmas.i,bunproved(cst(m)&ctx(m)=>g))
+ =>
+  cl(i)(cst(m)&ctx(m)=>g);
+
+  bmodr(InterProverLemmas.i,bunproved(ctx(m)&inv(m)&asn(m)&pre(o)=>g))
+ =>
+  cl(i)(ctx(m)&inv(m)&asn(m)&pre(o)=>g);
+
+  bmodr(InterProverLemmas.i,bunproved(cst(m)&ctx(m)&inv(m)&asn(m)&pre(o)=>g))
+ =>
+  cl(i)(cst(m)&ctx(m)&inv(m)&asn(m)&pre(o)=>g);
+
+  bsearch(true,H,J) &
+  cl(i)(J=>g)
+ =>
+  cl(i)(H=>g);
+
+  brule(InterProverLemmas.i,(l)) &              /* get last lemma ... no hypotheses ... */
+  bmodr(InterProverLemmas.i,bunproved(l))       /* ... mark lemma as unproved */
+ =>
+  create_lemma_replace_original_hyp_with_current_hyp;
+
+  brule(InterProverLemmas.i,g) &                /* get last lemma ... no hypotheses */
+  ReadOriginalLemma((X=>G)) &        /* ... get original hypotheses ... */
+  bmodr(InterProverLemmas.i,bunproved(X=>g))    /* ... mark lemma as unproved */
+ =>
+  create_lemma_replace_original_hyp_with_current_hyp;
+
+  brule(InterProverLemmas.i,g) &                /* get last lemma ... no hypotheses */
+  ReadOriginalLemma((X=>(Y=>G))) &   /* ... get original hypotheses ... */
+  bmodr(InterProverLemmas.i,bunproved(bflat(X&Y)=>g))  /* ... mark lemma as unproved */
+=>
+  create_lemma_replace_original_hyp_with_current_hyp;
+
+  brule(InterProverLemmas.i,(h=>g)) &           /* get last lemma ... it has hypotheses */
+  bmodr(InterProverLemmas.i,bunproved(h=>g))    /* ... bgethyp failed ...  */
+ =>                                  /* ... mark lemma as unproved */
+  create_lemma_replace_original_hyp_with_current_hyp;
+
+  brule(InterProverLemmas.i,(h=>g)) &           /* get last lemma ... it has hypotheses */
+  bsearch(true,H,A) &                /* ... remove `true' ... */
+  bmodr(InterProverLemmas.i,bunproved(A=>g))    /* ... bgethyp failed ...  */
+ =>                                  /* ... mark lemma as unproved */
+  create_lemma_replace_original_hyp_with_current_hyp;
+
+  brule(InterProverLemmas.i,(h=>g)) &           /* get last lemma ... it has hypotheses */
+  bgethyp(H) &                       /* ... get current hypotheses ... */
+  bmodr(InterProverLemmas.i,bunproved(H=>g))    /* ... mark lemma as unproved */
+ =>
+  create_lemma_replace_original_hyp_with_current_hyp;
+
+  brule(InterProverLemmas.i,(h=>g)) &           /* get last lemma ... it has hypotheses */
+  bgethyp(H) &                       /* ... get current hypotheses ... */
+  bsearch(true,H,A) &                /* ... remove `true' ... */
+  bmodr(InterProverLemmas.i,bunproved(A=>g))    /* ... mark lemma as unproved */
+ =>
+  create_lemma_replace_original_hyp_with_current_hyp;
+
+
+
+  brule(InterProverLemmas.i,(h=>g)) &           /* get last lemma ... it has hypotheses */
+  bgethyp(H) &                       /* ... get current hypotheses ... */
+  cl(i)(H=>g)
+ =>
+  create_lemma_replace_original_hyp_with_current_hyp;
+
+
+
+/*** Ib - remove when done - reinstate above rule ***
+Writef(("\n  Lemma created ***(Node %)***\n",n))
+=>
+write_created(n);
+****      up to here     ****/
+
+  ReadBackTrackNum(J) &
+  ReadCurrentLemmaDotNum((l.n)) &
+  ReadCurrentGoal(g) &
+  bcrer(InterProverLemmas,g) &
+  bcrelr(InterProverLemmasHostX,((J-1)|l.n)) &    /* `bcrelr' => no hypotheses stored */
+  create_lemma_replace_original_hyp_with_current_hyp &
+  Writef(("\n  Lemma created\n")) &
+/*** Ib - remove when done - reinstate above rule ***
+write_created(J-1) &
+****      up to here     ****/
+  bmodr(InterProverFromUserX.8,3)    /* lemma created */  
+ =>
+  create_lemma
+
+END
+
+&
+
+THEORY GetNumUnprovedInterProverLemmasX IS
+
+  ?;
+
+  gnul1(l)(n);
+
+  brule(l.n,x) &
+  gnul1(l)(n+1)
+ =>
+  gnul1(l)(n);
+
+  brule(l.n,bunproved(x)) &
+  brule(GetNumUnprovedInterProverLemmasX.1,N) &
+  bmodr(GetNumUnprovedInterProverLemmasX.1,(N+1)) &
+  gnul1(l)(n+1)
+ =>
+  gnul1(l)(n);
+
+  bmodr(GetNumUnprovedInterProverLemmasX.1,0) &
+  gnul1(l)(1)
+ =>
+  gnul(l)
+
+END
+
+&
+
+THEORY InterProveX IS
+
+  ReadCurrentGoal(a) &
+  ReadCurrentHyp(h) &   
+  SetPOBBeingAttemptedFlag &
+  FlagLemmaProved &
+  SetInterProverDepth &
+  InformInterProverDepth &
+  bcall((SwitchX:(h=>a)) | (WRITE;MODR;FailureX)~:a)
+ =>
+  ip1;
+
+  ReadCurrentGoal(a) &
+  ReadCurrentHyp(true) &     /* no current hyp: (true => (h => g)) */
+  SetPOBBeingAttemptedFlag &
+  FlagLemmaProved &
+  SetInterProverDepth &
+  InformInterProverDepth &
+  bcall((SwitchX:a) | (WRITE;MODR;FailureX)~:a)
+ =>
+  ip1
+
+END
+
+&
+
+THEORY LemmaFailureSnapshotX IS
+
+  ?;         /* goal on which ProveLemma fails */
+
+  ?          /* 0=>getallhyp in `GetCurrHyp'  1=>don't */
+
+END
+
+&
+
+THEORY ProveLemmaX IS
+
+
+  0;   /* 1=>Lemma being attempted, 0=>POB being attempted */
+
+  bcrer(InterProverLemmas,x) &              /* preserve lemma ... */
+  bcrer(InterProverLemmasHostX,(K|l.n))     /* ... and its host */
+ =>
+  recreate(x|l.n)(K);
+
+  bclean(InterProverLemmas) &               /* clean ... */
+  bclean(InterProverLemmasHostX)            /* ... before recreate */
+ =>
+  clean_Lemma_and_Host1(i);      /* search complete */
+
+  brule(InterProverLemmas.i,x) &            /* Lemma currently exists ... */
+  brule(InterProverLemmasHostX.i,(K|l.n)) & /* ... find Lemma host pob ... */
+  clean_Lemma_and_Host1(i-1) &   /* ... continue search ... */
+  recreate(x|l.n)(K)             /* ... and preserve lemma and host */
+ =>
+  clean_Lemma_and_Host1(i);
+
+  brule(InterProverLemmas.i,removed) &       /* Lemma previously removed ... */
+  brule(InterProverLemmasHostX.i,(K|l.n)) & /* ... find Lemma host pob ... */
+  brule(l.n,x) &                 /* ... which had been proved ... */
+  bmodr(l.n,bunproved(x)) &      /* ... so mark pob as unproved .. */
+  clean_Lemma_and_Host1(i-1)     /* ... and continue search */
+ =>
+  clean_Lemma_and_Host1(i);
+
+  brule(InterProverLemmas.i,removed) &         /* Lemma previously removed ... */
+  brule(InterProverLemmasHostX.i,(K|l.n)) & /* ... find Lemma host pob ... */
+  brule(l.n,bunproved(x)) &      /* ... but it is already unproved .. */
+  clean_Lemma_and_Host1(i-1)     /* ... so continue search */
+ =>
+  clean_Lemma_and_Host1(i);
+
+  blent(InterProverLemmas.i) &              /* get number of InterProverLemmas */
+/***
+PrintTHEORY(InterProverLemmas)&
+PrintTHEORY(InterProverLemmasHostX)&
+***/
+  clean_Lemma_and_Host1(i)
+ =>
+  clean_Lemma_and_Host;
+
+/*************************************************************************/
+
+
+  brule(InterProverFromUserX.5,l) &
+  Writef(("\n\n\n  Attempting %\n  PROOFMETHOD is not loaded - default REASONING_DEPTH %\n",l,2))
+ =>
+  inform_REASONING_DEPTH$N;
+
+  Read_REASONING_DEPTH(D) &
+  bnum(D) &
+  brule(InterProverFromUserX.5,l) &
+  Writef(("\n\n\n  Attempting %\n  PROOFMETHOD REASONING_DEPTH %\n",l,D))
+ =>
+  inform_REASONING_DEPTH$N;
+
+
+
+  ReadInput(ProveLemma_run_Option) &
+  ReadOriginalLemma(a) &
+  ModifyLemmaFailureGoalSnapshot(a) &
+  FlagLemmaProved &
+  inform_REASONING_DEPTH$N &
+  bcall((SwitchX:a) | (WRITE;MODR;LemmaFailureX)~:a)
+ =>
+  prove_lemma2$N;
+
+  ReadInput(ProveLemma_run_Option) &
+  ReadOriginalLemma((h=>a)) &
+  ModifyLemmaFailureGoalSnapshot(a) &
+  FlagLemmaProved &
+  inform_REASONING_DEPTH$N &
+  bcall((SwitchX:(h=>a)) | (WRITE;MODR;LemmaFailureX)~:(h=>a))
+ =>
+  prove_lemma2$N;
+
+  ReadInput(ProveLemma_run_Option) &
+  ReadOriginalLemma((s=>(h=>a))) &
+  ModifyLemmaFailureGoalSnapshot(a) &
+  FlagLemmaProved &
+  inform_REASONING_DEPTH$N &
+  bcall((SwitchX:(s=>(h=>a))) | (WRITE;MODR;LemmaFailureX)~:(s=>(h=>a)))
+ =>
+  prove_lemma2$N;
+
+
+
+  ReadInput(ProveLemma_max_fwd_Option) &
+  LoadBmfh &
+  prove_lemma1$(N+1)
+ =>
+  prove_lemma2$N;
+
+  ReadInput(ProveLemma_hyp_Option) &
+  ShowHyp &
+  prove_lemma1$(N+1)
+ =>
+  prove_lemma2$N;
+
+  ReadInput(ProveLemma_rld_Option) &
+  UnloadProofMethod &
+  LoadProofMethod &
+/*  LoadBtlProofMethod & NO - done by INCLUSION in pmd */
+  CheckFwdReasoningDepth &
+  UnFlagTheoryInsufficient &
+  ModifyCurrentHyp(true) &
+  prove_lemma1$(N+1)
+ =>
+  prove_lemma2$N;
+
+  ReadInput(AnotherTheory_Option) &
+  FlagAnotherTheoryRequested 
+ =>
+  prove_lemma2$N;
+
+
+  ShowProveLemmaOptionsIP &
+  prove_lemma2$N
+ =>
+  prove_lemma1$N;
+
+  SetLemmaBeingAttemptedFlag &
+  FlagLemmaFailureGoalAndHypSnapshotNotTaken &
+  bcall(MODR: bmodr(LemmaTraceX.1,?)) &
+  SetInterProverDepth &
+  prove_lemma2$0 /* &
+  CleanInterProverLemmasAndHost */
+ =>
+  prove_lemma
+
+END
+
+&
+
+THEORY LoadZeroLevelFileX IS
+
+  lzl_1(x);
+
+  bcrelr(t,a)
+ =>
+  lzl_1(THEORY t IS a END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lzl_0(f);
+
+  bget(f,x) &
+  lzl_1 bsmap x
+ =>
+  lzl_0(f)
+
+END
+
+&
+
+THEORY CheckFwdReasoningDepthX IS
+
+#define CheckFwdReasoningDepth bcall(CheckFwdReasoningDepthX~:cfrd)
+
+  Writef(("\n  Warning:\n\n    InterProverLemmas created at InterProver Reasoning Depth %\n    but REASONING_DEPTH is set to %\n",l,N))
+ =>
+  cfrd1(N)(l);
+
+  btest(N>=l)
+ =>
+  cfrd1(N)(l);
+
+  Writef(("\n  Warning:\n\n    InterProverLemmas created at InterProver Reasoning Depths % and %\n    but REASONING_DEPTH is set to %\n",L,l,N))
+ =>
+  cfrd1(N)(L,l);
+
+  btest(N>=l)
+ =>
+  cfrd1(N)(L,l);
+
+  cfrd1(N)(?);
+
+  cfrd;
+
+  ProofMethodLoaded &
+  ReadFwdReasoningDepthRecorded(L) &
+  Read_REASONING_DEPTH(N) &
+  cfrd1(N)(L)
+ =>
+  cfrd
+
+END
+
+&
+
+THEORY RecordFwdReasoningDepthX IS
+
+  ?;
+
+  bmodr(RecordFwdReasoningDepthX.1,L)
+ =>
+  rfrd3(L,?);
+
+  rfrd3(brev(bflat(X,N,l)))
+ =>
+  rfrd2(l)(N)(X);
+
+  btest(l>N) &
+  rfrd3(brev(bflat(X,l,N)))
+ =>
+  rfrd2(l)(N)(X);
+
+  rfrd3(brev(bflat(X,N,L)))
+ =>
+  rfrd2(L,l)(N)(X);
+
+  btest(l>N) &
+  rfrd2(L)(N)(X,l)
+ =>
+  rfrd2(L,l)(N)(X);
+
+  rfrd2(L)(N)(?)
+ =>
+  rfrd1(L)(N);
+
+  bsearch(N,L,M)
+ =>
+  rfrd1(L)(N);
+
+  rfrd1(N)(N);
+
+  bmodr(RecordFwdReasoningDepthX.1,N)
+ =>
+  rfrd1(?)(N);
+
+  InterProverDepthIs(N) &
+  ReadFwdReasoningDepthRecorded(L) &
+  rfrd1(L)(N)
+ =>
+  rfrd
+
+END
+
+&
+
+THEORY InterProverFromUserX IS
+
+/*
+  presents a list of base file names (obtained from main path)
+  on screen and gets selection from user
+
+  invocation:
+    InterProverFromUserX
+  result:
+    to follow ...
+*/
+
+  ?;       /*  1. name of construct - a.b */
+
+  ?;       /*  2. filename "a.b.n.po" */
+
+  ?;       /*  3. filename "a.b.n pmd" */
+
+  InterProverLemmas;  /*  4. all (original) lemma names and `InterProverLemmas' */
+
+  ?;       /*  5. current attempt: lemma.num */
+
+  ?;       /*  6. the original lemma */
+
+  ?;       /*  7. edit process no (for `KillEditProcess') */
+
+  1;       /*  8. flag returning value from `InterProve' */
+
+  ?;       /*  9. current lemma theory names containing
+                 unproved pog for `Another Theory' option */
+
+  ?;       /* 10. the currently-selected theory */
+
+  0;       /* 11. 0=>AutoProver 1=>InterProver */
+
+  ?;       /* 12. motif: SelSto */
+
+  ?;       /* 13. motif: EscSto */
+
+  ?;       /* 14. EditorString */
+
+  ?;       /* 15. HypEditorString */
+
+  ?;       /* 16. 1=> WorkDone */
+
+  ?;       /* 17. name of construct - a.b.n */
+
+  ?;       /* 18. max length of thy names */
+
+  ?;       /* 19. ReadSelectionFromFifo */
+#define ReadSelectionFromFifoNum (InterProverFromUserX.19)
+#define ReadSelectionFromFifo(x) brule (ReadSelectionFromFifoNum,x)
+
+  ?;       /* 20. max thy tot */
+
+  ?;       /* 21. lower bound - 1 */
+#define ModrTheLowerBound(x)  bcall((ARI;MODR):bmodr(InterProverFromUserX.21,x))
+#define ReadTheLowerBound(x)  brule(InterProverFromUserX.21,x)
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+/*********************** exit ***********************/
+
+  brule(InterProverFromUserX.17,a.b.n) &
+  Writef(("\n  InterProver - nothing proved\n\n  Current Proof Level % maintained for %\n",n,a.b))
+ =>
+  exit;
+
+  WorkDone &
+  ReadIPConstructName(x) &
+  GetJobs(X) &
+  AddJobs(X,(x:BT_INP_ASK_FINI:0))  
+ =>
+  exit;
+
+
+/*************** return_from_ProveLemma ***************/
+
+  TheoryInsufficient &
+  ModifySwallowNotAllowed &
+  KillHypProcess &
+  ProveLemma_menu$(N+1)
+ =>
+  return_from_ProveLemma$N;
+
+  LemmaProved &
+  ReadCurrentLemmaDotNum((l.n)) &
+  brule(l.n,bunproved(x)) &
+  ModifySwallowNotAllowed &
+  Writef(("\n  Lemma discharged\n")) &
+  bmodr(l.n,x) &
+  KillHypProcess &
+  SelectTheory_menu$(N+1)
+ =>
+  return_from_ProveLemma$N;
+
+  AnotherTheoryRequested & 
+  ModifySwallowNotAllowed &
+  KillHypProcess &
+  SelectTheory_menu$(N+1)
+ =>
+  return_from_ProveLemma$N;
+
+
+/************************ return_from_InterProve **************************/
+
+  LemmaCreated & 
+  ModifySwallowNotAllowed &
+  ReadCurrentLemmaDotNum((l.n)) &  
+  brule(l.n,bunproved(x)) &
+  bmodr(l.n,x) &
+  Writef(("\n  Proof Obligation discharged\n")) &
+  ModifyWorkDone &
+  KillHypProcess & 
+  SelectTheory_menu$(N+1)
+ =>
+  return_from_InterProve$N;
+
+  TheoryInsufficient &
+  ModifySwallowNotAllowed &
+  KillHypProcess &
+  InterProver_menu$(N+1)
+ =>
+  return_from_InterProve$N;
+
+  LemmaProved &
+  ReadCurrentLemmaDotNum((l.n)) &  
+  brule(l.n,bunproved(x)) &
+  ModifySwallowNotAllowed &
+  bmodr(l.n,x) &
+  Writef("\n  Proof Obligation discharged\n") &
+  ModifyWorkDone &
+  KillHypProcess & 
+  SelectTheory_menu$(N+1)
+ =>
+  return_from_InterProve$N;
+
+  AnotherTheoryRequested &  
+  ModifySwallowNotAllowed &
+  RemoveSisterInterProverLemmas(0) &
+  KillHypProcess &
+  SelectTheory_menu$(N+1)
+ =>
+  return_from_InterProve$N;
+
+
+/*********************  ProveLemma_menu *****************************/
+
+  ReadInput(ProveLemma_skip_Option) &
+  Writef(("\n  Didn't attempt to load PROOFMETHOD\n")) &
+  ProveLemma_menu$(N+1)
+ =>
+  ProveLemma_menu_1$N;
+
+  ReadInput(ProveLemma_run_Option) &
+  ModifySwallowNotAllowed &
+  UnFlagTheoryInsufficient &
+  ProveLemma &
+  return_from_ProveLemma$(N+1)
+ =>
+  ProveLemma_menu_1$N;
+
+  ReadInput(ProveLemma_max_fwd_Option) &
+  LoadBmfh &
+  ProveLemma_menu$(N+1)
+ =>
+  ProveLemma_menu_1$N;
+
+  ReadInput(ProveLemma_hyp_Option) &
+  ShowHyp &
+  ProveLemma_menu$(N+1)
+ =>
+  ProveLemma_menu_1$N;
+
+  ReadInput(ProveLemma_rld_Option) &
+  UnloadProofMethod &
+  LoadProofMethod &
+  CheckFwdReasoningDepth &
+/*  LoadBtlProofMethod & NO - done by INCLUSION in pmd */
+  UnFlagTheoryInsufficient &
+  ModifyCurrentHyp(true) &
+  ProveLemma_menu$(N+1)
+ =>
+  ProveLemma_menu_1$N;
+
+  ReadInput(AnotherTheory_Option) & 
+  KillHypProcess &
+  SelectTheory_menu$(N+1)
+ =>
+  ProveLemma_menu_1$N;
+
+
+
+
+  ShowProveLemmaOptionsIP &
+  ProveLemma_menu_1$N
+ =>
+  ProveLemma_menu_check_PMD_loaded$N;
+
+  ProofMethodNotLoaded &
+  SetPMDNotParseInit &
+  ShowProveLemmaOptionsIP &
+  ProveLemma_menu_1$N
+ =>
+  ProveLemma_menu_check_PMD_loaded$N;
+
+
+
+  UnFlagTheoryInsufficient &
+  ShowProveLemmaOptionsIP &
+  ProveLemma_menu_1$N
+ =>
+  ProveLemma_menu$N;
+
+  ProofMethodNotLoaded &
+  ProofMethodLoadErrorFlagged &
+  UnFlagProofMethodLoadError &
+  UnFlagTheoryInsufficient &
+  ShowProveLemmaOptionsIP &
+  ProveLemma_menu_1$N
+ =>
+  ProveLemma_menu$N;
+
+  ProofMethodNotLoaded &
+  ProofMethodLoadErrorNotFlagged &
+  LoadProofMethod &
+/*  LoadBtlProofMethod & NO - done by INCLUSION in pmd */
+  CheckFwdReasoningDepth &
+  UnFlagTheoryInsufficient &
+  ProveLemma_menu_check_PMD_loaded$N
+ =>
+  ProveLemma_menu$N;
+
+
+
+/*********************  InterProver_menu *****************************/
+
+  ReadInput(InterProve_run_Option) &
+  ModifySwallowNotAllowed &
+  UnFlagTheoryInsufficient &
+  modify_lemma_creation_allowed &
+  InterProve &
+  return_from_InterProve$(N+1)
+ =>
+  InterProver_menu_1$N;
+
+  TheoryInsufficient &
+  ReadInput(InterProve_run_Option) &
+  ModifySwallowNotAllowed &
+  RestoreOriginalPOB &
+  UnFlagTheoryInsufficient &
+  modify_lemma_creation_not_allowed &
+  InterProver_menu$(N+1)
+ =>
+  InterProver_menu_1$N;
+
+  ReadInput(InterProve_hyp_Option) &
+  ShowHyp &
+  InterProver_menu$(N+1)
+ =>
+  InterProver_menu_1$N;
+
+
+  blent(InterProverLemmas.m) &
+  brule(InterProverLemmas.m,bunproved(c)) &
+  ModifySwallowNotAllowed &
+  ReadCurrentLemmaDotNum((l.n)) &  
+  brule(l.n,bunproved(x)) &
+  bmodr(l.n,x) &
+  Writef(("\n  Proof Obligation discharged\n")) &
+  ModifyWorkDone &
+  KillHypProcess & 
+  ModifyCurrentLemmaDotNum((InterProverLemmas.m)) &
+  ModifyOriginalLemma((c)) &
+  ModifyCurrentGoal((c)) &
+  ModifyCurrentHyp(true) &
+  Writef(("\n  Selecting InterProverLemma.% & Proving\n",m)) &
+  SelectRule_menu_4$N(InterProverLemmas)
+ =>
+  InterProver_menu_1_1$N;
+
+  ReadInput(InterProve_lem_and_prove_Option) &
+  CreateInterProverLemma &
+  FlagLemmaProved & 
+  InterProver_menu_1_1$N
+ =>
+  InterProver_menu_1$N;
+
+  ReadInput(InterProve_lem_Option) &
+  CreateInterProverLemma &
+  FlagLemmaProved & 
+  return_from_InterProve$(N+1)
+ =>
+  InterProver_menu_1$N;
+
+  ReadInput(AnotherTheory_Option) &
+  UnFlagTheoryInsufficient &
+  KillHypProcess &
+  SelectTheory_menu$(N+1)
+ =>
+  InterProver_menu_1$N;
+
+  ReadInput(InterProve_max_fwd_Option) &
+  LoadBmfh &
+  InterProver_menu$(N+1)
+ =>
+  InterProver_menu_1$N;
+
+
+
+  ShowInterProveOptionsIP &
+  InterProver_menu_1$N
+ =>
+  InterProver_menu$N;
+
+  ProofMethodLoaded &
+  UnloadProofMethod &
+  ShowInterProveOptionsIP &
+  InterProver_menu_1$N
+ =>
+  InterProver_menu$N;
+
+
+
+/********************* SelectRule_menu ***************************/
+
+
+
+  modify_lemma_creation_not_allowed &
+  ResetBackTrackNum &
+  InterProver_menu$N
+ =>
+  SelectRule_menu_4$N(l); /* theory other than `InterProverLemmas' selected */
+
+  ResetBackTrackNum &
+  ProveLemma_menu$N
+ =>
+  SelectRule_menu_4$N(InterProverLemmas);    /* `InterProverLemmas' selected */
+
+  brule(t.m,bunproved(c)) &
+  ModifyCurrentLemmaDotNum((t.m)) &
+  ModifyOriginalLemma((c)) &
+  ModifyCurrentGoal((c)) &
+  ModifyCurrentHyp(true) &
+  SelectRule_menu_4$N(t)
+ =>
+  SelectRule_menu_new3$N(t.m);
+
+  ReadSelectionFromFifo(t.n) &
+  ReadTheLowerBound(m) &
+  SelectRule_menu_new3$N(t.(n+m))
+ =>
+  SelectRule_menu_new2$N;
+  
+  ReadSelectionFromFifo(1) &
+  SelectTheory_menu$(N+1)
+ =>
+  SelectRule_menu_new2$N;
+  
+  ReadSelectionFromFifo(0) &
+  exit
+ =>
+  SelectRule_menu_new2$N;
+  
+  brule(t.m,b) &
+  bprintf("%:%%\n",b,m,3) &  /* 3 => proved at this level */
+  SelectRule_menu_new1$N(t)(m+1)(n)
+ =>
+  SelectRule_menu_new1$N(t)(m)(n);
+
+  ReadOrigProvedList(L) &
+  bsearch((t.m),L,M) &
+  brule((t.m,b)) &
+  bprintf("%:%%\n",b,m,2) &  /* 2 => proved at prev level */
+  SelectRule_menu_new1$N(t)(m+1)(n)
+ =>
+  SelectRule_menu_new1$N(t)(m)(n);
+
+  brule(t.m,bunproved(b)) &
+  bprintf("%:%%\n",b,m,0) &  /* 0 => unproved */
+  SelectRule_menu_new1$N(t)(m+1)(n)
+ =>
+  SelectRule_menu_new1$N(t)(m)(n);
+
+  bclose &
+  FifoWrite_Store((BT_IPR_RUL_M,t,0),(ReadSelectionFromFifoNum)) &
+  SelectRule_menu_new2$N
+ =>
+  SelectRule_menu_new1$N(t)(n)(n);
+
+  ModrTheLowerBound(m-1) &
+  Connect("TMP/.Bcom") &
+  SelectRule_menu_new1$N(t)(m)(n)
+ =>
+  SelectRule_menu_new$N(t)(m)(n);
+
+/********************* SelectTheoryRange_menu ***************************/
+
+
+  SelectTheory_menu$(N+1)
+ =>
+  SelectTheoryRange_menu3$N(t);
+
+  ReadSelectionFromFifo((m..n)) &
+  SelectRule_menu_new$N(t)(m)(n+1)
+ =>
+  SelectTheoryRange_menu3$N(t);
+
+  blent(t.n) &
+  PrintUnprovedRangeTotals(N,t) &
+  FifoWrite_Store((BT_IPR_RUL_RANGE_M,t,n),(ReadSelectionFromFifoNum)) &
+  SelectTheoryRange_menu3$N(t)
+ =>
+  SelectTheoryRange_menu2$N(t);
+
+  blent(t.n) &
+  btest(n<=50) &
+  SelectRule_menu_new$N(t)(1)(n+1)
+ =>
+  SelectTheoryRange_menu2$N(t);
+
+/********************* SelectTheory_menu ***************************/
+
+  ReadSelectionFromFifo(l) &
+  ModifyCurrentlySelectedTheory(l) &
+  SelectTheoryRange_menu2$N(l)
+ =>
+  SelectTheory_menu2$N;
+
+  ReadSelectionFromFifo(0) &
+  exit
+ =>
+  SelectTheory_menu2$N;
+
+  ReadTheoryMenu(T) &
+/***
+HERE(("FifoWrite_Store":T))&
+***/
+  FifoWrite_Store((BT_IPR_THY_M,T,0),(ReadSelectionFromFifoNum)) &
+  SelectTheory_menu2$N
+ =>
+  SelectTheory_menu1$N;
+
+  CreTheoryMenu &
+  SelectTheory_menu1$N
+ =>
+  SelectTheory_menu$N;
+
+
+
+/*******************************************************************/
+
+
+  bcrer(TheoryStringsX,s)
+ =>
+  cre_thy_strings0(s)(x);
+
+  cre_thy_strings0(bcatl(s," "))(0)
+ =>
+  cre_thy_strings0(s)(1);
+
+  btest(N>=2) &
+  cre_thy_strings0(bcatl(s,"  "))(N-2)
+ =>
+  cre_thy_strings0(s)(N);
+
+  btest(N>=4) &
+  cre_thy_strings0(bcatl(s,"    "))(N-4)
+ =>
+  cre_thy_strings0(s)(N);
+
+  btest(N>=8) &
+  cre_thy_strings0(bcatl(s,"        "))(N-8)
+ =>
+  cre_thy_strings0(s)(N);
+
+  bcrer(TheoryStringsX,(t:s))
+ =>
+  cre_thy_strings3(t)(s);
+
+  cre_thy_strings3(t)(s)
+ =>
+  cre_thy_strings2(t)(s)(n);
+
+  cre_thy_strings3(t)(bcatl(s," "))
+ =>
+  cre_thy_strings2(t)(s)(1);
+
+  cre_thy_strings3(t)(bcatl(s,"  "))
+ =>
+  cre_thy_strings2(t)(s)(2);
+
+  btest(n>2) &
+  cre_thy_strings2(t)(bcatl(s,"  "))(n-2)
+ =>
+  cre_thy_strings2(t)(s)(n);
+
+  btest(n>4) &
+  cre_thy_strings2(t)(bcatl(s,"    "))(n-4)
+ =>
+  cre_thy_strings2(t)(s)(n);
+
+  btest(n>8) &
+  cre_thy_strings2(t)(bcatl(s,"        "))(n-8)
+ =>
+  cre_thy_strings2(t)(s)(n);
+
+  ReadMaxLengthThyName(n) &
+  cre_thy_strings2(t)(bcatl("",t))(n-blen(t))
+ =>
+  cre_thy_strings1(t);
+
+  ReadAllOriginalLemmaNames(L) &
+  ReadMaxLengthThyName(m) &
+  cre_thy_strings0("")(m) &
+  cre_thy_strings1 bsmap L
+ =>
+  cre_thy_strings;
+
+  get_max_thy_len2(n);
+
+  ReadMaxLengthThyName(m) &
+  btest(n>m) &
+  ModrMaxLengthThyName(n)
+ =>
+  get_max_thy_len2(n);
+
+  get_max_thy_len2(blen(t) + 1)
+ =>
+  get_max_thy_len1(t);
+
+  ReadAllOriginalLemmaNames(L) &
+  ModrMaxLengthThyName(0) &
+  get_max_thy_len1 bsmap L &
+  cre_thy_strings
+ =>
+  get_max_thy_len;
+
+
+  get_max_thy_tot1(t);
+
+  brule(t.N,x) &
+  ReadMaxLengthThyTot(T) &
+  btest(N>T) &
+  ModrMaxLengthThyTot(N)
+ =>
+  get_max_thy_tot1(t);
+
+  ReadAllOriginalLemmaNames(L) &
+  ModrMaxLengthThyTot(0) &
+  get_max_thy_tot1 bsmap L
+ =>
+  get_max_thy_tot;
+
+  ipfu10(x);
+
+  bcrer(BToolLemmas,bunproved(L))
+ =>
+  ipfu10(BToolLemmas,L,m,n);            /* not 1 since ..... */
+
+  bcrer(BToolLemmas,L)
+ =>
+  ipfu10(BToolLemmas,bproved(L),m,n);   /* not 1 since ..... */
+
+  brule(a.m,x) &
+  bmodr(a.m,bunproved(x))
+ =>
+  ipfu10(a,r,m,n);                      /* not 1 since want to work for level 0 */
+
+  ipfu10(a,0,m,n);
+
+  
+  ipfu9(x);
+
+  ReadAllOriginalLemmaNames(X) &
+  ModifyAllOriginalLemmaNames((X;a)) &
+  ipfu10(a) bnmap b
+ =>
+  ipfu9(THEORY a IS b END);
+
+  ipfu9(THEORY PropertiesX END);
+
+  ipfu9(THEORY PropertiesX IS b END);
+
+  ipfu9(THEORY ExpandHypX END);
+
+  ipfu9(THEORY ExpandHypX IS b END);
+
+  ipfu9(THEORY EnumerateX END);
+
+  ipfu9(THEORY EnumerateX IS b END);
+
+  ipfu9(THEORY NotEqualX END);
+
+  ipfu9(THEORY NotEqualX IS b END);
+
+  ipfu9(THEORY RewriteToFalseOrTrueX END);
+
+  ipfu9(THEORY RewriteToFalseOrTrueX IS b END);
+
+  ipfu9(THEORY FwdContra0X END);
+
+  ipfu9(THEORY FwdContra0X IS b END);
+
+  ipfu9(THEORY FwdEqual1X END);
+
+  ipfu9(THEORY FwdEqual1X IS b END);
+
+
+  ReadPOFileName(f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ipfu7(g);
+
+  ReadPOFileName(f) &
+  LoadZeroLevelFile(g) &
+  bget(f,r) &
+  ipfu9 bsmap r &
+  get_max_thy_len &
+  get_max_thy_tot &
+  StoreOrigProved &
+  SelectTheory_menu$0
+ =>
+  ipfu7(g);
+
+
+  SetInterProverFlag &
+  ModrIPConstructName(b.c) &
+  bmodr(InterProverFromUserX.17,b.c.r) &
+  ModifySwallowNotAllowed &
+  ModifyPOFileName((bcatl("POB/",b,".",c,".",r,".po"))) &
+  ModifyPMDFileName((bcatl("PMD/",b,".",c,".",r,".pmd"))) &
+  ModifyBtlPMDFileName((bcatl("PMD/",b,".",c,".",r,".btl.pmd"))) &
+  UnFlagTheoryInsufficient &
+  UnloadProofMethod &
+  ipfu7(bcatl("POB/",b,".",c,".",0,".po")) &
+/*
+  KillPmdProcess &
+*/
+  KillHypProcess &
+  CleanInterProver &
+  ModifySwallowNotAllowed &
+  UnFlagTheoryInsufficient &
+  UnloadProofMethod &
+  bshell("rm -f .Bpmd")
+ =>
+  ipfu6(b.c.r.po);
+
+  InformInterProvingImplementation(b,r) &
+  ipfu6(b.imp.r.po)
+ =>
+  ipfu5(b.imp.r.po);
+
+  InformInterProvingRefinement(b,r) &
+  ipfu6(b.ref.r.po)
+ =>
+  ipfu5(b.ref.r.po);
+
+  InformInterProvingMachine(b,r) &
+  ipfu6(b.mch.r.po)
+ =>
+  ipfu5(b.mch.r.po)
+
+END

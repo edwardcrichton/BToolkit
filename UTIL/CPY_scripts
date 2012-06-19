@@ -1,0 +1,95 @@
+#! /bin/csh -f
+
+#
+# Install in $BKIT/BLIB
+#
+
+set curdir = `pwd`
+cd ..
+set runwwwdir = `pwd`
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script copies all scripts in SCRIPTS "
+echo "  to  `pwd`/BKIT/BLIB "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+if ( ! -d $BKIT/BLIB ) then
+  mkdir $BKIT/BLIB
+endif
+
+cd ../SCRIPTS
+
+echo ""
+
+foreach file ( $BKIT_script_files $script_files  )
+
+  if ( ! -r $file ) then
+    echo ""
+    echo "            ----->>>>> $file does not exist - NOT COPIED"
+    echo ""
+    echo "            Aborted"
+    echo ""
+    exit ( 1 )
+  else
+    rm -f  $BKIT/BLIB/$file
+    cp $file $BKIT/BLIB
+    echo ""
+    echo "    $file -> $BKIT/BLIB "
+  endif
+
+end
+
+if ( $?TOOLKIT_VERSION && $TOOLKIT_VERSION == "WWW_VERSION" ) then
+
+  foreach file ( $WWW_script_files  )
+
+    if ( ! -r $file ) then
+      echo ""
+      echo "            ----->>>>> $file does not exist - NOT COPIED"
+      echo ""
+      echo "            Aborted"
+      echo ""
+      exit ( 1 )
+    else
+      rm -f   $runwwwdir/$file
+      cp $file $runwwwdir
+      echo ""
+      echo ""
+      echo "    $file -> $runwwwdir "
+      echo ""
+    endif
+
+  end
+
+else
+
+  foreach file ( $WWW_script_files  )
+
+    if ( -r $runwwwdir/$file ) then
+      rm $runwwwdir/$file
+      echo ""
+      echo ""
+      echo "    Removed $runwwwdir/$file "
+      echo ""
+    endif
+
+  end
+
+endif
+
+echo ""
+echo "  Done "
+echo ""

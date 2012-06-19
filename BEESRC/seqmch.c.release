@@ -1,0 +1,967 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define cmp_seq_arg_val 30
+int cmp_seq_arg = cmp_seq_arg_val;
+
+/*
+#define spare_mem_percent_seq ((max_mem-vad(vnbs+1))*100)/max_mem
+/?                            ((max_mem- adts[ vnbs+1 ] )*100)/max_mem   ?/
+*/
+
+                   
+/*  DECLARATIONS ){ SEQUENCE MACHINE  */
+                   
+/* 
+int mmts[max_mem+1];
+int adts[max_seq+3];
+int tats[max_seq+3];
+int tmbs[max_seq+3];
+int coms[max_seq+3];
+*/
+
+extern int * mmts;
+extern int adts[];
+extern int tats[];
+extern int tmbs[];
+extern int coms[];
+extern int max_mem;
+extern int max_seq;
+int histo[62];
+int ttms;
+int vnbs;
+int stp;
+int stack[200+1];
+                    
+/*  PROGRAMS FOR SEQUENCE MACHINE  */
+
+
+
+/*  mmts is main memory array (max_mem) */
+#define mmm(i,v)   mmts[i]=v
+#define vmm(i)     mmts[i]
+
+
+
+/*  vnbs is tot no (used) sequences */
+#define mnb(v)     vnbs=v
+
+
+
+/*  tats is length of sequence i */
+#define vtt(i)     tats[i]
+#define mtt(i,v)   tats[i]=v
+
+
+
+/* adts is start of sequence i (pointing to mmts) */
+#define vad(i)     adts[i]
+#define mad(i,v)   adts[i]=v
+
+/*
+res_seq(s) = vad(s+1)-vad(s)-len(s),
+so represents spare locations for seq s
+*/
+
+
+
+#define ini_seq    vnbs=0; adts[1]=0; tats[1]=0; adts[2]=max_mem; ttms=0; stp=1  
+/*
+  vnbs=0	   total no (used) seq = 0 (vnbs+1 (=1) is the next available seq)
+  adts[1]=0	   seq#1 starts at mmts[0]
+  tats[1]=0	   length of seq#1 =0
+  adts[2]=max_mem  (adts[vnbs+2]=max_mem) seq#1 can occupy the whole of mmts
+  ttms=0	   total no dead seq = 0
+  stp=1			
+*/
+
+
+
+
+
+#define val(s,i)   vmm(vad(s)+i)
+
+#define len(s)     vtt(s)
+
+#define lst(s)     val(s,len(s))
+
+#define fst(s)     val(s,1)
+
+#define snd(s)     val(s,2)
+
+#define res_seq(s) vad(s+1)-vad(s)-len(s)
+
+#define str(s,i,v) mmm(vad(s)+i,v)
+
+#define pop(s)     mtt(s,vtt(s)-1)
+
+#define clr(s)     mtt(s,0)
+
+#define adp(s,v)   mmm(vad(s)+vtt(s)+1,v);mtt(s,vtt(s)+1)
+
+
+
+
+
+int
+spare_mem_percent_seq ()
+{
+  long n = ( max_mem - adts [ vnbs+1 ] ) * 100;
+  n = n / max_mem;
+  return ( ( int ) n );
+}
+
+
+
+
+evm(i,t)
+{
+  /***
+  moves seq#i t locations back
+  ***/
+
+  register int j,k,v ;
+  v=vad(i);               /* adts[i] */
+  if( i<=vnbs ){
+    itrn( j , 1 , len(i) , {
+      k=v+j;
+      mmm(k-t,vmm(k))
+   ;});
+  };
+  mad(i,v-t);
+}
+
+mve(i,t)
+{
+  /***
+  moves seq#i t locations forward
+  ***/
+
+  register int j,k,v ;
+  v=vad(i);
+  nitrn( j , len(i) , 1 , {
+    k=v+j;
+    mmm(k+t,vmm(k))
+ ;});
+  mad(i,v+t);
+}
+
+mov(s,r,t)
+{register int i ;
+  if( s<r ){
+    i=r;
+    while( i>s ){ 
+      mve(i,t);
+      i=i-1 ;
+    } ;
+  } else if( r<s ){
+    i=r+1;
+    while( i<=s ){ 
+      evm(i,t);
+      i=i+1 ;
+    };
+  };
+}
+
+cmp_seq(n)
+{
+  /***
+    if n = -999 (being called prior to save_comp_tool)
+      cmp_seq_arg = 0
+    else
+      if    spare_mem_percent_seq () >= 25 return
+      else  cmp_seq_arg = cmp_seq_arg_val (currently 30)
+
+    compact
+    
+    if n != -999
+      if spare_mem_percent_seq () <= 20                  ||
+         is_unchanged & spare_mem_percent_seq () <= 30   ||
+         max_mem - adts [ vnbs+1 ] < ( alloc_topup / 4 )
+        realloc_max_mem
+  ***/
+
+  static int previously_dismissed = 0;
+
+  register int s;
+
+  register int last_spare_mem_percent_seq;
+  
+#ifdef MALLOC_VERBOSE
+
+  time_t ini_time, fini_time;
+  int secs;
+
+  ini_time = time ( NULL );
+
+#endif /* MALLOC_VERBOSE */
+
+/***
+printf ( "cmp_seq(%d) -  previously_dismissed  %d spare_mem_percent_seq () %d\n", n, previously_dismissed, spare_mem_percent_seq () ); fflush ( stdout );
+***/
+
+  if ( n != -999 ) {
+
+    if ( spare_mem_percent_seq () >= 25 ) {
+      if ( ! previously_dismissed ) {
+        previously_dismissed = 1;
+        return;
+      }
+    }
+
+    cmp_seq_arg = cmp_seq_arg_val;
+
+  }
+
+  else {
+
+    cmp_seq_arg = 0;
+
+  }
+
+  last_spare_mem_percent_seq = spare_mem_percent_seq ();
+
+#ifdef MALLOC_VERBOSE
+
+printf ( "\n  :::::::::::::::::::::::::::::::::\n   cmp_seq(%d) %d%% -> ",
+                                           cmp_seq_arg, spare_mem_percent_seq ());
+fflush ( stdout );
+
+/***
+printf ( "\n%d vnbs=%d(%d) adts[vnbs+1]=%d adts[vnbs+2]=%d\n            ",
+                                max_mem, vnbs, ttms, adts[vnbs+1], adts[vnbs+2] );
+fflush ( stdout );
+***/
+
+#endif /* MALLOC_VERBOSE */
+
+  /***
+    get free space in each seq in coms[]
+  ***/
+  itrn( s , 1 , vnbs , {
+    coms[s]=res_seq(s)
+  ;});
+
+  /***
+   for each seq
+      if free space > cmp_seq_arg
+  ***/
+  itrn( s , 1 , vnbs , {
+    if( coms[s]>cmp_seq_arg ){
+
+/***
+if ( max_mem !=  adts[vnbs+2] ) {
+  printf ( "\n    1 ***** s+1=%d res_seq(s)=%d res_seq(s)-cmp_seq_arg=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-cmp_seq_arg );
+}
+if ( adts[vnbs+1] > max_mem ) {
+  printf ( "\n    2 ***** s+1=%d res_seq(s)=%d res_seq(s)-cmp_seq_arg=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-cmp_seq_arg );
+}
+if ( adts[vnbs+1] < 0 ) {
+  printf ( "\n    2a ***** s+1=%d res_seq(s)=%d res_seq(s)-cmp_seq_arg=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-cmp_seq_arg );
+}
+if ( coms[s] < 0 ) {
+  printf ( "\n    3 ***** s+1=%d res_seq(s)=%d res_seq(s)-cmp_seq_arg=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-cmp_seq_arg );
+}
+***/
+
+      evm(s+1,res_seq(s)-cmp_seq_arg);
+
+/***
+if ( max_mem !=  adts[vnbs+2] ) {
+  printf ( "\n    4 ***** s+1=%d res_seq(s)=%d res_seq(s)-cmp_seq_arg=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-cmp_seq_arg );
+}
+if ( adts[vnbs+1] > max_mem ) {
+  printf ( "\n    5 ***** s+1=%d res_seq(s)=%d res_seq(s)-cmp_seq_arg=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-cmp_seq_arg );
+}
+if ( adts[vnbs+1] < 0 ) {
+  printf ( "\n    5a ***** s+1=%d res_seq(s)=%d res_seq(s)-cmp_seq_arg=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-cmp_seq_arg );
+}
+if ( coms[s] < 0 ) {
+  printf ( "\n    6 ***** s+1=%d res_seq(s)=%d res_seq(s)-cmp_seq_arg=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-cmp_seq_arg );
+}
+***/
+
+    } else {
+
+/***
+if ( max_mem !=  adts[vnbs+2] ) {
+  printf ( "\n    7 ***** s+1=%d res_seq(s)=%d res_seq(s)-coms[s]=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-coms[s] );
+}
+if ( adts[vnbs+1] > max_mem ) {
+  printf ( "\n    8 ***** s+1=%d res_seq(s)=%d res_seq(s)-coms[s]=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-coms[s] );
+}
+if ( adts[vnbs+1] < 0 ) {
+  printf ( "\n    8a ***** s+1=%d res_seq(s)=%d res_seq(s)-coms[s]=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-coms[s] );
+}
+if ( coms[s] < 0 ) {
+  printf ( "\n    9 ***** s+1=%d res_seq(s)=%d res_seq(s)-coms[s]=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-coms[s] );
+}
+***/
+
+      evm(s+1,res_seq(s)-coms[s]);
+
+/***
+if ( max_mem !=  adts[vnbs+2] ) {
+  printf ( "\n    10 ***** s+1=%d res_seq(s)=%d res_seq(s)-coms[s]=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-coms[s] );
+}
+if ( adts[vnbs+1] > max_mem ) {
+  printf ( "\n    11 ***** s+1=%d res_seq(s)=%d res_seq(s)-coms[s]=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-coms[s] );
+}
+if ( adts[vnbs+1] < 0 ) {
+  printf ( "\n    11a ***** s+1=%d res_seq(s)=%d res_seq(s)-coms[s]=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-coms[s] );
+}
+if ( coms[s] < 0 ) {
+  printf ( "\n    12 ***** s+1=%d res_seq(s)=%d res_seq(s)-coms[s]=%d *****\n",
+                                        s+1, res_seq(s),  res_seq(s)-coms[s] );
+}
+***/
+
+    }
+  ;})
+
+#ifdef MALLOC_VERBOSE
+
+  fini_time = time ( NULL );
+  secs = ( int ) fini_time - ( int ) ini_time;
+
+printf ( "%d%% (%d Mb)\n     time taken: %2d mins %2d secs\n  :::::::::::::::::::::::::::::::::\n",
+           spare_mem_percent_seq (), ( max_mem / 1000000 ) * sizeof ( int ),
+           ( secs / 60 ), ( secs % 60 ) );
+fflush ( stdout );
+
+/***
+printf ( "\n%d vnbs=%d(%d) adts[vnbs+1]=%d adts[vnbs+2]=%d\n            ",
+                                max_mem, vnbs, ttms, adts[vnbs+1], adts[vnbs+2] );
+fflush ( stdout );
+***/
+
+#endif /* MALLOC_VERBOSE */
+
+  if ( n != -999 ) {
+    if ( ( spare_mem_percent_seq () <= 20 )                                ||
+         ( ( spare_mem_percent_seq () == last_spare_mem_percent_seq ) &&
+           ( spare_mem_percent_seq () <= 30 )                            ) ||
+         ( max_mem - adts [ vnbs+1 ] < ( alloc_topup / 4 ) )               ||
+         previously_dismissed                                                 ) {
+      realloc_max_mem ();
+    }
+  }
+  
+  previously_dismissed = 0;
+
+}
+
+computeG(a,b,p,r)
+{register int k ;
+  if( b>2*p-a ){
+    if( r<=2*p-a ){
+      if( (r-a) % 2 == 0 ){
+        k=p - ((r+1-a) / 2);
+      } else {
+        k=p + ((r+1-a) / 2);
+      };
+    } else {
+      k=r;
+    };
+  } else {
+    if( r<=2*(b-p)+a-1 ){
+      if( (r-a) % 2 == 0 ){
+        k=p - ((r+1-a) / 2);
+      } else {
+        k=p + ((r+1-a) / 2);
+      };
+    } else {
+      k=b+a-r;
+    };
+  }
+; return k;
+}
+
+search(s,t)
+{register int y,k,r,search_res ;
+  r=2;
+  y=vnbs+2;
+  search_res=0;
+  while( y!=r ){
+    k=computeG(1,vnbs+1,s,r);
+    if( res_seq(k)>=t ){
+      y=r;
+      search_res=k;
+    } else {
+      r=r+1;
+    };
+  }
+; return search_res;
+}
+
+sta0_seqfunc()
+#define sta0_seq sta0_seqfunc()
+{register int z,s,t,h,x ;  
+  z=0;
+  t=0;
+  x=0;
+  itrn( s , 1 , vnbs , {
+    h=res_seq(s);
+    z=z+h;
+    t=t+len(s);
+    if( h!=0 ){
+      x=x+1;
+    };
+  });
+  fprintf ( bstdout,"\n\n      Max Number of Sequences:       ");
+  fprintf ( bstdout,"%8d\n",max_seq);
+  fprintf ( bstdout,"      Number of Used Sequences:      ");
+  fprintf ( bstdout,"%8d\n",vnbs);
+  
+  fprintf ( bstdout,"      Number of Dead Sequences:      ");
+  fprintf ( bstdout,"%8d\n",ttms);
+  fprintf ( bstdout,"      Number of Live Sequences:      ");
+  fprintf ( bstdout,"%8d\n",vnbs-ttms);
+  
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      Memory Size:                   ");
+  fprintf ( bstdout,"%8d words\n",max_mem);
+  
+  fprintf ( bstdout,"      Memory Used:                   ");
+  fprintf ( bstdout,"%8d words\n",vad(vnbs+1));
+  
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      SPARE MEMORY:                  ");
+  fprintf ( bstdout,"%8d words\n",max_mem-vad(vnbs+1));
+  
+  fprintf ( bstdout,"\n");
+    
+  fprintf ( bstdout,"      Sequences with no Free Space:  ");
+  fprintf ( bstdout,"%8d\n",vnbs-x);
+  
+  fprintf ( bstdout,"      Sequences with Free Space:     ");
+  fprintf ( bstdout,"%8d\n",x);
+  
+  
+  fprintf ( bstdout,"      Average Sequence Size:         ");
+  fprintf ( bstdout,"%8d words\n",(t / (vnbs)));
+  
+  if( x!=0 ){
+    fprintf ( bstdout,"      Average Free Space Size:       ");
+    fprintf ( bstdout,"%8d words\n",(z / x));
+  }
+
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      SIGMA OF FREE SPACES:          ");
+  fprintf ( bstdout,"%8d words\n",z);
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      SPARE MEMORY +                 ");
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      SIGMA OF FREE SPACES:          ");
+  fprintf ( bstdout,"%8d words\n\n",z+max_mem-vad(vnbs+1));
+  fprintf ( bstdout,"\n");
+}
+
+sta_seqfunc()
+#define sta_seq sta_seqfunc()
+{
+  sta0_seq;
+  fprintf(stderr,"      Compacting free spaces? ");
+  if( yes_no==YES ){
+    fprintf(stderr,"      Maximum Size of Free space after each sequence: ");
+    cmp_seq(read_nat);
+    fprintf(stderr,"\n");
+    fprintf(stderr,"\n");
+    fprintf(stderr,"\n");
+    sta_seq;
+  };
+}
+
+realloc_max_mem ()
+{
+
+  int prev_max_mem;
+  int * prev_mmts;
+
+#ifdef MALLOC_VERBOSE
+
+  static time_t last_time = 0;
+  time_t now_time;
+  int secs;
+
+  if ( last_time == 0 ) last_time = time ( NULL );
+  now_time = time ( NULL );
+  secs = ( int ) now_time - ( int ) last_time;
+  last_time = now_time;
+
+printf ( "\n    ---------------------------------------------------\n     realloc - max_mem: %d Mb (%2d%%) -> ",
+            ( max_mem / 1000000 ) * sizeof ( int ), spare_mem_percent_seq () );
+fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+  /***
+  decide if first realloc, increment max_mem accordingly
+  and realloc to mmts
+  ***/
+  prev_max_mem = max_mem;
+  prev_mmts = mmts;
+  if ( ( max_mem == alloc_init )          &&
+       ( alloc_topup == alloc_topup_val )    ) {
+    max_mem = max_mem + init_alloc_topup;
+  }
+  else {
+    max_mem = max_mem + alloc_topup;
+  }
+
+  mmts = ( int * ) realloc ( mmts, ( ( max_mem + 5 ) * sizeof ( int ) ) );
+
+
+  if ( mmts == NULL ) {
+    /***
+      realloc failed ...
+    ***/
+    int n;
+    max_mem = prev_max_mem;
+    mmts = prev_mmts;
+    n = max_mem / 1000000;
+    n = n * sizeof ( int );
+    printf ( "\n    ---------------------------------------------------\n" );
+    printf ( "\n      Cannot perform realloc\n\n" );
+    fprintf ( bstdout, "      bplatform: Memory full at %d Mb\n", n );
+    exit___(1);
+  }
+
+
+#ifdef MALLOC_VERBOSE
+
+printf ( "%d Mb (%2d%%)",
+            ( max_mem / 1000000 ) * sizeof ( int ), spare_mem_percent_seq () );
+fflush ( stdout );
+if ( max_mem != alloc_init + init_alloc_topup )
+  printf ( "\n        %2d mins %2d secs since last realloc", 
+                                                 ( secs / 60 ), ( secs % 60 ) );
+printf ( "\n    ---------------------------------------------------\n" );
+fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+  if ( ( ( max_mem / 1000000 ) * sizeof ( int ) ) > 10 ) {
+
+    /*  GlobalDefs.src: #define BT_INFO_DONT_WAIT_M 999122 */
+    char info_buf [ 500 ];
+    sprintf ( info_buf, "999122@bplatform memory realloc -> %d Mb@0",
+                                         ( max_mem / 1000000 ) * sizeof ( int ) );
+    bfifowrite_direct ( info_buf );
+    if ( ! ( fifo_read_direct () ) ) {
+      sprintf ( err_buf, "  bplatform: %s\n    Error in fifo read (seqmch)\n",
+                                                                    fifo_file_2m );
+      perror ( err_buf );
+      fprintf ( bstdout, "\n" );
+      system ( "echo 0 > .Bses" );
+      exit ( 1 );
+    }
+  }
+
+  /***
+  set adts [ vnbs+2 ] to max_men
+  ***/
+  mad ( vnbs+2, max_mem );
+}
+
+aug(s,t)     
+{
+  /***
+    determines whether or not cmp_seq/realloc_max_mem required.
+    while space not found {
+      if max_mem < compact_cut_off (currently 100Mb (words) )
+        cmp_seq
+        if freed memory <= 20 (and ! realloc performed in cmp_seq)
+          realloc
+      else
+          realloc
+    }
+  ***/
+
+  register int loc_found,ls,k, curr_spare_mem_percent_seq;
+  static int last_spare_mem_percent_seq = 0;
+  if( res_seq(s) < t ){
+    ls=len(s);
+    if( ls<=10 ){
+      k=(ls+3) / 2;
+    } else {
+      k=(ls+16) / 4;
+    }
+    k=t+k;
+    loc_found = search(s,k);
+  
+    while( ! loc_found ) {
+      curr_spare_mem_percent_seq = spare_mem_percent_seq ();
+
+#ifdef MALLOC_VERBOSE
+
+printf ( "\n        aug --- curr_spare_mem_percent_seq = %d\n", curr_spare_mem_percent_seq ); fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+      if ( max_mem  < compact_cut_off ) {
+        int max_mem_prev = max_mem;
+
+#ifdef MALLOC_VERBOSE
+
+printf ( "\n        aug --- pre  cmp_seq\n" ); fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+        cmp_seq ( cmp_seq_arg_val );
+
+#ifdef MALLOC_VERBOSE
+
+printf ( "\n        aug --- post cmp_seq --- max_mem_prev %d --- max_mem %d\n", max_mem_prev, max_mem ); fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+        if ( max_mem_prev == max_mem ) {  /* realloc not done in cmp_seq */
+          curr_spare_mem_percent_seq = spare_mem_percent_seq ();
+          if ( ( curr_spare_mem_percent_seq <= 20 )                                ||
+               ( ( curr_spare_mem_percent_seq == last_spare_mem_percent_seq ) &&
+                 ( curr_spare_mem_percent_seq <= 30 )                            ) ||
+               ( max_mem - adts [ vnbs+1 ] < ( alloc_topup / 4 ) )                    )
+
+#ifdef MALLOC_VERBOSE
+
+printf ( "\n        aug --- realloc_max_mem : 1\n" ); fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+            realloc_max_mem ();
+        }
+      }
+      else {
+
+#ifdef MALLOC_VERBOSE
+
+printf ( "\n        aug --- realloc_max_mem : 2\n" ); fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+        realloc_max_mem ();
+      }
+      last_spare_mem_percent_seq = curr_spare_mem_percent_seq;
+      loc_found = search(s,k);
+    }
+
+    /***
+      space found (possibly after cmp_seq/realloc_max_mem)
+      so store the sequence
+    ***/
+    mov(s,loc_found,k);
+  }
+}
+
+cre(n)
+{register int i ;
+  if( ttms!=0 ){
+    i=tmbs[ttms];
+    ttms=ttms-1;
+  }
+  else {
+    if( vnbs<max_seq ){
+      i=vnbs+1;
+      mad(i+2,max_mem);
+
+/***
+printf ( " --->>> cre(%d) - mad(%d+2,%d)\n", n, i, max_mem );
+printf ( "                 mad(%d+1,%d)\n", i, vad(i) );
+***/
+
+      mad(i+1,vad(i));
+      mtt(i+1,0);
+      mtt(i,0);
+      vnbs=vnbs+1;
+    } else {
+      sta0_seq;
+#ifdef BTOOL_FLAG
+      fprintf ( bstdout, "      TOO MANY SEQUENCES (Press CR to exit)\n");
+      {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+#else
+      fprintf ( bstdout, "      bplatform: Too many sequences\n\n");
+#endif /* BTOOL_FLAG */
+      exit___(1);
+    };
+  };
+  aug(i,n);
+  return i;
+}
+
+#define kil(n) clr(n); ttms=ttms+1; tmbs[ttms]=n
+ 
+/*
+#define kil(n) fprintf ( bstdout, "kil(%d)\n",n); clr(n); ttms=ttms+1; tmbs[ttms]=n
+*/
+
+#define psh(s,v)   aug(s,1);adp(s,v)
+
+#define itr(t,i,v,s)  itrn( i , 1 , len(t) , {  v=val(t,i); s  ;})
+
+#define nitr(t,i,v,s)  nitrn( i , len(t) , 1 , {  v=val(t,i); s  ;})
+
+#define xst(t,i,v,p,s1,s2)  i=len(t);  while( i>0 ){  v=val(t,i);  if( p ){  s1;  i=(-i)  ;} else {  i=i-1  ;};};  if( i==0 ){ s2 ;}
+
+#define nxst(t,i,v,p,s1,s2)  i=1;  while( i<=len(t) ){  v=val(t,i);  if( p ){  s1;  i=len(t)+2  ;} else {  i=i+1  ;};};  if( i==len(t)+1 ){ s2 ;}
+eql(s,t)
+{register int i,eql_res ;
+  if( len(s)!=len(t) ){
+    eql_res=FALSE;
+  } else {
+    eql_res=TRUE;
+    i=len(s);
+    while( i!=0 ){ 
+      if( val(s,i)!=val(t,i) ){
+        i=0;
+        eql_res=FALSE;
+      } else { 
+        i=i-1;
+      };
+    };
+  }
+; return eql_res;
+}
+
+pcop(a,m,n,b)
+{register int i,v,w ;
+  if( a!=b ){
+    clr(b);
+    aug(b,n-m+1);
+    mtt(b,n-m+1);
+    w=vad(b);
+    v=vad(a);
+    itrn( i , m , n , {
+      mmm(w+i-m+1,vmm(v+i))
+   ;});
+  };
+}
+
+cop(a,b)
+{register int i,v,w,n ;
+  if( a!=b ){
+    n=len(a);
+    clr(b);
+    aug(b,n);
+    mtt(b,n);
+    w=vad(b);
+    v=vad(a);
+    itrn( i , 1 , n , {
+      mmm(w+i,vmm(v+i))
+   ;});
+  };
+}
+
+cnc(a,b)
+{register int i,v,w,n ;
+  if( a!=b ){
+    n=len(b);
+    aug(a,n);
+    v=vad(a)+len(a);
+    mtt(a,len(a)+n);
+    w=vad(b);
+    itrn( i , 1 , n , {
+      mmm(v+i,vmm(w+i))
+   ;});
+  };
+}
+
+rcnc(a,b)
+{register int i,v,w,n ;
+  if( a!=b ){
+    n=len(b);
+    aug(a,n);
+    v=vad(a)+len(a);
+    mtt(a,len(a)+n);
+    w=vad(b);
+    itrn( i , 1 , n , {
+      mmm(v+i,vmm(w+n-i+1))
+   ;});
+  };
+}
+
+pcnc(a,b,m,n)
+{register int i,v,w,l ;
+  if( a!=b ){
+    l=n-m+1;
+    aug(a,l);
+    v=vad(a)+len(a)-m+1;
+    mtt(a,len(a)+l);
+    w=vad(b);
+    itrn( i , m , n , {
+      mmm(v+i,vmm(w+i))
+   ;});
+  };
+}
+
+idx(s,v)
+{register int i,w,idx_res ;
+  xst(s,i,w,w==v,idx_res=i,idx_res=0)
+; return idx_res;
+}
+
+#define mbr(s,v)  ((idx(s,v)!=0)!=0)
+rev(s) 
+{register int r,i,j ;
+  i=0; 
+  j=len(s);
+  while( i+1<j ){
+    i=i+1;
+    r=val(s,i);
+    str(s,i,val(s,j));
+    str(s,j,r);
+    j=j-1;
+  };
+}
+
+rem(s,i)
+{register int k ;
+  itrn( k , i+1 , len(s) , {
+    str(s,k-1,val(s,k));
+});
+  pop(s);
+}
+
+write_seq(s)
+{register int i ;
+  itrn(i,1,len(s),write_nat(val(s,i)));
+}
+
+
+
+
+
+
+/* from ctxmch.h */
+#define root_tree(t)  len(t)
+#define chk_frm(f,g) chk_tree(f,root_tree(f),1,g,root_tree(g),1)
+
+int read_fifofunc ();
+
+bfifowrite_direct ( sss )
+char * sss;
+{
+	/* Added trace and handled EINTR */
+	/* Note: fifo_write_ptr not declared locally ?? */
+	
+     kill ( Bpim_ps_no, SIGUSR1 );
+     
+  /*
+  if ( ( fifo_write_ptr = open ( fifo_file_2m, O_WRONLY /? & ~O_NONBLOCK & ~O_NDELAY & ~O_APPEND ?/ ) ) < 0 ) {
+    sprintf ( err_buf, "  bplatform: %s", fifo_file_2m );
+    perror ( err_buf );
+    fprintf ( bstdout, "\n" );
+    system ( "echo 0 > .Bses" );
+    exit ( 1 );
+  }
+  */
+  
+  #ifdef FIFO_TRACE_FLAG
+  fprintf ( stdout, "                                  bfifowrite_direct: before open\n" ); fflush ( stdout );
+  #endif /* FIFO_TRACE_FLAG */
+  
+  do
+  {
+  	fifo_write_ptr = open ( fifo_file_2m, O_WRONLY /* & ~O_NONBLOCK & ~O_NDELAY & ~O_APPEND */ );
+	if( errno == EINTR )
+	{
+		#ifdef FIFO_TRACE_FLAG
+		fprintf ( stdout, "                                  bfifowrite_direct: open EINTR\n" ); fflush ( stdout );
+		#endif /* FIFO_TRACE_FLAG */
+		sleep(1);
+	}
+  }
+  while(fifo_write_ptr < 0 && errno == EINTR);
+  
+  if(fifo_write_ptr < 0)
+  {
+  
+	fprintf ( stdout, "                                  bfifowrite_direct: open error\n" ); fflush ( stdout );
+		  	
+  	sprintf ( err_buf, "  bplatform: %s", fifo_file_2m );
+	perror ( err_buf );
+	fprintf ( bstdout, "\n" );
+	system ( "echo 0 > .Bses" );
+	exit ( 1 );
+  }
+
+  #ifdef FIFO_TRACE_FLAG
+  fprintf ( stdout, "                                  bfifowrite_direct: before write\n" ); fflush ( stdout );
+  #endif /* FIFO_TRACE_FLAG */
+
+  if ( write ( fifo_write_ptr, sss, strlen ( sss ) ) != strlen ( sss ) )
+  {
+  
+    fprintf ( stdout, "                                  bfifowrite_direct: write error\n" ); fflush ( stdout );
+  
+    sprintf ( err_buf, "  bplatform: %s", fifo_file_2m );
+    perror ( err_buf );
+    fprintf ( bstdout, "\n" ); fflush ( bstdout );
+    fprintf ( bstdout, "\n        bplatform: attempting to write (len %d)\n",
+                                              strlen ( sss ) ); fflush ( bstdout );
+    fprintf ( bstdout, "\n        %s\n\n", sss ); fflush ( bstdout );
+    system ( "echo 0 > .Bses" );
+    exit ( 1 );
+  }
+  
+  #ifdef FIFO_TRACE_FLAG
+  fprintf ( stdout, "                                  bfifowrite_direct: written\n" ); fflush ( stdout );
+  #endif /* FIFO_TRACE_FLAG */
+
+  if ( close ( fifo_write_ptr ) != 0 ) {
+  
+    fprintf ( stdout, "                                  bfifowrite_direct: close error\n" ); fflush ( stdout );
+  
+    sprintf ( err_buf, "  bplatform: %s", fifo_file_2m );
+    perror ( err_buf );
+    fprintf ( bstdout, "\n" );
+    system ( "echo 0 > .Bses" );
+    exit ( 1 );
+  }
+  
+  #ifdef FIFO_TRACE_FLAG
+  fprintf ( stdout, "                                  bfifowrite_direct: closed\n" ); fflush ( stdout );
+  #endif /* FIFO_TRACE_FLAG */
+  
+}
+
+fifo_read_direct ()
+{
+  register int ff, ss, fifo_read_prf_res;
+  fifo_read_prf_res = FALSE;
+  ff = cre ( 5 );
+  ss = read_fifofunc ();    /* macmch */
+  if ( ss != 0 ) fifo_read_prf_res = chk_frm ( ff, ss );
+  kil ( ff );
+  return fifo_read_prf_res;
+}

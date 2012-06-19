@@ -1,0 +1,150 @@
+/* Copyright (c) 1985-96, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+
+
+#include "GlobalDefs.src"
+
+
+
+THEORY BTOOLKITINIT END   /* Theory # 2 */
+
+&
+
+#include "Utils.src"
+
+&
+
+#include "TranslatorsPASP.src"
+
+&
+
+#include "TransPASP.src"
+
+&
+
+#include "LinkPASP.src"
+
+&
+
+#include "Toolkit_core.src"
+
+&
+
+
+#define CreDotHtmlPASPCodeSLIBFile(x) \
+  bcall(MODR:bmodr(CreDotHtmlPASPCodeSLIBFileX.1,x)) & \
+  bcall(((MAP;LMAP;ARI;CATL;SHELL;MODR;WRITE;NEWV;RULE)~;CreDotHtmlPASPCodeSLIBFileX)~: \
+                       (ch_slib_init(x) & ch_slib(x)))
+
+
+
+THEORY ParseInitX IS
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformUnknownEnvironment(x) &
+  PFZ
+ =>  
+  pi$x;
+
+
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_PASP_SLIB:0),X,Y) &
+  ModifyJobs(Y) &
+  CrePASPSLIBModule(x) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PASP_SLIB_HTX:1),X,Y) &
+  ModifyJobs(Y) &
+  CreDotHtmlPASPCodeSLIBFile(x) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PASP_FIN:0),X,Y) &
+  ModifyJobs(Y) &
+  FinPASPDirect(x) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_RUN:0),X,Y) &
+  ModifyJobs(Y) &
+  SatPASPDirect(x) &
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+  GetJobs(X) &
+  bsearch((x:BT_LNK_WITH_IPT:0),X,Y) &
+  ModifyJobs(Y) &
+  LinkPASPDirect(x) &
+  LoadToolkit(1)
+ =>
+  run;
+
+
+
+
+  GetJobs(X) &
+  bsearch((B:BT_TRL_WITH_IPT_SEES:0),X,Y) &
+  ModifyJobs(Y) &
+  TransPASPDirect(B) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch(((A;B):BT_TRL_WITH_IPT_SEES:0),X,Y) &
+  ModifyJobs((Y;(A:BT_TRL_WITH_IPT_SEES:0))) &  /* need to check success! */
+  TransPASPDirect(B) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  bnum(x) &
+  btest(1<=x) &
+  btest(5>=x) &
+  run
+ =>  
+  pi$x;
+
+
+
+  bnum(n) &
+  bmodr(ParseEnvX.2,n) &
+  LoadJobs &
+  pi$n
+ =>
+  n$toolkit$n$n
+
+END

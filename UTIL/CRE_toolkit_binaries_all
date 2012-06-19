@@ -1,0 +1,85 @@
+#! /bin/csh -f
+
+#
+# ToolkitN.bin installed
+#
+
+if ( ! -x ../BEESRC/b ) then
+  echo ""
+  cd ..
+  echo "  `pwd`/BEESRC/b does not exist - run CRE_b"
+  echo ""
+  exit ( 1 )
+endif
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script installs ToolkitN.bin "
+echo "  in `pwd`/BKIT/BLIB "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+if ( ! $?BKIT ) then
+  echo ""
+  echo "  Environment variable BKIT not set"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( ! -d $BKIT/BPLAT ) then
+  echo ""
+  echo "  Directory $BKIT/BPLAT does not exist"
+  echo ""
+  exit ( 1 )
+endif
+
+
+if ( ! -r $BKIT/BPLAT/SYMBOL ) then
+  echo ""
+  echo "  File $BKIT/BPLAT/SYMBOL does not exist"
+  echo ""
+  exit ( 1 )
+endif
+
+
+
+#if ( $status != 0 ) then
+#  rm -f $BSC/UTIL/.lock
+#  exit ( 1 )
+#endif
+
+foreach BT_num ( $REL_BT_N_files )
+
+cd ../SRC
+
+  rm -f Standardize.src SetOfRules
+  
+    cp Standardize_NonPASP.src Standardize.src
+    cp SetOfRules_NonPASP SetOfRules
+
+cd ../UTIL
+
+  echo  "$BT_num" | _CRE_toolkit_binary_raw 1
+#  if ( $status != 0 ) then
+#    rm -f $BSC/UTIL/.lock
+#    exit ( 1 )
+#  endif
+
+end
+
+cd $BKIT/BLIB
+ls -l Toolkit*.bin

@@ -1,0 +1,35 @@
+#! /bin/sh
+
+printf "1\n" > .Bcom
+cd TEX
+if [ "$6" = "0" ]
+then
+  $BKIT/BLIB/Post_Latexer_0 < .Btex > _$3.$4.tex
+elif  [ "$6" = "1" ]
+then
+  $BKIT/BLIB/Doc_Latexer < .Btex > _$3.$4.tex
+fi
+printf "%s\n" $5 > $3.$4.tex
+if [ "$6" != "0" ]
+then
+  cat .prl >> $3.$4.tex
+fi
+if [ "$2" = "1" ]
+then
+  printf "\\\\makeindex\n" >> $3.$4.tex
+fi
+printf "\\\\begin{document}\n" >> $3.$4.tex
+cat _$3.$4.tex >> $3.$4.tex
+if [ "$6" = "2" ]
+then
+  $BKIT/BLIB/Latex_Index < .idx > .idx_
+  cat .idx_ >>  $3.$4.tex
+  rm -f .idx*
+fi
+printf "\\\\end{document}\n" >> $3.$4.tex
+xterm -sb -geometry 65x30+1+1 -e $BKIT/BLIB/BLatex $1 $3 $4 $7
+rm -f $3.$4.tex $3.$4.log .Btex texput.log
+if [ "$6" != "1" ]
+then
+  rm -f $3.$4.aux $3.$4.idx $3.$4.toc .prl
+fi

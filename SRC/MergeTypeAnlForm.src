@@ -1,0 +1,327 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY MergeTypeAnlProcListX IS
+
+#define MergeTypeAnlProcList_tac (((FLAT;WRITE)~;MergeTypeAnlProcListX)~)
+
+#define MergeTypeAnlProcList(x,y)  bcall(MergeTypeAnlProcList_tac : pr(x)(y))
+
+  ?;  /* 1. op type info */
+
+  ?;  /* 2. set/variable type info */
+
+  ?;  /* 3. param type info */
+
+  bprintf("(%)\n",p)
+ =>
+  pr2(p);
+
+  bsearch(?,p,q) &
+  pr2(q)
+ =>
+  pr2(p);
+
+  pr2(p)
+ =>
+  pr1(v)(p)(?);
+
+  pr1(v)(p)(T)
+ =>
+  pr1(v)(p)(T;x);
+
+  bsearch(a,(v,?),x) &
+  pr1(v)(p&(a:b))(T)
+ =>
+  pr1(v)(p)(T;a:b);
+
+/*
+HERE(("Typechecker adding" - a:b))&
+*/
+  bsearch(a,(v,?),x) &
+  pr1(v)(p&(a:b))(T)
+ =>
+  pr1(v)(p)(T;a:b);
+
+  bsearch(a,(v,?),x) &
+  bsearch((a<:t),(p&?),y) &     /* t - any type expression will do ! */
+  pr1(v)(p)(T)
+ =>
+  pr1(v)(p)(T;a:b);
+
+  bsearch(a,(v,?),x) &
+  bsearch((a:t),(p&?),y) &      /* t - any type expression will do ! */
+  pr1(v)(p)(T)
+ =>
+  pr1(v)(p)(T;a:b);
+
+  brule(MergeTypeAnlProcListX.2,T) &
+  pr1(v)(p)(bflat(?;T))
+ =>
+  pr(v)(p);
+
+  bprintf("(%)\n",?)
+ =>
+  pr(v)(?)
+
+END
+
+&
+
+THEORY MergeTypeAnlLoadX IS
+
+#define MergeTypeAnlLoad_tac (((CATL;MODR;MAP;WRITE)~;MergeTypeAnlLoadX)~)
+
+#define MergeTypeAnlLoad(x)  bcall(MergeTypeAnlLoad_tac  : mtal0(x))
+
+  bprintf(" (%)\n",a)
+ =>
+  pr_ops2(a);
+
+  bprintf(" WHILE\n") &
+  bprintf(" (%)\n",a) &
+  bprintf(" DO\n (\n") &
+  pr_ops2(b) &
+  bprintf(" )\n INVARIANT\n") &
+  bprintf(" (%)\n",c) &
+  bprintf(" VARIANT\n") &
+  bprintf(" (%)\n",d) &
+  bprintf(" END\n")
+ =>
+  pr_ops2(WHILE a DO b INVARIANT c VARIANT d END);
+
+  bprintf(" WHILE\n") &
+  bprintf(" (%)\n",a) &
+  bprintf(" DO\n (\n") &
+  pr_ops2(b) &
+  bprintf(" )\n VARIANT\n") &
+  bprintf(" (%)\n",c) &
+  bprintf(" INVARIANT\n") &
+  bprintf(" (%)\n",d) &
+  bprintf(" END\n")
+ =>
+  pr_ops2(WHILE a DO b VARIANT c INVARIANT d END);
+
+  bprintf(" (\n") &
+  pr_ops2(a) &
+  bprintf(" )\n |\n (\n") &
+  pr_ops2(b) &
+  bprintf(" )\n")
+ =>
+  pr_ops2(a|b);
+
+  bprintf(" (\n") &
+  pr_ops2(a) &
+  bprintf(" )\n ==>\n (\n") &
+  pr_ops2(b) &
+  bprintf(" )\n")
+ =>
+  pr_ops2(a==>b);
+
+  bprintf(" (\n") &
+  pr_ops2(a) &
+  bprintf(" )\n ||\n (\n") &
+  pr_ops2(b) &
+  bprintf(" )\n")
+ =>
+  pr_ops2(a||b);
+
+  bprintf(" (\n") &
+  pr_ops2(a) &
+  bprintf(" )\n []\n (\n") &
+  pr_ops2(b) &
+  bprintf(" )\n")
+ =>
+  pr_ops2(a[]b);
+
+  bprintf(" (\n") &
+  pr_ops2(a) &
+  bprintf(" )\n ;\n (\n") &
+  pr_ops2(b) &
+  bprintf(" )\n")
+ =>
+  pr_ops2(a;b);
+
+  bprintf(" @(%).\n (\n",a) &
+  pr_ops2(b) &
+  bprintf(" )\n")
+ =>
+  pr_ops2(@a.b);
+
+  bprintf(" @(%).\n",a) &
+  bprintf(" (\n") &
+  pr_ops2(b==>c) &
+  bprintf(" )\n")
+ =>
+  pr_ops2(@a.(b==>c));
+
+  bprintf("(\n (%)\n;\n (%)\n;\n (%)\n;\n (%)\n;\n (\n (%)\n |\n (\n",s,t,u,v,w) &
+  pr_ops2(x) &
+  bprintf(" )\n )\n;\n (\n (%)\n |\n (\n",y) &
+  pr_ops2(z) &
+  bprintf(" )\n )\n )\n")
+ =>
+  pr_ops1(s;t;u;v;(w|x);(y|z));
+
+  pr_ops1(a) &
+  bprintf(",\n")
+ =>
+  pr_ops(a,m,n);
+
+  pr_ops1(a)
+ =>
+  pr_ops(a,n,n);
+
+  pr_ops1(n)
+ =>
+  pr_ops0(n);
+
+  pr_ops bnmap (N,n)
+ =>
+  pr_ops0(N,n);
+
+  bprintf("(?)\n")
+ =>
+  pr_ops0(?);
+
+  bprintf("(%)\n",a)
+ =>
+  pr_list(a);
+
+HERE((x))&junk=>
+  pr_see1(x);
+
+  bprintf ("(%(%):(%):((%),(%),(%)))\n",a,b,c,d,e,f)
+ =>
+  pr_see1(a(b):(c):((d),(e),(f)));
+
+  pr_see1(a) &
+  bprintf(",\n")
+ =>
+  pr_see(a,m,n);
+
+  pr_see1(a)
+ =>
+  pr_see(a,n,n);
+
+  bprintf("(\n") &
+  pr_see bnmap a &
+  bprintf(")\n")
+ =>
+  pr_see0(a);
+
+  bprintf("(?)\n")
+ =>
+  pr_see0(?);
+
+  pr_see0(A) &
+  bprintf(";\n") &
+  pr_see0(B) &
+  bprintf(";\n") &
+  pr_list(C) &
+  bprintf(";\n") &
+  pr_list(D) &
+  bprintf(";\n") &
+  pr_list(E) &
+  bprintf(";\n") &
+  pr_list(F) &
+  bprintf(";\n") &
+  MergeTypeAnlProcList(bflat(C,E),G) &
+  bprintf(";\n") &
+  MergeTypeAnlProcList(bflat(D,F),H) &
+  bprintf(";\n") &
+  pr_see0(b) &
+  bprintf(";\n") &
+  pr_list(c) &
+  bprintf(";\n") &
+  pr_list(Q) &
+  bprintf(";\n") &
+  pr_list(d) &
+  bprintf(";\n") &
+  MergeTypeAnlProcList(Q,e) &
+/*  pr_list(e) & */
+  bprintf(";\n") &
+  MergeTypeAnlProcList(d,f) &
+/*   pr_list(f) & */
+  bprintf(";\n") &
+  pr_list(g) &
+  bprintf(";\n") &
+  bprintf("(%)\n",h) &  /* unexpanded init */
+  bprintf(";\n") &
+  bprintf("(%)\n",i) &  /* expanded init */
+  bprintf(";\n") &
+  pr_list(W) &
+  bprintf(";\n") &
+  pr_list(j) &
+  bprintf(";\n") &
+  bprintf("(%(%):(%):(%))\n",k,l,m,r) &
+  bprintf(";\n(\n") &
+  pr_ops0(n) &
+  bprintf(")\n") &
+  bclose
+ =>
+  mtal3(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  mtal2(f)(X);
+
+  bconnect(f) &
+  mtal3(X)
+ =>
+  mtal2(f)(X);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  mtal1(a.b)(f);
+
+  bget(f,X) &
+  mtal2(bcatl("ANL/",a,".",b,".anl"))(X)
+ =>
+  mtal1(a.b)(f);
+
+  bmodr(MergeTypeAnlProcListX.1,?) &
+  bmodr(MergeTypeAnlProcListX.2,B) &
+  bmodr(MergeTypeAnlProcListX.3,C)
+ =>
+  mtal_t1(B|C);
+
+  bmodr(MergeTypeAnlProcListX.1,A) &
+  bmodr(MergeTypeAnlProcListX.2,B) &
+  bmodr(MergeTypeAnlProcListX.3,C)
+ =>
+  mtal_t1(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  mtal_t(f);
+
+  bget(f,x) &
+  mtal_t1(x)
+ =>
+  mtal_t(f);
+
+  mtal_t(bcatl("TYP/",a,".mri.typ")) &
+  mtal1(a.b)(bcatl("ANL/",a,".",b,".anl"))
+ =>
+  mtal0(a.b)
+
+END

@@ -1,0 +1,202 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Byt_BS_TYPE">
+  <TITLE>The Byt_BS_TYPE machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.02
+  VERSION:          B-Toolkit Beta 4.32
+  DATE:             09/01/99
+v0.03
+  VERSION:          B-Toolkit Beta 4.32
+  DATE:             15/02/99
+***/
+
+/*
+Description: Library Type machine extending Byt_TYPE to include BitString ops
+
+History :
+030698 v0.01 : Created.
+090199 v0.02 : added: exp, SETBIT, RESETBIT
+150299 v0.03 : added: SEES Bool_TYPE
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Byt_BS_TYPE
+
+EXTENDS           <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>
+
+/*"
+This specification is an extension of {\em Byt\_Type\/}, providing
+the four bit manipulation functions {\em BAND, BOR, BXOR and BNOT\/},
+using the {\em BYTE\/}-`bit-sequence' constants
+{\em b2bs\/} and {\em bs2b\/} together with four bit manipulation
+functions {\em bnd, bor, bxr\/} and {\em bcp\/}.
+
+The additional operations provide the four bit
+manipulation functions {\em BAND, BOR, BXOR and BNOT\/}.
+"*/
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+/*"
+Required because of {\em b2bl\/} and {\em  bl2b\/} in {\em Byt\_TYPE\/}
+"*/
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>
+
+/*"
+We introduce the two conversion functions between {\em BYTE\/}
+and their `bit-sequence' representation:
+"*/
+
+  b2bs, bs2b,
+
+/*"
+and the bit manipulation functions for `and', `or', `xor' and `complement':
+"*/
+
+  bnd, bor, bxr, bcp
+
+/*
+/?"
+We finally introduce the exponential function:
+"?/
+
+  exp
+*/
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+/*"
+In order to provide the bit-manipulation operations we define {\em b2bs\/}
+as the bijection between {\em BYTE\/} and its bit-sequence value, and
+{\em bs2b\/} as its inverse:
+"*/
+
+  b2bs : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &gt;-&gt;&gt; /* {ss | ss : seq {0,1} & size(ss) = 8} */ (1..8 --&gt; {0,1}) &
+/* !bb.(bb:BYTE =&gt; (bb = n2b(SIGMA(ii).(ii:1..8 | 2^^(8-ii) * b2bs(bb))))) & */
+  bs2b = b2bs~ &
+
+/*"
+We define the bit functions {\em bnd, bor, bxr\/} and {\em bcp\/}:
+\newpage
+"*/
+
+  bnd = {(0|-&gt;0) |-&gt; 0, (0|-&gt;1) |-&gt; 0, (1|-&gt;0) |-&gt; 0, (1|-&gt;1) |-&gt; 1} &
+  bor = {(0|-&gt;0) |-&gt; 0, (0|-&gt;1) |-&gt; 1, (1|-&gt;0) |-&gt; 1, (1|-&gt;1) |-&gt; 1} &
+  bxr = {(0|-&gt;0) |-&gt; 0, (0|-&gt;1) |-&gt; 1, (1|-&gt;0) |-&gt; 1, (1|-&gt;1) |-&gt; 0} &
+  bcp = {0 |-&gt; 1, 1 |-&gt; 0}
+
+/*
+/?"
+We now axiomatize the {\em exp\/} function:
+"?/
+   exp : NAT * NAT --&gt; NAT &
+   !(xx,nn). ( xx : NAT & nn : NAT =&gt; ( 
+               exp(xx,0) = 1 &
+               exp(xx,nn+1) = exp(xx,nn) * nn )
+             )
+*/
+   
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+Each of the first four bit manipulation operations has precondition
+that the input variables are of type {\em BYTE\/}; in
+each case a {\em BYTE\/} value is returned.\\[1ex]
+
+{\bf BAND}:\ \ \  translated as:\\{\tt rr := BAND(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BAND">BAND</A>(aa : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & bb : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B> rr := bs2b((b2bs(aa) &gt;< b2bs(bb)) ; bnd) <B>END</B>;
+
+/*"
+{\bf BOR}:\ \ \  translated as:\\{\tt rr := BOR(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BOR">BOR</A>(aa : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & bb : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B> rr := bs2b((b2bs(aa) &gt;< b2bs(bb)) ; bor) <B>END</B>;
+
+/*"
+{\bf BXOR}:\ \ \  translated as:\\{\tt rr := BXOR(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BXOR">BXOR</A>(aa : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & bb : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B> rr := bs2b((b2bs(aa) &gt;< b2bs(bb)) ; bxr) <B>END</B>;
+
+/*"
+\newpage
+{\bf BNOT}:\ \ \  translated as:\\{\tt rr := BNOT(aa)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BNOT">BNOT</A>(aa : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B> rr := bs2b(b2bs(aa) ; bcp)  <B>END</B>;
+
+/*"
+The last two bit manipulation operations take a bit position and a
+{\em BYTE\/}, with precondition that the {\em bit\/} is no bigger than
+$7$; in each case a {\em BYTE\/} value is returned. HOWEVER, in order
+that the operations may be translated in-line, the bit position parameter
+must be a {\em number\/} and not an {\em identifier\/}; the latter
+will be rejected by the translator\\[1ex]
+
+{\bf ISBITSET}:\ \ \  translated (effectively) as:\\{\tt bb := b2bl(BAND(aa,bb))}\\
+where {\em bb\/} is a {\em BYTE\/} whose bits are all $0$ except
+that at position {\em bit\/} which is $1$\\
+"*/
+  bb <-- <A NAME="OPNAME!ISBITSET">ISBITSET</A>(bit : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & aa : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(bit) : 0..7 <B>THEN</B>
+      bb := <B>bool</B> ( b2bs(aa) (<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(bit)+1) = 1 )
+    <B>END</B>;
+
+/*"
+{\bf SETBIT}:\ \ \  translated as:\\{\tt rr := BOR(aa,bb)}\\
+where {\em bb\/} is a {\em BYTE\/} whose bits are all $0$ except
+that at position {\em bit\/} which is $1$\\
+"*/
+  rr <-- <A NAME="OPNAME!SETBIT">SETBIT</A>(bit : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & aa : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(bit) : 0..7 <B>THEN</B>
+      rr := bs2b(b2bs(aa) <+ {<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(bit)+1 |-&gt; 1})
+    <B>END</B>;
+
+/*"
+{\bf RESETBIT}:\ \ \  translated as:\\{\tt rr := BAND(aa,bb)}\\
+where {\em bb\/} is a {\em BYTE\/} whose bits are all $1$ except
+that at position {\em bit\/} which is $0$\\
+"*/
+  rr <-- <A NAME="OPNAME!RESETBIT">RESETBIT</A>(bit : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & aa : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(bit) : 0..7 <B>THEN</B>
+      rr :=bs2b(b2bs(aa) <+ {<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(bit)+1 |-&gt; 0})
+    <B>END</B>
+
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:05:51 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,241 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(VHDL_PK(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Vec , Rename_Vec2Nat , Rename_Nat2Vec)
+;
+(Rename_Vec , Rename_Vec2Nat , Rename_Nat2Vec)
+;
+(Rename_Vec = 0..ub --> std_logic & Rename_Vec2Nat : Rename_Vec --> NAT & Rename_Nat2Vec : NAT +-> Rename_Vec & !vec.(vec : Rename_Vec => Rename_Vec2Nat(vec) = SIGMA(nn).(nn : 0..ub & vec(nn) = '1' | exp(2 , nn))) & Rename_Nat2Vec = Rename_Vec2Nat~)
+;
+(Rename_Vec = 0..ub --> std_logic & Rename_Vec2Nat : Rename_Vec --> NAT & Rename_Nat2Vec : NAT +-> Rename_Vec & !vec.(vec : Rename_Vec => Rename_Vec2Nat(vec) = SIGMA(nn).(nn : 0..ub & vec(nn) = '1' | exp(2 , nn))) & Rename_Nat2Vec = Rename_Vec2Nat~)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_vec_VEC2NAT,Rename_vec_NAT2VEC,Rename_idx_VAL,Rename_idx_EQL,Rename_vec_XTR,Rename_idx_MOD)
+;
+(Rename_vec_VEC2NAT , Rename_vec_NAT2VEC , Rename_idx_VAL , Rename_idx_EQL , Rename_vec_XTR , Rename_idx_MOD)
+;
+(Rename_vector_PK(lb , ub):(lb = 0 & lb < ub & ub : NAT & lb : NAT):(?))
+;
+(
+(
+ (Rename_vec_VEC2NAT)
+;
+ (? , Val_Op , Det_Op , (nn <-- Rename_vec_VEC2NAT(vec)))
+;
+ (vec)
+;
+ (nn)
+;
+ (
+ (vec : Rename_Vec)
+ |
+ (
+ (BEGIN
+ nn := Rename_Vec2Nat(vec)
+ END)
+ )
+ )
+;
+ (
+ (vec : Rename_Vec)
+ |
+ (
+ (nn := Rename_Vec2Nat(vec))
+ )
+ )
+)
+,
+(
+ (Rename_vec_NAT2VEC)
+;
+ (? , Val_Op , Det_Op , (vec <-- Rename_vec_NAT2VEC(nn)))
+;
+ (nn)
+;
+ (vec)
+;
+ (
+ (nn : NAT & nn : dom(Rename_Nat2Vec))
+ |
+ (
+ (vec := Rename_Nat2Vec(nn))
+ )
+ )
+;
+ (
+ (nn : NAT & nn : dom(Rename_Nat2Vec))
+ |
+ (
+ (vec := Rename_Nat2Vec(nn))
+ )
+ )
+)
+,
+(
+ (Rename_idx_VAL)
+;
+ (? , Val_Op , Det_Op , (val <-- Rename_idx_VAL(vec , idx)))
+;
+ (vec , idx)
+;
+ (val)
+;
+ (
+ (vec : Rename_Vec & idx : 0..ub)
+ |
+ (
+ (BEGIN
+ val := vec(idx)
+ END)
+ )
+ )
+;
+ (
+ (vec : Rename_Vec & idx : 0..ub)
+ |
+ (
+ (val := vec(idx))
+ )
+ )
+)
+,
+(
+ (Rename_idx_EQL)
+;
+ (? , Val_Op , Det_Op , (sl <-- Rename_idx_EQL(val , vec , idx)))
+;
+ (val , vec , idx)
+;
+ (sl)
+;
+ (
+ (val : std_logic & vec : Rename_Vec & idx : 0..ub)
+ |
+ (
+ (IF val = vec(idx) THEN
+ sl := '1'
+ ELSE
+ sl := '0'
+ END)
+ )
+ )
+;
+ (
+ (val : std_logic & vec : Rename_Vec & idx : 0..ub)
+ |
+ (
+ (
+ (
+ (val = vec(idx))
+ )
+ ==>
+ (
+ (sl := '1')
+ )
+ )
+ []
+ (
+ (
+ (not(val = vec(idx)))
+ )
+ ==>
+ (
+ (sl := '0')
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_vec_XTR)
+;
+ (? , Val_Op , Det_Op , (vecout <-- Rename_vec_XTR(vecin , lo , hi)))
+;
+ (vecin , lo , hi)
+;
+ (vecout)
+;
+ (
+ (vecin : Rename_Vec & lo : 0..ub & hi : 0..ub & lo <= hi)
+ |
+ (
+ (vecout := %nn.(nn : 0..hi-lo | vecin(lo+nn)))
+ )
+ )
+;
+ (
+ (vecin : Rename_Vec & lo : 0..ub & hi : 0..ub & lo <= hi)
+ |
+ (
+ (vecout := %nn.(nn : 0..hi-lo | vecin(lo+nn)))
+ )
+ )
+)
+,
+(
+ (Rename_idx_MOD)
+;
+ (? , Val_Op , Det_Op , (vecout <-- Rename_idx_MOD(val , vecin , idx)))
+;
+ (val , vecin , idx)
+;
+ (vecout)
+;
+ (
+ (val : std_logic & vecin : Rename_Vec & idx : 0..ub)
+ |
+ (
+ (BEGIN
+ vecout := vecin <+ {idx |-> val}
+ END)
+ )
+ )
+;
+ (
+ (val : std_logic & vecin : Rename_Vec & idx : 0..ub)
+ |
+ (
+ (vecout := vecin <+ {idx |-> val})
+ )
+ )
+)
+)

@@ -1,0 +1,331 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(PASP_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_UiAO1_arr , Rename_UiAO1_nxt)
+;
+(Rename_UiAO1_arr , Rename_UiAO1_nxt)
+;
+(Rename_UiAO1_arr : 1..ub --> BYTE & Rename_UiAO1_nxt : 1..ub)
+;
+(Rename_UiAO1_arr : 1..ub --> BYTE & Rename_UiAO1_nxt : 1..ub)
+;
+(?)
+;
+(BEGIN
+ ANY array WHERE
+ array : 1..ub --> BYTE &
+ ran(array) = {n2b(init_elem)}
+ THEN
+ Rename_UiAO1_arr := array
+ END ||
+ Rename_UiAO1_nxt := 1
+ END)
+;
+(@array.(array : 1..ub --> BYTE & ran(array) = {n2b(init_elem)} ==> Rename_UiAO1_arr := array) || Rename_UiAO1_nxt := 1)
+;
+(Rename_UiAO1_RST,Rename_UiAO1_VAL,Rename_UiAO1_NXT,Rename_UiAO1_STO,Rename_UiAO1_STO_NXT,Rename_UiAO1_FILL)
+;
+(Rename_UiAO1_RST , Rename_UiAO1_VAL , Rename_UiAO1_NXT , Rename_UiAO1_STO , Rename_UiAO1_STO_NXT , Rename_UiAO1_FILL)
+;
+(Rename_UiArrO1(ub , init_elem):(1 <= ub & ub <= 65535 & init_elem <= 255 & init_elem : NAT & ub : NAT):(?))
+;
+(
+(
+ (Rename_UiAO1_RST)
+;
+ (? , Mod_Op , NonDet_Op , Rename_UiAO1_RST)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_UiAO1_arr :: 1..ub --> BYTE ||
+ Rename_UiAO1_nxt := 1
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ @(Rename_UiAO1_arrx).
+ (
+ (
+ (Rename_UiAO1_arrx : 1..ub --> BYTE)
+ )
+ ==>
+ (
+ (Rename_UiAO1_arr := Rename_UiAO1_arrx)
+ )
+ )
+ )
+ ||
+ (
+ (Rename_UiAO1_nxt := 1)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_UiAO1_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_UiAO1_VAL(ii)))
+;
+ (ii)
+;
+ (vv)
+;
+ (
+ (ii : UNSIGNED & u2n(ii) : 1..ub)
+ |
+ (
+ (vv := Rename_UiAO1_arr(u2n(ii)))
+ )
+ )
+;
+ (
+ (ii : UNSIGNED & ii : n2u[1..ub])
+ |
+ (
+ (vv := Rename_UiAO1_arr(u2n(ii)))
+ )
+ )
+)
+,
+(
+ (Rename_UiAO1_NXT)
+;
+ (? , Val_Op , Det_Op , (nn <-- Rename_UiAO1_NXT))
+;
+ (?)
+;
+ (nn)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ nn := n2u(Rename_UiAO1_nxt)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (nn := n2u(Rename_UiAO1_nxt))
+ )
+ )
+)
+,
+(
+ (Rename_UiAO1_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_UiAO1_STO(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (ii : UNSIGNED & vv : BYTE & u2n(ii) : 1..ub)
+ |
+ (
+ (
+ (Rename_UiAO1_arr(u2n(ii)) := vv)
+ )
+ ||
+ (
+ (IF u2n(ii) < ub THEN
+ Rename_UiAO1_nxt := u2n(ii)+1
+ ELSE
+ Rename_UiAO1_nxt := 1
+ END)
+ )
+ )
+ )
+;
+ (
+ (ii : UNSIGNED & vv : BYTE & ii : n2u[1..ub])
+ |
+ (
+ (
+ (Rename_UiAO1_arr := Rename_UiAO1_arr <+ {u2n(ii) |-> vv})
+ )
+ ||
+ (
+ (
+ (
+ (ii < n2u(ub))
+ )
+ ==>
+ (
+ (Rename_UiAO1_nxt := u2n(ii)+1)
+ )
+ )
+ []
+ (
+ (
+ (n2u(ub) <= ii)
+ )
+ ==>
+ (
+ (Rename_UiAO1_nxt := 1)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_UiAO1_STO_NXT)
+;
+ (? , Mod_Op , Det_Op , Rename_UiAO1_STO_NXT(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (BEGIN
+ Rename_UiAO1_arr(Rename_UiAO1_nxt) := vv ||
+ IF Rename_UiAO1_nxt < ub THEN
+ Rename_UiAO1_nxt := Rename_UiAO1_nxt+1
+ ELSE
+ Rename_UiAO1_nxt := 1
+ END
+ END)
+ )
+ )
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (
+ (Rename_UiAO1_arr := Rename_UiAO1_arr <+ {Rename_UiAO1_nxt |-> vv})
+ )
+ ||
+ (
+ (
+ (
+ (Rename_UiAO1_nxt < ub)
+ )
+ ==>
+ (
+ (Rename_UiAO1_nxt := Rename_UiAO1_nxt+1)
+ )
+ )
+ []
+ (
+ (
+ (ub <= Rename_UiAO1_nxt)
+ )
+ ==>
+ (
+ (Rename_UiAO1_nxt := 1)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_UiAO1_FILL)
+;
+ (? , Mod_Op , NonDet_Op , Rename_UiAO1_FILL(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (BEGIN
+ ANY array WHERE
+ array : 1..ub --> BYTE &
+ ran(array) = {vv}
+ THEN
+ Rename_UiAO1_arr := array
+ END ||
+ Rename_UiAO1_nxt := 1
+ END)
+ )
+ )
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (
+ @(array).
+ (
+ (
+ (array : 1..ub --> BYTE & ran(array) = {vv})
+ )
+ ==>
+ (
+ (Rename_UiAO1_arr := array)
+ )
+ )
+ )
+ ||
+ (
+ (Rename_UiAO1_nxt := 1)
+ )
+ )
+ )
+)
+)

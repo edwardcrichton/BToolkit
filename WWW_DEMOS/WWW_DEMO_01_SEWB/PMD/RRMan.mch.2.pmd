@@ -1,0 +1,39 @@
+PROOFMETHOD RRMan.mch.2.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~ /* ;FEQL~ */ )
+
+  REASONING_DEPTH 2
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    bsearch((a:NAT),c,d) &
+    #b.([a:=1](d))
+   =>
+    #(a,b).c
+    
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END
+
+DEFINITIONS
+
+  ?
+
+INCLUSIONS
+
+  "PMD/RRMan.mch.1.pmd"

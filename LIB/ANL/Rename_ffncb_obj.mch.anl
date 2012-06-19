@@ -1,0 +1,753 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(file_dump(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(String_TYPE(?):(?):((?),(?),(?)))
+,
+(Rename_ffnc_ctx(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_UnPack , Rename_CHARperWORD)
+;
+(Rename_UnPack , Rename_CHARperWORD)
+;
+(Rename_UnPack : NAT +-> VALUE --> STRING & Rename_CHARperWORD = 4)
+;
+(Rename_UnPack : NAT +-> VALUE --> STRING & Rename_CHARperWORD = 4)
+;
+(?)
+;
+(?)
+;
+(Rename_fnctok , Rename_fncstruct , Rename_locate)
+;
+(Rename_fnctok , Rename_fncstruct , Rename_locate)
+;
+(Rename_fnctok <: Rename_FNCOBJ & Rename_fncstruct : Rename_fnctok --> (1..rcdsiz +-> VALUE) & Rename_locate : 1..card(Rename_fnctok) >->> Rename_fnctok)
+;
+(Rename_fnctok <: Rename_FNCOBJ & Rename_fncstruct : Rename_fnctok --> (1..rcdsiz +-> VALUE) & Rename_locate : 1..card(Rename_fnctok) >->> Rename_fnctok)
+;
+(?)
+;
+(Rename_fnctok , Rename_fncstruct , Rename_locate := {} , {} , {})
+;
+(Rename_fnctok , Rename_fncstruct , Rename_locate := {} , {} , {})
+;
+(Rename_STS_FNC_OBJ,Rename_FUL_FNC_OBJ,Rename_TST_FLD_FNC_OBJ,Rename_ANY_FNC_OBJ,Rename_CRE_FNC_OBJ,Rename_KIL_FNC_OBJ,Rename_INI_FNC_OBJ,Rename_XST_FNC_OBJ,Rename_DEF_FNC_OBJ,Rename_VAL_FNC_OBJ,Rename_STO_FNC_OBJ,Rename_RMV_FNC_OBJ,Rename_SAV_FNC_OBJ,Rename_RST_FNC_OBJ,Rename_SAVN_FNC_OBJ,Rename_RSTN_FNC_OBJ,Rename_FIRST_FNC_OBJ,Rename_NEXT_FNC_OBJ)
+;
+(Rename_STS_FNC_OBJ , Rename_FUL_FNC_OBJ , Rename_TST_FLD_FNC_OBJ , Rename_ANY_FNC_OBJ , Rename_CRE_FNC_OBJ , Rename_KIL_FNC_OBJ , Rename_INI_FNC_OBJ , Rename_XST_FNC_OBJ , Rename_DEF_FNC_OBJ , Rename_VAL_FNC_OBJ , Rename_STO_FNC_OBJ , Rename_RMV_FNC_OBJ , Rename_SAV_FNC_OBJ , Rename_RST_FNC_OBJ , Rename_SAVN_FNC_OBJ , Rename_RSTN_FNC_OBJ , Rename_FIRST_FNC_OBJ , Rename_NEXT_FNC_OBJ)
+;
+(Rename_ffncb_obj(VALUE , rcdsiz , maxobj):(maxobj > 0 & maxobj : NAT & rcdsiz : NAT & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_STS_FNC_OBJ)
+;
+ (? , Val_Op , Det_Op , (mm , nn <-- Rename_STS_FNC_OBJ))
+;
+ (?)
+;
+ (mm , nn)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ mm , nn := card(Rename_fnctok) , maxobj
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (mm , nn := card(Rename_fnctok) , maxobj)
+ )
+ )
+)
+,
+(
+ (Rename_FUL_FNC_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_FUL_FNC_OBJ))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(card(Rename_fnctok) = maxobj)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(card(Rename_fnctok) = maxobj))
+ )
+ )
+)
+,
+(
+ (Rename_TST_FLD_FNC_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_TST_FLD_FNC_OBJ(ii)))
+;
+ (ii)
+;
+ (bb)
+;
+ (
+ (ii : NAT)
+ |
+ (
+ (bb := bool(ii : 1..rcdsiz))
+ )
+ )
+;
+ (
+ (ii : NAT)
+ |
+ (
+ (bb := bool(ii : 1..rcdsiz))
+ )
+ )
+)
+,
+(
+ (Rename_ANY_FNC_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (vv <-- Rename_ANY_FNC_OBJ))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv :: Rename_FNCOBJ
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(vvx).
+ (
+ (
+ (vvx : Rename_FNCOBJ)
+ )
+ ==>
+ (
+ (vv := vvx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_CRE_FNC_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , (bb , pp <-- Rename_CRE_FNC_OBJ))
+;
+ (?)
+;
+ (bb , pp)
+;
+ (
+ (true)
+ |
+ (
+ (IF card(Rename_fnctok) < maxobj THEN
+ ANY qq , ll WHERE
+ qq : Rename_FNCOBJ-Rename_fnctok &
+ ll : 1..card(Rename_fnctok)+1 >->> Rename_fnctok \/ {qq}
+ THEN
+ Rename_fncstruct(qq) := {} ||
+ Rename_fnctok := Rename_fnctok \/ {qq} ||
+ Rename_locate := ll ||
+ pp := qq ||
+ bb := TRUE
+ END
+ ELSE
+ bb := FALSE ||
+ pp :: Rename_FNCOBJ
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (card(Rename_fnctok) < maxobj)
+ )
+ ==>
+ (
+ @(qq , ll).
+ (
+ (
+ (qq : Rename_FNCOBJ-Rename_fnctok & ll : 1..card(Rename_fnctok)+1 >->> Rename_fnctok \/ {qq})
+ )
+ ==>
+ (
+ (Rename_fncstruct , Rename_fnctok , Rename_locate , pp , bb := Rename_fncstruct <+ {qq |-> {}} , Rename_fnctok \/ {qq} , ll , qq , TRUE)
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ (maxobj <= card(Rename_fnctok))
+ )
+ ==>
+ (
+ (
+ (bb := FALSE)
+ )
+ ||
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_FNCOBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_KIL_FNC_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_KIL_FNC_OBJ(ff))
+;
+ (ff)
+;
+ (?)
+;
+ (
+ (ff : Rename_fnctok)
+ |
+ (
+ (
+ (
+ (Rename_fncstruct := {ff} <<| Rename_fncstruct)
+ )
+ ||
+ (
+ (Rename_fnctok := Rename_fnctok-{ff})
+ )
+ )
+ ||
+ (
+ (Rename_locate :: 1..card(Rename_fnctok)-1 >->> Rename_fnctok-{ff})
+ )
+ )
+ )
+;
+ (
+ (ff : Rename_fnctok)
+ |
+ (
+ (
+ (Rename_fncstruct , Rename_fnctok := {ff} <<| Rename_fncstruct , Rename_fnctok-{ff})
+ )
+ ||
+ (
+ @(Rename_locatex).
+ (
+ (
+ (Rename_locatex : 1..card(Rename_fnctok)-1 >->> Rename_fnctok-{ff})
+ )
+ ==>
+ (
+ (Rename_locate := Rename_locatex)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_INI_FNC_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_INI_FNC_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_fncstruct := {} ||
+ Rename_fnctok := {} ||
+ Rename_locate := {}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_fncstruct , Rename_fnctok , Rename_locate := {} , {} , {})
+ )
+ )
+)
+,
+(
+ (Rename_XST_FNC_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_XST_FNC_OBJ(pp)))
+;
+ (pp)
+;
+ (bb)
+;
+ (
+ (pp : Rename_FNCOBJ)
+ |
+ (
+ (bb := bool(pp : Rename_fnctok))
+ )
+ )
+;
+ (
+ (pp : Rename_FNCOBJ)
+ |
+ (
+ (bb := bool(pp : Rename_fnctok))
+ )
+ )
+)
+,
+(
+ (Rename_DEF_FNC_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_DEF_FNC_OBJ(ff , ii)))
+;
+ (ff , ii)
+;
+ (bb)
+;
+ (
+ (ff : Rename_fnctok & ii : 1..rcdsiz)
+ |
+ (
+ (bb := bool(ii : dom(Rename_fncstruct(ff))))
+ )
+ )
+;
+ (
+ (ff : Rename_fnctok & ii : 1..rcdsiz)
+ |
+ (
+ (bb := bool(ii : dom(Rename_fncstruct(ff))))
+ )
+ )
+)
+,
+(
+ (Rename_VAL_FNC_OBJ)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_FNC_OBJ(ff , ii)))
+;
+ (ff , ii)
+;
+ (vv)
+;
+ (
+ (ff : Rename_fnctok & ii : dom(Rename_fncstruct(ff)))
+ |
+ (
+ (vv := Rename_fncstruct(ff)(ii))
+ )
+ )
+;
+ (
+ (ff : Rename_fnctok & ii : dom(Rename_fncstruct(ff)))
+ |
+ (
+ (vv := Rename_fncstruct(ff)(ii))
+ )
+ )
+)
+,
+(
+ (Rename_STO_FNC_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_FNC_OBJ(ff , ii , vv))
+;
+ (ff , ii , vv)
+;
+ (?)
+;
+ (
+ (ff : Rename_fnctok & ii : 1..rcdsiz & vv : VALUE)
+ |
+ (
+ (Rename_fncstruct(ff)(ii) := vv)
+ )
+ )
+;
+ (
+ (ff : Rename_fnctok & ii : 1..rcdsiz & vv : VALUE)
+ |
+ (
+ (Rename_fncstruct := Rename_fncstruct <+ {ff |-> (Rename_fncstruct(ff) <+ {ii |-> vv})})
+ )
+ )
+)
+,
+(
+ (Rename_RMV_FNC_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_RMV_FNC_OBJ(ff , ii))
+;
+ (ff , ii)
+;
+ (?)
+;
+ (
+ (ff : Rename_fnctok & ii : 1..rcdsiz)
+ |
+ (
+ (Rename_fncstruct(ff) := {ii} <<| Rename_fncstruct(ff))
+ )
+ )
+;
+ (
+ (ff : Rename_fnctok & ii : 1..rcdsiz)
+ |
+ (
+ (Rename_fncstruct := Rename_fncstruct <+ {ff |-> ({ii} <<| Rename_fncstruct(ff))})
+ )
+ )
+)
+,
+(
+ (Rename_SAV_FNC_OBJ)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_FNC_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_FNC_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_FNC_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY sfncn , sfnco , sfncl WHERE
+ sfncn <: Rename_FNCOBJ &
+ sfnco : sfncn --> (1..rcdsiz +-> VALUE) &
+ sfncl : 1..card(sfncn) >->> sfncn
+ THEN
+ Rename_fncstruct := sfnco ||
+ Rename_fnctok := sfncn ||
+ Rename_locate := sfncl
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(sfncn , sfnco , sfncl).
+ (
+ (
+ (sfncn <: Rename_FNCOBJ & sfnco : sfncn --> (1..rcdsiz +-> VALUE) & sfncl : 1..card(sfncn) >->> sfncn)
+ )
+ ==>
+ (
+ (Rename_fncstruct , Rename_fnctok , Rename_locate := sfnco , sfncn , sfncl)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_FNC_OBJ)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_FNC_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_FNC_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_FNC_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY sfncn , sfnco , sfncl WHERE
+ sfncn <: Rename_FNCOBJ &
+ sfnco : sfncn --> (1..rcdsiz +-> VALUE) &
+ sfncl : 1..card(sfncn) >->> sfncn
+ THEN
+ Rename_fncstruct := sfnco ||
+ Rename_fnctok := sfncn ||
+ Rename_locate := sfncl
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(sfncn , sfnco , sfncl).
+ (
+ (
+ (sfncn <: Rename_FNCOBJ & sfnco : sfncn --> (1..rcdsiz +-> VALUE) & sfncl : 1..card(sfncn) >->> sfncn)
+ )
+ ==>
+ (
+ (Rename_fncstruct , Rename_fnctok , Rename_locate := sfnco , sfncn , sfncl)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_FIRST_FNC_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (nn , pp <-- Rename_FIRST_FNC_OBJ))
+;
+ (?)
+;
+ (nn , pp)
+;
+ (
+ (true)
+ |
+ (
+ (IF not(Rename_fnctok = {}) THEN
+ pp := Rename_locate(card(Rename_fnctok)) ||
+ nn := card(Rename_fnctok)
+ ELSE
+ pp :: Rename_FNCOBJ ||
+ nn := 0
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (not(Rename_fnctok = {}))
+ )
+ ==>
+ (
+ (pp , nn := Rename_locate(card(Rename_fnctok)) , card(Rename_fnctok))
+ )
+ )
+ []
+ (
+ (
+ (Rename_fnctok = {})
+ )
+ ==>
+ (
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_FNCOBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ ||
+ (
+ (nn := 0)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_NEXT_FNC_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (nn , qq <-- Rename_NEXT_FNC_OBJ(mm , pp)))
+;
+ (mm , pp)
+;
+ (nn , qq)
+;
+ (
+ (pp : Rename_fnctok & mm : 1..card(Rename_fnctok))
+ |
+ (
+ (
+ (nn := mm-1)
+ )
+ ||
+ (
+ (IF mm /= 1 THEN
+ qq := Rename_locate(mm-1)
+ ELSE
+ qq :: Rename_fnctok
+ END)
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_fnctok & mm : 1..card(Rename_fnctok))
+ |
+ (
+ (
+ (nn := mm-1)
+ )
+ ||
+ (
+ (
+ (
+ (not(mm = 1))
+ )
+ ==>
+ (
+ (qq := Rename_locate(mm-1))
+ )
+ )
+ []
+ (
+ (
+ (mm = 1)
+ )
+ ==>
+ (
+ @(qqx).
+ (
+ (
+ (qqx : Rename_fnctok)
+ )
+ ==>
+ (
+ (qq := qqx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+)

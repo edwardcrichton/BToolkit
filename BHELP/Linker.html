@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Linker</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Linker"></A>
+<H1>
+The Linker (lnk)</H1>
+The Linker is invoked from the <A HREF="BToolkit.html#Environments!Translators">Translators
+Environment</A> and C-compiles a suitable implementation into object code.
+
+<P>A prerequisite for linking is that the implementation has been <A HREF="Translator.html#Translator">translated</A>.
+
+<P>The C-compiler is set through the <A HREF="Options.html#Options!C_Compiler_Flags">Translators/Compilers</A>
+setting of the <A HREF="Options.html#Options">Options</A>.
+
+<P>For particlar developments, it may be necessary to link in specific
+libraries; although not usually necessary, this is done through the <A HREF="Options.html#Options!Non_X_Link">Non-X
+Link Libraries</A> and <A HREF="Options.html#Options!X_Link">X Link Libraries</A>
+setting of the <A HREF="Options.html#Options">Options</A> The latter is
+usually required when generating <A HREF="Interface.html#Interface!Generator!Motif">Motif
+interfaces</A> (although in this case, linking is performed by the generator).
+
+<P>If the <A HREF="AMNotation.html#Abstract_Machines">specification</A>
+`fifi.mch' is <A HREF="AMNotation.html#IMPLEMENTATION">implemented</A>
+by `mimi.imp', then linking of the latter will produce the executable file
+`fifi', written to the <A HREF="BToolkit.html#Development_Environment">CDE/C</A>
+directory.
+
+<P>The linker must be invoked against the implementation which defines
+the <TT>main</TT>, procedure, otherwise an error occurs. An attempt to
+link an implementation having parameters (which will, of course, have been
+defined in its top-level abstraction) will result in an error, as will
+attempting to link an implementation in which machines <A HREF="Structuring.html#SEES_Clause!Using">SEEN</A>
+at a lower level have not all been imported.
+
+<P>See also&nbsp;<the A HREF="Translator.html#Translator">Translator and
+help on <A HREF="Structuring.html#Linker!Name_Clashes">Structuring Developments</A>.
+<BR>&nbsp;
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<BR>&nbsp;
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

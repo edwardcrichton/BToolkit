@@ -1,0 +1,882 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define SwitchTheoryNames \
+  ( \
+    CardinalityX, \
+    NotEqualX, \
+    EqualityX, \
+    Exist0X, \
+    Exist1X, \
+    Exist2X, \
+    InFINX, \
+    InNatX, \
+    InRealX, \
+    InTypeX, \
+    InSetX, \
+    NotInSetX, \
+    InRelationX, \
+    InPartialFunctionX, \
+    InInjectionX, \
+    InBijectionX, \
+    InSurjectionX, \
+    InTotalFunctionX, \
+    InSequenceX, \
+    InclusionX, \
+    LessThanOrEqualX, \
+    LessThanX, \
+    SwitchNotX, \
+    FalseX, \
+    BoolX, \
+    OrX \
+  )
+
+THEORY RenameToBTPSwitchX IS
+
+  CardinalityX == CardinalityX___SwitchBTPX;
+  NotEqualX == NotEqualX___SwitchBTPX;
+  EqualityX == EqualityX___SwitchBTPX;
+  Exist0X == Exist0X___SwitchBTPX;
+  Exist1X == Exist1X___SwitchBTPX;
+  Exist2X == Exist2X___SwitchBTPX;
+  InFINX == InFINX___SwitchBTPX;
+  InNatX == InNatX___SwitchBTPX;
+  InRealX == InRealX___SwitchBTPX;
+  InTypeX == InTypeX___SwitchBTPX;
+  InSetX == InSetX___SwitchBTPX;
+  NotInSetX == NotInSetX___SwitchBTPX;
+  InRelationX == InRelationX___SwitchBTPX;
+  InPartialFunctionX == InPartialFunctionX___SwitchBTPX;
+  InInjectionX == InInjectionX___SwitchBTPX;
+  InBijectionX == InBijectionX___SwitchBTPX;
+  InSurjectionX == InSurjectionX___SwitchBTPX;
+  InTotalFunctionX == InTotalFunctionX___SwitchBTPX;
+  InSequenceX == InSequenceX___SwitchBTPX;
+  InclusionX == InclusionX___SwitchBTPX;
+  LessThanOrEqualX == LessThanOrEqualX___SwitchBTPX;
+  LessThanX == LessThanX___SwitchBTPX;
+  SwitchNotX == SwitchNotX___SwitchBTPX;
+  FalseX == FalseX___SwitchBTPX;
+  BoolX == BoolX___SwitchBTPX;
+  OrX == OrX___SwitchBTPX;
+
+  SwitchNotX == SwitchNotBTPX;
+  SwitchX == SwitchBTPX;
+
+  Bcall(a) == bcall(a)
+
+END
+
+&
+
+
+#define btlTac \
+  (((ARI;CATL;MODR;MAP;WRITE)~;BToolProverFromUserX)~)
+
+#define BToolProverDirect(x)       bcall(btlTac:btp(x))
+
+#define BToolProverFiniDirect(x)   bcall(btlTac:btp_fini(x))
+
+#define btlAutoTac \
+  (((ARI;CATL;MODR;MAP;WRITE)~;BToolAutoProverFromUserX)~)
+
+#define BToolProverAutoProofIni(x) bcall(btlAutoTac:btp_aup_ini(x))
+
+
+#define ModrBToolConstructName(x)  bcall(MODR:bmodr(BToolProverFromUserX.1,x))
+#define ReadBToolConstructName(x)  brule(BToolProverFromUserX.1,x)
+
+#define ModifyPOFileName_btl(x)  bcall((ARI;CATL;MODR):bmodr(BToolProverFromUserX.2,x))
+#define ReadPOFileName_btl(x)    brule(BToolProverFromUserX.2,x)
+
+#define ReadFirstTheory(x)   brule(BToolProverFromUserX.3,x)
+#define ModrFirstTheory(x)   bcall(MODR:bmodr(BToolProverFromUserX.3,x))
+
+#define ReadLastTheory(x)   brule(BToolProverFromUserX.4,x)
+#define ModrLastTheory(x)   bcall(MODR:bmodr(BToolProverFromUserX.4,x))
+
+#define ReadPmdTheoriesStored(x)   brule(BToolProverFromUserX.6,x)
+#define ModrPmdTheoriesStored(x)   bcall(MODR:bmodr(BToolProverFromUserX.6,x))
+
+#define ReadPmdTheoriesPrintedHere(x)   brule(BToolProverFromUserX.7,x)
+#define ModrPmdTheoriesPrintedHere(x)   bcall(MODR:bmodr(BToolProverFromUserX.7,x))
+
+
+#define BToolProverSysTheories \
+  (PropertiesX,ExpandHypX,EnumerateX,NotEqualX,RewriteToFalseOrTrueX,FwdContra0X,FwdEqual1X)
+
+
+
+THEORY TempX IS 
+
+?;?;?;?;?;?;?;?;?;?;?;  /* temporary storage */
+0;                      /* no of lemmas already proved */
+0;                      /* no of lemmas proved during this session */
+0;                      /* no of lemmas remaining unproved */
+?;                      /* whoops ... forgot one */
+?;                      /* whoops ... forgot another */
+?;                      /* 17 not used */
+?;                      /* 18 store incremented .pmd file name (string) */
+?;                      /* 19 store incremented .pmd file name (non-string) */
+0;                      /* 20 no of lemmas not attempted */
+0                       /* 21 total no lemmas */
+
+END                    
+
+&
+
+THEORY LoadZeroLevelFileBToolX IS
+
+#define LoadZeroLevelFileBTool(f) \
+   bcall(((MAP;RULE;WRITE;MODR)~;LoadZeroLevelFileBToolX)~:lzl_0(f))
+
+  lzl_2(x);
+
+  bsearch(t,BToolProverSysTheories,T) &
+  bprintf("\n&\nTHEORY % END",t)
+ =>
+  lzl_2(THEORY t END,m,n);
+
+  bsearch(t,BToolProverSysTheories,T) &
+  bprintf("THEORY % END",t)
+ =>
+  lzl_2(THEORY t END,1,n);
+
+  bprintf(";\n  bproved(%)",a)
+ =>
+  lzl_3(a,m,n);
+
+  bprintf("\n  bproved(%)",a)
+ =>
+  lzl_3(a,1,n);
+
+  bsearch(t,BToolProverSysTheories,T) &
+  bprintf("\n&\nTHEORY % IS",t) &
+  lzl_3 bnmap a &
+  bprintf("\nEND",t,a)
+ =>
+  lzl_2(THEORY t IS a END,m,n);
+
+  bsearch(t,BToolProverSysTheories,T) &
+  bprintf("THEORY % IS",t) &
+  lzl_3 bnmap a &
+  bprintf("\nEND",t,a)
+ =>
+  lzl_2(THEORY t IS a END,1,n);
+
+  lzl_1(x);
+
+  bcrelr(t,a)
+ =>
+  lzl_1(THEORY t IS a END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lzl_0(f);
+
+  bget(f,x) &
+  lzl_1 bsmap x &
+  lzl_2 bnmap x
+ =>
+  lzl_0(f)
+
+END
+
+&
+
+THEORY AppendSrcFileForBToolProverX IS
+
+#define AppendSrcFileForBToolProver(x,y) \
+    bcall(((CATL;MODR;MAP;WRITE)~;AppendSrcFileForBToolProverX)~ : asf(x)(y))
+
+  ?;
+#define ModrBToolLemmasPrevLevel(x) bmodr(AppendSrcFileForBToolProverX.1,x)
+#define ReadBToolLemmasPrevLevel(x) brule(AppendSrcFileForBToolProverX.1,x)
+
+  ?;  /* sc */
+
+
+  bprintf(" END\n") &
+  bclose
+ =>
+  asf5;
+
+  brule(AppendSrcFileForBToolProverX.2,0)
+ =>
+  asf5;
+
+  bprintf(";%",r)
+ =>
+  asf4(r);
+
+  bprintf(";%",r)
+ =>
+  asf4(bproved(r));
+
+  brule(AppendSrcFileForBToolProverX.2,0) &
+  bmodr(AppendSrcFileForBToolProverX.2,1) &
+  Append("TMP/po.src") &
+  bprintf("&\nTHEORY BToolLemmas IS %",r)
+ =>
+  asf4(r);
+
+  brule(AppendSrcFileForBToolProverX.2,0) &
+  bmodr(AppendSrcFileForBToolProverX.2,1) &
+  Append("TMP/po.src") &
+  bprintf("&\nTHEORY BToolLemmas IS %",r)
+ =>
+  asf4(bproved(r));
+
+  asf3(r,m,n);
+
+  ReadBToolLemmasPrevLevel(N) &
+  btest(m>N) &
+  asf4(r)
+ =>
+  asf3(r,m,n);
+
+  asf2(x);
+
+  bmodr(AppendSrcFileForBToolProverX.2,0) &
+  asf3 bnmap T &
+  asf5
+ =>
+  asf2(THEORY BToolLemmas IS T END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  asf1(b.c.r)(x);
+
+  bget(f,x) &
+  asf2 bsmap (x)
+ =>
+  asf1(b.c.r)(f);
+
+  asf_PrevLevel2(l,m,n);
+  
+  ModrBToolLemmasPrevLevel(n)
+ =>
+  asf_PrevLevel2(l,n,n);
+  
+  asf_PrevLevel1(x);
+
+  asf_PrevLevel2 bnmap T
+ =>
+  asf_PrevLevel1(THEORY BToolLemmas IS T END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  asf_PrevLevel(b.c.r)(f);
+
+  bget(f,x) &
+  asf_PrevLevel1 bsmap x
+ =>
+  asf_PrevLevel(b.c.r)(f);
+
+  ModrBToolLemmasPrevLevel(0) &
+  asf_PrevLevel(b.c.r)(bcatl("POB/",b,".",c,".",n,".po")) &
+  asf1(b.c.r)(bcatl("POB/",b,".",c,".",r,".po"))
+ =>
+  asf(b.c.r)(n)
+
+END
+
+&
+
+THEORY PrintFwdTacticForBToolProverX IS
+
+#define PrintFwdTacticForBToolProver(x) \
+  bcall(((FLAT;WRITE)~;PrintFwdTacticForBToolProverX)~:pft(bflat(x)))
+
+
+  Connect("TMP/.BTPftac") &
+  bprintf("%\n",F) &
+  bclose
+ =>
+  pft(F);
+
+  (a~) == a;
+
+  bsearch(PropertiesX,F,G) &
+  pft(G)
+ =>
+  pft(F);
+
+  bsearch(ExpandHypX,F,G) &
+  pft(G)
+ =>
+  pft(F);
+
+  bsearch(FEQL,F,G) &
+  pft(G)
+ =>
+  pft(F);
+
+  pft(bflat(F))
+ =>
+  pft(F~)
+
+END
+
+&
+
+THEORY CreReloadSrcFileForBToolProverX IS
+
+#define CreReloadSrcFileForBToolProver(x) \
+    bcall(((ARI;MODR;WRITE;SHELL;MAP)~;CreReloadSrcFileForBToolProverX)~ : crsf(x))
+
+  bprintf("\n&\nTHEORY % ",t) &
+  crsf2(t)(1) &
+  bprintf("\nEND\n")
+ =>
+  crsf3(t);
+
+  crsf3(FwdUsersTheory);
+
+  crsf3(UsersTheory);
+
+  crsf3(?);
+
+
+  crsf2(t)(n);
+  
+  brule(t.n,r) &
+  bprintf(";\n  bproved(%)",r) &
+  crsf2(t)(n+1)
+ =>
+  crsf2(t)(n);
+  
+  crsf2(t)(1);
+  
+  brule(t.1,r) &
+  bprintf("IS\n  bproved(%)",r) &
+  crsf2(t)(2)
+ =>
+  crsf2(t)(1);
+  
+  ReadUnprocessedTactic(B,F) &
+  Connect("TMP/rld.src") &
+  bprintf("THEORY UsersTheory ") &
+  crsf2(UsersTheory)(1) &
+  bprintf("\nEND\n&\nTHEORY FwdUsersTheory\n") &
+  crsf2(FwdUsersTheory)(1) &
+  bprintf("\nEND\n") &
+  ReadTheoryList(T) &
+  crsf3 bsmap T &
+  bclose &
+  PrintFwdTacticForBToolProver(F) &
+  ModifyJobs((?;(1:BT_BTL_RLD_FINI:0)))   /* 1 indicates success */
+ =>
+  crsf1(b.c.r);
+
+  ProofMethodNotLoaded &
+  ClearJobs &
+  ModifyJobs((?;(0:BT_BTL_RLD_FINI:0)))   /* 1st 0 indicates failure */
+ =>
+  crsf1(b.c.r);
+
+  bshell("rm -f TMP/rld.src") &
+  SetBToolProver &
+  ModrBToolConstructName(b.c) &
+  ModifyPMDFileName(bcatl("PMD/",b,".",c,".",r,".pmd")) &
+  ModifyBtlPMDFileName((bcatl("PMD/",b,".",c,".",r,".btl.pmd"))) &
+  LoadProofMethod &
+  crsf1(b.c.r)
+ =>
+  crsf(b.c.r)
+
+END
+
+&
+
+THEORY CreSwitchBTPFileX IS
+
+#define CreSwitchBTPFile bcall(((ARI;WRITE;MAP)~;CreSwitchBTPFileX):csw)
+
+
+  bcall((RenameToBTPSwitchX~;WRITE):bprintf(a))
+ =>
+  _bprintf(a);
+
+
+
+  _bprintf("(%)",(r))
+ =>
+  csw3(T)(r);
+
+
+  /***
+  goal change rules
+  ***/
+
+  _bprintf("((%)&bcall((%):(%)|(%~;SwitchBTPX):(%))=>(%))",(h),(t),(G),(T),(g),(g))
+ =>
+  csw3(T)(h & bcall(t:G) => g);
+
+  _bprintf("(bcall((%):(%)|(%~;SwitchBTPX):(%))=>(%))",(t),(G),(T),(g),(g))
+ =>
+  csw3(T)(bcall(t:G) => g);
+
+
+  /***
+  no goal change rules (ie. tactic change)
+  ***/
+
+  _bprintf("(%)",((h) & bcall((t):(g)) => (g)))
+ =>
+  csw3(T)(h & bcall(t:g) => g);
+
+  _bprintf("(%)",(bcall((t):(g)) => (g)))
+ =>
+  csw3(T)(bcall(t:g) => g);
+
+
+
+
+
+
+  csw9(n)(t);
+
+  brule(t.n,x) &
+  bprintf(";\n(%)",x) &
+  csw9(n+1)(t)
+ =>
+  csw9(n)(t);
+
+  brule(t.1,x) &
+  bprintf(" IS\n(%)",x) &
+  csw9(2)(t)
+ =>
+  csw9(1)(t);
+
+
+
+  bprintf("\nEND")
+ =>
+  csw2(t)(n);
+
+  brule(t.n,r) &
+  bprintf(";\n") &
+  csw3(t)(r) &
+  csw2(t)(n+1)
+ =>
+  csw2(t)(n);
+
+  brule(t.1,r) &
+  bprintf(" IS\n") &
+  csw3(t)(r) &
+  csw2(t)(2)
+ =>
+  csw2(t)(1);
+
+  bprintf("\n&\nTHEORY %___SwitchBTPX",t) &
+  csw2(t)(1)
+ =>
+  csw1(t);
+
+  bprintf("THEORY %___SwitchBTPX",CardinalityX) &
+  csw2(CardinalityX)(1)
+ =>
+  csw1(CardinalityX);
+
+
+/***
+PrintTHEORY((SwitchBTPX))&
+***/
+  Connect("TMP/swbtp.src") &
+  csw1 bsmap SwitchTheoryNames &
+  bprintf("\n&\nTHEORY SwitchNotBTPX") &
+  csw9(1)(SwitchNotBTPX) &
+  bprintf("\nEND\n&\nTHEORY SwitchBTPX") &
+  csw9(1)(SwitchBTPX) &
+  bprintf("\nEND\n") &
+  bclose
+/***
+&bcall(SHELL:bshell("cat TMP/swbtp.src")) &
+Bget("TMP/swbtp.src")
+***/
+ =>
+  csw
+
+END
+
+&
+
+THEORY CreSrcFileForBToolProverX IS
+
+#define CreSrcFileForBToolProver(x) \
+    bcall(((CATL;MODR;MAP;WRITE;RULE;SHELL)~;CreSrcFileForBToolProverX)~ : csf(x))
+
+  1;
+
+  ?; /* (length BToolUsersTheory , length FwdBToolUsersTheory) */
+
+  ?;
+#define BToolLemmasPresent        brule(CreSrcFileForBToolProverX.3,1)
+#define ModrBToolLemmasPresent    bmodr(CreSrcFileForBToolProverX.3,1)
+#define ModrBToolLemmasNotPresent bmodr(CreSrcFileForBToolProverX.3,0)
+
+  ?;
+#define Read_BT_inc_result(x) \
+  brule(CreSrcFileForBToolProverX.4,x)
+#define BT_ari_inc(x) \
+  bcall((ARI;MODR):bmodr(CreSrcFileForBToolProverX.4,(x+1)))
+
+
+  bshell(a);
+
+
+  modr_first_thy(BToolLemmas) &
+  modr_last_thy(BToolLemmas) &
+  bprintf("\n&\nTHEORY BToolLemmas END")
+ =>
+  csf2_lem_chk;
+
+  BToolLemmasPresent
+ =>
+  csf2_lem_chk;
+
+  csf2_lem(x);
+
+  ModrBToolLemmasPresent
+ =>
+  csf2_lem(THEORY BToolLemmas IS a END);
+
+
+
+  bclean(t);
+
+  bmodr(CreSrcFileForBToolProverX.1,1)
+ =>
+  pr_amp;
+
+  brule(CreSrcFileForBToolProverX.1,1) &
+  bprintf("\n&\n")
+ =>
+  pr_amp;
+
+
+
+
+  
+  bprintf("THEORY % END",t)
+ =>
+  print_pmd6(t);
+
+  brule(t.1,r) &
+  bprintf("THEORY % IS %",t,r) &
+  print_pmd_rul(t)(2) &
+  bprintf(" END")
+ =>
+  print_pmd6(t);  /* BToolUsersTheory/FwdBToolUsersTheory in btl.src */
+
+
+
+  print_pmd_rul(t)(n);
+
+
+  Read_BT_inc_result(n) &
+  print_pmd_rul(t)(n)
+ =>
+  print_pmd_rul_ari(t)(m);
+
+  brule(t.n,r) &
+  bprintf(";%",r) &
+  BT_ari_inc(n) &
+  print_pmd_rul_ari(t)(n)
+ =>
+  print_pmd_rul(t)(n);
+
+  print_pmd1(t);
+
+  brule(t.1,r) &
+  ReadPmdTheoriesPrintedHere(T) &
+  ModrPmdTheoriesPrintedHere((T,t)) &
+  pr_amp &
+  bprintf("THEORY % IS %",t,r) &
+  print_pmd_rul(t)(2) &
+  bprintf(" END")
+ =>
+  print_pmd1(t);
+
+  pr_amp &
+  bprintf("THEORY UsersTheory END") &      /* in case thy is empty */
+  pr_amp &
+  bprintf("THEORY FwdUsersTheory END") &   /* in case thy is empty */
+  ReadPmdTheoriesStored(T) &
+  print_pmd1 bsmap T &
+  pr_amp &
+  bprintf("THEORY BToolUsersTheory END") &   /* for position in po.src */
+  pr_amp &
+  bprintf("THEORY FwdBToolUsersTheory END")  /* actually printed in btl.src */
+ =>
+  print_pmd;
+
+
+  ReadPmdTheoriesStored(T) &
+  ModrPmdTheoriesStored((T,t))
+ =>
+  print_pmd_0(t);
+
+  ReadPmdTheoriesStored(T) &
+  bsearch(t,T,S) 
+ =>
+  print_pmd_0(t);
+
+  print_pmd_0(FwdBToolUsersTheory);  /* done above */
+
+  print_pmd_0(BToolUsersTheory);     /* done above */
+
+  print_pmd_0(?);
+
+  ReadTheoryList(T) &  /* (LoadproofMethod) to remove duplicates */
+  print_pmd_0 bsmap T &
+  print_pmd
+ =>
+  print_pmd_00;
+
+
+
+  ModrLastTheory(t)
+ =>
+  modr_last_thy(t);
+
+  modr_first_thy(t);
+
+  ReadFirstTheory(?) &
+  ModrFirstTheory(t) &
+  print_pmd_00
+ =>
+  modr_first_thy(t);
+
+  brule(t.m,r) &
+  bprintf(";\n  %",r)
+ =>
+  csf3(t,x,m,n);
+
+  brule(t.1,r) &
+  bprintf("\n  %",r)
+ =>
+  csf3(t,x,1,n);
+
+  brule(t.m,r) &
+  bprintf(";\n  bproved(%)",r)
+ =>
+  csf3(t,0,m,n);
+
+  bprintf(";\n  %",L)
+ =>
+  csf3(BToolLemmas,L,m,n);
+
+  brule(t.1,r) &
+  bprintf("\n  bproved(%)",r)
+ =>
+  csf3(t,0,1,n);
+
+  bprintf("\n  %",L)
+ =>
+  csf3(BToolLemmas,L,1,n);
+
+  csf2(THEORY t END);
+
+  modr_first_thy(t) &
+  modr_last_thy(t) &
+  bprintf("\n&\nTHEORY % IS",t) &
+  csf3(t) bnmap a &
+  bprintf("\nEND")
+ =>
+  csf2(THEORY t IS a END);
+
+  csf2(THEORY FwdBToolUsersTheory END);
+
+  csf2(THEORY BToolUsersTheory END);
+
+  csf2(THEORY FwdBToolUsersTheory IS X END);
+
+  csf2(THEORY BToolUsersTheory IS X END);
+
+  bsearch(t,BToolProverSysTheories,T)
+ =>
+  csf2(THEORY t END);
+
+  bsearch(t,BToolProverSysTheories,T)
+ =>
+  csf2(THEORY t IS a END);
+
+  ReadPOFileName_btl(f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  csf1_1(b.c.r)(g);
+
+  ReadUnprocessedTactic(B,F) &
+  ReadPOFileName_btl(f) &                   /* f is POB/b.c.r.po */
+  bcrer(BToolUsersTheory,_________.__) &    /* separates previous level */
+  bcrer(FwdBToolUsersTheory,_________.__) & /* btl pmd from current     */ 
+  Connect("TMP/po.src") &
+  LoadZeroLevelFileBTool(g) &               /* g is b.c.0.po */
+  bget(f,R) &
+  csf2 bsmap R &
+  ModrBToolLemmasNotPresent &
+  csf2_lem bsmap R &
+  csf2_lem_chk &
+  bprintf("\n") &
+  bmodr(InterProverFromUserX.3,bcatl("PMD/",b,".",c,".",r,".pmd")) &
+  bclose &
+  LoadBtlProofMethod &
+  Connect("TMP/btl.src") &
+  print_pmd6(BToolUsersTheory) &
+  pr_amp &
+  print_pmd6(FwdBToolUsersTheory) &
+  bclose &
+  PrintFwdTacticForBToolProver(F)
+ =>
+  csf1_1(b.c.r)(g);
+
+  ProofMethodNotLoaded &
+  ClearJobs &
+  FifoWrite_NoStore((BT_DSP_FILE_M,".BBcom",0)) &
+  Writef(("  Can't proceed with BToolProver\n")) &
+  LoadToolkit(1)
+ =>
+  csf1_1(b.c.r)(g);
+
+  LoadProofMethod &
+  csf1_1(b.c.r)(g)
+ =>
+  csf1(b.c.r)(g);
+
+  csf1(b.c.r)(bcatl("POB/",b,".",c,".",0,".po")) &
+  CreSwitchBTPFile
+ =>
+  csf(b.c.r)
+
+END
+
+&
+
+THEORY InterProverFromUserX IS ?;?;? END &
+
+THEORY BToolProverFromUserX IS
+
+  ?;       /*  1. name of construct - a.b */
+
+  ?;       /*  2. filename "a.b.n po" */
+
+  ?;       /*  3. first theory */
+/* defined above
+#define ReadFirstTheory(x)   brule(BToolProverFromUserX.3,x)
+#define ModrFirstTheory(x)   bmodr(BToolProverFromUserX.3,x)
+*/
+
+  ?;       /*  4. last theory */
+/* defined above
+#define ReadLastTheory(x)   brule(BToolProverFromUserX.4,x)
+#define ModrLastTheory(x)   bmodr(BToolProverFromUserX.4,x)
+*/
+
+  ?;       /*  5. BToolProver flag */
+
+  ?;       /*  6. pmd theories printed */
+/* defined above
+#define ReadPmdTheoriesStored(x)   brule(BToolProverFromUserX.6,x)
+#define ModrPmdTheoriesStored(x)   bmodr(BToolProverFromUserX.6,x)
+*/
+
+  ?;       /*  7. pmd theories printed */
+/* defined above
+#define ReadPmdTheoriesPrintedHere(x)   brule(BToolProverFromUserX.7,x)
+#define ModrPmdTheoriesPrintedHere(x)   bmodr(BToolProverFromUserX.7,x)
+*/
+
+
+
+  bmodr(TempX.14,1) &
+  bmodr(TempX.19,(b.c.r)) &
+  bmodr(TempX.18,bcatl("PMD/",b,".",c,".",r,".pmd")) &
+  CreatePmdTemplate(apr)
+ =>
+  btp_fini(b.c.r);
+
+
+  
+
+  ReadFirstTheory(s) &
+  ReadLastTheory(t) &
+  GetJobs(X) &
+  AddJobs(X,(s:BT_BTL_RUN:t))  /* eg. Initialisation : BT_BTL_RUN : BToolLemmas */
+ =>
+  btp1;
+
+
+  SetBToolProver &
+  ModrFirstTheory(?) &
+  ModrLastTheory(?) &
+  ModrBToolConstructName(b.c) &
+  ModifyPOFileName_btl((bcatl("POB/",b,".",c,".",r,".po"))) &
+  ModifyPMDFileName(bcatl("PMD/",b,".",c,".",r,".pmd")) &
+  ModifyBtlPMDFileName((bcatl("PMD/",b,".",c,".",r,".btl.pmd"))) &
+  CreSrcFileForBToolProver(b.c.r) &
+  btp1
+ =>
+  btp(b.c.r.po)
+
+END
+
+&
+
+THEORY BToolAutoProverFromUserX IS
+
+
+  ReadFirstTheory(s) &
+  ReadLastTheory(t) &
+  GetJobs(X) &
+  AddJobs(X,((s.t):BT_BTL_AUP:(b.3)))
+ =>
+  btp_aup_ini1(b.imp);
+
+  ReadFirstTheory(s) &
+  ReadLastTheory(t) &
+  GetJobs(X) &
+  AddJobs(X,((s.t):BT_BTL_AUP:(b.2)))
+ =>
+  btp_aup_ini1(b.ref);
+
+  ReadFirstTheory(s) &
+  ReadLastTheory(t) &
+  GetJobs(X) &
+  AddJobs(X,((s.t):BT_BTL_AUP:(b.1)))
+ =>
+  btp_aup_ini1(b.mch);
+
+  SetBToolProver &
+  ModrFirstTheory(?) &
+  ModrLastTheory(?) &
+  ModrBToolConstructName(b.c) &
+  ModifyPOFileName_btl(bcatl("POB/",b,".",c,".",r,".po")) &
+  ModifyPMDFileName(bcatl("PMD/",b,".",c,".",r,".pmd")) &
+  ModifyBtlPMDFileName((bcatl("PMD/",b,".",c,".",r,".btl.pmd"))) &
+  CreSrcFileForBToolProver(b.c.r) &
+  btp_aup_ini1(b.c)
+ =>
+  btp_aup_ini(b.c.r.po)
+
+END

@@ -1,0 +1,153 @@
+POW         unr      nrml      11
+POW1        unr      nrml      11
+FIN         unr      nrml      11
+FIN1        unr      nrml      11
+FINI        unr      nrml      11
+FINI1       unr      nrml      11
+UNION       unr      nrml      11
+INTER       unr      nrml      11
+SIGMA       unr      nrml      11
+PI          unr      nrml      11
+union       unr      nrml      11
+inter       unr      nrml      11
+prj1        unr      nrml      11
+prj2        unr      nrml      11
+card        unr      nrml      11
+finite      unr      nrml      11
+infinite    unr      nrml      11
+choice      unr      nrml      11
+<:          bin      blba      -2
+<<:         bin      blba      -2
+/<:         bin      blba      -2
+/<<:        bin      blba      -2
+/:          bin      blba       0
+
+seq         unr      nrml      11
+seq1        unr      nrml      11
+conc        unr      nrml      11
+front       unr      nrml      11
+tail        unr      nrml      11
+first       unr      nrml      11
+last        unr      nrml      11
+size        unr      nrml      11
+iseq        unr      nrml      11
+perm        unr      nrml      11
+rev         unr      nrml      11
+
+SEQ         atm      nrml      0
+SET         atm      nrml      0
+STR         atm      nrml      0
+
+succ        atm      nrml      0
+pred        atm      nrml      0
+plus        atm      nrml      0
+minus       atm      nrml      0
+multiply    atm      nrml      0
+divide      atm      nrml      0
+mod         bin      blba      3
+div         bin      blba      3
+..          bin      nrml      1
+
+
+
+bool        unr      nrml      11
+or          bin      blba      -5
+&&          bin      bbat      -5
+
+
+closure     unr      nrml      11
+iterate     unr      nrml      11
+circ        bin      blba      0
+id          unr      nrml      11
+dom         unr      nrml      11
+cod         unr      nrml      11
+ran         unr      nrml      11
+
+
+
+-->         bin      blba      -1
++->         bin      blba      -1
+>->         bin      blba      -1
+>+>         bin      blba      -1
+-->>        bin      blba      -1
++->>        bin      blba      -1
+>->>        bin      blba      -1
+<->         bin      blba      -1
+
+
+
+END         clo      keyt
+
+BEGIN       opn      keyl      11  END
+IF          opn      keyw      11  END
+PRE         opn      keyl      11  END
+WHILE       opn      keyw      11  END
+CASE        opn      keyw      11  END
+EITHER      opn      keyw      11  END
+SELECT      opn      keyw      11  END
+CHOICE      opn      keyl      11  END
+VAR         opn      keyw      11  END
+ANY         opn      keyw      11  END
+LET         opn      keyw      11  END
+GLOBAL      opn      keyl      11  END
+MEMORY_MAP  opn      keyl      11  END
+BASE        opn      keyl      11  END
+USETAC      opn      keyl      11  END
+ON          bin      keyl      -9
+REASONING_DEPTH       bin      keyl      -9
+WHERE       bin      keyl      -9
+BE          bin      keyl      -9
+IN          bin      keyl      -9
+THEN        bin      keyl      -9
+ELSE        bin      keyl      -9
+WHEN        bin      keyw      -9
+DO          bin      keyl      -9
+OF          bin      keyl      -9
+TO          bin      keyw      -9
+ELSIF       bin      keyw      -9
+OR          bin      keyl      -9
+WITH        bin      keyw      -9
+USES        bin      keyl      -9
+REFINES     bin      keyl      -9
+EXTENDS     bin      keyl      -9
+SEES        bin      keyl      -9
+VARIABLES   bin      keyl      -9
+VARIANT     bin      keyl      -9
+INVARIANT   bin      keyl      -9
+PROMOTES    bin      keyl      -9
+INITIALISATION bin   keyl      -9
+OPERATIONS  bin      keyl      -9
+ASSERTIONS  bin      keyl      -9
+INCLUDES    bin      keyl      -9
+IMPORTS     bin      keyl      -9
+SETS        bin      keyl      -9
+CONSTANTS   bin      keyl      -9
+RULES       bin      keyl      -9
+PROPERTIES  bin      keyl      -9
+OPTIONAL    bin      keyl      -9
+PARTIAL     bin      keyl      -9
+MANDATORY   bin      keyl      -9
+TOTAL       bin      keyl      -9
+FIELDS      bin      keyl      -9
+ABOUT       bin      keyl      -9
+ARE         bin      keyl      -9
+SUPPORTS    bin      keyl      -9
+ACRONYM     bin      keyl      -9
+FIELDS      bin      keyl      -9
+TRACEPOINT  bin      keyl      -9
+CONTENTS    bin      keyl      -9
+DEFINITIONS bin      keyl      -9
+APIINVARIANT   bin      keyl      -9
+APIDEFINITIONS bin      keyl      -9
+INCLUSIONS  bin      keyl      -9
+ANIMATE          opn      keyl      11  END
+PARAMETER_VALUES bin      keyl      -9
+SETS_VALUES      bin      keyl      -9
+CONSTANTS_VALUES bin      keyl      -9
+ENUM_SETS_VALUES bin      keyl      -9
+METHODS     	 bin      keyl      -5
+LOCAL_METHODS	 bin      keyl      -5
+VIRTUAL_METHODS	 bin      keyl      -5
+DERIVED          bin      keyl      -9
+ORELSE           bin      keyl      -9
+ALSO             bin      keyl      -9

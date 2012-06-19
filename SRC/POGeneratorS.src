@@ -1,0 +1,482 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY ProcessSubsX IS
+
+  CheckCompactionSilently &
+/***
+HERE(("ProcessAndCreateLemmas":a))&
+***/
+  ProcessAndCreateLemmas(a)
+ =>
+  a
+
+END
+
+&
+
+THEORY SpecCalculusX IS
+
+  brule(InvariantX.k, I(m$x))
+ =>
+  inv(m$x) == I;
+
+  (#x.not(P))
+ =>
+  not(!x.P);
+      
+  (#x.(P & Q))
+ =>
+  not(!x.(P=>not(Q)));
+
+  c
+ =>
+  bool(c) = TRUE;
+
+  not(!x.(M => not(P)))
+ =>
+  not(!x.(P => not(M)));
+
+  not(!x.(P & M => not(Q)))
+ =>
+  not(!x.(P => not(Q & M)));
+
+  bvrb(x) &
+  bsearch((x = E), (Q & R), S) &
+  x\E &
+  [x:=E](P & S)
+ =>
+   not(!x.(P => not(Q & R)));
+
+  bvrb(x) &
+  bsearch((E = x), (Q & R), S) &
+  x\E &
+  [x:=E](P & S)
+ =>
+  not(!x.(P => not(Q & R)));
+
+  bvrb(x) &
+  x\E &
+  [x:=E]P
+ =>
+  not(!x.(P => not(x = E)));
+
+  bvrb(x) &
+  x\E &
+  [x:=E]P
+ =>
+  not(!x.(P => not(E = x)));
+
+  bvrb(x) &
+  x\E &
+  [x:=E](P & M)
+ =>
+  not(!x.(P & M => not(x = E)));
+
+  bvrb(x) &
+  x\E &
+  [x:=E](P & M)
+ =>
+  not(!x.(P & M => not(E = x)));
+
+  not(!(l,x).(M => not(P)))
+ =>
+  not(!(l,x).(P => not(M)));
+
+  not(!(l,x).(P & M => not(Q)))
+ =>
+  not(!(l,x).(P => not(Q & M)));
+
+  bvrb(x) &
+  bsearch((x = E), (Q & R), S) &
+  x\E &
+  not(!l.[x:=E](P => not(S)))
+ =>
+  not(!(l,x).(P => not(Q & R)));
+
+  bvrb(x) &
+  bsearch((E = x), (Q & R), S) &
+  x\E &
+  not(!l.[x:=E](P => not(S)))
+ =>
+  not(!(l,x).(P => not(Q & R)));
+
+  bvrb(x) &
+  x\E &
+  not(!l.[x:=E]P)
+ =>
+  not(!(l,x).(P => not(x = E)));
+
+  bvrb(x) &
+  x\E &
+  not(!l.[x:=E]P)
+ =>
+  not(!(l,x).(P => not(E = x)));
+
+  bvrb(x) &
+  x\E &
+  not(!l.[x:=E](P => not(M)))
+ =>
+  not(!(l,x).(P & M => not(x = E)));
+
+  bvrb(x) &
+  x\E &
+  not(!l.[x:=E](P => not(M)))
+ =>
+  not(!(l,x).(P & M => not(E = x)));
+
+  y\M &
+  not(!x.!y.(K & M => L))
+ =>
+  not(!x.(M => !y.(K => L)));
+
+  y\M &
+  not(!x.(P => !y.(K & M => L)))
+ =>
+  not(!x.(P & M => !y.(K => L)));
+/*
+  not(!(x,y).(K => L))
+ =>
+  not(!x.!y.(K => L));
+*/
+  not(!(x,z).!y.(K => L))
+ =>
+  not(!x.!(y,z).(K => L));
+
+  not(!(x,y).P)
+ =>
+  not(!x.!y.P);
+
+  P
+ =>
+  not(not(P));
+
+  P &
+  not(Q)
+ =>
+  not(P => Q);
+
+  (not(B) => not(A)) & 
+  (C => not(A)) 
+ => 
+  not(A & (B => C));
+
+  (P => not(Q)) & 
+  (not(P) => not(R)) 
+ => 
+  not((P => Q) & (not(P) => R));
+
+/*
+  (P => (Q => R)) == ((P & Q) => R);
+
+ (@a.(b==>(c==>d))) == (@a.(bflat(b&c)==>d));
+
+   a\b
+ =>
+  (@a.(@b.x)) == (@(bflat(a,b)).x);
+
+  c\b
+ =>
+  (@a.(b==>(@c.(d==>e)))) == (@(bflat(a,c)).(bflat(b&d)==>e));
+*/
+
+
+
+
+/*********** equality rules ***********/
+
+  [skip]R == R;
+
+  [P | I]R == (P & [I]R);
+
+  [P==>S]R == (P => [S]R);
+
+  [S [] T]R == ([S]R & [T]R);
+
+  [@x.I]R == !x.[I]R;
+
+  bvrb(a) &
+  bvrb(c)
+ =>
+  (a:=b || c:=d) == (bflat(a,c):=bflat(b,d));
+
+  bvrb(a) &
+  bvrb(c)  
+ =>
+  [e || a:=b || c:=d]R == [e || bflat(a,c):=bflat(b,d)]R;
+
+  bvrb(a) &
+  bvrb(c)  
+ =>
+  [a:=b || c:=d || e]R == [bflat(a,c):=bflat(b,d) || e]R;
+
+  (a || skip) == a;
+
+  (skip || a) == a;
+
+  (a || skip || b) == (a || b);
+
+  ((a ==> b) || c) == (a ==> (b || c));
+
+  (c || (a ==> b)) == (a ==> (c || b));
+
+  (c || (a ==> b) || d) == (a ==> (c || b || d));
+
+  ((a [] b) || c) == ((a || c) [] (b || c));
+
+  (c || (a [] b)) == ((c || a) [] (c || b));
+
+  (c || (a [] b) || d) == ((c || a || d) [] (c || b || d));
+
+/*
+
+Moved below
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   (? || (@?.?) || d) == ((@a.(c || b)) || d);
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   (? || (@?.?)) == (@a.(c||b));
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   ((@?.?) || ?) == (@a.(b||c));
+
+*/
+
+   bvrb(a) &
+   ConstructAlphaConversion(a,b,c)
+ =>
+   ((@a.b) || c) == ((@?.?) || ?);
+
+   bvrb(a) &
+   ConstructAlphaConversion(a,b,c)
+ =>
+   (c || (@a.b)) == (? || (@?.?));
+
+   bvrb(a) &
+   ConstructAlphaConversion(a,b,c)
+  =>
+   (c || (@a.b) || d) == (? || (@?.?) || d);
+
+
+
+   a\c => (@a.b || c) == (@a.(b || c));
+
+   a\c => (c || @a.b) == (@a.(c || b));
+
+   a\c => (c || (@a.b) || d) == ((@a.(c || b)) || d);
+
+  (@a.(b | c)) == ((!a.b) | (@a.c));
+
+  ((b | c) || a) == (b | (c || a));        /* changed */
+
+  (a || (b | c)) == (b | (a || c));        /* changed */
+
+  (c || (a|b) || d) == (a | (c || b || d));  /* added */
+
+  (a || (b || c)) == (a || b || c);
+
+
+
+
+/********** implication rules **********/
+
+  [S][T]R
+ =>
+  [S;T]R;
+
+  R
+ =>
+  [skip]R;
+
+  P &
+  [I]R
+ =>
+  [P | I]R;
+
+  P => [S]R
+ =>
+  [P==>S]R;
+
+  [S]R &
+  [T]R
+ =>
+  [S [] T]R;
+
+  !x.[I]R
+ =>
+  [@x.I]R;
+
+  bvrb(a) &
+  bvrb(c) &  
+  [bflat(a,c):=bflat(b,d)]R
+ =>
+  [a:=b || c:=d]R;
+
+  bvrb(a) &
+  bvrb(c) &  
+  [e || bflat(a,c):=bflat(b,d)]R
+ =>
+  [e || a:=b || c:=d]R;
+
+  bvrb(a) &
+  bvrb(c) &  
+  [bflat(a,c):=bflat(b,d) || e]R
+ =>
+  [a:=b || c:=d || e]R;
+
+  [a]R
+ =>
+  [a || skip]R;
+
+  [a]R
+ =>
+  [skip || a]R;
+
+  [a || b]R
+ =>
+  [a || skip || b]R;
+
+  a => [b || c]R
+ =>
+  [(a ==> b) || c]R;
+
+  a => [c || b]R
+ =>
+  [c || (a ==> b)]R;
+
+  a => [c || b || d]R
+ =>
+  [c || (a ==> b) || d]R;
+
+  [a || c]R &
+  [b || c]R
+ => 
+  [(a [] b) || c]R;
+
+  [c || a]R &
+  [c || b]R
+ =>
+  [c || (a [] b)]R;
+
+  [c || a || d]R &
+  [c || b || d]R
+ =>
+  [c || (a [] b) || d]R;
+
+   bvrb(a) &
+   ConstructAlphaConversion(a,b,c) &
+   ((@a.b) || c)[(@?.?) || ?]R
+ =>
+   [(@a.b) || c]R;
+
+   bvrb(a) &
+   ConstructAlphaConversion(a,b,c) &
+   (c || (@a.b))[? || (@?.?)]R
+ =>
+   [c || (@a.b)]R;
+
+   bvrb(a) &
+   ConstructAlphaConversion(a,b,c) &
+   (c || (@a.b) || d)[? || (@?.?) || d]R
+  =>
+   [c || (@a.b) || d]R;
+
+   a\c &
+   !a.[b||c]R
+  =>
+   [(@a.b) || c]R;
+
+   a\c &
+   !a.[c||b]R 
+  =>
+   [c || (@a.b)]R;
+
+   a\c &
+   [(@a.(c||b)) || d]R
+  =>
+   [c || (@a.b) || d]R;
+
+   a\d &
+   [c || (@a.(b||d))]R
+  =>
+   [c || (@a.b) || d]R;
+
+  [(!a.b) | (@a.c)]R
+ =>
+  [@a.(b | c)]R;
+
+  [b | (c || a)]R
+ =>
+  [(b | c) || a]R;
+
+  [b | (a || c)]R
+ =>
+  [a || (b | c)]R;
+
+  [b | (a || c || d)]R
+ =>
+  [a || (b|c) || d]R;
+
+  [a || b || c]R
+ =>
+  [a || (b || c)]R;
+
+
+
+
+/* moved form above */
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   (? || (@?.?) || d) == ((@a.(c || b)) || d);
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   (? || (@?.?)) == (@a.(c||b));
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   ((@?.?) || ?) == (@a.(b||c));
+
+
+
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   [(@a.(c || b)) || d]R
+ =>
+   (x)[? || (@?.?) || d]R;
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   !a.[c||b]R
+ =>
+   (x)[? || (@?.?)]R;
+
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   !a.[b||c]R
+ =>
+   (x)[(@?.?) || ?]R;
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END

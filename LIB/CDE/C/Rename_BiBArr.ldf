@@ -1,0 +1,12 @@
+/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             27/01/01
+created from Rename_BiBArr_File.ldf
+***/
+
+(lb,ub)
+|
+(Byt_TYPE,Bool_TYPE)

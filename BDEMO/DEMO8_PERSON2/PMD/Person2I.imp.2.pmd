@@ -1,0 +1,35 @@
+PROOFMETHOD
+
+  Person2_1.imp.2
+
+IS
+
+  USETAC
+
+    (UsersTheory~),
+    (FwdUsersTheory~;FEQL~)
+
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+/*"
+Since the {\em Restore\_Person\/} operation can be performed only after the
+{\em Save\_Person\/} operation, the data saved will satisfy the invariant;
+in particular, we may assume the ono-to-one correspondence between tokens
+and names - i.e. that {\em namex\/} is a bijection between {\em personbasex\/}
+and {\em names\/}:
+"*/
+
+   
+   binhyp(pre(Restore_Person)) &
+   namex : personbasex --> STRING
+  =>
+   namex : personbasex >->> names
+
+  END
+
+END

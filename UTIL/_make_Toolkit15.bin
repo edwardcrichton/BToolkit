@@ -1,0 +1,137 @@
+#! /bin/csh -f
+if ( ! -x ../BKIT/BTool ) then
+  echo ""
+  cd ..
+  echo "  `pwd`/BKIT/BTool not exist - run CRE_BTool"
+  echo ""
+  exit ( 1 )
+endif
+
+###################################
+#  set BKIT if not set
+###################################
+
+
+set curdir = `pwd`
+cd ..
+setenv BKIT `pwd`/BKIT
+if ( ! -d $BKIT ) then
+  mkdir $BKIT
+endif
+if ( ! -d $BKIT/BLIB ) then
+  mkdir $BKIT/BLIB
+endif
+cd $curdir
+
+cd ../UTIL
+source ./set_compile_variables 1
+
+cd ../SRC
+
+rm -f Standardize.src SetOfRules .Berr
+
+
+  cp Standardize_NonPASP.src Standardize.src
+  cp SetOfRules_core SetOfRules
+
+echo "-- Making MakeSetOfRules_BTool.src.bin ... "
+rm -f MakeSetOfRules_BTool.src.bin runauto core .Berr
+../BKIT/BTool -c MakeSetOfRules_BTool.src
+if ( ! -r MakeSetOfRules_BTool.src.bin ) then
+  echo ""
+  echo "-- Error executing MakeSetOfRules_BTool.src.bin"
+  echo ""
+  rm -f ../SRC/Standardize.src ../SRC/SetOfRules .Berr
+  rm -f runauto SetOfRules.made MakeSetOfRules_BTool.src.bin tmpb core .Berr
+  exit ( 1 )
+endif
+echo "-- Made MakeSetOfRules_BTool.src.bin "
+echo ""
+ls -l MakeSetOfRules_BTool.src.bin
+echo ""
+
+echo "-- Making SetOfRules.made ... "
+rm -f MakeSetOfRules.made runauto core .Berr
+echo "run(auto)" > runauto
+../BKIT/BTool -b MakeSetOfRules_BTool.src.bin runauto > .Berrcd
+if ( ! -r SetOfRules.made ) then
+  echo ""
+  echo "-- Error executing MakeSetOfRules_BTool.src.bin"
+  echo ""
+  rm -f ../SRC/Standardize.src ../SRC/SetOfRules .Berr
+  rm -f runauto SetOfRules.made MakeSetOfRules_BTool.src.bin tmpb core
+  exit ( 1 )
+endif
+echo ""
+grep "Can't connect" .Berr > /dev/null
+if ($status == 0) then
+  echo ""
+  echo "-- Error executing MakeSetOfRules_BTool.src.bin"
+  echo ""
+  rm -f ../SRC/Standardize.src ../SRC/SetOfRules .Berr
+  rm -f runauto SetOfRules.made MakeSetOfRules_BTool.src.bin tmpb core
+  exit ( 1 )
+endif
+if ( ! -r SetOfRules.made ) then
+  echo ""
+  echo "-- Error executing MakeSetOfRules_BTool.src.bin"
+  echo ""
+  rm -f ../SRC/Standardize.src ../SRC/SetOfRules .Berr
+  rm -f runauto SetOfRules.made MakeSetOfRules_BTool.src.bin tmpb ../BEESRC/bplatsize.o core
+  exit ( 1 )
+endif
+echo "-- Made SetOfRules.made "
+echo ""
+ls -l SetOfRules.made
+echo ""
+
+
+echo "-- Making Toolkit15.tmp.src.bin ... "
+echo \`AMNSYMBOL > Toolkit15.tmp.src
+cat SetOfRules.made >> Toolkit15.tmp.src
+echo "&" >> Toolkit15.tmp.src
+cat Standardize.src >> Toolkit15.tmp.src
+echo "&" >> Toolkit15.tmp.src
+cat CommonTheory.src >> Toolkit15.tmp.src
+
+
+rm -f .Berr
+../BKIT/BTool -c Toolkit15.tmp.src > .Berr
+grep rror .Berr > /dev/null
+if ( $status == 0 ) then
+  echo ""
+  echo "-- Error executing Toolkit15.tmp.src.bin"
+  echo ""
+  rm -f ../SRC/Standardize.src ../SRC/SetOfRules
+  rm -f runauto SetOfRules.made Toolkit15.tmp.src MakeSetOfRules_BTool.src.bin tmpb ../BEESRC/bplatsize.o core .Berr
+  exit ( 1 )
+endif 
+if ( ! -r Toolkit15.tmp.src.bin ) then
+  echo ""
+  echo ""
+  echo "-- Error executing Toolkit15.tmp.src.bin"
+  echo ""
+  rm -f ../SRC/Standardize.src ../SRC/SetOfRules
+  rm -f runauto SetOfRules.made Toolkit15.tmp.src MakeSetOfRules_BTool.src.bin tmpb ../BEESRC/bplatsize.o core .Berr
+  exit ( 1 )
+endif
+echo "-- Made Toolkit15.tmp.src.bin "
+echo ""
+ls -l Toolkit15.tmp.src.bin
+echo ""
+
+echo "-- Moving Toolkit15.tmp.src.bin ... "
+rm Toolkit15.tmp.src
+cp Toolkit15.tmp.src.bin ../BKIT/BLIB/Toolkit15.bin
+rm Toolkit15.tmp.src.bin
+echo ""
+echo "-- Moved to ../BKIT/BLIB/Toolkit15.bin "
+echo ""
+
+rm -f ../SRC/Standardize.src ../SRC/SetOfRules
+rm -f runauto tmpb SetOfRules.made MakeSetOfRules_BTool.src.bin tmpb ../BEESRC/../BEESRC/bplatsize.o core .Berr
+
+cd ../BKIT/BLIB
+# ls -l Toolkit15.bin
+
+cd $curdir

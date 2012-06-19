@@ -1,0 +1,833 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+int tapip[12];
+int tpipe[12];
+int ipipe[12];
+int llin[12];
+int lfic[12];
+
+int dave_is_upper_case;
+
+#define max_siz_lex 30
+/*  same as max_err in errmch.q  */
+int pip[12][max_siz_lex+1];
+int qbbuf,bbuf,sta,sta_bra,dst,linput,ficput;
+
+#define dig 1
+
+#define low 2
+
+#define upp 3
+
+#define mix 4
+
+#define opss 5
+
+#define neutral_lex     0
+
+#define psh_lex(i,x)  tapip[i]=tapip[i]+1;pip[i][tapip[i]]=x 
+
+#define len_lex(i)    tapip[i] 
+
+#define ini_ana_lex(x)   tapip[1]=1; pip[1][1]=x
+
+#define clr_lex(i)    tapip[i]=0 
+
+#define val_lex(i)    pip[i][ipipe[i]]
+
+#define remaz_lex(i)  ipipe[i]=0
+
+#define incrm_lex(i)  ipipe[i]=ipipe[i]+1
+
+#define test_lex(i)   (ipipe[i]<tapip[i]) && (ipipe[i]<=30)
+
+#define max_lex       7
+
+#define mod_lex(i,v)  tpipe[i]=v
+
+#define sta_lex(i)    tpipe[i]
+
+#define lin_lex(i) llin[i]
+
+#define fic_lex(i) lfic[i]
+
+#define dif_lex(i) (((fic_lex(i)!=ficput) || (lin_lex(i)!=linput))!=0)
+
+#define quo_lex 1
+
+#define lex_lex 2
+
+#define key_lex 3
+
+#define bra_lex 4
+
+#define err_lex 5
+
+#define gho_lex 6
+
+#define prs_lex 7
+
+#define upd_lin_fic_lex(i) lin_lex(i)=linput; fic_lex(i)=ficput
+ini_lexfunc()
+#define ini_lex ini_lexfunc()
+{register int i ;
+  itrn( i , 1 , max_lex , {
+    lin_lex(i)=1;
+    fic_lex(i)=0;
+    tapip[i]=0;
+});
+  qbbuf=cre(150);
+  bbuf=cre(150);
+  sta=cre(150);
+  sta_bra=cre(150);
+}
+
+reset_lexfunc()
+#define reset_lex reset_lexfunc()
+{register int i ;
+  itrn( i , 1 , max_lex , {
+    mod_lex(i,neutral_lex);
+    lin_lex(i)=1;
+    fic_lex(i)=0
+ ;});
+  mod_lex(err_lex,BET_sym);             
+/*  a binary symbol  */
+  mod_lex(key_lex,BET_sym);             
+/*  TO BE MAKE PRECISE  */
+  clr_str(qbbuf);
+  clr_str(bbuf);
+  clr(sta);
+  clr(sta_bra);
+  psh(sta,OPNBRK_sym);
+}
+
+mod_lin_lex(f,l)
+{
+  linput=l;
+  ficput=f;
+}
+
+trans_lexfunc()
+#define trans_lex trans_lexfunc()
+{register int r,k,kk,ll,lb,m ;
+  r=0;
+  k=0;
+  kk=maxint / 10;
+  ll=maxint % 10;
+  lb=len_str(bbuf);
+  while( k<lb ){
+    k=k+1;
+    m=val_str(bbuf,k)-ZER_sym;
+    if( (r<kk) || ((r==kk) && (m<=ll)) ){
+      r=r*10+m;
+    } else {
+      r=(-1);
+      k=lb;
+    };
+  }
+; return r;
+}
+
+nature_lex(o)
+{register int nature_lex_res ;
+  if( digit_sym(o)==TRUE ){
+    nature_lex_res=dig;
+  } else if( lower_spe_sym(o)==TRUE ){
+    nature_lex_res=low;
+  } else if( upper_sym(o)==TRUE ){
+    nature_lex_res=upp;
+  } else {
+    nature_lex_res=opss;
+  }
+; return nature_lex_res;
+}
+
+analyse_lexfunc()
+#define analyse_lex analyse_lexfunc()
+{register int i,n,v ;
+  i=1;
+  itr_str(bbuf,i,v,if( i==1 ){
+                    n=nature_lex(v);
+                  } else if( n!=mix ){
+                    if( n!=nature_lex(v) ){
+                      n=mix;
+                    }
+                 ;})
+; return n;
+}
+
+enter_lexfunc()
+#define enter_lex enter_lexfunc()
+{register int r,enter_lex_res ;
+  dave_is_upper_case = FALSE;
+  if( len_str(bbuf)==1 ){
+    if( nature_lex(val_str(bbuf,1))==dig ){
+      enter_lex_res=(-trans_lex);
+    } else {
+      enter_lex_res=val_str(bbuf,1);
+    };
+  } else {
+    switch( analyse_lex ){
+      case dig :{
+        r=trans_lex;
+        if( r==-1 ){
+          enter_lex_res=cre_sym(bbuf,atm,nrml,0);
+        } else {
+          enter_lex_res=(-r);
+        }
+      ;break;}case upp :{
+        dave_is_upper_case = TRUE;
+        enter_lex_res=cre_sym(bbuf,opn,mixw,0)
+      ;break;}case mix :{
+        enter_lex_res=cre_sym(bbuf,atm,nrml,0)
+      ;break;}case low :{
+        enter_lex_res=cre_sym(bbuf,atm,nrml,0)
+      ;break;}case opss :{
+        enter_lex_res=cre_sym(bbuf,bin,blba,0) /*** nrml -> blba ***/
+/***
+;printf ( "%d ", enter_lex_res );
+{int k = enter_lex_res;
+if( (k>32) && (k!=127) ){ 
+              if( letchif_sym(k)==FALSE ){
+                printf ( "`" );
+                write_stri_sym(k);
+                printf ( "'\n" );
+                if( len_str(stri_sym(k))<8 ){
+                  putc(9, bstdout);
+                } } } }
+***/
+      ;break;};
+    };
+  }
+; return enter_lex_res;
+}
+
+ousta_lex(i)
+{register int x,n,k,l,c,y,lexn,b,v ;
+  x=val_lex(i);
+  n=sta_lex(i);
+  k=i+1;
+  if( i<max_lex ){ 
+    clr_lex(k) ;
+  };
+  switch( i ){
+    case quo_lex :{    
+/*  quoting, \, rem. mult. blanks, [], {}, !=  */
+      if( x==DBLQUO_sym ){
+        switch( n ){
+          case 0 :{
+            psh_str(qbbuf,x); 
+            mod_lex(i,4)
+          ;break;}case 1 :{
+            psh_str(qbbuf,x); 
+            mod_lex(i,4)
+          ;break;}case 6 :{
+            psh_lex(k,LSB_sym);
+            psh_str(qbbuf,x); 
+            mod_lex(i,4)
+          ;break;}case 7 :{
+            psh_lex(k,LCB_sym);
+            psh_str(qbbuf,x); 
+            mod_lex(i,4)
+          ;break;}case 8 :{
+            psh_lex(k,SMR_sym);
+            psh_str(qbbuf,x); 
+            mod_lex(i,4)
+          ;break;}case 4 :{
+            psh_str(qbbuf,x);
+            v=cre_sym(qbbuf,atm,nrml,0);
+            psh_lex(k,0-v);
+            clr_str(qbbuf);
+            mod_lex(i,0)
+          ;break;}case 5 :{
+            
+/* psh_str(qbbuf,x); */
+            psh_str(qbbuf,x);
+            mod_lex(i,4)
+          ;break;}case 2 :{
+            psh_str(qbbuf,x)
+          ;break;}case 3 :{
+            psh_str(qbbuf,x)
+          ;break;};
+        };
+      } else if( x==ANTI_SLASH_sym ){
+        switch( n ){
+          case 4 :{
+            psh_str(qbbuf,x);
+            mod_lex(i,5)
+          ;break;}case 5 :{
+            psh_str(qbbuf,x);
+            mod_lex(i,4)
+          ;break;}case 6 :{
+            psh_lex(k,LSB_sym);
+            psh_lex(k,x);
+            mod_lex(i,0)
+          ;break;}case 7 :{
+            psh_lex(k,LCB_sym);
+            psh_lex(k,x);
+            mod_lex(i,0)
+          ;break;}case 8 :{
+            psh_lex(k,SMR_sym);
+            psh_lex(k,x);
+            mod_lex(i,0)
+          ;break;}case 0
+/* ,2,3 */
+ :{
+            psh_lex(k,x);
+            mod_lex(i,0)
+          ;break;}case 1 :{
+            psh_lex(k,x);
+            mod_lex(i,0)
+          ;break;};
+        }
+     
+/* ;} else if( x==SMPQUO_sym ){
+        switch( n ){
+          case 0,1,6,7,8 :{
+            psh_str(qbbuf,x); 
+            mod_lex(i,2)
+          ;break;}case 2 :{
+            mod_lex(i,3)
+          ;break;}case 3 :{
+            psh_str(qbbuf,x);
+            psh_str(qbbuf,x);
+            mod_lex(i,2)
+          ;break;}case 4,5 :{
+            psh_str(qbbuf,x)
+          ;break;};
+        } */;
+      } else {
+        switch( n ){
+          case 0 :{
+            if( (x==LSB_sym) || (x==LCB_sym) || (x==SMR_sym) ){
+              {};
+            } else if( (x!=BLK_sym) || (n==0) ){
+              psh_lex(k,x);
+            };
+            if( x==BLK_sym ){
+              mod_lex(i,1);
+            } else if( x==LSB_sym ){
+              mod_lex(i,6);
+            } else if( x==LCB_sym ){
+              mod_lex(i,7);
+            } else if( x==SMR_sym ){
+              mod_lex(i,8);
+            } else {
+              mod_lex(i,0);
+            }
+          ;break;}case 1 :{
+            if( (x==LSB_sym) || (x==LCB_sym) || (x==SMR_sym) ){
+              {};
+            } else if( (x!=BLK_sym) || (n==0) ){
+              psh_lex(k,x);
+            };
+            if( x==BLK_sym ){
+              mod_lex(i,1);
+            } else if( x==LSB_sym ){
+              mod_lex(i,6);
+            } else if( x==LCB_sym ){
+              mod_lex(i,7);
+            } else if( x==SMR_sym ){
+              mod_lex(i,8);
+            } else {
+              mod_lex(i,0);
+            }
+          ;break;}case 6 :{
+            if( x==RSB_sym ){
+              psh_str(qbbuf,LSB_sym);
+              psh_str(qbbuf,RSB_sym);
+              v=cre_sym(qbbuf,atm,nrml,0);
+              psh_lex(k,0-v);
+              clr_str(qbbuf);
+            } else {
+              psh_lex(k,LSB_sym);
+              if( (x==LSB_sym) || (x==LCB_sym) || (x==SMR_sym) ){
+                {};
+              } else if( (x!=BLK_sym) || (n==0) ){
+                psh_lex(k,x);
+              };
+            };
+            if( x==BLK_sym ){
+              mod_lex(i,1);
+            } else if( x==LSB_sym ){
+              mod_lex(i,6);
+            } else if( x==LCB_sym ){
+              mod_lex(i,7);
+            } else if( x==SMR_sym ){
+              mod_lex(i,8);
+            } else {
+              mod_lex(i,0);
+            }
+          ;break;}case 7 :{
+            if( x==RCB_sym ){
+              psh_str(qbbuf,LCB_sym);
+              psh_str(qbbuf,RCB_sym);
+              v=cre_sym(qbbuf,atm,nrml,0);
+              psh_lex(k,0-v);
+              clr_str(qbbuf);
+            } else {
+              psh_lex(k,LCB_sym);
+              if( (x==LSB_sym) || (x==LCB_sym) || (x==SMR_sym) ){
+                {};
+              } else if( (x!=BLK_sym) || (n==0) ){
+                psh_lex(k,x);
+              };
+            };
+            if( x==BLK_sym ){
+              mod_lex(i,1);
+            } else if( x==LSB_sym ){
+              mod_lex(i,6);
+            } else if( x==LCB_sym ){
+              mod_lex(i,7);
+            } else if( x==SMR_sym ){
+              mod_lex(i,8);
+            } else {
+              mod_lex(i,0);
+            }
+          ;break;}case 8 :{
+            if( x==GTR_sym ){
+              psh_str(qbbuf,SMR_sym);
+              psh_str(qbbuf,GTR_sym);
+              v=cre_sym(qbbuf,atm,nrml,0);
+              psh_lex(k,0-v);
+              clr_str(qbbuf);
+            } else {
+              psh_lex(k,SMR_sym);
+              if( (x==LSB_sym) || (x==LCB_sym) || (x==SMR_sym) ){
+                {};
+/*              } else if( (x!=BLK_sym) || (n==0) ){ */
+                } else {
+                psh_lex(k,x);
+              };
+            };
+            if( x==BLK_sym ){
+              mod_lex(i,1);
+            } else if( x==LSB_sym ){
+              mod_lex(i,6);
+            } else if( x==LCB_sym ){
+              mod_lex(i,7);
+            } else if( x==SMR_sym ){
+              mod_lex(i,8);
+            } else {
+              mod_lex(i,0);
+            }
+          ;break;}case 
+/* 2, */
+4 :{
+            psh_str(qbbuf,x)
+          
+/* ;break;}case 3 :{
+            psh_str(qbbuf,SMPQUO_sym);
+            v=cre_sym(qbbuf,atm,nrml,0);
+            psh_lex(k,0-v);
+            psh_lex(k,x);
+            clr_str(qbbuf);
+            mod_lex(i,0) */
+          ;break;}case 5 :{
+            psh_str(qbbuf,x);
+            mod_lex(i,4)
+            
+            
+/* psh_str(qbbuf,DBLQUO_sym);
+            v=cre_sym(qbbuf,atm,nrml,0);
+            psh_lex(k,0-v);
+            psh_lex(k,x);
+            clr_str(qbbuf);
+            mod_lex(i,0) */
+            
+          ;break;};
+        };
+      }
+    ;break;}case lex_lex :{               
+/* lexical analysis proper */
+      if( x==BLK_sym ){
+        if( len(bbuf)!=0 ){
+          v=enter_lex;
+          psh_lex(k,v);
+          clr_str(bbuf);
+        };
+      } else if( x==EOT_sym ){
+        psh_lex(k,x);
+        clr_str(bbuf);
+      } else if( x<0 ){
+        if( n!=blk ){
+          if( len(bbuf)!=0 ){
+            v=enter_lex;
+            psh_lex(k,v);
+            clr_str(bbuf);
+          };
+        };
+        psh_lex(k,0-x);
+      } else if( (lexi_sym(x)==n) && ((n==atm) || (n==bin)) ){
+        psh_str(bbuf,x);
+      } else {
+        if( n!=blk ){
+          if( len(bbuf)!=0 ){
+            v=enter_lex;
+            psh_lex(k,v);
+            clr_str(bbuf);
+          };
+        };
+        psh_str(bbuf,x);
+      };
+      if( x<0 ){
+        mod_lex(i,atm);
+      } else {
+        mod_lex(i,lexi_sym(x));
+      }
+    ;break;}case key_lex :{                 
+/*  Guessing Keywords  */
+      lexn=lexi_sym(n);
+      l=lexi_sym(x);
+      if( edit_sym(x)==mixw ){
+        if( (lexn==pst) || (lexn==clo) || (lexn==atm) ){
+
+/***
+;WWW("\nGuessing Keyword for ",0);
+write_stri_sym(x);
+WWW("  ",0);
+write_lexi_sym(x);
+WWW("  ",0);
+write_edit_sym(x);
+WWW("  ",0);
+write_prio_sym(x);
+WWW("\n  lexn: %d (",lexn);
+write_lexi_sym(n);
+WWW(")  l: %d (",l);
+write_lexi_sym(x);
+WWW(")    n: %d",n);  
+WWW("\n  edit_sym: (",0); 
+write_edit_sym(x);
+WWW(")\n  dave_is_upper_case - %d\n",dave_is_upper_case);
+;WWW("\n    mixb - a potential keyword of arity --->>> 2 <<<---\n",0);
+***/
+
+/***
+          if ( dave_is_upper_case == TRUE ) {
+            cre_symb_err(fic_lex(i),lin_lex(i),dif_lex(i),missing_binary_err,n,x);
+            mod_edit_sym(n,nrml);
+            mod_lexi_sym(n,atm);
+            psh_lex(k,EVL_sym);
+            psh_lex(k,x);
+	  }
+          else {
+            mod_edit_sym(x,mixb); 
+	  }
+***/
+
+          mod_edit_sym(x,mixb) 
+/*  a potential keyword of arity 2         */;
+        } else {                               
+          mod_edit_sym(x,mixa)      
+
+/***
+;WWW("\nGuessing Keyword for ",0);
+write_stri_sym(x);
+WWW("  ",0);
+write_lexi_sym(x);
+WWW("  ",0);
+write_edit_sym(x);
+WWW("  ",0);
+write_prio_sym(x);
+WWW("\n  lexn: %d (",lexn);
+write_lexi_sym(n);
+WWW(")  l: %d (",l);
+write_lexi_sym(x);
+WWW(")    n: %d",n);  
+WWW("\n  edit_sym: (",0); 
+write_edit_sym(x);
+WWW(")\n  dave_is_upper_case - %d\n",dave_is_upper_case);
+;WWW("\n    mixa - a potential keyword of arity --->>> 1 <<<---\n",0);
+***/
+
+/*  a potential keyword of arity 1 || */;
+        };                        
+/*  a potential normal symbol of arity 0   */
+        if( edit_sym(n)==mixa ){
+          mod_edit_sym(n,keyl);
+          mod_lexi_sym(n,opn);
+          mod_prio_sym(n,11);       
+/*  SEE FILE "SYMBOL" FOR KEYWORD PRIORITY  */
+          arity[k]=2;
+          psh_lex(k,n);
+        } else if( edit_sym(n)==mixb ){
+          mod_edit_sym(n,keyl);
+          mod_lexi_sym(n,bin);
+          arity[n]=2;
+          mod_prio_sym(n,(-9));     
+/*  SEE FILE "SYMBOL" FOR KEYWORD PRIORITY  */
+          psh_lex(k,n);
+        };
+      } else if( edit_sym(n)==mixa ){
+        if( (l==bin) || (l==pst) || (l==clo) || (x==OPNBRK_sym) || (x==LSB_sym) ){
+          mod_edit_sym(n,nrml);
+          mod_lexi_sym(n,atm);
+          arity[n]=0;
+          mod_prio_sym(n,0);
+          psh_lex(k,n);
+          psh_lex(k,x);
+        } else if( (l==atm) || (l==unr) || (l==opn) ){
+          mod_edit_sym(n,keyl);
+          mod_lexi_sym(n,opn);
+          arity[n]=2;
+          mod_prio_sym(n,11);
+          psh_lex(k,n);
+          psh_lex(k,x);
+        };
+      } else if( edit_sym(n)==mixb ){
+        if( (l==bin) || (l==pst) || (l==clo) ){
+          mod_edit_sym(n,nrml);
+          mod_lexi_sym(n,bin);
+          arity[n]=2;
+          mod_prio_sym(n,0);
+          psh_lex(k,n);
+          psh_lex(k,x);
+        } else if( (l==atm) || (l==unr) || (l==opn) ){
+          mod_edit_sym(n,keyl);
+          mod_lexi_sym(n,bin);
+          arity[n]=2;
+          mod_prio_sym(n,(-9));
+          psh_lex(k,n);
+          psh_lex(k,x);
+        };
+      } else {
+        psh_lex(k,x);
+      };
+      mod_lex(i,x)
+    ;break;}case bra_lex :{                   
+/*  balancing of brakets  */
+      l=lexi_sym(x);
+      if( x==EOT_sym ){
+        while( len(sta_bra)!=0 ){
+          cre_err(fic_lex(i),lin_lex(i),dif_lex(i),
+          missing_closing_err,clos_sym(lst(sta_bra)));
+          v=clos_sym(lst(sta_bra));
+          if( len_lex(k)<max_siz_lex ){
+            psh_lex(k,v);
+          } else {
+            set_too_many_err;
+          };
+          pop(sta_bra);
+        };
+        if( len_lex(k)<max_siz_lex ){
+          psh_lex(k,x);
+        } else {
+          set_too_many_err;
+        };
+      } else if( l==clo ){
+        c=TRUE;
+        b=((len(sta_bra)!=0)!=0);
+        while( (b==TRUE) && (c==TRUE) ){
+          y=lst(sta_bra);
+          if( are_opn_clo_sym(y,x)==FALSE ){
+            cre_err(fic_lex(i),lin_lex(i),dif_lex(i),
+            missing_closing_err,clos_sym(y));
+            v=clos_sym(y);
+            if( len_lex(k)<max_siz_lex ){
+              psh_lex(k,v);
+            } else {
+              set_too_many_err;
+            };
+            pop(sta_bra);
+            b=((len(sta_bra)!=0)!=0);
+          } else {
+            if( len_lex(k)<max_siz_lex ){
+              psh_lex(k,x);
+            } else {
+              set_too_many_err;
+            };
+            pop(sta_bra);
+            c=FALSE;
+          };
+        };
+        if( b==FALSE ){
+          cre_err(fic_lex(i),lin_lex(i),dif_lex(i),missing_opening_err,x);
+        };
+      } else if( l==opn ){
+        if( len_lex(k)<max_siz_lex ){
+          psh_lex(k,x);
+        } else {
+          set_too_many_err;
+        };
+        psh(sta_bra,x);
+      } else {
+        psh_lex(k,x);
+      }
+    ;break;}case err_lex :{  
+/*  error, spe, evl  */
+      lexn=lexi_sym(n);
+      l=lexi_sym(x);
+      if( (lexn==atm) || (lexn==pst) || (n==CLOBRK_sym) || (n==RCB_sym) ){
+        if( (x==OPNBRK_sym) || (x==LSB_sym) ){
+          psh_lex(k,EVL_sym);
+          psh_lex(k,x);
+        } else if( (l==atm) || (l==opn) || (l==unr) ){
+          cre_symb_err(fic_lex(i),lin_lex(i),dif_lex(i),missing_binary_err,n,x);
+          psh_lex(k,EVL_sym);
+          psh_lex(k,x);
+        } else {
+          psh_lex(k,x);
+        };
+      } else if( (lexn==bin) || (lexn==unr) || (lexn==opn) ){
+/*        if( (l==clo) || (l==bin) || (l==pst) ){ */
+          /* the previous error for `-5' or `+7' */        
+        if( (l==clo) || ( (l==bin) && (x!=PLS_sym) && (x!=MIN_sym) ) || (l==pst) ) {
+          cre_symb_err(fic_lex(i),lin_lex(i),dif_lex(i),missing_zeroary_err,n,x);
+          psh_lex(k,ERR_sym);
+          psh_lex(k,x);
+        } else {
+          psh_lex(k,x);
+        };
+      } else if( n==RSB_sym ){
+        if( (l==atm) || (l==opn) || (l==unr) ){
+          psh_lex(k,SPE_sym);
+          psh_lex(k,x);
+        } else {
+          psh_lex(k,x);
+        };
+      } else if( lexn==clo ){
+        if( (l==atm) || (l==opn) || (l==unr) ){
+          cre_symb_err(fic_lex(i),lin_lex(i),dif_lex(i),missing_binary_err,n,x);
+          psh_lex(k,EVL_sym);
+          psh_lex(k,x);
+        } else {
+          psh_lex(k,x);
+        };
+      } else {
+        psh_lex(k,x);
+      };
+      mod_lex(i,x)
+    ;break;}case gho_lex :{                             
+/*  adding ghosts  */
+      l=lexi_sym(x);
+      lexn=lexi_sym(n);         
+/* new */
+      if( l==pst ){             
+        psh_lex(k,x);
+        psh_lex(k,GHO_sym);
+      } else if( l==unr ){
+        if( lexn!=unr ){        
+/*  new */
+          psh_lex(k,GHO_sym);
+          psh_lex(k,x);
+        } else {
+          psh_lex(k,x);
+          psh_lex(k,GHO_sym);
+          cre_symb_err(fic_lex(i),lin_lex(i),dif_lex(i),missing_spe_opening_err,n,x);                                ;
+        }                      
+/*  end new */;
+      }
+
+      else if ( ( x == PLS_sym ) || ( x == MIN_sym ) ) {
+/***
+if ( lower_sym(n) )     printf ( "                                                 lower_sym(%d)\n", n );
+if ( upper_sym(n) )     printf ( "                                                 upper_sym(%d)\n", n );
+if ( is_ident_sym(n) )  printf ( "                                                 is_ident_sym(%d)\n", n );
+if ( is_nbr_sym(n) )    printf ( "                                                 is_nbr_sym(%d)\n", n );
+if ( ! n )              printf ( "                                                 zero!\n" );
+if ( lexi_sym(n)== blk) printf ( "                                                 blk(%d)\n", n );
+if ( lexi_sym(n)== pst) printf ( "                                                 pst(%d)\n", n );
+if ( lexi_sym(n)== atm) printf ( "                                                 atm(%d)\n", n );
+if ( lexi_sym(n)== clo) printf ( "                                                 clo(%d)\n", n );
+***/
+        if ( ( lexn != blk )                       &&
+             ( lexn != pst )                       &&
+             ( lexn != atm )                       &&
+             ( lexn != clo )
+          /* ( ( ! is_atm_sym ( n ) )  ||
+               ( ! n )                   ) */         ) {
+/***
+printf ( "               ------------- GHO_sym for - or + ----------------\n" );
+***/
+
+          psh_lex(k,GHO_sym);
+          psh_lex(k,x);
+        }
+        else {
+          psh_lex(k,x);
+        }
+      }
+
+
+      else if( (l==opn) && (x!=OPNBRK_sym) ){
+        psh_lex(k,OPNBRK_sym);
+        psh_lex(k,GHO_sym);
+        psh_lex(k,x);
+        psh_lex(k,OPNBRK_sym);
+      } else if( (l==clo) && (x!=CLOBRK_sym) ){
+        psh_lex(k,CLOBRK_sym);
+        psh_lex(k,CLOBRK_sym);
+      } else {
+        psh_lex(k,x);
+      };
+      mod_lex(i,x) 
+/* new */
+    ;break;}case prs_lex :{                           
+/*  parsing  */
+      if( x==EOT_sym ){
+        x=CLOBRK_sym;
+      };
+      if( ari_sym(x)==0 ){
+        psh(dst,x);
+      } else if( x==OPNBRK_sym ){
+        psh(sta,x);
+      } else if( x==CLOBRK_sym ){
+        while( lst(sta)!=OPNBRK_sym ){
+          psh(dst,lst(sta));
+          pop(sta);
+        };
+        pop(sta);
+      } else {
+        while( prio_sym(lst(sta))>=prio_sym(x)+righ_sym(x) ){
+          psh(dst,lst(sta));
+          pop(sta);
+        };
+        psh(sta,x);
+      }
+    ;break;};
+  };
+}
+
+ana_lex(p)
+{register int i ;
+  
+/* if( val_too_many_err==FALSE ){  */
+    
+/* clr_lex(1);
+    psh_lex(1,p); */
+    ini_ana_lex(p);
+    i=1;
+    remaz_lex(i);
+    while( (i>0) && (val_too_many_err==FALSE) ){
+      if( test_lex(i) ){
+        incrm_lex(i);
+        ousta_lex(i);
+        upd_lin_fic_lex(i);
+        if( i<max_lex ){
+          i=i+1;
+          remaz_lex(i) ;
+        };
+      } else {
+        i=i-1;
+      };
+    }
+  
+/* ;} */;
+}
+

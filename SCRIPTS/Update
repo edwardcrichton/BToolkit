@@ -1,0 +1,10 @@
+#! /bin/sh
+
+echo "" > .Berr
+cp .Bpda_0 .Bpda
+if [ $? = 0 ]
+then
+  echo 0 > .Bcom
+else
+  echo 1 > .Bcom
+fi

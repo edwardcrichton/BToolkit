@@ -1,0 +1,28 @@
+PROOFMETHOD MaxOfSetI.imp.1.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~ /* ;FEQL~ */ )
+
+  REASONING_DEPTH 1
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    ?
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END

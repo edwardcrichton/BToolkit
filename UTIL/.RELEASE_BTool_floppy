@@ -1,0 +1,170 @@
+#! /bin/csh -f
+
+#
+#  After the ftp-able BTool_tarfile BTool_`platform'.`release-Version'.tar
+#  has been created, this script creates installation floppy:
+#
+#    DISK0 - BTool.install READ_ME btool.tar gunzip gunzip.READ_ME
+
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+echo ""
+echo "         ------------------------------"
+echo ""
+
+echo ""
+echo "  Make release floppies for:"
+echo ""
+echo "      1 ... SunOS"
+echo "      3 ... Solaris"
+echo "      4 ... Aix"
+echo "      5 ... DecAlpha"
+echo "      6 ... Linux"
+echo "      7 ... Indy"
+echo ""
+
+echo -n "  Number: "
+set answer=$<
+echo ""
+
+if ( $answer != "1" && $answer != "3" && $answer != "4" && $answer != "5" && $answer != "6" && $answer != "7") then
+  echo "  Bad input - aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $answer == "1" ) set plat=SunOS
+if ( $answer == "3" ) set plat=Solaris
+if ( $answer == "4" ) set plat=Aix
+if ( $answer == "5" ) set plat=DecAlpha
+if ( $answer == "6" ) set plat=Linux
+if ( $answer == "7" ) set plat=Indy
+
+cd ..
+
+if ( ! -r BTool_$plat.$BT_VERSION.tar ) then
+  echo "    `pwd`/BTool_$plat.$BT_VERSION.tar "
+  echo ""
+  echo "  does not exist - aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+echo ""
+echo "  tar xvf BTool_$plat.$BT_VERSION.tar "
+echo ""
+tar xvf BTool_$plat.$BT_VERSION.tar
+
+cd BTool_$plat.$BT_VERSION
+
+echo ""
+ls -l
+
+set disks="0"
+set last_disk="btool.tar.gz"
+
+
+echo "  Ready to create release floppy disk "
+echo ""
+
+foreach disk ($disks)
+
+  set done=0
+  while ($done == 0)
+
+    echo "  Insert DISK$disk - hit <CR> when ready"
+    echo ""
+    echo -n "***** ? "
+    set answer=$<
+    echo ""
+
+    if ($disk == 0) set files="READ_ME BTool.install gunzip.READ_ME gunzip $last_disk"
+
+    echo "    Writing"
+    echo ""
+
+    tar cvf /dev/fd0 $files
+
+    if ($status == 0) then
+
+      echo ""
+      echo "    Checking"
+      echo ""
+      tar tvf /dev/fd0
+
+      if ($status == 0) then
+
+        echo ""
+        echo "    OK"
+        echo ""
+        eject
+        set done=1
+
+      endif
+
+    endif
+
+    if ($done == 0) then
+
+      eject
+      echo ""
+      echo "-- DISK$disk failed"
+      echo ""
+
+      set y_n=0
+      while ($y_n == 0)
+
+        echo -n "***** Retry (y/n)? "
+        set answer=$<
+        echo ""
+
+        if ($answer == "y") then
+
+          set y_n=1
+          set first_attempt=0
+
+        else
+
+          if ($answer == "n") then
+
+
+            echo "                ----------------"
+            echo ""
+            echo "                     ABORTED"
+            echo ""
+            echo "                ----------------"
+            echo ""
+            cd ..
+            rm -fr BTool_$plat.$BT_VERSION
+            exit(1)
+
+          else
+
+            echo "-- Bad input"
+            echo ""
+
+          endif
+
+        endif
+
+      end
+
+    endif
+
+  end
+
+end
+
+cd ..
+rm -fr BTool_$plat.$BT_VERSION
+
+echo ""
+echo "  BTool release floppy for $plat.$BT_VERSION complete"
+echo ""
+echo ""

@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>Status</TITLE>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Status"><HR></A>
+<H1>Status (sts)</H1>
+
+This option is invoked from the 
+<A HREF="BToolkit.html#Environments!Main">Main Environment</A> 
+and is applicable to all 
+<A HREF="AMNotation.html#MACHINE">machines</A>, 
+<A HREF="AMNotation.html#REFINEMENT">refinements</A> 
+and 
+<A HREF="AMNotation.html#IMPLEMENTATION">implementations</A>.
+<P>
+It allows the user to determine the current state of a construct under
+configuration; status information comprises:
+<UL>
+ <LI> whether or not the construct is currently 
+<A HREF="Analyser.html#Analyser">analysed</A>; 
+if
+    so, the following information is provided:
+<UL>
+ <LI> the number of proven/unproven proof obligations associated
+     with the construct at each proof level
+
+ <LI> whether or not the construct is currently marked-up
+
+ <LI> in the case of an implementation, whether or not it is
+     currently translated
+
+ <LI> a list of dependent constructs
+
+ <LI> a list of subordinate constructs
+
+ <LI> the abstraction/refinement/implementation list
+
+</UL></UL>
+<P>
+(A construct <TT>A</TT> is `dependent' on a construct <TT>B</TT> if <TT>A</TT> 
+<A HREF="Structuring.html#SEES_Clause!Using">SEES</A>, 
+<A HREF="Structuring.html#USES_Clause!Using">USES</A>,
+<A HREF="Structuring.html#INCLUDES_Clause!Using">INCLUDES</A>, 
+<A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTS</A> or 
+<A HREF="Structuring.html#REFINES_Clause">REFINES</A> <TT>B</TT>; in those cases <TT>B</TT> is said to be a
+`subordinate' construct to <TT>A</TT>).
+
+<P>
+<HR WIDTH="60%">
+<P>
+<P><CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

@@ -1,0 +1,268 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY SwitchNotBTPX IS
+
+   bcall((LessThanOrEqualX___SwitchBTPX~;SwitchBTPX) : (b <= a)) 
+   => 
+   not(a < b);
+
+   bcall((LessThanX___SwitchBTPX~;SwitchBTPX) : (b < a)) 
+   => 
+   not(a <= b);
+
+   bcall((NotEqualX___SwitchBTPX;SwitchBTPX) : not(a = b)) 
+   => 
+   not(a = b);
+
+   bcall(SwitchBTPX : (#x.not(P)))
+   => 
+   not(!x.P);
+
+   bcall(SwitchBTPX : (#x.(P&Q)))
+   => 
+   not(!x.(P=>not(Q)));
+
+   bcall((GEN;SUB~;SwitchNotBTPX~;SwitchBTPX) : (!x.not(P)))
+   => 
+   not(#x.P);
+
+   bcall(SwitchBTPX : (not((a => b) & (b => a))))
+   => 
+   not(bool(a) = bool(b));
+
+   bcall(SwitchBTPX : (a & not(b)))
+   => 
+   not(a => b);
+
+   bcall(SwitchBTPX : p) 
+   => 
+   not(not(p));
+
+   bcall((SwitchNotBTPX~;SwitchBTPX) : (not(a) & not(b))) 
+   => 
+   not(a or b);
+   
+   bcall(SwitchBTPX : (not(p) or not(q)))
+   => 
+   not(p & q);
+
+   bcall((NotEqualX___SwitchBTPX;SwitchBTPX) : ( not((a - b) = {})) )
+   => 
+   not(a <: b);
+
+   bcall((NotInSetX___SwitchBTPX~;SwitchBTPX) : not(a : b)) 
+   => 
+   not(a : b);
+
+   /***
+   establish false
+   ***/
+
+   binhyp(a) &
+   bcall(FalseX:false)  /* stop it dead */
+  =>
+   not(a)
+
+END
+
+&
+
+THEORY SwitchBTPX IS
+
+  /********************************
+           HYP
+  ********************************/
+
+   bcall(
+         ( ( (ARI~;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;HYP;ARI;SwitchBTPX) :  a) )
+           |
+           ( SwitchBTPX : a )
+        )
+   =>
+   a;
+
+  /*******************************************
+       Rewrite
+  *******************************************/
+
+   bcall((Tac_Rewrite_Simplify_FWD_2~;SwitchBTPX) : a)
+   =>
+   a;
+
+
+  /********************************
+       Existential
+  ********************************/
+
+   bcall(((Exist2X___SwitchBTPX;SUB;ARI)~;SwitchBTPX) : (#x.P))
+   => 
+   (#x.P);
+
+   bcall(((Exist1X___SwitchBTPX;SUB;ARI)~;SwitchBTPX) : (#x.P))
+   => 
+   (#x.P);
+
+   bcall(((Exist0X___SwitchBTPX;SUB;ARI)~;SwitchBTPX) : (#x.P))
+   => 
+   (#x.P);
+
+
+  /********************************
+       goal matches
+  ********************************/
+
+   bcall((EqualityX___SwitchBTPX;SwitchBTPX) : (a = b)) 
+   =>
+   a = b;
+
+   bcall((GEN;SUB~;SwitchBTPX) : (!x.P)) 
+   => 
+   !x.P;
+
+   bcall((BoolX___SwitchBTPX;SwitchBTPX) : (bool(a) = bool(b)))
+   => 
+   (bool(a) = bool(b));
+
+   bcall((SwitchNotBTPX;SwitchBTPX) : not(p)) 
+   => 
+   not(p);
+
+   bcall((OrX___SwitchBTPX;SwitchBTPX)~ : (a or b) )
+   => 
+   (a or b);
+
+   bcall((LessThanOrEqualX___SwitchBTPX~;SwitchBTPX) : (n <= p)) 
+   => 
+   n <= p;
+
+   bcall((LessThanX___SwitchBTPX~;SwitchBTPX) : (n < p)) 
+   => 
+   n < p;
+
+   bcall((InclusionX___SwitchBTPX;SwitchBTPX) : (a <: b)) 
+   => 
+   a <: b;
+
+   bcall((NotInSetX___SwitchBTPX~;SwitchBTPX) : not(a : b)) 
+   => 
+   not(a : b);
+
+   bcall((InSetX___SwitchBTPX~;SwitchBTPX) : (a : b)) 
+   => 
+   a : b;
+
+   /*** moved from InTypeX ***/
+   bcall((InRealX~;SwitchX) : (a : REAL))
+   =>
+   a : REAL;
+
+   /*** added ***/
+   bcall((InNatX~;SwitchX) : (n : NAT1))
+   =>
+   n : NAT1;
+
+   /*** moved from InTypeX ***/
+   bcall((InNatX~;SwitchX) : (n : NAT))
+   =>
+   n : NAT;
+
+   /*** moved from InTypeX ***/
+   bcall((InSequenceX;SwitchX) : (s : iseq(a)))
+   =>
+   s : iseq(a);
+
+   /*** moved from InTypeX ***/
+   bcall((InSequenceX;SwitchX) : (s : seq(a)))
+   =>
+   s : seq(a);
+
+   /*** moved from InTypeX ***/
+   bcall((InBijectionX;SwitchX) : ( (f : s >->> t) ) )
+   =>
+   f : s >->> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InSurjectionX;SwitchX) : (f : s +->> t))
+   =>
+   f : s +->> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InInjectionX;SwitchX) : (f : s >+> t))
+   =>
+   f : s >+> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InTotalFunctionX;SwitchX) : (f : s --> t))
+   =>
+   f : s --> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InPartialFunctionX~;SwitchX) : (f : s +-> t))
+   =>
+   f : s +-> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InRelationX~;SwitchX) : (r : s <-> t))
+   =>
+   r : s <-> t;
+
+   /*** moved from InTypeX ***/
+   bcall((InFINX~;SwitchX) : (a : FIN(b)))
+   =>
+   a : FIN(b);
+
+   bcall((SUB~;SwitchBTPX) : ([s:=t]g))
+   => 
+   [s:=t]g;
+
+
+   /********************************
+   establish false
+  ********************************/
+
+   binhyp(a) &
+   bcall(FalseX:not(a))
+  =>
+   not(a);
+
+   binhyp(not(a)) &
+   bcall(FalseX:a)
+  =>
+   a;
+
+  /********************************
+   false established
+  ********************************/
+
+   bcall(DummyX:false)  /* stop it dead */
+  =>
+   false;
+
+  /********************************
+   DED - should always be last rule!!!!
+  ********************************/
+
+  bcall
+    (
+      (DED~;SwitchBTPX~) : (h=>g)
+    )
+ =>
+  (h=>g)
+
+END

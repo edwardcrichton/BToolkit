@@ -1,0 +1,195 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bit_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(BitsN_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(NO_BTSN,STO_BTSN,VAL_BTSN,CPL_BTSN,SUB_BTSN)
+;
+(NO_BTSN,STO_BTSN,VAL_BTSN,CPL_BTSN,SUB_BTSN)
+;
+(BitsN_TYPE_Ops(?):(?):(?))
+;
+(
+(
+ (NO_BTSN)
+;
+ (?,Val_Op,Det_Op,(rr <-- NO_BTSN(len)))
+;
+ (len)
+;
+ (rr)
+;
+ (
+ (len: 1..32)
+ |
+ (
+ (rr:=(1..len)*{FALSE})
+ )
+ )
+;
+ (
+ (len: 1..32)
+ |
+ (
+ (rr:=(1..len)*{FALSE})
+ )
+ )
+)
+,
+(
+ (STO_BTSN)
+;
+ (?,Val_Op,Det_Op,(rr <-- STO_BTSN(len,reg,nn,bb)))
+;
+ (len,reg,nn,bb)
+;
+ (rr)
+;
+ (
+ (len: 1..32 & reg: BITSN(len) & nn: 1..len & bb: BOOL)
+ |
+ (
+ (rr:=reg<+{nn|->bb})
+ )
+ )
+;
+ (
+ (len: 1..32 & reg: BITSN(len) & nn: 1..len & bb: BOOL)
+ |
+ (
+ (rr:=reg<+{nn|->bb})
+ )
+ )
+)
+,
+(
+ (VAL_BTSN)
+;
+ (?,Val_Op,Det_Op,(bb <-- VAL_BTSN(len,reg,nn)))
+;
+ (len,reg,nn)
+;
+ (bb)
+;
+ (
+ (len: 1..32 & reg: BITSN(len) & nn: 1..len)
+ |
+ (
+ (bb:=reg(nn))
+ )
+ )
+;
+ (
+ (len: 1..32 & reg: BITSN(len) & nn: 1..len)
+ |
+ (
+ (bb:=reg(nn))
+ )
+ )
+)
+,
+(
+ (CPL_BTSN)
+;
+ (?,Val_Op,Det_Op,(rr <-- CPL_BTSN(len,reg)))
+;
+ (len,reg)
+;
+ (rr)
+;
+ (
+ (len: 1..32 & reg: BITSN(len))
+ |
+ (
+ (rr:=(reg;
+tcp))
+ )
+ )
+;
+ (
+ (len: 1..32 & reg: BITSN(len))
+ |
+ (
+ (rr:=(reg;
+tcp))
+ )
+ )
+)
+,
+(
+ (SUB_BTSN)
+;
+ (?,Val_Op,Det_Op,(rr <-- SUB_BTSN(len,reg1,reg2)))
+;
+ (len,reg1,reg2)
+;
+ (rr)
+;
+ (
+ (len: 1..32 & reg1: BITSN(len) & reg2: BITSN(len))
+ |
+ (
+ (rr:=(reg1><reg2;
+tsb))
+ )
+ )
+;
+ (
+ (len: 1..32 & reg1: BITSN(len) & reg2: BITSN(len))
+ |
+ (
+ (rr:=(reg1><reg2;
+tsb))
+ )
+ )
+)
+)

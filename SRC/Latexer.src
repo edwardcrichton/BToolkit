@@ -1,0 +1,7827 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define DocFirstTimeAround   brule(DocDirectX.1,x.doc) & \
+                             brule(DocDirectX.3,J) & \
+                             bsearch((x.doc:0),J,K)
+
+#define DocSecondTimeAround  brule(DocDirectX.1,x.doc) & \
+                             brule(DocDirectX.3,J) & \
+                             bsearch((x.doc:1),J,K)
+
+
+#define LatexProblem Writef(("  % problem\n",bsrv LaTeX berv))
+
+
+#define SelfReferentialError(x) Writef(("\n\n    %: include recursion",bsrv x berv))
+
+#define InformTabOverflow(x) Writef(("\n\n    ... tab stop overflow: % ... ",bsrv x berv))
+
+#define InformDocSyntaxError(x) Writef(("\n  Syntax error % ",bsrv x berv))
+
+#define WarnDocNotYetAnalysed(x) Writef(("\n  Warning: % has not been analysed ",x))
+
+#define WarnDocNotYetGenerated(x) Writef(("\n  Warning: % has not been generated ",x))
+
+#define WarnPrfNotYetExist(x) Writef(("\n  Warning: % does not exist ",x))
+
+#define WarnFileNotExist(x) Writef(("\n  Warning: file % does not exist ",x))
+
+#define InformTEXFileNotExist(x) Writef(("\n  Warning: TEX/% does not exist ",x))
+
+#define WarnDocNotYetConfigured(x) Writef(("\n  Warning: % is not configured ",x))
+
+#define InformNotOpIdentList(x,y) Writef(("\n\n  Syntax error %\n\n    Should be a distinct list of operation names of %\n",bsrv y berv,x))
+
+#define InformCantLatex(x)  Writef(("\n\n  Can't LaTeX:\n\n    %\n\n  DOCUMENT aborted\n",bsrv x berv))
+
+
+#define WarnTabOverflow(x) Writef(("\n    Warning: tab stop overflow: % ",bsrv x berv))
+
+#define comment_clause_kwd_init(x) \
+  bprintf("\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%  ") & \
+  bprintf(x) & \
+  bprintf("\n\%\n")
+
+#define comment_clause_kwd(x) \
+  bprintf("\n\%\n") & \
+  comment_clause_kwd_init(x)
+
+#define print_operations_kwd_nl(x) \
+  bprintf("\\bnl\\bnl\n{\\bf OPERATIONS} \\bbnl\n")
+
+#define print_clause_kwd_nl(x) \
+  bprintf("\\bbnl\n{\\bf ") & \
+  bprintf(x) & \
+  bprintf("} \\bbnl\n")
+
+
+
+#define print_clause_no_nl_kwd_nl(x) \
+  bprintf("\n{\\bf ") & \
+  bprintf(x) & \
+  bprintf("} \\bbnl\n")
+
+#define print_clause_kwd_no_nl(x) \
+  bprintf("\\bbnl\n{\\bf ") & \
+  bprintf(x) & \
+  bprintf("} \\bhsp")
+
+
+
+#define print_opn_kwd(x) \
+  bprintf(" \\bOpnWord{") & \
+  bprintf(x) & \
+  bprintf("} ")
+
+#define print_opn_kwd_sp(x) \
+  bprintf(" \\bhsp \\bOpnWord{") & \
+  bprintf(x) & \
+  bprintf("} ")
+
+
+
+
+#define print_opn_kwd_end  bprintf(" \\bOpnWord{END} ")
+
+#define print_opn_kwd_end_sp  bprintf(" \\bhsp \\bOpnWord{END} ")
+
+
+
+#define ClearDMUError bcall(MODR:bmodr(DMUErrorX.1,0))
+
+#define SetDMUError   bcall(MODR:bmodr(DMUErrorX.1,1))
+
+
+
+#define SetLatexUnExpandedFlag bcall(MODR:bmodr(FlagsX.1,0))
+
+#define SetLatexExpandedFlag   bcall(MODR:bmodr(FlagsX.1,1))
+
+#define UnExpandedFlagSet    brule(FlagsX.1,0)
+
+#define ExpandedFlagSet      brule(FlagsX.1,1)
+
+
+
+#define SetSYSTEMFlag       bcall(MODR:bmodr(FlagsX.2,1))
+
+#define SYSTEMFlagSet       brule(FlagsX.2,1)
+
+
+
+#define ReadTabCount(x)   brule(FlagsX.3,x)
+
+#define SetTabCount(x)    bcall((ARI;MODR): bmodr(FlagsX.3,x))
+
+
+
+
+#define ENUMERATIONNLStore		(ParseConstructX.1)
+#define ModrENUMERATIONNLStore(x)	bmodr(ENUMERATIONNLStore,x)
+#define ReadENUMERATIONNLStore(x)	brule(ENUMERATIONNLStore,x)
+
+#define MACHINENLStore			(ParseConstructX.2)
+#define ModrMACHINENLStore(x)		bmodr(MACHINENLStore,x)
+#define ReadMACHINENLStore(x)		brule(MACHINENLStore,x)
+
+#define REFINEMENTNLStore		(ParseConstructX.3)
+#define ModrREFINEMENTNLStore(x)	bmodr(REFINEMENTNLStore,x)
+#define ReadREFINEMENTNLStore(x)	brule(REFINEMENTNLStore,x)
+
+#define IMPLEMENTATIONNLStore		(ParseConstructX.4)
+#define ModrIMPLEMENTATIONNLStore(x)	bmodr(IMPLEMENTATIONNLStore,x)
+#define ReadIMPLEMENTATIONNLStore(x)	brule(IMPLEMENTATIONNLStore,x)
+
+#define REFINESNLStore			(ParseConstructX.5)
+#define ModrREFINESNLStore(x)		bmodr(REFINESNLStore,x)
+#define ReadREFINESNLStore(x)		brule(REFINESNLStore,x)
+
+#define DEFINITIONSNLStore		(ParseConstructX.6)
+#define ModrDEFINITIONSNLStore(x)	bmodr(DEFINITIONSNLStore,x)
+#define ReadDEFINITIONSNLStore(x)	brule(DEFINITIONSNLStore,x)
+
+#define SETSNLStore			(ParseConstructX.7)
+#define ModrSETSNLStore(x)		bmodr(SETSNLStore,x)
+#define ReadSETSNLStore(x)		brule(SETSNLStore,x)
+
+#define CONSTANTSNLStore		(ParseConstructX.8)
+#define ModrCONSTANTSNLStore(x)		bmodr(CONSTANTSNLStore,x)
+#define ReadCONSTANTSNLStore(x)		brule(CONSTANTSNLStore,x)
+
+#define PROPERTIESNLStore		(ParseConstructX.9)
+#define ModrPROPERTIESNLStore(x)	bmodr(PROPERTIESNLStore,x)
+#define ReadPROPERTIESNLStore(x)	brule(PROPERTIESNLStore,x)
+
+#define CONSTRAINTSNLStore		(ParseConstructX.10)
+#define ModrCONSTRAINTSNLStore(x)	bmodr(CONSTRAINTSNLStore,x)
+#define ReadCONSTRAINTSNLStore(x)	brule(CONSTRAINTSNLStore,x)
+
+#define USESNLStore			(ParseConstructX.11)
+#define ModrUSESNLStore(x)		bmodr(USESNLStore,x)
+#define ReadUSESNLStore(x)		brule(USESNLStore,x)
+
+#define SEESNLStore			(ParseConstructX.12)
+#define ModrSEESNLStore(x)		bmodr(SEESNLStore,x)
+#define ReadSEESNLStore(x)		brule(SEESNLStore,x)
+
+#define EXTENDSNLStore			(ParseConstructX.13)
+#define ModrEXTENDSNLStore(x)		bmodr(EXTENDSNLStore,x)
+#define ReadEXTENDSNLStore(x)		brule(EXTENDSNLStore,x)
+
+#define INCLUDESNLStore			(ParseConstructX.14)
+#define ModrINCLUDESNLStore(x)		bmodr(INCLUDESNLStore,x)
+#define ReadINCLUDESNLStore(x)		brule(INCLUDESNLStore,x)
+
+#define IMPORTSNLStore			(ParseConstructX.15)
+#define ModrIMPORTSNLStore(x)		bmodr(IMPORTSNLStore,x)
+#define ReadIMPORTSNLStore(x)		brule(IMPORTSNLStore,x)
+
+#define PROMOTESNLStore			(ParseConstructX.16)
+#define ModrPROMOTESNLStore(x)		bmodr(PROMOTESNLStore,x)
+#define ReadPROMOTESNLStore(x)		brule(PROMOTESNLStore,x)
+
+#define VARIABLESNLStore		(ParseConstructX.17)
+#define ModrVARIABLESNLStore(x)		bmodr(VARIABLESNLStore,x)
+#define ReadVARIABLESNLStore(x)		brule(VARIABLESNLStore,x)
+
+#define INVARIANTNLStore		(ParseConstructX.18)
+#define ModrINVARIANTNLStore(x)		bmodr(INVARIANTNLStore,x)
+#define ReadINVARIANTNLStore(x)		brule(INVARIANTNLStore,x)
+
+#define ASSERTIONSNLStore		(ParseConstructX.19)
+#define ModrASSERTIONSNLStore(x)	bmodr(ASSERTIONSNLStore,x)
+#define ReadASSERTIONSNLStore(x)	brule(ASSERTIONSNLStore,x)
+
+#define INITIALISATIONNLStore		(ParseConstructX.20)
+#define ModrINITIALISATIONNLStore(x)	bmodr(INITIALISATIONNLStore,x)
+#define ReadINITIALISATIONNLStore(x)	brule(INITIALISATIONNLStore,x)
+
+#define OPERATIONSNLStore		(ParseConstructX.21)
+#define ModrOPERATIONSNLStore(x)	bmodr(OPERATIONSNLStore ,x)
+#define ReadOPERATIONSNLStore(x)	brule(OPERATIONSNLStore ,x)
+
+#define SYSTEMNLStore			(ParseConstructX.22)
+#define ModrSYSTEMNLStore(x)		bmodr(SYSTEMNLStore,x)
+#define ReadSYSTEMNLStore(x)		brule(SYSTEMNLStore,x)
+
+#define INTERFACENLStore		(ParseConstructX.23)
+#define ModrINTERFACENLStore(x)		bmodr(INTERFACENLStore,x)
+#define ReadINTERFACENLStore(x)		brule(INTERFACENLStore,x)
+
+#define SUPPORTSNLStore			(ParseConstructX.24)
+#define ModrSUPPORTSNLStore(x)		bmodr(SUPPORTSNLStore,x)
+#define ReadSUPPORTSNLStore(x)		brule(SUPPORTSNLStore,x)
+
+#define OPERATIONSFILTERStore		(LatexFromUserX.4)
+#define ModrOPERATIONSFILTERStore(x)	bmodr(OPERATIONSFILTERStore,x)
+#define ReadOPERATIONSFILTERStore(x)	brule(OPERATIONSFILTERStore,x)
+
+/*
+#define trans_tac ((machineX;MODR;ARI;transX;CATL;WRITE)~)
+
+  no ARI !!!
+
+*/
+
+#define trans_tac ((machineX;MODR;transX;CATL;WRITE)~)
+
+
+#define IncTabCount     bcall((TabCountX;WRITE): inc_tab_count_0)
+#define DecTabCount     bcall((TabCountX;WRITE): dec_tab_count_0)
+
+
+#define SetIndent       bcall(WRITE: bprintf("\\bsetindent\n"))
+#define ResetIndent     bcall(WRITE: bprintf("\\bresetindent\n"))
+#define BeginTabbing    bcall(WRITE: bprintf("\n\\begin{tabbing}\n\\bSetTabs\n"))
+#define EndTabbing      bcall(WRITE: bprintf("\n\\end{tabbing}\n"))
+#define RestoreTabbing  BeginTabbing & \
+                        bcall(((WRITE;ARI)~;TabCountX)~: restore_tab_0)
+
+#define LargeNegVSpace  bcall(WRITE: bprintf("\\vspace{-6.5ex}"))
+#define MedNegVSpace    bcall(WRITE: bprintf("\\vspace{-4.5ex}"))
+#define SmallNegVSpace  bcall(WRITE: bprintf("\\vspace{-1.5ex}"))
+#define PosVSpace       bcall(WRITE: bprintf("\\vspace{3.5ex}"))
+
+#define PrintTopLine \
+  bcall(WRITE: bprintf("\\ \\rule{\\textwidth}{.1ex}\\\\[1ex]\n"))
+
+#define PrintBotLine \
+  bcall(WRITE: bprintf("\\ \\\\\\rule{\\textwidth}{.1ex}\n")) & \
+  MedNegVSpace
+
+
+#define PrintXrefLine \
+  bcall(WRITE: bprintf("\\hspace*{\\bxrefindent}\\rule{\\bxrefwidth}{.1ex}\n"))
+
+/*
+#define BeginClaXRef \
+  EndTabbing & \
+  ResetIndent & \
+  bcall(WRITE: bprintf("\n\%\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\% Clause cross-references\n\%\n")) & \
+  PrintXrefLine & \
+  bcall(WRITE: bprintf("\\bxrefhead{Cross-references}\n"))
+
+#define EndClaXref \
+  PrintXrefLine & \
+  LargeNegVSpace & \
+  SetIndent & \
+  RestoreTabbing
+*/
+
+#define BeginClaXRef \
+  EndTabbing & \
+  ResetIndent & \
+  bcall(WRITE: bprintf("\n\%\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\% Clause cross-references\n\%\n")) & \
+  bcall(WRITE: bprintf("\\bxrefhead{Cross-references}\n"))
+
+#define EndClaXref \
+  MedNegVSpace & \
+  SetIndent & \
+  RestoreTabbing
+
+
+/*
+#define BeginConXRef(x) \
+   bcall(WRITE: bprintf("\%\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\% Construct cross-references for %\n\%\n",x)) & \
+  PrintXrefLine & \
+  bcall(WRITE: bprintf("\\bxrefhead{Cross-references for %}\n",x))
+
+#define EndConXref \
+  PrintXrefLine & \
+  MedNegVSpace
+*/
+#define BeginConXRef(x) \
+   bcall(WRITE: bprintf("\%\n\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\% Construct cross-references for %\n\%\n",x)) & \
+  bcall(WRITE: bprintf("\\bxrefhead{Cross-references for %}\n",x))
+
+/*
+#define EndConXref \
+  MedNegVSpace
+*/
+
+#define EndConXref \
+  bcall(WRITE: bprintf("\\vskip 3.5ex \n"))
+
+
+#define Printbbnl   bcall(WRITE: bprintf("\\bbnl"))
+#define Printbnl    bcall(WRITE: bprintf("\\bnl"))
+
+
+#define PrintAnnot(x)       bcall((CATL;WRITE): bprintf("%",x))
+
+
+#define ReadDeclarationString(x)     brule(LatexFromUserX.5,x)
+#define ModifyDeclarationString(x)   bmodr(LatexFromUserX.5,x)
+   
+#define ReadExecutableString(x)   brule(LatexFromUserX.6,x)
+#define ModifyExecutableString(x) bmodr(LatexFromUserX.6,x)
+   
+
+
+THEORY LatexARIX IS
+
+  ?
+#define LatexARI_dec(x) bcall((ARI~;MODR):bmodr(LatexARIX.1,(x-1)))
+#define LatexARI_inc(x) bcall((ARI~;MODR):bmodr(LatexARIX.1,(x+1)))
+#define LatexARI_res(x) brule(LatexARIX.1,x)
+
+END
+
+&
+
+THEORY FlagsX IS 
+
+  0;       /* FlagsX.1 */  /* expanded/unexpanded flag */ 
+
+  0;       /* FlagsX.2 */ /* SYSTEM flag */
+
+  0        /* FlagsX.3 */ /* Tab count */
+
+END
+
+&
+
+THEORY DMUErrorX IS 0 END &
+
+THEORY CleanDMUX IS
+
+#define CleanDMU bcall((CleanDMUX;MODR~): cl_dmu)
+
+  bmodr(PROCOMMENTX.1,?) &
+  bmodr(EPICOMMENTX.1,?) &
+  bmodr(NAMEX.1,?) &
+  bmodr(SYSTEMX.1,?) &
+  bmodr(SUPPORTSX.1,?) &
+  bmodr(REFINESX.1,?) &
+  bmodr(PARAMETERSX.1,?) &
+  bmodr(DEFINITIONSX.1,?) &
+  bmodr(SETSX.1,?) &
+  bmodr(CONSTANTSX.1,?) &
+  bmodr(PROPERTIESX.1,?) &
+  bmodr(CONSTRAINTSX.1,?) &
+  bmodr(USESX.1,?) &
+  bmodr(SEESX.1,?) &
+  bmodr(EXTENDSX.1,?) &
+  bmodr(INCLUDESX.1,?) &
+  bmodr(IMPORTSX.1,?) &
+  bmodr(PROMOTESX.1,?) &
+  bmodr(VARIABLESX.1,?) &
+  bmodr(INVARIANTX.1,?) &
+  bmodr(ASSERTIONSX.1,?) &
+  bmodr(INITIALISATIONX.1,?) &
+  bmodr(OPERATIONSX.1,?)
+ =>
+  cl_dmu
+
+END
+
+&
+
+THEORY XRefX IS
+
+#define XRefSto          (XRefX.1)
+#define ReadXRefSto(x)   brule(XRefSto,x)
+#define ModrXRefSto(x)   bcall(MODR:bmodr(XRefSto,x))
+
+#define LabelsCreatedSto          (XRefX.2)
+#define ReadLabelsCreatedSto(x)   brule(LabelsCreatedSto,x)
+#define ModrLabelsCreatedSto(x)   bcall(MODR:bmodr(LabelsCreatedSto,x))
+
+#define SVARIABLESSto          (XRefX.3)
+#define ReadSVARIABLESSto(x)   brule(SVARIABLESSto,x)
+#define ModrSVARIABLESSto(x)   bcall(MODR:bmodr(SVARIABLESSto,x))
+
+#define SSETNAMESSto          (XRefX.4)
+#define ReadSSETNAMESSto(x)   brule(SSETNAMESSto,x)
+#define ModrSSETNAMESSto(x)   bcall(MODR:bmodr(SSETNAMESSto,x))
+
+#define SCONSTANTSSto          (XRefX.5)
+#define ReadSCONSTANTSSto(x)   brule(SCONSTANTSSto,x)
+#define ModrSCONSTANTSSto(x)   bcall(MODR:bmodr(SCONSTANTSSto,x))
+
+#define SOPNAMESSto          (XRefX.6)
+#define ReadSOPNAMESSto(x)   brule(SOPNAMESSto,x)
+#define ModrSOPNAMESSto(x)   bcall(MODR:bmodr(SOPNAMESSto,x))
+
+#define SSUBMCHSto          (XRefX.7)
+#define ReadSSUBMCHSto(x)   brule(SSUBMCHSto,x)
+#define ModrSSUBMCHSto(x)   bcall(MODR:bmodr(SSUBMCHSto,x))
+
+#define SSUBABSSto          (XRefX.8)
+#define ReadSSUBABSSto(x)   brule(SSUBABSSto,x)
+#define ModrSSUBABSSto(x)   bcall(MODR:bmodr(SSUBABSSto,x))
+
+#define CurrXRefClauseSto          (XRefX.9)
+#define ReadCurrXRefClauseSto(x)   brule(CurrXRefClauseSto,x)
+#define ModrCurrXRefClauseSto(x)   bcall(MODR:bmodr(CurrXRefClauseSto,x))
+
+#define ConXRefSto          (XRefX.10)
+#define ReadConXRefSto(x)   brule(ConXRefSto,x)
+#define ModrConXRefSto(x)   bcall(MODR:bmodr(ConXRefSto,x))
+
+#define SDEFINITIONSSto          (XRefX.11)
+#define ReadSDEFINITIONSSto(x)   brule(SDEFINITIONSSto,x)
+#define ModrSDEFINITIONSSto(x)   bcall(MODR:bmodr(SDEFINITIONSSto,x))
+
+#define StoreXRefSets         bcall(XRefX~: sto_cf_sets)
+#define StoreXRefConstants    bcall(XRefX~: sto_cf_constants)
+#define StoreXRefDefinitions  bcall(XRefX~: sto_cf_definitions)
+#define StoreXRefVariables    bcall(XRefX~: sto_cf_variables)
+#define StoreXRefOpnames      bcall(XRefX~: sto_cf_opnames)
+#define StoreXRefSubMchnames  bcall(XRefX~: sto_cf_mchnames)
+#define StoreXRefSubRefnames  bcall(XRefX~: sto_cf_refnames)
+
+#define var_xr  1
+#define set_xr  2
+#define cst_xr  3
+#define def_xr  4
+#define op_xr   5
+#define mch_xr  6
+#define ref_xr  7
+
+#define CheckXRef(x) \
+	bcall(((WRITE)~;XRefX)~: check_x_ref_0(x))
+
+
+  ?;  /* 1. variable, set, constant & op names of current machine */
+
+  ?;  /* 2. labels created */
+
+  ?;?;?;?;?;?; /* 3. -> 8. */
+
+  ?; /* 9. curr cross ref clause */
+
+  ?; /* 10. construct cross ref */
+
+  ?; /* 11. defs */
+
+  brule(SETNAMESX.1,x) &
+  ModrXRefSto((x))
+ =>
+  sto_cf_sets;
+
+  brule(CONSTANTNAMESX.1,x) &
+  ModrXRefSto((x))
+ =>
+  sto_cf_constants;
+
+  brule(DEFINITIONNAMESX.1,x) &
+  ModrXRefSto((x))
+ =>
+  sto_cf_definitions;
+
+  brule(VARIABLENAMESX.1,x) &
+  ModrXRefSto((x))
+ =>
+  sto_cf_variables;
+
+  brule(OPERATIONNAMESX.1,x) &
+  ModrXRefSto((x))
+ =>
+  sto_cf_opnames;
+
+  brule(SUBMCHNAMESX.1,x) &
+  ModrSSUBMCHSto((x))
+ =>
+  sto_cf_mchnames;
+
+  brule(SUBABSNAMESX.1,x) &
+  ModrSSUBABSSto((x))
+ =>
+  sto_cf_refnames;
+
+
+
+  check_x_ref_1(a);
+
+  ReadSSUBMCHSto(S) &
+  bsearch(a,S,T) &
+  bprintf("\\label{%}\\index{%} ",a) &
+  ReadCurrXRefClauseSto(F) &
+  ReadConXRefSto(G) &
+  ModrCurrXRefClauseSto((F,(a:?:mch_xr))) &
+  ModrConXRefSto((G,(a:?:mch_xr))) &
+  ReadLabelsCreatedSto(L) &
+  ModrLabelsCreatedSto((L,a))
+ =>
+  check_x_ref_1(a);
+
+  brule(LatexFromUserX.2,a.b)  /* its own machine name!!! */
+ =>
+  check_x_ref_1(a);
+
+  ReadSSUBABSSto(S) &
+  bsearch(a,S,T) &
+  bprintf("\\label{%}\\index{%} ",a) &
+  ReadCurrXRefClauseSto(F) &
+  ReadConXRefSto(G) &
+  ModrCurrXRefClauseSto((F,(a:?:ref_xr))) &
+  ModrConXRefSto((G,(a:?:ref_xr))) &
+  ReadLabelsCreatedSto(L) &
+  ModrLabelsCreatedSto((L,a))
+ =>
+  check_x_ref_1(a);
+
+  ReadSOPNAMESSto(S) &
+  bsearch(m(a),S,T) &
+  bprintf("\\label{%}\\index{%} ",a) &
+  ReadCurrXRefClauseSto(F) &
+  ReadConXRefSto(G) &
+  ModrCurrXRefClauseSto((F,(a:m:op_xr))) &
+  ModrConXRefSto((G,(a:m:op_xr))) &
+  ReadLabelsCreatedSto(L) &
+  ModrLabelsCreatedSto((L,a))
+ =>
+  check_x_ref_1(a);
+
+  ReadSDEFINITIONSSto(S) &
+  bsearch(m(a),S,T) &
+  bprintf("\\label{%}\\index{%} ",a) &
+  ReadCurrXRefClauseSto(F) &
+  ReadConXRefSto(G) &
+  ModrCurrXRefClauseSto((F,(a:m:def_xr))) &
+  ModrConXRefSto((G,(a:m:def_xr))) &
+  ReadLabelsCreatedSto(L) &
+  ModrLabelsCreatedSto((L,a))
+ =>
+  check_x_ref_1(a);
+
+  ReadSCONSTANTSSto(S) &
+  bsearch(m(a),S,T) &
+  bprintf("\\label{%}\\index{%} ",a) &
+  ReadCurrXRefClauseSto(F) &
+  ReadConXRefSto(G) &
+  ModrCurrXRefClauseSto((F,(a:m:cst_xr))) &
+  ModrConXRefSto((G,(a:m:cst_xr))) &
+  ReadLabelsCreatedSto(L) &
+  ModrLabelsCreatedSto((L,a))
+ =>
+  check_x_ref_1(a);
+
+  ReadSSETNAMESSto(S) &
+  bsearch(m(a),S,T) &
+  bprintf("\\label{%}\\index{%} ",a) &
+  ReadCurrXRefClauseSto(F) &
+  ReadConXRefSto(G) &
+  ModrCurrXRefClauseSto((F,(a:m:set_xr))) &
+  ModrConXRefSto((G,(a:m:set_xr))) &
+  ReadLabelsCreatedSto(L) &
+  ModrLabelsCreatedSto((L,a))
+ =>
+  check_x_ref_1(a);
+
+  ReadSVARIABLESSto(S) &
+  bsearch(m(a),S,T) &
+  bprintf("\\label{%}\\index{%} ",a) &
+  ReadCurrXRefClauseSto(F) &
+  ReadConXRefSto(G) &
+  ModrCurrXRefClauseSto((F,(a:m:var_xr))) &
+  ModrConXRefSto((G,(a:m:var_xr))) &
+  ReadLabelsCreatedSto(L) &
+  ModrLabelsCreatedSto((L,a))
+ =>
+  check_x_ref_1(a);
+
+  ReadXRefSto(S) &
+  bsearch(a,S,T) &
+  bprintf("\\label{%}\\index{%} ",a) &
+  ReadLabelsCreatedSto(L) &
+  ModrLabelsCreatedSto((L,a))
+ =>
+  check_x_ref_1(a);
+
+  check_x_ref_0(a);
+
+  DMU_GIndex_Flag_set &
+  check_x_ref_1(a)
+ =>
+  check_x_ref_0(a);
+
+  DMU_CoIndex_Flag_set &
+  check_x_ref_1(a)
+ =>
+  check_x_ref_0(a);
+
+  DMU_ClIndex_Flag_set &
+  check_x_ref_1(a)
+ =>
+  check_x_ref_0(a);
+
+  DMU_Labels_Flag_set &
+  check_x_ref_1(a)
+ =>
+  check_x_ref_0(a)
+
+END
+
+&
+
+THEORY PrintXRefX IS 
+
+#define ccrTac   ((CATL;MAP;WRITE;MODR;SHELL;ARI)~;PrintXRefX)~
+
+
+#define ConstructXRef(s)  bcall(ccrTac: co_xr_1(s))
+
+
+#define ClauseXRefNoAnnot(s)  bcall(ccrTac: cl_xr_no_an_1(s))
+
+#define OpClauseXRefNoAnnot(s)  bcall(ccrTac: op_cl_xr_no_an_1(s))
+
+#define ClauseXRefAnnot(s)  bcall(ccrTac: cl_xr_an_1(s))
+
+#define OpClauseXRefAnnot(s)  bcall(ccrTac: op_cl_xr_an_1(s))
+
+
+  ?;
+
+#define PrintSto        (PrintXRefX.2)
+#define ReadPrintSto(x) brule(PrintSto,x)
+#define ModrPrintSto(x) bmodr(PrintSto,x)
+
+  ?;
+
+#define TabOne          (PrintXRefX.3)
+#define ReadTabOne(x)   brule(TabOne,x)
+#define ModrTabOne(x)   bmodr(TabOne,x)
+
+#define TabTwo          (PrintXRefX.4)
+#define ReadTabTwo(x)   brule(TabTwo,x)
+#define ModrTabTwo(x)   bmodr(TabTwo,x)
+
+  0;0;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  brule(PrintXRefX.1,P) &
+  bmodr(PrintXRefX.1,(P,a))
+ =>
+  update_prt(a);
+
+
+/*
+  set_xref_tabstwo(bcatl(s,"x"))(n-1)
+ =>
+  set_xref_tabstwo(s)(n);
+
+  bprintf(s)
+ =>
+  set_xref_tabstwo(s)(0);
+
+  set_xref_tabsone(bcatl(s,"x"))(n-1)
+ =>
+  set_xref_tabsone(s)(n);
+
+  bprintf(bcatl(s,"\\= "))
+ =>
+  set_xref_tabsone(s)(0);
+
+  ReadTabOne(x) &
+  ReadTabTwo(y) &
+  set_xref_tabsone("MMM")(x) &
+  set_xref_tabstwo("MMM")(y) &
+  bprintf("\\= OPERATIONSMMM\\= \\kill\n")
+ =>
+  set_xref_tabs_con;
+
+  ReadTabOne(x) &
+  ReadTabTwo(y) &
+  set_xref_tabsone("MMM")(x) &
+  set_xref_tabstwo("Operation ofMMM")(y) &
+  bprintf("\\= \\kill\n")
+ =>
+  set_xref_tabs;
+
+
+  gettabtwo(m);
+
+  ReadTabTwo(n) &
+  btest(m>n) &
+  ModrTabTwo(m)
+ =>
+  gettabtwo(m);
+
+  gettabone(m);
+
+  ReadTabOne(n) &
+  btest(m>n) &
+  ModrTabOne(m)
+ =>
+  gettabone(m);
+
+  gettabone(blen(a)) &
+  gettabtwo(blen(m))
+ =>
+  get_xref_tabs(a:m:x);
+
+  get_xref_tabs(?);
+*/
+
+
+
+  c_xr_8(a);
+
+  ReadPrintSto(S) &
+  bsearch((a:s),S,T) &
+  bprintf(s)
+ =>
+  c_xr_8(a);
+
+  Append("TEX/.Btex") &
+  c_xr_8 bsmap x
+ =>
+  c_xr_7(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  c_xr_6;
+
+  bget(".Bcom",x) &
+  c_xr_7(x)
+ =>
+  c_xr_6;
+
+  bshell("$BKIT/BLIB/CreateCom sort") &
+  c_xr_6
+ =>
+  c_xr_5;
+
+  ReadPrintSto(S) &
+  ModrPrintSto((S,(a:s))) &
+  bprintf("%;\n",a)
+ =>
+  c_xr_4(a)(s);
+
+
+
+  c_xr_4(a)(bcatl(s,"\\bbpageref{",a,"}}\n")) &
+  update_prt(a)
+ =>
+  c_xr_3__(a)(s);
+
+  c_xr_3__(a)(bcatl("\\bxrefline{{\\em ",a,"}}{{\\em ",m,"}}{",s,"}{"))
+ =>
+  c_xr_3_(a)(m)(s);
+
+  c_xr_3__(a)(bcatl("\\bxrefline{{\\em ",a,"}}{}{",s,"}{"))
+ =>
+  c_xr_3_(a)(?)(s);
+
+/*
+  c_xr_4(a)(bcatl(s,"\\bbpageref{",a,"}\\\\\n"))
+ =>
+  c_xr_3(a)(s);
+
+  c_xr_3(a)(bcatl("\\> {\\em ",a,"}\\>\\>{\\sc MACHINE}\\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  con_c_xr_2(a:m:ref_xr);
+
+  IsCfg(a.ref) &
+  c_xr_3(a)(bcatl("\\> {\\em ",a,"}\\>\\>{\\sc REFINEMENT}\\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  con_c_xr_2(a:m:ref_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"}\\>\\>{\\sc MACHINE}\\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  con_c_xr_2(a:m:mch_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"}\\>{\\em ",m,"}\\>{\\sc VARIABLES}\\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  con_c_xr_2(a:m:var_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"}\\>{\\em ",m,"}\\>{\\sc SETS}\\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  con_c_xr_2(a:m:set_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"}\\>{\\em ",m,"}\\>{\\sc CONSTANTS}\\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  con_c_xr_2(a:m:cst_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"}\\>{\\em ",m,"}\\>{\\sc DEFINITIONS}\\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  con_c_xr_2(a:m:def_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"}\\>{\\em ",m,"}\\>{\\sc OPERATIONS}\\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  con_c_xr_2(a:m:op_xr);
+*/
+
+  c_xr_3_(a)(?)("{\\sc machine}")
+ =>
+  con_c_xr_2(a:m:ref_xr);
+
+  IsCfg(a.ref) &
+  c_xr_3_(a)(?)("{\\sc refinement}")
+ =>
+  con_c_xr_2(a:m:ref_xr);
+
+  c_xr_3_(a)(?)("{\\sc machine}")
+ =>
+  con_c_xr_2(a:m:mch_xr);
+
+  c_xr_3_(a)(m)("{\\sc variables}")
+ =>
+  con_c_xr_2(a:m:var_xr);
+
+  c_xr_3_(a)(m)("{\\sc sets}")
+ =>
+  con_c_xr_2(a:m:set_xr);
+
+  c_xr_3_(a)(m)("{\\sc constants}")
+ =>
+  con_c_xr_2(a:m:cst_xr);
+
+  c_xr_3_(a)(m)("{\\sc definitions}")
+ =>
+  con_c_xr_2(a:m:def_xr);
+
+  c_xr_3_(a)(m)("{\\sc operations}")
+ =>
+  con_c_xr_2(a:m:op_xr);
+
+
+
+  brule(PrintXRefX.1,P) &
+  bsearch(a,P,Q)
+ =>
+  con_c_xr_2(a:m:x);
+
+  con_c_xr_2(?);
+
+/*
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"} \\>{\\em Refinement} \\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  c_xr_2(a:m:ref_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"} \\>{\\em Machine} \\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  c_xr_2(a:m:mch_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"} \\>{\\em Variable of ",m,"} \\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  c_xr_2(a:m:var_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"} \\>{\\em Set of ",m,"} \\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  c_xr_2(a:m:set_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"} \\>{\\em Constant of ",m,"} \\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  c_xr_2(a:m:cst_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"} \\>{\\em Definition of ",m,"} \\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  c_xr_2(a:m:def_xr);
+
+  c_xr_3(a)(bcatl("\\>{\\em ",a,"} \\>{\\em Operation of ",m,"} \\>")) &
+  bprintf("\n") &
+  update_prt(a)
+ =>
+  c_xr_2(a:m:op_xr);
+*/
+
+  c_xr_3_(a)(?)("{\\sc refinement}")
+ =>
+  c_xr_2(a:m:ref_xr);
+
+  IsCfg(a.ref) &
+  c_xr_3_(a)(?)("{\\sc refinement}")
+ =>
+  c_xr_2(a:m:ref_xr);
+
+  c_xr_3_(a)(?)("{\\sc machine}")
+ =>
+  c_xr_2(a:m:mch_xr);
+
+  c_xr_3_(a)(m)("{\\sc variables}")
+ =>
+  c_xr_2(a:m:var_xr);
+
+  c_xr_3_(a)(m)("{\\sc sets}")
+ =>
+  c_xr_2(a:m:set_xr);
+
+  c_xr_3_(a)(m)("{\\sc constants}")
+ =>
+  c_xr_2(a:m:cst_xr);
+
+  c_xr_3_(a)(m)("{\\sc definitions}")
+ =>
+  c_xr_2(a:m:def_xr);
+
+  c_xr_3_(a)(m)("{\\sc operations}")
+ =>
+  c_xr_2(a:m:op_xr);
+
+
+
+
+  brule(PrintXRefX.1,P) &
+  bsearch(a,P,Q)
+ =>
+  c_xr_2(a:m:x);
+
+  c_xr_2(?);
+
+  ReadCurrXRefClauseSto(S) &
+  WriteDot &
+  bmodr(PrintXRefX.1,?) &
+  bprintf(s) &
+  BeginClaXRef &
+    Connect(".Bcom") &
+    ModrPrintSto(?) &
+    c_xr_2 bsmap S &
+    c_xr_5 &
+  EndClaXref
+ =>
+  cl_xr_an_1(s);           /* non-op clause xref - annot */
+
+  ReadCurrXRefClauseSto(S) &
+  WriteDot &
+  bmodr(PrintXRefX.1,?) &
+  bprintf(s) &
+  BeginClaXRef &
+    Connect(".Bcom") &
+    ModrPrintSto(?) &
+    c_xr_2 bsmap S &
+    c_xr_5 &
+  EndClaXref
+ =>
+  op_cl_xr_an_1(s);           /* op clause xref - annot */
+
+  ReadCurrXRefClauseSto(?) /* &
+  PrintBotLine */
+ =>
+  cl_xr_an_1(s);
+
+  ReadCurrXRefClauseSto(?) &
+  Printbbnl
+ =>
+  op_cl_xr_an_1(s);
+
+  ReadCurrXRefClauseSto(S) &
+  WriteDot &
+  bmodr(PrintXRefX.1,?) &
+  bprintf(s) &
+  BeginClaXRef &
+    Connect(".Bcom") &
+    ModrPrintSto(?) &
+    c_xr_2 bsmap S &
+    c_xr_5 &
+  EndClaXref
+ =>
+  cl_xr_no_an_1(s);        /* non-op clause xref - no-annot */
+
+  ReadCurrXRefClauseSto(S) &
+  WriteDot &
+  bmodr(PrintXRefX.1,?) &
+  bprintf(s) &
+  BeginClaXRef &
+    Connect(".Bcom") &
+    ModrPrintSto(?) &
+    c_xr_2 bsmap S &
+    c_xr_5 &
+  EndClaXref
+ =>
+  op_cl_xr_no_an_1(s);      /* op clause xref - no-annot */
+
+  ReadCurrXRefClauseSto(?)
+ =>
+  cl_xr_no_an_1(s);
+
+  ReadCurrXRefClauseSto(?)
+ =>
+  op_cl_xr_no_an_1(s);
+
+  ReadConXRefSto(S) &
+  brule(LatexFromUserX.2,a.b) &
+  WriteDot &
+  bmodr(PrintXRefX.1,?) &
+  bprintf(s) &
+  BeginConXRef(a) &
+    Connect(".Bcom") &
+    ModrPrintSto(?) &
+    con_c_xr_2 bsmap S &
+    c_xr_5 &
+  EndConXref
+ =>
+  co_xr_1(s);             /* construct xref */
+
+  ReadConXRefSto(?)
+ =>
+  co_xr_1(s)
+
+END
+
+&
+
+THEORY ProcessIndexX IS
+
+#define piTac  ((REV;FLAT;RULE;MODR;ARI;WRITE;SHELL;MAP;ARI)~;ProcessIndexX)~
+
+#define ProcessIndex(x)  bcall(piTac: pi_00(x))
+
+
+  chk_nl_1(x)(y);
+
+  bprintf("\\\\\n\hspace*{1em} ")
+ =>
+  chk_nl_1(x)(x);
+
+  chk_nl_1(x)(y*10)
+ =>
+  chk_nl_0(x)(y);
+
+  bprintf(" %,",n) &
+  chk_nl_0(x)(x/10)
+ =>
+  pi_9(n,x,y);
+
+  bprintf(" %",n)
+ =>
+  pi_9(n,x,x);
+
+  pi_9 bnmap n
+ =>
+  pi_8(n);
+
+  pi_8(n)
+ =>
+  pi_7(n);
+
+  pi_8(bflat(m,n))
+ =>
+  pi_7(n,m);
+
+
+
+
+      /*** to deal with space either side of \ ***/
+
+  bprintf("%",a)
+ =>
+  pi_6_(a);
+
+  pi_6_(a) &
+  bprintf("\\") &
+  pi_6_(b)
+ =>
+  pi_6_(a\b);
+
+  bprintf("\\begin{tabular}{l}\n{\\bf ",a,a) &
+  pi_6_(a) &
+  bprintf("}\\bhsp {\\bf \\pageref{") &
+  pi_6_(a) &
+  bprintf("} }\\\\\n\\hspace*{1em} ") &
+  pi_7(brev(n)) &
+  bprintf("\n\\end{tabular}\\\\\n")
+ =>
+  pi_6(a:n);
+
+
+/*
+  bprintf("\\begin{tabular}{l}\n{\\bf %}\\bhsp {\\bf \\pageref{%} }\\\\\n\\hspace*{1em} ",a,a) &
+  pi_7(brev(n)) &
+  bprintf("\n\\end{tabular}\\\\\n")
+ =>
+  pi_6(a:n);
+*/
+
+      /*** to deal with space either side of \ ***/
+
+
+
+
+  pi_6(?);
+
+  Connect("TEX/.idx") &
+  bprintf("\n\\begin{twocolumn}\n\\pagenumbering{roman}\n{\\LARGE{\\bf Index} }\\bbnl\\ \\bbnl\n") &
+  pi_6 bsmap x &
+  bprintf("\\end{twocolumn}\n") 
+ =>
+  pi_5(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  pi_4;
+
+  bget(".Bcom",x) &
+  pi_5(x)
+ =>
+  pi_4;
+
+  bshell("$BKIT/BLIB/CreateCom sort") &
+  pi_4
+ =>
+  pi_3;
+
+
+
+  bprintf("%",a)
+ =>
+  pi_2_(a);
+
+  bprintf("%;\n",s) &
+  pi_1(n+1)
+ =>
+  pi_2(n)(m)(s);
+
+  brule(IndexX.I,(i:q)) &
+  bmodr(IndexX.I,?) &
+  pi_2(n)(I)(i:(p,q))
+ =>
+  pi_2(n)(m)(i:p);
+
+  brule(IndexX.I,(i:q)) &
+  bsearch(q,p,r) &
+  bmodr(IndexX.I,?) &
+  pi_2(n)(I)(i:p)
+ =>
+  pi_2(n)(m)(i:p);
+
+  brule(IndexX.I,(i:p)) &
+  bmodr(IndexX.I,?) &
+  pi_2(n)(I)(i:p)
+ =>
+  pi_2(n)(m)(i:p);
+
+  pi_1(n);
+
+  brule(IndexX.n,x) &
+  bmodr(IndexX.n,?) &
+  pi_2(n)(0)(x)
+ =>
+  pi_1(n);
+
+  brule(IndexX.n,?) &
+  pi_1(n+1)
+ =>
+  pi_1(n);
+
+  bcrelr(IndexX,x) &
+  pi_1(1) &
+  bclose &
+  pi_3
+ =>
+  pi_0(x);
+
+  Connect(".Bcom") &
+  WriteDot &
+  pi_0(x)
+ =>
+  pi_00(x)
+
+END
+
+&
+
+THEORY TabCountX IS 
+
+/*
+#define FirstOpAnnot(x) \
+   EndTabbing & \
+     SmallNegVSpace & \
+     PrintAnnot(x) & \
+     PrintBotLine & \
+   RestoreTabbing
+
+#define OpAnnot(x) \
+   EndTabbing & \
+     LargeNegVSpace & \
+     PrintAnnot(x) & \
+     PrintBotLine & \
+   RestoreTabbing
+
+#define Annot(x) \
+   EndTabbing & \
+     SmallNegVSpace & \
+     PrintTopLine & \
+     PrintAnnot(x) & \
+     PrintBotLine & \
+   RestoreTabbing
+
+#define FinalClauseAnnot(x) \
+   EndTabbing & \
+     SmallNegVSpace & \
+     PrintAnnot(x) & \
+     SmallNegVSpace & \
+   RestoreTabbing
+
+#define FinalClauseAnnotNoXRef(x) \
+   EndTabbing & \
+     PosVSpace & \
+     PrintAnnot(x) & \
+     PrintBotLine & \
+   RestoreTabbing
+*/
+
+#define FirstOpAnnot(x) \
+   EndTabbing & \
+     MedNegVSpace & \
+     PrintAnnot(x) & \
+   RestoreTabbing
+
+#define OpAnnot(x) \
+   EndTabbing & \
+     MedNegVSpace & \
+     PrintAnnot(x) & \
+   RestoreTabbing
+
+#define Annot(x) \
+   EndTabbing & \
+     SmallNegVSpace & \
+     PrintAnnot(x) & \
+     SmallNegVSpace & \
+   RestoreTabbing
+
+#define FinalClauseAnnot(x) \
+   EndTabbing & \
+     SmallNegVSpace & \
+     PrintAnnot(x) & \
+     SmallNegVSpace & \
+   RestoreTabbing
+
+#define FinalClauseAnnotNoXRef(x) \
+   EndTabbing & \
+     PosVSpace & \
+     PrintAnnot(x) & \
+   RestoreTabbing
+
+
+
+#define PrologueAnnot(x) \
+  PrintAnnot(bcatl(x,"0QjKOo  _?_oO00Oo_?_ oOKjQ0"))
+
+#define EpilogueAnnot(x) \
+  PrintAnnot(bcatl(x,"0QjKOo  _?_oO00Oo_?_ oOKjQ0"))
+
+
+  bprintf("\\+\\>") &
+  restore_tab_1(n-1)
+ =>
+  restore_tab_1(n);
+
+  restore_tab_1(0);
+
+  ReadTabCount(n) &
+  restore_tab_1(n)/* &
+  bprintf(" \\bbnl\n")*/
+ =>
+  restore_tab_0;
+
+  ReadTabCount(n) &
+  btest(n>15) &
+  WarnTabOverflow(n) &
+  restore_tab_1(15) &
+  bprintf(" \\bbnl\n")
+ =>
+  restore_tab_0;
+
+
+  ReadTabCount(x) &
+  SetTabCount((x-1)) &
+  bprintf(" \\-")
+ =>
+  dec_tab_count_0;
+
+  ReadTabCount(0) &
+  WarnTabOverflow(0-1)
+ =>
+  dec_tab_count_0;
+
+
+  ReadTabCount(x) &
+  SetTabCount((x+1)) &
+  bprintf("\\+")
+ =>
+  inc_tab_count_0;
+
+  ReadTabCount(15) &
+  WarnTabOverflow(16)
+ =>
+  inc_tab_count_0;
+
+
+
+  brule(LatexProofX.1,a.b.n)       /* a proof */
+ =>
+  x;
+
+  DMUErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY switchX IS
+
+  brule(LatexFromUserX.2,a.b) &
+  Connect("TEX/.Btex") &
+  WriteDot &
+  PrologueAnnot(t) &
+  SetIndent &
+  BeginTabbing
+ =>
+  pro_log(t);
+   
+  brule(LatexFromUserX.2,a.b) &
+  Connect("TEX/.Btex") &
+  WriteDot &
+  comment_clause_kwd_init(("%",a.b.tex)) &
+  SetIndent &
+  BeginTabbing
+ =>
+  pro_log(?);
+   
+
+
+   
+  brule(LatexFromUserX.2,a.b) &
+  comment_clause_kwd("END") &
+  print_clause_kwd_nl("END") &
+  EndTabbing &
+  ResetIndent &
+  EpilogueAnnot(t) &
+  bclose
+ =>
+  epi_log(t);
+   
+  DMU_CoIndex_Flag_set &
+  brule(LatexFromUserX.2,a.b) &
+  comment_clause_kwd("END") &
+  print_clause_kwd_nl("END") &
+  EndTabbing &
+  ResetIndent &
+  EpilogueAnnot(t) &
+  ConstructXRef("") &
+  bclose
+ =>
+  epi_log(t);
+   
+
+  brule(LatexFromUserX.2,a.b) &
+  comment_clause_kwd("END") &
+  print_clause_kwd_nl("END") &
+  EndTabbing &
+  ResetIndent &
+  bclose
+ =>
+  epi_log(?);
+   
+  DMU_CoIndex_Flag_set &
+  brule(LatexFromUserX.2,a.b) &
+  comment_clause_kwd("END") &
+  print_clause_kwd_nl("END") &
+  EndTabbing &
+  ResetIndent &
+  ConstructXRef("") &
+  bclose
+ =>
+  epi_log(?);
+   
+
+
+/*
+  WriteDot &
+  comment_clause_kwd(i) &
+  print_clause_kwd_no_nl(i) &
+  bcall(trans_tac: trans_semicolon(0)(Q)) &
+  bprintf("\n") 
+ =>
+  construct_clause(F,i,Q);
+*/
+  WriteDot &
+  comment_clause_kwd(i) &
+  print_clause_kwd_no_nl(i) &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(Q)) &
+  DecTabCount
+ =>
+  construct_clause(F,i,Q);
+
+
+  WriteDot &
+  brule(F,1) &
+  comment_clause_kwd(i) &
+  print_clause_kwd_nl(i) &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(Q)) &
+  DecTabCount
+ =>
+  construct_clause(F,i,Q);
+   
+
+
+  WriteDot &
+  construct_clause(SYSTEMNLStore,"SYSTEM",Q)
+ =>
+  construct_clause_0(bse)(Q);
+   
+  WriteDot &
+  construct_clause(INTERFACENLStore,"INTERFACE",Q)
+ =>
+  construct_clause_0(itf)(Q);
+   
+  WriteDot &
+  construct_clause(ENUMERATIONNLStore,"ENUMERATION",Q)
+ =>
+  construct_clause_0(enm)(Q);
+   
+  WriteDot &
+  construct_clause(MACHINENLStore,"MACHINE",Q)
+ =>
+  construct_clause_0(mch)(Q);
+   
+  WriteDot &
+  construct_clause(REFINEMENTNLStore,"REFINEMENT",Q)
+ =>
+  construct_clause_0(ref)(Q);
+   
+  WriteDot &
+  construct_clause(IMPLEMENTATIONNLStore,"IMPLEMENTATION",Q)
+ =>
+  construct_clause_0(imp)(Q);
+
+
+  brule(SUPPORTSX.1,S) &
+  bcall((switchX;WRITE~): (clause("SUPPORTS",SUPPORTSNLStore,trans_comma(0)(S))))
+ =>
+  sys_clause_supports;
+
+  brule(SUPPORTSX.1,?)
+ =>
+  sys_clause_supports;
+
+  brule(SETSX.1,S) &
+  bcall((switchX;WRITE~): (clause("SETS",SETSNLStore,trans_comma(0)(S))))
+ =>
+  sys_clause_sets;
+
+  brule(SETSX.1,?)
+ =>
+  sys_clause_sets;
+
+  WriteDot &
+  bcall((switchX;WRITE~): sys_clause_supports) &
+  bcall((switchX;WRITE~): sys_clause_sets) &
+  comment_clause_kwd("IS") &
+  print_clause_kwd_nl("IS") &
+  IncTabCount &
+  bcall(trans_tac: t(n)(C)) &
+  DecTabCount 
+ =>
+  sys_clause(t(n)(C));
+   
+  sys_clause(t(n)(?));
+   
+
+
+  WriteDot &
+  comment_clause_kwd(i) &
+  print_clause_kwd_no_nl(i) &
+  bcall(trans_tac: t(n)(C))
+ =>
+  clause(i,F,t(n)(C));
+
+  brule(F,1) &
+  WriteDot &
+  comment_clause_kwd(i) &
+  print_clause_kwd_nl(i) &
+  IncTabCount &
+  bcall(trans_tac: t(n)(C)) &
+  DecTabCount 
+ =>
+  clause(i,F,t(n)(C));
+
+
+
+  clause(i,F,t(n)(?));
+   
+
+
+  WriteDot &
+  comment_clause_kwd(i) &
+  print_clause_kwd_no_nl(i) &
+  bcall(trans_tac: t(n)(C))
+ =>
+  ops_clause(i,F,t(n)(C));
+
+  brule(F,1) &
+  WriteDot &
+  comment_clause_kwd(i) &
+  print_operations_kwd_nl(i) &
+  IncTabCount &
+  bcall(trans_tac: t(n)(C)) &
+  DecTabCount 
+ =>
+  ops_clause(i,F,t(n)(C));
+
+
+
+  ops_clause(i,F,t(n)(?));
+   
+
+
+  DMUErrorFlagged
+ =>
+  x
+   
+END
+
+&
+
+#define DoLatexConstruct_UnExpanded(k) \
+  UnExpandedFlagSet & \
+  brule(LatexFromUserX.2,k.T) & \
+  brule(PROCOMMENTX.1,Y) & \
+  brule(NAMEX.1,Q) & \
+  brule(DEFINITIONSX.1,K) & \
+  brule(REFINESX.1,M) & \
+  brule(SETSX.1,C) & \
+  brule(CONSTANTSX.1,E) & \
+  brule(PROPERTIESX.1,G) & \
+  brule(CONSTRAINTSX.1,m) & \
+  brule(USESX.1,B) & \
+  brule(SEESX.1,A) & \
+  brule(EXTENDSX.1,L) & \
+  brule(INCLUDESX.1,b) & \
+  brule(IMPORTSX.1,S) & \
+  brule(PROMOTESX.1,c) & \
+  brule(VARIABLESX.1,J) & \
+  brule(INVARIANTX.1,e) & \
+  brule(ASSERTIONSX.1,g) & \
+  brule(INITIALISATIONX.1,h) & \
+  brule(OPERATIONSX.1,n) & \
+  brule(EPICOMMENTX.1,W) & \
+  ModrConXRefSto(?) & \
+  bcall((switchX;MAP;WRITE~)~: (pro_log(Y))) & \
+  bcall((switchX~;WRITE~): (construct_clause_0(T)(Q))) & \
+  bprintf("\\label{%}\\index{%}  ",k) & \
+  StoreXRefSubRefnames & \
+  bcall((switchX;WRITE~): (clause("REFINES",REFINESNLStore,trans_comma(0)(M)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  bcall((switchX;WRITE~): (clause("CONSTRAINTS",CONSTRAINTSNLStore,trans_ampersand(0)(m)))) & \
+  StoreXRefSubMchnames & \
+  bcall((switchX;WRITE~): (clause("SEES",SEESNLStore,trans_comma(0)(A)))) & \
+  bcall((switchX;WRITE~): (clause("USES",USESNLStore,trans_comma(0)(B)))) & \
+  bcall((switchX;WRITE~): (clause("EXTENDS",EXTENDSNLStore,trans_comma(0)(L)))) & \
+  bcall((switchX;WRITE~): (clause("INCLUDES",INCLUDESNLStore,trans_comma(0)(b)))) & \
+  bcall((switchX;WRITE~): (clause("IMPORTS",IMPORTSNLStore,trans_comma(0)(S)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  bcall((switchX;WRITE~): (clause("PROMOTES",PROMOTESNLStore,trans_comma(0)(c)))) & \
+  StoreXRefSets & \
+  bcall((FLAT;switchX;WRITE)~: (clause("SETS",SETSNLStore,trans_semicolon(0)(C)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  StoreXRefConstants & \
+  bcall((switchX;WRITE~): (clause("CONSTANTS",CONSTANTSNLStore,trans_comma(0)(E)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  bcall((switchX;WRITE~): (clause("PROPERTIES",PROPERTIESNLStore,trans_ampersand_xref(0)(G)))) & \
+  StoreXRefVariables & \
+  bcall((switchX;WRITE~): (clause("VARIABLES",VARIABLESNLStore,trans_comma(0)(J)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  bcall((switchX;WRITE~): (clause("INVARIANT",INVARIANTNLStore,trans_ampersand_xref(0)(e)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  bcall((switchX;WRITE~): (clause("ASSERTIONS",ASSERTIONSNLStore,trans_ampersand_xref(0)(g)))) & \
+  StoreXRefOpnames & \
+  bcall((switchX;WRITE~): (clause("INITIALISATION",INITIALISATIONNLStore,transinit_xref_0(0)(h)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  StoreXRefOpnames & \
+  bcall((switchX;WRITE~): (ops_clause("OPERATIONS",OPERATIONSNLStore,transops_xref_00(0)(n)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  StoreXRefDefinitions & \
+  bcall((FLAT;switchX;WRITE)~: (clause("DEFINITIONS",DEFINITIONSNLStore,trans_semicolon(0)(K)))) & \
+  ModrXRefSto((?)) & \
+  ModrCurrXRefClauseSto((?)) & \
+  bcall((switchX;MAP;WRITE~)~: (epi_log(W))) & \
+  bcall(SHELL:bshell("$BKIT/BLIB/ClearBerr"))
+
+
+#define DoLatexEnumeration_UnExpanded(k) \
+  UnExpandedFlagSet & \
+  brule(NAMEX.1,Q) & \
+  brule(LatexFromUserX.2,k.T) & \
+  brule(PROCOMMENTX.1,Y) & \
+  brule(EPICOMMENTX.1,W) & \
+  brule(NAMEX.1,Q) & \
+  brule(SETSX.1,C) & \
+  brule(SEESX.1,S) & \
+  bcall((switchX;MAP;WRITE~)~: (pro_log(Y))) & \
+  bcall((switchX~;WRITE~): (construct_clause_0(T)(Q))) & \
+  bcall((FLAT;switchX;WRITE)~: (clause("SEES",SEESNLStore,trans_comma(0)(S)))) & \
+  bcall((FLAT;switchX;WRITE)~: (clause("SETS",SETSNLStore,trans_semicolon(0)(C)))) & \
+  bcall((switchX;MAP;WRITE~)~: (epi_log(W))) & \
+  bcall(SHELL:bshell("$BKIT/BLIB/ClearBerr")) & \
+  Latex_File
+
+
+
+#define DoLatexInterface_UnExpanded(k) \
+  UnExpandedFlagSet & \
+  brule(NAMEX.1,Q) & \
+  brule(LatexFromUserX.2,k.T) & \
+  brule(PROCOMMENTX.1,Y) & \
+  brule(IMPORTSX.1,S) & \
+  brule(EPICOMMENTX.1,W) & \
+  brule(OPERATIONSX.1,n) & \
+  bcall((switchX;MAP;WRITE~)~: (pro_log(Y))) & \
+  bcall((switchX~;WRITE~): (construct_clause_0(T)(Q))) & \
+  bcall((switchX;WRITE~): (clause("OPERATIONS",OPERATIONSNLStore,transops(0)(n)))) & \
+  bcall((switchX;WRITE~): (clause("IMPORTS",IMPORTSNLStore,trans_comma(0)(S)))) & \
+  bcall((switchX;MAP;WRITE~)~: (epi_log(W))) & \
+  bcall(SHELL:bshell("$BKIT/BLIB/ClearBerr")) & \
+  Latex_File
+
+
+
+#define DoLatexBase_UnExpanded(k) \
+  UnExpandedFlagSet & \
+  brule(LatexFromUserX.2,k.T) & \
+  brule(PARAMETERSX.1,l) & \
+  brule(PROCOMMENTX.1,Y) & \
+  brule(NAMEX.1,Q) & \
+  brule(SYSTEMX.1,s) & \
+  brule(EPICOMMENTX.1,W) & \
+brule(DEFINITIONSX.1,K) & \
+  bcall((switchX;MAP;WRITE~)~: (pro_log(Y))) & \
+  bcall((switchX~;WRITE~): (construct_clause_0(T)(Q))) & \
+  bcall((switchX;WRITE~): (sys_clause(trans_semicolon(0)(s)))) & \
+bcall((FLAT;switchX;WRITE)~: (clause("DEFINITIONS",DEFINITIONSNLStore,trans_semicolon(0)(K)))) & \
+  bcall((switchX;MAP;WRITE~)~: (epi_log(W))) & \
+  bcall(SHELL:bshell("$BKIT/BLIB/ClearBerr")) & \
+  Latex_File
+
+
+
+
+
+THEORY unaryX IS
+
+  bprintf(" $%$ ", JOK1 blank0?) &
+  bprintf("( ") &
+  trans(0)(b) &
+  bprintf(" )")
+ =>
+  trans(n)(JOK1(b));
+
+#define unitrans(t,o) \
+  bprintf(o) & \
+  trans(0)(P) & \
+  bprintf(" )") \
+ => \
+  trans(n)(t)
+
+
+unitrans(  POW(P),     " $\\power$ ( ");
+unitrans(  POW1(P),    " $\\power\\bsub{1}$ ( ");
+unitrans(  FIN(P),     " $\\finset$ ( ");
+unitrans(  FIN1(P),    " $\\finset\\bsub{1}$ ( ");
+unitrans(  seq1(P),    " {\\sf seq}$\\bsub{1}$ ( ");
+
+
+#define sunitrans(o,s) \
+  bprintf(s) & \
+  trans(0)(P) & \
+  bprintf(" ) ") \
+ => \
+  trans(n)(o(P))
+
+
+sunitrans(bsearch,	" {\\sf bsearch}$\;$( ");
+
+sunitrans(bflat,	" {\\sf bflat}$\;$( ");
+
+sunitrans(card,		" {\\sf card}$\;$( ");
+sunitrans(inter,	" {\\sf inter}$\;$( ");
+sunitrans(union,	" {\\sf union}$\;$( ");
+sunitrans(prj1,		" {\\sf prj1}$\;$( ");
+sunitrans(prj2,		" {\\sf prj2}$\;$( ");
+sunitrans(fix,		" {\\sf fix}$\;$( ");
+sunitrans(FIX,		" {\\sf FIX}$\;$( ");
+sunitrans(choice,	" {\\sf choice}$\;$( ");
+sunitrans(finite,	" {\\sf finite}$\;$( ");
+sunitrans(infinite,	" {\\sf infinite}$\;$( ");
+sunitrans(dom,		" {\\sf dom}$\;$( ");
+sunitrans(ran,		" {\\sf ran}$\;$( ");
+sunitrans(cod,		" {\\sf cod}$\;$( ");
+sunitrans(id,		" {\\sf id}$\;$( ");
+sunitrans(seq,		" {\\sf seq}$\;$( ");
+sunitrans(iseq,		" {\\sf iseq}$\;$( ");
+sunitrans(bseq,		" {\\sf bseq}$\;$( ");
+sunitrans(perm,		" {\\sf perm}$\;$( ");
+sunitrans(size,		" {\\sf size}$\;$( ");
+sunitrans(rev,		" {\\sf rev}$\;$( ");
+sunitrans(conc,		" {\\sf conc}$\;$( ");
+sunitrans(first,	" {\\sf first}$\;$( ");
+sunitrans(last,		" {\\sf last}$\;$( ");
+sunitrans(tail,		" {\\sf tail}$\;$( ");
+sunitrans(front,	" {\\sf front}$\;$( ");
+sunitrans(bool,		" {\\sf bool}$\;$( ");
+sunitrans(UNION,	" {\\sf UNION}$\;$( ");
+sunitrans(INTER,	" {\\sf INTER}$\;$( ");
+sunitrans(SIGMA,	" {\\sf SIGMA}$\;$( ");
+sunitrans(PI,		" {\\sf PI}$\;$( ");
+sunitrans(ord,		" {\\sf ord}$\;$( ")
+
+END
+
+&
+
+THEORY binaryX IS
+
+#define bintrans(t,p,o) \
+   trans(p)(a) & \
+   bprintf(o) &  \
+   trans(p+1)(b) \
+  => \
+   trans(n)(t);  \
+\
+   btest(n>p) & \
+   bprintf(" ( ") & \
+   trans(p)(a) & \
+   bprintf(o) &  \
+   trans(p+1)(b) & \
+   bprintf(" ) ") \
+ => \
+   trans(n)(t) \
+   
+
+   trans(8)(a) &
+   bprintf(" $\\;\\;${\\tt % }$\\;\\;$ ", (blank0? JOK2 blank0?)) &
+   trans(9)(b)
+  =>
+   trans(n)(a JOK2 b);
+
+   btest(n>8) &
+   bprintf(" ( ") &
+   trans(8)(a) &
+   bprintf(" $\\;\\;${\\tt % }$\\;\\;$ ", (blank0? JOK2 blank0?)) &
+   trans(9)(b) &
+   bprintf(" ) ")
+  =>
+   trans(n)(a JOK2 b);
+
+/* next rule ib             ******* */
+
+   trans(p)(a) & 
+   bprintf(" $\\bsub{") &  
+   trans(p+1)(b) &
+   bprintf("}$") 
+  => 
+   trans(n)(a$b);
+
+   bnum(b) &
+   trans(p)(a) & 
+   bprintf(" $\\bsub{%}$",b) 
+  => 
+   trans(n)(a$b);
+
+/***
+  trans - check for parallel
+***/
+
+  bcall(trans_tac: trans_parallel(n)(S 70OoscoO07 T))
+ =>
+  trans(n)(S 70OoscoO07 T);
+
+  bcall(trans_tac: trans_parallel(n)(S 0OoparoO0 T))
+ =>
+  trans(n)(S 0OoparoO0 T);
+
+  bcall(trans_tac: trans_parallel(n)(S 0Oopar T))
+ =>
+  trans(n)(S 0Oopar T);
+
+  bcall(trans_tac: trans_parallel(n)(S paroO0 T))
+ =>
+  trans(n)(S paroO0 T);
+
+  bcall(trans_tac: trans_parallel(n)(S || T))
+ =>
+  trans(n)(S || T);
+
+/***
+  trans - check for comm
+***/
+
+  bcall(trans_tac: trans_comma(n)(x 70OocomoO07 y))
+ =>
+  trans(n)(x 70OocomoO07 y);
+
+  bcall(trans_tac: trans_comma(n)(x 0OocomoO0 y))
+ =>
+  trans(n)(x 0OocomoO0 y);
+
+  bcall(trans_tac: trans_comma(n)(x 0Oocom y))
+ =>
+  trans(n)(x 0Oocom y);
+
+  bcall(trans_tac: trans_comma(n)(x comoO0 y))
+ =>
+  trans(n)(x comoO0 y);
+
+  bcall(trans_tac: trans_comma(n)(x , y))
+ =>
+  trans(n)(x , y);
+
+/***
+  trans - check for ampersand
+***/
+
+  bcall(trans_tac: trans_ampersand(n)(x 70OoampoO07 y))
+ =>
+  trans(n)(x 70OoampoO07 y);
+
+  bcall(trans_tac: trans_ampersand(n)(x 0OoampoO0 y))
+ =>
+  trans(n)(x 0OoampoO0 y);
+
+  bcall(trans_tac: trans_ampersand(n)(x 0Ooamp y))
+ =>
+  trans(n)(x 0Ooamp y);
+
+  bcall(trans_tac: trans_ampersand(n)(x ampoO0 y))
+ =>
+  trans(n)(x ampoO0 y);
+
+  bcall(trans_tac: (trans_ampersand(n)(x & y)))
+ =>
+  trans(n)(x & y);
+
+/***
+  trans - check for semicolon
+***/
+
+  bcall(trans_tac: trans_semicolon(n)(x 70OoscoO07 y))
+ =>
+  trans(n)(x 70OoscoO07 y);
+
+  bcall(trans_tac: trans_semicolon(n)(x 0OoscoO0 y))
+ =>
+  trans(n)(x 0OoscoO0 y);
+
+  bcall(trans_tac: trans_semicolon(n)(x 0Oosc y))
+ =>
+  trans(n)(x 0Oosc y);
+
+  bcall(trans_tac: trans_semicolon(n)(x scoO0 y))
+ =>
+  trans(n)(x scoO0 y);
+
+  bcall(trans_tac: trans_semicolon(n)(x ; y))
+ =>
+  trans(n)(x ; y);
+
+IsVHDL &
+bintrans(	(a^^b),			8,      " $\\&$ ");
+
+bintrans(	(a;b),			1,      " \\bOperationSemiColon\n ");
+
+bintrans(	(a=b),			4,	" $=$\n ");
+bintrans(	(a 0OoeqoO0 b),		4,	"\\bnl $=$ \\bnl\n");
+bintrans(	(a 0Ooeq b),		4,	"\\bnl\n$=$ ");
+bintrans(	(a eqoO0 b),		4,	" $=$ \\bnl\n");
+
+bintrans(	(a=>b),			2,	" $\\Rightarrow$\n ");
+bintrans(	(a 0OoimploO0 b),	2,	"\\bnl $\\Rightarrow$ \\bnl\n");
+bintrans(	(a 0Ooimpl b),		2,	"\\bnl\n$\\Rightarrow$ ");
+bintrans(	(a imploO0 b),		2,	" $\\Rightarrow$ \\bnl\n");
+
+ bintrans(	(a<=>b),		4,	" $\\Leftrightarrow$\n ");
+bintrans(	(a 0OoiffoO0 b),	4,	"\bnl $\\Leftrightarrow$ \\bnl\n");
+bintrans(	(a 0Ooiff b),		4,	"\\bnl\n$\\Leftrightarrow$ ");
+bintrans(	(a iffoO0 b),		4,	" $\\Leftrightarrow$ \\bnl\n");
+
+bintrans(	(a or b),		3,	" $\\vee$\n ");
+bintrans(	(a 0OooroO0 b),		3,	"\\bnl $\\vee$ \\bnl\n");
+bintrans(	(a 0Ooor b),		3,	"\\bnl\n$\\vee$ ");
+bintrans(	(a oroO0 b),		3,	" $\\vee$ \\bnl\n");
+
+
+bintrans(	(a<=b),		8,	" $\\leq$ ");
+bintrans(	(a>=b),		8,	" $\\geq$ ");
+bintrans(	(a/=b),		8,	" $\\neq$ ");
+
+bintrans(	(a/b),		11,	"  / ");
+bintrans(	(a*b),		11,	" $\\times$ ");
+bintrans(	(a><b),		8,	" $\\otimes$ " );
+
+bintrans(	(a,b),		7,	" $,\\;$ ");
+bintrans(	(a:b),		4,	" $\\in$ ");
+bintrans(	(a/:b),		8,	" $\\not\\in$ ");
+bintrans(	(a|b),		0,	" $\\;\\;|\\;\\;$ ");
+bintrans(	(a^b),		8,	" $\\cat$ ");
+bintrans(	(a-b),		10,	" $-$ ");
+bintrans(	(a+b),		10,	" $+$ ");
+bintrans(	(a=b),		4,	" $=$ ");
+bintrans(	(a==b),		4,	" $\\;\\;\\defs\;\\;$ ");
+bintrans(	(a\b),		8,	" $\\$ ");
+bintrans(	(a<b),		8,	" $<$ ");
+bintrans(	(a>b),		8,	" $>$ ");
+bintrans(	(a <<: b),	6,	" $\\subset$ ");
+bintrans(	(a <: b),	6,	" $\\subseteq$ ");
+bintrans(	(a /<<: b),	6,	" $\\not\\subset$ ");
+bintrans(	(a /<: b),	6,	" $\\not\\subseteq$ ");
+bintrans(	(a [] b),	1,	" $\\char91 \\char93$ ");
+/*
+bintrans(	(a<--b),	7,	" $\\longleftarrow$ ");
+*/
+bintrans(	(a==>b),	2,	" $\\Longrightarrow$ ");
+bintrans(	(a-->b),	7,	" $\\fun$ ");
+bintrans(	(a+->b),	7,	" $\\pfun$ ");
+bintrans(	(a>->b),	7,	" $\\inj$ ");
+bintrans(	(a>+>b),	7,	" $\\pinj$ ");
+bintrans(	(a-->>b),	7,	" $\\surj$ ");
+bintrans(	(a+->>b),	7,	" $\\psurj$ ");
+bintrans(	(a>->>b),	7,	" $\\bij$ ");
+bintrans(	(a<->b),	7,	" $\\rel$ ");
+bintrans(	(a::b),		6,	" $:\\in$ ");
+bintrans(	(a..b),		9,	" $\\upto$ ");
+bintrans(	(a|->b),	8,	" $\\mapsto$ ");
+bintrans(	(a\/b),		8,	" $\\cup$ ");
+bintrans(	(a/\b),		8,	" $\\cap$ ");
+bintrans(	(a<|b),		8,	" $\\dres$ ");
+bintrans(	(a|>b),		8,	" $\\rres$ ");
+bintrans(	(a circ b),	8,	" $\\circ$ ");
+bintrans(	(a<<|b),	8,	" $\\ndres$ ");
+bintrans(	(a|>>b),	8,	" $\\nrres$ ");
+bintrans(	(a||b),		8,	" \\bparallel ");
+bintrans(	(a mod b),	11,	" \ {\\sf mod}\ ");
+bintrans(	(a -> b),	8,	" $\\rightarrow$ ");
+bintrans(	(a <- b),	8,	" $\\leftarrow$ ");
+bintrans(	(a /|\ b),	8,	" $\\uparrow$ ");
+bintrans(	(a \|/ b),	8,	" $\\downarrow$ ");
+bintrans(	(a \ b),	8,	" $\\backslash$ ");
+bintrans(	(a . b),	8,	" . ");
+bintrans((a <+ b),8," $<\\kern-.65em\\raisebox{.275ex}{$\\scriptscriptstyle +$}\\;$ ");
+bintrans((a +> b),8," $\\raisebox{.300ex}{$\\scriptscriptstyle +$}\\kern-.65em>$ ");
+bintrans((a.b),18," . ");
+
+
+
+   bprintf("\n\\newpage\n") &
+   trans(n)(b)
+  =>
+   trans(n)(Xx___np___ /0O0/ b);
+
+
+/*
+HERE((trans:Xx___nl___))&
+*/
+   prt_proof_nl_tab &
+   trans(n)(b)
+  =>
+   trans(n)(Xx___nl___ /0O0/ b);
+
+
+
+  bnum(n) &
+  LatexARI_dec(n) &
+  trans_from_binary_ARI(n)(a)   /* picked up in transX */
+ =>
+  trans(n-1)(a);
+
+  bnum(n) &
+  LatexARI_inc(n) &
+  trans_from_binary_ARI(n)(a)   /* picked up in transX */
+ =>
+  trans(n+1)(a)
+
+
+END
+
+&
+
+THEORY quantifierX IS
+
+  bprintf(" $\\forall$ ") &
+  trans(0)(x)
+ =>
+  transfor(!(x));
+  
+  bprintf(" $\\forall$ ") &
+  bprintf("( ") &
+  trans(0)(x,y) &
+  bprintf(" )") 
+ =>
+  transfor(!(x,y));
+  
+  transfor(!(x)) &
+  bprintf(" . ") &
+  trans(0)(P)
+ =>
+  trans(n)(!x.P);
+  
+  transfor(!(x)) &
+  bprintf(" . ( ") &
+  trans(0)(P JOK2 R) &
+  bprintf(" )")
+ =>
+  trans(n)(!x.(P JOK2 R));
+  
+  transfor(!(x)) &
+  bprintf(" . ") &
+  trans(0)(P . R)
+ =>
+  trans(n)(!x.(P . R));
+  
+  transfor(!(x)) &
+  bprintf(" . ") &
+  trans(0)([y:=E]P)
+ =>
+  trans(n)(!x.[y:=E]P);
+  
+
+
+  bprintf(" $\\exists$ ") &
+  trans(0)(x)
+ =>
+  transfor(#(x));
+  
+  bprintf(" $\\exists$ ") &
+  bprintf("( ") &
+  trans(0)(x,y) &
+  bprintf(" )") 
+ =>
+  transfor(#(x,y));
+  
+  transfor(#(x)) &
+  bprintf(" . ") &
+  trans(0)(P)
+ =>
+  trans(n)(#x.P);
+  
+  transfor(#(x)) &
+  bprintf(" . ( ") &
+  trans(0)(P JOK2 R) &
+  bprintf(" )")
+ =>
+  trans(n)(#x.(P JOK2 R));
+  
+  transfor(#(x)) &
+  bprintf(" . ") &
+  trans(0)(P . R)
+ =>
+  trans(n)(#x.(P . R));
+  
+  transfor(#(x)) &
+  bprintf(" . ") &
+  trans(0)([y:=E]P)
+ =>
+  trans(n)(#x.[y:=E]P);
+
+#define little_quantifier(Q,o) \
+  bprintf(o) & \
+  trans(0)(x) \
+ => \
+  transuni(Q(x)); \
+   \
+  bprintf(o) & \
+  bprintf("( ") & \
+  trans(0)(x,y) & \
+  bprintf(" )")  \
+ => \
+  transuni(Q(x,y)); \
+   \
+  transuni(Q(x)) & \
+  bprintf(" . ") & \
+  trans(0)(P) \
+ => \
+  trans(n)(Q x.P); \
+  \
+  transuni(Q(x)) & \
+  bprintf(" . ( ") & \
+  trans(0)(P JOK2 R) & \
+  bprintf(" )") \
+ => \
+  trans(n)(Q x.(P JOK2 R)); \
+  \
+  transuni(Q(x)) & \
+  bprintf(" . ") & \
+  trans(0)([y:=E]P) \
+ => \
+  trans(n)(Q x.[y:=E]P)
+  
+little_quantifier(UNION," $\\bigcup$ ");
+little_quantifier(INTER," $\\bigcap$ ");
+little_quantifier(SIGMA," $\\sum$ ");
+little_quantifier(PI," $\\prod$ ");
+little_quantifier(%," $\\lambda$ ")
+
+END
+
+&
+
+THEORY substitutionX IS
+
+  bprintf(" $\\char91$ ") &
+  trans(0)(x) &
+  bprintf(" $:=$ ") &
+  trans(0)(E) &
+  bprintf(" $\\char93$ ")
+ =>
+  transsub(x,E);
+  
+  transsub(x,E) &
+  trans(0)(P)
+ =>
+  trans(n)([x:=E]P);
+  
+  transsub(x,E) &
+  bprintf(" ( ") &
+  trans(0)(P JOK2 Q) &
+  bprintf(" ) ")
+ =>
+  trans(n)([x:=E](P JOK2 Q));
+  
+  transsub(x,E) &
+  trans(0)(P . R)
+ =>
+  trans(n)([x:=E]P . R);
+  
+  transsub(x,E) &
+  trans(0)([y:=F]P)
+ =>
+  trans(n)([x:=E][y:=F]P);
+
+  DMUErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY transX IS
+
+  0;
+
+#define set_in_maths   bcall(MODR:bmodr(transX.1,1))
+#define reset_in_maths bcall(MODR:bmodr(transX.1,0))
+#define in_maths       brule(transX.1,1)
+
+  bprintf(" $%$ ",P)
+ =>
+  trans(n)(P);
+
+  bnum(P) &
+  bprintf("{\\em %\\/}",P)
+ =>
+  trans(n)(P);
+
+  in_maths &
+  bnum(P) &
+  bprintf(" {\\mathit %} ",P)
+ =>
+  trans(n)(P);
+
+  bident(P) &
+  bprintf("{\\em %\\/}",P) &
+  CheckXRef(P)
+ =>
+  trans(n)(P);
+
+  in_maths &
+  bident(P) &
+  bprintf("{\\mathit %\\/}",P) &
+  CheckXRef(P)
+ =>
+  trans(n)(P);
+
+  prt_proof_nl_tab
+ =>
+  trans(n)(Xx___nl___);
+
+  bstring(P) &
+  bprintf(" `` {\\tt ") &
+  bprintf(P) &
+  bprintf("} '' ")
+ =>
+  trans(n)(P);
+
+  trans(n)(777770Oo77_7_77oO077777);
+
+  IncTabCount &
+  bprintf("\\bnl\n")
+ =>
+  trans(n)(tnednItS);
+
+  DecTabCount &
+  bprintf("\\bnl\n")
+ =>
+  trans(n)(tnednIdE);
+
+  bprintf(" {\\sf %} ",skip)
+ =>
+  trans(n)(skip);
+
+  SYSTEMFlagSet &
+  bprintf(" {\\sc str} ")
+ =>
+  trans(n)(STR);
+
+  SYSTEMFlagSet &
+  bprintf(" {\\sc set} ")
+ =>
+  trans(n)(SET);
+
+  SYSTEMFlagSet &
+  bprintf(" {\\sc seq} ")
+ =>
+  trans(n)(SEQ);
+
+/*
+  bcall((binaryX;(ARI;transX;CATL;WRITE)~): trans(n)(a JOK2 b))
+  no ARI !!!
+*/
+  bcall((binaryX;(transX;CATL;WRITE)~): trans(n)(a JOK2 b))
+  =>
+  trans(n)(a JOK2 b);
+
+
+/***
+  added 92/11/25
+***/
+
+   trans(0)(x) &
+   bprintf("\\bnl\n $:=$ \\bnl\n") &
+   trans(0)(t)
+  =>
+   trans(n)(x 0OocoleqloO0 t);
+   
+   trans(0)(x) &
+   bprintf("\\bnl\n $:=$ ") &
+   trans(0)(t)
+  =>
+   trans(n)(x 0Oocoleql t);
+   
+   trans(0)(x) &
+   bprintf(" $:=$ \\bnl\n") &
+   trans(0)(t)
+  =>
+   trans(n)(x coleqloO0 t);
+   
+   trans(0)(x) &
+   bprintf(" $:=$  ") &
+   trans(0)(t)
+  =>
+   trans(n)(x:=t);
+   
+
+
+   trans(7)(x) &
+   bprintf("\\bnl\n $\\longleftarrow$ \\bnl\n") &
+   trans(8)(t)
+  =>
+   trans(n)(x 0OosnteroO0 t);
+   
+   trans(7)(x) &
+   bprintf("\\bnl\n $\\longleftarrow$ ") &
+   trans(8)(t)
+  =>
+   trans(n)(x 0Oosnter t);
+   
+   trans(7)(x) &
+   bprintf(" $\\longleftarrow$ \\bnl\n") &
+   trans(8)(t)
+  =>
+   trans(n)(x snteroO0 t);
+   
+   trans(7)(x) &
+   bprintf(" $\\longleftarrow$ ") &
+   trans(8)(t)
+  =>
+   trans(n)(x <-- t);
+   
+
+
+
+   trans(7)(x) &
+   bprintf("\\bnl\n $\\longleftarrow$ \\bnl\n") &
+   trans(8)(t(p))
+  =>
+   trans(n)(x 0OosnteroO0 t(p));
+   
+   trans(7)(x) &
+   bprintf("\\bnl\n $\\longleftarrow$ ") &
+   trans(8)(t(p))
+  =>
+   trans(n)(x 0Oosnter t(p));
+   
+   trans(7)(x) &
+   bprintf(" $\\longleftarrow$ \\bnl\n") &
+   trans(8)(t(p))
+  =>
+   trans(n)(x snteroO0 t(p));
+   
+   trans(7)(x) &
+   bprintf(" $\\longleftarrow$ ") &
+   trans(8)(t(p))
+  =>
+   trans(n)(x <-- t(p));
+   
+
+
+
+   trans(4)(x) &
+   bprintf(" $:\\in$ ") &
+   trans(5)(t)
+  =>
+   trans(n)(x::t);
+   
+
+
+   bcall((unaryX;(ARI;transX;CATL;WRITE)~): trans(n)(JOK1(b)))
+  =>
+   trans(n)(JOK1(b));
+   
+   bcall((quantifierX;quantifierX;(ARI;transX;CATL;WRITE)~): trans(n)(JOK1 x.P))
+  =>
+   trans(n)(JOK1 x.P);
+   
+   bcall((substitutionX;substitutionX;(ARI;transX;CATL;WRITE)~): trans(n)([x:=E]P))
+  =>
+   trans(n)([x:=E]P);
+   
+
+
+
+  print_clause_no_nl_kwd_nl("GLOBAL") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(c)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(GLOBAL c END);
+
+
+  print_clause_kwd_no_nl("BASE") &
+  IncTabCount &
+  transbody(0)(a) &
+  DecTabCount &
+  print_clause_kwd_nl("MANDATORY") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(c)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(BASE a MANDATORY c END);
+
+
+  print_clause_kwd_nl("BASE") &
+  IncTabCount &
+  transbody(0)(a) &
+  DecTabCount &
+  print_clause_kwd_nl("MANDATORY") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(c)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(BASEoO0 a MANDATORY c END);
+
+
+  print_clause_kwd_no_nl("BASE") &
+  IncTabCount &
+  transbody(0)(a) &
+  DecTabCount &
+  print_clause_kwd_nl("OPTIONAL") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(b)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(BASE a OPTIONAL b END);
+
+
+  print_clause_kwd_nl("BASE") &
+  IncTabCount &
+  transbody(0)(a) &
+  DecTabCount &
+  print_clause_kwd_nl("OPTIONAL") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(b)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(BASEoO0 a OPTIONAL b END);
+
+
+  print_clause_kwd_no_nl("BASE") &
+  IncTabCount &
+  transbody(0)(a) &
+  DecTabCount &
+  print_clause_kwd_nl("OPTIONAL") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(b)) &
+  DecTabCount &
+  print_clause_kwd_nl("MANDATORY") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(c)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(BASE a OPTIONAL b MANDATORY c END);
+
+
+  print_clause_kwd_nl("BASE") &
+  IncTabCount &
+  transbody(0)(a) &
+  DecTabCount &
+  print_clause_kwd_nl("OPTIONAL") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(b)) &
+  DecTabCount &
+  print_clause_kwd_nl("MANDATORY") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(c)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(BASEoO0 a OPTIONAL b MANDATORY c END);
+
+
+  print_clause_kwd_no_nl("BASE") &
+  IncTabCount &
+  transbody(0)(a) &
+  DecTabCount &
+  print_clause_kwd_nl("MANDATORY") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(c)) &
+  DecTabCount &
+  print_clause_kwd_nl("OPTIONAL") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(b)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(BASE a MANDATORY c OPTIONAL b END);
+
+
+  print_clause_kwd_nl("BASE") &
+  IncTabCount &
+  transbody(0)(a) &
+  DecTabCount &
+  print_clause_kwd_nl("MANDATORY") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(c)) &
+  DecTabCount &
+  print_clause_kwd_nl("OPTIONAL") &
+  IncTabCount &
+  bcall(trans_tac: trans_semicolon(0)(b)) &
+  DecTabCount &
+  bprintf("\\bnl\n") &
+  print_opn_kwd_end
+ =>
+  trans(n)(BASEoO0 a MANDATORY c OPTIONAL b END);
+
+
+
+                            /* SPECIAL CASES */
+
+  trans(0)(f) &
+  bprintf(" ( ") &
+  trans(0)(x) &
+  bprintf(" ) ")
+ =>
+  trans(n)(f(x));
+
+  SYSTEMFlagSet &
+  trans(0)(SEQ) &
+  bprintf(" ( ") &
+  trans(0)(x) &
+  bprintf(" ) ")
+ =>
+  trans(n)(SEQ(x));
+
+  SYSTEMFlagSet &
+  trans(0)(SET) &
+  bprintf(" ( ") &
+  trans(0)(x) &
+  bprintf(" ) ")
+ =>
+  trans(n)(SET(x));
+
+  bprintf(" {\\sf bsingleton} ( ")  &
+  trans(0)(x) &
+  bprintf(" ) ")
+ =>
+  trans(n)(bsingleton(x));
+
+  bprintf(" {\\sf bident} ( ")  &
+  trans(0)(x) &
+  bprintf(" ) ")
+ =>
+  trans(n)(bident(x));
+
+  bprintf(" {\\sf min} ( ")  &
+  trans(0)(x) &
+  bprintf(" ) ")
+ =>
+  trans(n)(min(x));
+
+  bprintf(" {\\sf max} ( ") &
+  trans(0)(x) &
+  bprintf(" ) ")
+ =>
+  trans(n)(max(x));
+
+#define zunitrans(t,o)   bprintf(" $%$ ",o) & \
+  trans(0)(P) & \
+  bprintf(" ) ") \
+ => \
+  trans(n)(t)
+
+  bprintf(" $\\neg$ ") &
+  trans(0)(P)
+ =>
+  trans(n)(not(P));
+  
+  bprintf(" $\\neg$ ") &
+  bprintf(" ( ") &
+  trans(0)(P JOK2 Q) &
+  bprintf(" ) ")
+ =>
+  trans(n)(not(P JOK2 Q));
+  
+  bprintf(" \\{ ") &
+  IncTabCount &
+  trans(0)(P) &
+  DecTabCount &
+  bprintf(" \\} ")
+ =>
+  trans(n)({P});
+  
+  bprintf(" $\\emptyset$ ")
+ =>
+  trans(n)({});
+   
+  trans(0)(x) &
+  bprintf(" $\\char91$ ") &
+  trans(0)(y) &
+  bprintf(" $\\char93$ ")
+ =>
+  trans(n)(x[y]);
+  
+
+
+
+
+
+  bprintf("(") &
+  trans(0)(r) &
+  bprintf(")") &
+  bprintf(" \\bnhsp \\raisebox{.825ex}{\\small ") &
+  trans(0)(n) &
+  bprintf(" } ")
+ =>
+  trans(p)(iterate(r,n));
+
+  bident(r) &
+  trans(0)(r) &
+  bprintf(" \\bnhsp \\raisebox{.825ex}{\\small ") &
+  trans(0)(n) &
+  bprintf(" } ")
+ =>
+  trans(p)(iterate(r,n));
+
+
+  bprintf("(") &
+  trans(0)(r) & 
+  bprintf(")") &
+  bprintf(" \\bnhsp \\raisebox{.3ex}{*}")
+ =>
+  trans(p)(closure(r));
+
+  bident(r) &
+  trans(0)(r) & 
+  bprintf(" \\bnhsp \\raisebox{.3ex}{*}")
+ =>
+  trans(p)(closure(r));
+
+
+   bprintf(" $\\nat$ ")
+  =>
+   trans(n)(NAT);
+
+  bprintf(" $\\nat\\bsub{1}$ ")
+  =>
+  trans(n)(NAT1);
+  
+ 
+   bprintf(" $\\char91$ $\\char93$ ")
+  =>
+   trans(n)(<>);
+   
+   bprintf(" $\\char91$ ") &
+   trans(0)(s) &
+   bprintf(" $\\char93$ ")
+  =>      
+   trans(n)([s]);
+   
+/***
+   trans(0)(x) &
+   bprintf(" $\\hbox{'}$ ")
+  =>
+   trans(n)(x');
+***/
+   
+   trans(0)(x) &
+/*
+   bprintf(" $^{-{\\mathit 1}}$ ")
+*/
+   bprintf(" $^{-1}$ ")
+  =>
+   trans(n)(x~);
+
+   bprintf(" ( ") &
+   trans(0)(x JOK2 y) &
+   bprintf(") ") &
+/*
+   bprintf(" $^{-{\\mathit 1}}$ ")
+*/
+   bprintf(" $^{-1}$ ")
+  =>
+   trans(n)((x JOK2 y)~);
+   
+   trans(0)(x) &
+/*
+   bprintf(" $^{-{\\mathit 1}^{-{\\mathit 1}}}$ ")
+*/
+   bprintf(" $^{-1^{-1}}$ ")
+  =>
+   trans(n)(x~~);
+   
+   bprintf(" ( ") &
+   trans(0)(x JOK2 y) &
+   bprintf(") ") &
+/*
+   bprintf(" $^{-{\\mathit 1}^{-{\\mathit 1}}}$ ")
+*/
+   bprintf(" $^{-1^{-1}}$ ")
+  =>
+   trans(n)((x JOK2 y)~~);
+   
+   bprintf(" {\\sf succ} ")
+  =>
+   trans(n)(succ);
+   
+   bprintf(" {\\sf pred} ")
+  =>
+   trans(n)(pred);
+   
+   bprintf(" {\\sf plus} ")
+  =>
+   trans(n)(plus);
+   
+   bprintf(" {\\sf multiply} ")
+  =>
+   trans(n)(mult);
+   
+   bprintf(" {\\sf divide} ")
+  =>
+   trans(n)(divide);
+   
+   bprintf(" {\\sf minus} ")
+  =>
+   trans(n)(minus);
+
+
+/***
+  trans - check for parallel
+***/
+
+  bcall(trans_tac: trans_parallel(n)(S 70OoscoO07 T))
+ =>
+  trans(n)(S 70OoscoO07 T);
+
+  bcall(trans_tac: trans_parallel(n)(S 0OoparoO0 T))
+ =>
+  trans(n)(S 0OoparoO0 T);
+
+  bcall(trans_tac: trans_parallel(n)(S 0Oopar T))
+ =>
+  trans(n)(S 0Oopar T);
+
+  bcall(trans_tac: trans_parallel(n)(S paroO0 T))
+ =>
+  trans(n)(S paroO0 T);
+
+  bcall(trans_tac: trans_parallel(n)(S || T))
+ =>
+  trans(n)(S || T);
+
+/***
+  trans - check for comm
+***/
+
+  bcall(trans_tac: trans_comma(n)(x 70OocomoO07 y))
+ =>
+  trans(n)(x 70OocomoO07 y);
+
+  bcall(trans_tac: trans_comma(n)(x 0OocomoO0 y))
+ =>
+  trans(n)(x 0OocomoO0 y);
+
+  bcall(trans_tac: trans_comma(n)(x 0Oocom y))
+ =>
+  trans(n)(x 0Oocom y);
+
+  bcall(trans_tac: trans_comma(n)(x comoO0 y))
+ =>
+  trans(n)(x comoO0 y);
+
+  bcall(trans_tac: trans_comma(n)(x , y))
+ =>
+  trans(n)(x , y);
+
+/***
+  trans - check for ampersand
+***/
+
+  bcall(trans_tac: trans_ampersand(n)(x 70OoampoO07 y))
+ =>
+  trans(n)(x 70OoampoO07 y);
+
+  bcall(trans_tac: trans_ampersand(n)(x 0OoampoO0 y))
+ =>
+  trans(n)(x 0OoampoO0 y);
+
+  bcall(trans_tac: trans_ampersand(n)(x 0Ooamp y))
+ =>
+  trans(n)(x 0Ooamp y);
+
+  bcall(trans_tac: trans_ampersand(n)(x ampoO0 y))
+ =>
+  trans(n)(x ampoO0 y);
+
+  bcall(trans_tac: (trans_ampersand(n)(x & y)))
+ =>
+  trans(n)(x & y);
+
+/***
+  trans - check for semicolon
+***/
+
+  bcall(trans_tac: trans_semicolon(n)(x 70OoscoO07 y))
+ =>
+  trans(n)(x 70OoscoO07 y);
+
+  bcall(trans_tac: trans_semicolon(n)(x 0OoscoO0 y))
+ =>
+  trans(n)(x 0OoscoO0 y);
+
+  bcall(trans_tac: trans_semicolon(n)(x 0Oosc y))
+ =>
+  trans(n)(x 0Oosc y);
+
+  bcall(trans_tac: trans_semicolon(n)(x scoO0 y))
+ =>
+  trans(n)(x scoO0 y);
+
+  bcall(trans_tac: trans_semicolon(n)(x ; y))
+ =>
+  trans(n)(x ; y);
+
+
+
+  LatexARI_res(n) &
+  trans(n)(a)
+ =>
+  trans_from_binary_ARI(m)(a);
+
+
+  bnum(n) &
+  LatexARI_dec(n) &
+  trans_from_binary_ARI(n)(a)   /* picked up in transX */
+ =>
+  trans(n-1)(a);
+
+  bnum(n) &
+  LatexARI_inc(n) &
+  trans_from_binary_ARI(n)(a)   /* picked up in transX */
+ =>
+  trans(n+1)(a);
+
+
+  DMUErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY CurrOpNameX IS
+
+#define CurrOpNameSto          (CurrOpNameX.1)
+#define ReadCurrOpNameSto(x)   brule(CurrOpNameSto,x)
+#define ModrCurrOpNameSto(x)   bcall(MODR: bmodr(CurrOpNameSto,x))
+
+#define op_AnnotSto        (CurrOpNameX.2)
+#define Read_op_Annot(x)   brule(op_AnnotSto,x)
+#define Modr_op_Annot(x)   bcall(MODR: bmodr(op_AnnotSto,x))
+
+#define FirstOpSto           (CurrOpNameX.3)
+#define FlagFirstOp          bcall(MODR: bmodr(FirstOpSto,1))
+#define FlagNotFirstOp       bcall(MODR: bmodr(FirstOpSto,0))
+#define FirstOpFlagged       brule(FirstOpSto,1)
+
+#define CheckOpAnnot(o)   bcall(((WRITE;CATL)~;CurrOpNameX)~: coa_0(o))
+
+
+  ?;?;?;
+
+  Read_op_Annot(s) &
+  Modr_op_Annot(?) &
+  OpAnnot(s) /* &
+  bprintf("\bnl \\bopname{%} \bbnl\n",o) */
+ =>
+  coa_0(o);
+
+  FirstOpFlagged &
+  FlagNotFirstOp &
+  Read_op_Annot(s) &
+  Modr_op_Annot(?) &
+  FirstOpAnnot(s) /* &
+  bprintf("\bnl \\bopname{%} \bbnl\n",o) */
+ =>
+  coa_0(o);
+
+  Read_op_Annot(?) /* &
+  bprintf("\bnl \\bopname{%} \bbnl\n",o) */
+ =>
+  coa_0(o);
+
+  FirstOpFlagged &
+  FlagNotFirstOp &
+  Read_op_Annot(?) /* &
+  bprintf("\bnl \\bopname{%} \bbnl\n",o) */
+ =>
+  coa_0(o)
+
+END
+
+&
+
+THEORY machineX IS
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+/***
+  transbody - must be trans
+***/
+
+  trans(n)(P)
+ =>
+  transbody(n)(P);                      
+   
+/***
+  transbody - definitions
+***/
+
+  transbody(n)(P) &
+  bprintf(" $\\;\\;\\defs\;\\;$ ") &
+  transbody(n)(Q)
+ =>
+  transbody(n)(P == Q);                      
+   
+/***
+  transbody - check for comma
+***/
+
+  trans_comma(n)(S 70OocomoO07 T)
+ =>  
+  transbody(n)(S 70OocomoO07 T);
+
+  trans_comma(n)(S 0OocomoO0 T)
+ =>  
+  transbody(n)(S 0OocomoO0 T);
+
+  trans_comma(n)(S 0Oocom T)
+ =>  
+  transbody(n)(S 0Oocom T);
+
+  trans_comma(n)(S comoO0 T)
+ =>  
+  transbody(n)(S comoO0 T);
+
+  trans_comma(n)(S , T)
+ =>  
+  transbody(n)(S , T);
+
+/***
+  transbody - check for ampersand
+***/
+
+  trans_ampersand(n)(S 70OoampoO07 T)
+ =>  
+  transbody(n)(S 70OoampoO07 T);
+
+  trans_ampersand(n)(S 0OoampoO0 T)
+ =>  
+  transbody(n)(S 0OoampoO0 T);
+
+  trans_ampersand(n)(S 0Ooamp T)
+ =>  
+  transbody(n)(S 0Ooamp T);
+
+  trans_ampersand(n)(S ampoO0 T)
+ =>  
+  transbody(n)(S ampoO0 T);
+
+  trans_ampersand(n)(S & T)
+ =>  
+  transbody(n)(S & T);
+
+/***
+  transbody - check for parallel
+***/
+
+  trans_parallel(n)(S 70OoscoO07 T)
+ =>
+  transbody(n)(S 70OoscoO07 T);
+
+  trans_parallel(n)(S 0OoparoO0 T)
+ =>
+  transbody(n)(S 0OoparoO0 T);
+
+  trans_parallel(n)(S 0Oopar T)
+ =>
+  transbody(n)(S 0Oopar T);
+
+  trans_parallel(n)(S paroO0 T)
+ =>
+  transbody(n)(S paroO0 T);
+
+  trans_parallel(n)(S || T)
+ =>
+  transbody(n)(S || T);
+
+/***
+  transbody - check for semicolon
+***/
+
+  trans_semicolon(n)(S 70OoscoO07 T)
+ =>
+  transbody(n)(S 70OoscoO07 T);
+
+  trans_semicolon(n)(S 0OoscoO0 T)
+ =>
+  transbody(n)(S 0OoscoO0 T);
+
+  trans_semicolon(n)(S 0Oosc T)
+ =>
+  transbody(n)(S 0Oosc T);
+
+  trans_semicolon(n)(S scoO0 T)
+ =>
+  transbody(n)(S scoO0 T);
+
+  trans_semicolon(n)(S ; T)
+ =>
+  transbody(n)(S ; T);
+
+/***
+  trans_ampersand
+***/
+
+  trans(n)(t)                  /* `transbody(n)(t)' an old goal */
+ =>
+  trans_ampersand(n)(t);
+   
+  transbody(n)(t)
+ =>
+  trans_ampersand(n)(t);
+   
+
+
+  trans_ampersand(3)(s) &
+  bprintf("\\bnl\n $\\wedge$ \\bnl\n") &
+  trans_ampersand(4)(t)
+ =>
+  trans_ampersand(n)(s 0OoampoO0 t);
+
+  btest(n>3) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  bprintf("\\bnl\n $\\wedge$ \\bnl\n") &
+  trans_ampersand(4)(t) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s 0OoampoO0 t);
+
+
+
+  trans_ampersand(3)(s) &
+  bprintf("\\bnl\n $\\wedge$ ") &
+  trans_ampersand(4)(t)
+ =>
+  trans_ampersand(n)(s 0Ooamp t);
+
+  btest(n>3) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  bprintf("\\bnl\n $\\wedge$ ") &
+  trans_ampersand(4)(t) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s 0Ooamp t);
+
+
+
+  trans_ampersand(3)(s) &
+  bprintf(" $\\wedge$ \\bnl\n") &
+  trans_ampersand(4)(t)
+ =>
+  trans_ampersand(n)(s ampoO0 t);
+
+  btest(n>3) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  bprintf(" $\\wedge$ \\bnl\n") &
+  trans_ampersand(4)(t) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s ampoO0 t);
+
+
+
+  trans_ampersand(3)(s) &
+  bprintf(" $\\wedge$\n") &
+  trans_ampersand(4)(t)
+ =>
+  trans_ampersand(n)(s & t);
+
+  btest(n>3) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  bprintf(" $\\wedge$\n") &
+  trans_ampersand(4)(t) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s & t);
+
+  bstring(s) &
+  Annot(s) &
+  trans_ampersand(n)(t)
+ =>
+  trans_ampersand(n)(s & t);
+
+  bstring(t) &
+  trans_ampersand(n)(s) &
+  Annot(t)
+ =>
+  trans_ampersand(n)(s & t);
+
+
+
+  bstring(t) &
+  trans_ampersand(3)(s) &
+  bprintf("\\bnl\n $\\wedge$ \\bnl\n") &
+  Annot(t) &
+  trans_ampersand(4)(u)
+ =>
+  trans_ampersand(n)(s 0OoampoO0 t 70OoampoO07 u);
+
+  btest(n>3) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  bprintf("\\bnl\n $\\wedge$ \\bnl\n") &
+  Annot(t) &
+  trans_ampersand(4)(u) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s 0OoampoO0 t 70OoampoO07 u);
+
+
+
+  bstring(t) &
+  trans_ampersand(3)(s) &
+  bprintf("\\bnl\n $\\wedge$ ") &
+  Annot(t) &
+  trans_ampersand(4)(u)
+ =>
+  trans_ampersand(n)(s 0Ooamp t 70OoampoO07 u);
+
+  btest(n>3) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  bprintf("\\bnl\n $\\wedge$ ") &
+  Annot(t) &
+  trans_ampersand(4)(u) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s 0Ooamp t 70OoampoO07 u);
+
+
+
+  bstring(t) &
+  trans_ampersand(3)(s) &
+  bprintf(" $\\wedge$ \\bnl\n") &
+  Annot(t) &
+  trans_ampersand(4)(u)
+ =>
+  trans_ampersand(n)(s ampoO0 t 70OoampoO07 u);
+
+  btest(n>3) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  bprintf(" $\\wedge$ \\bnl\n") &
+  Annot(t) &
+  trans_ampersand(4)(u) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s ampoO0 t 70OoampoO07 u);
+
+
+
+  bstring(t) &
+  trans_ampersand(3)(s) &
+  bprintf(" $\\wedge$\n") &
+  Annot(t) &
+  trans_ampersand(4)(u)
+ =>
+  trans_ampersand(n)(s & t 70OoampoO07 u);
+
+  btest(n>3) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  bprintf(" $\\wedge$\n") &
+  Annot(t) &
+  trans_ampersand(4)(u) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s & t 70OoampoO07 u);
+
+
+
+  bstring(t) &
+  trans_ampersand(3)(s) &
+  Annot(t) &
+  trans_ampersand(4)(u)
+ =>
+  trans_ampersand(n)(s 70OoampoO07 t 70OoampoO07 u);
+
+  btest(n>3) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_ampersand(3)(s) &
+  Annot(t) &
+  trans_ampersand(4)(u) &
+  bprintf(" ) ")
+ =>
+  trans_ampersand(n)(s 70OoampoO07 t 70OoampoO07 u);
+
+
+
+  bstring(s) &
+  Annot(s) &
+  trans_ampersand(n)(t)
+ =>
+  trans_ampersand(n)(s 70OoampoO07 t);
+
+  bstring(t) &
+  trans_ampersand(n)(s) &
+  Annot(t)
+ =>
+  trans_ampersand(n)(s 70OoampoO07 t);
+
+  IncTabCount &
+  bprintf("\\bnl\n") &
+  trans_ampersand(n)(s)
+ =>
+  trans_ampersand(n)(tnednItS & s);
+
+  trans_ampersand(n)(s) &
+  IncTabCount &
+  bprintf("\\bnl\n")
+ =>
+  trans_ampersand(n)(s & tnednItS);
+
+  DecTabCount &
+  trans_ampersand(n)(s)
+ =>
+  trans_ampersand(n)(tnednIdE & s);
+
+  trans_ampersand(n)(s) &
+  DecTabCount
+ =>
+  trans_ampersand(n)(s & tnednIdE);
+
+
+
+
+  trans_ampersand(n)(x)
+ =>
+  trans_ampersand_xref(n)(x);
+
+  DMU_ClIndex_Flag_set &
+  trans_ampersand(n)(x) &
+  ClauseXRefNoAnnot("")
+ =>
+  trans_ampersand_xref(n)(x);
+
+  bstring(t) &
+  DMU_ClIndex_Flag_set &
+  trans_ampersand(n)(s) &
+  ClauseXRefAnnot("") &
+  FinalClauseAnnot(t)
+ =>
+  trans_ampersand_xref(n)(s 70OoampoO07 t);
+
+
+/*
+HERE((trans_ampersand:Xx___nl___))&
+*/
+  prt_proof_nl_tab &
+  trans(n)(b)
+ =>
+  trans_ampersand(n)(Xx___nl___ /0O0/ b);
+
+
+
+/***
+  trans_comma
+***/
+
+  trans(n)(t)                 /* `transbody(n)(t)' an old goal */
+ =>
+  trans_comma(n)(t);
+   
+  transbody(n)(t)
+ =>
+  trans_comma(n)(t);
+   
+
+
+  trans_comma(7)(s) &
+  bprintf("\\bnl\n , \\bnl\n") &
+  trans_comma(8)(t)
+ =>
+  trans_comma(n)(s 0OocomoO0 t);
+
+  btest(n>7) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  bprintf("\\bnl\n , \\bnl\n") &
+  trans_comma(8)(t) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s 0OocomoO0 t);
+
+
+
+  trans_comma(7)(s) &
+  bprintf("\\bnl\n , ") &
+  trans_comma(8)(t)
+ =>
+  trans_comma(n)(s 0Oocom t);
+
+  btest(n>7) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  bprintf("\\bnl\n , ") &
+  trans_comma(8)(t) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s 0Oocom t);
+
+
+
+  trans_comma(7)(s) &
+  bprintf(" , \\bnl\n") &
+  trans_comma(8)(t)
+ =>
+  trans_comma(n)(s comoO0 t);
+
+  btest(n>7) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  bprintf(" , \\bnl\n") &
+  trans_comma(8)(t) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s comoO0 t);
+
+
+
+  trans_comma(n)(s) &
+  trans_comma(n)(t)
+ =>
+  trans_comma(n)(s , t);
+ 
+  Xx___nl___\s &
+  Xx___nl___\t &
+  trans_comma(7)(s) &
+  bprintf(" , ") &
+  trans_comma(8)(t)
+ =>
+  trans_comma(n)(s , t);
+ 
+  Xx___nl___\s &
+  Xx___nl___\t &
+  btest(n>7) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  bprintf(" , ") &
+  trans_comma(8)(t) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s , t);
+
+  bstring(t) &
+  trans_comma(7)(s) &
+  bprintf("\\bnl\n , \\bnl\n") &
+  Annot(t) &
+  trans_comma(8)(u)
+ =>
+  trans_comma(n)(s 0OocomoO0 t 70OocomoO07 u);
+
+  btest(n>7) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  bprintf("\\bnl\n , \\bnl\n") &
+  Annot(t) &
+  trans_comma(8)(u) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s 0OocomoO0 t 70OocomoO07 u);
+
+
+
+  bstring(t) &
+  trans_comma(7)(s) &
+  bprintf("\\bnl\n , ") &
+  Annot(t) &
+  trans_comma(8)(u)
+ =>
+  trans_comma(n)(s 0Oocom t 70OocomoO07 u);
+
+  btest(n>7) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  bprintf("\\bnl\n , ") &
+  Annot(t) &
+  trans_comma(8)(u) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s 0Oocom t 70OocomoO07 u);
+
+
+
+  bstring(t) &
+  trans_comma(7)(s) &
+  bprintf(" , \\bnl\n") &
+  Annot(t) &
+  trans_comma(8)(u)
+ =>
+  trans_comma(n)(s comoO0 t 70OocomoO07 u);
+
+  btest(n>7) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  bprintf(" , \\bnl\n") &
+  Annot(t) &
+  trans_comma(8)(u) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s comoO0 t 70OocomoO07 u);
+
+
+
+  bstring(t) &
+  trans_comma(7)(s) &
+  bprintf(" , ") &
+  Annot(t) &
+  trans_comma(8)(u)
+ =>
+  trans_comma(n)(s , t 70OocomoO07 u);
+
+  btest(n>7) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  bprintf(" , ") &
+  Annot(t) &
+  trans_comma(8)(u) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s , t 70OocomoO07 u);
+
+
+
+  bstring(t) &
+  trans_comma(7)(s) &
+  Annot(t) &
+  trans_comma(8)(u)
+ =>
+  trans_comma(n)(s 70OocomoO07 t 70OocomoO07 u);
+
+  btest(n>7) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_comma(7)(s) &
+  Annot(t) &
+  trans_comma(8)(u) &
+  bprintf(" ) ")
+ =>
+  trans_comma(n)(s 70OocomoO07 t 70OocomoO07 u);
+
+
+
+  bstring(s) &
+  Annot(s) &
+  trans_comma(n)(t)
+ =>
+  trans_comma(n)(s 70OocomoO07 t);
+
+  bstring(t) &
+  trans_comma(n)(s) &
+  Annot(t)
+ =>
+  trans_comma(n)(s 70OocomoO07 t);
+
+
+/*
+HERE((trans_comma:Xx___nl___))&
+*/
+  prt_proof_nl_tab &
+  trans(n)(b)
+ =>
+  trans_comma(n)(Xx___nl___ /0O0/ b);
+
+  trans_comma(n)(a) &
+  bprintf(" , ") &
+  prt_proof_nl_tab &
+  trans(n)(b)
+ =>
+  trans_comma(n)(a, Xx___nl___ /0O0/ b);
+
+
+
+/***
+  trans_semicolon
+***/
+
+  trans(n)(t)                 /* `transbody(n)(t)' an old goal */
+ =>
+  trans_semicolon(n)(t);
+   
+  transbody(n)(t)
+ =>
+  trans_semicolon(n)(t);
+   
+  trans_parallel(n)(t)
+ =>
+  trans_semicolon(n)(t);
+   
+
+
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon \\bnl\n") &
+  trans_semicolon(2)(t)
+ =>
+  trans_semicolon(n)(s 0OoscoO0 t);
+
+  btest(n>1) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon \\bnl\n") &
+  trans_semicolon(2)(t) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s 0OoscoO0 t);
+
+
+
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon ") &
+  trans_semicolon(2)(t)
+ =>
+  trans_semicolon(n)(s 0Oosc t);
+
+  btest(n>1) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon ") &
+  trans_semicolon(2)(t) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s 0Oosc t);
+
+
+
+  trans_semicolon(1)(s) &
+  bprintf(" \\bStatementSemiColon \\bnl\n") &
+  trans_semicolon(2)(t)
+ =>
+  trans_semicolon(n)(s scoO0 t);
+
+  btest(n>1) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bStatementSemiColon \\bnl\n") &
+  trans_semicolon(2)(t) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s scoO0 t);
+
+
+
+  trans_semicolon(1)(s) &
+  bprintf(" \\bStatementSemiColon ") &
+  trans_semicolon(2)(t)
+ =>
+  trans_semicolon(n)(s ; t);
+
+  btest(n>1) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bStatementSemiColon ") &
+  trans_semicolon(2)(t) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s ; t);
+
+  bstring(s) &
+  Annot(s) &
+  trans_semicolon(n)(t)
+ =>
+  trans_semicolon(n)(s ; t);
+
+  bstring(t) &
+  trans_semicolon(n)(s) &
+  Annot(t)
+ =>
+  trans_semicolon(n)(s ; t);
+
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon \\bnl\n") &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s 0OoscoO0 t 70OoscoO07 u);
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon \\bnl\n") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s 0OoscoO0 t 70OoscoO07 u);
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bparallel \\bnl\n") &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s 0OoparoO0 t 70OoscoO07 u);
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bparallel \\bnl\n") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s 0OoparoO0 t 70OoscoO07 u);
+
+
+
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon ") &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s 0Oosc t 70OoscoO07 u);
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon ") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s 0Oosc t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bparallel ") &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s 0Oopar t 70OoscoO07 u);
+
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf("\\bnl\n \\bparallel ") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s 0Oopar t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bStatementSemiColon \\bnl\n") &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s scoO0 t 70OoscoO07 u);
+
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bStatementSemiColon \\bnl\n") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s scoO0 t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bparallel \\bnl\n") &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s paroO0 t 70OoscoO07 u);
+
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bparallel \\bnl\n") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s paroO0 t 70OoscoO07 u);
+
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bStatementSemiColon ") &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s ; t 70OoscoO07 u);
+
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bStatementSemiColon ") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s ; t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bparallel ") &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s || t 70OoscoO07 u);
+
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bparallel ") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s || t 70OoscoO07 u);
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  bprintf(" \\bparallel ") &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s 70OoscoO07 t || u);
+
+
+
+  bstring(t) &
+  trans_semicolon(1)(s) &
+  Annot(t) &
+  trans_semicolon(2)(u)
+ =>
+  trans_semicolon(n)(s 70OoscoO07 t 70OoscoO07 u);
+
+  btest(n>1) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_semicolon(1)(s) &
+  Annot(t) &
+  trans_semicolon(2)(u) &
+  bprintf(" ) ")
+ =>
+  trans_semicolon(n)(s 70OoscoO07 t 70OoscoO07 u);
+
+
+
+  bstring(s) &
+  Annot(s) &
+  trans_semicolon(n)(t)
+ =>
+  trans_semicolon(n)(s 70OoscoO07 t);
+
+  bstring(t) &
+  trans_semicolon(n)(s) &
+  Annot(t)
+ =>
+  trans_semicolon(n)(s 70OoscoO07 t);
+
+
+/*
+HERE((trans_semicolon:Xx___nl___))&
+*/
+  prt_proof_nl_tab &
+  trans(n)(b)
+ =>
+  trans_semicolon(n)(Xx___nl___ /0O0/ b);
+
+
+
+/***
+  trans_parallel
+***/
+
+  trans(n)(t)                 /* `transbody(n)(t)' an old goal */
+ =>
+  trans_parallel(n)(t);
+   
+  transbody(n)(t)
+ =>
+  trans_parallel(n)(t);
+   
+  trans_semicolon(n)(t)
+ =>
+  trans_parallel(n)(t);
+
+  trans_parallel(n)(s) &
+  bprintf("\\bnl\n \\bparallel \\bnl\n") &
+  trans_parallel(n)(t)
+ =>
+  trans_parallel(n)(s 0OoparoO0 t);
+
+
+
+  btest(n>8) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bparallel \\bnl\n") &
+  trans_parallel(9)(t) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s 0OoparoO0 t);
+
+
+
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bparallel ") &
+  trans_parallel(9)(t)
+ =>
+  trans_parallel(n)(s 0Oopar t);
+
+  btest(n>8) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bparallel ") &
+  trans_parallel(9)(t) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s 0Oopar t);
+
+
+
+  trans_parallel(8)(s) &
+  bprintf(" \\bparallel \\bnl\n") &
+  trans_parallel(9)(t)
+ =>
+  trans_parallel(n)(s paroO0 t);
+
+  btest(n>8) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf(" \\bparallel \\bnl\n") &
+  trans_parallel(9)(t) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s paroO0 t);
+
+
+
+  trans_parallel(8)(s) &
+  bprintf(" \\bparallel ") &
+  trans_parallel(9)(t)
+ =>
+  trans_parallel(n)(s || t);
+
+  btest(n>8) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf(" \\bparallel ") &
+  trans_parallel(9)(t) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s || t);
+
+  bstring(s) &
+  Annot(s) &
+  trans_parallel(n)(t)
+ =>
+  trans_parallel(n)(s || t);
+
+  bstring(t) &
+  trans_parallel(n)(s) &
+  Annot(t)
+ =>
+  trans_parallel(n)(s || t);
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bparallel \\bnl\n") &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s 0OoparoO0 t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bparallel \\bnl\n") &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s 0OoparoO0 t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon \\bnl\n") &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s 0OoscoO0 t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon \\bnl\n") &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s 0OoscoO0 t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bparallel ") &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s 0Oopar t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bparallel ") &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s 0Oopar t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon ") &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s 0Oosc t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf("\\bnl\n \\bStatementSemiColon ") &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s 0Oosc t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  bprintf(" \\bparallel \\bnl\n") &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s paroO0 t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf(" \\bparallel \\bnl\n") &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s paroO0 t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  bprintf(" \\bStatementSemiColon \\bnl\n") &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s scoO0 t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf(" \\bStatementSemiColon \\bnl\n") &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s scoO0 t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  bprintf(" \\bparallel ") &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s || t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf(" \\bparallel ") &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s || t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  bprintf(" \\bStatementSemiColon ") &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s ; t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  bprintf(" \\bStatementSemiColon ") &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s ; t 70OoscoO07 u);
+
+
+
+  bstring(t) &
+  trans_parallel(8)(s) &
+  Annot(t) &
+  trans_parallel(9)(u)
+ =>
+  trans_parallel(n)(s 70OoscoO07 t 70OoscoO07 u);
+
+  btest(n>8) &
+  bstring(t) &
+  bprintf(" ( ") &
+  trans_parallel(8)(s) &
+  Annot(t) &
+  trans_parallel(9)(u) &
+  bprintf(" ) ")
+ =>
+  trans_parallel(n)(s 70OoscoO07 t 70OoscoO07 u);
+
+
+
+  bstring(s) &
+  Annot(s) &
+  trans_parallel(n)(t)
+ =>
+  trans_parallel(n)(s 70OoscoO07 t);
+
+  bstring(t) &
+  trans_parallel(n)(s) &
+  Annot(t)
+ =>
+  trans_parallel(n)(s 70OoscoO07 t);
+
+/***
+  trans_opname
+***/
+
+/*
+  bprintf(" {\\bf {\\em %}} ",t)
+*/
+  bprintf(" {\\bf { %}} ",t)
+ =>
+  transopname(t);  /* op name */
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+/*  trans(n)(t) & */
+  transopname(t)
+ =>
+  trans_opname(n)(t);
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+/*  trans(n)(t) & */
+  transopname(t) &
+  bprintf("( ") &
+  trans_comma(n)(w) &
+  bprintf(" )")
+ =>
+  trans_opname(n)(t(w));
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+  trans_comma(n)(s) &
+  bprintf("\\bnl\n $\\longleftarrow$ \\bnl\n") &
+/*  trans(n)(t) & */
+  transopname(t)
+ =>
+  trans_opname(n)(s 0OosnteroO0 t);
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+  trans_comma(n)(s) &
+  bprintf("\\bnl\n $\\longleftarrow$ ") &
+/*  trans(n)(t) & */
+  transopname(t)
+ =>
+  trans_opname(n)(s 0Oosnter t);
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+  trans_comma(n)(s) &
+  bprintf(" $\\longleftarrow$ \\bnl\n") &
+/*  trans(n)(t) & */
+  transopname(t)
+ =>
+  trans_opname(n)(s snteroO0 t);
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+  trans_comma(n)(s) &
+  bprintf(" $\\longleftarrow$ ") &
+/*  trans(n)(t) & */
+  transopname(t)
+ =>
+  trans_opname(n)(s <-- t);
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+  trans_comma(n)(s) &
+  bprintf("\\bnl\n $\\longleftarrow$ \\bnl\n") &
+/*  trans(n)(t) & */
+  transopname(t) &
+  bprintf("( ") &
+  trans_comma(n)(w) &
+  bprintf(" )")
+ =>
+  trans_opname(n)(s 0OosnteroO0 t(w));
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+  trans_comma(n)(s) &
+  bprintf("\\bnl\n $\\longleftarrow$ ") &
+/*  trans(n)(t) & */
+  transopname(t) &
+  bprintf("( ") &
+  trans_comma(n)(w) &
+  bprintf(" )")
+ =>
+  trans_opname(n)(s 0Oosnter t(w));
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+  trans_comma(n)(s) &
+  bprintf(" $\\longleftarrow$ \\bnl\n") &
+/*  trans(n)(t) & */
+  transopname(t) &
+  bprintf("( ") &
+  trans_comma(n)(w) &
+  bprintf(" )")
+ =>
+  trans_opname(n)(s snteroO0 t(w));
+
+  WriteDot &
+  comment_clause_kwd(("OPERATION %",t)) &
+  ModrCurrOpNameSto(t) &
+  CheckOpAnnot(t) &
+  trans_comma(n)(s) &
+  bprintf(" $\\longleftarrow$ ") &
+/*  trans(n)(t) & */
+  transopname(t) &
+  bprintf("( ") &
+  trans_comma(n)(w) &
+  bprintf(" )")
+ =>
+  trans_opname(n)(s<--t(w));
+
+/***
+  transops
+***/
+
+
+  chk_op_x_ref_no_annot;
+
+  DMU_ClIndex_Flag_set &
+  OpClauseXRefNoAnnot("")
+ =>
+  chk_op_x_ref_no_annot;
+
+  Printbbnl
+ =>
+  chk_op_x_ref_annot;
+
+  DMU_ClIndex_Flag_set &
+  OpClauseXRefAnnot("")
+ =>
+  chk_op_x_ref_annot;
+
+
+
+  transbody(0)(t)
+ =>
+  transops(n)(t);    /* init */
+
+  ModrCurrXRefClauseSto((?)) &
+  trans_opname(0)(r<--o)
+ =>
+  transops(n)(r<--o);
+
+  ModrCurrXRefClauseSto((?)) &
+  trans_opname(0)(t) &
+  bprintf("\\bnl\n$\\defs$ \\bnl\n") &
+  IncTabCount &
+  transbody(0)(x) &
+  DecTabCount
+ =>
+  transops(n)(t 0OoeqoO0 x);
+
+  ModrCurrXRefClauseSto((?)) &
+  trans_opname(0)(t) &
+  bprintf("\\bnl\n$\\defs$ \\bhsp ") &
+  IncTabCount &
+  transbody(0)(x) &
+  DecTabCount
+ =>
+  transops(n)(t 0Ooeq x);
+
+  ModrCurrXRefClauseSto((?)) &
+  trans_opname(0)(t) &
+  bprintf(" \\bhsp $\\defs$ \\bnl\n") &
+  IncTabCount &
+  transbody(0)(x) &
+  DecTabCount
+ =>
+  transops(n)(t eqoO0 x);
+
+  ModrCurrXRefClauseSto((?)) &
+  trans_opname(0)(t) &
+  bprintf(" \\bhsp $\\defs$ \\bhsp ") &
+  IncTabCount &
+  transbody(0)(x) &
+  DecTabCount
+ =>
+  transops(n)(t = x);
+
+
+
+
+  transops(0)(s) &
+  bprintf("\\bbnl\n \\bOperationSemiColon \\bbnl\n") &
+  chk_op_x_ref_no_annot &
+  transops(0)(t)
+ =>
+  transops(n)(s 0OoscoO0 t);
+
+  transops(0)(s) &
+  bprintf("\\bbnl\n \\bOperationSemiColon ") &
+  chk_op_x_ref_no_annot &
+  transops(0)(t)
+ =>
+  transops(n)(s 0Oosc t);
+
+  transops(0)(s) &
+  bprintf(" \\bOperationSemiColon \\bbnl\n") &
+  chk_op_x_ref_no_annot &
+  transops(0)(t)
+ =>
+  transops(n)(s scoO0 t);
+
+  transops(0)(s) &
+  bprintf(" \\bOperationSemiColon ") &
+  chk_op_x_ref_no_annot &
+  transops(0)(t)
+ =>
+  transops(n)(s ; t);
+
+
+  bstring(t) &
+  transops(0)(s) &
+  bprintf("\\bbnl\n \\bOperationSemiColon \\bbnl\n") &
+  chk_op_x_ref_annot &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s 70OoscoO07 t 0OoscoO0 u);
+
+  bstring(t) &
+  transops(0)(s) &
+  bprintf("\\bbnl\n \\bOperationSemiColon ") &
+  chk_op_x_ref_annot &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s 70OoscoO07 t 0Oosc u);
+
+  bstring(t) &
+  transops(0)(s) &
+  bprintf(" \\bOperationSemiColon \\bbnl\n") &
+  chk_op_x_ref_annot &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s 70OoscoO07 t scoO0 u);
+
+  bstring(t) &
+  transops(0)(s) &
+  bprintf(" \\bOperationSemiColon ") &
+  chk_op_x_ref_annot &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s 70OoscoO07 t ; u);
+
+  bstring(t) &
+  transops(0)(s) &
+  bprintf("\\bbnl\n \\bOperationSemiColon \\bbnl\n") &
+  chk_op_x_ref_annot &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s 0OoscoO0 t 70OoscoO07 u);
+
+  bstring(t) &
+  transops(0)(s) &
+  bprintf("\\bbnl\n \\bOperationSemiColon ") &
+  chk_op_x_ref_annot &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s 0Oosc t 70OoscoO07 u);
+
+  bstring(t) &
+  transops(0)(s) &
+  bprintf(" \\bOperationSemiColon \\bbnl\n") &
+  chk_op_x_ref_annot &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s scoO0 t 70OoscoO07 u);
+
+  bstring(t) &
+  transops(0)(s) &
+  bprintf(" \\bOperationSemiColon ") &
+  chk_op_x_ref_annot &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s ; t 70OoscoO07 u);
+
+  bstring(t) &
+  transops(0)(s) &
+  Modr_op_Annot(t) &
+  transops(0)(u)
+ =>
+  transops(n)(s 70OoscoO07 t 70OoscoO07 u);
+
+
+
+  bstring(s) &
+  Modr_op_Annot(s) &
+  transops(0)(t)
+ =>
+  transops(n)(s ; t);
+
+  bstring(t) &
+  transops(0)(s) &
+  Modr_op_Annot(t)
+ =>
+  transops(n)(s ; t);
+
+
+  bstring(s) &
+  Modr_op_Annot(s) &
+  transops(0)(t)
+ =>
+  transops(n)(s 70OoscoO07 t);
+
+  bstring(t) &
+  transops(0)(s) &
+  Modr_op_Annot(t)
+ =>
+  transops(n)(s 70OoscoO07 t);
+
+
+
+
+  FlagFirstOp &
+  transops(n)(s)
+ =>
+  transops_xref_0(n)(s);
+
+  DMU_ClIndex_Flag_set &
+  FlagFirstOp &
+  transops(n)(s) &
+  OpClauseXRefAnnot("")
+ =>
+  transops_xref_0(n)(s);
+
+  bstring(t) &
+  FlagFirstOp &
+  transops(n)(s) &
+  FinalClauseAnnotNoXRef(t)
+ =>
+  transops_xref_0(n)(s 70OoscoO07 t);
+
+  ReadCurrXRefClauseSto(S) &
+  FinalClauseAnnot(t)
+ =>
+  final_clause_annot(t);
+
+  ReadCurrXRefClauseSto(?) &
+  FinalClauseAnnotNoXRef(t)
+ =>
+  final_clause_annot(t);
+
+  bstring(t) &
+  DMU_ClIndex_Flag_set &
+  FlagFirstOp &
+  transops(n)(s) &
+  OpClauseXRefAnnot("") &
+  final_clause_annot(t)
+ =>
+  transops_xref_0(n)(s 70OoscoO07 t);
+
+
+
+  transops_xref_0(n)(Y 70OoscoO07 t)
+ =>
+  transops_xref_filter_2(n)(t)(Y);
+
+  transops_xref_0(n)(Y)
+ =>
+  transops_xref_filter_2(n)(?)(Y);
+
+  transops_xref_filter_2(n)(X)(Y JOK2 x)
+ =>
+  transops_xref_filter_2(n)(X JOK2 x)(Y);
+
+  transops_xref_0(n)(x)
+ =>
+  transops_xref_filter_1(n)(x);
+
+  transops_xref_filter_2(n)(X)(x)
+ =>
+  transops_xref_filter_1(n)(X|x);
+
+  transops_xref_filter_1(n)(?);
+
+
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(o 0OoeqoO0 S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(o 0Ooeq S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(o eqoO0 S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(o = S)(X)(L);
+
+
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((o 0OoeqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(o 0OoeqoO0 S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((o 0Ooeq S)))
+ =>
+  transops_xref_filter_0(n)(o 0Ooeq S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((o eqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(o eqoO0 S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((o = S)))
+ =>
+  transops_xref_filter_0(n)(o = S)(X)(L);
+
+
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(o(B) 0OoeqoO0 S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(o(B) 0Ooeq S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(o(B) eqoO0 S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(o(B) = S)(X)(L);
+
+
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((o(B) 0OoeqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(o(B) 0OoeqoO0 S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((o(B) 0Ooeq S)))
+ =>
+  transops_xref_filter_0(n)(o(B) 0Ooeq S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((o(B) eqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(o(B) eqoO0 S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((o(B) = S)))
+ =>
+  transops_xref_filter_0(n)(o(B) = S)(X)(L);
+
+
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(A<--o 0OoeqoO0 S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(A<--o 0Ooeq S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(A<--o eqoO0 S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(A<--o = S)(X)(L);
+
+
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((A<--o 0OoeqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(A<--o 0OoeqoO0 S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((A<--o 0Ooeq S)))
+ =>
+  transops_xref_filter_0(n)(A<--o 0Ooeq S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((A<--o eqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(A<--o eqoO0 S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((A<--o = S)))
+ =>
+  transops_xref_filter_0(n)(A<--o = S)(X)(L);
+
+
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(A<--o(B) 0OoeqoO0 S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(A<--o(B) 0Ooeq S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(A<--o(B) eqoO0 S)(X)(L);
+
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(A<--o(B) = S)(X)(L);
+
+
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((A<--o(B) 0OoeqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(A<--o(B) 0OoeqoO0 S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((A<--o(B) 0Ooeq S)))
+ =>
+  transops_xref_filter_0(n)(A<--o(B) 0Ooeq S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((A<--o(B) eqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(A<--o(B) eqoO0 S)(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|((A<--o(B) = S)))
+ =>
+  transops_xref_filter_0(n)(A<--o(B) = S)(X)(L);
+
+
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o 0OoeqoO0 S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o 0Ooeq S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o eqoO0 S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o = S))(X)(L);
+
+
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((o 0OoeqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o 0OoeqoO0 S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((o 0Ooeq S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o 0Ooeq S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((o eqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o eqoO0 S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((o = S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o = S))(X)(L);
+
+
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o(B) 0OoeqoO0 S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o(B) 0Ooeq S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o(B) eqoO0 S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o(B) = S))(X)(L);
+
+
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((o(B) 0OoeqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o(B) 0OoeqoO0 S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((o(B) 0Ooeq S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o(B) 0Ooeq S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((o(B) eqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o(B) eqoO0 S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((o(B) = S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (o(B) = S))(X)(L);
+
+
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o 0OoeqoO0 S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o 0Ooeq S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o eqoO0 S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o = S))(X)(L);
+
+
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((A<--o 0OoeqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o 0OoeqoO0 S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((A<--o 0Ooeq S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o 0Ooeq S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((A<--o eqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o eqoO0 S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((A<--o = S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o = S))(X)(L);
+
+
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o(B) 0OoeqoO0 S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o(B) 0Ooeq S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o(B) eqoO0 S))(X)(L);
+
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o(B) = S))(X)(L);
+
+
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((A<--o(B) 0OoeqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o(B) 0OoeqoO0 S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((A<--o(B) 0Ooeq S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o(B) 0Ooeq S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((A<--o(B) eqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o(B) eqoO0 S))(X)(L);
+
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 ((A<--o(B) = S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (A<--o(B) = S))(X)(L);
+
+
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o 0OoeqoO0 S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o 0Ooeq S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o eqoO0 S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o = S))(X)(L);
+
+
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (o 0OoeqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o 0OoeqoO0 S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (o 0Ooeq S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o 0Ooeq S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (o eqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o eqoO0 S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (o = S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o = S))(X)(L);
+
+
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o(B) 0OoeqoO0 S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o(B) 0Ooeq S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o(B) eqoO0 S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o(B) = S))(X)(L);
+
+
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (o(B) 0OoeqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o(B) 0OoeqoO0 S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (o(B) 0Ooeq S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o(B) 0Ooeq S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (o(B) eqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o(B) eqoO0 S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (o(B) = S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 o(B) = S))(X)(L);
+
+
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o 0OoeqoO0 S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o 0Ooeq S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o eqoO0 S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o = S))(X)(L);
+
+
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (A<--o 0OoeqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o 0OoeqoO0 S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (A<--o 0Ooeq S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o 0Ooeq S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (A<--o eqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o eqoO0 S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (A<--o = S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o = S))(X)(L);
+
+
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o(B) 0OoeqoO0 S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o(B) 0Ooeq S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o(B) eqoO0 S))(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0(n)(O)(X)(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o(B) = S))(X)(L);
+
+
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (A<--o(B) 0OoeqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o(B) 0OoeqoO0 S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (A<--o(B) 0Ooeq S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o(B) 0Ooeq S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (A<--o(B) eqoO0 S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o(B) eqoO0 S))(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0(n)(O)(X JOK2 (s 70OoscoO07 (A<--o(B) = S)))(L)
+ =>
+  transops_xref_filter_0(n)(O JOK2 (s 70OoscoO07 A<--o(B) = S))(X)(L);
+
+
+
+  transops_xref_filter_0_1(n)(X);
+
+  transops_xref_filter_1(n)(X|x)
+ =>
+  transops_xref_filter_0_1(n)(X JOK2 x);
+
+
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o 0OoeqoO0 S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o 0Ooeq S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o eqoO0 S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o = S)(X)(L);
+
+
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (o 0OoeqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o 0OoeqoO0 S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (o 0Ooeq S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o 0Ooeq S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (o eqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o eqoO0 S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (o = S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o = S)(X)(L);
+
+
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o(B) 0OoeqoO0 S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o(B) 0Ooeq S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o(B) eqoO0 S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o(B) = S)(X)(L);
+
+
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (o(B) 0OoeqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o(B) 0OoeqoO0 S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (o(B) 0Ooeq S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o(B) 0Ooeq S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (o(B) eqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o(B) eqoO0 S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (o(B) = S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 o(B) = S)(X)(L);
+
+
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o 0OoeqoO0 S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o  0Ooeq S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o  eqoO0 S)(X)(L);
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o = S)(X)(L);
+
+
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (A<--o 0OoeqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o 0OoeqoO0 S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (A<--o 0Ooeq S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o 0Ooeq S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (A<--o eqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o eqoO0 S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_0_1(n)(X|(s 70OoscoO07 (A<--o = S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o = S)(X)(L);
+
+
+
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o(B) 0OoeqoO0 S)(X)(L);
+
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o(B) 0Ooeq S)(X)(L);
+
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o(B) eqoO0 S)(X)(L);
+
+
+  bstring(s) &
+  transops_xref_filter_0_1(n)(X)
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o(B) = S)(X)(L);
+
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|(s 70OoscoO07 (A<--o(B) 0OoeqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o(B) 0OoeqoO0 S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|(s 70OoscoO07 (A<--o(B) 0Ooeq S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o(B) 0Ooeq S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|(s 70OoscoO07 (A<--o(B) eqoO0 S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o(B) eqoO0 S)(X)(L);
+
+  bstring(s) &
+  bsearch(o,L,M) &
+  transops_xref_filter_1(n)(X|(s 70OoscoO07 (A<--o(B) = S)))
+ =>
+  transops_xref_filter_0(n)(s 70OoscoO07 A<--o(B) = S)(X)(L);
+
+
+
+
+  ReadOPERATIONSFILTERStore(L) &                 /* filter ops */
+  transops_xref_filter_0(n)(s)(?)(L,?)             /* no final annot */
+ =>
+  transops_xref_00(n)(s);
+
+  ReadOPERATIONSFILTERStore(L) &                 /* filter ops */
+  bstring(t) &
+  transops_xref_filter_0(n)(s)(t)(L,?)           /* t is final annot */
+ =>
+  transops_xref_00(n)(s 70OoscoO07 t);
+
+  ReadOPERATIONSFILTERStore(0) &                 /* take all ops */
+  transops_xref_0(n)(s)
+ =>
+  transops_xref_00(n)(s);
+
+
+
+  transops(n)(s) &
+  chk_op_x_ref_no_annot
+ =>
+  transinit_xref_0(n)(s);
+
+  bstring(r) &
+  Annot(r) &
+  transops(n)(s) &
+  chk_op_x_ref_no_annot
+ =>
+  transinit_xref_0(n)(r 70OoscoO07 s);
+
+  bstring(t) &
+  transops(n)(s) &
+  Annot(t)
+ =>
+  transinit_xref_0(n)(s 70OoscoO07 t);
+
+  bstring(r) &
+  bstring(t) &
+  Annot(r) &
+  transops(n)(s) &
+  Annot(t)
+ =>
+  transinit_xref_0(n)(r 70OoscoO07 s 70OoscoO07 t);
+
+  bstring(r) &
+  DMU_ClIndex_Flag_set &
+  Annot(r) &
+  transops(n)(s) &
+  chk_op_x_ref_no_annot
+ =>
+  transinit_xref_0(n)(r 70OoscoO07 s);
+
+  bstring(t) &
+  DMU_ClIndex_Flag_set &
+  transops(n)(s) &
+  ClauseXRefAnnot("") &
+  FinalClauseAnnot(t)
+ =>
+  transinit_xref_0(n)(s 70OoscoO07 t);
+
+  bstring(r) &
+  bstring(t) &
+  DMU_ClIndex_Flag_set &
+  Annot(r) &
+  transops(n)(s) &
+  ClauseXRefAnnot("") &
+  FinalClauseAnnot(t)
+ =>
+  transinit_xref_0(n)(r 70OoscoO07 s 70OoscoO07 t);
+
+
+
+#define transbodyInner(x,A,B,C,D) \
+ \
+  transbody(0)(S) & \
+  DecTabCount & \
+  bprintf("\\bnl\n") & \
+  print_opn_kwd(x) & \
+  IncTabCount & \
+  bprintf("\\bnl\n") & \
+  transbody(0)(T) \
+ => \
+  transbody(n)(A); \
+ \
+  transbody(0)(S) & \
+  DecTabCount & \
+  bprintf("\\bnl\n") & \
+  print_opn_kwd(x) & \
+  IncTabCount & \
+  transbody(0)(T) \
+ => \
+  transbody(n)(B); \
+ \
+  transbody(0)(S) & \
+  DecTabCount & \
+  print_opn_kwd_sp(x) & \
+  IncTabCount & \
+  bprintf("\\bnl\n") & \
+  transbody(0)(T) \
+ => \
+  transbody(n)(C); \
+ \
+  transbody(0)(S) & \
+  DecTabCount & \
+  print_opn_kwd_sp(x) & \
+  IncTabCount & \
+  transbody(0)(T) \
+ => \
+  transbody(n)(D)
+  
+
+  transbodyInner
+   (
+    "THEN",
+    (S 0OoTHENoO0 T),
+    (S 0OoTHEN T),
+    (S THENoO0 T),
+    (S THEN T)
+   );
+
+  transbodyInner
+   (
+    "WHEN",
+    (S 0OoWHENoO0 T),
+    (S 0OoWHEN T),
+    (S WHENoO0 T),
+    (S WHEN T)
+   );
+
+  transbodyInner
+   (
+    "WHERE",
+    (S 0OoWHEREoO0 T),
+    (S 0OoWHERE T),
+    (S WHEREoO0 T),
+    (S WHERE T)
+   );
+
+  transbodyInner
+   (
+    "DO",
+    (S 0OoDOoO0 T),
+    (S 0OoDO T),
+    (S DOoO0 T),
+    (S DO T)
+   );
+
+  transbodyInner
+   (
+    "INVARIANT",
+    (S 0OoINVARIANToO0 T),
+    (S 0OoINVARIANT T),
+    (S INVARIANToO0 T),
+    (S INVARIANT T)
+   );
+
+  transbodyInner
+   (
+    "VARIANT",
+    (S 0OoVARIANToO0 T),
+    (S 0OoVARIANT T),
+    (S VARIANToO0 T),
+    (S VARIANT T)
+   );
+
+  transbodyInner
+   (
+    "OF",
+    (S 0OoOFoO0 T),
+    (S 0OoOF T),
+    (S OFoO0 T),
+    (S OF T)
+   );
+
+  transbodyInner
+   (
+    "IN",
+    (S 0OoINoO0 T),
+    (S 0OoIN T),
+    (S INoO0 T),
+    (S IN T)
+   );
+
+  transbodyInner
+   (
+    "BE",
+    (S 0OoBEoO0 T),
+    (S 0OoBE T),
+    (S BEoO0 T),
+    (S BE T)
+   );
+
+  transbodyInner
+   (
+    "OR",
+    (S 0OoORoO0 T),
+    (S 0OoOR T),
+    (S ORoO0 T),
+    (S OR T)
+   );
+
+  transbodyInner
+   (
+    "ELSE",
+    (S 0OoELSEoO0 T),
+    (S 0OoELSE T),
+    (S ELSEoO0 T),
+    (S ELSE T)
+   );
+
+  transbodyInner
+   (
+    "ELSIF",
+    (S 0OoELSIFoO0 T),
+    (S 0OoELSIF T),
+    (S ELSIFoO0 T),
+    (S ELSIF T)
+   );
+
+
+
+
+
+#define transbodyOuter(x,A,B,C,D) \
+ \
+  bprintf("\\bnl\n") & \
+  print_opn_kwd(x) & \
+  IncTabCount & \
+  bprintf("\\bnl\n") & \
+  transbody(0)(S) & \
+  DecTabCount & \
+  bprintf("\\bnl\n") & \
+  print_opn_kwd_end \
+ => \
+  transbody(n)(A); \
+ \
+  bprintf("\\bnl\n") & \
+  print_opn_kwd(x) & \
+  IncTabCount & \
+  transbody(0)(S) & \
+  DecTabCount & \
+  bprintf("\\bnl\n") & \
+  print_opn_kwd_end \
+ => \
+  transbody(n)(B); \
+ \
+  print_opn_kwd(x) & \
+  IncTabCount & \
+  bprintf("\\bnl\n") & \
+  transbody(0)(S) & \
+  DecTabCount & \
+  bprintf("\\bnl\n") & \
+  print_opn_kwd_end \
+ => \
+  transbody(n)(C); \
+ \
+  print_opn_kwd(x) & \
+  IncTabCount & \
+  transbody(0)(S) & \
+  DecTabCount & \
+  bprintf("\\bnl\n") & \
+  print_opn_kwd_end \
+ => \
+  transbody(n)(D)
+
+
+  transbodyOuter
+   (
+    "BEGIN",
+    (0OoBEGINoO0 S END),
+    (0OoBEGIN S END),
+    (BEGINoO0 S END),
+    (BEGIN S END)
+    );
+
+  transbodyOuter(
+     "PRE",
+     (0OoPREoO0 S END),
+     (0OoPRE S END),
+     (PREoO0 S END),
+     (PRE S END)
+   );
+
+  transbodyOuter
+   (
+    "IF",
+    (0OoIFoO0 S END),
+    (0OoIF S END),
+    (IFoO0 S END),
+    (IF S END)
+   );
+
+  transbodyOuter
+   (
+    "CHOICE",
+    (0OoCHOICEoO0 S END),
+    (0OoCHOICE S END),
+    (CHOICEoO0 S END),
+    (CHOICE S END)
+   );
+
+  transbodyOuter
+   (
+    "SELECT",
+    (0OoSELECToO0 S END),
+    (0OoSELECT S END),
+    (SELECToO0 S END),
+    (SELECT S END)
+   );
+
+  transbodyOuter
+   (
+    "CASE",
+    (0OoCASEoO0 S END),
+    (0OoCASE S END),
+    (CASEoO0 S END),
+    (CASE S END)
+   );
+
+  transbodyOuter
+   (
+    "EITHER",
+    (0OoEITHERoO0 S END),
+    (0OoEITHER S END),
+    (EITHERoO0 S END),
+    (EITHER S END)
+   );
+
+  transbodyOuter
+   (
+    "ANY",
+    (0OoANYoO0 S END),
+    (0OoANY S END),
+    (ANYoO0 S END),
+    (ANY S END)
+   );
+
+  transbodyOuter
+   (
+    "VAR",
+    (0OoVARoO0 S END),
+    (0OoVAR S END),
+    (VARoO0 S END),
+    (VAR S END)
+   );
+
+  transbodyOuter
+   (
+    "LET",
+    (0OoLEToO0 S END),
+    (0OoLET S END),
+    (LEToO0 S END),
+    (LET S END)
+   );
+
+  transbodyOuter
+   (
+    "WHILE",
+    (0OoWHILEoO0 S END),
+    (0OoWHILE S END),
+    (WHILEoO0 S END),
+    (WHILE S END)
+   );
+
+
+
+  /* NoNlLayoutOne(x,A,B) */
+
+  print_opn_kwd("BEGIN") &
+  transbody(0)(S) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(BEGIN S END);
+
+  bprintf("\\bnl\n") &
+  print_opn_kwd("BEGIN") &
+  transbody(0)(S) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(0OoBEGIN S END);
+
+
+
+  /* NoNlLayoutTwo(x,y,A,B) */
+
+  print_opn_kwd("PRE") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(PRE S THEN T END);
+
+  bprintf("\\bnl\n") &
+  print_opn_kwd("PRE") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(0OoPRE S THEN T END);
+
+  print_opn_kwd("IF") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(IF S THEN T END);
+
+  bprintf("\\bnl\n") &
+  print_opn_kwd("IF") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(0OoIF S THEN T END);
+
+
+  print_opn_kwd("IF") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  print_opn_kwd_sp("ELSIF") &
+  transbody(0)(U) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(V) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(IF S THEN T ELSIF U THEN V END);
+
+  print_opn_kwd("IF") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  bprintf("\\bnl\n") &
+  print_opn_kwd("ELSIF") &
+  transbody(0)(U) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(V) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(IF S THEN T 0OoELSIF U THEN V END);
+
+  bprintf("\\bnl\n") &
+  print_opn_kwd("IF") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  print_opn_kwd_sp("ELSIF") &
+  transbody(0)(U) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(V) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(0OoIF S THEN T ELSIF U THEN V END);
+
+  bprintf("\\bnl\n") &
+  print_opn_kwd("IF") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  bprintf("\\bnl\n") &
+  print_opn_kwd("ELSIF") &
+  transbody(0)(U) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(V) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(0OoIF S THEN T 0OoELSIF U THEN V END);
+
+
+
+  /*  NoNlLayoutThree */
+
+  print_opn_kwd("ANY") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("WHERE") &
+  transbody(0)(T) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(U) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(ANY S WHERE T THEN U END);
+
+  bprintf("\\bnl\n") &
+  print_opn_kwd("ANY") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("WHERE") &
+  transbody(0)(T) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(U) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(0OoANY S WHERE T THEN U END);
+
+
+  print_opn_kwd("IF") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  print_opn_kwd_sp("ELSE") &
+  transbody(0)(U) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(IF S THEN T ELSE U END);
+
+
+  bprintf("\\bnl\n") &
+  print_opn_kwd("IF") &
+  transbody(0)(S) &
+  print_opn_kwd_sp("THEN") &
+  transbody(0)(T) &
+  print_opn_kwd_sp("ELSE") &
+  transbody(0)(U) &
+  print_opn_kwd_end_sp
+ =>
+  transbody(n)(0OoIF S THEN T ELSE U END);
+
+
+
+  DMUErrorFlagged
+ =>
+  x
+
+END  
+
+&
+
+THEORY ParseConstructX IS
+
+#define ParseConstructtac ((CATL;MODR;WRITE;SHELL)~;ParseConstructX)~
+
+#define ParseConstruct(a)  bcall(ParseConstructtac: parse(a))
+
+
+  ?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  SetDMUError &
+  Writef(("syntax error: \n\n    %\n",bsrv s berv))
+ =>
+  parse_clauses(a)(s);
+
+  bmodr(PARAMETERSX.1,t) &
+  bident(s)
+ =>
+  parse_clauses(a)(s(t));
+
+  bmodr(NAMEX.1,(a))
+ =>
+  parse_clauses(a)(a);
+
+  bmodr(NAMEX.1,(a(Y)))
+ =>
+  parse_clauses(a)(a(Y));
+
+  bmodr(NAMEX.1,(a))
+ =>
+  parse_clauses(a)(a(?));
+
+  bstring(t) &
+  bmodr(NAMEX.1,(X 70OoscoO07 t))
+ =>
+  parse_clauses(a)(X 70OoscoO07 t);
+
+  bstring(t) &
+  bmodr(NAMEX.1,(X(Y) 70OoscoO07 t))
+ =>
+  parse_clauses(a)(X(Y) 70OoscoO07 t);
+
+  bstring(t) &
+  bmodr(NAMEX.1,(X 70OoscoO07 t))
+ =>
+  parse_clauses(a)(X(?) 70OoscoO07 t);
+
+  bstring(s) &
+  bmodr(NAMEX.1,(s 70OoscoO07 X))
+ =>
+  parse_clauses(a)(s 70OoscoO07 X);
+
+  bstring(s) &
+  bmodr(NAMEX.1,(s 70OoscoO07 X(Y)))
+ =>
+  parse_clauses(a)(s 70OoscoO07 X(Y));
+
+  bstring(s) &
+  bmodr(NAMEX.1,(s 70OoscoO07 X))
+ =>
+  parse_clauses(a)(s 70OoscoO07 X(?));
+
+  bstring(s) &
+  bstring(t) &
+  bmodr(NAMEX.1,(s 70OoscoO07 X 70OoscoO07 t))
+ =>
+  parse_clauses(a)(s 70OoscoO07 X 70OoscoO07 t);
+
+
+
+  parse_clauses(a)(n)
+ =>
+  parse_base(a)(n);
+
+  bmodr(SYSTEMX.1,s) &
+  parse_base(a)(X)
+ =>
+  parse_base(a)(X IS s);
+
+  ModrSUPPORTSNLStore(0) &
+  bmodr(SUPPORTSX.1,S) &
+  parse_base(a)(X)
+ =>
+  parse_base(a)(X SUPPORTS S);
+
+  ModrSUPPORTSNLStore(1) &
+  bmodr(SUPPORTSX.1,S) &
+  parse_base(a)(X)
+ =>
+  parse_base(a)(X SUPPORTSoO0 S);
+
+
+  ModrSETSNLStore(0) &
+  bmodr(SETSX.1,S) &
+  parse_base(a)(X)
+ =>
+  parse_base(a)(X SETS S);
+
+  ModrSETSNLStore(1) &
+  bmodr(SETSX.1,S) &
+  parse_base(a)(X)
+ =>
+  parse_base(a)(X SETSoO0 S);
+
+
+  ModrDEFINITIONSNLStore(0) &
+  bmodr(DEFINITIONSX.1,S) &
+  parse_base(a)(X)
+ =>
+  parse_base(a)(X DEFINITIONS S);
+
+  ModrDEFINITIONSNLStore(1) &
+  bmodr(DEFINITIONSX.1,S) &
+  parse_base(a)(X)
+ =>
+  parse_base(a)(X DEFINITIONSoO0 S);
+
+
+
+  ModrSYSTEMNLStore(0) &
+  parse_base(a)(X)
+ =>
+  parse_clauses(a)(SYSTEM X END);
+
+  ModrSYSTEMNLStore(1) &
+  parse_base(a)(X)
+ =>
+  parse_clauses(a)(SYSTEMoO0 X END);
+
+
+
+
+
+  ModrINTERFACENLStore(0) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(INTERFACE s END);
+
+  ModrINTERFACENLStore(1) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(INTERFACEoO0 s END);
+
+  ModrENUMERATIONNLStore(0) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(ENUMERATION s END);
+
+  ModrENUMERATIONNLStore(1) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(ENUMERATIONoO0 s END);
+
+  ModrMACHINENLStore(0) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(MACHINE s END);
+
+  ModrMACHINENLStore(1) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(MACHINEoO0 s END);
+
+  ModrREFINEMENTNLStore(0) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(REFINEMENT s END);
+
+  ModrREFINEMENTNLStore(1) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(REFINEMENToO0 s END);
+
+  ModrIMPLEMENTATIONNLStore(0) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(IMPLEMENTATION s END);
+
+  ModrIMPLEMENTATIONNLStore(1) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(IMPLEMENTATIONoO0 s END);
+
+
+
+  ModrREFINESNLStore(0) &
+  bmodr(REFINESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s REFINES t);
+
+  ModrREFINESNLStore(1) &
+  bmodr(REFINESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s REFINESoO0 t);
+
+  ModrDEFINITIONSNLStore(0) &
+  bmodr(DEFINITIONSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s DEFINITIONS t);
+
+  ModrDEFINITIONSNLStore(1) &
+  bmodr(DEFINITIONSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s DEFINITIONSoO0 t);
+
+  ModrSETSNLStore(0) &
+  bmodr(SETSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s SETS t);
+
+  ModrSETSNLStore(1) &
+  bmodr(SETSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s SETSoO0 t);
+
+  ModrCONSTANTSNLStore(0) &
+  bmodr(CONSTANTSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s CONSTANTS t);
+
+  ModrCONSTANTSNLStore(1) &
+  bmodr(CONSTANTSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s CONSTANTSoO0 t);
+
+  ModrPROPERTIESNLStore(0) &
+  bmodr(PROPERTIESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s PROPERTIES t);
+
+  ModrPROPERTIESNLStore(1) &
+  bmodr(PROPERTIESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s PROPERTIESoO0 t);
+
+  ModrCONSTRAINTSNLStore(0) &
+  bmodr(CONSTRAINTSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s CONSTRAINTS t);
+
+  ModrCONSTRAINTSNLStore(1) &
+  bmodr(CONSTRAINTSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s CONSTRAINTSoO0 t);
+
+  ModrUSESNLStore(0) &
+  bmodr(USESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s USES t);
+
+  ModrUSESNLStore(1) &
+  bmodr(USESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s USESoO0 t);
+
+  ModrSEESNLStore(0) &
+  bmodr(SEESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s SEES t);
+
+  ModrSEESNLStore(1) &
+  bmodr(SEESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s SEESoO0 t);
+
+  ModrEXTENDSNLStore(0) &
+  bmodr(EXTENDSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s EXTENDS t);
+
+  ModrEXTENDSNLStore(1) &
+  bmodr(EXTENDSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s EXTENDSoO0 t);
+
+  ModrINCLUDESNLStore(0) &
+  bmodr(INCLUDESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s INCLUDES t);
+
+  ModrINCLUDESNLStore(1) &
+  bmodr(INCLUDESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s INCLUDESoO0 t);
+
+  ModrIMPORTSNLStore(0) &
+  bmodr(IMPORTSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s IMPORTS t);
+
+  ModrIMPORTSNLStore(1) &
+  bmodr(IMPORTSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s IMPORTSoO0 t);
+
+  ModrPROMOTESNLStore(0) &
+  bmodr(PROMOTESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s PROMOTES t);
+
+  ModrPROMOTESNLStore(1) &
+  bmodr(PROMOTESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s PROMOTESoO0 t);
+
+  ModrVARIABLESNLStore(0) &
+  bmodr(VARIABLESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s VARIABLES t);
+
+  ModrVARIABLESNLStore(1) &
+  bmodr(VARIABLESX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s VARIABLESoO0 t);
+
+  ModrINVARIANTNLStore(0) &
+  bmodr(INVARIANTX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s INVARIANT t);
+
+  ModrINVARIANTNLStore(0) &
+  bmodr(INVARIANTX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s 0OoINVARIANT t);
+
+  ModrINVARIANTNLStore(1) &
+  bmodr(INVARIANTX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s 0OoINVARIANToO0 t);
+
+  ModrINVARIANTNLStore(1) &
+  bmodr(INVARIANTX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s INVARIANToO0 t);
+
+  ModrASSERTIONSNLStore(0) &
+  bmodr(ASSERTIONSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s ASSERTIONS t);
+
+  ModrASSERTIONSNLStore(1) &
+  bmodr(ASSERTIONSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s ASSERTIONSoO0 t);
+
+  ModrINITIALISATIONNLStore(0) &
+  bmodr(INITIALISATIONX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s INITIALISATION t);
+
+  ModrINITIALISATIONNLStore(1) &
+  bmodr(INITIALISATIONX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s INITIALISATIONoO0 t);
+
+  ModrOPERATIONSNLStore(0) &
+  bmodr(OPERATIONSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s OPERATIONS t);
+
+  ModrOPERATIONSNLStore(1) &
+  bmodr(OPERATIONSX.1,t) &
+  parse_clauses(a)(s)
+ =>
+  parse_clauses(a)(s OPERATIONSoO0 t);
+
+
+
+
+
+
+  parse_clauses(a)(X)
+ =>
+  parse_clauses_0(a)(X);
+
+  bstring(T) &
+  bmodr(EPICOMMENTX.1,T) &
+  parse_clauses(a)(X)
+ =>
+  parse_clauses_0(a)(X 70OoscoO07 T);
+
+  bstring(S) &
+  bmodr(PROCOMMENTX.1,S) &
+  parse_clauses(a)(X)
+ =>
+  parse_clauses_0(a)(S 70OoscoO07 X);
+
+  bstring(S) &
+  bstring(T) &
+  bmodr(PROCOMMENTX.1,S) &
+  bmodr(EPICOMMENTX.1,T) &
+  parse_clauses(a)(X)
+ =>
+  parse_clauses_0(a)(S 70OoscoO07 X 70OoscoO07 T);
+
+
+
+  SetDMUError &
+  GetJobs(X) &
+  AddJobs(X,((a.b:BT_DMU_PARSE_ERR:f)))
+ =>
+  parse_error(a.b)(f);
+
+  bshell(bcatl("$BKIT/BLIB/Deannot < .parse_error > SRC/",a,".",b,".bad_annot")) &
+  bshell(bcatl("rm -f .parse_error")) &
+  Writef((" bad annotation position\n")) &
+  parse_error(a.b)(bcatl("SRC/",a,".",b,".bad_annot"))
+ =>
+  parse(a.b);
+
+  bget(".Bcom",x) &
+  bshell("rm -f .parse_error") &
+  parse_clauses_0(a)(x)
+ =>
+  parse(a.itf);
+
+  bget(".Bcom",x) &
+  bshell("rm -f .parse_error") &
+  parse_clauses_0(a)(x)
+ =>
+  parse(a.enm);
+
+  bget(".Bcom",x) &
+  bshell("rm -f .parse_error") &
+  parse_clauses_0(a)(x)
+ =>
+  parse(a.bse);
+
+  bget(".Bcom",x) &
+  bshell("rm -f .parse_error") &
+  parse_clauses_0(a)(x)
+ =>
+  parse(a.mch);
+
+  bget(".Bcom",x) &
+  bshell("rm -f .parse_error") &
+  parse_clauses_0(a)(x)
+ =>
+  parse(a.ref);
+
+  bget(".Bcom",x) &
+  bshell("rm -f .parse_error") &
+  parse_clauses_0(a)(x)
+ =>
+  parse(a.imp)
+
+END
+
+&
+
+THEORY StoSubsidX IS
+
+#define ssTac (FLAT;((MAP;LMAP;CATL;NEWV)~;StoSubsidX)~)
+
+#define StoSubsid(x)  bcall(ssTac: ss_0(bflat(x)))
+
+
+  ReadSSETNAMESSto(S) &
+  ModrSSETNAMESSto((S,a(x)))
+ =>
+  ss_set_2(a,x);
+
+  ss_set_2(a,?);
+
+  ss_set_2(a) bsmap (x)
+ =>
+  ss_set_1(a)(x);
+
+  setnames_mac(n) == n;
+
+  setnames_mac(n(E)) == n;
+
+  ss_set_1(a)(setnames_mac bslmap x)
+ =>
+  ss_set_0(a,x);
+
+  ss_set_0(a,?);
+
+  ReadSVARIABLESSto(S) &
+  ModrSVARIABLESSto((S,a(x)))
+ =>
+  ss_var(a,x);
+
+  ss_var(a,?);
+
+  ReadSDEFINITIONSSto(S) &
+  ModrSDEFINITIONSSto((S,a(x)))
+ =>
+  ss_def(a,x);
+
+  ss_def(a,x)
+ =>
+  ss_def(a,x(p));
+
+  ss_def(a,x)
+ =>
+  ss_def(a,(x==y));
+
+  ss_def(a,?);
+
+  ReadSCONSTANTSSto(S) &
+  ModrSCONSTANTSSto((S,a(x)))
+ =>
+  ss_cst(a,x);
+
+  ss_cst(a,?);
+
+  ReadSOPNAMESSto(S) &
+  ModrSOPNAMESSto((S,a(x)))
+ =>
+  ss_op(a,x);
+
+  ss_op(a,?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ss_2(a)(Z);
+
+  WriteDot &
+  bget(Z,((X;(J|K));A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ss_var(a) bsmap (d) &
+  ss_set_0(a) bsmap (D) &
+  ss_cst(a) bsmap (F) &
+  ss_def(a) bsmap (K) &
+  ss_op(a) bsmap (j)
+ =>
+  ss_2(a)(Z);
+
+  ss_2(r)(bcatl("ANL/",r,".ref.anl"))
+ =>
+  ss_1(r);
+
+/*
+  ReadCurrentState(C) &
+  bsearch(r.mch(X),C,D) &
+*/
+  IsCfg(r.mch) &
+  ss_2(r)(bcatl("ANL/",r,".mch.anl"))
+ =>
+  ss_1(r);
+
+  ss_2(r)(bcatl("ANL/",r,".ref.anl"))
+ =>
+  ss_1(r(s):t:(u,v,w));
+
+/*
+  ReadCurrentState(C) &
+  bsearch(r.mch(X),C,D) &
+*/
+  IsCfg(r.mch) &
+  ss_2(r)(bcatl("ANL/",r,".mch.anl"))
+ =>
+  ss_1(r(s):t:(u,v,w));
+
+/*
+  ReadCurrentState(C) &
+  bsearch(r.mch(X),C,D) &
+*/
+  IsCfg(r.mch) &
+  ss_2(/*bnewv(R,r)*/r)(bcatl("ANL/",r,".mch.anl"))
+ =>
+  ss_1(R.r(s):t:(u,v,w));
+
+  ss_1(?);
+
+  ModrSVARIABLESSto(?) &
+  ModrSSETNAMESSto(?) &
+  ModrSCONSTANTSSto(?) &
+  ModrSDEFINITIONSSto(?) &
+  ModrSOPNAMESSto(?) &
+  ModrSSUBMCHSto(?) &
+  ss_1 bsmap (x)
+ =>
+  ss_0(x)
+
+END
+
+&
+
+THEORY LoadBdmfX IS
+
+#define LoadBdmf bcall(((MODR)~;LoadBdmfX)~:Bdmf_0)
+
+  Writef(("\n  .Bdmf format error: %\n",x)) &
+  bhalt
+ =>
+  Bdmf_1(x);
+
+  Set_DMU_Labels_Flag(a) &
+  Set_DMU_ClIndex_Flag(b) &
+  Set_DMU_CoIndex_Flag(c) &
+  Set_DMU_GIndex_Flag(d) &
+  ModifyDeclarationString(s) &
+/***
+HERE((S:s))&
+***/
+  
+  ModifyExecutableString(t)
+ =>
+  Bdmf_1(a,b,c,d,s,t);
+
+  InformCantConnect(".Bdmf") &
+  bhalt
+ =>
+  Bdmf_0;
+
+  bget(".Bdmf",x) &
+/***
+HERE((X:x))&
+***/
+  Bdmf_1(x)
+ =>
+  Bdmf_0
+
+END
+
+&
+
+THEORY LatexFromUserX IS
+
+  ?;  /* shell flag */
+
+  ?;  /* construct - a.b */
+
+  ?;  /* error flag: 0=> ok, 1=> error */
+
+  ?;  /* OPERATIONSFILTERStore */
+
+  ?;  /* 5. DeclarationString */
+
+  ?;  /* 6. LatexExecutableString */
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  bcall(RULE: bcrer(SUBABSNAMESX,(r,?)))
+ =>
+  sto_subref_0(r);
+
+
+  bcall(RULE: bcrer(SUBMCHNAMESX,M))
+ =>
+  sto_submch_1(M);
+
+  subsid_mac(r) == r;
+
+  subsid_mac(r(s):t:(u,v,w)) == r;
+
+  subsid_mac(R.r(s):t:(u,v,w)) == r;
+
+  sto_submch_1(subsid_mac bslmap M)
+ =>
+  sto_submch_0(M);
+
+
+  bcall(RULE: bcrer(SETNAMESX,S))
+ =>
+  sto_setnames_1(S);
+
+  setnames_mac(n) == n;
+
+  setnames_mac(n(E)) == n;
+
+  sto_setnames_1(setnames_mac bslmap S)
+ =>
+  sto_setnames_0(S);
+
+
+  bcall(RULE: bcrer(DEFINITIONNAMESX,S))
+ =>
+  sto_defnames_1(S);
+
+  defnames_mac(a) == a;
+
+  defnames_mac(a==c) == a;
+
+  defnames_mac(a(b)==c) == a;
+
+  sto_defnames_1(defnames_mac bslmap S)
+ =>
+  sto_defnames_0(S);
+
+
+  brule(LatexFromUserX.3,1) &
+  Writef(" aborted\n")
+ =>
+  check_error;
+
+  brule(LatexFromUserX.3,0) &
+  Writef(" done\n")
+ =>
+  check_error;
+
+  DMUErrorFlagged
+ =>
+  check_error;
+
+
+
+
+  Latex_79(z)(Z)(1);
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(z:BT_DMU:?)) &  /* ? is doc-dep constructs */
+  AddDmu(z)
+ =>
+  Latex_79(z)(Z)(0);
+
+  DMUErrorFlagged
+ =>
+  Latex_79(z)(Z)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  Latex_78(z)(Z);
+
+  bget(".Bcom",x) &
+  bcall(MODR: bmodr(LatexFromUserX.3,x)) &
+  Latex_79(z)(Z)(x)
+ =>
+  Latex_78(z)(Z);
+
+  DMUErrorFlagged
+ =>
+  Latex_78(z)(Z);
+
+  
+
+  Latex_File
+ =>
+  Latex__Latex_file(s.t);
+
+  DMUErrorFlagged &
+  Writef(" aborted\n")
+ =>
+  Latex__Latex_file(s.t);
+
+
+
+  WriteDot &
+  ParseConstruct(x)
+ =>
+  parse_if_unexpanded1(x);
+
+
+
+
+
+  UnExpandedFlagSet &
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/Pre_GML_0 < CFG/",a,".",b," | $BKIT/BLIB/Pre_GML_1 | $BKIT/BLIB/Pre_GML_2 | $BKIT/BLIB/Pre_GML_3 | $BKIT/BLIB/Pre_GML_4 | $BKIT/BLIB/Pre_GML_5 > .Bcom ; cp .Bcom .parse_error")) &
+  parse_if_unexpanded1(a.b)
+ =>
+  parse_if_unexpanded(a.b);
+
+
+  /***
+  args for LatexFile:
+    1: 0 => latex once, 1 => latex 3 times
+    2: 1 => \makeindex
+    3: MaxOfSet  (MaxOfSet.mch) 
+    4: mch       (prf)           (prf.0)
+    5: 'string' - \documentclass[]{article} \usepackage{Bkit}
+    6: 0 => not a doc, 1 => a doc (no process index), 2 => doc (process index)
+    7: 'string' - executable (latex)
+  ***/
+
+  ReadExecutableString(e) &
+  
+/***
+HERE(((CATL): bshell(bcatl(S, " 0 '",e,"'"))))&
+***/ 
+  bcall((CATL;SHELL):bshell(bcatl(S, " 0 '",e,"'")))
+ =>
+  Latex_File2(S);
+  
+  brule(LatexFromUserX.2,s.t) &
+  ReadDeclarationString(p) & 
+/***
+HERE((P4:p))&
+***/
+  Latex_File2(S,s," ",t," '",p,"'")
+ =>
+  Latex_File1(S);
+
+  Latex_File1("$BKIT/BLIB/LatexFile 0 0 ")
+ =>
+  Latex_File;
+
+  DMU_Labels_Flag_set &
+  Latex_File1("$BKIT/BLIB/LatexFile 1 0 ")
+ =>
+  Latex_File;
+
+  DMU_CoIndex_Flag_set &
+  Latex_File1("$BKIT/BLIB/LatexFile 1 0 ")
+ =>
+  Latex_File;
+
+  DMU_ClIndex_Flag_set &
+  Latex_File1("$BKIT/BLIB/LatexFile 1 1 ")
+ =>
+  Latex_File;
+
+
+
+
+  DoLatexInterface_UnExpanded(z) &
+  WriteDot &
+  Latex_78(z.itf)(Z)
+ =>
+  Latex_77_1(z.itf)(Z);
+  
+
+  DoLatexEnumeration_UnExpanded(z) &
+  WriteDot &
+  Latex_78(z.enm)(Z)
+ =>
+  Latex_77_1(z.enm)(Z);
+  
+
+  DoLatexBase_UnExpanded(z) &
+  WriteDot &
+  Latex_78(z.bse)(Z)
+ =>
+  Latex_77_1(z.bse)(Z);
+  
+
+  DoLatexConstruct_UnExpanded(z) &
+  WriteDot &
+  Latex__Latex_file(z.imp) &
+  Latex_78(z.imp)(Z)
+ =>
+  Latex_77_1(z.imp)(Z);
+
+  DoLatexConstruct_UnExpanded(z) &
+  WriteDot &
+  Latex__Latex_file(z.ref) &
+  Latex_78(z.ref)(Z)
+ =>
+  Latex_77_1(z.ref)(Z);
+
+  DoLatexConstruct_UnExpanded(z) &
+  WriteDot &
+  Latex__Latex_file(z.mch) &
+  Latex_78(z.mch)(Z)
+ =>
+  Latex_77_1(z.mch)(Z);
+  
+  DMUErrorFlagged
+ =>
+  Latex_77_1(a.b)(Z);
+
+ 
+  bcall(RULE: bcrer(SUBABSNAMESX,?)) &
+  bcall(RULE: bcrer(SUBMCHNAMESX,?)) &
+  bcall(RULE: bcrer(SETNAMESX,?)) &
+  bcall(RULE: bcrer(CONSTANTNAMESX,?)) &
+  bcall(RULE: bcrer(DEFINITIONNAMESX,?)) &
+  bcall(RULE: bcrer(VARIABLENAMESX,?)) &
+  bcall(RULE: bcrer(OPERATIONNAMESX,?)) &
+  Latex_77_1(a.b)(Z)
+ =>
+  Latex_77(a.b)(Z);
+  
+  bget(Z,((X;(J|K));A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  sto_submch_0(bflat(A,B,b)) &
+  sto_subref_0(r) &
+  sto_setnames_0(D,?) &
+  sto_defnames_0(K,?) &
+  bcall(RULE: bcrer(CONSTANTNAMESX,(F,?))) &
+  bcall(RULE: bcrer(VARIABLENAMESX,(d,?))) &
+  bcall(RULE: bcrer(OPERATIONNAMESX,(j,?))) &
+  StoSubsid((A,B,b,r)) &
+  Latex_77_1(a.imp)(Z)
+ =>
+  Latex_77(a.imp)(Z);
+  
+  bget(Z,((X;(J|K));A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  sto_submch_0(bflat(A,B,b)) &
+  sto_subref_0(r) &
+  sto_setnames_0(D,?) &
+  sto_defnames_0(K,?) &
+  bcall(RULE: bcrer(CONSTANTNAMESX,(F,?))) &
+  bcall(RULE: bcrer(VARIABLENAMESX,(d,?))) &
+  bcall(RULE: bcrer(OPERATIONNAMESX,(j,?))) &
+  StoSubsid((A,B,b,r)) &
+  Latex_77_1(a.ref)(Z)
+ =>
+  Latex_77(a.ref)(Z);
+  
+  bget(Z,((X;(J|K));A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  sto_submch_0(bflat(A,B,b)) &
+  sto_subref_0(r) &
+  sto_setnames_0(D,?) &
+  sto_defnames_0(K,?) &
+  bcall(RULE: bcrer(CONSTANTNAMESX,(F,?))) &
+  bcall(RULE: bcrer(VARIABLENAMESX,(d,?))) &
+  bcall(RULE: bcrer(OPERATIONNAMESX,(j,?))) &
+  StoSubsid((A,B,b,r)) &
+  Latex_77_1(a.mch)(Z)
+ =>
+  Latex_77(a.mch)(Z);
+  
+
+ 
+  Writef(("\n  LaTeXing "))
+ =>
+  Latex_777(a.b)(c);
+
+  Latex2e_DMU_Language_Flag_set &
+  Writef(("\n  LaTeX(2e)ing "))
+ =>
+  Latex_777(a.b)(c);
+
+  DMUErrorFlagged
+ =>
+  Latex_77(z)(Z);
+  
+  
+  Latex_777(z.itf)(F) &
+  Writef(("INTERFACE % ",z)) &
+  CleanDMU &
+  ClearDMUError &
+  parse_if_unexpanded(z.itf) &
+  Latex_77(z.itf)(F)
+ =>
+  Latex_7(z.itf)(F);
+
+  Latex_777(z.enm)(F) &
+  Writef(("ENUMERATION % ",z)) &
+  CleanDMU &
+  ClearDMUError &
+  parse_if_unexpanded(z.enm) &
+  Latex_77(z.enm)(F)
+ =>
+  Latex_7(z.enm)(F);
+
+  Latex_777(z.bse)(F) &
+  Writef(("SYSTEM % ",z)) &
+  CleanDMU &
+  ClearDMUError &
+  parse_if_unexpanded(z.bse) &
+  Latex_77(z.bse)(F)
+ =>
+  Latex_7(z.bse)(F);
+
+  Latex_777(z.mch)(F) &
+  Writef(("MACHINE % ",z)) &
+  CleanDMU &
+  ClearDMUError &
+  parse_if_unexpanded(z.mch) &
+  Latex_77(z.mch)(F)
+ =>
+  Latex_7(z.mch)(F);
+
+  Latex_777(z.ref)(F) &
+  Writef(("REFINEMENT % ",z)) &
+  CleanDMU &
+  ClearDMUError &
+  parse_if_unexpanded(z.ref) &
+  Latex_77(z.ref)(F)
+ =>
+  Latex_7(z.ref)(F);
+
+  Latex_777(z.imp)(F) &
+  Writef(("IMPLEMENTATION % ",z)) &
+  CleanDMU &
+  ClearDMUError &
+  parse_if_unexpanded(z.imp) &
+  Latex_77(z.imp)(F)
+ =>
+  Latex_7(z.imp)(F);
+
+
+
+  bmodr(LatexFromUserX.2,a.b) &
+  bmodr(DocDirectX.1,?) &
+  ModrOPERATIONSFILTERStore((L)) &
+  Latex_7(a.b)(bcatl("ANL/",a,".",b,".anl")) &
+  check_error
+ => 
+  Latex_6b(a.b.anl)(L);
+
+
+
+  brule(GetNumberFromUserX.1,2) &
+  SetLatexExpandedFlag &
+  Latex_6b(a.b.anl)(L)
+ =>
+  Latex_6a(a.b.anl)(L);
+
+  brule(GetNumberFromUserX.1,1) &
+  SetLatexUnExpandedFlag &
+  Latex_6b(a.b.anl)(L)
+ =>
+  Latex_6a(a.b.anl)(L);
+
+  brule(GetNumberFromUserX.1,0)
+ =>
+  Latex_6a(a.b.anl)(L);
+
+  ClearMenuWin &
+  bwritem("    % Main Menu\n\n    % Latex % unexpanded\n    % Latex  % expanded  (without annotation)\n\n",bsrv 0 berv,bsrv 1 berv,a.b,bsrv 2 berv,a.b) &
+  GetNumberFromUser(3) &
+  Latex_6a(a.b.anl)(L)
+ =>
+  Latex_6(a.b.anl)(L);
+
+
+  Latex_6b(a.b.anl)(L)
+ =>
+  Latex_6(a.b.anl)(L);                  /* expanded not yet implemented ... */
+
+
+  Latex_6b(a.itf.anl)(L)
+ =>
+  Latex_6(a.itf.anl)(L);                /* can't expand an INTERFACE! */
+
+
+  Latex_6b(a.enm.anl)(L)
+ =>
+  Latex_6(a.enm.anl)(L);                /* can't expand an ENUM! */
+
+
+  SetSYSTEMFlag &
+  Latex_6b(a.bse.anl)(L)
+ =>
+  Latex_6(a.bse.anl)(L);                /* can't expand a BASE! */
+
+
+/***
+HERE((a))&HERE((L))&
+***/
+  LoadBdmf &
+  Latex_6(a)(L)
+/***
+&PrintTHEORYUpTo(XRefX,11)
+***/
+ =>
+  Latex_0(a)(L);
+
+  IsDmu(a.b)
+ =>
+  Latex_0(a.b.anl)(L)
+
+END
+
+/***************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&
+
+THEORY ProcessPrologueX IS
+
+#define ProcessPrologue(x) bcall(((WRITE;SHELL)~;ProcessPrologueX)~:pp(x))
+
+  InformCantExecute(f) &
+  SetDMUError
+ =>
+  bshell(f);
+
+  bclose &
+  Connect("TMP/.Bcom") &
+  bprintf("%\n",p) &
+  bclose &
+  bshell("$BKIT/BLIB/Post_Latexer_0 < TMP/.Bcom > TEX/.prl") &
+  Append("TEX/.Btex")
+ =>
+  pp(p)
+
+END
+
+&
+
+THEORY DocDirectX IS
+
+#define ddTac  ((CATL;SHELL;MODR;WRITE;MAP;ARI)~;DocDirectX)~
+
+#define DocDirect(x) bcall(ddTac: dd_0_0(x))
+
+  ?; /* 1. */
+
+#define NotYetDMUSto        (DocDirectX.2)
+#define ReadNotYetDMUSto(x) brule(NotYetDMUSto,x)
+#define ModrNotYetDMUSto(x) bmodr(NotYetDMUSto,x)
+
+  ?; /* 2. */
+
+  ?; /* 3. 0=first 1=second */
+
+#define IncludedSto        (DocDirectX.4)
+#define ReadIncludedSto(x) brule(IncludedSto,x)
+#define ModrIncludedSto(x) bmodr(IncludedSto,x)
+
+  ?; /* 4. */
+
+#define DotLtxSto          (DocDirectX.5)
+#define ReadDotLtxSto(x)   brule(DotLtxSto,x)
+#define ModrDotLtxSto(x)   bmodr(DotLtxSto,x)
+
+   ?; /* 5. */
+
+  InformCantExecute(f) &
+  SetDMUError
+ =>
+  bshell(f);
+
+
+  /***
+  for args for LatexFile see above
+  ***/
+
+  ReadExecutableString(e) &
+  bshell(bcatl(S," '",e,"'"))
+ =>
+  latex_doc_file1(S);
+
+  ReadDeclarationString(p) & 
+/***
+HERE((P1:p))&
+***/
+  latex_doc_file1("$BKIT/BLIB/LatexFile 1 0 ",d," doc '",p,"' 1")
+ =>
+  latex_doc_file(1)(d); /* not process index */
+
+  DMU_GIndex_Flag_set &
+  ReadDeclarationString(p) &  
+/***
+HERE((P2:p))&
+***/
+  latex_doc_file1("$BKIT/BLIB/LatexFile 1 1 ",d," doc '",p,"' 1")
+ =>
+  latex_doc_file(1)(d); /* not process index */
+
+  ReadDeclarationString(p) & 
+/***
+HERE((P3:p))&
+***/
+  latex_doc_file1("$BKIT/BLIB/LatexFile 0 1 ",d," doc '",p,"' 2")
+ =>
+  latex_doc_file(2)(d); /* process index */
+
+
+  InformCantLatex(S) &
+  SetDMUError
+ =>
+  dd_11(S);
+
+  bsearch(?,S,T) &
+  dd_11(T)
+ =>
+  dd_11(S);
+
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_DMU:0))
+ =>
+  dd_10(a.b);
+
+  GetJobs(X) &
+  AddJob(X,(a.b.prf:BT_DMU:0))
+ =>
+  dd_10(a.b.prf);
+
+  GetJobs(X) &
+  AddJob(X,(a.b.prf.n:BT_DMU:0))
+ =>
+  dd_10(a.b.prf.n);
+
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_DMU:L))
+ =>
+  dd_10(a.b(L));
+
+  GetJobs(X) &
+  AddPriorityJob(X,(a.doc:BT_DOC:0))
+ =>
+  dd_10(a.doc);
+
+  dd_10(a.tex);
+
+  dd_10(a.eps(s));
+
+  dd_10(?);
+
+  ReadNotYetDMUSto(S) &
+  dd_11(S)
+ =>
+  dd_5;
+
+  print_dot_ltx_1(x);
+
+  bprintf(";%\n",a.b)
+ =>
+  print_dot_ltx_1(a.b(L));
+
+
+  DocFirstTimeAround &
+  ReadNotYetDMUSto(S) &
+  brule(DocDirectX.1,d.doc) &
+  GetJobs(X) &
+  AddPriorityJob(X,(d.doc:BT_DOC:0)) &
+  Writef("\n") &
+  dd_10 bsmap S
+/*
+ &
+  bmodr(DocDirectX.3,(d.doc:1))          /? DocSecondTimeAround ?/
+*/
+
+ =>
+  dd_5;
+
+  DocFirstTimeAround &
+  ReadNotYetDMUSto(S) &
+  brule(DocDirectX.1,d.doc) &
+  GetJobs(?) &
+  AddJob(?,(d.doc:BT_DOC:0)) &
+  Writef("\n") &
+  dd_10 bsmap S
+/*
+ &
+  bmodr(DocDirectX.3,(d.doc:1))          /? DocSecondTimeAround ?/
+*/
+
+ =>
+  dd_5;
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(d.doc:BT_DOC:S))    /* S is doc-dep constructs */
+ =>
+  dd_101(d.doc)(S);
+
+  bsearch(?,S,T) &
+  dd_101(d.doc)(T)
+ =>
+  dd_101(d.doc)(S);
+
+  brule(DocDirectX.1,d.doc) &
+  ReadIncludedSto(S) &
+  dd_101(d.doc)(S) &
+  AddDmu(d.doc) & 
+  Writef(" done\n")
+ =>
+  dd_100;
+
+  dd_100
+ =>
+  ddi_12(0);
+
+  Writef(" aborted\n")
+ =>
+  ddi_12(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  ddi_11;
+
+  bget(".Bcom",x) &
+  ddi_12(x)
+ =>
+  ddi_11;
+
+  
+  Writef(("\n  LaTeXing "))
+ =>
+  ddi_10_l;
+
+  Latex2e_DMU_Language_Flag_set &
+  Writef(("\n  LaTeX(2e)ing "))
+ =>
+  ddi_10_l;
+
+  brule(DocDirectX.1,d.doc) &
+  ddi_10_l &
+  Writef(("DOCUMENT % with index ",d)) &
+  CleanDMU &
+  ClearDMUError &
+  WriteDot &
+  latex_doc_file(2)(d) &
+  WriteDot &
+  ddi_11
+ =>
+  ddi_10;
+
+  ProcessIndex(I) &
+  ddi_10
+ =>
+  ddi_9(I;0);
+
+  dd_100
+ =>
+  ddi_9(0);
+
+  InformCantConnect("TEX/.idx") &
+  PFZ
+ =>
+  ddi_8;
+
+  bget("TEX/.idx",x) &
+  WriteDot &
+  ddi_9(x)
+ =>
+  ddi_8;
+
+  dd_100
+ =>
+  dd_7(0);
+
+  DMU_GIndex_Flag_set &
+  Writef(("\n  Creating index ")) &
+  brule(DocDirectX.1,d.doc) &
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/Latex_Index < TEX/",d,".doc.idx > TEX/.idx ; echo 0 >> TEX/.idx")) &
+  ddi_8
+ =>
+  dd_7(0);
+
+  Writef(" aborted\n")
+ =>
+  dd_7(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  dd_6;
+
+  bget(".Bcom",x) &
+  WriteDot &
+  dd_7(x)
+ =>
+  dd_6;
+
+
+
+  ReadIncludedSto(S) &
+  ModrIncludedSto((S,b.eps)) &
+  bprintf("\n\\epsfbox{%.eps}\n\n",b)
+ =>
+  dd_eps2(b.eps)(0);      /* .eps exists */
+
+  InformTEXFileNotExist(b.eps)
+ =>
+  dd_eps2(b.eps)(1);      /* .eps doesn't exist */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  dd_eps1(b.eps);
+
+  bget(".Bcom",x) &
+  dd_eps2(b.eps)(x)
+ =>
+  dd_eps1(b.eps);
+
+  dd_eps(b.eps);         /* Second time around  */
+
+  DocFirstTimeAround &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",b,".eps"," ",TEX)) &
+  dd_eps1(b.eps)
+ =>
+  dd_eps(b.eps);
+
+
+
+  ReadNotYetDMUSto(?) &
+  brule(DocDirectX.1,d.doc) &
+  WriteDot &
+  latex_doc_file(1)(d) &
+  WriteDot &
+  dd_6
+ =>
+  dd_5;
+
+  Writef((" ... aborted\n")) &
+  DMUErrorFlagged
+ =>
+  dd_5;
+
+
+
+  dd_4(x);
+
+  DocFirstTimeAround &
+  InformDocSyntaxError(a) &
+  SetDMUError
+ =>
+  dd_4(a);
+
+
+
+
+
+  dd_4_verbatim1(s)(1);
+
+  DocFirstTimeAround &
+  WarnFileNotExist(s)
+ =>
+  dd_4_verbatim1(s)(1);
+
+  dd_4_verbatim1(s)(0);  /* s exists */
+
+  DocFirstTimeAround &
+  bprintf("\\begin{verbatim}\n") &
+  bclose &
+  bshell(bcatl("cat ",s," >> TEX/.Btex")) &
+  Append("TEX/.Btex") &
+  bprintf("\\end{verbatim}\n")
+ =>
+  dd_4_verbatim1(s)(0);  /* s exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  dd_4_verbatim(s);
+
+  bget(".Bcom",x) &
+  dd_4_verbatim1(s)(x)
+ =>
+  dd_4_verbatim(s);
+
+  bstring(s) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",s," .")) &
+  dd_4_verbatim(s)
+ =>
+  dd_4(verbatim(s));
+
+
+/*
+  InformTEXFileNotExist(x.tex) &
+  SetDMUError
+ =>
+  dd_4(include(x.tex));
+*/
+
+
+  dd_eps(b.eps)
+ =>
+  dd_4(include(b.eps));
+
+  DocFirstTimeAround &
+  WarnDocNotYetConfigured(a.doc)
+ =>
+  dd_4(include(a.doc));
+
+  DocFirstTimeAround &
+  WarnDocNotYetConfigured(a.enm)
+ =>
+  dd_4(include(a.enm));
+
+  DocFirstTimeAround &
+  WarnDocNotYetConfigured(a.itf)
+ =>
+  dd_4(include(a.itf));
+
+  DocFirstTimeAround &
+  WarnDocNotYetConfigured(a.bse)
+ =>
+  dd_4(include(a.bse));
+
+  DocFirstTimeAround &
+  WarnDocNotYetConfigured(a.imp)
+ =>
+  dd_4(include(a.imp));
+
+  DocFirstTimeAround &
+  WarnDocNotYetConfigured(a.ref)
+ =>
+  dd_4(include(a.ref));
+
+  DocFirstTimeAround &
+  WarnDocNotYetConfigured(a.mch)
+ =>
+  dd_4(include(a.mch));
+
+  DocFirstTimeAround
+ =>
+  dd_4(include(dummy.mch));
+
+  DocFirstTimeAround &
+  WarnPrfNotYetExist(a.b.prf)
+ =>
+  dd_4(include(a.b.prf));
+
+  DocFirstTimeAround &
+  WarnPrfNotYetExist(a.b.prf.n)
+ =>
+  dd_4(include(a.b.prf.n));
+
+  DocFirstTimeAround &
+  IsCfg(a.doc) &
+  WarnDocNotYetGenerated(a.doc)
+ =>
+  dd_4(include(a.doc));
+
+  DocFirstTimeAround &
+  IsCfg(a.enm) &
+  WarnDocNotYetGenerated(a.enm)
+ =>
+  dd_4(include(a.enm));
+
+  DocFirstTimeAround &
+  IsCfg(a.bse) &
+  WarnDocNotYetGenerated(a.bse)
+ =>
+  dd_4(include(a.bse));
+
+  DocFirstTimeAround &
+  IsCfg(a.itf) &
+  WarnDocNotYetGenerated(a.itf)
+ =>
+  dd_4(include(a.itf));
+
+  DocFirstTimeAround &
+  IsCfg(a.imp) &
+  WarnDocNotYetAnalysed(a.imp)
+ =>
+  dd_4(include(a.imp));
+
+  DocFirstTimeAround &
+  IsCfg(a.ref) &
+  WarnDocNotYetAnalysed(a.ref)
+ =>
+  dd_4(include(a.ref));
+
+  DocFirstTimeAround &
+  IsCfg(a.mch) &
+  WarnDocNotYetAnalysed(a.mch)
+ =>
+  dd_4(include(a.mch));
+
+
+
+
+  IsCfg(a.doc) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.doc))
+ =>
+  dd_4(include(a.doc));
+
+  brule(DocDirectX.1,a.doc) &
+  SelfReferentialError(a.doc) &
+  SetDMUError
+ =>
+  dd_4(include(a.doc));
+
+  IsGen(a.enm) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.enm))
+ =>
+  dd_4(include(a.enm));
+
+  IsGen(a.bse) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.bse))
+ =>
+  dd_4(include(a.bse));
+
+  IsGen(a.itf) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.itf))
+ =>
+  dd_4(include(a.itf));
+
+  IsAnl(a.imp) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.imp))
+ =>
+  dd_4(include(a.imp));
+
+  IsAnl(a.ref) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.ref))
+ =>
+  dd_4(include(a.ref));
+
+  IsAnl(a.mch) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.mch))
+ =>
+  dd_4(include(a.mch));
+
+  IsCfg(a.b.prf) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.b.prf))
+ =>
+  dd_4(include(a.b.prf));
+
+  IsCfg(a.b.prf.n) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.b.prf.n))
+ =>
+  dd_4(include(a.b.prf.n));
+
+
+
+
+
+  ReadIncludedSto(S) &
+  ModrIncludedSto((S,a.b)) &
+/*  bshell(bcatl("$BKIT/BLIB/Doc_Latexer < TEX/",a,".",b,".tex > TEX/_",a,".",b,".tex")) & */
+  bprintf("\\input{_%.%.tex}\n",a,b)
+ =>
+  dd_4_1(a.b);
+
+  ReadIncludedSto(S) &
+  ModrIncludedSto((S,a.b.prf)) &
+  bprintf("\\input{_%.%.prf.tex}\n",a,b)
+ =>
+  dd_4_1(a.b.prf);
+
+  ReadIncludedSto(S) &
+  ModrIncludedSto((S,a.b.prf.n)) &
+  bprintf("\\input{_%.%.prf.%.tex}\n",a,b,n)
+ =>
+  dd_4_1(a.b.prf.n);
+
+  IsDmu(a.b) &
+  dd_4_1(a.b)
+ =>
+  dd_4(include(a.b));
+
+
+
+  InformNotOpIdentList(a,L) &
+  SetDMUError
+ =>
+  dd_4(include(a.b(L)));
+
+  blident(L) &
+  IsAnl(a.imp) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.imp(L)))
+ =>
+  dd_4(include(a.imp(L)));
+
+  blident(L) &
+  IsDmu_Remove(a.imp) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.imp(L)))
+ =>
+  dd_4(include(a.imp(L)));
+
+  blident(L) &
+  IsAnl(a.ref) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.ref(L)))
+ =>
+  dd_4(include(a.ref(L)));
+
+  blident(L) &
+  IsDmu_Remove(a.ref) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.ref(L)))
+ =>
+  dd_4(include(a.ref(L)));
+
+  blident(L) &
+  IsAnl(a.mch) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.mch(L)))
+ =>
+  dd_4(include(a.mch(L)));
+
+  blident(L) &
+  IsDmu_Remove(a.mch) &
+  ReadNotYetDMUSto(S) &
+  ModrNotYetDMUSto((S,a.mch(L)))
+ =>
+  dd_4(include(a.mch(L)));
+
+
+
+  DocSecondTimeAround &
+  dd_4(include(a.b))
+ =>
+  dd_4(include(a.b(L)));
+
+  dd_4(s)
+ =>
+  dd_3(s);
+
+  bstring(t) &
+  bprintf("%\n",t)
+ =>
+  dd_3(t);
+
+  dd_3(s) &
+  dd_4(t)
+ =>
+  dd_3(s 0OoscoO0 t);
+
+  dd_3(s) &
+  dd_4(t)
+ =>
+  dd_3(s 0Oosc t);
+
+  dd_3(s) &
+  dd_4(t)
+ =>
+  dd_3(s scoO0 t);
+
+  dd_3(s) &
+  dd_4(t)
+ =>
+  dd_3(s ; t);
+
+  bstring(t) &
+  dd_3(s) &
+  bprintf("%\n",t) &
+  dd_4(u)
+ =>
+  dd_3(s 0OoscoO0 t 70OoscoO07 u);
+
+  bstring(t) &
+  dd_3(s) &
+  bprintf("%\n",t) &
+  dd_4(u)
+ =>
+  dd_3(s 0Oosc t 70OoscoO07 u);
+
+  bstring(t) &
+  dd_3(s) &
+  bprintf("%\n",t) &
+  dd_4(u)
+ =>
+  dd_3(s scoO0 t 70OoscoO07 u);
+
+  bstring(t) &
+  dd_3(s) &
+  bprintf("%\n",t) &
+  dd_4(u)
+ =>
+  dd_3(s ; t 70OoscoO07 u);
+
+  bstring(s) &
+  bprintf("%\n",s) &
+  dd_3(t)
+ =>
+  dd_3(s 70OoscoO07 t);
+
+  bstring(t) &
+  dd_3(s) &
+  bprintf("%\n",t)
+ =>
+  dd_3(s 70OoscoO07 t);
+
+  Writef(("\n\n  Syntax error - document does not conform to:\n\n")) &
+  Writef(("    DOCUMENT\n      %\n    CONTENTS\n      ...\n    END\n\n  or\n\n",d)) &
+  Writef(("    DOCUMENT\n      %\n        /*\" LaTeX prologue text \"*/\n    CONTENTS\n      ...\n    END\n",d))
+ =>
+  dd_3(d)(DOCUMENT x END);
+
+  bstring(s) &
+  bident(e) &
+  Writef(("\n\n  Syntax error:\n\n    DOCUMENT name %\n    does not match file name %\n\n",e,d))
+ =>
+  dd_3(d)(DOCUMENT e 70OoscoO07 s CONTENTS x END);
+
+  bstring(p) &
+  ProcessPrologue(p) &
+  dd_3(x) &
+  dd_5
+ =>
+  dd_3(d)(DOCUMENT d 70OoscoO07 p CONTENTS x END);
+
+  bident(e) &
+  Writef(("\n\n  Syntax error:\n\n    DOCUMENT name %\n    does not match file name %\n\n",e,d))
+ =>
+  dd_3(d)(DOCUMENT e CONTENTS x END);
+
+  dd_3(x) &
+  dd_5
+ =>
+  dd_3(d)(DOCUMENT d CONTENTS x END);
+
+  WriteDot &
+  Connect("TEX/.prl") &      /* to empty */
+  bclose &
+  Connect("TEX/.Btex") &
+  dd_3(d)(x)
+ =>
+  dd_2(d)(x);
+
+  SetDMUError &
+  GetJobs(X) &
+  AddJobs(X,((d.doc:BT_DMU_PARSE_ERR:f)))
+ =>
+  parse_error(d.doc)(f);
+
+  bshell(bcatl("$BKIT/BLIB/Deannot < .parse_error > SRC/",d,".",doc,".bad_annot")) &
+  bshell(bcatl("rm -f .parse_error .BBcom")) &
+  Writef((" bad annotation position\n")) &
+  parse_error(d.doc)(bcatl("SRC/",d,".",doc,".bad_annot"))
+ =>
+  dd_1(d.doc);
+
+  bget(".BBcom",x) &
+  bshell("rm -f .parse_error") &
+  WriteDot &
+  bmodr(DocDirectX.1,d.doc) &
+  dd_2(d)(x)
+ =>
+  dd_1(d.doc);
+
+
+  check_Second(d);
+
+  brule(DocDirectX.3,X) &
+  bsearch((d.doc:1),X,Y) &
+  bmodr(DocDirectX.3,Y)
+ =>
+  check_Second(d);
+
+  brule(DocDirectX.3,X) &
+  bmodr(DocDirectX.3,(X;(d.doc:0)))         /* Reset to DocFirstTimeAround */
+ =>
+  check_First(d);
+
+  brule(DocDirectX.3,X) &
+  bsearch((d.doc:0),X,Y) &
+  bmodr(DocDirectX.3,(Y;(d.doc:1)))         /* Set to DocSecondTimeAround */
+ =>
+  check_First(d);
+
+  Writef(("\n  LaTeXing "))
+ =>
+  dd_0_l(d.doc);
+
+  Latex2e_DMU_Language_Flag_set &
+  Writef(("\n  LaTeX(2e)ing "))
+ =>
+  dd_0_l(d.doc);
+
+  dd_0_l(d.doc) &
+  Writef(("DOCUMENT % ",d)) &
+  check_First(d) &
+  CleanDMU &
+  ClearDMUError &
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/Pre_GML_0 < CFG/",d,".doc | $BKIT/BLIB/Pre_GML_1 | $BKIT/BLIB/Pre_GML_2 | $BKIT/BLIB/Pre_GML_3 | $BKIT/BLIB/Pre_GML_4 | $BKIT/BLIB/Pre_GML_5 > .BBcom ; cp .BBcom .parse_error")) &
+  ModrNotYetDMUSto(?) &
+  dd_1(d.doc) &
+  check_Second(d)
+ =>
+  dd_0(d.doc);
+
+  LoadBdmf &
+  dd_0(d.doc)
+  =>
+  dd_0_0(d.doc);
+
+  IsDmu(d.doc)
+ =>
+  dd_0_0(d.doc)
+
+END
+
+&
+
+THEORY ShowDirectX IS
+
+  InformCantExecute(f)
+ =>
+  bshell(f);
+
+  ShowToPrinterFlagSet &
+  bshell(bcatl("$BKIT/BLIB/PrintFile ",a," ",b))
+ =>
+  show_direct(a.b.anl);
+
+  ShowToScreenFlagSet &
+  bshell(bcatl("$BKIT/BLIB/ShowFile ",a," ",b))
+ =>
+  show_direct(a.b.anl)
+
+END
+
+&
+
+THEORY PROCOMMENTX IS ? END &
+
+THEORY EPICOMMENTX IS ? END &
+
+THEORY NAMEX IS ? END &
+
+THEORY SYSTEMX IS ? END &
+
+THEORY SUPPORTSX IS ? END &
+
+THEORY REFINESX IS ? END &
+
+THEORY PARAMETERSX IS ? END &
+
+THEORY DEFINITIONSX IS ? END &
+
+THEORY SETSX IS ? END &
+
+THEORY CONSTANTSX IS ? END &
+
+THEORY PROPERTIESX IS ? END &
+
+THEORY CONSTRAINTSX IS ? END &
+
+THEORY USESX IS ? END &
+
+THEORY SEESX IS ? END &
+
+THEORY EXTENDSX IS ? END &
+
+THEORY INCLUDESX IS ? END &
+
+THEORY IMPORTSX IS ? END &
+
+THEORY PROMOTESX IS ? END &
+
+THEORY VARIABLESX IS ? END &
+
+THEORY INVARIANTX IS ? END &
+
+THEORY ASSERTIONSX IS ? END &
+
+THEORY INITIALISATIONX IS ? END &
+
+THEORY OPERATIONSX IS ? END
+
+&
+
+THEORY testLatexer IS
+
+bcall(trans_tac:
+      transbody(0)(IF true THEN
+                     skip
+                   0OoELSIF
+                     true
+                   THEN
+                     skip
+                   0OoELSE
+                     skip
+                   END)
+);
+
+bcall(trans_tac:
+      transbody(0)(IF true THEN
+                     skip
+                   0OoELSIF
+                     true
+                   THEN
+                     skip
+                   END)
+)
+
+
+
+END

@@ -1,0 +1,4262 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define WarnSupportsNotConfigured(x) Writef(("\n     Warning: supported construct % not configured ",x))
+#define ErrorSupportsNotConfigured(x) Writef(("\n    Error: supported construct % not configured ",bsrv x berv))
+
+#define WarnNotParse(x) Writef(("\n  Warning: % does not parse! ",x))
+
+#define ReadSupported(x)          brule(GBOLoadSupportsX.1,x)
+#define ModifySupported(x)        bmodr(GBOLoadSupportsX.1,x)
+#define SupportedNotUsed          brule(GBOLoadSupportsX.1,?)
+
+THEORY GBOCheckSupportedX IS
+
+#define GBCheckSupportedOp(x,y) \
+  bcall(((NEWV;MODR;WRITE)~;GBOCheckSupportedX)~:cso_0(x,y))
+
+#define ResetGBChkSupportedOpSC \
+  bcall(((MODR;WRITE)~;GBOCheckSupportedX)~:r_csc)
+
+#define GBChkSupportedOpNotPrintedSC \
+  bcall(((MODR;WRITE)~;GBOCheckSupportedX)~:onp_0)
+
+  ?;  /* 1 => op to be commented out */
+
+  ?;  /* 1 => `;' reqd */
+
+  ?;  /* 1 => (prev) op not printed */
+
+  0;
+#define SetCommentOutOp    bcall(MODR:bmodr(GBOCheckSupportedX.4,1))
+#define ResetCommentOutOp  bcall(MODR:bmodr(GBOCheckSupportedX.4,0))
+#define CommentOutOpIsSet  brule(GBOCheckSupportedX.4,1)
+
+  brule(GBOCheckSupportedX.1,1) &  /* prev op commented out */
+  bmodr(GBOCheckSupportedX.2,?) &  /* sc reqd */
+  bprintf("; *") &
+  bprintf("/")
+ =>  
+  r_csc;
+
+  brule(GBOCheckSupportedX.1,1) &  /* prev op commented out */
+  brule(GBOCheckSupportedX.2,?) &    /* sc not reqd */
+  bprintf(" *") &
+  bprintf("/")
+ =>  
+  r_csc;
+
+  brule(GBOCheckSupportedX.1,?) &  /* prev op not commented out */
+  bmodr(GBOCheckSupportedX.2,?) &  /* sc reqd */
+  bprintf(";")
+ =>  
+  r_csc;
+
+  brule(GBOCheckSupportedX.1,?) &  /* prev op not commented out */
+  brule(GBOCheckSupportedX.2,?)    /* sc not reqd */
+ =>  
+  r_csc;
+
+  brule(GBOCheckSupportedX.3,1) &  /* previous op not printed */
+  bmodr(GBOCheckSupportedX.3,0)
+ =>
+  r_csc;
+
+
+
+  brule(GBOCheckSupportedX.1,1) &  /* prev op commented out */
+  bprintf("; *") &               /* sc reqd */
+  bprintf("/\n\n")
+ =>
+  csc;
+
+  brule(GBOCheckSupportedX.1,?) &  /* prev op not commented out */
+  bprintf(";\n\n")                 /* sc reqd */
+ =>
+  csc;
+
+  brule(GBOCheckSupportedX.1,1) &  /* prev op commented out */
+  brule(GBOCheckSupportedX.2,?) &  /* sc not reqd */
+  bmodr(GBOCheckSupportedX.2,1) &
+  bprintf(" *") &
+  bprintf("/\n\n")
+ =>
+  csc;
+
+  brule(GBOCheckSupportedX.1,?) &  /* prev op not commented out */
+  brule(GBOCheckSupportedX.2,?) &  /* sc not reqd */
+  bmodr(GBOCheckSupportedX.2,1) &
+  bprintf("\n\n")
+ =>
+  csc;
+
+  brule(GBOCheckSupportedX.3,1) &  /* previous op not printed */
+  bmodr(GBOCheckSupportedX.3,0)
+ =>
+  csc;
+
+
+
+  csc &
+  bmodr(GBOCheckSupportedX.1,?)
+ =>
+  cso_1(o);
+
+  ReadSupported(S) &
+  o\S &
+  csc &
+  bprintf("/") &
+  bprintf("*") &
+  bmodr(GBOCheckSupportedX.1,1)  /* this op commented out */
+ =>
+  cso_1(o);
+
+  cso_1(bnewv(a,b)) &
+  ResetCommentOutOp
+ =>
+  cso_0(a,b); 
+
+  SupportedNotUsed &
+  csc &
+  bmodr(GBOCheckSupportedX.1,?) &  /* this op NOT commented out */
+  ResetCommentOutOp
+ =>
+  cso_0(a,b); 
+
+  SupportedNotUsed &
+  CommentOutOpIsSet &
+  csc &
+  bprintf("/") &
+  bprintf("*") &
+  bmodr(GBOCheckSupportedX.1,1) &  /* this op commented out */
+  ResetCommentOutOp
+ =>
+  cso_0(a,b); 
+
+  brule(GBOCheckSupportedX.3,1) &  /* previous op not printed */
+  bmodr(GBOCheckSupportedX.3,0)
+ =>
+  cso_0(a,b); 
+
+
+  bmodr(GBOCheckSupportedX.3,1)
+ =>
+  onp_0;
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintX IS
+
+#define GBOphfTac ((CATL;WRITE)~;GBOPrintX)~
+
+#define GBOPrintHeader bcall(GBOphfTac: po_0)
+
+#define GBOPrintFooter bcall(WRITE: bprintf("\n"))
+
+#define GBOPrintInitOpenComment  bcall(WRITE~: (bprintf("\n/")&bprintf("*****\n")))
+
+#define GBOPrintOpenComment  bcall(WRITE~: (bprintf("\n\n\n/")&bprintf("*****\n")))
+
+#define GBOPrintInitCloseComment bcall(WRITE~: (bprintf("\n*****")&bprintf("/\n")))
+
+#define GBOPrintCloseComment \
+  bcall((WRITE;MODR)~: \
+     (bprintf("\n*****")&bprintf("/")&bmodr(GBOCheckSupportedX.1,?)))
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  po_1(f)(a);
+
+  bconnect(f) &
+  GBOPrintInitOpenComment &
+  bprintf("  Operations to be generated for SYSTEM %:",a) &
+  GBOPrintInitCloseComment
+ =>
+  po_1(f)(a);
+
+  ReadSystemName(a) &
+  po_1(bcatl("CFG/",a,".ops"))(a)
+ =>
+  po_0;
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintSetObjOpsX IS
+
+#define GBOpsetopTac ((MAP;MODR;WRITE)~;GBOPrintSetObjOpsX)~
+
+#define GBOPrintSetObjOps(a,b,c) \
+	bcall(GBOpsetopTac: setobj_ops_0(a)(b)(c))
+
+/***
+  incl
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSetTok(a) &
+  bprintf(")")
+ =>
+  incl_setobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  incl_setobj_3(b)(c)(t)(x)
+ =>
+  incl_setobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  incl_setobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  incl_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- incl_%(",c) &
+  incl_setobj_2(b)(c)(t)
+ =>
+  incl_setobj_1(b)(c)(t);
+
+  incl_setobj_1(b)(c)(t)
+ =>
+  incl_setobj_0(b)(c)(t);
+
+/***
+  eql
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSetTok(a) &
+  bprintf(")")
+ =>
+  eql_setobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  eql_setobj_3(b)(c)(t)(x)
+ =>
+  eql_setobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  eql_setobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  eql_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%(",c) &
+  eql_setobj_2(b)(c)(t)
+ =>
+  eql_setobj_1(b)(c)(t);
+
+  eql_setobj_1(b)(c)(t)
+ =>
+  eql_setobj_0(b)(c)(t);
+
+/***
+  mod
+***/
+
+  GBReadTok(S) &
+  bprintf(")",F,c,S,t,c,F,S,x,x)
+ =>
+  mod_setobj_4(b)(c)(setobj(t))(x)(F);
+
+  GBReadTok(S) &
+  bprintf(")",S,t,c,S,x,x)
+ =>
+  mod_setobj_4(GLOBAL ? END)(c)(setobj(t))(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSetTok(a) &
+  mod_setobj_4(b)(c)(t)(x)(F)
+ =>
+  mod_setobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  mod_setobj_3(b)(c)(t)(x)
+ =>
+  mod_setobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- mod_%(",c) &
+  mod_setobj_2(b)(c)(t)
+ =>
+  mod_setobj_1(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  mod_setobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  mod_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- mod_%(",c) &
+  mod_setobj_2(GLOBAL ? END)(c)(t)
+ =>
+  mod_setobj_1(GLOBAL ? END)(c)(t);
+
+  mod_setobj_1(b)(c)(t)
+ =>
+  mod_setobj_0(b)(c)(t);
+
+/***
+  diff
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSetTok(a) &
+  bprintf(")")
+ =>
+  diff_setobj_3(b)(c)(t);
+
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  diff_setobj_3(b)(c)(t)
+ =>
+  diff_setobj_2(b)(c)(t);
+
+  diff_setobj_3(GLOBAL ? END)(c)(t)
+ =>
+  diff_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  diff_%(",c) &
+  diff_setobj_2(b)(c)(t)
+ =>
+  diff_setobj_1(b)(c)(t);
+
+  diff_setobj_1(b)(c)(t)
+ =>
+  diff_setobj_0(b)(c)(t);
+
+/***
+  inter
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSetTok(a) &
+  bprintf(")")
+ =>
+  inter_setobj_3(b)(c)(t);
+
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  inter_setobj_3(b)(c)(t)
+ =>
+  inter_setobj_2(b)(c)(t);
+
+  inter_setobj_3(GLOBAL ? END)(c)(t)
+ =>
+  inter_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  inter_%(",c) &
+  inter_setobj_2(b)(c)(t)
+ =>
+  inter_setobj_1(b)(c)(t);
+
+  inter_setobj_1(b)(c)(t)
+ =>
+  inter_setobj_0(b)(c)(t);
+
+/***
+  union
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSetTok(a) &
+  bprintf(")")
+ =>
+  union_setobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  union_setobj_3(b)(c)(t)(x)
+ =>
+  union_setobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  union_setobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  union_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- union_%(",c) &
+  union_setobj_2(b)(c)(t)
+ =>
+  union_setobj_1(b)(c)(t);
+
+  union_setobj_1(b)(c)(t)
+ =>
+  union_setobj_0(b)(c)(t);
+
+/***
+  incl
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSetTok(a) &
+  bprintf(")")
+ =>
+  incl_setobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  incl_setobj_3(b)(c)(t)(x)
+ =>
+  incl_setobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  incl_setobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  incl_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- incl_%(",c) &
+  incl_setobj_2(b)(c)(t)
+ =>
+  incl_setobj_1(b)(c)(t);
+
+  incl_setobj_1(b)(c)(t)
+ =>
+  incl_setobj_0(b)(c)(t);
+
+/***
+  member
+***/
+
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  bprintf(")")
+ =>
+  member_setobj_3(b)(c)(setobj(t))(x);
+
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  bprintf(")")
+ =>
+  member_setobj_3(b)(c)(setobj(NAT))(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  member_setobj_3(b)(c)(t)(x)
+ =>
+  member_setobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  member_setobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  member_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- member_%(",c) &
+  member_setobj_2(b)(c)(t)
+ =>
+  member_setobj_1(b)(c)(t);
+
+  member_setobj_1(b)(c)(t)
+ =>
+  member_setobj_0(b)(c)(t);
+
+
+
+/***
+  search
+***/
+
+  GBReadTok(B) &
+  GBPrintFreshVar(cc) &
+  bprintf(")") 
+ =>
+  search_obj_4(b)(c)(t)(x)(F);
+
+  GBReadTok(F) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  search_obj_4(b)(c)(t)(x)(F)
+ =>
+  search_obj_3(b)(c)(t)(x);
+
+  GBReadTok(F) &
+  search_obj_4(GLOBAL ? END)(c)(t)(x)(F)
+ =>
+  search_obj_3(GLOBAL ? END)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(e) &
+  bprintf(" <-- search_%(",c) &
+  search_obj_3(b)(c)(s(e))(x)
+ =>
+  search_obj_2(b)(c)(s(e));  
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(",") &
+  search_obj_2(b)(c)(t)
+ =>
+  search_obj_1(b)(c)(t);
+
+  brule(GBOCheckSupportedX.1,?) &   /* search used - comment it out */
+  bmodr(GBOCheckSupportedX.1,1) &
+  bprintf("/") &
+  bprintf("* search in set not possible; ")
+ =>
+  search_obj_0(b)(c)(t);
+
+  brule(GBOCheckSupportedX.1,1) &    /* search not used - commented out */
+  bprintf(" search in set not posible ")
+ =>
+  search_obj_0(b)(c)(t);
+
+  /* above 2 rules search is NOT possible */
+
+  ReadBaseNames(B) &
+  bsearch(e,B,C) &
+  ReadIDs(K) &
+  bsearch(e(v),K,L) &
+  search_obj_1(b)(c)(setobj(e))
+ =>
+  search_obj_0(b)(c)(setobj(e));
+
+
+/***
+  del
+***/
+
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  bprintf(")")
+ =>
+  del_setobj_3(b)(c)(setobj(t));
+
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  bprintf(")")
+ =>
+  del_setobj_3(b)(c)(setobj(NAT));
+
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  del_setobj_3(b)(c)(t)
+ =>
+  del_setobj_2(b)(c)(t);
+
+  del_setobj_3(GLOBAL ? END)(c)(t)
+ =>
+  del_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  del_%(",c) &
+  del_setobj_2(b)(c)(t)
+ =>
+  del_setobj_1(b)(c)(t);
+
+  del_setobj_1(b)(c)(t)
+ =>
+  del_setobj_0(b)(c)(t);
+
+/***
+  add
+***/
+
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  bprintf(")")
+ =>
+  add_setobj_3(b)(c)(setobj(t))(x);
+
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  bprintf(")")
+ =>
+  add_setobj_3(b)(c)(setobj(NAT))(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  add_setobj_3(b)(c)(t)(x)
+ =>
+  add_setobj_2(b)(c)(t);
+
+
+  GBReadFreshVar(x) &
+  add_setobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  add_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- add_%(",c) &
+  add_setobj_2(b)(c)(t)
+ =>
+  add_setobj_1(b)(c)(t);
+
+  add_setobj_1(b)(c)(t)
+ =>
+  add_setobj_0(b)(c)(t);
+
+/***
+  clear
+***/
+
+  GBReadTok(F) &
+  bprintf(")")
+ =>
+  clear_setobj_3(b)(c)(t);
+
+  GBPrintFncTok(b) &
+  clear_setobj_3(b)(c)(t)
+ =>
+  clear_setobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  bprintf("clear_%(",c) &
+  clear_setobj_2(b)(c)(t)
+ =>
+  clear_setobj_1(b)(c)(t);
+
+  bprintf("  ") &
+  bprintf("clear_%",c)
+ =>
+  clear_setobj_1(GLOBAL ? END)(c)(t);
+
+  clear_setobj_1(b)(c)(t)
+ =>
+  clear_setobj_0(b)(c)(t);
+
+/***
+  card
+***/
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  card_setobj_2(b)(c)(t);
+
+  card_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(nbr) &
+  bprintf(" <-- card_%(",c) &
+  card_setobj_2(b)(c)(t)
+ =>
+  card_setobj_1(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(nbr) &
+  bprintf(" <-- card_%",c) &
+  card_setobj_2(GLOBAL ? END)(c)(t)
+ =>
+  card_setobj_1(GLOBAL ? END)(c)(t);
+
+  card_setobj_1(b)(c)(t)
+ =>
+  card_setobj_0(b)(c)(t);
+
+/***
+  val
+***/
+
+  GBReadTok(S) &
+  GBPrintFncTok(b) &
+  bprintf(")",S,b)
+ =>
+  val_setobj_2(b)(c)(t);
+
+  val_setobj_2(GLOBAL ? END)(c)(t);
+
+  ReadSystemName(a) &
+  bprintf("  ") &
+  GBPrintSetTok(a) &
+  bprintf(" <-- val_%(",c) &
+  val_setobj_2(b)(c)(t)
+ =>
+  val_setobj_1(b)(c)(t);
+
+  ReadSystemName(a) &
+  bprintf("  ") &
+  GBPrintSetTok(a) &
+  bprintf(" <-- val_%",c) &
+  val_setobj_2(GLOBAL ? END)(c)(t)
+ =>
+  val_setobj_1(GLOBAL ? END)(c)(t);
+
+  val_setobj_1(b)(c)(t)
+ =>
+  val_setobj_0(b)(c)(t);
+
+
+/***
+  valOrd
+***/
+
+  GBReadTok(F) &
+  GBPrintFreshVar(ii) &
+  bprintf(")")
+ =>
+  valOrd_setobj_3(b)(c)(t)(M);
+
+  GBReadTok(M) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  valOrd_setobj_3(b)(c)(t)(M)
+ =>
+  valOrd_setobj_2(b)(c)(t);
+
+  GBReadTok(M) &
+  valOrd_setobj_3(GLOBAL ? END)(c)(t)(M)
+ =>
+  valOrd_setobj_2(GLOBAL ? END)(c)(t);
+
+  GBReadFreshVar(M) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  valOrd_setobj_3(b)(c)(setobj(NAT))(M)
+ =>
+  valOrd_setobj_2(b)(c)(setobj(NAT));
+
+  GBReadFreshVar(M) &
+  valOrd_setobj_3(GLOBAL ? END)(c)(setobj(NAT))(M)
+ =>
+  valOrd_setobj_2(GLOBAL ? END)(c)(setobj(NAT));
+
+  bprintf("  ") &
+  GBPrintMbr(t) &
+  bprintf(" <-- valOrd_%(",c) &
+  valOrd_setobj_2(b)(c)(setobj(t))
+ =>
+  valOrd_setobj_1(b)(c)(setobj(t));
+
+  bprintf("  ") &
+  GBPrintFreshVar(nat) &
+  bprintf(" <-- valOrd_%(",c) &
+  valOrd_setobj_2(b)(c)(setobj(NAT))
+ =>
+  valOrd_setobj_1(b)(c)(setobj(NAT));
+
+  valOrd_setobj_1(b)(c)(t)
+ =>
+  valOrd_setobj_0(b)(c)(t);
+
+/***
+  write
+***/
+
+  GBReadTok(F) &
+  bprintf(")")
+ =>
+  write_setobj_3(b)(c)(t);
+
+  GBPrintFncTok(b) &
+  write_setobj_3(b)(c)(t)
+ =>
+  write_setobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  bprintf("write_%(",c) &
+  write_setobj_2(b)(c)(t)
+ =>
+  write_setobj_1(b)(c)(t);
+
+  bprintf("  ") &
+  bprintf("write_%",c)
+ =>
+  write_setobj_1(GLOBAL ? END)(c)(t);
+
+  write_setobj_1(b)(c)(t)
+ =>
+  write_setobj_0(b)(c)(t);
+
+/***
+  read
+***/
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  read_setobj_2(b)(c)(t);
+
+  read_setobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- read_%(",c) &
+  read_setobj_2(b)(c)(t)
+ =>
+  read_setobj_1(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- read_%",c) &
+  read_setobj_2(GLOBAL ? END)(c)(t)
+ =>
+  read_setobj_1(GLOBAL ? END)(c)(t);
+
+  read_setobj_1(b)(c)(t)
+ =>
+  read_setobj_0(b)(c)(t);
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(val_,c) &
+  val_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(card_,c) &
+  card_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(clear_,c) &
+  clear_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(add_,c) &
+  add_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(del_,c) &
+  del_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(member_,c) &
+  member_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(search_,c) &
+  search_obj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(union_,c) &
+  union_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(inter_,c) &
+  inter_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(diff_,c) &
+  diff_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(mod_,c) &
+  mod_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(eql_,c) &
+  eql_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(incl_,c) &
+  incl_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(valOrd_,c) &
+  valOrd_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(read_,c) &
+  read_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(write_,c) &
+  write_setobj_0(b)(c)(t)
+ =>
+  setobj_ops_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintOptSetObjOpsX IS
+
+#define GBOposetopTac ((MAP;MODR;WRITE)~;GBOPrintOptSetObjOpsX)~
+
+#define GBOPrintOptSetObjOps(a,b,c) \
+	bcall(GBOposetopTac: opt_setobj_0(a)(b)(c))
+
+/***
+  def
+***/
+  
+  GBReadFreshVar(x) &
+  bprintf(" <-- def_%(",c) &
+  GBPrintFncTok(b) &
+  bprintf(")",x,b)
+ =>
+  def_setobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  def_setobj_2(b)(c)(t)
+ =>
+  def_setobj_1(b)(c)(t);
+
+  def_setobj_1(b)(c)(t)
+ =>
+  def_setobj_0(b)(c)(t);
+
+/***
+  rem
+***/
+  
+  bprintf("  rem_%(",c) &
+  GBPrintFncTok(b) &
+  bprintf(")",b)
+ =>
+  rem_setobj_1(b)(c)(t);
+
+  rem_setobj_1(b)(c)(t)
+ =>
+  rem_setobj_0(b)(c)(t);
+
+/***
+  cre
+***/
+
+/*
+  GBReadFreshVar(x) &
+  GBReadTok(F) &
+  bprintf("%)",F)
+ =>
+  cre_setobj_3(b)(c)(fstrobj(t))(y);
+*/
+
+  GBReadFreshVar(x) &
+  GBReadTok(F) &
+  bprintf("%)",F)
+ =>
+  cre_setobj_3(b)(c)(strobj(t))(y);
+
+  GBReadFreshVar(x) &
+  GBReadTok(F) &
+  bprintf("%)",F)
+ =>
+  cre_setobj_3(b)(c)(seqobj(t))(y);
+
+  GBReadFreshVar(x) &
+  GBReadTok(F) &
+  bprintf("%)",F)
+ =>
+  cre_setobj_3(b)(c)(setobj(t))(y);
+
+  GBReadFreshVar(x) &
+  bprintf(" <-- cre_%(",c) &
+  GBGetFncTok(b) &
+  GBGetFreshVar(rep) &
+  cre_setobj_3(b)(c)(t)(x)
+ =>
+  cre_setobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  cre_setobj_2(b)(c)(t)
+ =>
+  cre_setobj_1(b)(c)(t);
+
+  cre_setobj_1(b)(c)(t)
+ =>
+  cre_setobj_0(b)(c)(t);
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(cre_,c) &
+  cre_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(rem_,c) &
+  rem_setobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(def_,c) &
+  def_setobj_0(b)(c)(t)
+ =>
+  opt_setobj_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintSeqObjOpsX IS
+
+#define GBOpseqopTac ((MAP;MODR;WRITE)~;GBOPrintSeqObjOpsX)~
+
+#define GBOPrintSeqObjOps(a,b,c) \
+	bcall(GBOpseqopTac: seqobj_ops_0(a)(b)(c))
+
+/***
+  within
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  bprintf(")")
+ =>
+  within_seqobj_4(b)(c)(seqobj(t))(x)(y);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  bprintf(")")
+ =>
+  within_seqobj_4(b)(c)(seqobj(NAT))(x)(y);
+
+  GBReadFreshVar(y) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  within_seqobj_4(b)(c)(t)(x)(y)
+ =>
+  within_seqobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(y) &
+  within_seqobj_4(GLOBAL ? END)(c)(t)(x)(y)
+ =>
+  within_seqobj_3(GLOBAL ? END)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFreshVar(ii) &
+  bprintf(" <-- within_%(",c) &
+  within_seqobj_3(b)(c)(t)(x)
+ =>
+  within_seqobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(",") &
+  within_seqobj_2(b)(c)(t)
+ =>
+  within_seqobj_1(b)(c)(t);
+
+  within_seqobj_1(b)(c)(t)
+ =>
+  within_seqobj_0(b)(c)(t);
+
+/***
+  search
+***/
+
+  GBReadTok(B) &
+  GBPrintFreshVar(cc) &
+  bprintf(")") 
+ =>
+  search_obj_4(b)(c)(t)(x)(F);
+
+  GBReadTok(F) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  search_obj_4(b)(c)(t)(x)(F)
+ =>
+  search_obj_3(b)(c)(t)(x);
+
+  GBReadTok(F) &
+  search_obj_4(GLOBAL ? END)(c)(t)(x)(F)
+ =>
+  search_obj_3(GLOBAL ? END)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(e) &
+  bprintf(" <-- search_%(",c) &
+  search_obj_3(b)(c)(s(e))(x)
+ =>
+  search_obj_2(b)(c)(s(e));  
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(",") &
+  search_obj_2(b)(c)(t)
+ =>
+  search_obj_1(b)(c)(t);
+
+  bmodr(GBOCheckSupportedX.3,1)
+ =>
+  search_obj_0(b)(c)(t);
+
+  ReadBaseNames(B) &
+  bsearch(e,B,C) &
+  ReadIDs(K) &
+  bsearch(e(v),K,L) &
+  search_obj_1(b)(c)(seqobj(e))
+ =>
+  search_obj_0(b)(c)(seqobj(e));
+
+
+/***
+  eql
+***/
+
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,b,F,c)
+ =>
+  eql_seqobj_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,a,c)
+ =>
+  eql_seqobj_4(GLOBAL ? END)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSeqTok(a) &
+  eql_seqobj_4(b)(c)(t)(x)(F)
+ =>
+  eql_seqobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  eql_seqobj_3(b)(c)(t)(x)
+ =>
+  eql_seqobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  eql_seqobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  eql_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%(",c) &
+  eql_seqobj_2(b)(c)(t)
+ =>
+  eql_seqobj_1(b)(c)(t);
+
+  eql_seqobj_1(b)(c)(t)
+ =>
+  eql_seqobj_0(b)(c)(t);
+
+/***
+  conc
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,b,F,c)
+ =>
+  conc_seqobj_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,a,c)
+ =>
+  conc_seqobj_4(GLOBAL ? END)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSeqTok(a) &
+  conc_seqobj_4(b)(c)(t)(x)(F)
+ =>
+  conc_seqobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  conc_seqobj_3(b)(c)(t)(x)
+ =>
+  conc_seqobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  conc_seqobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  conc_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- conc_%(",c) &
+  conc_seqobj_2(b)(c)(t)
+ =>
+  conc_seqobj_1(b)(c)(t);
+
+  conc_seqobj_1(b)(c)(t)
+ =>
+  conc_seqobj_0(b)(c)(t);
+
+/***
+  mod
+***/
+
+  GBReadTok(S) &
+  bprintf(")",F,c,S,t,c,F,S,x,x)
+ =>
+  mod_seqobj_4(b)(c)(seqobj(t))(x)(F);
+
+  GBReadTok(S) &
+  bprintf(")",S,t,c,S,x,x)
+ =>
+  mod_seqobj_4(GLOBAL ? END)(c)(seqobj(t))(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintSeqTok(a) &
+  mod_seqobj_4(b)(c)(t)(x)(F)
+ =>
+  mod_seqobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  mod_seqobj_3(b)(c)(t)(x)
+ =>
+  mod_seqobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- mod_%(",c) &
+  mod_seqobj_2(b)(c)(t)
+ =>
+  mod_seqobj_1(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  mod_seqobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  mod_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- mod_%(",c) &
+  mod_seqobj_2(GLOBAL ? END)(c)(t)
+ =>
+  mod_seqobj_1(GLOBAL ? END)(c)(t);
+
+  mod_seqobj_1(b)(c)(t)
+ =>
+  mod_seqobj_0(b)(c)(t);
+
+/***
+  push
+***/
+
+  GBReadFreshVar(F) &
+  GBPrintMbr(t) &
+  bprintf(")")
+ =>
+  push_seqobj_3(b)(c)(seqobj(t))(x);
+
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  bprintf(")")
+ =>
+  push_seqobj_3(b)(c)(seqobj(NAT))(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  push_seqobj_3(b)(c)(t)(x)
+ =>
+  push_seqobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  push_seqobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  push_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- push_%(",c) &
+  push_seqobj_2(b)(c)(t)
+ =>
+  push_seqobj_1(b)(c)(t);
+
+  push_seqobj_1(b)(c)(t)
+ =>
+  push_seqobj_0(b)(c)(t);
+
+/***
+  pop
+***/
+
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  pop_seqobj_2(b)(c)(t);
+
+  pop_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  pop_%(",c) &
+  pop_seqobj_2(b)(c)(t)
+ =>
+  pop_seqobj_1(b)(c)(t);
+
+  bprintf("  pop_%",c) &
+  pop_seqobj_2(GLOBAL ? END)(c)(t)
+ =>
+  pop_seqobj_1(GLOBAL ? END)(c)(t);
+
+  pop_seqobj_1(b)(c)(t)
+ =>
+  pop_seqobj_0(b)(c)(t);
+
+/***
+  modIth
+***/
+
+  GBReadFreshVar(y) &
+  GBPrintMbr(t) &
+  bprintf(")")
+ =>
+  modIth_seqobj_4(b)(c)(seqobj(t))(F);
+
+  GBReadFreshVar(y) &
+  GBPrintFreshVar(nat) &
+  bprintf(")")
+ =>
+  modIth_seqobj_4(b)(c)(seqobj(NAT))(F);
+
+  GBReadTok(F) &
+  GBPrintFreshVar(ii) &
+  bprintf(",") &
+  modIth_seqobj_4(b)(c)(t)(F)
+ =>
+  modIth_seqobj_3(b)(c)(t);
+
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  modIth_seqobj_3(b)(c)(t)
+ =>
+  modIth_seqobj_2(b)(c)(t);
+
+  modIth_seqobj_3(GLOBAL ? END)(c)(t)
+ =>
+  modIth_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  bprintf("modIth_%(",c) &
+  modIth_seqobj_2(b)(c)(t)
+ =>
+  modIth_seqobj_1(b)(c)(t);
+
+  modIth_seqobj_1(b)(c)(t)
+ =>
+  modIth_seqobj_0(b)(c)(t);
+
+/***
+  delIth
+***/
+
+  GBReadTok(F) &
+  GBPrintFreshVar(ii) &
+  bprintf(")")
+ =>
+  delIth_seqobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  delIth_seqobj_3(b)(c)(t)(x)
+ =>
+  delIth_seqobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  delIth_seqobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  delIth_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- delIth_%(",c) &
+  delIth_seqobj_2(b)(c)(t)
+ =>
+  delIth_seqobj_1(b)(c)(t);
+
+  delIth_seqobj_1(b)(c)(t)
+ =>
+  delIth_seqobj_0(b)(c)(t);
+
+/***
+  insIth
+***/
+
+  GBReadFreshVar(y) &
+  GBPrintMbr(t) &
+  bprintf(")")
+ =>
+  insIth_seqobj_4(b)(c)(seqobj(t))(x)(F);
+
+  GBReadFreshVar(y) &
+  GBPrintFreshVar(nat) &
+  bprintf(")")
+ =>
+  insIth_seqobj_4(b)(c)(seqobj(NAT))(x)(F);
+
+  GBReadTok(F) &
+  GBPrintFreshVar(ii) &
+  bprintf(",") &
+  insIth_seqobj_4(b)(c)(t)(x)(F)
+ =>
+  insIth_seqobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  insIth_seqobj_3(b)(c)(t)(x)
+ =>
+  insIth_seqobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  insIth_seqobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  insIth_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- insIth_%(",c) &
+  insIth_seqobj_2(b)(c)(t)
+ =>
+  insIth_seqobj_1(b)(c)(t);
+
+  insIth_seqobj_1(b)(c)(t)
+ =>
+  insIth_seqobj_0(b)(c)(t);
+
+/***
+  valIth
+***/
+
+  GBReadTok(F) &
+  GBPrintFreshVar(ii) &
+  bprintf(")")
+ =>
+  valIth_seqobj_3(b)(c)(t)(M);
+
+  GBReadTok(M) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  valIth_seqobj_3(b)(c)(t)(M)
+ =>
+  valIth_seqobj_2(b)(c)(t);
+
+  GBReadTok(M) &
+  valIth_seqobj_3(GLOBAL ? END)(c)(t)(M)
+ =>
+  valIth_seqobj_2(GLOBAL ? END)(c)(t);
+
+  GBReadFreshVar(M) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  valIth_seqobj_3(b)(c)(seqobj(NAT))(M)
+ =>
+  valIth_seqobj_2(b)(c)(seqobj(NAT));
+
+  GBReadFreshVar(M) &
+  valIth_seqobj_3(GLOBAL ? END)(c)(seqobj(NAT))(M)
+ =>
+  valIth_seqobj_2(GLOBAL ? END)(c)(seqobj(NAT));
+
+  bprintf("  ") &
+  GBPrintMbr(t) &
+  bprintf(" <-- valIth_%(",c) &
+  valIth_seqobj_2(b)(c)(seqobj(t))
+ =>
+  valIth_seqobj_1(b)(c)(seqobj(t));
+
+  bprintf("  ") &
+  GBPrintFreshVar(nat) &
+  bprintf(" <-- valIth_%(",c) &
+  valIth_seqobj_2(b)(c)(seqobj(NAT))
+ =>
+  valIth_seqobj_1(b)(c)(seqobj(NAT));
+
+  valIth_seqobj_1(b)(c)(t)
+ =>
+  valIth_seqobj_0(b)(c)(t);
+
+/***
+  last
+***/
+
+  GBReadTok(M) &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  last_seqobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintMbr(t) &
+  bprintf(" <-- last_%(",c) &
+  last_seqobj_2(b)(c)(seqobj(t))
+ =>
+  last_seqobj_1(b)(c)(seqobj(t));
+
+  bprintf("  ") &
+  GBPrintFreshVar(nat) &
+  bprintf(" <-- last_%(",c) &
+  last_seqobj_2(b)(c)(seqobj(NAT))
+ =>
+  last_seqobj_1(b)(c)(seqobj(NAT));
+
+  bprintf("  ") &
+  GBPrintMbr(t) &
+  bprintf(" <-- last_%",c)
+ =>
+  last_seqobj_1(GLOBAL ? END)(c)(seqobj(t));
+
+  bprintf("  ") &
+  GBPrintFreshVar(nat) &
+  bprintf(" <-- last_%",c)
+ =>
+  last_seqobj_1(GLOBAL ? END)(c)(seqobj(NAT));
+
+  last_seqobj_1(b)(c)(t)
+ =>
+  last_seqobj_0(b)(c)(t);
+
+/***
+  clear
+***/
+
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  clear_seqobj_2(b)(c)(t);
+
+  clear_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  bprintf("clear_%",c) &
+  clear_seqobj_2(b)(c)(t)
+ =>
+  clear_seqobj_1(b)(c)(t);
+
+  clear_seqobj_1(b)(c)(t)
+ =>
+  clear_seqobj_0(b)(c)(t);
+
+/***
+  length
+***/
+
+  GBReadFreshVar(x) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  length_seqobj_2(b)(c)(t);
+
+  length_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(nbr) &
+  bprintf(" <-- length_%",c) &
+  length_seqobj_2(b)(c)(t)
+ =>
+  length_seqobj_1(b)(c)(t);
+
+  length_seqobj_1(b)(c)(t)
+ =>
+  length_seqobj_0(b)(c)(t);
+
+/***
+  val
+***/
+
+  GBReadTok(S) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")",S,b)
+ =>
+  val_seqobj_2(b)(c)(t);
+
+  val_seqobj_2(GLOBAL ? END)(c)(t);
+
+  ReadSystemName(a) &
+  bprintf("  ") &
+  GBPrintSeqTok(a) &
+  bprintf(" <-- val_%",c) &
+  val_seqobj_2(b)(c)(t)
+ =>
+  val_seqobj_1(b)(c)(t);
+
+  val_seqobj_1(b)(c)(t)
+ =>
+  val_seqobj_0(b)(c)(t);
+
+/***
+  write
+***/
+
+  GBReadTok(F) &
+  bprintf(")")
+ =>
+  write_seqobj_3(b)(c)(t);
+
+  GBPrintFncTok(b) &
+  write_seqobj_3(b)(c)(t)
+ =>
+  write_seqobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  bprintf("write_%(",c) &
+  write_seqobj_2(b)(c)(t)
+ =>
+  write_seqobj_1(b)(c)(t);
+
+  bprintf("  ") &
+  bprintf("write_%",c)
+ =>
+  write_seqobj_1(GLOBAL ? END)(c)(t);
+
+  write_seqobj_1(b)(c)(t)
+ =>
+  write_seqobj_0(b)(c)(t);
+
+/***
+  read
+***/
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  read_seqobj_2(b)(c)(t);
+
+  read_seqobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- read_%(",c) &
+  read_seqobj_2(b)(c)(t)
+ =>
+  read_seqobj_1(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- read_%",c) &
+  read_seqobj_2(GLOBAL ? END)(c)(t)
+ =>
+  read_seqobj_1(GLOBAL ? END)(c)(t);
+
+  read_seqobj_1(b)(c)(t)
+ =>
+  read_seqobj_0(b)(c)(t);
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(val_,c) &
+  val_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(length_,c) &
+  length_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(clear_,c) &
+  clear_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(last_,c) &
+  last_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(valIth_,c) &
+  valIth_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(insIth_,c) &
+  insIth_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(delIth_,c) &
+  delIth_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(modIth_,c) &
+  modIth_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(pop_,c) &
+  pop_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(push_,c) &
+  push_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(mod_,c) &
+  mod_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(conc_,c) &
+  conc_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(eql_,c) &
+  eql_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(within_,c) &
+  within_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(search_,c) &
+  search_obj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(write_,c) &
+  write_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(read_,c) &
+  read_seqobj_0(b)(c)(t)
+ =>
+  seqobj_ops_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintOptSeqObjOpsX IS
+
+#define GBOposeqopTac ((MAP;MODR;WRITE)~;GBOPrintOptSeqObjOpsX)~
+
+#define GBOPrintOptSeqObjOps(a,b,c) \
+	bcall(GBOposeqopTac: opt_seqobj_0(a)(b)(c))
+
+/***
+  def
+***/
+  
+  bcall(GBOposetopTac: def_setobj_0(b)(c)(t))
+ =>
+  def_seqobj_0(b)(c)(t);
+
+/***
+  rem
+***/
+  
+  bcall(GBOposetopTac: rem_setobj_0(b)(c)(t))
+ =>
+  rem_seqobj_0(b)(c)(t);
+
+/***
+  cre
+***/
+  
+  bcall(GBOposetopTac: cre_setobj_0(b)(c)(t))
+ =>
+  cre_seqobj_0(b)(c)(t);
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(cre_,c) &
+  cre_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(rem_,c) &
+  rem_seqobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(def_,c) &
+  def_seqobj_0(b)(c)(t)
+ =>
+  opt_seqobj_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintFStrObjOpsX IS
+
+#define GBOpfstropTac ((MAP;MODR;WRITE)~;GBOPrintFStrObjOpsX)~
+
+#define GBOPrintFStrObjOps(a,b,c) \
+	bcall(GBOpfstropTac: fstrobj_ops_0(a)(b)(c))
+
+  ?; /* 1=>at least 1 copy_(eql_) op printed */
+
+/***
+  key_search
+***/
+
+  GBReadTok(S) &
+  bprintf(")",S,S,b,F,c)
+ =>
+  key_search_fstrobj_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintFStrTok(a) &
+  key_search_fstrobj_4(b)(c)(t)(x)(F)
+ =>
+  key_search_fstrobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(" <-- key_search_%(",c) &
+  key_search_fstrobj_3(b)(c)(t)(x)
+ =>
+  key_search_fstrobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(",") &
+  key_search_fstrobj_2(b)(c)(t)
+ =>
+  key_search_fstrobj_1(b)(c)(t);
+
+  key_search_fstrobj_1(b)(c)(t)
+ =>
+  key_search_fstrobj_0(b)(c)(t);
+
+  key_search_fstrobj_0(GLOBAL ? END)(c)(t);
+
+
+/***
+  eql_mand_mand
+***/
+
+  GBReadTok(S) &
+  bprintf(")")
+ =>
+  eql_mand_mand_fstrobj_2(b)(c)(t)(c)(B(i))(x)(F);
+
+  GBReadTok(S)
+ =>
+  eql_mand_mand_fstrobj_2((GLOBAL ? END))(c)(t)(c)((GLOBAL ? END)(i))(x)(F);
+
+  GBReadFreshVar(x) &
+  GBReadTok(F) &
+  GBPrintFncTok(b) &
+  eql_mand_mand_fstrobj_2(b)(c)(t)(c)(B(i))(x)(F)
+ =>
+  eql_mand_mand_fstrobj_1(b)(c)(t)(c)(B(i));
+
+  GBReadFreshVar(x) &
+  GBReadTok(F) &
+  eql_mand_mand_fstrobj_2(GLOBAL ? END)(c)(t)(c)(B(i))(x)(F)
+ =>
+  eql_mand_mand_fstrobj_1(GLOBAL ? END)(c)(t)(c)(B(i));
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%_%(",i,c) &
+  GBPrintFncTok(B) &
+  bprintf(",") &
+  eql_mand_mand_fstrobj_1(b)(c)(t)(c)(B(i))
+ =>
+  eql_mand_mand_fstrobj_0(b)(c)(t)(c)(B(i));
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%_%(",i,c) &
+  GBPrintFncTok(B) &
+  eql_mand_mand_fstrobj_1(GLOBAL ? END)(c)(t)(c)(B(i))
+ =>
+  eql_mand_mand_fstrobj_0(GLOBAL ? END)(c)(t)(c)(B(i));
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%_%(",i,c) &
+  eql_mand_mand_fstrobj_1(b)(c)(t)(c)((GLOBAL ? END)(i))
+ =>
+  eql_mand_mand_fstrobj_0(b)(c)(t)(c)((GLOBAL ? END)(i));
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%_%",i,c) &
+  eql_mand_mand_fstrobj_1((GLOBAL ? END))(c)(t)(c)((GLOBAL ? END)(i))
+ =>
+  eql_mand_mand_fstrobj_0((GLOBAL ? END))(c)(t)(c)((GLOBAL ? END)(i));
+
+/***
+  copy_mand_mand
+***/
+
+  GBReadTok(S) &
+  bprintf(")")
+ =>
+  copy_mand_mand_fstrobj_2(b)(c)(t)(c)(B(i))(F);
+
+  GBReadTok(S)
+ =>
+  copy_mand_mand_fstrobj_2((GLOBAL ? END))(c)(t)(c)((GLOBAL ? END)(i))(F);
+
+  GBReadTok(F) &
+  GBPrintFncTok(b) &
+  copy_mand_mand_fstrobj_2(b)(c)(t)(c)(B(i))(F)
+ =>
+  copy_mand_mand_fstrobj_1(b)(c)(t)(c)(B(i));
+
+  GBReadTok(F) &
+  copy_mand_mand_fstrobj_2(GLOBAL ? END)(c)(t)(c)(B(i))(F)
+ =>
+  copy_mand_mand_fstrobj_1(GLOBAL ? END)(c)(t)(c)(B(i));
+
+  bprintf("  ") &
+  bprintf("copy_%_%(",i,c) &
+  GBPrintFncTok(B) &
+  bprintf(",") &
+  copy_mand_mand_fstrobj_1(b)(c)(t)(c)(B(i))
+ =>
+  copy_mand_mand_fstrobj_0(b)(c)(t)(c)(B(i));
+
+  bprintf("  ") &
+  bprintf("copy_%_%(",i,c) &
+  GBPrintFncTok(B) &
+  copy_mand_mand_fstrobj_1(GLOBAL ? END)(c)(t)(c)(B(i))
+ =>
+  copy_mand_mand_fstrobj_0(GLOBAL ? END)(c)(t)(c)(B(i));
+
+  bprintf("  ") &
+  bprintf("copy_%_%(",i,c) &
+  copy_mand_mand_fstrobj_1(b)(c)(t)(c)((GLOBAL ? END)(i))
+ =>
+  copy_mand_mand_fstrobj_0(b)(c)(t)(c)((GLOBAL ? END)(i));
+
+  bprintf("  ") &
+  bprintf("copy_%_%",i,c) &
+  copy_mand_mand_fstrobj_1(GLOBAL ? END)(c)(t)(c)((GLOBAL ? END)(i))
+ =>
+  copy_mand_mand_fstrobj_0(GLOBAL ? END)(c)(t)(c)((GLOBAL ? END)(i));
+
+
+/***
+  write_fstr
+***/
+
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  write_fstr_fstrobj_2(b)(c)(t);
+
+  write_fstr_fstrobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  bprintf("write_fstr_%",c) &
+  write_fstr_fstrobj_2(b)(c)(t)
+ =>
+  write_fstr_fstrobj_1(b)(c)(t);
+
+  write_fstr_fstrobj_1(b)(c)(t)
+ =>
+  write_fstr_fstrobj_0(b)(c)(t);
+
+/***
+  read_fstr
+***/
+
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  read_fstr_fstrobj_2(b)(c)(t);
+
+  read_fstr_fstrobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  bprintf("read_fstr_%",c) &
+  read_fstr_fstrobj_2(b)(c)(t)
+ =>
+  read_fstr_fstrobj_1(b)(c)(t);
+
+  read_fstr_fstrobj_1(b)(c)(t)
+ =>
+  read_fstr_fstrobj_0(b)(c)(t);
+
+/***
+  eql
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,b,F,c)
+ =>
+  eql_fstrobj_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,a,c)
+ =>
+  eql_fstrobj_4(GLOBAL ? END)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintFStrTok(a) &
+  eql_fstrobj_4(b)(c)(t)(x)(F)
+ =>
+  eql_fstrobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  eql_fstrobj_3(b)(c)(t)(x)
+ =>
+  eql_fstrobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  eql_fstrobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  eql_fstrobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%(",c) &
+  eql_fstrobj_2(b)(c)(t)
+ =>
+  eql_fstrobj_1(b)(c)(t);
+
+  eql_fstrobj_1(b)(c)(t)
+ =>
+  eql_fstrobj_0(b)(c)(t);
+
+
+/***
+  ovr
+***/
+
+  GBReadTok(S) &
+  bprintf(")",F,c,S,c,F,S,x,x)
+ =>
+  ovr_fstrobj_4(b)(c)(t)(F);
+
+  GBReadTok(S) &
+  bprintf(")",S,c,S,x,x)
+ =>
+  ovr_fstrobj_4(GLOBAL ? END)(c)(t)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintFStrTok(a) &
+  ovr_fstrobj_4(b)(c)(t)(F)
+ =>
+  ovr_fstrobj_3(b)(c)(t);
+
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  ovr_fstrobj_3(b)(c)(t)
+ =>
+  ovr_fstrobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  bprintf("ovr_%(",c) &
+  ovr_fstrobj_2(b)(c)(t)
+ =>
+  ovr_fstrobj_1(b)(c)(t);
+
+  ovr_fstrobj_3(GLOBAL ? END)(c)(t)
+ =>
+  ovr_fstrobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  bprintf("ovr_%(",c) &
+  ovr_fstrobj_2(GLOBAL ? END)(c)(t)
+ =>
+  ovr_fstrobj_1(GLOBAL ? END)(c)(t);
+
+  ovr_fstrobj_1(b)(c)(t)
+ =>
+  ovr_fstrobj_0(b)(c)(t);
+
+/***
+  length
+***/
+
+  GBReadFreshVar(x) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  length_fstrobj_2(b)(c)(t);
+
+  length_fstrobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(nbr) &
+  bprintf(" <-- length_%",c) &
+  length_fstrobj_2(b)(c)(t)
+ =>
+  length_fstrobj_1(b)(c)(t);
+
+  length_fstrobj_1(b)(c)(t)
+ =>
+  length_fstrobj_0(b)(c)(t);
+
+/***
+  xtr
+***/
+
+  GBReadTok(S) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")",S,b)
+ =>
+  xtr_fstrobj_2(b)(c)(t);
+
+  xtr_fstrobj_2(GLOBAL ? END)(c)(t);
+
+  ReadSystemName(a) &
+  bprintf("  ") &
+  GBPrintFStrTok(a) &
+  bprintf(" <-- xtr_%",c) &
+  xtr_fstrobj_2(b)(c)(t)
+ =>
+  xtr_fstrobj_1(b)(c)(t);
+
+  xtr_fstrobj_1(b)(c)(t)
+ =>
+  xtr_fstrobj_0(b)(c)(t);
+
+
+
+  eql_mand_mand_fstrobj_00(b,c,t,c,x);
+
+  brule(GBFSTRSIZEX.1,W) &
+  bsearch(c(N),W,Y) &
+  bsearch(i(N),Y,Z) &
+  bmodr(GBOPrintFStrObjOpsX.1,1) &     /* op printed */
+  GBEmptyAccumulatedVariables &
+/*
+HERE((eql_mand_mand_fstrobj_0(b)(c)(t)(c)(B(i))))&
+*/
+  eql_mand_mand_fstrobj_0(b)(c)(t)(c)(B(i))
+ =>
+  eql_mand_mand_fstrobj_00(b,c,t,c,B(i));
+
+  eql_mand_mand_fstrobj_00(b,c,t,c,b(i))
+ =>
+  eql_mand_mand_fstrobj_00_0(b,c,t,c,i);
+
+  eql_mand_fstrobj_000(b,c,t,x);        /* c/=x */
+
+  brule(GBOOpsX.6,O) &
+  brule(GBOOpsX.4,C) &
+  eql_mand_mand_fstrobj_00(b,c,t,c) bsmap O &
+  eql_mand_mand_fstrobj_00_0(b,c,t,c) bsmap C
+ =>
+  eql_mand_fstrobj_000(b,c,t,c);
+
+  brule(GBOOpsX.4,O) &
+  eql_mand_fstrobj_000(b,c,t) bsmap O
+ =>
+  eql_mand_fstrobj_0000(b)(c)(t);
+
+
+
+  copy_mand_mand_fstrobj_00(b,c,t,c,x);
+
+  brule(GBFSTRSIZEX.1,W) &
+  bsearch(c(N),W,Y) &
+  bsearch(i(N),Y,Z) &
+  bmodr(GBOPrintFStrObjOpsX.1,1) &     /* op printed */
+  GBEmptyAccumulatedVariables &
+/*
+HERE((copy_mand_mand_fstrobj_0(b)(c)(t)(c)(B(i))))&
+*/
+  copy_mand_mand_fstrobj_0(b)(c)(t)(c)(B(i))
+ =>
+  copy_mand_mand_fstrobj_00(b,c,t,c,B(i));
+
+  copy_mand_mand_fstrobj_00(b,c,t,c,b(i))
+ =>
+  copy_mand_mand_fstrobj_00_0(b,c,t,c,i);
+
+  copy_mand_fstrobj_000(b,c,t,x);        /* c/=x */
+
+  brule(GBOOpsX.6,O) &
+  brule(GBOOpsX.4,C) &
+  copy_mand_mand_fstrobj_00(b,c,t,c) bsmap O &
+  copy_mand_mand_fstrobj_00_0(b,c,t,c) bsmap C
+ =>
+  copy_mand_fstrobj_000(b,c,t,c);
+
+  brule(GBOOpsX.4,O) &
+  copy_mand_fstrobj_000(b,c,t) bsmap O
+ =>
+  copy_mand_fstrobj_0000(b)(c)(t);
+
+
+  eql_mand_fstrobj_chk_printed;     /* op printed */
+
+  brule(GBOPrintFStrObjOpsX.1,0) &  /* op not printed */
+  GBChkSupportedOpNotPrintedSC 
+ =>
+  eql_mand_fstrobj_chk_printed;
+
+
+  GBEmptyAccumulatedVariables &
+  bmodr(GBOPrintFStrObjOpsX.1,0) &
+  GBCheckSupportedOp(copy_,c) &           /*ihs 2-9-95*/
+  copy_mand_fstrobj_0000(b)(c)(t) &
+  eql_mand_fstrobj_chk_printed &
+  GBEmptyAccumulatedVariables &
+  bmodr(GBOPrintFStrObjOpsX.1,0) &
+  GBCheckSupportedOp(eql_,c) &            /*ihs 2-9-95*/
+  eql_mand_fstrobj_0000(b)(c)(t) &
+  eql_mand_fstrobj_chk_printed &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(key_search_,c) &
+  key_search_fstrobj_0(b)(c)(t)
+ =>
+  fstrobj_ops_key_search(b)(c)(t);
+
+  fstrobj_ops_key_search(GLOBAL ? END)(c)(t);
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(xtr_,c) &
+  xtr_fstrobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(length_,c) &
+  length_fstrobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(ovr_,c) &
+  ovr_fstrobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(eql_,c) &
+  eql_fstrobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(read_fstr_,c) &
+  read_fstr_fstrobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(write_fstr_,c) &
+  write_fstr_fstrobj_0(b)(c)(t) &
+  fstrobj_ops_key_search(b)(c)(t)
+ =>
+  fstrobj_ops_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintStrObjOpsX IS
+
+#define GBOpstropTac ((MAP;MODR;WRITE)~;GBOPrintStrObjOpsX)~
+
+#define GBOPrintStrObjOps(a,b,c) \
+	bcall(GBOpstropTac: strobj_ops_0(a)(b)(c))
+
+/***
+  key_search
+***/
+
+  GBReadTok(S) &
+  bprintf(")",S,S,b,F,c)
+ =>
+  key_search_strobj_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintStrTok(a) &
+  key_search_strobj_4(b)(c)(t)(x)(F)
+ =>
+  key_search_strobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(" <-- key_search_%(",c) &
+  key_search_strobj_3(b)(c)(t)(x)
+ =>
+  key_search_strobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(",") &
+  key_search_strobj_2(b)(c)(t)
+ =>
+  key_search_strobj_1(b)(c)(t);
+
+  key_search_strobj_1(b)(c)(t)
+ =>
+  key_search_strobj_0(b)(c)(t);
+
+  key_search_strobj_0(GLOBAL ? END)(c)(t);
+
+/***
+  write_str
+***/
+
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  write_str_strobj_2(b)(c)(t);
+
+  write_str_strobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  bprintf("write_str_%",c) &
+  write_str_strobj_2(b)(c)(t)
+ =>
+  write_str_strobj_1(b)(c)(t);
+
+  write_str_strobj_1(b)(c)(t)
+ =>
+  write_str_strobj_0(b)(c)(t);
+
+/***
+  read_str
+***/
+
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  read_str_strobj_2(b)(c)(t);
+
+  read_str_strobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- read_str_%",c) &
+  read_str_strobj_2(b)(c)(t)
+ =>
+  read_str_strobj_1(b)(c)(t);
+
+  read_str_strobj_1(b)(c)(t)
+ =>
+  read_str_strobj_0(b)(c)(t);
+
+/***
+  eql
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,b,F,c)
+ =>
+  eql_strobj_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,a,c)
+ =>
+  eql_strobj_4(GLOBAL ? END)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintStrTok(a) &
+  eql_strobj_4(b)(c)(t)(x)(F)
+ =>
+  eql_strobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  eql_strobj_3(b)(c)(t)(x)
+ =>
+  eql_strobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  eql_strobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  eql_strobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%(",c) &
+  eql_strobj_2(b)(c)(t)
+ =>
+  eql_strobj_1(b)(c)(t);
+
+  eql_strobj_1(b)(c)(t)
+ =>
+  eql_strobj_0(b)(c)(t);
+
+/***
+  conc
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,b,F,c)
+ =>
+  conc_strobj_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(S) &
+  bprintf(")",S,S,a,c)
+ =>
+  conc_strobj_4(GLOBAL ? END)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintStrTok(a) &
+  conc_strobj_4(b)(c)(t)(x)(F)
+ =>
+  conc_strobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  conc_strobj_3(b)(c)(t)(x)
+ =>
+  conc_strobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  conc_strobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  conc_strobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- conc_%(",c) &
+  conc_strobj_2(b)(c)(t)
+ =>
+  conc_strobj_1(b)(c)(t);
+
+  conc_strobj_1(b)(c)(t)
+ =>
+  conc_strobj_0(b)(c)(t);
+
+/***
+  mod
+***/
+
+  GBReadTok(S) &
+  bprintf(")",F,c,S,c,F,S,x,x)
+ =>
+  mod_strobj_4(b)(c)(t)(x)(F);
+
+  GBReadTok(S) &
+  bprintf(")",S,c,S,x,x)
+ =>
+  mod_strobj_4(GLOBAL ? END)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintStrTok(a) &
+  mod_strobj_4(b)(c)(t)(x)(F)
+ =>
+  mod_strobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  mod_strobj_3(b)(c)(t)(x)
+ =>
+  mod_strobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- mod_%(",c) &
+  mod_strobj_2(b)(c)(t)
+ =>
+  mod_strobj_1(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  mod_strobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  mod_strobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- mod_%(",c) &
+  mod_strobj_2(GLOBAL ? END)(c)(t)
+ =>
+  mod_strobj_1(GLOBAL ? END)(c)(t);
+
+  mod_strobj_1(b)(c)(t)
+ =>
+  mod_strobj_0(b)(c)(t);
+
+/***
+  valIth
+***/
+
+  GBReadTok(F) &
+  GBPrintFreshVar(ii) &
+  bprintf(")")
+ =>
+  valIth_strobj_3(b)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  valIth_strobj_3(b)(c)(t)(x)
+ =>
+  valIth_strobj_2(b)(c)(t);
+
+  GBReadFreshVar(y) &
+  bprintf(")")
+ =>
+  valIth_strobj_3(GLOBAL ? END)(c)(t)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFreshVar(ii) &
+  valIth_strobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  valIth_strobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(Char) &
+  bprintf(" <-- valIth_%(",c) &
+  valIth_strobj_2(b)(c)(strobj(t))
+ =>
+  valIth_strobj_1(b)(c)(strobj(t));
+
+  valIth_strobj_1(b)(c)(t)
+ =>
+  valIth_strobj_0(b)(c)(t);
+
+/***
+  push
+***/
+
+  GBReadFreshVar(F) &
+  GBPrintFreshVar(Char) &
+  bprintf(")")
+ =>
+  push_strobj_3(b)(c)(strobj(t))(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  push_strobj_3(b)(c)(t)(x)
+ =>
+  push_strobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  GBPrintFreshVar(Char) &
+  bprintf(")")
+ =>
+  push_strobj_2(GLOBAL ? END)(c)(strobj(t));
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- push_%(",c) &
+  push_strobj_2(b)(c)(t)
+ =>
+  push_strobj_1(b)(c)(t);
+
+  push_strobj_1(b)(c)(t)
+ =>
+  push_strobj_0(b)(c)(t);
+
+/***
+  clear
+***/
+
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  clear_strobj_2(b)(c)(t);
+
+  clear_strobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  bprintf("clear_%",c) &
+  clear_strobj_2(b)(c)(t)
+ =>
+  clear_strobj_1(b)(c)(t);
+
+  clear_strobj_1(b)(c)(t)
+ =>
+  clear_strobj_0(b)(c)(t);
+
+/***
+  length
+***/
+
+  GBReadFreshVar(x) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  length_strobj_2(b)(c)(t);
+
+  length_strobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(nbr) &
+  bprintf(" <-- length_%",c) &
+  length_strobj_2(b)(c)(t)
+ =>
+  length_strobj_1(b)(c)(t);
+
+  length_strobj_1(b)(c)(t)
+ =>
+  length_strobj_0(b)(c)(t);
+
+/***
+  xtr
+***/
+
+  GBReadTok(S) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")",S,b)
+ =>
+  xtr_strobj_2(b)(c)(t);
+
+  xtr_strobj_2(GLOBAL ? END)(c)(t);
+
+  ReadSystemName(a) &
+  bprintf("  ") &
+  GBPrintStrTok(a) &
+  bprintf(" <-- xtr_%",c) &
+  xtr_strobj_2(b)(c)(t)
+ =>
+  xtr_strobj_1(b)(c)(t);
+
+  xtr_strobj_1(b)(c)(t)
+ =>
+  xtr_strobj_0(b)(c)(t);
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(key_search_,c) &
+  key_search_strobj_0(b)(c)(t)
+ =>
+  strobj_ops_key_search(b)(c)(t);
+
+  strobj_ops_key_search(GLOBAL ? END)(c)(t);
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(xtr_,c) &
+  xtr_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+SetCommentOutOp &
+  GBCheckSupportedOp(length_,c) &
+  length_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+SetCommentOutOp &
+  GBCheckSupportedOp(clear_,c) &
+  clear_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+SetCommentOutOp &
+  GBCheckSupportedOp(valIth_,c) &
+  valIth_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+SetCommentOutOp &
+  GBCheckSupportedOp(push_,c) &
+  push_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(mod_,c) &
+  mod_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+SetCommentOutOp &
+  GBCheckSupportedOp(conc_,c) &
+  conc_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(eql_,c) &
+  eql_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+SetCommentOutOp &
+  GBCheckSupportedOp(read_str_,c) &
+  read_str_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+SetCommentOutOp &
+  GBCheckSupportedOp(write_str_,c) &
+  write_str_strobj_0(b)(c)(t) &
+  strobj_ops_key_search(b)(c)(t)
+ =>
+  strobj_ops_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintOptStrObjOpsX IS
+
+#define GBOpostropTac ((MAP;MODR;WRITE)~;GBOPrintOptStrObjOpsX)~
+
+#define GBOPrintOptStrObjOps(a,b,c) \
+	bcall(GBOpostropTac: opt_strobj_0(a)(b)(c))
+
+/***
+  def
+***/
+  
+  bcall(GBOposetopTac: def_setobj_0(b)(c)(t))
+ =>
+  def_strobj_0(b)(c)(t);
+
+/***
+  rem
+***/
+  
+  bcall(GBOposetopTac: rem_setobj_0(b)(c)(t))
+ =>
+  rem_strobj_0(b)(c)(t);
+
+/***
+  cre
+***/
+  
+  bcall(GBOposetopTac: cre_setobj_0(b)(c)(t))
+ =>
+  cre_strobj_0(b)(c)(t);
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(cre_,c) &
+  cre_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(rem_,c) &
+  rem_strobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(def_,c) &
+  def_strobj_0(b)(c)(t)
+ =>
+  opt_strobj_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintFncObjOpsX IS
+
+#define GBOpfncopTac ((MAP;MODR;WRITE)~;GBOPrintFncObjOpsX)~
+
+#define GBOPrintFncObjOps(a,b,c) \
+	bcall(GBOpfncopTac: fncobj_ops_0(a)(b)(c))
+
+/***
+  key_search
+***/
+
+  GBReadTok(G) &
+  bprintf(")",G,G,b,F,c)
+ =>
+  key_search_fncobj_4(b)(c)(fncobj(t))(x)(F);
+
+  GBReadTok(F) &
+  GBPrintFncTok(t) &
+  key_search_fncobj_4(b)(c)(fncobj(t))(x)(F)
+ =>
+  key_search_fncobj_3(b)(c)(fncobj(t))(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(" <-- key_search_%(",c) &
+  key_search_fncobj_3(b)(c)(t)(x)
+ =>
+  key_search_fncobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(",") &
+  key_search_fncobj_2(b)(c)(t)
+ =>
+  key_search_fncobj_1(b)(c)(t);
+
+  key_search_fncobj_1(b)(c)(t)
+ =>
+  key_search_fncobj_0(b)(c)(t);
+
+  key_search_fncobj_0(GLOBAL ? END)(c)(t);
+
+
+/***
+  val
+***/
+
+  GBReadTok(G) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")",G,b)
+ =>
+  val_fncobj_2(b)(c)(t);
+
+  val_fncobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFncTok(t) &
+  bprintf(" <-- val_%",c) &
+  val_fncobj_2(b)(c)(fncobj(t))
+ =>
+  val_fncobj_1(b)(c)(fncobj(t));
+
+  val_fncobj_1(b)(c)(t)
+ =>
+  val_fncobj_0(b)(c)(t);
+
+/***
+  mod
+***/
+
+  GBReadTok(G) &
+  bprintf(")",b,F,c,G)
+ =>
+  mod_fncobj_3(b)(c)(t)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(G) &
+  bprintf(")",a,c,G)
+ =>
+  mod_fncobj_3(GLOBAL ? END)(c)(t)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintFncTok(t) &
+  mod_fncobj_3(b)(c)(fncobj(t))(F)
+ =>
+  mod_fncobj_2(b)(c)(fncobj(t));
+
+  bprintf("  mod_%(",c) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  mod_fncobj_2(b)(c)(t)
+ =>
+  mod_fncobj_1(b)(c)(t);
+
+  bprintf("  mod_%(",c) &
+  mod_fncobj_2(GLOBAL ? END)(c)(t)
+ =>
+  mod_fncobj_1(GLOBAL ? END)(c)(t);
+
+  mod_fncobj_1(b)(c)(t)
+ =>
+  mod_fncobj_0(b)(c)(t);
+
+/***
+  eql
+***/
+
+  GBReadTok(G) &
+  bprintf(")",G,G,b,F,c)
+ =>
+  eql_fncobj_4(b)(c)(fncobj(t))(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(G) &
+  bprintf(")",G,G,a,c)
+ =>
+  eql_fncobj_4(GLOBAL ? END)(c)(fncobj(t))(x)(F);
+
+  GBReadTok(F) &
+  GBPrintFncTok(t) &
+  eql_fncobj_4(b)(c)(fncobj(t))(x)(F)
+ =>
+  eql_fncobj_3(b)(c)(fncobj(t))(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  eql_fncobj_3(b)(c)(t)(x)
+ =>
+  eql_fncobj_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  eql_fncobj_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  eql_fncobj_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%(",c) &
+  eql_fncobj_2(b)(c)(t)
+ =>
+  eql_fncobj_1(b)(c)(t);
+
+  eql_fncobj_1(b)(c)(t)
+ =>
+  eql_fncobj_0(b)(c)(t);
+
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(key_search_,c) &
+  key_search_fncobj_0(b)(c)(t)
+ =>
+  fncobj_ops_key_search(b)(c)(t);
+
+  fncobj_ops_key_search(GLOBAL ? END)(c)(t);
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(val_,c) &
+  val_fncobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(mod_,c) &
+  mod_fncobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(eql_,c) &
+  eql_fncobj_0(b)(c)(t) &
+  fncobj_ops_key_search(b)(c)(t)
+ =>
+  fncobj_ops_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintOptFncObjOpsX IS
+
+#define GBOpofncopTac ((MAP;MODR;WRITE)~;GBOPrintOptFncObjOpsX)~
+
+#define GBOPrintOptFncObjOps(a,b,c) \
+	bcall(GBOpofncopTac: opt_fncobj_0(a)(b)(c))
+
+/***
+  def
+***/
+  
+  bcall(GBOposetopTac: def_setobj_0(b)(c)(t))
+ =>
+  def_fncobj_0(b)(c)(t);
+
+/***
+  rem
+***/
+  
+  bcall(GBOposetopTac: rem_setobj_0(b)(c)(t))
+ =>
+  rem_fncobj_0(b)(c)(t);
+
+/***
+  cre
+***/
+  
+  GBReadTok(G) &
+  bprintf(")",b,F,c,G)
+ =>
+  cre_fncobj_4(b)(c)(fncobj(t))(F);
+
+  GBReadTok(F) &
+  bprintf(",") &
+  GBPrintFncTok(t) &
+  cre_fncobj_4(b)(c)(fncobj(t))(F)
+ =>
+  cre_fncobj_3(b)(c)(fncobj(t));
+
+  bprintf("cre_%(",c) &
+  GBPrintFncTok(b) &
+  cre_fncobj_3(b)(c)(t)
+ =>
+  cre_fncobj_2(b)(c)(t);
+
+  bprintf("  ") &
+  cre_fncobj_2(b)(c)(t)
+ => 
+  cre_fncobj_1(b)(c)(t);
+
+  cre_fncobj_1(b)(c)(t)
+ =>
+  cre_fncobj_0(b)(c)(t);
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(cre_,c) &
+  cre_fncobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(rem_,c) &
+  rem_fncobj_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(def_,c) &
+  def_fncobj_0(b)(c)(t)
+ =>
+  opt_fncobj_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintSetOpsX IS
+
+#define GBOpsetopsTac ((MAP;MODR;WRITE)~;GBOPrintSetOpsX)~
+
+#define GBOPrintSetOps(a,b,c) \
+	bcall(GBOpsetopsTac: set_ops_0(a)(b)(c))
+
+/***
+  key_search
+***/
+
+  GBReadTok(M) &
+  bprintf(")",M,M,b,F,c)
+ =>
+  key_search_set_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadFreshVar(M) &
+  bprintf(")",M,M,b,F,c)
+ =>
+  key_search_set_4(b)(c)(nat(t))(x)(F);
+
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  key_search_set_4(b)(c)(nat(t))(x)(F)
+ =>
+  key_search_set_3(b)(c)(nat(t))(x);
+
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  key_search_set_4(b)(c)(set(t))(x)(F)
+ =>
+  key_search_set_3(b)(c)(set(t))(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(" <-- key_search_%(",c) &
+  key_search_set_3(b)(c)(t)(x)
+ =>
+  key_search_set_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(",") &
+  key_search_set_2(b)(c)(t)
+ =>
+  key_search_set_1(b)(c)(t);
+
+  key_search_set_1(b)(c)(t)
+ =>
+  key_search_set_0(b)(c)(t);
+
+  key_search_set_0(GLOBAL ? END)(c)(t);
+
+/***
+  eql
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(M) &
+  bprintf(")",M,M,b,F,c)
+ =>
+  eql_set_4(b)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(M) &
+  bprintf(")",M,M,a,c)
+ =>
+  eql_set_4(GLOBAL ? END)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadTok(M) &
+  bprintf(")",x,a,c,F)
+ =>
+  eql_set_4(GLOBAL ? END)(c)(t)(x)(F);
+
+  ReadSystemName(a) &
+  GBReadFreshVar(M) &
+  bprintf(")",M,M,b,F,c)
+ =>
+  eql_set_4(b)(c)(nat(t))(x)(F);
+
+  ReadSystemName(a) &
+  GBReadFreshVar(M) &
+  bprintf(")",M,M,a,c)
+ =>
+  eql_set_4(GLOBAL ? END)(c)(nat(t))(x)(F);
+
+  ReadSystemName(a) &
+  GBReadFreshVar(M) &
+  bprintf(")",x,a,c,F)
+ =>
+  eql_set_4(GLOBAL ? END)(c)(nat(t))(x)(F);
+
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  eql_set_4(b)(c)(nat(t))(x)(F)
+ =>
+  eql_set_3(b)(c)(nat(t))(x);
+
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  eql_set_4(b)(c)(set(t))(x)(F)
+ =>
+  eql_set_3(b)(c)(set(t))(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  eql_set_3(b)(c)(t)(x)
+ =>
+  eql_set_2(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  eql_set_3(GLOBAL ? END)(c)(t)(x)
+ =>
+  eql_set_2(GLOBAL ? END)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(" <-- eql_%(",c) &
+  eql_set_2(b)(c)(t)
+ =>
+  eql_set_1(b)(c)(t);
+
+  eql_set_1(b)(c)(t)
+ =>
+  eql_set_0(b)(c)(t);
+
+/***
+  mod
+***/
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  bprintf(")",b)
+ =>
+  mod_set_2(b)(c)(set(t));
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  bprintf(")",a)
+ =>
+  mod_set_2(GLOBAL ? END)(c)(set(t));
+
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  bprintf(")",b)
+ =>
+  mod_set_2(b)(c)(nat(t));
+
+  ReadSystemName(a) &
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  bprintf(")",a)
+ =>
+  mod_set_2(GLOBAL ? END)(c)(nat(t));
+
+  bprintf("  ") &
+  bprintf("mod_%(",c) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  mod_set_2(b)(c)(t)
+ =>
+  mod_set_1(b)(c)(t);
+
+  bprintf("  ") &
+  bprintf("mod_%(",c) &
+  mod_set_2(GLOBAL ? END)(c)(t)
+ =>
+  mod_set_1(GLOBAL ? END)(c)(t);
+
+  mod_set_1(b)(c)(t)
+ =>
+  mod_set_0(b)(c)(t);
+
+/***
+  val
+***/
+
+  GBReadTok(M) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")",M,b)
+ =>
+  val_set_2(b)(c)(t);
+
+  val_set_2(GLOBAL ? END)(c)(t);
+
+  GBReadFreshVar(M) &
+  bprintf("(") &
+  GBPrintFncTok(b) &
+  bprintf(")",M,b)
+ =>
+  val_set_2(b)(c)(nat(t));
+
+  val_set_2(GLOBAL ? END)(c)(nat(t));
+
+  ReadSystemName(a) &
+  bprintf("  ") &
+  GBPrintMbr(t) &
+  bprintf(" <-- val_%",c) &
+  val_set_2(b)(c)(set(t))
+ =>
+  val_set_1(b)(c)(set(t));
+
+  ReadSystemName(a) &
+  bprintf("  ") &
+  GBPrintFreshVar(nat) &
+  bprintf(" <-- val_%",c) &
+  val_set_2(b)(c)(nat(t))
+ =>
+  val_set_1(b)(c)(nat(t));
+
+  val_set_1(b)(c)(t)
+ =>
+  val_set_0(b)(c)(t);
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(key_search_,c) &
+  key_search_set_0(b)(c)(t)
+ =>
+  set_ops_key_search(b)(c)(t);
+
+  set_ops_key_search(GLOBAL ? END)(c)(t);
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(val_,c) &
+  val_set_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(mod_,c) &
+  mod_set_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(eql_,c) &
+  eql_set_0(b)(c)(t) &
+  set_ops_key_search(b)(c)(t)
+ =>
+  set_ops_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintOptSetOpsX IS
+
+#define GBOposetopsTac ((MAP;MODR;WRITE)~;GBOPrintOptSetOpsX)~
+
+#define GBOPrintOptSetOps(a,b,c) \
+	bcall(GBOposetopsTac: opt_set_0(a)(b)(c))
+
+/***
+  cre
+***/
+  
+  GBReadTok(M) &
+  bprintf(")",b,F,c,M)
+ =>
+  cre_set_3(b)(c)(t)(F);
+
+  GBReadFreshVar(M) &
+  bprintf(")",b,F,c,M)
+ =>
+  cre_set_3(b)(c)(nat(t))(F);
+
+  GBReadTok(F) &
+  GBPrintMbr(t) &
+  cre_set_3(b)(c)(set(t))(F)
+ =>
+  cre_set_2(b)(c)(set(t));
+
+  GBReadTok(F) &
+  GBPrintFreshVar(nat) &
+  cre_set_3(b)(c)(nat(t))(F)
+ =>
+  cre_set_2(b)(c)(nat(t));
+
+  bprintf("  cre_%(",c) &
+  GBPrintFncTok(b) &
+  bprintf(",") &
+  cre_set_2(b)(c)(t)
+ =>
+  cre_set_1(b)(c)(t);
+
+  cre_set_1(b)(c)(t)
+ =>
+  cre_set_0(b)(c)(t);
+
+/***
+  def
+***/
+  
+  GBReadTok(F) &
+  bprintf("%,%_idx)",F,c)
+ =>
+  def_set_3(b)(c)(t);
+
+  GBReadFreshVar(x) &
+  bprintf(" <-- def_%(",c) &
+  GBPrintFncTok(b) &
+  bprintf(")",x,b)
+ => 
+  def_set_2(b)(c)(t);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  def_set_2(b)(c)(t)
+ => 
+  def_set_1(b)(c)(t);
+
+  def_set_1(b)(c)(t)
+ =>
+  def_set_0(b)(c)(t);
+
+/***
+  rem
+***/
+  
+  bprintf("  rem_%(",c) &
+  GBPrintFncTok(b) &
+  bprintf(")",b)
+ => 
+  rem_set_1(b)(c)(t);
+
+  rem_set_1(b)(c)(t)
+ =>
+  rem_set_0(b)(c)(t);
+
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(cre_,c) &
+  cre_set_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(rem_,c) &
+  rem_set_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(def_,c) &
+  def_set_0(b)(c)(t)
+ =>
+  opt_set_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintNatOpsX IS
+
+#define GBOpnatopTac ((MAP;MODR;WRITE)~;GBOPrintNatOpsX)~
+
+#define GBOPrintNatOps(a,b,c) \
+	bcall(GBOpnatopTac: nat_ops_0(a)(b)(c))
+
+/***
+  key_search
+***/
+
+  bcall(GBOpsetopsTac: key_search_set_0(b)(c)(t))
+ =>
+  key_search_nat_0(b)(c)(t);
+
+/***
+  eql
+***/
+
+  bcall(GBOpsetopsTac: eql_set_0(b)(c)(t))
+ =>
+  eql_nat_0(b)(c)(t);
+
+/***
+  mod
+***/
+
+  bcall(GBOpsetopsTac: mod_set_0(b)(c)(t))
+ =>
+  mod_nat_0(b)(c)(t);
+
+/***
+  val
+***/
+
+  bcall(GBOpsetopsTac: val_set_0(b)(c)(t))
+ =>
+  val_nat_0(b)(c)(t);
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(val_,c) &
+  val_nat_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(mod_,c) &
+  mod_nat_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(eql_,c) &
+  eql_nat_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(key_search_,c) &
+  key_search_nat_0(b)(c)(t)
+ =>
+  nat_ops_0(b)(c)(t);
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(val_,c) &
+  val_nat_0(GLOBAL ? END)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(mod_,c) &
+  mod_nat_0(GLOBAL ? END)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(eql_,c) &
+  eql_nat_0(GLOBAL ? END)(c)(t)
+ =>
+  nat_ops_0(GLOBAL ? END)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintOptNatOpsX IS
+
+#define GBOponatopTac ((MAP;MODR;WRITE)~;GBOPrintOptNatOpsX)~
+
+#define GBOPrintOptNatOps(a,b,c) \
+	bcall(GBOponatopTac: opt_nat_0(a)(b)(c))
+
+/***
+  def
+***/
+  
+  bcall(GBOposetopsTac: def_set_0(b)(c)(t))
+ =>
+  def_nat_0(b)(c)(t);
+
+/***
+  rem
+***/
+  
+  bcall(GBOposetopsTac: rem_set_0(b)(c)(t))
+ =>
+  rem_nat_0(b)(c)(t);
+
+/***
+  cre
+***/
+  
+  bcall(GBOposetopsTac: cre_set_0(b)(c)(t))
+ =>
+  cre_nat_0(b)(c)(t);
+
+
+
+
+
+
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(cre_,c) &
+  cre_nat_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(rem_,c) &
+  rem_nat_0(b)(c)(t) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(def_,c) &
+  def_nat_0(b)(c)(t)
+ =>
+  opt_nat_0(b)(c)(t);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintBaseOpsX IS
+
+#define GBOpbopTac ((MAP;MODR;CATL;WRITE)~;GBOPrintBaseOpsX)~
+
+#define GBOPrintBaseOps(a,b)  bcall(GBOpbopTac: base_ops_0(a)(b))
+
+  ?;?;?;
+
+  ResetGBChkSupportedOpSC &
+  GBOPrintOpenComment &
+  bprintf(bcatl("  Operations for Base ",b)) &
+  GBOPrintCloseComment
+ =>
+  prt_comment(b);
+
+/***
+  printID_
+***/
+
+  bprintf("  ") &
+  bprintf("printID_BaseObj_%(",b) &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  printID_0(b);
+
+/***
+  print_
+***/
+
+  bprintf("  ") &
+  bprintf("print_BaseObj_%(",b) &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  print_0(b);
+
+/***
+  any_
+***/
+
+  bprintf(" <-- any_%",b)
+ =>
+  any_1(b);
+
+  bprintf("  ") &
+  GBPrintFncTok(b) &
+  any_1(b)
+ =>
+  any_0(b);
+
+/***
+  nbr
+***/
+
+  bprintf("% <-- nbr_%",s,b,v)
+  =>
+  nbr_5(b)(s,t,u,v);
+
+  GBReadTok(x) &
+  nbr_5(b)(X,x)
+ =>
+  nbr_4(b)(X);
+
+  GBReadFreshVar(x) &
+  GBGetFncTok(b) &
+  nbr_4(b)(X,x)
+ =>
+  nbr_3(b)(X);
+
+  GBReadFreshVar(x) &
+  GBGetFreshVar(loc) &
+  nbr_3(b)(X,x)
+ =>
+  nbr_2(b)(X);
+
+  GBReadFreshVar(x) &
+  GBGetFreshVar(count) &
+  nbr_2(b)(x)
+ =>
+  nbr_1(b);
+
+  bprintf("  ") &
+  GBGetFreshVar(tot) &
+  nbr_1(b)
+ =>
+  nbr_0(b);
+
+/***
+  vld
+***/
+
+
+  GBReadFreshVar(x) &
+  bprintf("% <-- vld_%(",x,b) &
+  GBPrintFncTok(b) &
+  bprintf(")",x,b)
+ =>
+  vld_1(b);
+
+  bprintf("  ") &
+  GBGetFreshVar(rep) &
+  vld_1(b)
+ =>
+  vld_0(b);
+
+/***
+  next
+***/
+
+
+  GBReadTok(y) &
+  bprintf("%_0,%_0)",x,y,x,y,b,x,y)
+ =>
+  next_2(b)(x);
+
+  GBReadFreshVar(x) &
+  bprintf("%,",x) &
+  GBPrintFncTok(b) &
+  bprintf(" <-- next_%(",b,x) &
+  next_2(b)(x)
+ =>
+  next_1(b);
+
+  bprintf("  ") &
+  GBGetFreshVar(loc) &
+  next_1(b)
+ =>
+  next_0(b);
+
+/***
+  first
+***/
+
+  GBReadFreshVar(x) &
+  bprintf("%,",x) &
+  GBPrintFncTok(b) &
+  bprintf(" <-- first_%",b,x)
+ =>
+  first_1(b);
+
+  bprintf("  ") &
+  GBGetFreshVar(loc) &
+  first_1(b)
+ =>
+  first_0(b);
+
+/***
+  kill
+***/
+
+
+  brule(GBConstantsStoX.I,(1|b(M))) &
+  brule(GBConstantsStoX.J,(0|b(O))) &
+  bprintf("  ") &
+  bprintf("kill_%(",b) &
+  GBPrintFncTok(b) &
+  bprintf(")")
+ =>
+  kill_0(b);
+
+
+/***
+  make
+***/
+
+  bprintf(",%",i)
+ =>
+  make_prt_param((I:i:t),m,n);
+
+  bprintf("%",i)
+ =>
+  make_prt_param((I:i:t),1,n);
+
+  GBReadRenamedStructurePRE(P) &
+  bprintf("(") &
+  make_prt_param bnmap P &
+  bprintf(")")
+ =>
+  make_4(b)(C)(x)(F);
+
+  GBReadRenamedStructurePRE(?)
+ =>
+  make_4(b)(C)(x)(F);
+
+  make_4(b)(?)(x)(F);
+
+  GBReadTok(F) &
+  GBGetStructurePREANY(b,C) &
+  make_4(b)(C)(x)(F)
+ =>
+  make_3(b)(C)(x);
+
+  GBReadTok(F) &
+  make_4(b)(?)(x)(F)
+ =>
+  make_3(b)(?)(x);
+
+  GBReadFreshVar(x) &
+  GBPrintFncTok(b) &
+  bprintf(" <-- make_%",b) &
+  make_3(b)(C)(x)
+ =>
+  make_2(b)(C);
+
+  bprintf("  ") &
+  GBPrintFreshVar(rep) &
+  bprintf(",") &
+  make_2(b)(C)
+ =>
+  make_1(b)(C);
+
+  bmodr(GBMPrintBaseOpsX.3,?) &
+  make_1(b)(C)
+ =>
+  make_0(b)(C);
+
+/***
+  stats
+***/
+
+  brule(GBConstantsStoX.I,(1|b(M))) &
+  brule(GBConstantsStoX.J,(0|b(O))) &
+  bprintf("  used_obj,max_obj <-- stats_%",b)
+ =>
+  stats_0(b);
+
+
+
+  prt_comment(b) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(stats_,b) &
+  stats_0(b) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(make_,b) &
+  make_0(b)(A) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(kill_,b) &
+  kill_0(b) &
+  GBEmptyAccumulatedVariables &
+SetCommentOutOp &
+  GBCheckSupportedOp(printID_BaseObj_,b) &
+  printID_0(b) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(print_BaseObj_,b) &
+  print_0(b) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(first_,b) &
+  first_0(b) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(next_,b) &
+  next_0(b) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(vld_,b) &
+  vld_0(b) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(nbr_,b) &
+  nbr_0(b) &
+  GBEmptyAccumulatedVariables &
+  GBCheckSupportedOp(any_,b) &
+  any_0(b)
+ =>
+  base_ops_0(b)(A);
+
+  GBEmptyAccumulatedVariables &
+  ReadSystemName(a) &
+  ResetGBChkSupportedOpSC &
+  GBOPrintOpenComment &
+  bprintf(bcatl("  Operation for Global Variables")) &
+  GBOPrintCloseComment &
+  GBCheckSupportedOp(print_Globals_,a) &
+  bprintf("  ") &
+  bprintf("print_Globals_%",a)
+ =>
+  base_ops_0(GLOBAL ? END)(A);
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOOpsX IS
+
+#define GBOpopsTac ((ARI~;MODR~;CATL;WRITE;MAP)~;GBOOpsX)~
+
+#define GBOPrintOps  bcall(GBOpopsTac: prt_ops_0)
+
+  ?; /* 1. curr base name */
+
+  ?; /* 2. mand att */
+
+  ?; /* 3. opt att */
+
+  ?; /* 4. mand fstr att of curr base */
+
+  ?; /* 5. opt fstr att of curr base */
+
+  ?; /* 6. mand fstr att of others */
+
+  ?; /* 7. opt fstr att of others */
+
+
+  ResetGBChkSupportedOpSC &
+  GBOPrintOpenComment &
+  bprintf(bcatl("  Operations for Base ",b," Variable: ",c)) &
+  GBOPrintCloseComment
+ =>
+  prt_comment(b)(c);
+
+  ResetGBChkSupportedOpSC &
+  GBOPrintOpenComment &
+  bprintf(bcatl("  Operations for Global Variable: ",c)) &
+  GBOPrintCloseComment
+ =>
+  prt_comment(GLOBAL ? END)(c);
+
+
+  prt_comment(b)(c) &
+  GBOPrintSetOps(b,c,set(t))
+ =>
+  prt_fld_4(b)(1)(c)(set(t));
+
+  prt_comment(b)(c) &
+  GBOPrintOptSetOps(b,c,set(t)) &
+  GBOPrintSetOps(b,c,set(t))
+ =>
+  prt_fld_4(b)(0)(c)(set(t));
+
+  prt_comment(b)(c) &
+  GBOPrintNatOps(b,c,nat(t))
+ =>
+  prt_fld_4(b)(1)(c)(nat(t));
+
+  prt_comment(b)(c) &
+  GBOPrintOptNatOps(b,c,nat(t)) &
+  GBOPrintNatOps(b,c,nat(t))
+ =>
+  prt_fld_4(b)(0)(c)(nat(t));
+
+  prt_comment(b)(c) &
+  GBOPrintSetObjOps(b,c,setobj(t))
+ =>
+  prt_fld_4(b)(1)(c)(setobj(t));
+
+  prt_comment(b)(c) &
+  GBOPrintOptSetObjOps(b,c,setobj(t)) &
+  GBOPrintSetObjOps(b,c,setobj(t))
+ =>
+  prt_fld_4(b)(0)(c)(setobj(t));
+
+  prt_comment(b)(c) &
+  GBOPrintSeqObjOps(b,c,seqobj(t))
+ =>
+  prt_fld_4(b)(1)(c)(seqobj(t));
+
+  prt_comment(b)(c) &
+  GBOPrintOptSeqObjOps(b,c,seqobj(t)) &
+  GBOPrintSeqObjOps(b,c,seqobj(t))
+ =>
+  prt_fld_4(b)(0)(c)(seqobj(t));
+
+  prt_comment(b)(c) &
+  GBOPrintFStrObjOps(b,c,fstrobj(t))
+ =>
+  prt_fld_4(b)(1)(c)(fstrobj(t));
+
+  prt_comment(b)(c) &
+  GBOPrintStrObjOps(b,c,strobj(t))
+ =>
+  prt_fld_4(b)(1)(c)(strobj(t));
+
+  prt_comment(b)(c) &
+  GBOPrintOptStrObjOps(b,c,strobj(t)) &
+  GBOPrintStrObjOps(b,c,strobj(t))
+ =>
+  prt_fld_4(b)(0)(c)(strobj(t));
+
+  prt_comment(b)(c) &
+  GBOPrintFncObjOps(b,c,fncobj(t))
+ =>
+  prt_fld_4(b)(1)(c)(fncobj(t));
+
+  prt_comment(b)(c) &
+  GBOPrintOptFncObjOps(b,c,fncobj(t)) &
+  GBOPrintFncObjOps(b,c,fncobj(t))
+ =>
+  prt_fld_4(b)(0)(c)(fncobj(t));
+
+  prt_fld_3(b)(N)(?);
+
+  brule(GBConstantsTypeStoX.J,b(T)) &
+  bsearch((c|t),T,U) &
+  prt_fld_4(b)(N)(c)(t)
+ =>
+  prt_fld_3(b)(N)(c);
+
+  prt_fld_3(b)(N)(c)
+ =>
+  prt_fld_2(b)(N)(c);
+
+  prt_fld_2(b)(N)(C) &
+  prt_fld_3(b)(N)(c)
+ =>
+  prt_fld_2(b)(N)(C;c);
+
+  brule(GBOOpsX.2,(S|A)) &
+  prt_fld_2(b)(S)(A) &
+  brule(GBOOpsX.3,(T|B)) &
+  prt_fld_2(b)(T)(B)
+ =>
+  prt_fld_1(b);
+
+
+
+
+  brule(GBOOpsX.7,X) &
+  bmodr(GBOOpsX.7,(X,b(i)))
+ =>
+  prt_ops_oth_fstr_3(0)(b(i));
+
+  brule(GBOOpsX.6,X) &
+  bmodr(GBOOpsX.6,(X,b(i)))
+ =>
+  prt_ops_oth_fstr_3(1)(b(i));
+
+  prt_ops_oth_fstr_2(b,N,i);
+
+  brule(GBConstantsTypeStoX.I,b(X)) &
+  bsearch((i|fstrobj(x)),X,Y) &
+  prt_ops_oth_fstr_3(N)(b(i))
+ =>
+  prt_ops_oth_fstr_2(b,N,i);
+
+  prt_ops_oth_fstr_1(?);   /* (GLOBAL ? END) - copy to GLOBAL fails here */
+
+  brule(GBConstantsStoX.M,(1|b(A))) &
+  brule(GBConstantsStoX.N,(0|b(B))) &
+  prt_ops_oth_fstr_2(b,1) bsmap (A) &
+  prt_ops_oth_fstr_2(b,0) bsmap (B)
+ =>
+  prt_ops_oth_fstr_1(b);
+
+  ReadBaseNames(B) &
+  bsearch(b,B,C) &
+  prt_ops_oth_fstr_1 bsmap C
+ =>
+  prt_ops_oth_fstr_0(b);
+
+
+  brule(GBOOpsX.5,X) &
+  bmodr(GBOOpsX.5,(X,i))
+ =>
+  prt_ops_fstr_2(0)(i);
+
+  brule(GBOOpsX.4,X) &
+  bmodr(GBOOpsX.4,(X,i))
+ =>
+  prt_ops_fstr_2(1)(i);
+
+  prt_ops_fstr_1(b,N,i);
+
+  brule(GBConstantsTypeStoX.I,b(X)) &
+  bsearch((i|fstrobj(x)),X,Y) &
+  prt_ops_fstr_2(N)(i)
+ =>
+  prt_ops_fstr_1(b,N,i);
+
+  brule(GBConstantsStoX.M,(1|b(A))) &
+  brule(GBConstantsStoX.N,(0|b(B))) &
+  prt_ops_fstr_1(b,1) bsmap (A) &
+  prt_ops_fstr_1(b,0) bsmap (B)
+ =>
+  prt_ops_fstr_0(b);
+
+
+  brule(GBOOpsX.N,(1|A)) &
+  GBOPrintBaseOps(b,A) &
+  prt_fld_1(b)
+ =>
+  prt_ops_2(b);
+
+  bprintf(" */\n\n  ?  /") &
+  bprintf("* (added for parsing reasons) *") &
+  bprintf("/\n")
+ =>
+  prt_finalise;
+
+  brule(GBOCheckSupportedX.1,?)    /* prev op not commented out */
+ =>
+  prt_finalise;
+
+  prt_ops_1(M)(N);
+
+  brule(GBConstantsStoX.M,(S|b(A))) &
+  brule(GBConstantsStoX.N,(T|b(B))) &
+  bmodr(GBOOpsX.1,b) &
+  bmodr(GBOOpsX.2,(S|A)) &
+  bmodr(GBOOpsX.3,(T|B)) &
+  bmodr(GBOOpsX.4,?) &
+  bmodr(GBOOpsX.5,?) &
+  bmodr(GBOOpsX.6,?) &
+  bmodr(GBOOpsX.7,?) &
+  prt_ops_fstr_0(b) &
+  prt_ops_oth_fstr_0(b) &
+  WriteDot &
+  prt_ops_2(b) &
+  prt_ops_1(M+2)(N+2)
+ =>
+  prt_ops_1(M)(N);
+
+  prt_ops_1(1)(2) &
+  prt_finalise
+ =>
+  prt_ops_0;
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOPrintSavRstRelX IS
+
+#define GBOPrintSavRstRel \
+  bcall(((MODR;WRITE)~;GBOPrintSavRstRelX)~: prt_sav_rst_rel_0)
+
+  ?; /* 0=> comma,sc not printed */
+
+  ?; /* 1=> system_stats_param_ printed */
+
+
+
+  bprintf("  ?")
+ =>
+  __bprintf(a);
+
+  brule(GBOPrintSavRstRelX.2,1) &
+  bprintf(a)
+ =>
+  __bprintf(a);
+
+
+
+  bprintf(",\n")
+ =>
+  chk_comma;
+
+  brule(GBOPrintSavRstRelX.1,0) &
+  bmodr(GBOPrintSavRstRelX.1,1)
+ =>
+  chk_comma;
+
+  bprintf(a)
+ =>
+  _bprintf(a);
+
+
+  system_stats_param_str;
+
+  STRINGFlagset &
+  chk_comma &
+  bmodr(GBOPrintSavRstRelX.2,1) &
+  _bprintf("  used_strmem,\n") &
+  _bprintf("  max_strmem,\n") &
+  _bprintf("  used_strobj,\n") &
+  _bprintf("  max_strobj")
+ =>
+  system_stats_param_str;
+
+
+  system_stats_param_set;
+
+  SETFlagset &
+  chk_comma &
+  bmodr(GBOPrintSavRstRelX.2,1) &
+  _bprintf("  used_setmem,\n") &
+  _bprintf("  max_setmem,\n") &
+  _bprintf("  used_setobj,\n") &
+  _bprintf("  max_setobj")
+ =>
+  system_stats_param_set;
+
+
+  system_stats_param_seq;
+
+  SEQFlagset &
+  chk_comma &
+  bmodr(GBOPrintSavRstRelX.2,1) &
+  _bprintf("  used_seqmem,\n") &
+  _bprintf("  max_seqmem,\n") &
+  _bprintf("  used_seqobj,\n") &
+  _bprintf("  max_seqobj")
+ =>
+  system_stats_param_seq;
+
+
+  ReadSystemName(a) &
+  ResetGBChkSupportedOpSC &
+  GBOPrintOpenComment &
+  bprintf("  Save/restore - host byte order") &
+  GBOPrintCloseComment &
+  GBCheckSupportedOp(save_,a) &
+  bprintf("  rep <-- save_%",a) &
+  GBCheckSupportedOp(restore_,a) &
+  bprintf("  rep <-- restore_%",a) &
+  ResetGBChkSupportedOpSC &
+  GBOPrintOpenComment &
+  bprintf("  Save/restore - network byte order") &
+  GBOPrintCloseComment &
+  GBCheckSupportedOp(save_n_,a) &
+  bprintf("  rep <-- save_n_%",a) &
+  GBCheckSupportedOp(restore_n_,a) &
+  bprintf("  rep <-- restore_n_%",a) &
+  ResetGBChkSupportedOpSC &
+  GBOPrintOpenComment &
+  bprintf("  Statistics") &
+  GBOPrintCloseComment &
+  GBCheckSupportedOp(system_stats_,a) &
+  bmodr(GBOPrintSavRstRelX.1,0) &
+  bmodr(GBOPrintSavRstRelX.2,0) &
+  system_stats_param_str &
+  system_stats_param_seq &
+  system_stats_param_set &
+  __bprintf("\n    <--\n  system_stats_%",a)
+ =>
+  prt_sav_rst_rel_0;
+
+  GenBaseErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GBOLoadSupportsX IS
+
+#define GBOLoadSupports bcall(((MAP;CATL;FLAT;MODR)~;GBOLoadSupportsX)~:ls_0)
+
+  ?;
+
+  ls_4(X);
+
+  ls_4(X)
+ =>
+  ls_4(X JOK2 Y);
+
+  ReadSupported(F) &
+  ModifySupported(bflat(F;P)) &
+  ls_4(X)
+ =>
+  ls_4(X PROMOTES P);
+
+  ReadSupported(F) &
+  ModifySupported(bflat(F;I)) &
+  ls_4(X)
+ =>
+  ls_4(X INITIALISATION I);
+
+  ReadSupported(F) &
+  ModifySupported(bflat(F;O)) &
+  ls_4(X)
+ =>
+  ls_4(X OPERATIONS O);
+
+  ReadSupported(F) &
+  ModifySupported(bflat(F;O)) &
+  ls_4(X)
+ =>
+  ls_4(X DEFINITIONS O);
+
+  ls_4(X)
+ =>
+  ls_3(IMPLEMENTATION X END);
+
+  ls_4(X)
+ =>
+  ls_3(REFINEMENT X END);
+
+  ls_4(X)
+ =>
+  ls_3(MACHINE X END);
+
+  bstring(Z) &
+  WarnNotParse(Z)
+ =>
+  ls_2(Z);
+
+  bstring(Z) &
+  bget(Z,X) &
+  ls_3(X)
+ =>
+  ls_2(Z);
+
+/*
+  WarnSupportsNotConfigured(a)
+ =>
+  ls_1(a);
+*/
+  ErrorSupportsNotConfigured(a) &
+  SetGenBaseError
+ =>
+  ls_1(a);
+
+  IsCfg(a.mch) &
+  WriteDot &
+  ls_2(bcatl("CFG/",a,".",mch))
+ =>
+  ls_1(a);
+
+  IsCfg(a.ref) &
+  WriteDot &
+  ls_2(bcatl("CFG/",a,".",ref))
+ =>
+  ls_1(a);
+
+  IsCfg(a.imp) &
+  WriteDot &
+  ls_2(bcatl("CFG/",a,".",imp))
+ =>
+  ls_1(a);
+
+  ls_1(?);
+
+  ReadSupports(S) &
+  ls_1 bsmap S
+ =>
+  ls_0
+
+END
+
+&
+
+THEORY GenBaseOpsX IS
+
+  chk_error;
+
+  GenBaseErrorFlagged &
+  OfferGenBaseFailureOptions
+ =>
+  chk_error;
+
+/***
+PrintTHEORY(GBConstantsStoX)&
+PrintTHEORY(GBConstantsTypeStoX)&
+PrintTHEORY(GBSETTypeStoX)&
+PrintTHEORY(GBNATTypeStoX)&
+PrintTHEORY(GBSETOBJTypeStoX)&
+PrintTHEORY(GBSEQOBJTypeStoX)&
+PrintTHEORY(GBFSTROBJTypeStoX)&
+PrintTHEORY(GBSTROBJTypeStoX)&
+PrintTHEORY(GBTypeStoX)&
+PrintTHEORYUpTo(GenBaseParseX,11)
+=>
+junk;
+***/
+  WriteDot &
+  GBOLoadSupports &
+  GBOPrintHeader &
+  GBOPrintSavRstRel &
+  GBOPrintOps &
+  GBOPrintFooter &
+  chk_error
+/***
+&junk
+***/
+ =>
+  gbo_0
+
+END

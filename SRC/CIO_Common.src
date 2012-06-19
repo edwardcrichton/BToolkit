@@ -1,0 +1,1234 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define print_database \
+    PrintTHEORYUpTo(CreOpsX,16) & \
+    PrintTHEORY(StringDefX) & \
+    PrintTHEORYUpTo(PrtMotifX,9) & \
+    PrintTHEORY(TypeConfusionRewritesX)
+
+#define print_type_info \
+    HERE(("ImpTypeStore")) & \
+    PrintRule(CreOpsX.12) & \
+    HERE(("SetsStore")) & \
+    PrintRule(CreOpsX.9) & \
+    HERE(("ParamsStore")) & \
+    PrintRule(CheckParamsX.1) & \
+    HERE(("ImpSeenPropsStore")) & \
+    PrintRule(CreOpsX.15) & \
+    HERE(("SetPropsStore")) & \
+    PrintRule(CreOpsX.3) & \
+    HERE(("EnumStore")) & \
+    PrintRule(CreOpsX.10)
+
+
+#define CIOTac  ((NEWV~;CATL~;MAP;WRITE;FLAT;MODR;SHELL)~;CIOFromUserX)~
+
+#define CIODirect(x)  bcall(CIOTac: cio_2(x))
+
+#define CIOMTac  ((NEWV~;CATL~;MAP;WRITE;FLAT;MODR;SHELL)~;CIOFromUserMX)~
+
+#define CIODirectM(x) bcall(CIOMTac: cio_2M(x))
+
+
+#define StoreTypeConfusion(x) \
+          bcall(((RULE;CATL;MAP;MODR)~;StoreTypeConfusionX)~:stc(x))
+
+
+#define SetCurrentConstruct(x) bcall(MODR:bmodr(CIOFromUserX.1,x))
+
+#define GetCurrentConstruct(x) brule(CIOFromUserX.1,x)
+
+
+#define InformOpsClauseReqd \
+  Writef(("\n\n    No OPERATIONS clause\n"))
+
+#define InformKeywordNotRecognized(x) \
+  Writef(("\n\n    Keyword not recognized:\n %",bsrv x berv))
+
+#define InformSyntaxError(x) \
+  Writef(("\n\n    Syntax error: %\n",bsrv x berv))
+
+#define InformWrongNumImportedParams(w,x,y) \
+  Writef(("\n\n    Wrong number of parameters for %:\n      %\n      %\n",k,x,y))
+
+#define InformWrongNumParams(x,y) \
+  Writef(("\n\n    Wrong number of parameters:\n      %\n      %\n",x,y))
+
+#define InformNoParametersRequired(x) \
+  Writef(("\n\n    No parameters required (%)\n",bsrv x berv))
+
+#define InformParametersRequired \
+  Writef(("\n\n    Parameters required\n"))
+
+#define InformParamsError(x) \
+  Writef(("\n\n    Parameter discrepancy: %\n",bsrv x berv))
+
+#define InformCantSetParamsError(x,y) \
+  Writef(("\n\n    Parameter % should be a non-empty interval (%)\n",bsrv x berv,bsrv y berv))
+
+#define InformNotSetParamsError(x) \
+  Writef(("\n\n    Parameter % is not set\n",bsrv x berv))
+
+#define InformNumParamsError(x,y) \
+  Writef(("\n\n    Parameter % should be set to a number (%)\n",bsrv x berv,bsrv y berv))
+
+#define InformOPERATIONSSyntaxError(x) \
+  Writef(("\n\n    OPERATIONS syntax error: %\n",bsrv x berv))
+
+#define InformMchNotConfigured(x) \
+  Writef(("\n\n    % is not configured\n",bsrv x berv))
+
+#define InformNotAnalysed(x) \
+  Writef(("\n\n    % is not analysed\n",bsrv x berv))
+
+#define InformNoImplementation(x) \
+  Writef(("\n\n    % has no (analysed) IMPLEMENTATION\n",bsrv x berv))
+
+#define InformSubsidNoImplementation(x) \
+  Writef(("\n\n    Subsidiary MACHINE % has no (analysed) IMPLEMENTATION\n",bsrv x berv))
+
+#define Informbasicio(x,y) \
+  Writef(("\n\n    % is imported by %\n\n  Can't generate %\n",bsrv basic_io berv,x,y))
+
+#define InformDuplicateOpName(x) \
+  Writef(("\n\n    Duplication in OPERATIONS clause %\n",bsrv x berv))
+
+#define InformNotOperationName(m,o) \
+  Writef(("\n\n    % is not an operation name of %\n",bsrv o berv,m))
+
+#define InformNameNotMatchFileName(s,t) \
+  Writef(("\n\n    INTERFACE name % does not match filename %\n",bsrv s berv,bsrv t berv)) 
+
+#define InformCantGenerateForType(n,i,T) \
+  Writef(("\n\n    Can't generate basic_io SLIB implementation for %\n    Parameter % has non-SLIB type % ",bsrv n berv,bsrv i berv,bsrv T berv)) 
+
+#define WarningDefaultForPOW(n,i,T) \
+  Writef(("\n    Warning: Using default Abstract Token Type for parameter\n             % of operation % - POW(%) ",i,n,T)) 
+
+#define WarningDefaultForseq(n,i,T) \
+  Writef(("\n    Warning: Using default Abstract Token Type for parameter\n             % of operation % - seq(%) ",i,n,T)) 
+
+#define WarningSeeNotIpt(x) \
+  Writef(("\n    Warning: % is SEEN but not IMPORTED ",x)) 
+
+#define InformParamNotSet(x) \
+  Writef(("\n\n    Parameter of IMPORTED machine % not set",bsrv x berv)) 
+
+
+#define ModifyImportedCIOList(x)   bcall(MODR:bmodr(CIOParseX.3,x))
+#define ReadImportedCIOList(x)     brule(CIOParseX.3,x)
+
+
+#define ClearScalarFlag      bcall(MODR:bmodr(CheckParamsX.2,0))
+#define SetScalarFlag        bcall(MODR:bmodr(CheckParamsX.2,1))
+#define ScalarFlagNotSet     brule(CheckParamsX.2,0)
+#define ScalarFlagSet        brule(CheckParamsX.2,1)
+
+
+
+#define ActualParamsStore          CheckParamsX.1
+#define ModrActualParamsStore(x)   bmodr(ActualParamsStore,x)
+#define ReadActualParamsStore(x)   brule(ActualParamsStore,x)
+
+
+#define SetCurrentConstruct(x) bcall(MODR:bmodr(CIOFromUserX.1,x))
+#define GetCurrentConstruct(x) brule(CIOFromUserX.1,x)
+
+#define SetConstructImp(x) bcall(MODR:bmodr(CIOFromUserX.2,x))
+#define GetConstructImp(x) brule(CIOFromUserX.2,x)
+
+#define RecImportedStore        (CIOFromUserX.3)
+#define ReadRecImportedStore(x) brule(RecImportedStore,x)
+#define ModrRecImportedStore(x) bmodr(RecImportedStore,x)
+
+#define SeenNotImportedStore        (CIOFromUserX.4)
+#define ReadSeenNotImportedStore(x) brule(SeenNotImportedStore,x)
+#define ModrSeenNotImportedStore(x) bmodr(SeenNotImportedStore,x)
+
+#define LinkListStore        (CIOFromUserX.5)
+#define ReadLinkListStore(x) brule(LinkListStore,x)
+#define ModrLinkListStore(x) bmodr(LinkListStore,x)
+
+
+
+THEORY CIOErrorX IS 0 END &
+
+#define ClearCIOError bcall(MODR: bmodr(CIOErrorX.1,0))
+
+#define SetCIOError   bcall(MODR: bmodr(CIOErrorX.1,1))
+
+
+
+THEORY CIOErrorX IS 0 END &
+
+THEORY OfferCIOFailureOptionsX IS
+
+#define OfferCIOFailureOptions \
+	bcall(OfferCIOFailureOptionsX: failure_options)
+
+#define OfferCIOFailureOptionsM \
+	bcall(OfferCIOFailureOptionsX: failure_optionsM)
+
+#define CIOMiniRemakeFlagStore    (OfferCIOFailureOptionsX.1)
+#define CIOMiniRemakeFlagSet      brule(CIOMiniRemakeFlagStore,0)
+#define CIONoMiniRemakeFlagSet    brule(CIOMiniRemakeFlagStore,1)
+#define SetCIOMiniRemakeFlag      bmodr(CIOMiniRemakeFlagStore,0)
+#define SetCIONoMiniRemakeFlag    bmodr(CIOMiniRemakeFlagStore,1)
+
+  0;
+
+  ?;
+
+  brule(CIOFromUserX.1,a.b) &
+  ModifyCurrentJob(((a.b):BT_CIO_CIOM:0)) &
+  GetJobs(X) &
+  ModifyJobs((X;(a.b:BT_MINI_RMK_M:0))) &
+  LoadToolkit(1)
+ =>
+  failure_optionsM;
+
+  brule(CIOFromUserX.1,a.b) &
+  ModifyCurrentJob(((a.b):BT_CIO_CIOM:0)) &
+  GetJobs(X) &
+  ModifyJobs((X;(a.b:BT_MINI_RMK_M:0))) &
+  LoadToolkit(1)
+ =>
+  failure_options;
+
+  CIONoMiniRemakeFlagSet
+ =>
+  x
+
+END
+
+&
+
+THEORY StringDefX END &
+
+THEORY NumStringNX IS 1 END &
+
+THEORY StringNX IS
+
+string1;string2;string3;string4;string5;string6;string7;string8;string9;string10;string11;string12;string13;string14;string15;string16;string17;string18;string19;string20;string21;string22;string23;string24;string25;string26;string27;string28;string29;string30;string31;string32;string33;string34;string35;string36;string37;string38;string39;string40;string41;string42;string43;string44;string45;string46;string47;string48;string49;string50
+
+END
+
+&
+
+THEORY StoreParamsX IS
+
+#define sto_params_tac     ((REV;MODR)~;StoreParamsX)~
+
+#define StoreParams(x)     bcall(sto_params_tac: sto_params_0(x))
+
+
+#define ParamsStore          StoreParamsX.1
+#define ModrParamsStore(x)   bmodr(ParamsStore,x)
+#define ReadParamsStore(x)   brule(ParamsStore,x)
+
+  ModrParamsStore((x,?))
+ =>
+  sto_params_0(x);
+
+  ModrParamsStore(?)
+ =>
+  sto_params_0(?)
+
+END
+
+&
+
+THEORY CreOpsX IS
+
+#define cre_ops_tac \
+	(((CATL;MAP;NEWV~;FLAT~;REV;RULE)~;ARI;MODR;SHELL)~;CreOpsX)~
+
+#define Cre_Ops(m,n) bcall(cre_ops_tac: cre_ops_0(m)(n))
+
+
+#define CurrTypeStore          CreOpsX.1
+#define ModrCurrTypeStore(x)   bmodr(CurrTypeStore,x)
+#define ReadCurrTypeStore(x)   brule(CurrTypeStore,x)
+
+#define OpTypesStore           CreOpsX.2
+#define ModrOpTypesStore(x)    bmodr(OpTypesStore,x)
+#define ReadOpTypesStore(x)    brule(OpTypesStore,x)
+
+
+#define SetPropsStore          CreOpsX.3
+#define ModrSetPropsStore(x)   bmodr(SetPropsStore,x)
+#define ReadSetPropsStore(x)   brule(SetPropsStore,x)
+
+
+#define Cre_OpsInpTempStore        CreOpsX.4
+#define ModrCre_OpsInpTempStore(x) bmodr(Cre_OpsInpTempStore,x)
+#define ReadCre_OpsInpTempStore(x) brule(Cre_OpsInpTempStore,x)
+
+
+#define Cre_OpsOutTempStore        CreOpsX.5
+#define ModrCre_OpsOutTempStore(x) bmodr(Cre_OpsOutTempStore,x)
+#define ReadCre_OpsOutTempStore(x) brule(Cre_OpsOutTempStore,x)
+
+
+#define LocalInpVarsStore         CreOpsX.6
+#define ModrLocalInpVarsStore(x)  bmodr(LocalInpVarsStore,x)
+#define ReadLocalInpVarsStore(x)  brule(LocalInpVarsStore,x)
+
+
+#define LocalOutVarsStore         CreOpsX.7
+#define ModrLocalOutVarsStore(x)  bmodr(LocalOutVarsStore,x)
+#define ReadLocalOutVarsStore(x)  brule(LocalOutVarsStore,x)
+
+
+
+#define IOLIBStore         CreOpsX.8
+#define ModrIOLIBStore(x)  bmodr(IOLIBStore,x)
+#define ReadIOLIBStore(x)  brule(IOLIBStore,x)
+
+
+
+#define SetsStore         CreOpsX.9
+#define ModrSetsStore(x)  bmodr(SetsStore,x)
+#define ReadSetsStore(x)  brule(SetsStore,x)
+
+
+
+#define EnumStore         CreOpsX.10
+#define ModrEnumStore(x)  bmodr(EnumStore,x)
+#define ReadEnumStore(x)  brule(EnumStore,x)
+
+
+
+#define EnumNameStore         CreOpsX.11
+#define ModrEnumNameStore(x)  bmodr(EnumNameStore,x)
+#define ReadEnumNameStore(x)  brule(EnumNameStore,x)
+
+
+
+#define ImpTypeStore           CreOpsX.12
+#define ModrImpTypeStore(x)    bmodr(ImpTypeStore,x)
+#define ReadImpTypeStore(x)    brule(ImpTypeStore,x)
+
+#define MotifItfStore          CreOpsX.13
+#define SetNonMotifItf         bmodr(MotifItfStore,1)
+#define SetMotifItf            bmodr(MotifItfStore,2)
+#define NonMotifItf            brule(MotifItfStore,1)
+#define MotifItf               brule(MotifItfStore,2)
+
+
+#define PropsStore         CreOpsX.14
+#define ModrPropsStore(x)  bmodr(PropsStore,x)
+#define ReadPropsStore(x)  brule(PropsStore,x)
+
+
+#define ImpSeenPropsStore         CreOpsX.15
+#define ModrImpSeenPropsStore(x)  bmodr(ImpSeenPropsStore,x)
+#define ReadImpSeenPropsStore(x)  brule(ImpSeenPropsStore,x)
+
+
+#define SeenByTopMchStore         CreOpsX.16
+#define ModrSeenByTopMchStore(x)  bmodr(SeenByTopMchStore,x)
+#define ReadSeenByTopMchStore(x)  brule(SeenByTopMchStore,x)
+
+
+  ?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  GetJobs(X) &
+  AddJobs(X,(((?,basic_io):BT_LIB_FRC:0));(((?,file_dump):BT_LIB_FRC:0));(((?,String_TYPE):BT_LIB_FRC:0));(((?,Bool_TYPE):BT_LIB_FRC:0));(((Itf,token_io):BT_LIB_FRC:0)))
+ =>
+  introduce_force_0;
+
+  ScalarFlagSet &
+  GetJobs(X) &
+  AddJobs(X,(((?,basic_io):BT_LIB_FRC:0));(((?,file_dump):BT_LIB_FRC:0));(((?,String_TYPE):BT_LIB_FRC:0));(((?,Bool_TYPE):BT_LIB_FRC:0));(((?,Scalar_TYPE):BT_LIB_FRC:0));(((Itf,token_io):BT_LIB_FRC:0)))
+ =>
+  introduce_force_0;
+
+  MotifItf
+ =>
+  introduce_force_0;
+
+  CIOErrorFlagged
+ =>
+  introduce_force_0;
+
+
+
+  load_imp_typ_file_6(x);
+
+  load_imp_typ_file_1(bcatl("TYP/",a,".mri.typ")) &
+  StoreTypeConfusion(a.imp)
+ =>
+  load_imp_typ_file_6(a.imp);
+
+  ReadRecImportedStore(L) &
+  load_imp_typ_file_6 bsmap L  /* these are all .mch !!! need [formparam:=actparam]!!! */
+ =>
+  load_imp_typ_file_5;
+
+  ReadImpTypeStore(T) &
+  ModrImpTypeStore((T;(x=y)))
+ =>
+  load_imp_typ_file_4(x)(y);
+
+  ReadImpTypeStore(T) &
+  ModrImpTypeStore((T;(x=y))) &
+  load_imp_typ_file_4(x)(Y)
+ =>
+  load_imp_typ_file_4(x)(Y\/y);
+
+  load_imp_typ_file_3(t);
+
+  load_imp_typ_file_4(x)(y)
+ =>
+  load_imp_typ_file_3(x=y);
+
+  load_imp_typ_file_3 bsmap B
+ =>
+  load_imp_typ_file_2(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  load_imp_typ_file_1(f);
+
+  bget(f,X) &
+  load_imp_typ_file_2(X)
+ =>
+  load_imp_typ_file_1(f);
+
+  load_imp_typ_file_0;
+
+  ReadBotRef(z.imp) &
+  ModrImpTypeStore(?) &
+  load_imp_typ_file_1(bcatl("TYP/",z,".mri.typ")) &
+  StoreTypeConfusion(z.imp) &
+  load_imp_typ_file_5
+ =>
+  load_imp_typ_file_0;
+
+
+
+  ReadEnumStore(E) &
+  ModrEnumStore((E,T(W)))
+ =>
+  update_EnumStore(T(W));
+
+  ReadEnumStore(E) &
+  bsearch((T(W)),E,F)
+ =>
+  update_EnumStore(T(W));
+
+  ReadEnumStore((T(W)))
+ =>
+  update_EnumStore(T(W));
+
+  ReadEnumStore(?) &
+  ModrEnumStore((T(W)))
+ =>
+  update_EnumStore(T(W));
+
+  bnum(n)
+ =>
+  update_EnumStore(T[n]);                 /* dimensioned set */
+
+
+
+  load_MchSeenImpPropsStore_sto_sees(x);
+
+  ReadSeenByTopMchStore(S) &
+  ModrSeenByTopMchStore((S,r.mch))
+ =>
+  load_MchSeenImpPropsStore_sto_sees(r(s):t:U);
+
+
+  load_ImpSeenPropsStore1(bcatl("TYP/",s,".mri.typ")) &
+  StoreTypeConfusion(s.t)
+ =>
+  load_MchSeenImpPropsStore04(s.t);
+
+  load_MchSeenImpPropsStore04(s.mch);
+
+  ReadBotRef(s.t) &
+  load_MchSeenImpPropsStore04(s.t)
+ =>
+  load_MchSeenImpPropsStore03(r.mch);
+
+  load_MchSeenImpPropsStore02(x);
+
+  GetBotRef(r.mch) &
+  load_MchSeenImpPropsStore03(r.mch)
+ =>
+  load_MchSeenImpPropsStore02(r(s):t:U);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  load_MchSeenImpPropsStore01(a.b)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  load_MchSeenImpPropsStore_sto_sees bsmap A &
+  load_MchSeenImpPropsStore02 bsmap A &
+/***
+05.08.97
+***/
+  load_MchSeenImpPropsStore_sto_sees bsmap B &
+  load_MchSeenImpPropsStore02 bsmap B
+ =>
+  load_MchSeenImpPropsStore01(Z);
+
+  GetCurrentConstruct(a.itf) &
+  load_MchSeenImpPropsStore01(bcatl("ANL/",a,".",mch,".anl")) &
+  StoreTypeConfusion(a.mch)
+ =>  
+  load_MchSeenImpPropsStore00;
+
+
+
+
+  ReadImpSeenPropsStore(T) &
+  ModrImpSeenPropsStore((T;(x=y)))
+ =>
+  load_ImpSeenPropsStore4(x)(y);
+
+  ReadImpSeenPropsStore(T) &
+  ModrImpSeenPropsStore((T;(x=y))) &
+  load_ImpSeenPropsStore4(x)(Y)
+ =>
+  load_ImpSeenPropsStore4(x)(Y\/y);
+
+  load_ImpSeenPropsStore3(x);
+
+  load_ImpSeenPropsStore4(x)(y)
+ =>
+  load_ImpSeenPropsStore3(x=y);
+
+  load_ImpSeenPropsStore3 bsmap B
+ =>
+  load_ImpSeenPropsStore2(B|C);
+
+  load_ImpSeenPropsStore3 bsmap B
+ =>
+  load_ImpSeenPropsStore2(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  load_ImpSeenPropsStore1(f);
+
+  bget(f,X) &
+  load_ImpSeenPropsStore2(X)
+ =>
+  load_ImpSeenPropsStore1(f);
+
+  load_ImpSeenPropsStore(x);
+
+  load_ImpSeenPropsStore1(bcatl("TYP/",r,".mri.typ")) &
+  StoreTypeConfusion(r.mch)
+ =>
+  load_ImpSeenPropsStore(r(s):t:(u,v,w));
+
+  load_ImpSeenPropsStore(S) &
+  load_ImpSeenPropsStore(s)
+ =>
+  load_ImpSeenPropsStore(S,s);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  load_ImpSeenPropsStore0(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  load_ImpSeenPropsStore(A) &
+  load_ImpSeenPropsStore(B)
+ =>
+  load_ImpSeenPropsStore0(Z);
+
+  load_ImpSeenPropsStore00; /* not interfacing an imp */
+
+  GetConstructImp(i.imp) &
+  load_ImpSeenPropsStore0(bcatl("ANL/",i,".imp.anl")) &
+  StoreTypeConfusion(i.imp)
+ =>  
+  load_ImpSeenPropsStore00;
+
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  save_sets(M)(N)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  ModrSetsStore((D,?)) &
+  ModrImpSeenPropsStore(?)
+ =>
+  save_sets(M)(N)(Z);
+
+
+
+
+/***
+  Motif
+***/
+  load_rec_ipt_3(x);
+
+  update_EnumStore(T(W))
+ =>
+  load_rec_ipt_3(T(W));
+
+  load_rec_ipt_3(T[W]);
+
+
+  ReadSetsStore(X) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  ModrSetsStore(bflat(X,D)) &
+  load_rec_ipt_3 bsmap D
+ =>
+  load_rec_ipt_2(Z);
+
+  load_rec_ipt_1(?);
+
+  bident(a) &
+  load_rec_ipt_2(bcatl("ANL/",a,".mch.anl")) &
+  StoreTypeConfusion(a.mch)
+ =>
+  load_rec_ipt_1(a.mch);
+
+
+  ReadRecImportedStore(x) &
+  load_rec_ipt_1 bsmap x
+ =>
+  load_rec_ipt_0;
+
+
+  ReadSetsStore(X) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  ModrSetsStore(bflat(X,D)) &
+  load_rec_ipt_3 bsmap D
+ =>
+  load_seen_not_impM_2(Z);
+
+  load_seen_not_impM_1(?);
+
+  bident(a) &
+  load_seen_not_impM_2(bcatl("ANL/",a,".mch.anl")) &
+  StoreTypeConfusion(a.mch)
+ =>
+  load_seen_not_impM_1(a.mch);
+
+
+  ReadSeenNotImportedStore(x) &
+  load_seen_not_impM_1 bsmap x
+ =>
+  load_seen_not_impM_0;
+
+
+
+
+
+  ReadSetsStore(X) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  ModrSetsStore(bflat(X,D))
+ =>
+  load_seen_not_imp_2(Z);
+
+  load_seen_not_imp_1(?);
+
+  bident(a) &
+  load_seen_not_imp_2(bcatl("ANL/",a,".mch.anl")) &
+  StoreTypeConfusion(a.mch)
+ =>
+  load_seen_not_imp_1(a.mch);
+
+
+  ReadSeenNotImportedStore(x) &
+  load_seen_not_imp_1 bsmap x
+ =>
+  load_seen_not_imp_0;
+
+
+  ModrOpTypesStore((A;?)) &
+  ModrSetPropsStore((B;?))
+ =>
+  cre_ops_2(m)(n)(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cre_ops_1(m)(n)(f);
+
+  bget(f,X) &
+  cre_ops_2(m)(n)(X)
+ =>
+  cre_ops_1(m)(n)(f)
+
+END
+
+&
+
+
+THEORY CIO_TypeConfusionIntoOpTypesStoX IS
+
+#define CIO_TypeConfusionIntoOpTypesSto \
+  bcall(((MAP;MODR)~;CIO_TypeConfusionIntoOpTypesStoX)~:tcfilt) & \
+  bcall(((RULE;MAP)~;CIO_TypeConfusionIntoOpTypesStoX)~:tc0)
+
+  ?;
+#define ReadFilteredOpTypesStore(x) brule(CIO_TypeConfusionIntoOpTypesStoX.1,x)
+#define ModrFilteredOpTypesStore(x) bmodr(CIO_TypeConfusionIntoOpTypesStoX.1,x)
+
+
+  ReadFilteredOpTypesStore(S) &
+  ModrOpTypesStore(S)
+ =>  
+  tcfilt2;
+
+  ReadOpTypesStore(O) &
+  bsearch((o(a)==t),O,P) &
+  ReadFilteredOpTypesStore(S) &
+  ModrFilteredOpTypesStore((S,(o(a)==t)))
+ =>
+  tcfilt1(o);
+
+  tcfilt1(?);
+
+  brule(PrtMotifX.9,O) & /* ReadOpsRequired(O) */
+  bmodr(CIO_TypeConfusionIntoOpTypesStoX.1,?) &
+  tcfilt1 bsmap O &
+  tcfilt2
+ =>
+  tcfilt;  /* filter OpTypesStore to just those ops required */
+
+                     /************************
+
+/***
+PrintTHEORY(TypeConfusionRewritesX)&
+***/
+  ReadOpTypesStore(O) &
+  bcall((TypeConfusionRewritesX~;MODR):ModrOpTypesStore(O)) &
+  ReadSetsStore(S) &
+  bcall((TypeConfusionRewritesX~;MODR):ModrSetsStore(S))
+ =>
+  tc0
+
+END
+
+&
+
+THEORY TypeConfusionRewritesX END &
+
+THEORY StoreTypeConfusionX IS
+
+/*
+  moved to top
+#define StoreTypeConfusion(x) \
+          bcall(((RULE;CATL;MAP;MODR)~;StoreTypeConfusionX)~:stc(x))
+*/
+
+/*
+  ?;
+
+  stc3(x);
+
+  bcrer(TypeConfusionRewritesX,(a==b))
+ =>
+  stc3(a=b);
+
+  brule(TypeConfusionRewritesX.N,(a==b))
+ =>
+  stc3(a=b);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  stc2(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  stc3 bsmap H
+ =>
+  stc2(Z);
+
+  ReadBotRef(c.d) &
+  brule(StoreTypeConfusionX.1,S) &
+  bmodr(StoreTypeConfusionX.1,(S,c.d)) &
+  stc2(bcatl("ANL/",c,".",d,".anl"))
+ =>
+  stc1(a.b);
+
+  ReadBotRef(c.d) &
+  brule(StoreTypeConfusionX.1,S) &
+  bsearch(c.d,S,T)
+ =>
+  stc1(a.b);
+
+  brule(StoreTypeConfusionX.1,S) &
+  bmodr(StoreTypeConfusionX.1,(S,a.b)) &
+  stc2(bcatl("ANL/",a,".",b,".anl")) &
+  GetBotRef(a.b) &
+  stc1(a.b)
+ =>
+  stc(a.b);
+
+  brule(StoreTypeConfusionX.1,S) &
+  bsearch(a.b,S,T) &
+  GetBotRef(a.b) &
+  stc1(a.b)
+ =>
+  stc(a.b)
+*/
+
+  ?;
+
+  ?;
+
+  stc4(x);
+
+  brule(StoreTypeConfusionX.2,B) &
+  bsearch(given(b),B,C) &
+  bcrer(TypeConfusionRewritesX,(a==b))
+ =>
+  stc4(a=b);
+
+  brule(TypeConfusionRewritesX.N,(a==b))
+ =>
+  stc4(a=b);
+
+  bmodr(StoreTypeConfusionX.2,B) &
+  stc4 bsmap B
+ =>
+  stc3(B|C);
+
+  bmodr(StoreTypeConfusionX.2,B) &
+  stc4 bsmap B
+ =>
+  stc3(A|B|C);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  stc2(Z);
+
+  bget(Z,x) &
+  stc3(x)
+ =>
+  stc2(Z);
+
+  ReadBotRef(c.d) &
+  brule(StoreTypeConfusionX.1,S) &
+  bmodr(StoreTypeConfusionX.1,(S,c.d)) &
+  stc2(bcatl("TYP/",c,".mri.typ"))
+ =>
+  stc1(a.b);
+
+  ReadBotRef(c.d) &
+  brule(StoreTypeConfusionX.1,S) &
+  bsearch(c.d,S,T)
+ =>
+  stc1(a.b);
+
+  GetBotRef(a.b) &
+  stc1(a.b)
+ =>
+  stc(a.b)
+
+END
+
+&
+
+THEORY StoreOpheadersX IS
+
+#define sto_op_hdr_tac         ((MAP;RULE)~;StoreOpheadersX)~
+
+#define StoreOpheaders(x)      bcall(sto_op_hdr_tac: sto_op_hdr_0(x))
+
+
+  sto_op_hdr_1(x);
+
+  bcrer(OpHeadersX,K)
+ =>
+  sto_op_hdr_1(s;(X,K);u;v;(w|x);(y|z));
+
+  sto_op_hdr_1 bsmap x
+ =>
+  sto_op_hdr_0(x);
+
+  bcrer(OpHeadersX,K)
+ =>
+  sto_op_hdr_0(s;(X,K);u;v;(w|x);(y|z))
+
+END
+
+&
+
+THEORY CheckParamsX IS
+
+#define chk_params_tac     ((FLAT~;MODR)~;CheckParamsX)~
+
+#define CheckParams        bcall(chk_params_tac: check_params_00)
+
+
+  ?;
+
+  ?;    /* SCALAR flag */
+
+  check_length(P)(Q)(a)(b);
+
+  InformWrongNumParams((P),(Q)) &
+  SetCIOError
+ =>
+  check_length(P)(Q)(A)(B,b);
+
+  InformWrongNumParams((P),(Q)) &
+  SetCIOError
+ =>
+  check_length(P)(Q)(A,a)(B);
+
+  check_length(P)(Q)(A)(B)
+ =>
+  check_length(P)(Q)(A,a)(B,b);
+
+  InformParamsError(a) &
+  SetCIOError
+ =>
+  check_params_1(a)(?);
+
+  InformParamsError(b) &
+  SetCIOError
+ =>
+  check_params_1(?)(b);
+
+  check_params_1(?)(?);
+
+  InformNumParamsError(a,b) &
+  SetCIOError
+ =>
+  check_params_1(A,a)(B,b);
+
+  bnum(b) &
+  check_params_1(A)(B)
+ =>
+  check_params_1(A,a)(B,b);
+
+  InformNotSetParamsError(a) &
+  SetCIOError
+ =>
+  check_params_1(A,a)(B,a);
+
+  bUpident(a) &
+  InformCantSetParamsError(a,b) &
+  SetCIOError
+ =>
+  check_params_1(A,a)(B,b);
+
+  bUpident(a) &
+  btest(y>=x) &
+  check_params_1(A)(B)
+ =>
+  check_params_1(A,a)(B,(x..y));
+
+  bUpident(a) &
+  SetScalarFlag &
+  check_params_1(A)(B)
+ =>
+  check_params_1(A,a)(B,SCALAR);
+
+  CIOErrorFlagged
+ =>
+  check_params_1(P)(x);
+
+  ReadParamsStore((P,?)) &
+  check_length(P)(x)(P)(x) &
+  check_params_1(bflat(?,P))(bflat(?,x))
+ =>
+  check_params_0(x);
+
+  ReadParamsStore(?) &
+  InformNoParametersRequired(x) &
+  SetCIOError
+ =>
+  check_params_0(x);
+
+  ReadParamsStore(P) &
+  InformParametersRequired &
+  SetCIOError
+ =>
+  check_params_0(?);
+
+  ReadParamsStore(?)
+ =>
+  check_params_0(?);
+
+  ReadActualParamsStore(x) &
+  check_params_0(x)
+ =>
+  check_params_00;
+
+  CIOErrorFlagged
+ =>
+  check_params_00
+
+END
+
+&
+
+THEORY CheckSeenNotImportedAgainst_SLIB_ldfX IS
+
+#define CheckSeenNotImportedAgainst_SLIB_ldf(x,y) \
+  bcall(((CATL;MODR;MAP)~;CheckSeenNotImportedAgainst_SLIB_ldfX)~:caldf(x)(y))
+
+
+  caldf2(a,x);
+
+  ReadSeenNotImportedStore(S) &
+  bsearch(i.mch,S,T) &
+  ModrSeenNotImportedStore(T)
+ =>
+  caldf2(a,(i:p:q));
+
+  caldf1(a)(Z);
+
+  bget(Z,(x|y)) &
+  caldf2(a) bsmap y
+ =>
+  caldf1(a)(Z);
+
+  caldf(a)(b);
+
+  caldf1(a)(bcatl("CDE/C/",a,".ldf"))
+ =>
+  caldf(a)(a);
+
+  IsPASPToolkit &
+  caldf1(a)(bcatl("CDE/C/",a,".ldf")) &
+  caldf1(a)(bcatl("CDE/PASP/",a,".ldf"))
+ =>
+  caldf(a)(a)
+
+END
+
+&
+
+THEORY CIOParseX IS
+
+#define CIOParse_tac \
+		((CATL;MODR;MAP)~;CIOParseX)~
+
+#define CIOParse \
+		bcall(CIOParse_tac: cio_parse_0)
+
+  ?;  /* ops */
+
+  ?;  /* variables of interfaced machine */
+
+  ?;  /* imports of interfaced machine */
+
+  InformOPERATIONSSyntaxError(O) &
+  SetCIOError
+ =>
+  check_ident(O);
+
+  bident(o) &
+  check_ident(O)
+ =>
+  check_ident(O,o);
+
+  bident(o) &
+  InformDuplicateOpName(o) &
+  SetCIOError
+ =>
+  check_ident(o,o);
+
+  bident(o) &
+  bsearch(o,O,P) &
+  InformDuplicateOpName(o) &
+  SetCIOError
+ =>
+  check_ident(O,o);
+
+
+  InformSyntaxError(x) &
+  SetCIOError
+ =>
+  parse_1(x);
+
+  GetCurrentConstruct(s.itf) &
+  InformNameNotMatchFileName(x,s) &
+  SetCIOError
+ =>
+  parse_1(x);
+
+  GetCurrentConstruct(x.itf)
+ =>
+  parse_1(x);
+
+  CIOErrorFlagged
+ =>
+  parse_1(x);
+
+
+
+  InformSyntaxError(s) &
+  SetCIOError
+ =>
+  parse_0(s);
+
+  bident(s) &
+  ModrActualParamsStore(?) &
+  parse_1(s)
+ =>
+  parse_0(s);
+
+  InformKeywordNotRecognized(blank0? JOK2 blank0?) &
+  SetCIOError
+ =>
+  parse_0(s JOK2 t);
+
+  
+  
+  check_length1(k)(P)(Q)(a)(b);
+
+  InformWrongNumImportedParams(k,(P),(Q)) &
+  SetCIOError
+ =>
+  check_length1(k)(P)(Q)(A,a)(b);
+
+  InformWrongNumImportedParams(k,(P),(Q)) &
+  SetCIOError
+ =>
+  check_length1(k)(P)(Q)(a)(B,b);
+
+  check_length1(k)(P)(Q)(A)(B)
+ =>
+  check_length1(k)(P)(Q)(A,a)(B,b);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  check_length(Z)(p);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  check_length1(k)(l)(p)(l)(p)
+ =>
+  check_length(Z)(p);
+
+  InformSyntaxError(s) &
+  SetCIOError
+ =>
+  check_ipt(s);
+
+  check_ipt_param(i,p);
+
+  InformParamNotSet(i) &
+  SetCIOError
+ =>
+  check_ipt_param(i,?);
+
+  bident(i)
+ =>
+  check_ipt(i);
+
+  bident(i) &
+  check_ipt_param(i) bsmap p &
+  check_length(bcatl("ANL/",i,".mch.anl"))(p) &
+  StoreTypeConfusion(i.mch)
+ =>
+  check_ipt(i(p));
+
+  check_ipt(I) &
+  check_ipt(i)
+ =>
+  check_ipt(I,i);
+
+  ModifyImportedCIOList((i,?)) &
+  check_ipt(i) &
+  parse_0(x)
+ =>
+  parse_0(x IMPORTS i);
+
+  bident(s) &
+  ModrActualParamsStore(x) &
+  parse_1(s)
+ =>
+  parse_0(s(x));
+
+  check_ident(o) &
+  parse_0(x)
+ =>
+  parse_0(x OPERATIONS o);
+
+  blident(o) &
+  bmodr(CIOParseX.1,o) &
+  parse_0(x)
+ =>
+  parse_0(x OPERATIONS o);
+
+  InformSyntaxError(x) &
+  SetCIOError
+ =>
+  cio_parse_2(x);
+
+  bmodr(CIOParseX.1,?) &
+  parse_0(x)
+ =>
+  cio_parse_2(INTERFACE x END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cio_parse_1(f);
+
+  bget(f,x) &
+  cio_parse_2(x)
+ =>
+  cio_parse_1(f);
+
+
+
+  check_for_ops;
+
+  brule(CIOParseX.1,?) &
+  InformOpsClauseReqd &
+  SetCIOError
+ =>
+  check_for_ops;
+
+
+  CIOErrorFlagged
+ =>
+  check_for_ops;
+
+  GetCurrentConstruct(a.b) &
+  WriteDot &
+  cio_parse_1(bcatl("CFG/",a,".",b)) &
+  check_for_ops
+ =>
+  cio_parse_0;
+
+  CIOErrorFlagged
+ =>
+  x
+
+END

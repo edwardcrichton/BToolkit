@@ -1,0 +1,167 @@
+#! /bin/csh -f
+
+#
+# Install in $BKIT/BHELP
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script copies recursively from LIB "
+echo "  to `pwd`/BKIT/BLIB "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+if ( ! -d $BKIT/BHELP ) then
+  mkdir $BKIT/BHELP
+  chmod 755 $BKIT/BHELP
+endif
+
+if ( ! -d $BKIT/BHELP/HTX ) then
+  mkdir $BKIT/BHELP/HTX
+  chmod 755 $BKIT/BHELP/HTX
+endif
+
+if ( ! -d $BKIT/BLIB/LIB ) then
+  mkdir $BKIT/BLIB/LIB
+  chmod 755 $BKIT/BLIB/LIB
+endif
+
+foreach dir ( ANL CDE CDE/C CFG TYP )
+  if ( ! -d $BKIT/BLIB/LIB/$dir ) then
+    mkdir $BKIT/BLIB/LIB/$dir
+    chmod 755 $BKIT/BLIB/LIB/$dir
+  endif
+end
+
+
+cd ../LIB
+
+foreach dir ( ANL CDE CDE/C CFG TYP )
+  if ( ! -d $dir ) then
+    echo ""
+    echo "            ----->>>>> `pwd`/$dir does not exist"
+    echo ""
+    echo "            Aborted"
+    echo ""
+    exit ( 1 )
+  endif
+end
+
+set slib_files = ( $SLIB_files )
+
+if ( $DBSERVER_VERSION == "YES" ) then
+  set slib_files = ( $slib_files $SLIB_DBSERVER_files )
+endif
+
+
+if ( $BOOSTER_VERSION == "YES" ) then
+  set slib_files = ( $slib_files $SLIB_BOOSTER_files )
+endif
+
+foreach file ( $slib_files )
+  echo "  $file  -> $BKIT/BLIB/LIB "
+  cp CFG/$file.mch $BKIT/BLIB/LIB/CFG
+  cp ANL/$file.mch.anl $BKIT/BLIB/LIB/ANL
+  cp TYP/$file.mri.typ $BKIT/BLIB/LIB/TYP
+  cp CDE/C/$file.g $BKIT/BLIB/LIB/CDE/C
+  cp CDE/C/$file.h $BKIT/BLIB/LIB/CDE/C
+  cp CDE/C/$file.c $BKIT/BLIB/LIB/CDE/C
+  if ( -r CDE/C/$file.ldf ) then
+    cp CDE/C/$file.ldf $BKIT/BLIB/LIB/CDE/C
+  endif
+  cp HTX/$file.mch.html $BKIT/BHELP/HTX
+  
+end
+
+echo ""
+
+if ( $BOOSTER_VERSION == "YES" ) then
+
+  echo ""
+  echo "  BOOSTER: Rename_setb_obj -> Rename_set_obj "
+
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_setb_obj.c    $BKIT/BLIB/LIB/CDE/C/Rename_set_obj.c
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_setb_obj.h    $BKIT/BLIB/LIB/CDE/C/Rename_set_obj.h
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_setb_obj.g    $BKIT/BLIB/LIB/CDE/C/Rename_set_obj.g
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_setb_obj.ldf  $BKIT/BLIB/LIB/CDE/C/Rename_set_obj.ldf
+
+  cat $BKIT/BLIB/LIB/CFG/Rename_setb_obj.mch     | sed -e s+setb_obj+set_obj+ > $BKIT/BLIB/LIB/CFG/Rename_set_obj.mch
+  cat $BKIT/BLIB/LIB/ANL/Rename_setb_obj.mch.anl | sed -e s+setb_obj+set_obj+ > $BKIT/BLIB/LIB/ANL/Rename_set_obj.mch.anl
+  cat $BKIT/BLIB/LIB/TYP/Rename_setb_obj.mri.typ | sed -e s+setb_obj+set_obj+ > $BKIT/BLIB/LIB/TYP/Rename_set_obj.mri.typ
+
+  rm $BKIT/BLIB/LIB/CFG/Rename_setb_obj.mch
+  rm $BKIT/BLIB/LIB/ANL/Rename_setb_obj.mch.anl
+  rm $BKIT/BLIB/LIB/TYP/Rename_setb_obj.mri.typ
+
+
+  echo "  BOOSTER: Rename_seqb_obj -> Rename_seq_obj "
+
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_seqb_obj.c    $BKIT/BLIB/LIB/CDE/C/Rename_seq_obj.c
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_seqb_obj.h    $BKIT/BLIB/LIB/CDE/C/Rename_seq_obj.h
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_seqb_obj.g    $BKIT/BLIB/LIB/CDE/C/Rename_seq_obj.g
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_seqb_obj.ldf  $BKIT/BLIB/LIB/CDE/C/Rename_seq_obj.ldf
+
+  cat $BKIT/BLIB/LIB/CFG/Rename_seqb_obj.mch     | sed -e s+seqb_obj+seq_obj+ > $BKIT/BLIB/LIB/CFG/Rename_seq_obj.mch
+  cat $BKIT/BLIB/LIB/ANL/Rename_seqb_obj.mch.anl | sed -e s+seqb_obj+seq_obj+ > $BKIT/BLIB/LIB/ANL/Rename_seq_obj.mch.anl
+  cat $BKIT/BLIB/LIB/TYP/Rename_seqb_obj.mri.typ | sed -e s+seqb_obj+seq_obj+ > $BKIT/BLIB/LIB/TYP/Rename_seq_obj.mri.typ
+
+  rm $BKIT/BLIB/LIB/CFG/Rename_seqb_obj.mch
+  rm $BKIT/BLIB/LIB/ANL/Rename_seqb_obj.mch.anl
+  rm $BKIT/BLIB/LIB/TYP/Rename_seqb_obj.mri.typ
+  
+
+  echo "  BOOSTER: Rename_strb_obj -> Rename_str_obj "
+
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_strb_obj.c    $BKIT/BLIB/LIB/CDE/C/Rename_str_obj.c
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_strb_obj.h    $BKIT/BLIB/LIB/CDE/C/Rename_str_obj.h
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_strb_obj.g    $BKIT/BLIB/LIB/CDE/C/Rename_str_obj.g
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_strb_obj.ldf  $BKIT/BLIB/LIB/CDE/C/Rename_str_obj.ldf
+
+  cat $BKIT/BLIB/LIB/CFG/Rename_strb_obj.mch     | sed -e s+strb_obj+str_obj+ > $BKIT/BLIB/LIB/CFG/Rename_str_obj.mch
+  cat $BKIT/BLIB/LIB/ANL/Rename_strb_obj.mch.anl | sed -e s+strb_obj+str_obj+ > $BKIT/BLIB/LIB/ANL/Rename_str_obj.mch.anl
+  cat $BKIT/BLIB/LIB/TYP/Rename_strb_obj.mri.typ | sed -e s+strb_obj+str_obj+ > $BKIT/BLIB/LIB/TYP/Rename_str_obj.mri.typ
+
+  rm $BKIT/BLIB/LIB/CFG/Rename_strb_obj.mch
+  rm $BKIT/BLIB/LIB/ANL/Rename_strb_obj.mch.anl
+  rm $BKIT/BLIB/LIB/TYP/Rename_strb_obj.mri.typ
+  
+  echo "  BOOSTER: Rename_ffncb_obj -> Rename_ffnc_obj "
+
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_ffncb_obj.c    $BKIT/BLIB/LIB/CDE/C/Rename_ffnc_obj.c
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_ffncb_obj.h    $BKIT/BLIB/LIB/CDE/C/Rename_ffnc_obj.h
+  mv -f $BKIT/BLIB/LIB/CDE/C/Rename_ffncb_obj.g    $BKIT/BLIB/LIB/CDE/C/Rename_ffnc_obj.g
+
+  cat $BKIT/BLIB/LIB/CFG/Rename_ffncb_obj.mch     | sed -e s+ffncb_obj+ffnc_obj+ > $BKIT/BLIB/LIB/CFG/Rename_ffnc_obj.mch
+  cat $BKIT/BLIB/LIB/ANL/Rename_ffncb_obj.mch.anl | sed -e s+ffncb_obj+ffnc_obj+ > $BKIT/BLIB/LIB/ANL/Rename_ffnc_obj.mch.anl
+  cat $BKIT/BLIB/LIB/TYP/Rename_ffncb_obj.mri.typ | sed -e s+ffncb_obj+ffnc_obj+ > $BKIT/BLIB/LIB/TYP/Rename_ffnc_obj.mri.typ
+
+  rm $BKIT/BLIB/LIB/CFG/Rename_ffncb_obj.mch
+  rm $BKIT/BLIB/LIB/ANL/Rename_ffncb_obj.mch.anl
+  rm $BKIT/BLIB/LIB/TYP/Rename_ffncb_obj.mri.typ
+  
+endif
+
+echo ""
+
+chmod 644 $BKIT/BLIB/LIB/CFG/*
+chmod 644 $BKIT/BLIB/LIB/ANL/*
+chmod 644 $BKIT/BLIB/LIB/TYP/*
+chmod 644 $BKIT/BLIB/LIB/CDE/C/*
+
+echo ""
+echo "  Done "
+echo ""

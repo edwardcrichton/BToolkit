@@ -1,0 +1,69 @@
+(
+(std_numbers_PK(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_range)
+;
+(Rename_range)
+;
+(Rename_range = 0..maxnum)
+;
+(Rename_range = 0..maxnum)
+;
+(?)
+;
+(?)
+;
+(Rename_num)
+;
+(Rename_num)
+;
+(Rename_num: Rename_range)
+;
+(Rename_num: Rename_range)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_EXP)
+;
+(Rename_EXP)
+;
+(Rename_numbers_VR(maxnum):(maxnum: NAT):(?))
+;
+(
+(
+ (Rename_EXP)
+;
+ (?,Mod_Op,Det_Op,Rename_EXP(num,p1))
+;
+ (num,p1)
+;
+ (?)
+;
+ (
+ (num: 0..maxnum & p1: 0..maxnum & exp(Rename_num,p1): 0..maxnum)
+ |
+ (
+ (Rename_num:=exp(num,p1))
+ )
+ )
+;
+ (
+ (num: 0..maxnum & p1: 0..maxnum & exp(Rename_num,p1): 0..maxnum)
+ |
+ (
+ (Rename_num:=exp(num,p1))
+ )
+ )
+)
+)

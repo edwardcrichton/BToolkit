@@ -1,0 +1,257 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Uns_TYPE">
+  <TITLE>The Uns_TYPE machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.02
+  VERSION:          B-Toolkit Beta 4.51
+  DATE:             18/06/99
+v0.03
+  VERSION:          B-Toolkit Beta 4.52
+  DATE:             12/07/99
+v0.04
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             15/01/01
+***/
+
+/*
+Description: Library Type machine intruducing UNSIGNED
+
+History :
+180299 v0.01 : Created.
+130699 v0.02 : change in PROPERTIES:
+  !nat.(nat:NAT =&gt; u2n(n2u(nat)) = nat) -&gt;
+    !nat.(nat:NAT&nat<=65535 => u2n(n2u(nat)) = nat)
+120799 v0.03 : created Uns_SEMANTICS.mch & changed this TYPE machine
+               so that mimimal semantic information is given here (to
+               increase the efficiency of the provers - semantic information
+               is mirrored in the PASP mathematical library)
+150101 v0.04 : Changes for DecCo8.
+               Properties reduced to minimal type information; full
+               properies given in Uns_SEMANTICS.mch
+               Changed n2u/u2n from --&gt; to &gt;-&gt;&gt; in line with Uns_SEMANTICS.mch.
+               Added operations ULEFT and URIGHT
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>       Uns_TYPE
+
+/*"
+This specification models the built-in PASP {\em UNSIGNED\/}
+type using the two conversion {\em UNSIGNED-NAT\/} functions
+{\em n2u\/} and {\em u2n\/}. {\em MinUnsigned\/} and {\em MaxUnsigned\/}
+are also defined, as are the {\em UNSIGNED\/}-`bit-sequence' functions
+{\em u2bs\/} and {\em bs2u\/} together with four bit manipulation
+functions {\em bnd, bor, bxr\/} and {\em bcp\/}.
+
+Each of the operations is translated directly to its PASP equivalent
+by the B-PASP Translator; the exceptions are {\em UINC\/} and {\em
+UDEC\/} which are translated in terms of {\em BADD\/} and {\em BSUB\/}.
+
+The constants {\em n2u\/} and {\em  u2n\/}
+are also introduced, being defined in the {\em Uns_SEMANTICS\/} machine.
+"*/
+
+<A NAME="SEES"><B>SEES</B></A>          <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+/*"
+Since some operations return a {\em BOOLEAN\/}
+we ensure that the {\em Bool\_TYPE\/} machine is in scope, and since
+one of the parameters of the {\em UXTR\/} and {\em USET\/} functions
+is a {\em BYTE\/}, we also have {\em Byt\_TYPE\/} in scope:
+"*/
+
+<A NAME="SETS"><B>SETS</B></A>          UNSIGNED
+
+/*"
+We introduce the set {\em UNSIGNED\/}:
+"*/
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>
+
+/*"
+We now introduce the two conversion functions between {\em UNSIGNED\/}
+and {\em NAT\/}:
+"*/
+
+  n2u, u2n
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+/*"
+We give minimal properties here - full semantic information
+is contained in {\em Uns\_SEMANTICS.mch\/}:
+"*/
+
+   n2u : 0..65535 &gt;-&gt;&gt; UNSIGNED &
+
+   u2n : UNSIGNED &gt;-&gt;&gt; 0..65535
+
+<A NAME="DEFINITIONS"><B>DEFINITIONS</B></A>
+
+   MinUns == n2u(0);
+   MaxUns == n2u(65535)
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+Each of the following six operations returns a {\em BOOLEAN\/}
+and is a specification of the identically-named built-in PASP
+function. Each precondition ensures that both input parameters
+have type {\em UNSIGNED\/}. We use the AMN {\sf bool} operator which
+returns the boolean value of its argument.\\[1ex]
+
+{\bf ULE}:\ \ \  translated as:\\{\tt rr := ULE(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!ULE">ULE</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa <= bb) <B>END</B>;
+
+/*"
+{\bf UGE}:\ \ \  translated as:\\{\tt rr := UGE(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UGE">UGE</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa &gt;= bb) <B>END</B>;
+ 
+/*"
+{\bf ULT}:\ \ \  translated as:\\{\tt rr := ULT(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!ULT">ULT</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa < bb) <B>END</B>;
+
+/*"
+{\bf UGT}:\ \ \  translated as:\\{\tt rr := UGT(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UGT">UGT</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa &gt; bb) <B>END</B>;
+
+/*"
+{\bf UEQ}:\ \ \  translated as:\\{\tt rr := UEQ(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UEQ">UEQ</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa = bb) <B>END</B>;
+
+/*"
+{\bf UNE}:\ \ \  translated as:\\{\tt rr := UNE(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UNE">UNE</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa /= bb) <B>END</B>;
+
+/*"
+\ \\
+
+The precondition for each of the five arithmetic operations stipulates
+that both input and output parameters are of type {\em UNSIGNED\/};
+the former ensures that the operation is invoked safely, and
+the latter that we do not have to deal with undefinedness.
+Each is a specification of the identically-named built-in PASP
+function\\[1ex]
+{\bf UADD}:\ \ \  translated as:\\{\tt rr := UADD(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UADD">UADD</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>PRE</B> aa + bb : UNSIGNED <B>THEN</B>
+      rr := aa + bb
+    <B>END</B>;
+
+/*"
+\newpage
+{\bf USUB}:\ \ \  translated as:\\{\tt rr := USUB(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!USUB">USUB</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>PRE</B> aa - bb : UNSIGNED <B>THEN</B>
+      rr := aa - bb
+    <B>END</B>;
+
+/*"
+{\bf UMUL}:\ \ \  translated as:\\{\tt rr := UMUL(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UMUL">UMUL</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>PRE</B> aa * bb : UNSIGNED <B>THEN</B>
+      rr := aa * bb
+    <B>END</B>;
+
+/*"
+{\bf UDIV}:\ \ \  translated as:\\{\tt rr := UDIV(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UDIV">UDIV</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>PRE</B> bb /= MinUns & aa /bb : UNSIGNED <B>THEN</B>
+      rr := aa / bb
+    <B>END</B>;
+  
+/*"
+{\bf UMOD}:\ \ \  translated as:\\{\tt rr := UMOD(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UMOD">UMOD</A>(aa : UNSIGNED & bb : UNSIGNED) =
+    <B>PRE</B> bb /= MinUns & aa mod bb : UNSIGNED <B>THEN</B>
+      rr := aa mod bb
+    <B>END</B>;
+  
+/*"
+\newpage
+The same comments apply to the next four operations except that the
+first two are translated in terms of the built-in PASP functions {\em UADD\/}
+and {\em USUB\/}, and the latter {\em ULEFT\/} and {\em URIGHT\/}.\\[1ex]
+
+{\bf UINC}:\ \ \  translated as:\\{\tt rr := UADD(aa,01)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UINC">UINC</A>(aa : UNSIGNED) =
+    <B>PRE</B> aa + n2u(1) : UNSIGNED <B>THEN</B>
+      rr := aa + n2u(1)
+    <B>END</B>;
+
+/*"
+{\bf UDEC}:\ \ \  translated as:\\{\tt rr := USUB(aa,01)}\\
+"*/
+  rr <-- <A NAME="OPNAME!UDEC">UDEC</A>(aa : UNSIGNED) =
+    <B>PRE</B> aa - n2u(1) : UNSIGNED <B>THEN</B>
+      rr := aa - n2u(1)
+    <B>END</B>;
+
+/*"
+{\bf ULEFT}:\ \ \  translated as:\\{\tt rr := ULEFT(aa)}\\
+"*/
+  rr <-- <A NAME="OPNAME!ULEFT">ULEFT</A>(aa : UNSIGNED) =
+    <B>PRE</B> aa * n2u(2) : UNSIGNED <B>THEN</B>
+      rr := aa * n2u(2)
+    <B>END</B>;
+
+/*"
+{\bf URIGHT}:\ \ \  translated as:\\{\tt rr := URIGHT(aa)}\\
+"*/
+  rr <-- <A NAME="OPNAME!URIGHT">URIGHT</A>(aa : UNSIGNED) =
+    <B>PRE</B> aa / n2u(2) : UNSIGNED <B>THEN</B>
+      rr := aa / n2u(2)
+    <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:06:02 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

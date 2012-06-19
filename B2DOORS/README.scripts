@@ -1,0 +1,77 @@
+
+               B to DOORS   Bridge
+               ===================
+
+
+
+SCRIPTS :
+========================================================
+
+Bdoors         
+------
+
+This is a  script for starting DOORS from a B development.
+
+Put this script in $BKIT/BLIB and check it has execute 
+permission.
+( B-Core will put it in $BKIT/BLIB in future releases of
+  the B-Toolkit )
+
+After starting a new B development with the B-Toolkit
+use top bar 'Options' on the running B-Toolkit to set one
+of the Optional Utilities to  $BKIT/BLIB/Bdoors.
+
+When you want to start Doors execute the Optional Utility :
+Bdoors using the top bar 'Util' menu. Only do that if
+Doors is not already running.
+
+The Bdoors script will start doors with its data repository
+( DOORSDATA ) residing in the subdirectory 'doorsdata' of the 
+current development. Therefor the started Doors will only
+have access to the projects and documents related to this
+that B development.
+
+You might decide on a different setup for your B and DOORS
+work, for example to have one Doors data repository for
+all your developments, in which case you can alter the script.
+
+
+start_DOORS_server
+-----------------
+
+This is a simple script for stating the Doors license server.
+
+You might NOT need this script as your System Administrator
+have already set up other procedures for running Doors.
+Consult your system administrator.
+
+This simple script must be put into the Doors installation directory, 
+and the license - license.dat - which you get from QSS must reside
+in the subdirectory 'lib'. The script is only run once after booting
+your machine.
+
+The script sets DOORSHOME and set a default value for DOORSDATA, which
+is overwritten when Doors is started using the Bdoors script.
+
+
+amn_V3.tar
+----------
+
+Is an archive file containing the Doors scripts for enabling the
+Doors tool to 'export' and 'import' file from a B development.
+
+Put the file into the lib/dxl/addins/  subdirectory of your Doors 
+installation, and unpack the archive using 'tar xvf amn_V3.tar'.
+This will give you a new directory : lib/dxl/addins/amn containing
+the scripts which enables the B extensions to your Doors tool.
+
+Special commands :
+    Export AMN
+    Import AMN
+    HTML export requirements
+
+will now be available on the Doors top bar menu.
+
+
+     
+

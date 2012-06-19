@@ -1,0 +1,21 @@
+/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.32
+  DATE:             18/02/99
+  Translated from PASP_DEV_Rename_UiArrO1/Rename_UiArrO1I.imp
+***/
+
+int Rename_UiArrO1P1 = Rename_UiArrO1PV1;
+int Rename_UiArrO1P2 = Rename_UiArrO1PV2;
+
+
+#define Rename_O1_UiArrPV1 { "BYTE" }
+#define Rename_O1_UiArrPV2 1
+#define Rename_O1_UiArrPV3 Rename_UiArrO1PV1
+
+#include "Rename_O1_UiArr.g"
+
+#include "Rename_N1_Uns.g"
+

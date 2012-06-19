@@ -1,0 +1,722 @@
+/* Copyright (c) 1985-99, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#include "SetOfRules_core"
+
+&
+
+THEORY FwdLessThan1X IS
+
+
+  a < n2b(b) & b <= c => a < n2b(c);
+
+  a <= n2b(b) & b < c => a < n2b(c);
+
+  a < n2b(b) & b < c => a < n2b(c);
+
+
+  a < n2u(b) & b <= c => a < n2u(c);
+
+  a <= n2u(b) & b < c => a < n2u(c);
+
+  a < n2u(b) & b < c => a < n2u(c);
+
+
+  a < b2n(b) => n2b(a) < b;
+
+  a < u2n(b) => n2u(a) < b;
+
+
+  (n2u(a) < n2u(b))    => (a < b);
+
+  (n2b(a) < n2b(b))    => (a < b);
+
+  (u2n(a) < u2n(b))    => (a < b);
+
+  (b2n(a) < b2n(b))    => (a < b)
+
+
+END
+
+&
+
+THEORY FwdLessThanOrEqual1X IS
+
+
+  a : n2b[b..b2n(c)]   =>  n2b(b) <= a;
+
+  a : n2b[b..b2n(c)]   =>  a <= c;
+
+  a : n2b[b..b2n(c)]   =>  n2b(b) <= c;
+
+  a : n2u[b..u2n(c)]   =>  n2u(b) <= a;
+
+  a : n2u[b..u2n(c)]   =>  a <= c;
+
+  a : n2u[b..u2n(c)]   =>  n2u(b) <= c;
+
+
+  a : BYTE => n2b(0) <= a;
+
+  a : BYTE => a <= n2b(255);
+
+
+  a : UNSIGNED => n2u(0) <= a;
+
+  a : UNSIGNED => a <= n2u(65535);
+
+
+  a < u2n(b + n2u(1))    =>   a <= u2n(b);
+
+  a < b2n(b + n2b(1))    =>   a <= b2n(b);
+
+
+  a <= n2u(b) & b <= c   =>   a <= n2u(c);
+
+  a <= n2b(b) & b <= c   =>   a <= n2b(c);
+
+
+  a <= b2n(b)            =>   n2b(a) <= b;
+
+  a <= u2n(b)            =>   n2u(a) <= b;
+
+
+  (n2u(a) <= n2u(b))     => (a <= b);
+
+  (n2b(a) <= n2b(b))     => (a <= b);
+
+  (u2n(a) <= u2n(b))     => (a <= b);
+
+  (b2n(a) <= b2n(b))     => (a <= b)
+
+
+
+END
+
+&
+
+THEORY FwdEqual1X IS
+
+
+  b2n(a) + b = b2n(c)   => a + n2b(b) = c;
+
+  b2n(a) - b = b2n(c)   => a - n2b(b) = c;
+
+
+  a = b2n(b) => n2b(a) = b;
+
+  a = u2n(b) => n2u(a) = b;
+
+  !a.(a:BYTE => n2b(b2n(a)) = a);
+
+  !a.(a:NAT & a<=255 => b2n(n2b(a)) = a);
+
+  !a.(a:BYTE & not(a=n2b(0)) => b2bl(a) = TRUE);
+
+  !a.(a:UNSIGNED => n2u(u2n(a)) = a);
+
+  !a.(a:NAT & a<=65535 => u2n(n2u(a)) = a);
+
+  !a.(a:BYTE => b2u(a) = n2u(b2n(a)));
+
+  !a.(a:UNSIGNED & u2n(a):0..255 => u2b(a) = n2b(u2n(a)));
+
+  !(a,b).(a:BYTE & b:BYTE => bb2u(a,b) = n2u(b2n(a)*256 + b2n(b)));
+
+  !a.(a:NAT1 => n2bl(a) = TRUE);
+
+
+  (n2u(a) = n2u(b))    => (a = b);
+
+  (n2b(a) = n2b(b))    => (a = b);
+
+  (u2n(a) = u2n(b))    => (a = b);
+
+  (b2n(a) = b2n(b))    => (a = b)
+
+
+END
+
+&
+
+THEORY FwdNotEqual1X IS
+
+  not(b2n(a) + b = b2n(c))   => not(a + n2b(b) = c);
+
+  not(b2n(a) - b = b2n(c))   => not(a - n2b(b) = c);
+
+
+  not(a = b2n(b)) => not(n2b(a) = b);
+
+  not(a = u2n(b)) => not(n2u(a) = b);
+
+
+  not(n2u(a) = n2u(b))    => not(a = b);
+
+  not(n2b(a) = n2b(b))    => not(a = b);
+
+  not(u2n(a) = u2n(b))    => not(a = b);
+
+  not(b2n(a) = b2n(b))    => not(a = b)
+
+
+END
+
+&
+
+
+
+
+
+
+THEORY LessThanOrEqualX IS
+
+
+    bcall( SwitchX : (b : BYTE) )
+   =>
+    n2b(a) + b <= n2b(a);
+
+    bcall( SwitchX : (b : UNSIGNED) )
+   =>
+    n2u(a) + b <= n2u(a);
+
+
+    bcall( SwitchX~ : ( (a < n2b(255)) & (a < b) ) )
+   =>
+    a + n2b(1) <= b;
+
+    bcall( SwitchX~ : ( (a < n2u(65535)) & (a < b) ) )
+   =>
+    a + n2u(1) <= b;
+
+
+  bcall( SwitchX : (b : BYTE) )
+ =>
+  n2b(a) <= b + n2b(a);
+
+  bcall( SwitchX : (b : UNSIGNED) )
+ =>
+  n2u(a) <= b + n2u(a);
+
+
+/*
+  bcall( SwitchX~ : (a <= n2u(b)) )
+ =>
+  u2n(a) <= b;
+
+  bcall( SwitchX~ : (n2u(b) <= a) )
+ =>
+  b <= u2n(a);
+
+  bcall( SwitchX~ : (a <= n2b(b)) )
+ =>
+  b2n(a) <= b;
+
+  bcall( SwitchX~ : (n2b(b) <= a) )
+ =>
+  b <= b2n(a);
+*/
+
+
+/*
+  btest(65535<=b)
+ =>
+  u2n(a) <= b;
+
+  btest(255<=b)
+ =>
+  b2n(a) <= b;
+*/
+
+
+  bcall( SwitchX~ : (a + b <= c) )
+ =>
+  b2n(a) + b2n(b) <= b2n(c);
+
+  bcall( SwitchX~ : (a * b <= c) )
+ =>
+  b2n(a) * b2n(b) <= b2n(c);
+
+  bcall( SwitchX~ : ( a * b + c <= d) )
+ =>
+  b2n(a) * b2n(b) + b2n(c) <= b2n(d);
+
+
+  bcall( SwitchX~ : (a + b <= c) )
+ =>
+  u2n(a) + u2n(b) <= u2n(c);
+
+  bcall( SwitchX~ : (a * b <= c) )
+ =>
+  u2n(a) * u2n(b) <= u2n(c);
+
+  bcall( SwitchX~ : (a * b + c <= d) )
+ =>
+  u2n(a) * u2n(b) + u2n(c) <= u2n(d);
+
+
+    bcall( SwitchX~ : (a <= b) )
+   =>
+    b2n(a) <= b2n(b);
+
+    bcall( SwitchX~ : (a <= b) )
+   =>
+    u2n(a) <= u2n(b);
+
+    bcall( SwitchX~ : (a <= b) )
+   =>
+    n2b(a) <= n2b(b);
+
+    bcall( SwitchX~ : (a <= b) )
+   =>
+    n2u(a) <= n2u(b)
+
+END
+
+&
+
+THEORY LessThanX IS
+
+
+    bcall( SwitchX : (a < n2b(255)) )
+   =>
+    a < a + n2b(1);
+
+    bcall( SwitchX : (a < n2u(65535)) )
+   =>
+    a < a + n2u(1);
+
+
+  a < a + n2b(b);
+
+  a < a + n2u(b);
+
+
+  btest(a < 65535) &
+  bcall( SwitchX~ : (n2u(a + 1 ) <= b) )
+ =>
+  n2u(a) < b;
+
+  btest(a < 255) &
+  bcall( SwitchX~ : (n2b(a + 1 ) <= b) )
+ =>
+  n2b(a) < b;
+
+
+/*
+  bcall( SwitchX~ : (a < n2u(b)) )
+ =>
+  u2n(a) < b;
+
+  bcall( SwitchX~ : (n2u(b) < a) )
+ =>
+  b < u2n(a);
+
+  bcall( SwitchX~ : (a < n2b(b)) )
+ =>
+  b2n(a) < b;
+
+  bcall( SwitchX~ : (n2b(b) < a) )
+ =>
+  b < b2n(a);
+*/
+
+
+  bcall( SwitchX~ : (a + b < c) )
+ =>
+  b2n(a) + b2n(b) < b2n(c);
+
+  bcall( SwitchX~ : (a * b < c) )
+ =>
+  b2n(a) * b2n(b) < b2n(c);
+
+  bcall( SwitchX~ : (a * b + c < d) )
+ =>
+  b2n(a) * b2n(b) + b2n(c) < b2n(d);
+
+
+  bcall( SwitchX~ : (a + b < c) )
+ =>
+  u2n(a) + u2n(b) < u2n(c);
+
+  bcall( SwitchX~ : (a * b < c) )
+ =>
+  u2n(a) * u2n(b) < u2n(c);
+
+  bcall( SwitchX~ : (a * b + c < d) )
+ =>
+  u2n(a) * u2n(b) + u2n(c) < u2n(d);
+
+
+    bcall( SwitchX~ : (a < b) )
+   =>
+    b2n(a) < b2n(b);
+
+    bcall( SwitchX~ : (a < b) )
+   =>
+    u2n(a) < u2n(b);
+
+    bcall( SwitchX~ : (a < b) )
+   =>
+    n2b(a) < n2b(b);
+
+    bcall( SwitchX~ : (a < b) )
+   =>
+    n2u(a) < n2u(b)
+
+
+END
+
+&
+
+THEORY EqualityX IS
+
+
+  bcall( SwitchX~ : (a = n2b(c)) )
+ =>
+  a + n2b(b) = n2b(c + b);
+
+  bcall( SwitchX~ : (n2b(c) = a) )
+ =>
+  n2b(c + b) = a + n2b(b);
+
+  bcall( SwitchX~ : (a = n2u(c)) )
+ =>
+  a + n2u(b) = n2u(c + b);
+
+  bcall( SwitchX~ : (n2u(c) = a) )
+ =>
+  n2u(c + b) = a + n2u(b);
+
+/*
+  bcall( SwitchX~ : (a = n2u(b)) )
+ =>
+  u2n(a) = b;
+
+  bcall( SwitchX~ : (n2u(b) = a) )
+ =>
+  b = u2n(a);
+
+  bcall( SwitchX~ : (a = n2b(b)) )
+ =>
+  b2n(a) = b;
+
+  bcall( SwitchX~ : (n2b(b) = a) )
+ =>
+  b = b2n(a);
+*/
+
+
+  bcall( SwitchX~ : (a + b = c) )
+ =>
+  b2n(a) + b2n(b) = b2n(c);
+
+  bcall( SwitchX~ : (a * b = c) )
+ =>
+  b2n(a) * b2n(b) = b2n(c);
+
+  bcall( SwitchX~ : (a * b + c = d) )
+ =>
+  b2n(a) * b2n(b) + b2n(c) = b2n(d);
+
+
+  bcall( SwitchX~ : (a + b = c) )
+ =>
+  u2n(a) + u2n(b) = u2n(c);
+
+  bcall( SwitchX~ : (a * b = c) )
+ =>
+  u2n(a) * u2n(b) = u2n(c);
+
+  bcall( SwitchX~ : (a * b + c = d) )
+ =>
+  u2n(a) * u2n(b) + u2n(c) = u2n(d);
+
+
+    bcall( SwitchX~ : (a = b) )
+   =>
+    b2n(a) = b2n(b);
+
+    bcall( SwitchX~ : (a = b) )
+   =>
+    u2n(a) = u2n(b);
+
+    bcall( SwitchX~ : (a = b) )
+   =>
+    n2b(a) = n2b(b);
+
+    bcall( SwitchX~ : (a = b) )
+   =>
+    n2u(a) = n2u(b)
+
+
+END
+
+&
+
+THEORY NotEqualX IS
+
+    bcall( SwitchX~ : (not(a = b)) )
+   =>
+    not(b2n(a) = b2n(b));
+
+    bcall( SwitchX~ : (not(a = b)) )
+   =>
+    not(u2n(a) = u2n(b));
+
+    bcall( SwitchX~ : (not(a = b)) )
+   =>
+    not(n2b(a) = n2b(b));
+
+    bcall( SwitchX~ : (not(a = b)) )
+   =>
+    not(n2u(a) = n2u(b))
+
+END
+
+&
+
+THEORY InSetX IS
+
+  n2b(c) <= a &
+  a <= n2b(d)
+ =>
+  a : n2b[c..d];
+
+  n2u(c) <= a &
+  a <= n2u(d)
+ =>
+  a : n2u[c..d];
+
+
+  bcall(SwtichX : ( (n2u(0)<=a) & (a <= n2u(65535)) ) )
+ =>
+  a : UNSIGNED;
+
+  bcall(SwtichX : (b <= a) )
+ =>
+  a - b : UNSIGNED;
+
+  bcall(SwtichX : (a < n2u(65535)) )
+ =>
+  a + n2u(1) : UNSIGNED;
+
+  bcall(SwtichX : (n2u(0) < a) )
+ =>
+  a - n2u(1) : UNSIGNED;
+
+  bcall( SwitchX~ : ( (0<=a) & (a<=65535) ) )
+ =>
+  n2u(a) : UNSIGNED;
+
+
+  bcall( SwitchX~ : ( (a : UNSIGNED) & (a <= n2u(255)) ) )
+ =>
+  u2b(a) : BYTE;
+
+  bcall( SwitchX~ : (a : BYTE) )
+ =>
+  b2u(a) : UNSIGNED;
+
+
+
+  bcall(SwtichX : ( (n2b(0)<=a) & (a <= n2b(255) ) ) )
+ =>
+  a : BYTE;
+
+  bcall(SwtichX : (a < n2b(255)) )
+ =>
+  a + n2b(1) : BYTE;
+
+  bcall(SwtichX : (n2b(0) < a) )
+ =>
+  a - n2b(1) : BYTE;
+
+  bcall(SwtichX : (n2b(1) <= a) )
+ =>
+  a - n2b(1) : BYTE;
+
+  bcall(SwtichX : ( (0<=a) & (a <= 255) ) )
+ =>
+  n2b(a) : BYTE;
+
+
+
+
+  bcall(SwtichX : (a : UNSIGNED) )
+ =>
+  u2n(a) : NAT;
+
+  bcall(SwtichX : (a : BYTE) )
+ =>
+  b2n(a) : NAT
+
+END
+
+&
+
+THEORY Exist0X IS
+
+    bcall ( SwitchX~ : ( (0 <= b) & (b <= 255) ) )
+   =>
+    (#a.(a=n2b(b)));
+
+    bcall ( SwitchX~ : ( (0 <= b) & (b <= 65535) ) )
+   =>
+    (#a.(a=n2u(b)))
+
+END
+
+&
+
+THEORY RewriteRelation1X IS
+
+
+/*
+    btest(b<=255)
+   =>
+    (u2b(a) + b) == u2b(a + b2u(b));
+
+    binhyp(b<=255)
+   =>
+    (u2b(a) + b) == u2b(a + b2u(b));
+
+    btest(b<=65535)
+   =>
+    (u2n(a) + b) == u2n(a + n2u(b));
+
+    binhyp(b<=65535)
+   =>
+    (u2n(a) + b) == u2n(a + n2u(b));
+*/
+
+
+  n2u(u2n(a)) == a;
+
+  n2b(b2n(a)) == a;
+
+
+  btest(0<=a) &
+  btest(a<=255)
+ =>
+  b2n(n2b(a)) == a;
+
+  binhyp(0<=a) &
+  binhyp(a<=255)
+ =>
+  b2n(n2b(a)) == a;
+
+
+  btest(0<=a) &
+  btest(a<=65535)
+ =>
+  u2n(n2u(a)) == a;
+
+  binhyp(0<=a) &
+  binhyp(a<=65535)
+ =>
+  u2n(n2u(a)) == a;
+
+
+
+  b2u(a) == n2u(b2n(a));
+
+
+  u2b(a) == n2b(u2n(a));
+
+
+  binhyp(not(a=n2b(0)))
+ =>
+  b2bl(a) == TRUE;
+
+/*
+  btest(0<=a) &
+  btest(a<=255) &
+  btest(0<=b) &
+  btest(b<=255)
+ =>
+*/
+  bb2u(a,b) == n2u(b2n(a)*256 + b2n(b));
+
+/*
+  binhyp(0<=a) &
+  binhyp(a<=255) &
+  binhyp(0<=b) &
+  binhyp(b<=255)
+ =>
+*/
+  bb2u(a,b) == n2u(b2n(a)*256 + b2n(b));
+
+
+
+
+  ran(n2b) == BYTE;
+
+  ran(b2n) == (0..255);
+
+  ran(b2bl) == BOOL;
+
+  ran(bl2b) == {n2b(0),n2b(1)};
+
+  bl2b(FALSE) == n2b(0);
+
+  bl2b(TRUE)  == n2b(1);
+
+  bnum(a) &
+  btest(0<a)
+ =>
+  b2bl(n2b(a)) == TRUE;
+
+  binhyp(n2b(0)<a)
+ =>
+  b2bl(a) == TRUE;
+
+  ran(n2u) == UNSIGNED;
+
+  ran(u2n) ==  (0..65535);
+
+  ran(b2u) == UNSIGNED;
+
+  ran(u2b) == BYTE;
+
+  ran(bb2u) == UNSIGNED;
+
+
+  ran(n2bl) == BOOL;
+
+  ran(bl2n) == {0,1};
+
+  n2bl(0) == FALSE;
+
+  btest(0<a)
+  =>
+  n2bl(a) == TRUE;
+
+  binhyp(a:NAT1)
+  =>
+  n2bl(a) == TRUE;
+
+  n2bl(1) == TRUE;
+
+
+  bl2n(TRUE) == 1;
+
+  bl2n(FALSE) == 0
+
+
+END

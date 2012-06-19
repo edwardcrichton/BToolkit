@@ -1,0 +1,17 @@
+PROOFMETHOD
+
+  Person2_1.imp.1
+
+IS
+
+  USETAC
+
+    (UsersTheory~),
+    (FwdUsersTheory~;FEQL~)
+
+  ON
+    Add_person, Get_person_details, Remove_person
+
+  END
+
+END

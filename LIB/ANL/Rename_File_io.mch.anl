@@ -1,0 +1,680 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(String_TYPE(?):(?):((?),(?),(?)))
+,
+(Scalar_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_OPEN_READ,Rename_OPEN_WRITE,Rename_OPEN_APPEND,Rename_CLOSE,Rename_PUT_STR,Rename_PUT_CHAR,Rename_PUT_BLK,Rename_PUT_NWL,Rename_PUT_NAT,Rename_PUT_TOK,Rename_GET_STR,Rename_GET_CHAR,Rename_GET_NAT,Rename_GET_TOK,Rename_FLUSH)
+;
+(Rename_OPEN_READ , Rename_OPEN_WRITE , Rename_OPEN_APPEND , Rename_CLOSE , Rename_PUT_STR , Rename_PUT_CHAR , Rename_PUT_BLK , Rename_PUT_NWL , Rename_PUT_NAT , Rename_PUT_TOK , Rename_GET_STR , Rename_GET_CHAR , Rename_GET_NAT , Rename_GET_TOK , Rename_FLUSH)
+;
+(Rename_File_io(TOKEN):(card(TOKEN) : NAT1):(?))
+;
+(
+(
+ (Rename_OPEN_READ)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_OPEN_READ(filename)))
+;
+ (filename)
+;
+ (rep)
+;
+ (
+ (filename : STRING)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (filename : STRING)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_OPEN_WRITE)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_OPEN_WRITE(filename)))
+;
+ (filename)
+;
+ (rep)
+;
+ (
+ (filename : STRING)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (filename : STRING)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_OPEN_APPEND)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_OPEN_APPEND(filename)))
+;
+ (filename)
+;
+ (rep)
+;
+ (
+ (filename : STRING)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (filename : STRING)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_CLOSE)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_CLOSE))
+;
+ (?)
+;
+ (rep)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_STR)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_PUT_STR(ss)))
+;
+ (ss)
+;
+ (rep)
+;
+ (
+ (ss : STRING)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (ss : STRING)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_CHAR)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_PUT_CHAR(cc)))
+;
+ (cc)
+;
+ (rep)
+;
+ (
+ (cc : CHAR)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (cc : CHAR)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_BLK)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_PUT_BLK(nn)))
+;
+ (nn)
+;
+ (rep)
+;
+ (
+ (nn : SCALAR)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (nn : SCALAR)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_NWL)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_PUT_NWL(nn)))
+;
+ (nn)
+;
+ (rep)
+;
+ (
+ (nn : SCALAR)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (nn : SCALAR)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_NAT)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_PUT_NAT(nn)))
+;
+ (nn)
+;
+ (rep)
+;
+ (
+ (nn : SCALAR)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (nn : SCALAR)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_PUT_TOK)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_PUT_TOK(tt)))
+;
+ (tt)
+;
+ (rep)
+;
+ (
+ (tt : TOKEN)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (tt : TOKEN)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_GET_STR)
+;
+ (? , Val_Op , NonDet_Op , (rep , ss <-- Rename_GET_STR))
+;
+ (?)
+;
+ (rep , ss)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rep :: BOOL ||
+ ss :: STRING
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ ||
+ (
+ @(ssx).
+ (
+ (
+ (ssx : STRING)
+ )
+ ==>
+ (
+ (ss := ssx)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_GET_CHAR)
+;
+ (? , Val_Op , NonDet_Op , (rep , cc <-- Rename_GET_CHAR))
+;
+ (?)
+;
+ (rep , cc)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rep :: BOOL ||
+ cc :: CHAR
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ ||
+ (
+ @(ccx).
+ (
+ (
+ (ccx : CHAR)
+ )
+ ==>
+ (
+ (cc := ccx)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_GET_NAT)
+;
+ (? , Val_Op , NonDet_Op , (rep , nn <-- Rename_GET_NAT))
+;
+ (?)
+;
+ (rep , nn)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rep :: BOOL ||
+ nn :: SCALAR
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ ||
+ (
+ @(nnx).
+ (
+ (
+ (nnx : SCALAR)
+ )
+ ==>
+ (
+ (nn := nnx)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_GET_TOK)
+;
+ (? , Val_Op , NonDet_Op , (rep , tt <-- Rename_GET_TOK))
+;
+ (?)
+;
+ (rep , tt)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rep :: BOOL ||
+ tt :: TOKEN
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ ||
+ (
+ @(ttx).
+ (
+ (
+ (ttx : TOKEN)
+ )
+ ==>
+ (
+ (tt := ttx)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_FLUSH)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_FLUSH))
+;
+ (?)
+;
+ (rep)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+)

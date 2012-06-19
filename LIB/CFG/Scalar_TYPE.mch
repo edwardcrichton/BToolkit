@@ -1,0 +1,14 @@
+MACHINE         Scalar_TYPE
+
+SETS            SCALAR
+
+PROPERTIES
+
+  SCALAR = 0..2147483646 &
+  card(SCALAR) = 2147483647
+
+DEFINITIONS
+
+ MaxScalar == 2147483646  /* 2 to the 31 - 2 */
+
+END

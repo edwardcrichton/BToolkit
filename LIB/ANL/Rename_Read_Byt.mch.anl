@@ -1,0 +1,101 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_byt_ro)
+;
+(Rename_byt_ro)
+;
+(Rename_byt_ro : BYTE)
+;
+(Rename_byt_ro : BYTE)
+;
+(?)
+;
+(Rename_byt_ro :: BYTE)
+;
+(@Rename_byt_rox.(Rename_byt_rox : BYTE ==> Rename_byt_ro := Rename_byt_rox))
+;
+(Rename_READ)
+;
+(Rename_READ)
+;
+(Rename_Read_Byt(?):(?):(?))
+;
+(
+(
+ (Rename_READ)
+;
+ (? , Mod_Op , NonDet_Op , (vv <-- Rename_READ))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv := Rename_byt_ro ||
+ Rename_byt_ro :: BYTE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (vv := Rename_byt_ro)
+ )
+ ||
+ (
+ @(Rename_byt_rox).
+ (
+ (
+ (Rename_byt_rox : BYTE)
+ )
+ ==>
+ (
+ (Rename_byt_ro := Rename_byt_rox)
+ )
+ )
+ )
+ )
+ )
+)
+)

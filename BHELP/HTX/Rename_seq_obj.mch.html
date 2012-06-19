@@ -1,0 +1,437 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_seq_obj">
+  <TITLE>The Rename_seq_obj machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>      Rename_seq_obj(VALUE,maxobj,maxmem)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>  maxobj&gt;0
+
+<A NAME="SEES"><B>SEES</B></A>         <A HREF="Rename_seq_ctx.mch.html#MACHINE">Rename_seq_ctx</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>
+
+  Rename_seqtok, Rename_seqstruct, Rename_seqmem
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_seqtok <: <A HREF="Rename_seq_ctx.mch.html#SETS">Rename_SEQOBJ</A> &
+  Rename_seqstruct: Rename_seqtok --&gt; seq(VALUE) &
+  Rename_seqmem = SIGMA tt.(tt : Rename_seqtok| size(Rename_seqstruct(tt))) &
+  Rename_seqmem:  NAT &  
+  Rename_seqmem &lt;= maxmem
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_seqtok, Rename_seqstruct, Rename_seqmem := {},{}, 0
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/******************  General query functions *********************/
+
+  bb <-- <A NAME="OPNAME!Rename_MEM_FUL_SEQ_OBJ">Rename_MEM_FUL_SEQ_OBJ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(Rename_seqmem=maxmem)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_OBJ_FUL_SEQ_OBJ">Rename_OBJ_FUL_SEQ_OBJ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(card(Rename_seqtok) =  maxobj)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_SEQ_OBJ">Rename_XST_SEQ_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: <A HREF="Rename_seq_ctx.mch.html#SETS">Rename_SEQOBJ</A>
+  <B>THEN</B>
+    bb:=<B>bool</B>(pp:Rename_seqtok)
+  <B>END</B>;
+
+
+/******************  Creating and deleting sequences **************/
+
+
+  <A NAME="OPNAME!Rename_INI_SEQ_OBJ">Rename_INI_SEQ_OBJ</A> =
+  <B>BEGIN</B>
+    Rename_seqtok, Rename_seqstruct, Rename_seqmem := {},{}, 0
+  <B>END</B>;
+
+  pp <-- <A NAME="OPNAME!Rename_ANY_SEQ_OBJ">Rename_ANY_SEQ_OBJ</A> =
+  <B>BEGIN</B>
+    pp :: <A HREF="Rename_seq_ctx.mch.html#SETS">Rename_SEQOBJ</A>
+  <B>END</B>;
+
+
+  bb,pp <-- <A NAME="OPNAME!Rename_CRE_SEQ_OBJ">Rename_CRE_SEQ_OBJ</A> =
+  <B>IF</B> card(Rename_seqtok) < maxobj <B>THEN</B>
+      <B>ANY</B> qq <B>WHERE</B>
+        qq: <A HREF="Rename_seq_ctx.mch.html#SETS">Rename_SEQOBJ</A> - Rename_seqtok
+      <B>THEN</B>
+        Rename_seqstruct(qq):=<> ||
+        Rename_seqtok := Rename_seqtok \/ {qq} ||
+        pp:=qq ||
+        bb := TRUE
+      <B>END</B>
+  <B>ELSE</B>
+      bb:= FALSE || pp :: <A HREF="Rename_seq_ctx.mch.html#SETS">Rename_SEQOBJ</A>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_KIL_SEQ_OBJ">Rename_KIL_SEQ_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_seqtok &
+    Rename_seqmem &gt;= size(Rename_seqstruct(pp))
+  <B>THEN</B>
+    Rename_seqstruct :=  {pp} &lt;<| Rename_seqstruct ||
+    Rename_seqtok := Rename_seqtok - {pp} ||
+    Rename_seqmem := Rename_seqmem - size(Rename_seqstruct(pp))
+  <B>END</B>;
+
+
+/******************  Query functions for individual sequences **********/
+
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_SEQ_OBJ">Rename_VAL_SEQ_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    ii:dom(Rename_seqstruct(pp))
+  <B>THEN</B> 
+    vv:=Rename_seqstruct(pp)(ii)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_IDX_SEQ_OBJ">Rename_XST_IDX_SEQ_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp: Rename_seqtok &
+    ii: 1..maxmem
+  <B>THEN</B>
+    bb:=<B>bool</B>(ii:1..size(Rename_seqstruct(pp)))
+  <B>END</B>;
+
+  nn <-- <A NAME="OPNAME!Rename_LEN_SEQ_OBJ">Rename_LEN_SEQ_OBJ</A>(pp)=
+  <B>PRE</B>
+    pp: Rename_seqtok
+  <B>THEN</B>
+    nn:=size(Rename_seqstruct(pp))
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EMP_SEQ_OBJ">Rename_EMP_SEQ_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_seqtok
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_seqstruct(pp)=<>)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_SEQ_OBJ">Rename_EQL_SEQ_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+     tt : Rename_seqtok &
+     ss : Rename_seqtok
+  <B>THEN</B>
+     bb := <B>bool</B>(Rename_seqstruct(tt) = Rename_seqstruct(ss))
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_MBR_SEQ_OBJ">Rename_MBR_SEQ_OBJ</A>(tt,vv) =
+  <B>PRE</B>
+     tt : Rename_seqtok &
+     vv : VALUE
+  <B>THEN</B>
+     <B>IF</B> vv : ran(Rename_seqstruct(tt)) <B>THEN</B>
+        <B>ANY</B> kk <B>WHERE</B>
+           kk: NAT & (Rename_seqstruct(tt))(kk) = vv
+        <B>THEN</B>
+            bb := TRUE || ii := kk  
+        <B>END</B> 
+     <B>ELSE</B>
+        bb := FALSE || ii :: NAT
+     <B>END</B> 
+  <B>END</B>;
+
+
+/******************   Sequence Operations ***********************/
+
+
+  bb <-- <A NAME="OPNAME!Rename_PSH_SEQ_OBJ">Rename_PSH_SEQ_OBJ</A>(pp,vv) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    vv: VALUE
+    /* Rename_seqmem &lt; maxmem */
+  <B>THEN</B>
+    <B>IF</B> Rename_seqmem<maxmem <B>THEN</B>
+      Rename_seqstruct(pp):=Rename_seqstruct(pp) &lt;- vv ||
+      Rename_seqmem:=Rename_seqmem+1 ||
+      bb := TRUE
+    <B>ELSE</B>
+      bb := FALSE
+    <B>END</B>
+  <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_CLR_SEQ_OBJ">Rename_CLR_SEQ_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_seqtok  /* &
+    Rename_seqmem &gt;= size(Rename_seqstruct(pp)) */
+  <B>THEN</B>
+    Rename_seqstruct(pp) := <> ||
+    Rename_seqmem := Rename_seqmem - size(Rename_seqstruct(pp))
+  <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_KEP_SEQ_OBJ">Rename_KEP_SEQ_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    ii:0..size(Rename_seqstruct(pp)) &
+    Rename_seqmem &gt;= size(Rename_seqstruct(pp))+ii
+  <B>THEN</B>
+    Rename_seqstruct(pp):=Rename_seqstruct(pp) /|\ ii ||
+    Rename_seqmem:=Rename_seqmem-size(Rename_seqstruct(pp))+ii
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_CUT_SEQ_OBJ">Rename_CUT_SEQ_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    ii:0..size(Rename_seqstruct(pp)) &
+    Rename_seqmem &gt;= ii
+  <B>THEN</B>
+    Rename_seqstruct(pp):=Rename_seqstruct(pp) \|/ ii ||
+    Rename_seqmem:=Rename_seqmem-ii
+  <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_REV_SEQ_OBJ">Rename_REV_SEQ_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp:Rename_seqtok
+  <B>THEN</B>
+    Rename_seqstruct(pp):=rev(Rename_seqstruct(pp))
+  <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_SWP_SEQ_OBJ">Rename_SWP_SEQ_OBJ</A>(pp,ii,jj) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    ii:dom(Rename_seqstruct(pp)) &
+    jj:dom(Rename_seqstruct(pp))
+  <B>THEN</B>
+    Rename_seqstruct(pp):= (
+     Rename_seqstruct(pp) &lt;+  (
+       {ii |-&gt; Rename_seqstruct(pp)(jj), jj |-&gt; Rename_seqstruct(pp)(ii) }
+       )
+     )
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_POP_SEQ_OBJ">Rename_POP_SEQ_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    Rename_seqstruct(pp)/=<> &
+    Rename_seqmem &gt; 0
+  <B>THEN</B>
+    Rename_seqstruct(pp):= front(Rename_seqstruct(pp)) ||
+    Rename_seqmem:=Rename_seqmem-1
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_STO_SEQ_OBJ">Rename_STO_SEQ_OBJ</A>(pp,ii,vv) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    vv:VALUE &
+    ii:1..size(Rename_seqstruct(pp))
+  <B>THEN</B> 
+    Rename_seqstruct(pp)(ii):=vv
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_APP_SEQ_OBJ">Rename_APP_SEQ_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    qq:Rename_seqtok 
+    /* Rename_seqmem+size(Rename_seqstruct(qq))&lt;=maxmem */
+  <B>THEN</B>
+    <B>IF</B>
+     Rename_seqmem+size(Rename_seqstruct(qq))&lt;=maxmem
+    <B>THEN</B>
+      Rename_seqstruct(pp):= (
+        Rename_seqstruct(pp)^Rename_seqstruct(qq) 
+      ) ||
+      Rename_seqmem:= (
+       Rename_seqmem+size(Rename_seqstruct(qq)) 
+      ) ||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_CPY_SEQ_OBJ">Rename_CPY_SEQ_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    qq:Rename_seqtok 
+    /* Rename_seqmem -  ( 
+     size(Rename_seqstruct(qq)) + size(Rename_seqstruct(pp))
+     ) &lt;= maxmem  */
+  <B>THEN</B>
+    <B>IF</B>
+     Rename_seqmem - (
+       size(Rename_seqstruct(qq))+ (
+         size(Rename_seqstruct(pp))
+       )
+     ) &lt;= maxmem
+    <B>THEN</B>
+      Rename_seqstruct(qq):=Rename_seqstruct(pp) ||
+      Rename_seqmem:= (
+       Rename_seqmem-size(Rename_seqstruct(qq))+ ( 
+         size(Rename_seqstruct(pp)) 
+         )
+      )||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_OVR_SEQ_OBJ">Rename_OVR_SEQ_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_seqtok &
+    qq:Rename_seqtok 
+    /* Rename_seqmem + (
+     size(Rename_seqstruct(qq))-size(Rename_seqstruct(pp))
+    ) &lt;= maxmem */
+  <B>THEN</B>
+    <B>IF</B>
+      Rename_seqmem+ (
+        size(Rename_seqstruct(qq))-(
+          size(Rename_seqstruct(pp))
+        )
+      ) &lt;= maxmem
+    <B>THEN</B>
+      Rename_seqstruct(qq):= (
+        Rename_seqstruct(qq) &lt;+ Rename_seqstruct(pp) 
+      ) ||
+      Rename_seqmem:= (
+       Rename_seqmem + (
+         max({0,(size(Rename_seqstruct(qq))-(
+          size(Rename_seqstruct(pp))
+         ))}) 
+       )
+      ) ||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+/************************ Persistent storage facilities *****************/
+
+/***********  save/restore host byte order ***********/
+
+  <A NAME="OPNAME!Rename_SAV_SEQ_OBJ">Rename_SAV_SEQ_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RST_SEQ_OBJ">Rename_RST_SEQ_OBJ</A> =
+  <B>ANY</B>
+    sseqn,sseqo,stotseq
+  <B>WHERE</B>
+    sseqn <: <A HREF="Rename_seq_ctx.mch.html#SETS">Rename_SEQOBJ</A> &
+    sseqo: sseqn --&gt; seq(VALUE) &
+    stotseq:  NAT 
+  <B>THEN</B>
+    Rename_seqstruct := sseqo ||
+    Rename_seqtok := sseqn ||
+    Rename_seqmem := stotseq
+  <B>END</B>;
+
+/***********  save/restore network byte order ***********/
+
+  <A NAME="OPNAME!Rename_SAVN_SEQ_OBJ">Rename_SAVN_SEQ_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RSTN_SEQ_OBJ">Rename_RSTN_SEQ_OBJ</A> =
+  <B>ANY</B>
+    sseqn,sseqo,stotseq
+  <B>WHERE</B>
+    sseqn <: <A HREF="Rename_seq_ctx.mch.html#SETS">Rename_SEQOBJ</A> &
+    sseqo: sseqn --&gt; seq(VALUE) &
+    stotseq:  NAT 
+  <B>THEN</B>
+    Rename_seqstruct := sseqo ||
+    Rename_seqtok := sseqn ||
+    Rename_seqmem := stotseq
+  <B>END</B>;
+
+/************************** Browsing ************************************/
+
+  nn,pp <-- <A NAME="OPNAME!Rename_FIRST_SEQ_OBJ">Rename_FIRST_SEQ_OBJ</A> =  
+  <B>IF</B> not(Rename_seqtok = {}) <B>THEN</B>
+     pp :: Rename_seqtok || 
+     nn := card(Rename_seqtok) 
+  <B>ELSE</B>
+     pp :: <A HREF="Rename_seq_ctx.mch.html#SETS">Rename_SEQOBJ</A> ||
+     nn := 0
+  <B>END</B>;
+
+  nn,qq <-- <A NAME="OPNAME!Rename_NEXT_SEQ_OBJ">Rename_NEXT_SEQ_OBJ</A>(mm,pp) = 
+  <B>PRE</B>
+    pp : Rename_seqtok &
+    mm : NAT1
+  <B>THEN</B>
+    nn := mm-1 ||
+    qq :: Rename_seqtok
+  <B>END</B>;
+
+
+/********************** Input Output facilities ************************/
+
+  <A NAME="OPNAME!Rename_OUTPUT_SEQ_OBJ">Rename_OUTPUT_SEQ_OBJ</A>(SS,pp) =  
+  <B>PRE</B>
+    SS&lt;: VALUE &
+    pp: Rename_seqtok
+  <B>THEN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_INPUT_SEQ_OBJ">Rename_INPUT_SEQ_OBJ</A>(SS,pp,ll) = 
+  <B>PRE</B>
+    SS&lt;: VALUE &
+    pp: Rename_seqtok &
+    ll: 1..250
+  <B>THEN</B>
+     <B>IF</B> Rename_seqmem + ll <= maxmem <B>THEN</B>
+       <B>ANY</B> ss <B>WHERE</B>
+         ss : seq(VALUE) &
+         size(ss) = ll
+       <B>THEN</B>
+         Rename_seqstruct(pp) := Rename_seqstruct(pp) ^ ss ||
+         Rename_seqmem := Rename_seqmem + ll ||
+         bb := TRUE
+       <B>END</B>
+     <B>ELSE</B>
+     bb := FALSE
+   <B>END</B>
+  <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:52 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

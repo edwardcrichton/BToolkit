@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.33">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Time">
+  <TITLE>The Rename_Time machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>               Rename_Time
+
+<A NAME="SEES"><B>SEES</B></A>                  <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Scalar_TYPE.mch.html#MACHINE">Scalar_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>             Rename_time, Rename_expire
+
+/*
+  Rename_time is implemented as the system call "time(NULL)", and thus
+  represents the time in seconds cince 00:00:00 UTC, January 1, 1970
+*/
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_time : <A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A> &
+  Rename_expire : <A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A>
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_time :: <A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A> ||
+  Rename_expire := 0
+ 
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  time <-- <A NAME="OPNAME!Rename_GetTime">Rename_GetTime</A> = <B>BEGIN</B> time := Rename_time <B>END</B>;
+
+  start_time <-- <A NAME="OPNAME!Rename_StartTimer">Rename_StartTimer</A>(interval:<A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A>) =
+    <B>PRE</B> Rename_time + interval <= <A HREF="Scalar_TYPE.mch.html#DEFINITIONS">MaxScalar</A> <B>THEN</B>
+      Rename_expire := Rename_time + interval ||
+      start_time := Rename_time
+    <B>END</B>;
+
+  expired <-- <A NAME="OPNAME!Rename_CheckTimer">Rename_CheckTimer</A> =
+    <B>BEGIN</B> expired := <B>bool</B> ( Rename_expire <= Rename_time ) <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Feb 25 09:03:39 1999
+<BR>
+<IMG SRC="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Beta 4.33</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

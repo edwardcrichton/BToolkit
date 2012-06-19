@@ -1,0 +1,112 @@
+
+                     PERSON2 DEMONSTRATION
+                     ---------------------
+
+    The PERSON2 demonstration is similar to that of the PERSON1
+    demonstration. However, it illustrates the use the BASE generator
+    in the data and algorithmic design of a simple software module,
+    and in particular the use of the key_search operations provided
+    by the generator. The interface generator is used to produce running
+    code, and documentation tool to provide a final document.
+
+0.  Enter the PERSON2 directory and run the B-Toolkit to create a new
+    development directory.
+
+1.  Introduce `Person2.mch' from SRC and analyse (anl); the `Scalar_TYPE',
+    `Bool_TYPE' and `String_TYPE' SLIB machines are committed.
+
+2.  Animate `Person2.mch' to check its functionality (anm).
+    Give a value to the set `PERSON' only.
+
+3.  Check that the POGenerator setting is `non-trivial' (in the
+    Options->Provers Menu) and POGenerate `Person2.mch';
+    20 proof obligations are generated; enter the Provers environment
+    and invoke the ProofPrinter to print the proof obligations (ppf).
+    Open `Person2.mch.prf' file and inspect.
+
+4.  AutoProve `Person2.mch' (prv); all proof obligations are discharged.
+    The ProofPrinter (ppf) may again be invoked to generate the proof file
+    `Person2.mch.prf.0' which may be opened and inspected. This is slower
+    than AutoProof since `readable', concise proofs are being constructed.
+
+5.  Goto the Generators environment and Introduce `Person2Base.bse' from SRC
+    and open for inspection. It describes a single BASE, called `personbase',
+    comprising 3 MANDATORY fields: `name', `age' and `sex'. Enter the
+    Generators environment and generate the operations (gbo) (Note the warning
+    about `supported construct Person2I not configured' - this is dealt
+    with in 6.)
+
+6.  Open `Person2Base.ops', return to the Main environment and introduce
+    `Person2I.imp' and open for inspection. The following operations
+    are required from `Person2Base':
+
+        save_Person2Base
+        restore_Person2Base
+        make_personbase
+        kill_personbase
+        mod_name
+        key_search_name
+        val_age
+        val_sex
+
+    Return to the Generators environment and reset (rst) `Person2Base.bse';
+    regenerate the operations (gbo) - now only the operations actually
+    needed in Person2I will be generated.
+
+7.  Now generate (gbm) the machines of `Person2Base.bse'. The following SLIB
+    constructs are introduced:
+
+        Bit_TYPE
+        Int_TYPE
+        basic_io
+        Person2Base_str_ctx
+        Person2Base_str_obj
+        personbase_ffnc_ctx
+        personbase_ffnc_obj
+        file_dump
+
+8.  After the generated machines have been analysed, return to the
+    Main environment and open `Person2BaseI.imp' for inspection; note
+    how each operation is built on the SLIB object machines.
+
+9.  Construct -> Close All Open Constructs and analyse `Person2I.imp'.
+
+10. POGenerate `Person2I.imp': 32 proof obligations are generated;
+    enter the Provers environment and AutoProve (prv): 24 will be discharged
+    at Level 1 (using the standard library tactic), 7 will be discharged
+    at Level 2 (using the standard library tactic augmented by
+    `FEQL') (HAVE A CUP OF COFFEE!) and the final one discharged at 
+    Level 3 (using the same tactic as at Level 2 and a rule provided 
+    in the PROOFMETHOD, the rule is actually an assumption about the
+    the use of the system - and therefore forms part of the specification).
+    The proofs might be slow as the demo tactic is set up to produce a 
+    maximum of hypothesis (REASONING_DEPTH = 2). The ProofPrinter (ppf) 
+    may be invoked at any of the four Levels if required (HAVE LUNCH!).
+
+11. The development is now complete. In order to test it, we may
+    Introduce a new Interface of the implemented machine `Person2.mch' and
+    set the interface-flag Option to Non-Motif.
+
+12. Edit `Person2.itf' (to provide a suitable value for `max_person'),
+    enter the Generators Environment, commit edits (cmt) and generate
+    the interface (itf); the constructs:
+
+        Person2Io.mch
+        Person2IoI.imp
+        Person2Itf.mch
+        Person2ItfI.imp
+        Person2EnumItf.enm
+
+    are generated, and the SLIB construct `Itf_token_io.mch' is
+    introduced. The enumeration is first generated, all generated
+    machines analysed, all implementations translated and, finally,
+    `Person2ItfI' linked to produce running code which may be executed
+    in the Translators environment.
+
+13. Introduce a new Document of configured constructs; Change to the
+    Documents environment, edit and commit edits (cmt); set the required
+    Document flags (from the Options Menu), mark-up (dmu) and view on
+    screen (shw) or print (prt).
+
+14. As an exercise, change the implementation so that it is treated
+    as a fixed-length string (FSTRING).

@@ -1,0 +1,7485 @@
+/* Copyright (c) 1985-96, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define TransVHDLDirect(x) \
+  bcall(((ARI~;NEWV~;FLAT;LMAP;CATL;MODR;MAP;SUB;RULE;WRITE;SHELL)~;TransVHDLX)~:tv(x))
+
+#define FlagVHDLError     bcall(MODR:bmodr(VHDLErrorX.1,1))
+#define VHDLErrorFlagged  brule(VHDLErrorX.1,1)
+
+#define StoENUM(x) bcall(((MAP;RULE)~;StoENUMX)~:se(x))
+
+#define StoPROPERTIES(x) bcall(((MAP;RULE)~;StoPROPERTIESX)~:(sp bsmap x))
+
+#define StoMchColSETS(x,y) \
+          bcall(((MAP;RULE)~;StoMchColSETSX)~:(smcs(x) bsmap y))
+
+#define StoMchColCONSTS(x,y) \
+          bcall(((MAP;RULE)~;StoMchColCONSTSX)~:(smcc(x) bsmap y))
+
+#define StoMchColENUMEL(x,y) \
+          bcall(((MAP;RULE)~;StoMchColENUMELX)~:(smcee(x) bsmap y))
+
+#define StoMchColString(x) bcall(((RULE)~;StoMchColStringX)~:ss(x))
+
+#define StoMchColVAR(x,y) bcall(((MAP;RULE)~;StoMchColVARX)~:smcv(x,y))
+
+#define StoINV(x,y) bcall(((MAP;RULE)~;StoINVX)~:si(x)(y))
+
+#define ModifyAbs(x)  bmodr(TransVHDLX.1,x)
+#define ReadAbs(x)    brule(TransVHDLX.1,x)
+
+#define ModifyConc(x)  bmodr(TransVHDLX.2,x)
+#define ReadConc(x)    brule(TransVHDLX.2,x)
+
+#define ModifyIpt(x)  bmodr(TransVHDLX.3,x)
+#define ReadIpt(x)    brule(TransVHDLX.3,x)
+
+#define ModifySees(x)  bmodr(TransVHDLX.4,x)
+#define ReadSees(x)    brule(TransVHDLX.4,x)
+
+#define ModifyCodeFilename(x)  bcall((CATL;MODR):bmodr(TransVHDLX.6,x))
+#define ReadCodeFilename(x)    brule(TransVHDLX.6,x)
+
+#define ModifyPortOpname(x)  bmodr(TransVHDLX.7,x)
+#define ReadPortOpname(x)    brule(TransVHDLX.7,x)
+
+#define ModifyArchOpname(x)  bmodr(TransVHDLX.8,x)
+#define ReadArchOpname(x)    brule(TransVHDLX.8,x)
+
+#define ModifyEnumSetRewriteList(x)  bmodr(TransVHDLX.9,x)
+#define ReadEnumSetRewriteList(x)    brule(TransVHDLX.9,x)
+
+#define ModifyPORT_IN(x)  bmodr(StoPORT_INX.1,x)
+#define ReadPORT_IN(x)    brule(StoPORT_INX.1,x)
+
+#define ReadCurrentProcessName(x)   brule(PrintSMArchBodyX.1,x)
+#define ModifyCurrentProcessName(x) bmodr(PrintSMArchBodyX.1,x)
+
+#define ReadProcessGuard(x)   brule(PrintSMArchBodyX.2,x)
+#define ModifyProcessGuard(x) bmodr(PrintSMArchBodyX.2,x)
+
+#define ReadOpsInvoked(x)   brule(GetOpsInvokedX.1,x)
+#define ModifyOpsInvoked(x) bmodr(GetOpsInvokedX.1,x)
+
+#define ReadSensitivityList(x)    brule(GetSensitivityListX.1,x)
+#define ModifySensitivityList(x)  bmodr(GetSensitivityListX.1,x)
+
+#define ReadSensitivitySubstitution(x)     brule(GetSensitivityListX.2,x)
+#define ModifySensitivitySubstitution(x)   bmodr(GetSensitivityListX.2,x)
+
+#define ReadProcessEventGuard(x)      brule(DetermineProcessEventGuardX.1,x)
+#define ModifyProcessEventGuard(x)    bmodr(DetermineProcessEventGuardX.1,x)
+
+#define ModifyConcRename(x)  bmodr(CreConcRenameX.1,x)
+#define ReadConcRename(x)    brule(CreConcRenameX.1,x)
+
+#define ModifyAbsVarsNotRefined(x)  bmodr(GetAbsVarsNotRefinedX.1,x)
+#define ReadAbsVarsNotRefined(x)    brule(GetAbsVarsNotRefinedX.1,x)
+
+#define ReportAbsVarNotRefined(x,y) \
+    bcall(((ARI;MAP;SUB)~;ReportAbsVarNotRefinedX)~:ravnr(x)(y)(1))
+
+
+#define BadImplicitProcess(x)\
+   Writef(("\n\n  Bad implicit process (not recognised):\n\n    % ..", bsrv x berv))
+
+#define BadArchitectureSub(x)\
+   Writef(("\n\n  Bad architectire substitution (not recognised):\n\n    % ..", bsrv x berv))
+
+#define BadImplicitProcessWithELSE(x)\
+   Writef(("\n\n  Bad implicit process - \n\n    asynchronous event guard with ELSE:\n\n      % ..", bsrv x berv))
+
+#define BadImplicitProcessNotAllGuards(x)\
+   Writef(("\n\n  Bad implicit process guard - \n\n    asynchronous event in some (not all) guards:\n\n      % ..", bsrv x berv))
+
+
+#define keywords ("port","map","architecture","process","attribute","of","to","in","out","is","and","or","begin","end","entity","component","signal","if","case","else","elsif","then","for","downto","loop","after","num","integer","range","variable","when","type","library","use","package","select","with","others")
+
+#define print_dashes bprintf("\n------------------------------------------------------------------------------\n")
+
+#define bnl   bprintf("\n")
+#define bsc   bprintf(";")
+#define bscnl bprintf(";\n")
+#define bcm bprintf(",")
+#define bcmnl bprintf(",\n")
+
+
+THEORY TRACEX IS
+
+#define TRACE(x) \
+  bcall(((SHELL)~;TRACEX)~: trace(x))
+
+  HERE(("---------------- trace ---------------- ")) &
+  a
+ =>
+  trace(a);
+
+  btest(n>=0)
+ =>
+  trace(HERE((n))&x)
+
+END
+
+&
+
+THEORY MchColImportX END &
+
+THEORY MchColStringX END &
+
+THEORY MchColConcX END &
+
+THEORY MchColDotRenameX END &
+
+THEORY MchDotRenameStringX END & /* only for _SM */
+
+THEORY MchDotReverseRenameX END & /* only for _SM */
+
+THEORY CodeMchColOPX END &
+
+THEORY ConcMchColOPX END &
+
+THEORY MchColOPX END &
+
+THEORY MchColVARX END &
+
+THEORY MchCodeColVARX END &
+
+THEORY LocalVARX END &
+
+THEORY LocalVARTypeX END &
+
+THEORY MchCodeColSIGNALX END &
+
+THEORY MchColPROMOTESX END &
+
+THEORY MchColSETSX END &
+
+THEORY MchColENUMELX END &
+
+THEORY MchColCONSTSX END &
+
+THEORY PROMOTESColAssgnX END &
+
+THEORY INVX END &
+
+THEORY ConcINVX END &
+
+THEORY AbsVarsNotRefinedX END &
+
+THEORY LocalINVX END &
+
+THEORY IncompleteLocalINVX END &
+
+THEORY OTHER_PROPERTIESX END &
+
+THEORY EQ_PROPERTIESX END &
+
+THEORY PORT_INX END &
+
+THEORY PORT_OUTX END &
+
+THEORY OUTPUTX END &
+
+THEORY SIGNALX END &
+
+THEORY ENUMX END &
+
+THEORY ENUMELEMSX END &
+
+THEORY NONENUMX END &
+
+THEORY EVENT_OpNamesX END &
+
+THEORY ACK_OpNamesX END &
+
+THEORY AlreadyLoadedX END &
+
+THEORY ComponentPortNamesX END &
+
+THEORY ActualPortInvocationsX END &
+
+THEORY ActualOutputAssignmentsX END &
+
+THEORY ComponentArchNamesX END &
+
+THEORY EntityX END &
+
+THEORY InMapX END &
+
+THEORY PortMapX END &
+
+THEORY OutMapX END &
+
+THEORY PreProcessOpsX IS
+
+  /* (IF p THEN a:='1' ELSE a:='0' END) == (a := bool(p))*/
+
+  vec_conc(a,b) == (a&b);
+
+  bbitstring(a) &
+  bbitstring(b)
+ =>
+  vec_conc(a,b) == bcatl(a,b)
+
+END
+
+&
+
+THEORY CaseToSelectX IS
+
+#define CaseToSelect(x) \
+  bcall(((MODR)~;CaseToSelectX)~:cts(x))
+
+  ?;
+#define ModifyCaseToSelect(x)  bmodr(CaseToSelectX.1,x)
+#define ReadCaseToSelect(x)    brule(CaseToSelectX.1,x)
+
+
+
+  ModifyCaseToSelect((SELECT S ELSE E END))
+ =>
+  cts2(E)(SELECT S END)(?);
+
+  ModifyCaseToSelect((SELECT S END))
+ =>
+  cts2(?)(SELECT S END)(?);  /* no ELSE */
+
+  cts2(E)(SELECT S WHEN g THEN s END)(L)
+ =>
+  cts2(E)(SELECT S END)(L|g==>s);
+
+
+
+  cts2(E)(SELECT n=m THEN s END)(L)
+ =>
+  cts1(n)(E)(m THEN s)(L);
+
+  cts1(n)(E)(S)(L|n=m==>s)
+ =>
+  cts1(n)(E)(S OR m THEN s)(L);
+
+
+
+  cts1(n)(?)(s)(?) /* no ELSE */
+ =>
+  cts(CASE n OF EITHER s END END);
+
+  cts1(n)(t)(s)(?)
+ =>
+  cts(CASE n OF EITHER s ELSE t END END)
+
+END
+
+&
+
+THEORY EventDisjunctsX IS
+
+  /* (IF p THEN a:='1' ELSE a:='0' END) == (a := bool(p)); */
+
+  vec_conc(a,b) == (a&b);
+
+  bbitstring(a) &
+  bbitstring(b)
+ =>
+  vec_conc(a,b) == bcatl(a,b);
+
+  (BEGIN VAR a END END) == (VAR a END);
+
+  (BEGIN ANY a END END) == (ANY a END);
+
+  (BEGIN SELECT a END END) == (SELECT a END);
+
+  (BEGIN CASE a END END) == (CASE a END);
+
+  (BEGIN IF a END END) == (IF a END);
+
+  (IF true THEN a END) == a;
+
+  (true or a)==true;
+
+  (a or true)==true;
+
+  (true&a)==a;
+
+  (a&true)==a
+
+END &
+
+THEORY ArityOneSymbols IS NATURAL END &
+
+
+THEORY VHDLErrorX IS ? END &
+
+THEORY PrintspX IS
+
+#define VHDL_tab 2
+
+#define Printsp(x)   bcall(((WRITE;ARI~)~;PrintspX)~:ps(x))
+#define Printnlsp(x) bcall(((WRITE;ARI~)~;PrintspX)~:(bnl&ps(x)))
+
+  ps(n);
+
+  bprintf(" ")
+ =>
+  ps(1);
+
+  btest(n>=2) &
+  bprintf("  ") &
+  ps(n-2)
+ =>
+  ps(n);
+
+  btest(n>=4) &
+  bprintf("    ") &
+  ps(n-4)
+ =>
+  ps(n);
+
+  btest(n>=8) &
+  bprintf("        ") &
+  ps(n-8)
+ =>
+  ps(n);
+
+  btest(n>=16) &
+  bprintf("                ") &
+  ps(n-16)
+ =>
+  ps(n)
+
+END
+
+&
+
+THEORY ReappendX IS
+
+#define Reappend bcall(((WRITE)~;ReappendX)~:reapp)
+
+  ReadCodeFilename(f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  reapp;
+
+  ReadCodeFilename(f) &
+  bappend(f)
+ =>
+  reapp
+
+END
+
+&
+
+THEORY CreMchDotRenameStringX IS
+
+#define CreMchDotRenameString bcall(((ARI~;NEWV;RULE)~;CreMchDotRenameStringX)~:cmdrs(1))
+
+  ?;
+
+  brule(CreMchDotRenameStringX.1,(A,B)) &
+  bcrer(MchDotRenameStringX,(R.r:bnewv(R,r):A:B))
+ =>
+  cmdrs1(R.r);
+
+  cmdrs(N);
+
+  brule(MchColDotRenameX.N,(R.r:S:m)) &
+  cmdrs(N+1)
+ =>
+  cmdrs(N);
+
+  brule(MchColDotRenameX.N,(R.r:S:m)) &
+  brule(MchColStringX.M,(S:w:"_SM")) & /* only for _SM */
+  FifoWrite_Store((BT_POSTFIX_M,m,0),(CreMchDotRenameStringX.1)) &  
+  cmdrs1(R.r) &
+  cmdrs(N+1)
+ =>
+  cmdrs(N)
+
+END
+
+&
+
+THEORY CheckForCodeNameClashesX IS
+
+#define CheckForCodeNameClashes \
+    bcall(((ARI;MODR)~;CheckForCodeNameClashesX)~:ccnc1(1))
+
+  ?;
+
+
+
+  /*** Constants clash ***/
+
+  ccnc5(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  ccnc5(N+1)
+ =>
+  ccnc5(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  brule(MchColCONSTSX.Q,(k:s)) &
+  brule(MchColStringX.P,(m:A:B)) &
+  Writef(("\n\n    signal name % of ",bsrv s berv)) &
+  Writef((A)) &
+  Writef((".vhd\n  clashes with CONSTANT of % ..",k)) &
+  FlagVHDLError &
+  ccnc5(N+1)
+ =>
+  ccnc5(N);
+
+  /*** Enum Elem clash ***/
+
+  ccnc5(1)
+ =>
+  ccnc4(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  ccnc4(N+1)
+ =>
+  ccnc4(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  brule(ENUMELEMSX.M,(s:t)) &
+  brule(MchColStringX.P,(m:A:B)) &
+  brule(MchColSETSX.Q,(k:t)) &
+  Writef(("\n\n    signal name % of ",bsrv s berv)) &
+  Writef((A)) &
+  Writef((".vhd\n  clashes with ELEMENT of % (%) ..",bsrv t berv,k)) &
+  FlagVHDLError &
+  ccnc4(N+1)
+ =>
+  ccnc4(N);
+
+  /*** Enum Set clash ***/
+
+  ccnc4(1)
+ =>
+  ccnc3(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  ccnc3(N+1)
+ =>
+  ccnc3(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  brule(ENUMX.M,(s(E))) &
+  brule(MchColStringX.P,(m:A:B)) &
+  brule(MchColSETSX.Q,(k:t)) &
+  Writef(("\n\n    signal name % of ",bsrv s berv)) &
+  Writef((A)) &
+  Writef((".vhd\n  clashes with SET name of % ..",k)) &
+  FlagVHDLError &
+  ccnc3(N+1)
+ =>
+  ccnc3(N);
+
+  /*** Other signal clash ***/
+
+  ccnc3(1)
+ =>
+  ccnc2(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  ccnc2(N+1)
+ =>
+  ccnc2(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  brule(MchColVARX.W,(k:s)) &
+  brule(MchColStringX.P,(m:A:B)) &
+  brule(AlreadyLoadedX.Q,(k.t)) &
+  Writef(("\n\n    signal name clash:\n    % appears in ",bsrv s berv)) &
+  Writef((A)) &
+  Writef((".vhd and % ..",k.t)) &
+  FlagVHDLError &
+  ccnc2(N+1)
+ =>
+  ccnc2(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  brule(MchColVARX.W,(k:s)) &
+  brule(MchColStringX.P,(m:A:B)) & /* the ... */
+  brule(MchColStringX.Q,(k:A:B)) & /* ... same */
+  ccnc2(N+1)
+ =>
+  ccnc2(N);
+
+  /*** Code SIGNALS clash ***/
+
+  ccnc2(1)
+ =>
+  ccnc1(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  brule(CheckForCodeNameClashesX.1,L) &
+  bmodr(CheckForCodeNameClashesX.1,(L,(m:s))) &
+  ccnc1(N+1)
+ =>
+  ccnc1(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  brule(CheckForCodeNameClashesX.1,L) &
+  bsearch((k:s),L,T) &
+  brule(MchColStringX.P,(m:A:B)) &
+  brule(MchColStringX.Q,(k:C:D)) &
+  Writef(("\n\n    signal name clash:\n    % appears in ",bsrv s berv)) &
+  Writef((A)) &
+  Writef((".vhd and ")) &
+  Writef((C)) &
+  Writef((".vhd ..")) &
+  FlagVHDLError &
+  ccnc1(N+1)
+ =>
+  ccnc1(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  brule(CheckForCodeNameClashesX.1,L) &
+  bsearch((k:s),L,T) &
+  brule(MchColStringX.P,(m:A:B)) & /* the ... */
+  brule(MchColStringX.Q,(k:A:B)) & /* ... same */
+  ccnc1(N+1)
+ =>
+  ccnc1(N)
+
+END
+
+&
+
+THEORY CheckVariableUseX IS
+
+  ?; /* 1. */
+#define ModifyTmpVariablesAssignedToFound(x) bmodr(CheckVariableUseX.1,x)
+#define ReadTmpVariablesAssignedToFound(x)   brule(CheckVariableUseX.1,x)
+
+  ?; /* 2. */
+#define ModifyVariablesAssignedToPriorFoundPAR(x) bmodr(CheckVariableUseX.2,x)
+#define ReadVariablesAssignedToPriorFoundPAR(x)   brule(CheckVariableUseX.2,x)
+
+#define NoVariablesAssignedToPriorFoundPAR  ReadVariablesAssignedToPriorFoundPAR(?)
+
+  ?; /* 3. */
+#define ModifyVariableAssignmentPriorFoundPAR(x) bmodr(CheckVariableUseX.3,x)
+#define ReadVariableAssignmentPriorFoundPAR(x)   brule(CheckVariableUseX.3,x)
+
+  ?; /* 4. */
+#define ModifyCurrentArchVariables(x) bmodr(CheckVariableUseX.4,x)
+#define ReadCurrentArchVariables(x)   brule(CheckVariableUseX.4,x)
+
+
+#define CheckVariableUse(x)  bcall(((FLAT;MODR;MAP)~;CheckVariableUseX)~: \
+          (ModifyTmpVariablesAssignedToFound(?) & \
+           ModifyVariablesAssignedToPriorFoundPAR(?) & \
+           ModifyVariableAssignmentPriorFoundPAR(?) & \
+           cvu(x)))
+
+
+#define BadVariableUse(x,y,z)\
+   Writef(("\n\n    Bad use of variable % after it's assignment\n\n  Assignment:\n    %\n  is concurrent with:\n    %\n", bsrv x berv, bsrv y berv, bsrv z berv)) 
+
+
+
+  ReadVariableAssignmentPriorFoundPAR(S) &
+  bsearch((s:=e),S,T) &
+  FlagVHDLError &
+  BadVariableUse(s,(s:=e),C)
+ =>
+  cvu_err2(s)(C);
+
+  s\C
+ =>
+  cvu_err2(s)(C);
+
+  cvu_err2(s)(P) &
+  cvu_err2(s)(S)
+ =>
+  cvu_err2(s)(WHILE P DO S VARIANT V INVARIANT I END);
+
+  cvu_err2(s)(P) &
+  cvu_err2(s)(S)
+ =>
+  cvu_err2(s)(WHILE P DO S INVARIANT I VARIANT V END);
+
+  cvu_err2(s)(a) &
+  cvu_err2(s)(b)
+ =>
+  cvu_err2(s)(a THEN b);
+
+  cvu_err2(s)(a) &
+  cvu_err2(s)(b) &
+  cvu_err2(s)(c)
+ =>
+  cvu_err2(s)(a OR b THEN c);
+
+  cvu_err2(s)(a) &
+  cvu_err2(s)(b) &
+  cvu_err2(s)(c)
+ =>
+  cvu_err2(s)(a WHEN b THEN c);
+
+  cvu_err2(s)(a) &
+  cvu_err2(s)(b) &
+  cvu_err2(s)(c)
+ =>
+  cvu_err2(s)(a ELSIF b THEN c);
+
+  cvu_err2(s)(a) &
+  cvu_err2(s)(b)
+ =>
+  cvu_err2(s)(a ELSE b);
+
+  cvu_err2(s)(b)
+ =>
+  cvu_err2(s)(CASE a OF EITHER b END END);
+
+  cvu_err2(s)(a)
+ =>
+  cvu_err2(s)(SELECT a END);
+
+  cvu_err2(s)(a)
+ =>
+  cvu_err2(s)(IF a END);
+
+  cvu_err2(s)(c)
+ =>
+  cvu_err2(s)(ANY a WHERE b THEN c END);
+
+  cvu_err2(s)(b)
+ =>
+  cvu_err2(s)(VAR a IN b END);
+
+  cvu_err2(s)(a) &
+  cvu_err2(s)(b)
+ =>
+  cvu_err2(s)(a || b);
+
+  cvu_err2(s)(a) &
+  cvu_err2(s)(b)
+ =>
+  cvu_err2(s)(a ; b);
+
+  cvu_err2(s)(C)
+ =>
+  cvu_err1(C,s);
+
+  s\C
+ =>
+  cvu_err1(C,s);
+
+  cvu_err1(C) bsmap S
+ =>
+  cvu_err(S)(C);
+
+  ReadVariablesAssignedToPriorFoundPAR(S) &
+  cvu_err(S)(x)
+ =>
+  cvu(x);
+
+  ReadVariablesAssignedToPriorFoundPAR(S) &
+  S\x
+ =>
+  cvu(x);
+
+  NoVariablesAssignedToPriorFoundPAR
+ =>
+  cvu(x);
+
+  /*** semi-colon update ***/
+
+  ReadVariablesAssignedToPriorFoundPAR(S) &
+  ModifyVariablesAssignedToPriorFoundPAR((S,s))
+ =>
+  cvu_par2(s);
+
+  ReadVariablesAssignedToPriorFoundPAR(S) &
+  bsearch(s,(S,?),T)
+ =>
+  cvu_par2(s);
+
+  NoVariablesAssignedToPriorFoundPAR &
+  ModifyVariablesAssignedToPriorFoundPAR(s)
+ =>
+  cvu_par2(s);
+
+  cvu_par2 bsmap S
+ =>
+  cvu_par1(S);
+
+  bsearch(?,S,T) &
+  cvu_par1(T)
+ =>
+  cvu_par1(S);
+
+  ReadTmpVariablesAssignedToFound(F) &
+  ModifyTmpVariablesAssignedToFound(?) &
+  ReadVariablesAssignedToPriorFoundPAR(S) &
+  cvu_par1(bflat(S,F))
+ =>
+  cvu_par;
+
+  ReadTmpVariablesAssignedToFound(?)  /* nothing new since last semi-colon */
+ =>
+  cvu_par;
+
+  /*** check for Variable assignment error ***/
+
+  ReadVariableAssignmentPriorFoundPAR(S) &
+  ModifyVariableAssignmentPriorFoundPAR((S;(s:=b)))
+ =>
+  cvu2(s:=b);
+
+  ReadVariableAssignmentPriorFoundPAR(S) &
+  bsearch((s:=c),S,T)
+ =>
+  cvu2(s:=b);
+
+  ReadVariablesAssignedToPriorFoundPAR(S) &
+  cvu_err(S)(s:=b)
+ =>
+  cvu1(s:=b);
+
+  ReadVariablesAssignedToPriorFoundPAR(S) &
+  S\(s:=b) &
+  cvu2(s:=b)
+ =>
+  cvu1(s:=b);
+
+  NoVariablesAssignedToPriorFoundPAR &
+  cvu2(s:=b)
+ =>
+  cvu1(s:=b);
+
+  ReadCurrentArchVariables(V) &
+  bsearch(s,(V,?),W) &
+  ReadTmpVariablesAssignedToFound(S) &
+  ModifyTmpVariablesAssignedToFound((S,s)) &
+  cvu1(s:=b)
+ =>
+  cvu(s:=b);
+
+  ReadCurrentArchVariables(V) &
+  bsearch(s,(V,?),W) &
+  ReadTmpVariablesAssignedToFound(S) &
+  bsearch(s,S,T) &
+  cvu1(s:=b)
+ =>
+  cvu(s:=b);
+
+  /*** decompose ***/
+
+  cvu(P) &
+  cvu(S)
+ =>
+  cvu(WHILE P DO S VARIANT V INVARIANT I END);
+
+  cvu(P) &
+  cvu(S)
+ =>
+  cvu(WHILE P DO S INVARIANT I VARIANT V END);
+
+  cvu(a) &
+  cvu(b)
+ =>
+  cvu(a THEN b);
+
+  cvu(a) &
+  cvu(b) &
+  cvu(c)
+ =>
+  cvu(a OR b THEN c);
+
+  cvu(a) &
+  cvu(b) &
+  cvu(c)
+ =>
+  cvu(a WHEN b THEN c);
+
+  cvu(a) &
+  cvu(b) &
+  cvu(c)
+ =>
+  cvu(a ELSIF b THEN c);
+
+  cvu(a) &
+  cvu(b)
+ =>
+  cvu(a ELSE b);
+
+  cvu(b)
+ =>
+  cvu(CASE a OF EITHER b END END);
+
+  cvu(a)
+ =>
+  cvu(SELECT a END);
+
+  cvu(a)
+ =>
+  cvu(IF a END);
+
+  cvu(b)
+ =>
+  cvu(VAR a IN b END);
+
+  cvu(a) &
+  cvu(b)
+ =>
+  cvu(a ; b);
+
+  cvu(a) &
+  cvu_par &
+  cvu(b)
+ =>
+  cvu(a || b);
+
+  cvu(a)
+ =>
+  cvu(BEGIN a END)
+
+END
+
+&
+
+THEORY CheckSignalUseX IS
+
+  ?; /* 1. */
+#define ModifyTmpSignalsAssignedToFound(x) bmodr(CheckSignalUseX.1,x)
+#define ReadTmpSignalsAssignedToFound(x)   brule(CheckSignalUseX.1,x)
+
+  ?; /* 2. */
+#define ModifySignalsAssignedToPriorFoundSC(x) bmodr(CheckSignalUseX.2,x)
+#define ReadSignalsAssignedToPriorFoundSC(x)   brule(CheckSignalUseX.2,x)
+
+#define NoSignalsAssignedToPriorFoundSC  ReadSignalsAssignedToPriorFoundSC(?)
+
+  ?; /* 3. */
+#define ModifySignalAssignmentPriorFoundSC(x) bmodr(CheckSignalUseX.3,x)
+#define ReadSignalAssignmentPriorFoundSC(x)   brule(CheckSignalUseX.3,x)
+
+
+#define CheckSignalUse(x)  bcall(((FLAT;MODR;MAP)~;CheckSignalUseX)~: \
+          (ModifyTmpSignalsAssignedToFound(?) & \
+           ModifySignalsAssignedToPriorFoundSC(?) & \
+           ModifySignalAssignmentPriorFoundSC(?) & \
+           csu(x)))
+
+
+#define BadSignalUse(x,y,z)\
+   Writef(("\n  Bad use of signal % after it's assignment\n\n  Assignment:\n    %\n  is sequentially followed by:\n    % ..", bsrv x berv, bsrv y berv, bsrv z berv))
+
+
+  ReadSignalAssignmentPriorFoundSC(S) &
+  bsearch((s:=e),S,T) &
+  FlagVHDLError &
+  BadSignalUse(s,(s:=e),C)
+ =>
+  csu_err2(s)(C);
+
+  s\C
+ =>
+  csu_err2(s)(C);
+
+  csu_err2(P) &
+  csu_err2(S)
+ =>
+  csu_err2(WHILE P DO S VARIANT V INVARIANT I END);
+
+  csu_err2(P) &
+  csu_err2(S)
+ =>
+  csu_err2(WHILE P DO S INVARIANT I VARIANT V END);
+
+  csu_err2(s)(a) &
+  csu_err2(s)(b)
+ =>
+  csu_err2(s)(a THEN b);
+
+  csu_err2(s)(a) &
+  csu_err2(s)(b) &
+  csu_err2(s)(c)
+ =>
+  csu_err2(s)(a OR b THEN c);
+
+  csu_err2(s)(a) &
+  csu_err2(s)(b) &
+  csu_err2(s)(c)
+ =>
+  csu_err2(s)(a WHEN b THEN c);
+
+  csu_err2(s)(a) &
+  csu_err2(s)(b) &
+  csu_err2(s)(c)
+ =>
+  csu_err2(s)(a ELSIF b THEN c);
+
+  csu_err2(s)(a) &
+  csu_err2(s)(b)
+ =>
+  csu_err2(s)(a ELSE b);
+
+  csu_err2(s)(b)
+ =>
+  csu_err2(s)(CASE a OF EITHER b END END);
+
+  csu_err2(s)(a)
+ =>
+  csu_err2(s)(SELECT a END);
+
+  csu_err2(s)(a)
+ =>
+  csu_err2(s)(IF a END);
+
+  csu_err2(s)(b)
+ =>
+  csu_err2(s)(VAR a IN b END);
+
+  csu_err2(s)(a) &
+  csu_err2(s)(b)
+ =>
+  csu_err2(s)(a || b);
+
+  csu_err2(s)(a) &
+  csu_err2(s)(b)
+ =>
+  csu_err2(s)(a ; b);
+
+  csu_err2(s)(C)
+ =>
+  csu_err1(C,s);
+
+  s\C
+ =>
+  csu_err1(C,s);
+
+  csu_err1(C) bsmap S
+ =>
+  csu_err(S)(C);
+
+  ReadSignalsAssignedToPriorFoundSC(S) &
+  csu_err(S)(x)
+ =>
+  csu(x);
+
+  ReadSignalsAssignedToPriorFoundSC(S) &
+  S\x
+ =>
+  csu(x);
+
+  NoSignalsAssignedToPriorFoundSC
+ =>
+  csu(x);
+
+  /*** semi-colon update ***/
+
+  ReadSignalsAssignedToPriorFoundSC(S) &
+  ModifySignalsAssignedToPriorFoundSC((S,s))
+ =>
+  csu_sc2(s);
+
+  ReadSignalsAssignedToPriorFoundSC(S) &
+  bsearch(s,(S,?),T)
+ =>
+  csu_sc2(s);
+
+  NoSignalsAssignedToPriorFoundSC &
+  ModifySignalsAssignedToPriorFoundSC(s)
+ =>
+  csu_sc2(s);
+
+  csu_sc2 bsmap S
+ =>
+  csu_sc1(S);
+
+  bsearch(?,S,T) &
+  csu_sc1(T)
+ =>
+  csu_sc1(S);
+
+  ReadTmpSignalsAssignedToFound(F) &
+  ModifyTmpSignalsAssignedToFound(?) &
+  ReadSignalsAssignedToPriorFoundSC(S) &
+  csu_sc1(bflat(S,F))
+ =>
+  csu_sc;
+
+  ReadTmpSignalsAssignedToFound(?)  /* nothing new since last semi-colon */
+ =>
+  csu_sc;
+
+  /*** check for signal assignment error ***/
+
+  ReadSignalAssignmentPriorFoundSC(S) &
+  ModifySignalAssignmentPriorFoundSC((S;(s:=b)))
+ =>
+  csu2(s:=b);
+
+  ReadSignalAssignmentPriorFoundSC(S) &
+  bsearch((s:=c),S,T)
+ =>
+  csu2(s:=b);
+
+  ReadSignalsAssignedToPriorFoundSC(S) &
+  csu_err(S)(s:=b)
+ =>
+  csu1(s:=b);
+
+  ReadSignalsAssignedToPriorFoundSC(S) &
+  S\(s:=b) &
+  csu2(s:=b)
+ =>
+  csu1(s:=b);
+
+  NoSignalsAssignedToPriorFoundSC &
+  csu2(s:=b)
+ =>
+  csu1(s:=b);
+
+  brule(SIGNALX.N,s) &
+  ReadTmpSignalsAssignedToFound(S) &
+  ModifyTmpSignalsAssignedToFound((S,s)) &
+  csu1(s:=b)
+ =>
+  csu(s:=b);
+
+  brule(SIGNALX.N,s) &
+  ReadTmpSignalsAssignedToFound(S) &
+  bsearch(s,S,T) &
+  csu1(s:=b)
+ =>
+  csu(s:=b);
+
+  /*** decompose ***/
+
+  csu(P) &
+  csu(S)
+ =>
+  csu(WHILE P DO S VARIANT V INVARIANT I END);
+
+  csu(P) &
+  csu(S)
+ =>
+  csu(WHILE P DO S INVARIANT I VARIANT V END);
+
+  csu(a) &
+  csu(b)
+ =>
+  csu(a THEN b);
+
+  csu(a) &
+  csu(b) &
+  csu(c)
+ =>
+  csu(a OR b THEN c);
+
+  csu(a) &
+  csu(b) &
+  csu(c)
+ =>
+  csu(a WHEN b THEN c);
+
+  csu(a) &
+  csu(b) &
+  csu(c)
+ =>
+  csu(a ELSIF b THEN c);
+
+  csu(a) &
+  csu(b)
+ =>
+  csu(a ELSE b);
+
+  csu(b)
+ =>
+  csu(CASE a OF EITHER b END END);
+
+  csu(a)
+ =>
+  csu(SELECT a END);
+
+  csu(a)
+ =>
+  csu(IF a END);
+
+  csu(b)
+ =>
+  csu(VAR a IN b END);
+
+  csu(a) &
+  csu(b)
+ =>
+  csu(a || b);
+
+  csu(a) &
+  csu_sc &
+  csu(b)
+ =>
+  csu(a ; b);
+
+  csu(a)
+ =>
+  csu(BEGIN a END)
+
+END
+
+&
+
+THEORY PrintActTypeX IS
+
+#define PrintActType(x) \
+    bcall(((ARI~;WRITE)~;PrintActTypeX)~:pat(x))
+
+  
+  Writef(("\n\n    Type not recognized:\n\n    % ..",bsrv t berv)) &
+  FlagVHDLError &
+  bprintf("                --->>> UNKNOWN (%) <<<---",t)
+ =>
+  pat(t);
+
+
+
+  exp(n,m) == (exp(n,(m-1))*n);
+
+  exp(n,0) == 1;
+
+
+
+  bnum(a) &
+  bnum(b)
+ =>
+  (a..b) == numident(a,b);
+
+  bnum(a) &
+  bident(b)
+ =>
+  (a..b) == numident(a,b);
+
+  bident(a) &
+  bnum(b)
+ =>
+  (a..b) == numident(a,b);
+
+  bident(a) &
+  bident(b)
+ =>
+  (a..b) == numident(a,b);
+
+
+
+  brule(OTHER_PROPERTIESX.N,(t=s)) &
+  pat(s)
+ =>
+  pat(t);
+
+  brule(EQ_PROPERTIESX.N,(t=s)) &
+  pat(s)
+ =>
+  pat(t);
+
+  brule(ENUMX.N,t(e)) &
+  bprintf("%",t)
+ =>
+  pat(t);
+
+  bprintf("NATURAL")
+ =>
+  pat(SCALAR);
+
+  bprintf("NATURAL")
+ =>
+  pat(NAT1);
+
+  bprintf("NATURAL")
+ =>
+  pat(NAT);
+
+  bprintf("integer range % to %",a,b)
+ =>
+  pat(numident(a,b));
+
+  bprintf("ARRAY (% to %) of ",a,b) &
+  pat(c)
+ =>
+  pat(numident(a,b) --> c);
+
+  bprintf("std_logic")
+ =>
+  pat({'0','1'});
+
+  bprintf("std_logic_vector(% downto %)",b,a)
+ =>
+  pat(numident(a,b) --> {'0','1'});
+
+  std_logic == {'0','1'}
+
+/*
+  bstring(s) &
+  bprintf(s)
+ =>
+  pat(s)
+*/
+
+
+END
+
+&
+
+THEORY PrintCommaListX IS
+
+#define PrintCommaList(x) \
+     bcall(((MAP;WRITE)~;PrintCommaListX)~:( pcl bnmap x))
+
+  bprintf(", %",a)
+ =>
+  pcl(a,m,n);
+
+  bprintf("%",a)
+ =>
+  pcl(a,1,n)
+
+END
+
+&
+
+THEORY PrintLiteralsX IS
+
+/***
+  MAKE SURE CreVHDLSLIB.src IS EXACTLY THE SMAE
+***/
+
+#define PrintLiterals(x,y) bcall(((ARI;CATL;WRITE)~;PrintLiteralsX)~:pl(x)(y))
+
+
+  pl_1(f)(bcatl(S,"1"))(N)(n-1)
+ =>
+  pl_1(f)(S)(N)(n);
+
+  bprintf("_ones2_%,%\n",f,S)
+ =>
+  pl_1(f)(S)(N)(0);
+
+
+  pl_0(f)(bcatl(S,"0"))(N)(n-1)
+ =>
+  pl_0(f)(S)(N)(n);
+
+  bprintf("_zeros2_%,%\n",f,S) &
+  pl_1(f)("1")(N)(N)
+ =>
+  pl_0(f)(S)(N)(0);
+
+
+  pl(f)(n);
+
+  bprintf("_succ_%,%\n",f,n+1) &
+  bprintf("_pred_%,%\n",f,n-1)
+ =>
+  pl(f)(n);
+
+  bnum(n) &
+  btest(n<100) &
+  bprintf("_succ_%,%\n",f,n+1) &
+  bprintf("_pred_%,-%\n",f,n-1) &
+  pl_0(f)("0")(n)(n)
+ =>
+  pl(f)(n);
+
+  bprintf("_succ_%,%\n",f,1)
+ =>
+  pl(f)(0)
+
+END
+
+&
+
+THEORY CheckForCodeFileX IS
+
+#define CheckForCodeFile(x) \
+    bcall(((ARI;CATL;MODR;SHELL;WRITE;MAP;RULE)~;CheckForCodeFileX)~:ccf(x))
+
+  ?; /* formal:actual */
+#define ReadFormalActualIptParams(x)    brule(CheckForCodeFileX.1,x)
+#define ModifyFormalActualIptParams(x)  bmodr(CheckForCodeFileX.1,x)
+
+  bcrer(MchCodeColVARX,(k:i:v))
+ =>
+  ccf9(k,i,v);
+
+  ccf9(k,i,?);
+
+  Writef(("\n\n    Problem processing variables from var file TMP/.%.var\n",i)) &
+  Writef(("\n    The following does not parse:\n\n      ")) &
+  bshell("cat TMP/.BBcom") &
+  Writef((" ..")) &
+  FlagVHDLError
+ =>
+  ccf8(k,i);
+
+  bget("TMP/.BBcom",x) &
+  ccf9(k,i) bsmap x
+ =>
+  ccf8(k,i);
+
+
+  bcrer(MchCodeColSIGNALX,(k:s:S))
+ =>
+  ccf7(k,(S,s));
+
+  ccf7(k,?);
+
+  Writef(("\n\n    Problem processing signals from code file %.vhd\n",k)) &
+  Writef(("\n  The following does not parse:\n\n    ")) &
+  bshell("cat TMP/.Bcom") &
+  Writef((" ..")) &
+  FlagVHDLError
+ =>
+  ccf6(k);
+
+  bget("TMP/.Bcom",x) &
+  ccf7(k) bsmap x
+ =>
+  ccf6(k);
+
+
+  bcrer(CodeMchColOPX,(k:i)) &
+  /*** TMP/.op created for each op (variable discarded) ***/
+TRACE((HERE((2))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 2 CDE/VHDL/",k,".vhd ",i)) &
+  /*** TMP/.op.var created for each op (variable) ***/
+TRACE((HERE((3))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 3 CDE/VHDL/",k,".vhd ",i)) &
+  /*** variable declarations -> TMP/.BBcom ***/
+TRACE((HERE((8))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 8 TMP/.",i,".var")) &
+  ccf8(k,i)
+ =>
+  ccf5(k,i);
+
+  ccf5(k,?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ccf4(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ccf5(k) bsmap j
+ =>
+  ccf4(Z);
+
+  PrintLiterals(f,a) &
+  bprintf("%,%\n",f,a)
+ =>
+  ccf3(f:a);
+
+  ccf3(F:A) &
+  ccf3(f:a)
+ =>
+  ccf3(F,f:A,a);
+
+  WriteDot &
+  /*** bin_ops processed ***/
+TRACE((HERE((0))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 0 CDE/VHDL/",k,".vhd")) &
+  ReadFormalActualIptParams(P) &
+  Connect("TMP/.Bcom") &
+  ccf3(P) &
+  bclose &
+  ccf4(bcatl("ANL/",k,".",mch,".anl")) &
+  /*** signals names -> TMP/.Bcom ***/
+TRACE((HERE((7))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 7 CDE/VHDL/",k,".vhd")) &
+  ccf6(k)
+ =>
+  ccf2(k)(0); /* code file exists */
+
+  ccf2(k)(1); /* no code file */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  ccf1(k);
+
+  bget(".Bcom",x) &
+  ccf2(k)(x)
+ =>
+  ccf1(k);
+
+  Writef(("\n\n    Can't determine actual parameters for %\n    It hasn't been imported! ..",bsrv k berv)) &   
+  FlagVHDLError
+ =>
+  ccf(k(l));
+
+  brule(MchColImportX.N,(m:k(a))) &
+  ModifyFormalActualIptParams((l:a)) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",k,".vhd CDE/VHDL")) &
+  ccf1(k)
+ =>
+  ccf(k(l));
+
+  ModifyFormalActualIptParams((aaa:aaa)) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",k,".vhd CDE/VHDL")) &
+  ccf1(k)
+ =>
+  ccf(k(?))
+
+END
+
+&
+
+THEORY FindTypeLocalVarsX IS
+
+#define FindTypeLocalVars \
+     bcall(((MAP;ARI~;WRITE;MODR;RULE)~;FindTypeLocalVarsX)~:ftlv(1))
+
+  ?;
+#define ModifyTypeLocalVarsNotFound  bmodr(FindTypeLocalVarsX.1,0)
+#define ModifyTypeLocalVarsFound     bmodr(FindTypeLocalVarsX.1,1)
+#define TypeLocalVarsFound           brule(FindTypeLocalVarsX.1,1)
+
+  ?;  /* curr op name */
+
+  ftlv2(v)(x);
+
+  brule(FindTypeLocalVarsX.2,n) &
+  bcrer(IncompleteLocalINVX,(n:v:e))
+ =>
+  ftlv2(v)(v:=e);
+
+
+  brule(INVX.N,(w:t)) &
+  brule(FindTypeLocalVarsX.2,n) &
+  bcrer(LocalINVX,(n:v:t)) &
+  ModifyTypeLocalVarsFound
+ =>
+  ftlv2(v)(v:=w);
+
+  bnum(n) &
+  brule(FindTypeLocalVarsX.2,n) &
+  bcrer(LocalINVX,(n:v:NAT)) &
+  ModifyTypeLocalVarsFound
+ =>
+  ftlv2(v)(v:=n);
+
+  brule(OTHER_PROPERTIESX.N,(f:POW(a*b))) &
+  brule(FindTypeLocalVarsX.2,n) &
+  bcrer(LocalINVX,(n:v:b)) &
+  ModifyTypeLocalVarsFound
+ =>
+  ftlv2(v)(v:=f(x));
+
+  ftlv2(v)(S) &
+  ftlv2(v)(T)
+ =>
+  ftlv2(v)(S ; T);
+
+  ftlv2(v)(S) &
+  ftlv2(v)(T)
+ =>
+  ftlv2(v)(S || T);
+
+  ftlv2(v)(S) &
+  ftlv2(v)(T)
+ =>
+  ftlv2(v)(S [] T);
+
+  ftlv2(v)(S)
+ =>
+  ftlv2(v)(P==>S);
+
+  bsearch((v:t),(P&?),Q) &
+  brule(FindTypeLocalVarsX.2,n) &
+  bcrer(LocalINVX,(n:v:t)) &
+  ModifyTypeLocalVarsFound
+ =>
+  ftlv2(v)(P==>S);
+
+  ftlv2(v)(S)
+ =>
+  ftlv2(v)(@b.S);
+
+  ftlv2(v)(S)
+ =>
+  ftlv2(v)(p|S);
+
+  ftlv2(v)(S)
+ =>
+  ftlv2(v)(WHILE P DO S VARIANT V INVARIANT I END);
+
+  ftlv2(v)(S)
+ =>
+  ftlv2(v)(WHILE P DO S INVARIANT I VARIANT V END);
+
+  TypeLocalVarsFound
+ =>
+  x;
+
+  ModifyTypeLocalVarsNotFound &
+  ftlv2(v)(S)
+ =>
+  ftlv1(S,v);
+
+  ftlv(N);
+
+  brule(MchColOPX.N,x)  &
+  ftlv(N+1)
+ =>
+  ftlv(N);
+
+  brule(MchColOPX.N,(m:(n(o,i)|S|@V.E))) &
+  bmodr(FindTypeLocalVarsX.2,n) &
+  ftlv1(E) bsmap V &
+  ftlv(N+1)
+ =>
+  ftlv(N);
+
+  brule(ConcMchColOPX.N,(m:(n(o,i)|S|@V.E))) &
+  bmodr(FindTypeLocalVarsX.2,n) &
+  ftlv1(E) bsmap V &
+  ftlv(N+1)
+ =>
+  ftlv(N)
+
+END
+
+&
+
+THEORY GetAssignedToX IS
+
+  ?;
+#define ReadAssignedTo(x)    brule(GetAssignedToX.1,x)
+#define ModifyAssignedTo(x)  bmodr(GetAssignedToX.1,bflat(x))
+
+#define GetAssignedTo(x) \
+  bcall(((FLAT;MODR)~;GetAssignedToX)~:(ModifyAssignedTo(?)&gat(x)&gat1))
+
+  ReadAssignedTo(a) &
+  bsearch(?,a,b) &
+  ModifyAssignedTo(b)
+ =>
+  gat1;
+
+  ReadAssignedTo(A) &
+  ModifyAssignedTo((A,a))
+ =>
+  gat(a:=b);
+
+  ReadAssignedTo(A) &
+  bsearch(a,A,B)
+ =>
+  gat(a:=b);
+
+  gat(b)
+ =>
+  gat(IF a THEN b END);
+
+  gat(b) &
+  gat(c)
+ =>
+  gat(IF a THEN b ELSE c END);
+
+  gat(a) &
+  gat(b)
+ =>
+  gat(a;b);
+
+  gat(a) &
+  gat(b)
+ =>
+  gat(a||b);
+
+  gat(a)
+ =>
+  gat(BEGIN a END)
+
+END
+
+&
+
+THEORY DetermineGuardsSubsTypeX IS
+
+#define DetermineGuardsSubsType(x,y) \
+      bcall((MODR~;DetermineGuardsSubsTypeX)~: (dhp(x) & dhb(y)))
+
+  ?;
+#define HomogGuards           brule(DetermineGuardsSubsTypeX.1,1)
+
+  ?;
+#define ReadHomogGuardVar(x)   brule(DetermineGuardsSubsTypeX.2,x)
+
+
+  ?;
+#define HomogSubs          brule(DetermineGuardsSubsTypeX.3,1)
+
+
+  ?;
+#define ReadHomogSubsVar(x)  brule(DetermineGuardsSubsTypeX.4,x)
+
+
+  ?;
+#define IsSubstBlock          brule(DetermineGuardsSubsTypeX.5,1)
+
+  ?;  /* 6. to check for duplicate values of pred */
+
+  bmodr(DetermineGuardsSubsTypeX.1,0)
+ =>
+  dhp1(x);
+
+  bmodr(DetermineGuardsSubsTypeX.1,1)
+ =>
+  dhp1(?);
+
+  ReadHomogGuardVar(a) &
+  brule(ENUMELEMSX.N,(b:S)) &
+  dhp1(P)
+ =>
+  dhp1(P|a=b);
+
+  ReadHomogGuardVar(a) &
+  bnum(b) &
+  dhp1(P)
+ =>
+  dhp1(P|a=b);
+
+  brule(DetermineGuardsSubsTypeX.6,B) &  /* duplicate value */
+  bsearch(b,B,C) &
+  bmodr(DetermineGuardsSubsTypeX.1,0)
+ =>
+  dhp1(P|a=b);
+
+  dhp1(P)
+ =>
+  dhp1(P|_=_);  /* ELSE CLAUSE */
+
+  bmodr(DetermineGuardsSubsTypeX.1,0)
+ =>
+  dhp(x);
+
+  bident(a) &
+  brule(ENUMELEMSX.N,(b:S)) &
+  bmodr(DetermineGuardsSubsTypeX.2,a) &
+  bmodr(DetermineGuardsSubsTypeX.6,(?,b)) &
+  dhp1(P)
+ =>
+  dhp(P|a=b);
+
+  bident(a) &
+  bnum(b) &
+  bmodr(DetermineGuardsSubsTypeX.2,a) &
+  bmodr(DetermineGuardsSubsTypeX.6,(?,b)) &
+  dhp1(P)
+ =>
+  dhp(P|a=b);
+
+
+
+  bmodr(DetermineGuardsSubsTypeX.5,0)
+ =>
+  dhb2(x);
+
+  bmodr(DetermineGuardsSubsTypeX.5,1)
+ =>
+  dhb2(?);
+
+  dhb2(S)
+ =>
+  dhb2(S|a:=b);
+
+  ReadHomogSubsVar(v) &
+  bmodr(DetermineGuardsSubsTypeX.3,0) &
+  bmodr(DetermineGuardsSubsTypeX.5,0)
+ =>
+  dhb1(x);
+
+  bmodr(DetermineGuardsSubsTypeX.3,1)
+ =>
+  dhb1(?);
+
+  bmodr(DetermineGuardsSubsTypeX.3,0) &
+  dhb2(S)
+ =>
+  dhb1(S|a:=b);
+
+  ReadHomogSubsVar(a) &
+  dhb1(S)
+ =>
+  dhb1(S|a:=b);
+
+  bmodr(DetermineGuardsSubsTypeX.3,0) &
+  bmodr(DetermineGuardsSubsTypeX.5,0)
+ =>
+  dhb(x);
+
+  bident(a) &
+  bmodr(DetermineGuardsSubsTypeX.4,a) &
+  dhb1(S)
+ =>
+  dhb(S|a:=b)
+
+END
+
+&
+
+THEORY PrintAssgnValX IS
+
+#define PrintAssgnVal(x) bcall(((CATL;SUB;WRITE)~;PrintAssgnValX)~:pav(x))
+#define PrintPredVal(x)  bcall(((CATL;SUB;WRITE)~;PrintAssgnValX)~:ppv(x))
+
+  Writef(("\n\n    Assign value statement not recognized:\n\n    % ..",bsrv s berv)) &
+  bprintf("                --->>> NOT RECOGNIZED (%) <<<---",s) &
+  FlagVHDLError
+ =>
+  pav(s);
+
+  bprintf("%",b)
+ =>
+  pav(a:=b);
+
+  bprintf("(%)",b)
+ =>
+  pav(a:=bool(b));
+
+  pav(a:=b)
+ =>
+  ppv(a=b)
+
+END
+
+&
+
+THEORY PrintPredX IS
+
+#define PrintPred(x)    bcall(((SUB;WRITE)~;PrintPredX)~:pp0(x))
+
+
+  bprintf("%",a)
+ =>
+  pp1(a)(b);
+
+  bident(a) &
+  bprintf("%",a)
+ =>
+  pp1(a)(b);
+
+  brule(EVENT_OpNamesX.N,(a:c)) &
+  ReadCurrentProcessName(n) &
+/*
+  Writef(("\n\n    Warning: asynchronous % event (process %) ..",c,n)) &
+*/
+  bprintf("%'EVENT",c)
+ =>
+  pp1(a)(b);
+
+  brule(EVENT_OpNamesX.N,(a:c)) &
+  ReadCurrentProcessName(?) &
+/*
+  Writef(("\n\n    Warning: asynchronous % event ..",c)) &
+*/
+  bprintf("%'EVENT",c)
+ =>
+  pp1(a)(b);
+
+/*
+  brule(INVX.M,(b:{'0','1'})) &
+  bnum(a) &
+  bprintf("'%'",a)
+ =>
+  pp1(a)(b);
+*/
+
+  pp1(a)(b) &
+  bprintf("%",blank0? JOK2 blank0?) &
+  pp1(b)(a)
+ =>
+  pp(a JOK2 b);
+
+  brule(EVENT_OpNamesX.N,(a:c)) &
+  ReadCurrentProcessName(n) &
+/*
+  Writef(("\n\n    Warning: asynchronous % event (process %) ..",c,n)) &
+*/
+  bprintf("%'EVENT",c)
+ =>
+  pp(a = b);
+
+  brule(EVENT_OpNamesX.N,(a:c)) &
+  ReadCurrentProcessName(?) &
+/*
+  Writef(("\n\n    Warning: asynchronous % event ..",c)) &
+*/
+  bprintf("%'EVENT",c)
+ =>
+  pp(a = b);
+
+
+  pp(a)
+ =>
+  pp_or(a);
+
+  bprintf("(") &
+  pp_and(a) &
+  bprintf(" and ") &
+  pp_and(b) &
+  bprintf(")")  
+ =>
+  pp_or(a & b);
+
+  pp_or(a) &
+  bprintf(" or ") &
+  pp_or(b)
+ =>
+  pp_or(a or b);
+
+  pp_or(a) &
+  bprintf(" or ") &
+  bprintf("(") &
+  pp_and(b) &
+  bprintf(" and ") &
+  pp_and(c) &
+  bprintf(")")  
+ =>
+  pp_or(a or (b & c));
+
+
+  pp(a)
+ =>
+  pp_and(a);
+
+  bprintf("(") &
+  pp_or(a) &
+  bprintf(" or ") &
+  pp_or(b) &
+  bprintf(")")  
+ =>
+  pp_and(a or b);
+
+  pp_and(a) &
+  bprintf(" and ") &
+  pp_and(b)
+ =>
+  pp_and(a & b);
+
+  pp_and(a) &
+  bprintf(" and ") &
+  bprintf("(") &
+  pp_or(b) &
+  bprintf(" or ") &
+  pp_or(c) &
+  bprintf(")")  
+ =>
+  pp_and(a & (b or c));
+
+
+  pp(a)
+ =>
+  pp0(a);
+
+  pp_or(a or b)
+ =>
+  pp0(a or b);
+
+  pp_and(a & b)
+ =>
+  pp0(a & b)
+
+END
+
+&
+
+THEORY InlineRewritesToBcomX IS
+
+#define InlineRewritesToBcom(x) \
+    bcall(((MAP;FLAT~;WRITE)~;InlineRewritesToBcomX)~:ilr(x))
+
+  (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,mm,nn,tot);
+
+
+  bprintf("%(%)<--,%(%) <=\n",F,B,A,B)
+ =>
+  ilr_chk_vector2((F <= A),B);
+
+  bprintf("%(%)<--,%(%) :=\n",F,B,A,B)
+ =>
+  ilr_chk_vector2((F := A),B);
+
+  brule(InlineRewritesToBcomX.1,L) &
+  ilr_chk_vector2(f JOK2 a) bsmap L
+ =>
+  ilr_chk_vector1(f JOK2 a);
+
+
+
+  ilr_chk_vector(f JOK2 a);
+
+  brule(MchCodeColVARX.N,(m:n:(a:s-->t))) &
+  ilr_chk_vector1(f JOK2 a)
+ =>
+  ilr_chk_vector(f JOK2 a);
+
+  brule(LocalINVX.N,(m:a:s-->t)) &
+  ilr_chk_vector1(f JOK2 a)
+ =>
+  ilr_chk_vector(f JOK2 a);
+
+
+
+  bprintf("%<--,% :=\n",f,a) &
+  ilr_chk_vector(f:=a) &
+  PrintLiterals(f,a) &
+  bprintf("%,%\n",f,a)
+ =>
+  ilr(f:=a);
+
+  brule(OUTPUTX.N,(a:t)) &
+  bprintf("%<--,% <=\n",f,a) &
+  ilr_chk_vector(f<=a) &
+  PrintLiterals(f,a) &
+  bprintf("%,%\n",f,a)
+ =>
+  ilr(f:=a);
+
+  brule(SIGNALX.N,a) &
+  bprintf("%<--,% <=\n",f,a) &
+  ilr_chk_vector(f<=a) &
+  PrintLiterals(f,a) &
+  bprintf("%,%\n",f,a)
+ =>
+  ilr(f:=a);
+
+  bnum(a) &
+  PrintLiterals(f,a) &
+  bprintf("%,%\n",f,a)
+ =>
+  ilr(f:=a);
+
+  ilr(?:=?);
+
+  ilr(F:=A) &
+  ilr(f:=a)
+ =>
+  ilr(F,f:=A,a)
+
+END
+
+&
+
+THEORY DetermineSameTypeX IS
+
+#define DetermineSameType(x,y) \
+    bcall(((DetermineSameTypeX;CATL)~;MODR):bmodr(DetermineSameTypeX.1,(x|y)))
+
+  ?;
+#define SameType brule(DetermineSameTypeX.1,(x|x))
+
+  (NAT1 == NATURAL);
+
+  (NAT == NATURAL);
+
+  ((a..b) == bcatl("integer range ",a," to ",b));
+
+/*
+  ({'0','1'} == BIT);
+*/
+
+  (std_logic_vector(n) == std_logic_vector(n DOWNTO 0))
+
+END
+
+&
+
+THEORY GetOpsInvokedX IS
+
+#define GetOpsInvoked(x) \
+    bcall(((MODR;SUB;RULE)~;GetOpsInvokedX)~:  \
+       (bmodr(GetOpsInvokedX.2,0)&goi0(x)))
+
+  ?;
+/* defined above 
+#define ReadOpsInvoked(x)   brule(GetOpsInvokedX.1,x)
+#define ModifyOpsInvoked(x) bmodr(GetOpsInvokedX.1,x)
+*/
+
+  ?;
+#define ReadOpsInvokedTopOp(x)   brule(GetOpsInvokedX.2,x)
+#define ModifyOpsInvokedTopOp(x) bmodr(GetOpsInvokedX.2,x)
+
+  chk_top_op(n);
+
+  ReadOpsInvokedTopOp(?) &
+  ModifyOpsInvokedTopOp(n)
+ =>
+  chk_top_op(n);
+
+
+  ReadOpsInvoked(N) &
+  ModifyOpsInvoked((N,n))
+ =>
+  add_ops_invoked(n);
+
+  ReadOpsInvoked(N) &
+  bsearch(n,N,M)
+ =>
+  add_ops_invoked(n);
+
+
+
+  Writef(("\n\n  Operation %\n  Can't determine type of % from:\n\n    %\n  ..",,bsrv n berv,bsrv v berv,P))
+ =>
+  goi_sto_type(n)(v)(P)(S);
+  
+  Writef(("\n\n  Operation %\n  Unable to type % from VAR clause:\n\n  %\n\n  Maybe use ANY clause?\n  ..",n,bsrv v berv,VAR a END))
+ =>
+  goi_sto_type(n)(v)(P)(VAR a END);
+  
+  bsearch((v:t),(P&?),Q) &
+  bcrer(LocalVARTypeX,(n:(v:t)))
+ =>
+  goi_sto_type(n)(v)(P)(S);
+  
+  goi_sto_type(n)(V)(P)(S) &
+  goi_sto_type(n)(v)(P)(S)
+ =>
+  goi_sto_type(n)(V,v)(P)(S);
+
+
+
+  goi1(skip);
+
+
+  /*** Abs ***/
+
+  brule(MchColOPX.M,(m:(n(?,?)|S|E))) &
+  goi(S)
+ =>
+  goi1(n);
+
+  brule(MchColOPX.M,(m:(n(?,i)|S|E))) &
+  goi([i:=p]S)
+ =>
+  goi1(n(p));
+
+  brule(MchColOPX.M,(m:(n(o,?)|S|E))) &
+  goi([o:=r]S)
+ =>
+  goi1(r<--n);
+
+  brule(MchColOPX.M,(m:(n(o,i)|S|E))) &
+  goi([o:=r]([i:=p]S))
+ =>
+  goi1(r<--n(p));
+
+  /*** Conc ***/
+
+  brule(ConcMchColOPX.M,(m:(n(?,?)|S|E))) &
+  goi(S)
+ =>
+  goi1(n);
+
+  brule(ConcMchColOPX.M,(m:(n(?,i)|S|E))) &
+  goi([i:=p]S)
+ =>
+  goi1(n(p));
+
+  brule(ConcMchColOPX.M,(m:(n(o,?)|S|E))) &
+  goi([o:=r]S)
+ =>
+  goi1(r<--n);
+
+  brule(ConcMchColOPX.M,(m:(n(o,i)|S|E))) &
+  goi([o:=r]([i:=p]S))
+ =>
+  goi1(r<--n(p));
+
+  /*** Code ***/
+
+  brule(CodeMchColOPX.M,(m:n))
+ =>
+  goi1(n);
+
+  brule(CodeMchColOPX.M,(m:n))
+ =>
+  goi1(n(p));
+
+  brule(CodeMchColOPX.M,(m:n))
+ =>
+  goi1(r<--n);
+
+  brule(CodeMchColOPX.M,(m:n))
+ =>
+  goi1(r<--n(p));
+
+
+
+/***
+HERE(("goi - discarded":x))
+***/
+  Writef(("\n\n  \"GetOpsInvoked\" discarded % ..",x))
+ =>  
+  goi(x);
+
+  goi(x:=y);
+
+  bident(n) &
+  add_ops_invoked(n) &
+  chk_top_op(n) &
+  goi1(n)
+ =>
+  goi(n);
+
+  add_ops_invoked(n) &
+  chk_top_op(n) &
+  goi1(n(p))
+ =>
+  goi(n(p));
+
+  add_ops_invoked(n) &
+  chk_top_op(n) &
+  goi1(r<--n)
+ =>
+  goi(r<--n);
+
+  add_ops_invoked(n) &
+  chk_top_op(n) &
+  goi1(r<--n(p))
+ =>
+  goi(r<--n(p));
+
+  goi(S)
+ =>
+  cvu_err2(WHILE P DO S VARIANT V INVARIANT I END);
+
+  goi(S)
+ =>
+  goi(WHILE P DO S INVARIANT I VARIANT V END);
+
+  goi(b)
+ =>
+  goi(a THEN b);
+
+  goi(a) &
+  goi(c)
+ =>
+  goi(a OR b THEN c);
+
+  goi(a) &
+  goi(c)
+ =>
+  goi(a WHEN b THEN c);
+
+  goi(a) &
+  goi(c)
+ =>
+  goi(a ELSIF b THEN c);
+
+  goi(a) &
+  goi(b)
+ =>
+  goi(a ELSE b);
+
+  goi(b)
+ =>
+  goi(CASE a OF EITHER b END END);
+
+  goi(a)
+ =>
+  goi(SELECT a END);
+
+  goi(a)
+ =>
+  goi(IF a END);
+
+  goi(a)
+ =>
+  goi(BEGIN a END);
+
+  ReadOpsInvokedTopOp(n) &
+  bcrer(LocalVARX,(n:a)) &
+  goi_sto_type(n)(a)(b)(?) &
+  goi(c)
+ =>
+  goi(ANY a WHERE b THEN c END);
+
+  ReadOpsInvoked((N,n)) &
+  bcrer(LocalVARX,(n:a)) &
+  goi_sto_type(n)(a)(b)(?) &
+  goi(c)
+ =>
+  goi(ANY a WHERE b THEN c END);
+
+  ReadOpsInvokedTopOp(n) &
+  goi_sto_type(n)(a)(b)(VAR a IN b END) &
+  goi(b)
+ =>
+  goi(VAR a IN b END);
+
+  ReadOpsInvoked((N,n)) &
+  goi_sto_type(n)(a)(b)(VAR a IN b END) &
+  goi(b)
+ =>
+  goi(VAR a IN b END);
+
+  goi(a) &
+  goi(b)
+ =>
+  goi(a || b);
+
+  goi(a) &
+  goi(b)
+ =>
+  goi(a ; b);
+
+
+
+
+  /*** Initial invocation ***/
+
+
+  ModifyOpsInvoked(?) &
+  goi(S)
+ =>
+  goi0(S);
+
+  /*** Abs ***/
+
+  brule(MchColOPX.M,(m:(n(?,?)|S|E))) &
+  ModifyOpsInvoked((?,n)) &
+  ModifyOpsInvokedTopOp(n) &
+  goi(S)
+ =>
+  goi0(n);
+
+  brule(MchColOPX.M,(m:(n(?,i)|S|E))) &
+  ModifyOpsInvoked((?,n)) &
+  ModifyOpsInvokedTopOp(n) &
+  goi([i:=p]S)
+ =>
+  goi0(n(p));
+
+  brule(MchColOPX.M,(m:(n(o,?)|S|E))) &
+  ModifyOpsInvoked((?,n)) &
+  ModifyOpsInvokedTopOp(n) &
+  goi([o:=r]S)
+ =>
+  goi0(r<--n);
+
+  brule(MchColOPX.M,(m:(n(o,i)|S|E))) &
+  ModifyOpsInvoked((?,n)) &
+  ModifyOpsInvokedTopOp(n) &
+  goi([o:=r]([i:=p]S))
+ =>
+  goi0(r<--n(p));
+
+  /*** Conc ***/
+
+  brule(ConcMchColOPX.M,(m:(n(?,?)|S|E))) &
+  ModifyOpsInvoked((?,n)) &
+  ModifyOpsInvokedTopOp(n) &
+  goi(S)
+ =>
+  goi0(n);
+
+  brule(ConcMchColOPX.M,(m:(n(?,i)|S|E))) &
+  ModifyOpsInvoked((?,n)) &
+  ModifyOpsInvokedTopOp(n) &
+  goi([i:=p]S)
+ =>
+  goi0(n(p));
+
+  brule(ConcMchColOPX.M,(m:(n(o,?)|S|E))) &
+  ModifyOpsInvoked((?,n)) &
+  ModifyOpsInvokedTopOp(n) &
+  goi([o:=r]S)
+ =>
+  goi0(r<--n);
+
+  brule(ConcMchColOPX.M,(m:(n(o,i)|S|E))) &
+  ModifyOpsInvoked((?,n)) &
+  ModifyOpsInvokedTopOp(n) &
+  goi([o:=r]([i:=p]S))
+ =>
+  goi0(r<--n(p));
+
+  /*** Code ***/
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  ModifyOpsInvoked((?,n))
+ =>
+  goi0(n);
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  ModifyOpsInvoked((?,n))
+ =>
+  goi0(n(p));
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  ModifyOpsInvoked((?,n))
+ =>
+  goi0(r<--n);
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  ModifyOpsInvoked((?,n))
+ =>
+  goi0(r<--n(p))
+
+END
+
+&
+
+THEORY RemoveLHSSubX IS
+
+  ModifySensitivitySubstitution(P)
+ =>
+  rlhss1(P);
+
+  (a<--b) == (?<--b);
+
+  (a:=b) == (?:=b);
+
+  ReadSensitivitySubstitution(P) &
+  rlhss1(P)
+ =>
+  rlhss
+
+END
+
+&
+
+THEORY GetSensitivityListX IS
+
+  ?;
+/* defined above 
+#define ReadSensitivityList(x)    brule(GetSensitivityListX.1,x)
+#define ModifySensitivityList(x)  bmodr(GetSensitivityListX.1,x)
+*/
+
+  ?; /* the substitution */
+/* defined above 
+#define ReadSensitivitySubstitution(x)     brule(GetSensitivityListX.2,x)
+#define ModifySensitivitySubstitution(x)   bmodr(GetSensitivityListX.2,x)
+*/
+
+#define GetSensitivityList(x) \
+  bcall(((ARI~;MAP;FLAT;MODR;CATL;SHELL)~;GetSensitivityListX)~: gsl0(x))
+
+
+#define RemoveLHSSub bcall((RemoveLHSSubX~;MODR)~:rlhss)
+
+/*
+  Lists signals & in ports (including aaa_event->aaa) occuring
+  free in branch conditions or on the rhs of substitutions
+*/
+
+  ?;
+#define ReadSensitivityAndOutputList(x)    brule(GetSensitivityListX.3,x)
+#define ModifySensitivityAndOutputList(x)  bmodr(GetSensitivityListX.3,x)
+
+  ?;
+#define ReadCodeSensitivityList(x)    brule(GetSensitivityListX.4,x)
+#define ModifyCodeSensitivityList(x)  bmodr(GetSensitivityListX.4,x)
+
+
+
+  ModifySensitivityList(S)
+/***
+&HERE((3:S))
+***/
+ =>
+  gsl11(S);
+
+  bsearch(?,S,T) &
+  gsl11(T)
+ =>
+  gsl11(S);
+
+  ReadSensitivityList(S) &
+  ReadCodeSensitivityList(T) &
+/***
+HERE((1:S))&
+HERE((2:T))&
+***/
+  gsl11(bflat(S,T))
+ =>
+  gsl10;
+
+
+
+  InformCantConnect("TMP/.BBcom") /* &
+  PFZ */
+ =>
+  gsl9;
+
+  bget("TMP/.BBcom",x) &
+  ReadCodeSensitivityList(S) &
+  ModifyCodeSensitivityList((bflat(S,x)))
+ =>
+  gsl9;
+
+  gsl8(L)(?);
+  
+  gsl8(L)(N)
+ =>
+  gsl8(L)(N,n);
+  
+  brule(CodeMchColOPX.M,(m:n)) &
+  /*** sensitivity signals -> TMP/.BBcom ***/
+/***
+HERE((0:n:L))&
+***/
+TRACE((HERE((9))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 9 ",n," '",L,"'")) &
+  gsl9 &
+  gsl8(L)(N)
+ =>
+  gsl8(L)(N,n);
+  
+  gsl8("")(N);
+  
+  ReadOpsInvoked(O) &
+  gsl8(L)(O)
+ =>
+  gsl7(?)(L);
+
+  gsl7(L)(bcatl(X,l," "))
+ =>
+  gsl7(L,l)(X);
+
+  ReadSensitivityList(S) &
+  bsearch(l,S,T) &
+  gsl7(L)(X)
+ =>
+  gsl7(L,l)(X);
+
+  ReadSensitivityAndOutputList(L) &
+  gsl7(L)("")
+ =>
+  gsl6;
+
+
+
+
+  ReadSensitivityList(V) &
+  ModifySensitivityList((V,v))
+ =>
+  gsl5(e)(v);
+
+  brule(EVENT_OpNamesX.N,(v:w)) &
+  ReadSensitivityList(V) &
+  ModifySensitivityList((V,w))
+ =>
+  gsl5(e)(v);
+
+  ReadSensitivitySubstitution(P) &
+  e\P
+ =>
+  gsl5(e)(v);
+
+  ReadSensitivityList(V) &
+  bsearch(v,V,W)
+ =>
+  gsl5(e)(v);
+
+  gsl4(N);
+
+  brule(EVENT_OpNamesX.N,(e:v)) &
+  gsl5(e)(v) &
+  gsl4(N+1)
+ =>
+  gsl4(N);
+
+  gsl3(N);
+
+  brule(PORT_INX.N,(V:t)) &
+  gsl2_0 bsmap V &
+  gsl3(N+1)
+ =>
+  gsl3(N);
+
+  ReadSensitivityList(V) &
+  ModifySensitivityList((V,v))
+ =>
+  gsl2(v);
+
+  brule(EVENT_OpNamesX.N,(v:w)) &    /* aaa_event -> aaa */
+  ReadSensitivityList(V) &
+  ModifySensitivityList((V,w))
+ =>
+  gsl2(v);
+
+  ReadSensitivitySubstitution(P) &
+  v\P
+ =>
+  gsl2(v);
+
+  ReadSensitivityList(V) &
+  bsearch(v,V,W)
+ =>
+  gsl2(v);
+
+  ReadSensitivityAndOutputList(L) &
+  ModifySensitivityAndOutputList((L,s)) &
+  gsl2(s)
+ =>
+  gsl2_0(s);
+
+  gsl1(N);
+
+  brule(SIGNALX.N,s) &
+  gsl2_0(s) &
+  gsl1(N+1)
+ =>
+  gsl1(N);
+
+  ReadOpsInvoked(O) &
+  ModifySensitivityList(?) &
+  ModifySensitivitySubstitution(P) &
+  ModifySensitivityAndOutputList(?) &
+  ModifyCodeSensitivityList(?) &
+  RemoveLHSSub &
+  gsl1(1) &  /* SIGNAL */
+  gsl3(1) &  /* IN port */
+  gsl4(1) &  /* aaa_event */
+  gsl6    &  /* Code ops */
+  gsl10
+ =>
+  gsl(P);
+
+
+
+
+  /*** use guard (if any) and unwind ops invoked(if any) */
+
+
+
+  gsl(S)
+ =>
+  gsl01(?)(S);
+
+/***
+HERE(("-------- skip -------------->"))&
+***/
+  gsl01(N)(G|S|skip)
+ =>
+  gsl01(N,skip)(G|S);
+
+  brule(MchColOPX.M,(m:(n(o,i)|T|E))) &
+/***
+HERE(("-------- MchColOPX -------------->":m:n:T))&
+***/
+  gsl01(N)(G|S|T)
+ =>
+  gsl01(N,n)(G|S);
+
+  brule(ConcMchColOPX.M,(m:(n(o,i)|T|E))) &
+/***
+HERE(("-------- ConcMchColOPX -------------->":m:n:T))&
+***/
+  gsl01(N)(G|S|T)
+ =>
+  gsl01(N,n)(G|S);
+
+  brule(CodeMchColOPX.M,(m:n)) &
+/***
+HERE(("-------- CodeMchColOPX -------------->":m:n))&
+***/
+  gsl01(N)(G|S)
+ =>
+  gsl01(N,n)(G|S);
+
+
+
+  ReadProcessGuard(G) &
+  ReadOpsInvoked(O) &
+  gsl01(O)(G|n)
+ =>
+  gsl0(n);
+
+  ReadProcessGuard(G) &
+  ReadOpsInvoked(O) &
+  gsl01(O)(G|n(p))
+ =>
+  gsl0(n(p));
+
+  ReadProcessGuard(G) &
+  ReadOpsInvoked(O) &
+  gsl01(O)(G|r<--n)
+ =>
+  gsl0(r<--n);
+
+  ReadProcessGuard(G) &
+  ReadOpsInvoked(O) &
+  gsl01(O)(G|r<--n(p))
+ =>
+  gsl0(r<--n(p));
+
+  ReadProcessEventGuard(E) &
+  bsearch(?,E,F) &
+  ModifySensitivityList(F)
+ =>
+  gsl0(o)
+
+END
+
+&
+
+THEORY ExpandDisjunctsX IS
+
+#define ExpandDisjuncts(x) \
+    bcall((ExpandDisjunctsX~;MODR):bmodr(ExpandDisjunctsX.1,x))
+
+  ?;
+#define ReadExpandedDisjunct(x) brule(ExpandDisjunctsX.1,x)
+
+  (c & (a or b)) == ((c & a) or (c & b));
+
+  ((a or b) & c) == ((a & c) or (b & c))
+
+END
+
+&
+
+THEORY DetermineProcessEventGuardX IS
+
+#define DetermineProcessEventGuard(x) \
+    bcall(((ARI;MODR;RULE;MAP)~;DetermineProcessEventGuardX)~:deg00)
+
+  ?;
+/* defined above 
+#define ModifyProcessEventGuard(x)    bmodr(DetermineProcessEventGuardX.1,x)
+#define ReadProcessEventGuard(x)      brule(DetermineProcessEventGuardX.1,x)
+*/
+
+  brule(EVENT_OpNamesX.N,(e:c)) &
+  ReadProcessEventGuard(E) &
+  ModifyProcessEventGuard((E,c))
+ =>
+  deg_rem_event(e);
+
+  bcrer(EventDisjunctsX,(a == true))
+ =>
+  deg_dis2(a);
+
+  bcrer(EventDisjunctsX,((b or a) == true)) &
+  bcrer(EventDisjunctsX,((a or b) == true))
+ =>
+  deg_dis2(a,b);
+
+  bcrer(EventDisjunctsX,((c or b or a) == true)) &
+  bcrer(EventDisjunctsX,((b or c or a) == true)) &
+  bcrer(EventDisjunctsX,((c or a or b) == true)) &
+  bcrer(EventDisjunctsX,((a or c or b) == true)) &
+  bcrer(EventDisjunctsX,((b or a or c) == true)) &
+  bcrer(EventDisjunctsX,((a or b or c) == true))
+ =>
+  deg_dis2(a,b,c);
+
+  bcrer(EventDisjunctsX,((d or c or b or a) == true)) &
+  bcrer(EventDisjunctsX,((d or d or a or b) == true)) &
+  bcrer(EventDisjunctsX,((c or d or b or a) == true)) &
+  bcrer(EventDisjunctsX,((c or d or a or b) == true)) &
+  bcrer(EventDisjunctsX,((d or b or c or a) == true)) &
+  bcrer(EventDisjunctsX,((d or b or a or c) == true)) &
+  bcrer(EventDisjunctsX,((b or d or c or a) == true)) &
+  bcrer(EventDisjunctsX,((b or d or a or c) == true)) &
+  bcrer(EventDisjunctsX,((c or b or d or a) == true)) &
+  bcrer(EventDisjunctsX,((c or b or a or d) == true)) &
+  bcrer(EventDisjunctsX,((b or c or d or a) == true)) &
+  bcrer(EventDisjunctsX,((b or c or a or d) == true)) &
+  bcrer(EventDisjunctsX,((d or a or c or b) == true)) &
+  bcrer(EventDisjunctsX,((d or a or b or c) == true)) &
+  bcrer(EventDisjunctsX,((a or d or c or b) == true)) &
+  bcrer(EventDisjunctsX,((a or d or b or c) == true)) &
+  bcrer(EventDisjunctsX,((c or a or d or b) == true)) &
+  bcrer(EventDisjunctsX,((c or a or b or d) == true)) &
+  bcrer(EventDisjunctsX,((a or c or d or b) == true)) &
+  bcrer(EventDisjunctsX,((a or c or b or d) == true)) &
+  bcrer(EventDisjunctsX,((b or a or d or c) == true)) &
+  bcrer(EventDisjunctsX,((b or a or c or d) == true)) &
+  bcrer(EventDisjunctsX,((a or b or d or c) == true)) &
+  bcrer(EventDisjunctsX,((a or b or c or d) == true))
+ =>
+  deg_dis2(a,b,c,d);
+
+  deg_dis2(a='1')
+ =>
+  deg_dis1(a);
+
+  deg_dis2((a='1'),(b='1'))
+ =>
+  deg_dis1(a,b);
+
+  deg_dis2((a='1'),(b='1'),(c='1'))
+ =>
+  deg_dis1(a,b,c);
+
+  deg_dis2((a='1'),(b='1'),(c='1'),(d='1'))
+ =>
+  deg_dis1(a,b,c,d);
+
+  deg_dis1(a,b,c,d,e);   /* too many */
+
+  deg_dis;
+
+  ReadProcessEventGuard(E) &
+  bsearch(e,E,F) &
+  bclean(EventDisjunctsX) &
+  deg_dis1(F) &
+  ModifyProcessEventGuard(?) &
+  deg_rem_event bsmap F
+ =>
+  deg_dis;
+
+  ReadProcessEventGuard(E) &
+  ModifyProcessEventGuard((E,e))
+ =>
+  add_EventGuard(e);
+
+  ReadProcessEventGuard(E) &
+  bsearch(e,E,F)
+ =>
+  add_EventGuard(e);
+
+
+  deg1(?)(1);                  /* done */
+
+  ModifyProcessEventGuard(?)   /* disjunct not ok - quit */
+ =>
+  deg1(Q|p)(N);
+
+  brule(EVENT_OpNamesX.N,(e:t)) &
+  deg1(Q|p)(N+1)
+ =>
+  deg1(Q|p)(N);
+
+  brule(EVENT_OpNamesX.N,(e:t)) &
+  bsearch((e='1'),(p&?),q) &
+  add_EventGuard(e) &
+  deg1(Q)(1)                   /* disjunct ok - continue */
+ =>
+  deg1(Q|p)(N);
+
+  ModifyProcessEventGuard(?) &
+  deg1(Q|p)(1)
+ =>
+  deg(p)(Q);
+
+  deg(P)(Q|p)
+ =>
+  deg(P or p)(Q);
+
+  ReadExpandedDisjunct(G) &
+  deg(G)(?)
+ =>
+  deg0;
+
+  ReadProcessGuard(G) &
+  ExpandDisjuncts(G) &
+  deg0 &
+  deg_dis
+ =>
+  deg00;
+
+  ReadProcessGuard(?) &
+  ModifyProcessEventGuard(?)
+ =>
+  deg00
+
+END
+
+&
+
+THEORY DetermineProcessGuardX IS
+
+#define DetermineProcessGuard(x) \
+    bcall(((FLAT;MODR)~;DetermineProcessGuardX)~:dpg0(x))
+
+/*** should have same rules as PrintProcessBody ***/
+
+
+HERE(("dpg discarded":x))=>
+  dpg(x);
+
+
+  dpg1;
+
+  ReadProcessGuard(G) &
+  bsearch(?,G,H) &
+  ModifyProcessGuard(H)
+ =>
+  dpg1;
+
+
+  bident(n)
+ =>
+  dpg(n);
+
+  dpg(n(p));
+
+  dpg(r<--n);
+
+  dpg(r<--n(p));
+
+  dpg(a:=b);
+
+
+  dpg(S)
+ =>
+  dpg(BEGIN S END);
+
+  dpg(S)
+ =>
+  dpg(ANY V WHERE P THEN S END);
+
+  dpg(S)
+ =>
+  dpg(VAR V IN S END);
+
+  dpg(a) &
+  dpg(b)
+ =>
+  dpg(a || b);
+
+  dpg(a) &
+  dpg(b)
+ =>
+  dpg(a ; b);
+
+
+  ReadProcessGuard(G) &
+  ModifyProcessGuard(bflat(G&g)) &
+  dpg(S)
+ =>
+  dpg(g THEN S);
+
+  ReadProcessGuard(G) &
+  ModifyProcessGuard(bflat(G&g)) &
+  dpg(S) &
+  dpg(T)
+ =>
+  dpg(S OR g THEN T);
+
+  ReadProcessGuard(G) &
+  ModifyProcessGuard(bflat(G&g)) &
+  dpg(S) &
+  dpg(T)
+ =>
+  dpg(S WHEN g THEN T);
+
+  ReadProcessGuard(G) &
+  ModifyProcessGuard(bflat(G&g)) &
+  dpg(S) &
+  dpg(T)
+ =>
+  dpg(S ELSIF g THEN T);
+
+  dpg(S) &
+  dpg(T)
+ =>
+  dpg(S ELSE T);
+
+  dpg(S)
+ =>
+  dpg(CASE v OF EITHER S END END);
+
+  dpg(S)
+ =>
+  dpg(SELECT S END);
+
+  dpg(S)
+ =>
+  dpg(IF S END);
+
+
+
+  ModifyProcessGuard(?) &
+  dpg(S) &
+  dpg1
+ =>
+  dpg0(S)
+
+END
+
+&
+
+THEORY PrintProcessBodyX IS
+
+#define PrintProcessBody(x) \
+    bcall(((EventDisjunctsX~;ARI;WRITE;MAP;MODR;SUB;CATL;SHELL)~;PrintProcessBodyX)~: \
+      ppb00(x))
+
+  ?;
+#define ModifyCurrentAMNSubOpName(x,y)  bmodr(PrintProcessBodyX.1,(x,y))
+#define ReadCurrentAMNSubOpName(x,y)    brule(PrintProcessBodyX.1,(x,y))
+
+  ?;
+#define ModifyLocalVarsPrinted(x)  bmodr(PrintProcessBodyX.2,x)
+#define ReadLocalVarsPrinted(x)    brule(PrintProcessBodyX.2,x)
+
+
+
+
+  Writef(("\n\n    AMN statement not recognized:\n\n    % ..",bsrv S berv)) &
+  bprintf("\n                --->>> NOT RECOGNIZED (%) <<<---\n\n",S) &
+  FlagVHDLError
+ =>
+  ppb(N)(S);
+
+
+  ppb(N)(S)
+ =>
+  ppb(N)(BEGIN S END);
+
+
+
+                 /*** print variable declaration ***/
+
+
+
+  /*** code local errors ***/
+
+  Writef(("\n\n    Can't determine type of % (%) ..",bsrv v berv,?)) &
+  bprintf("    variable %:                 --->>> UNKNOWN (%) <<<---;\n",v,?) &
+  FlagVHDLError
+ =>
+  ppb_var(v);
+
+  ReadCurrentAMNSubOpName(N,n) &
+  brule(IncompleteLocalINVX.M,(n:v:e)) &
+  Writef(("\n\n    Can't determine type of % (%) ..",bsrv v berv, e)) &
+  bprintf("    variable %:                 --->>> UNKNOWN (%) <<<---;\n",v,e) &
+  FlagVHDLError
+ =>
+  ppb_var(v);
+
+
+
+  IsCfg(m.s) &
+  Writef(("op % of %:\n\n             %",n,m.s,bsrv t berv))
+ =>
+  ppb_invoked_ops_err1("abs/conc":m:n:(v:t));
+
+  Writef(("op % of %:\n\n             %",n,m.vhd,bsrv t berv))
+ =>
+  ppb_invoked_ops_err1("code":m:n:(v:t));
+
+  ReadCurrentAMNSubOpName(O,o) &
+  Writef(("\n\n    Process % - variable % is multiply typed:\n\n      ",bsrv o berv,bsrv v berv)) &
+  ppb_invoked_ops_err1(S:q:p:(v:s)) &
+  Writef(("\n\n      ")) &
+  ppb_invoked_ops_err1(T:m:n:(v:t)) &
+  Writef((" .."))
+ =>
+  ppb_invoked_ops_err(S:q:p:(v:s))(T:m:n:(v:t));
+
+
+
+  /*** abs local vars ***/
+
+  ReadCurrentAMNSubOpName(N,n) &
+  brule(LocalINVX.M,(n:v:t)) &
+  brule(MchColOPX.P,(m:(n(o,i)|S|E))) &
+  bprintf("    variable %: ",v) &
+  PrintActType(t) &
+  ReadLocalVarsPrinted(V) &
+  ModifyLocalVarsPrinted((V,("abs/conc":m:n:(v:t)))) &
+  bprintf(";\n")
+ =>
+  ppb_var(v);
+
+  /*** conc local vars ***/
+
+  ReadCurrentAMNSubOpName(N,n) &
+  brule(LocalINVX.M,(n:v:t)) &
+  brule(ConcMchColOPX.P,(m:(n(o,i)|S|E))) &
+  bprintf("    variable %: ",v) &
+  PrintActType(t) &
+  ReadLocalVarsPrinted(V) &
+  ModifyLocalVarsPrinted((V,("abs/conc":m:n:(v:t)))) &
+  bprintf(";\n")
+ =>
+  ppb_var(v);
+
+  ReadCurrentAMNSubOpName(N,n) &
+  brule(LocalINVX.M,(n:v:t)) &
+  ReadLocalVarsPrinted(V) &
+  bsearch((S:q:p:(v:s)),V,W) &
+
+  brule(ConcMchColOPX.P,(m:(n(o,i)|S|E))) &
+  bprintf("    variable %: ",v) &
+  PrintActType(t) &
+  ModifyLocalVarsPrinted((V,("abs/conc":m:n:(v:t)))) &
+  bprintf(";\n") &
+
+  ppb_invoked_ops_err(S:q:p:(v:s))("abs/conc":m:n:(v:t)) &
+  FlagVHDLError
+ =>
+  ppb_var(v);
+
+  ReadCurrentAMNSubOpName(N,n) &
+  brule(LocalINVX.M,(n:v:t)) &
+  ReadLocalVarsPrinted(V) &
+  bsearch((S:q:p:(v:t)),V,W)  /* multiply declared, but same type */
+ =>
+  ppb_var(v);
+
+  /*** ops invoked local vars ***/
+
+  ReadLocalVarsPrinted(V) &
+  ModifyLocalVarsPrinted((V,(T:m:n:(v:t)))) &
+  bprintf("    variable %: ",v) &
+  PrintActType(t) &
+  bprintf(";\n")
+ =>
+  ppb_ops_invoked_var1(T)(m:n:(v:t));
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  ReadLocalVarsPrinted(V) &
+  ModifyLocalVarsPrinted((V,(T:m:n:(v:t)))) &
+  bprintf("    variable %: ",v) &  /* don't PrintActType for code */
+  bprintf(t) &
+  bprintf(";\n")
+ =>
+  ppb_ops_invoked_var1(T)(m:n:(v:t));
+
+  ReadLocalVarsPrinted(V) &
+  bsearch((S:q:p:(v:s)),V,W) &
+  brule(CodeMchColOPX.M,(m:n)) &
+
+  ModifyLocalVarsPrinted((V,(T:m:n:(v:t)))) &
+  bprintf("    variable %: ",v) &  /* don't PrintActType for code */
+  bprintf(t) &
+  bprintf(";\n") &
+
+  ppb_invoked_ops_err(S:q:p:(v:s))(T:m:n:(v:t)) &
+  FlagVHDLError
+ =>
+  ppb_ops_invoked_var1(T)(m:n:(v:t));
+
+  ReadLocalVarsPrinted(V) &
+  bsearch((S:q:p:(v:t)),V,W)  /* multiply declared, but same type */
+ =>
+  ppb_ops_invoked_var1(T)(m:n:(v:t));
+
+
+
+  brule(LocalVARTypeX.P,(n:(v:t))) &
+  brule(MchColOPX.Q,(m:(n(o,i)|S|E))) &
+  ppb_ops_invoked_var1("abs/conc")(m:n:(v:t))
+ =>
+  ppb_ops_invoked_var_(n,v);
+
+  brule(LocalVARTypeX.P,(n:(v:t))) &
+  brule(ConcMchColOPX.Q,(m:(n(o,i)|S|E))) &
+  ppb_ops_invoked_var1("abs/conc")(m:n:(v:t))
+ =>
+  ppb_ops_invoked_var_(n,v);
+
+
+  ppb_ops_invoked_loc_var(n)(N);
+
+  brule(LocalVARX.N,a) &
+  ppb_ops_invoked_loc_var(n)(N+1)
+ =>
+  ppb_ops_invoked_loc_var(n)(N);
+
+  brule(LocalVARX.N,(n:V)) &
+/***
+HERE(("yup" --- N,(n:V)))&
+***/
+   ppb_ops_invoked_var_(n) bsmap V &
+  ppb_ops_invoked_loc_var(n)(N+1)
+ =>
+  ppb_ops_invoked_loc_var(n)(N);
+
+
+/***
+HERE((n))&
+PrintTHEORY(LocalVARX)&
+***/
+  ppb_ops_invoked_loc_var(n)(1)
+ =>
+  ppb_ops_invoked_var(n)(N);
+
+  brule(CodeMchColOPX.N,a) &
+  ppb_ops_invoked_var(n)(N+1)
+ =>
+  ppb_ops_invoked_var(n)(N);
+
+  brule(MchCodeColVARX.N,(m:n:(v:t))) &
+  brule(CodeMchColOPX.P,(m:n)) &
+/***
+HERE(("yup" --- N,(m:n:(v:t))))&
+***/
+   ppb_ops_invoked_var1("code")(m:n:(v:t)) &
+  ppb_ops_invoked_var(n)(N+1)
+ =>
+  ppb_ops_invoked_var(n)(N);
+
+
+/***
+HERE((n))&
+PrintTHEORY(MchCodeColVARX)&
+***/
+   ppb_ops_invoked_var(n)(1)
+ =>
+  ppb_ops_invoked_var0(n);
+
+  ppb_ops_invoked_var0(?);
+
+
+
+  Printsp(VHDL_tab*N) &
+  bprintf("null;\n")
+ =>
+  ppb(N)(skip);
+
+
+  /*** local vars (discarded - ppb_ops_invoked_var) ***/
+
+
+  ppb(N)(S)
+ =>
+  ppb(N)(ANY V WHERE P THEN S END);
+
+  ppb(N)(S)
+ =>
+  ppb(N)(VAR V IN S END);
+
+
+
+
+  /*** op invocation ***/
+
+  ppb_pop_op_name1(?); /* something's gone wrong - error reported elsewhere */
+
+  ModifyCurrentAMNSubOpName(N,n)
+ =>
+  ppb_pop_op_name1(N,n);
+
+  ReadCurrentAMNSubOpName(N,n) &
+  ppb_pop_op_name1(N)
+ =>
+  ppb_pop_op_name;
+
+  ReadCurrentAMNSubOpName(N,n) &
+  ModifyCurrentAMNSubOpName((N,n),m)
+ =>
+  ppb_push_op_name(m);
+
+
+
+
+
+  /*** Abs op invocation ***/
+
+  brule(MchColOPX.M,(m:(n(?,?)|S|E))) &
+  ReportAbsVarNotRefined(n,S) &
+  ppb_push_op_name(n) &
+  ppb(N)(S) &
+  ppb_pop_op_name &
+  FlagVHDLError
+ =>
+  ppb(N)(n);
+
+  brule(MchColOPX.M,(m:(n(?,?)|S|E))) &
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb_push_op_name(n) &
+  ppb(N)(S) &
+  ppb_pop_op_name
+ =>
+  ppb(N)(n);
+
+  brule(MchColOPX.M,(m:(n(?,i)|S|E))) &
+  ReportAbsVarNotRefined(n,S) &
+  ppb_push_op_name(n) &
+  ppb(N)([i:=p](S)) &
+  ppb_pop_op_name &
+  FlagVHDLError
+ =>
+  ppb(N)(n(p));
+
+  brule(MchColOPX.M,(m:(n(?,i)|S|E))) &
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb_push_op_name(n) &
+  ppb(N)([i:=p](S)) &
+  ppb_pop_op_name
+ =>
+  ppb(N)(n(p));
+
+  brule(MchColOPX.M,(m:(n(o,?)|S|E))) &
+  ReportAbsVarNotRefined(n,S) &
+  ppb_push_op_name(n) &
+  ppb(N)([o:=r](S)) &
+  ppb_pop_op_name &
+  FlagVHDLError
+ =>
+  ppb(N)(r<--n);
+
+  brule(MchColOPX.M,(m:(n(o,?)|S|E))) &
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb_push_op_name(n) &
+  ppb(N)([o:=r](S)) &
+  ppb_pop_op_name
+ =>
+  ppb(N)(r<--n);
+
+  brule(MchColOPX.M,(m:(n(o,i)|S|E))) &
+  ReportAbsVarNotRefined(n,S) &
+  ppb(N)([o:=r]([i:=p](S))) &
+  ppb_pop_op_name &
+  FlagVHDLError
+ =>
+  ppb(N)(r<--n(p));
+
+  brule(MchColOPX.M,(m:(n(o,i)|S|E))) &
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb_push_op_name(n) &
+  ppb(N)([o:=r]([i:=p](S))) &
+  ppb_pop_op_name
+ =>
+  ppb(N)(r<--n(p));
+
+
+  /*** Conc op invocation ***/
+
+  brule(ConcMchColOPX.M,(m:(n(?,?)|S|E))) &
+  ReportAbsVarNotRefined(n,S) &
+  ppb_push_op_name(n) &
+  ppb(N)(S) &
+  ppb_pop_op_name &
+  FlagVHDLError
+ =>
+  ppb(N)(n);
+
+  brule(ConcMchColOPX.M,(m:(n(?,?)|S|E))) &
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb_push_op_name(n) &
+  ppb(N)(S) &
+  ppb_pop_op_name
+ =>
+  ppb(N)(n);
+
+  brule(ConcMchColOPX.M,(m:(n(?,i)|S|E))) &
+  ReportAbsVarNotRefined(n,S) &
+  ppb_push_op_name(n) &
+  ppb(N)([i:=p](S)) &
+  ppb_pop_op_name &
+  FlagVHDLError
+ =>
+  ppb(N)(n(p));
+
+  brule(ConcMchColOPX.M,(m:(n(?,i)|S|E))) &
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb_push_op_name(n) &
+  ppb(N)([i:=p](S)) &
+  ppb_pop_op_name
+ =>
+  ppb(N)(n(p));
+
+  brule(ConcMchColOPX.M,(m:(n(o,?)|S|E))) &
+  ReportAbsVarNotRefined(n,S) &
+  ppb_push_op_name(n) &
+  ppb(N)([o:=r](S)) &
+  ppb_pop_op_name &
+  FlagVHDLError
+ =>
+  ppb(N)(r<--n);
+
+  brule(ConcMchColOPX.M,(m:(n(o,?)|S|E))) &
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb_push_op_name(n) &
+  ppb(N)([o:=r](S)) &
+  ppb_pop_op_name
+ =>
+  ppb(N)(r<--n);
+
+  brule(ConcMchColOPX.M,(m:(n(o,i)|S|E))) &
+  ReportAbsVarNotRefined(n,S) &
+  ppb_push_op_name(n) &
+  ppb(N)([o:=r]([i:=p](S))) &
+  ppb_pop_op_name &
+  FlagVHDLError
+ =>
+  ppb(N)(r<--n(p));
+
+  brule(ConcMchColOPX.M,(m:(n(o,i)|S|E))) &
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb_push_op_name(n) &
+  ppb(N)([o:=r]([i:=p](S))) &
+  ppb_pop_op_name
+ =>
+  ppb(N)(r<--n(p));
+
+
+
+  /***  Code in-lined op invocation ***/
+  /***  <-- changed to := or <=     ***/
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  brule(MchColOPX.P,(m:(n(?,?)|S|E))) &
+  ppb_push_op_name(n) &
+  bclose &
+  Connect("TMP/.Bcom") &
+  InlineRewritesToBcom((aaa:=aaa)) &
+  bclose &
+  WriteDot &
+  /*** TMP/.Bcom created from TMP/.op ***/
+TRACE((HERE((43))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 4 ",n)) &
+  ReadCodeFilename(f) &
+  /*** TMP/.Bcom appended to master vhd file ***/
+TRACE((HERE((53))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 5 ",(2*VHDL_tab)," ",f)) &
+  Reappend
+ =>
+  ppb(N)(n);
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  brule(MchColOPX.P,(m:(n(?,i)|S|E))) &
+  ppb_push_op_name(n) &
+  bclose &
+  Connect("TMP/.Bcom") &
+  InlineRewritesToBcom((i:=p)) &
+  bclose &
+  WriteDot &
+  /*** TMP/.Bcom created from TMP/.op ***/
+TRACE((HERE((42))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 4 ",n)) &
+  ReadCodeFilename(f) &
+  /*** TMP/.Bcom appended to master vhd file ***/
+TRACE((HERE((52))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 5 ",(2*VHDL_tab)," ",f)) &
+  Reappend
+ =>
+  ppb(N)(n(p));
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  brule(MchColOPX.P,(m:(n(o,?)|S|E))) &
+  ppb_push_op_name(n) &
+  bclose &
+  Connect("TMP/.Bcom") &
+  InlineRewritesToBcom((o:=r)) &
+  bclose &
+  WriteDot &
+  /*** TMP/.Bcom created from TMP/.op ***/
+TRACE((HERE((41))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 4 ",n)) &
+  ReadCodeFilename(f) &
+  /*** TMP/.Bcom appended to master vhd file ***/
+TRACE((HERE((51))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 5 ",(2*VHDL_tab)," ",f)) &
+  Reappend
+ =>
+  ppb(N)(r<--n);
+
+  brule(CodeMchColOPX.M,(m:n)) &
+  brule(MchColOPX.P,(m:(n(o,i)|S|E))) &
+  ppb_push_op_name(n) &
+  bclose &
+  Connect("TMP/.Bcom") &
+  InlineRewritesToBcom((bflat(o,i):=bflat(r,p))) &
+  bclose &
+  WriteDot &
+  /*** TMP/.Bcom created from TMP/.op ***/
+TRACE((HERE((40))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 4 ",n)) &
+  ReadCodeFilename(f) &
+  /*** TMP/.Bcom appended to master vhd file ***/
+TRACE((HERE((50))&bshell("cat TMP/.Bcom")))&
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 5 ",(2*VHDL_tab)," ",f)) &
+  Reappend
+ =>
+  ppb(N)(r<--n(p));
+
+
+
+  /*** CASE ***/
+
+  ppbCASE3(N)(?)(?);
+
+  Printsp(VHDL_tab*N) &
+  bprintf("when ") &
+  PrintPredVal(P) &
+  bprintf(" =>\n") &
+  ppb(N+1)(S) &
+  ppbCASE3(N)(Y)(Z)
+ =>
+  ppbCASE3(N)(Y|P)(Z|S);
+
+  Printsp(VHDL_tab*N) &
+  bprintf("when ") &
+  PrintPredVal(P) &
+  bprintf(" =>\n") &
+  ppb(N+1)(S)
+ =>
+  ppbCASE3(N)(?|P)(?|S);
+
+  Printsp(VHDL_tab*N) &
+  bprintf("when others =>\n") &
+  ppb(N+1)(S)
+ =>
+  ppbCASE3(N)(?|_=_)(?|S);
+
+  ReadHomogGuardVar(p) &
+  Printsp(VHDL_tab*N) &
+  bprintf("case % is\n",p) &
+  ppbCASE3(N+1)(Y)(Z) &
+  Printsp(VHDL_tab*N) &
+  bprintf("end case;\n")
+ =>
+  ppbCASE2(N)(Y)(Z);
+
+
+
+  /*** IF */
+
+  ppbIF3(N)(?)(?);
+
+  Printsp(VHDL_tab*N) &
+  bprintf("elsif ") &
+  PrintPred(P) &
+  bprintf(" then\n") &
+  ppb(N+1)(S) &
+  ppbIF3(N)(Y)(Z)
+ =>
+  ppbIF3(N)(Y|P)(Z|S);
+
+  Printsp(VHDL_tab*N) &
+  bprintf("elsif ") &
+  PrintPred(P) &
+  bprintf(" then\n") &
+  ppb(N+1)(S)
+ =>
+  ppbIF3(N)(?|P)(?|S);
+
+  Printsp(VHDL_tab*N) &
+  bprintf("else\n") &
+  ppb(N+1)(S)
+ =>
+  ppbIF3(N)(?|_=_)(?|S);
+
+  Printsp(VHDL_tab*N) &
+  bprintf("if ") &
+  PrintPred(P) &
+  bprintf(" then\n") &
+  ppb(N+1)(S) &
+  ppbIF3(N)(Y)(Z) &
+  Printsp(VHDL_tab*N) &
+  bprintf("end if;\n")
+ =>
+  ppbIF2(N)(Y|P)(Z|S);
+
+
+
+  /*** determine homog pred for SELECT & decide - CASE or IF ... ***/
+
+  ppb(N+1)(IF X END)
+ =>
+  ppbSELECT_IF(N)(X)(?)(?);
+
+  ppbSELECT_IF(N)(X ELSIF P THEN S)(Y)(Z)
+ =>
+  ppbSELECT_IF(N)(X)(Y|P)(Z|S);
+
+  ppbSELECT_IF(N)(P THEN S)(Y)(Z)
+ =>
+  ppbSELECT1(N)(Y|P)(Z|S);
+
+
+
+  HomogGuards &
+  ppbCASE2(N)(Y)(Z)
+ =>
+  ppbSELECT1(N)(Y)(Z);
+  
+  DetermineGuardsSubsType((Y|P),(Z|S)) &
+  ppbSELECT1(N)(Y|P)(Z|S)
+ =>
+  ppbSELECT(N)(P THEN S)(Y)(Z);
+
+  ppbSELECT(N)(X)(Y|P)(Z|S)
+ =>
+  ppbSELECT(N)(X WHEN P THEN S)(Y)(Z);
+
+  ppbSELECT(N)(X)(Y|_=_)(Z|S)
+ =>
+  ppbSELECT(N)(X ELSE S)(Y)(Z);
+
+  ppbSELECT(N)(X)(?)(?)
+ =>
+  ppb(N)(SELECT X END);
+
+  ReadCaseToSelect(S) &
+/***
+HERE((S))&
+HERE(("The above AMN SELECT was internally converted from AMN CASE")) &
+***/
+  ppb(N)(S)
+ =>
+  ppb_read_CaseToSelect(N)(C);
+
+  CaseToSelect(CASE X END) &
+/***
+HERE(("The following AMN CASE being internally converted to AMN SELECT")) &
+HERE((CASE X END))&
+***/
+  ppb_read_CaseToSelect(N)(CASE X END)
+ =>
+  ppb(N)(CASE X END);
+
+
+
+  /*** determine homog pred for IF & decide - CASE or ELSIF ***/
+
+  ppbIF2(N)(Y)(Z)
+ =>
+  ppbIF1(N)(Y)(Z);
+  
+  HomogGuards &
+  ppbCASE2(N)(Y)(Z)
+ =>
+  ppbIF1(N)(Y)(Z);
+  
+  ppbIF2(N)(?|P)(?|S)
+ =>
+  ppbIF1(N)(?|P)(?|S);         /* IF P THEN S END */
+  
+  ppbIF2(N)(?|_=_|P)(?|T|S)
+ =>
+  ppbIF1(N)(?|_=_|P)(?|T|S);   /* IF P THEN S ELSE T END */
+  
+  DetermineGuardsSubsType((Y|P),(Z|S)) &
+  ppbIF1(N)(Y|P)(Z|S)
+ =>
+  ppbIF(N)(P THEN S)(Y)(Z);
+
+  ppbIF(N)(X)(Y|P)(Z|S)
+ =>
+  ppbIF(N)(X ELSIF P THEN S)(Y)(Z);
+
+  ppbIF(N)(X)(Y|_=_)(Z|S)
+ =>
+  ppbIF(N)(X ELSE S)(Y)(Z);
+
+  ppbIF(N)(X)(?)(?)
+ =>
+  ppb(N)(IF X END);
+
+
+
+  /***   :=   ;   ||   ***/
+
+  Printsp(VHDL_tab*N) &
+  bprintf("% <= % after 1 ns;\n",a,b)
+ =>
+  ppb(N)(a:=b);
+
+  ReadCurrentAMNSubOpName(P,n) &
+  brule(LocalINVX.M,(n:a:t)) &
+  Printsp(VHDL_tab*N) &
+  bprintf("% := % after 1 ns;\n",a,b)
+ =>
+  ppb(N)(a:=b);
+
+
+/*
+  Printsp(VHDL_tab*N) &
+  bprintf("% <= (%) after 1 ns;\n",a,b)
+ =>
+  ppb(N)(a:=bool(b));
+*/
+
+  ppb(N)(A:=B) &
+  ppb(N)(a:=b)
+ =>
+  ppb(N)(A,a:=B,b);
+
+  Printsp(VHDL_tab*N) &
+/***  ***/
+  bprintf("% <= opcode'VAL(%) after 1 ns;\n",a,b)
+ =>
+  ppb(N)(a:=opcode_VAL(b));
+
+  ppb(N)(a) &
+  ppb(N)(b)
+ =>
+  ppb(N)(a ; b);
+
+  ppb(N)(a) &
+  ppb(N)(b)
+ =>
+  ppb(N)(a || b);
+
+
+
+  /*** Process outer block of Process ***/
+
+  ReadOpsInvoked(U) &
+  ReadCurrentProcessName(n) &
+  ModifyLocalVarsPrinted(?) &
+  ModifyCurrentAMNSubOpName(?,n) &
+  ppb_ops_invoked_var0 bsmap U &
+  bprintf("  begin\n") &
+  ppb(2)(S)
+ =>
+  ppb0(S);
+
+  ReadOpsInvoked(U) &
+  ReadCurrentProcessName(n) &
+  ModifyCurrentAMNSubOpName(?,n) &
+  ModifyLocalVarsPrinted(?) &
+  ppb_ops_invoked_var0 bsmap U &
+  bprintf("  begin\n") &
+  ppb(2)(S)
+ =>
+  ppb0(BEGIN S END);
+
+  ReadOpsInvoked(U) &
+  ReadCurrentProcessName(n) &
+  ModifyCurrentAMNSubOpName(?,n) &
+  ModifyLocalVarsPrinted(?) &
+  ppb_var bsmap V &
+  ppb_ops_invoked_var0 bsmap U &
+  bprintf("  begin\n") &
+  ppb(2)(S)
+ =>
+  ppb0(VAR V IN S END);
+
+  ReadOpsInvoked(U) &
+  ReadCurrentProcessName(n) &
+  ModifyCurrentAMNSubOpName(?,n) &
+  ModifyLocalVarsPrinted(?) &
+  ppb_var bsmap V &
+  ppb_ops_invoked_var0 bsmap U &
+  bprintf("  begin\n") &
+  ppb(2)(S)
+ =>
+  ppb0(ANY V WHERE T THEN S END);
+
+
+  ReadArchOpname(a) &
+  ReportAbsVarNotRefined(a,S) &
+  ppb0(S) &
+  FlagVHDLError
+ =>
+  ppb00(S);
+
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+  ppb0(S)
+ =>
+  ppb00(S)
+
+END
+
+&
+
+THEORY PrintProcessX IS
+
+#define PrintProcess(x) \
+    bcall(((FLAT;WRITE;SUB;MODR;CATL;SHELL)~;PrintProcessX)~:pp(x))
+
+  1;
+
+  brule(PrintProcessX.1,n) &
+  bcall((ARI;MODR):bmodr(PrintProcessX.1,n+1))
+ =>
+  pp_inc_implicit(x);
+
+  ReadCurrentProcessName(n) &
+  ReadSensitivityList(v) &
+  bprintf("  % : process (",n) &
+  PrintCommaList(v) &
+  bprintf(")\n") &
+  PrintProcessBody(S) &
+  bprintf("  end process %;\n",n)
+ =>
+  pp(S);
+
+  ReadCurrentProcessName(?) &
+  ReadSensitivityList(v) &
+  brule(PrintProcessX.1,n) &
+  brule(TransVHDLX.5,(P,Y)) &
+  pp_inc_implicit(S) &
+  bprintf("  ") &
+  bprintf(P) &
+  bprintf("_pr% : process (",n) &
+  PrintCommaList(v) &
+  bprintf(")\n") &
+  PrintProcessBody(S) &
+  bprintf("  end process;\n"  )
+ =>
+  pp(S);
+
+  ReadCurrentProcessName(n) &
+  ReadSensitivityList(?) &
+  bprintf("  % : process\n",n) &
+  PrintProcessBody(S) &
+  bprintf("  end process %;\n",n)
+ =>
+  pp(S);
+
+  ReadCurrentProcessName(?) &
+  ReadSensitivityList(?) &
+  brule(PrintProcessX.1,n) &
+  brule(TransVHDLX.5,(P,Y)) &
+  pp_inc_implicit(S) &
+  bprintf("  ") &
+  bprintf(P) &
+  bprintf("_pr% : process\n",n) &
+  PrintProcessBody(S) &
+  bprintf("  end process;\n")
+ =>
+  pp(S)
+
+END
+
+&
+
+THEORY DeleteEventPredicateX IS
+
+  (true & a)==a;
+
+  (a & true)==a;
+
+  (true or a)==a;
+
+  (a or true)==a
+
+END
+
+&
+
+THEORY CreateDeleteEventPredicateX IS
+
+#define CreateDeleteEventPredicate(x,y) \
+  bcall(((RULE;MAP)~;CreateDeleteEventPredicateX)~:cdep(x)(y))
+
+  ?;
+#define ReadEventRemovedSubs(x) brule(CreateDeleteEventPredicateX.1,x)
+
+  bcrer(DeleteEventPredicateX,(p==true))
+ =>
+  cdep1(p);
+
+  cdep1(?);
+
+  bclean(DeleteEventPredicateX) &
+  cdep1 bsmap P &
+  bcall((DeleteEventPredicateX~;MODR):bmodr(CreateDeleteEventPredicateX.1,Q))
+ =>
+  cdep(P)(Q)
+
+END
+
+&
+
+THEORY PipasStackX IS
+
+#define PipasStack(x) \
+  bcall(((MODR)~;PipasStackX)~:(bmodr(PrintImpProcessOrArchSubX.1,x) & ps0(x)))
+
+  ?;
+#define ReadStackSub(x) brule(PipasStackX.1,x)
+
+/***
+HERE(("---------------------------"))&
+brule(PrintImpProcessOrArchSubX.1,W)&HERE((W))&HERE((X))&
+HERE(("+++++++++++++++++++++++++++"))&
+***/
+  DetermineGuardsSubsType(P,S) &
+  bmodr(PipasStackX.1,X)
+ =>
+  ps1(X)(P)(S);
+
+
+  ps1(Z|(a=v|B))(P|a=v)(S|B)
+ =>
+  ps_case(a)(v THEN B)(Z)(P)(S);
+
+  ps_case(a)(X)(Z|(a=v|B))(P|a=v)(S|B)
+ =>
+  ps_case(a)(X OR v THEN B)(Z)(P)(S);
+
+  ps_case(a)(X)(Z|(?|B))(P)(S|B)
+ =>
+  ps_case(a)(X ELSE B)(Z)(P)(S);
+
+  ps_case(a)(b)(?)(?)(?)
+ =>
+  ps0(CASE a OF EITHER b END END);
+
+
+  ps1(Z|(A|B))(P|A)(S|B)
+ =>
+  ps(A THEN B)(Z)(P)(S);
+
+  ps(X)(Z|(A|B))(P|A)(S|B)
+ =>
+  ps(X ELSIF A THEN B)(Z)(P)(S);
+
+  ps(X)(Z|(A|B))(P|A)(S|B)
+ =>
+  ps(X WHEN A THEN B)(Z)(P)(S);
+
+  ps(X)(Z|(?|B))(P)(S|B)
+ =>
+  ps(X ELSE B)(Z)(P)(S);
+
+  ps(a)(?)(?)(?)
+ =>
+  ps0(IF a END);
+
+  ps(a)(?)(?)(?)
+ =>
+  ps0(SELECT a END)
+
+END
+
+&
+
+THEORY PrintImpProcessOrArchSubX IS
+
+#define PrintImpProcessOrArchSub(x) \
+    bcall(((MAP;WRITE)~;PrintImpProcessOrArchSubX)~:pipas0(x))
+
+
+  ?; /* the original pre-PipasStack op */
+
+  /*** Default to Implicit Process ***/
+
+/*
+  GetOpsInvoked(S) &
+  PrintProcess(S)
+ =>
+  pipas1(S);
+
+  GetOpsInvoked(S) &
+  PrintProcess(S)
+ =>
+  pipas(S);
+*/
+
+/*
+  bprintf("%\n\n",S) &
+  FlagVHDLError &  
+  BadArchitectureSub(S)
+ =>
+  pipas_arch_sub1(S);
+*/
+
+
+/*
+  GetOpsInvoked(S) &
+  PrintProcess(S)
+ =>
+  pipas_arch_sub1(S);
+*/
+
+
+
+/*
+  /??? Special form, so Arch Sub ???/
+
+  HomogSubs &
+  ReadHomogSubsVar(v) &
+  bprintf("  % <= ",v) &
+  PrintAssgnVal(S) &
+  bprintf(" when ") &
+  PrintPred(P) &
+  bscnl
+ =>
+  pipas_arch_sub1(IF P THEN S END);
+
+  HomogSubs &
+  ReadHomogSubsVar(v) &
+  bprintf("  % <= ",v) &
+  PrintAssgnVal(S) &
+  bprintf(" when ") &
+  PrintPred(P) &
+  bprintf(" else ") &
+  PrintAssgnVal(T) &
+  bscnl
+ =>
+  pipas_arch_sub1(IF P THEN S ELSE T END);
+
+
+
+  IsSubstBlock &  /? not really needed here ?/
+  HomogGuards &
+  ReadHomogGuardVar(p) &
+  bprintf("  with % select",p) &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("% <= % when ",a,b) &
+  PrintPredVal(P) &
+  bsc &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("% <= % when ",c,d) &
+  PrintPredVal(Q) &
+  bscnl
+ =>
+  pipas_arch_sub1(IF P THEN a:=b ELSIF Q THEN c:=d END);
+
+  HomogSubs &
+  HomogGuards &
+  ReadHomogSubsVar(v) &
+  ReadHomogGuardVar(p) &
+  bprintf("  with % select",p) &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("% <=",v) &
+  Printnlsp(VHDL_tab?3) &
+  PrintAssgnVal(S) &
+  bprintf(" when ") &
+  PrintPredVal(P) &
+  bcm &
+  Printnlsp(VHDL_tab?3) &
+  PrintAssgnVal(T) &
+  bprintf(" when ") &
+  PrintPredVal(Q) &
+  bscnl
+ =>
+  pipas_arch_sub1(IF P THEN S ELSIF Q THEN T END);
+
+
+  bprintf("%\n\n",IF P THEN a:=b ELSIF Q THEN c:=d ELSE e:=f END) &
+  FlagVHDLError &  
+  BadArchitectureSub(IF P THEN a:=b ELSIF Q THEN c:=d ELSE e:=f END)
+ =>
+  pipas_arch_sub1(IF P THEN a:=b ELSIF Q THEN c:=d ELSE e:=f END);
+
+  HomogGuards &
+  ReadHomogGuardVar(p) &
+  bprintf("  with % select",p) &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("% <= % when ",a,b) &
+  PrintPredVal(P) &
+  bsc &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("% <= % when ",c,d) &
+  PrintPredVal(Q) &
+  bsc &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("else % <= %",e,f) &
+  bscnl
+ =>
+  pipas_arch_sub1(IF P THEN a:=b ELSIF Q THEN c:=d ELSE e:=f END);
+
+  HomogSubs &
+  bprintf("  % <= % when % else",a,b,P) &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("% when % else",d,Q) &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("%",f) &
+  bscnl
+ =>
+  pipas_arch_sub1(IF P THEN a:=b ELSIF Q THEN a:=d ELSE a:=f END);
+
+  HomogSubs &
+  HomogGuards &
+  ReadHomogSubsVar(v) &
+  ReadHomogGuardVar(p) &
+  bprintf("  with % select",p) &
+  Printnlsp(VHDL_tab?2) &
+  bprintf("% <=",v) &
+  Printnlsp(VHDL_tab?3) &
+  PrintAssgnVal(S) &
+  bprintf(" when ") &
+  PrintPredVal(P) &
+  bcm &
+  Printnlsp(VHDL_tab?3) &
+  PrintAssgnVal(T) &
+  bprintf(" when ") &
+  PrintPredVal(Q) &
+  bcm &
+  Printnlsp(VHDL_tab?3) &
+  PrintAssgnVal(U) &
+  bprintf(" when other") &
+  bscnl
+ =>
+  pipas_arch_sub1(IF P THEN S ELSIF Q THEN T ELSE U END);
+
+
+
+  DetermineGuardsSubsType((?|P),(?|S)) &
+  pipas_arch_sub1(IF P THEN S END)
+ =>
+  pipas_arch_sub(IF P THEN S END);
+
+  DetermineGuardsSubsType((?|P),(?|S|T)) &
+  pipas_arch_sub1(IF P THEN S ELSE T END)
+ =>
+  pipas_arch_sub(IF P THEN S ELSE T END);
+
+  DetermineGuardsSubsType((?|P|Q),(?|S|T)) &
+  pipas_arch_sub1(IF P THEN S ELSIF Q THEN T END)
+ =>
+  pipas_arch_sub(IF P THEN S ELSIF Q THEN T END);
+*/
+
+
+
+  
+  /*** Not Special form, so Process ***/
+    
+  brule(PrintImpProcessOrArchSubX.1,S) & /* recover original subs */
+  GetOpsInvoked(S) &
+  PrintProcess(S)
+ =>
+  pipas_arch_sub1(X);
+
+
+  /*** Special form, so Arch Sub ***/
+    
+  /***
+  homog guards
+  ***/
+
+  bscnl
+ =>
+  pipas_arch_sub_hg(?);
+
+  bprintf("% <= % when %",a,b,q) &
+  bsc &
+  Printnlsp(VHDL_tab*2) &
+  pipas_arch_sub_hg(X)
+ =>
+  pipas_arch_sub_hg(X|(p=q|a:=b));
+
+  bprintf("% <= % when %",a,b,q) &
+  bscnl
+ =>
+  pipas_arch_sub_hg(?|(p=q|a:=b));
+
+  bprintf("% <= % when others",a,b) &
+  bscnl
+ =>
+  pipas_arch_sub_hg(?|(?|a:=b));
+
+  HomogGuards &
+  ReadHomogGuardVar(p) &
+  ReadStackSub(S) &
+  bprintf("  with % select",p) &
+  Printnlsp(VHDL_tab*2) &
+  pipas_arch_sub_hg(S)
+  =>
+  pipas_arch_sub1(X);
+
+
+
+  /***
+  homog subs
+  ***/
+
+  bscnl
+ =>
+  pipas_arch_sub_hs(?);
+
+  bprintf("% when % else",w,P) &
+  Printnlsp(VHDL_tab*2) &
+  pipas_arch_sub_hs(X)
+ =>
+  pipas_arch_sub_hs(X|(P|v:=w));
+
+  bprintf("% when %",w,P) &
+  bscnl
+ =>
+  pipas_arch_sub_hs(?|(P|v:=w));
+
+  bprintf("%",w) &
+  bscnl
+ =>
+  pipas_arch_sub_hs(?|(?|v:=w));
+
+  HomogSubs &
+  ReadHomogSubsVar(v) &
+  ReadStackSub(S) &
+  bprintf("  % <= ",v) &
+  Printnlsp(VHDL_tab*2) &
+  pipas_arch_sub_hs(S)
+  =>
+  pipas_arch_sub1(X);
+
+
+
+  /***
+  homog guards & subs
+  ***/
+
+  bscnl
+ =>
+  pipas_arch_sub_hg_hs(?);
+
+  Printnlsp(VHDL_tab*3) &
+  bprintf("% when %",w,q) &
+  bcm &
+  pipas_arch_sub_hg_hs(X)
+ =>
+  pipas_arch_sub_hg_hs(X|(p=q|v:=w));
+
+  Printnlsp(VHDL_tab*3) &
+  bprintf("% when others",w) &
+  bscnl
+ =>
+  pipas_arch_sub_hg_hs(?|(?|v:=w));
+
+  HomogSubs &
+  HomogGuards &
+  ReadHomogSubsVar(v) &
+  ReadHomogGuardVar(p) &
+  ReadStackSub(S) &
+  bprintf("  with % select",p) &
+  Printnlsp(VHDL_tab*2) &
+  bprintf("% <=",v) &
+  pipas_arch_sub_hg_hs(S)
+  =>
+  pipas_arch_sub1(X);
+
+
+
+  PipasStack(CASE X END) &
+  pipas_arch_sub1(CASE X END)
+ =>
+  pipas_arch_sub(CASE X END);
+
+  PipasStack(SELECT X END) &
+  pipas_arch_sub1(SELECT X END)
+ =>
+  pipas_arch_sub(SELECT X END);
+
+  PipasStack(IF X END) &
+  pipas_arch_sub1(IF X END)
+ =>
+  pipas_arch_sub(IF X END);
+
+
+
+
+
+  /*** Arch Sub ***/
+
+  Printsp(VHDL_tab) &
+  bprintf("% <= % after 1 ns;\n",a,b)
+ =>
+  pipas_arch_sub(a:=b);
+
+  Printsp(VHDL_tab) &
+  bprintf("% <= (%) after 1 ns;\n",a,b)
+ =>
+  pipas_arch_sub(a:=bool(b));
+
+  pipas_arch_sub(A:=B) &
+  bprintf("\n") &
+  pipas_arch_sub(a:=b)
+ =>
+  pipas_arch_sub(A,a:=B,b);
+
+
+  /*** Check for Implicit Process ***/
+
+
+
+  FlagVHDLError &  
+  BadImplicitProcess(S)
+ =>
+  pipas_det_if_process4(S)(W);
+
+  pipas_det_if_process5(IF P THEN S END)
+ =>
+  pipas_det_if_process4(IF P THEN S END)(W);
+
+  pipas_det_if_process5(IF P THEN S ELSIF Q THEN T END)
+ =>
+  pipas_det_if_process4(IF P THEN S ELSIF Q THEN T END)(W);
+
+  true\Q &
+  FlagVHDLError &  
+  BadImplicitProcessNotAllGuards(W)
+ =>
+  pipas_det_if_process4(IF P THEN S ELSIF Q THEN T END)(W);
+
+  true\P &
+  FlagVHDLError &  
+  BadImplicitProcessNotAllGuards(W)
+ =>
+  pipas_det_if_process4(IF P THEN S ELSIF Q THEN T END)(W);
+
+
+
+  GetOpsInvoked(S) &
+  PrintProcess(S)
+ =>
+  pipas_det_if_process6(S);
+
+  pipas_det_if_process6(S)
+ =>
+  pipas_det_if_process6(IF true THEN S END);
+
+  pipas_det_if_process6(IF P THEN S ELSE T END)
+ =>
+  pipas_det_if_process6(IF P THEN S ELSIF true THEN T END);
+
+  pipas_det_if_process6(S)
+ =>
+  pipas_det_if_process6(IF true THEN S ELSIF P THEN T END);
+
+  ReadEventRemovedSubs(Q) &
+  pipas_det_if_process6(Q)
+ =>
+  pipas_det_if_process5(S);
+
+
+
+  pipas_det_if_process4(IF P THEN S END,(e='1'));
+
+  e\P &
+  FlagVHDLError &  
+  BadImplicitProcessNotAllGuards(IF P THEN S END)
+ =>
+  pipas_det_if_process4(IF P THEN S END,(e='1'));
+
+  pipas_det_if_process4(IF P THEN S ELSIF Q THEN T END,(e='1'));
+
+  e\Q &
+  FlagVHDLError &  
+  BadImplicitProcessNotAllGuards(IF P THEN S ELSIF Q THEN T END)
+ =>
+  pipas_det_if_process4(IF P THEN S ELSIF Q THEN T END,(e='1'));
+
+  e\P &
+  FlagVHDLError &  
+  BadImplicitProcessNotAllGuards(IF P THEN S ELSIF Q THEN T END)
+ =>
+  pipas_det_if_process4(IF P THEN S ELSIF Q THEN T END,(e='1'));
+
+  pipas_det_if_process4(S) bsmap P &
+  CreateDeleteEventPredicate(P,S) &
+  pipas_det_if_process5(S)
+ =>
+  pipas_det_if_process3(S)(P);
+
+
+  FlagVHDLError &  
+  BadImplicitProcess(S)
+ =>
+  pipas_det_if_process2(S)(W);
+
+  pipas_det_if_process3(IF P THEN S END)(W)
+ =>
+  pipas_det_if_process2(IF P THEN S END)(W);
+
+  pipas_det_if_process3(IF P THEN S ELSIF Q THEN T END)(W)
+ =>
+  pipas_det_if_process2(IF P THEN S ELSIF Q THEN T END)(W);
+
+
+
+  
+  bprintf("%\n\n",IF P THEN T ELSE U END) &
+  FlagVHDLError &  
+  BadImplicitProcessWithELSE(IF P THEN T ELSE U END)
+ =>
+  pipas_det_if_process2(IF P THEN T ELSE U END)(P);
+
+  bprintf("%\n\n",IF P THEN S ELSIF Q THEN T ELSE U END) &
+  FlagVHDLError &  
+  BadImplicitProcessWithELSE(IF P THEN S ELSIF Q THEN T ELSE U END)
+ =>
+  pipas_det_if_process2(IF P THEN S ELSIF Q THEN T ELSE U END)(P);
+
+  bsearch(?,P,Q) &
+  pipas_det_if_process2(S)(Q)
+ =>
+  pipas_det_if_process2(S)(P);
+
+
+  bprintf("%\n\n",S) &
+  FlagVHDLError &  
+  BadImplicitProcessNotAllGuards(S)
+ =>
+  pipas_det_if_process1(S)(l)(P); /* some but not all event guards */
+
+  pipas_arch_sub(S)
+ =>
+  pipas_det_if_process1(S)(l)(?); /* no event guards */
+
+  brule(EVENT_OpNamesX.N,(e:l)) &
+  pipas_det_if_process2(S)(P&(e='1'))
+ =>
+  pipas_det_if_process1(S)(l)(P);
+
+  
+  pipas_det_if_process1(S)(L)(P)
+ =>
+  pipas_det_if_process1(S)(L,l)(P);
+
+  brule(EVENT_OpNamesX.N,(e:l)) &
+  pipas_det_if_process1(S)(L)(P&(e='1'))
+ =>
+  pipas_det_if_process1(S)(L,l)(P);
+
+  ReadSensitivityList(L) &
+  pipas_det_if_process1(S)(L)(?)
+ =>
+  pipas_det_if_process(S);
+
+
+
+
+
+
+
+
+  ReadArchOpname(a) &
+  ReportAbsVarNotRefined(a,S) &
+  pipas_det_if_process(S) &
+  FlagVHDLError
+ =>
+  pipas0(S);
+
+  ReadAbsVarsNotRefined(V) &
+  V\S &
+/*
+HERE((99:S))&
+*/
+  pipas_det_if_process(S)
+ =>
+  pipas0(S)
+
+END
+
+&
+
+THEORY PrintSMArchBodyX IS
+
+#define PrintSMArchBody \
+     bcall((PrintSMArchBodyX;PreProcessOpsX~; \
+         ((MAP;ARI;SUB;WRITE;MODR;FLAT;CATL;SHELL)~;PrintSMArchBodyX)~):pSMab0)
+
+  ?;
+/* defined above
+#define ReadCurrentProcessName(x)   brule(PrintSMArchBodyX.1,x)
+#define ModifyCurrentProcessName(x) bmodr(PrintSMArchBodyX.1,x)
+*/
+
+  ?;
+/* defined above
+#define ReadProcessGuard(x)   brule(PrintSMArchBodyX.2,x)
+#define ModifyProcessGuard(x) bmodr(PrintSMArchBodyX.2,x)
+*/
+
+
+  /***  Now determine ArchSub/Implicit process ***/
+
+  PrintImpProcessOrArchSub(S)
+ =>
+  pSMab2(S);
+
+
+  /***  Explicit Process (invocation of _CP _PR _PK _SG ops) ***/
+
+  bident(n) &
+  brule(MchColOPX.N,(m:(n(?,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_SG")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess(n)
+ =>
+  pSMab2(n);
+
+  bident(n) &
+  brule(MchColOPX.N,(m:(n(?,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PK")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess(n)
+ =>
+  pSMab2(n);
+
+  bident(n) &
+  brule(MchColOPX.N,(m:(n(?,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_CP")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess(n)
+ =>
+  pSMab2(n);
+
+  bident(n) &
+  brule(MchColOPX.N,(m:(n(?,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PR")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess(n)
+ =>
+  pSMab2(n);
+
+
+  bident(n) &
+  brule(MchColOPX.N,(m:(n(?,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_SG")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN n END))
+ =>
+  pSMab2(IF G THEN n END);
+
+  bident(n) &
+  brule(MchColOPX.N,(m:(n(?,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PK")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN n END))
+ =>
+  pSMab2(IF G THEN n END);
+
+  bident(n) &
+  brule(MchColOPX.N,(m:(n(?,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_CP")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN n END))
+ =>
+  pSMab2(IF G THEN n END);
+
+  bident(n) &
+  brule(MchColOPX.N,(m:(n(?,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PR")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN n END))
+ =>
+  pSMab2(IF G THEN n END);
+
+
+  brule(MchColOPX.N,(m:(n(o,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_SG")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n))
+ =>
+  pSMab2(r<--n);
+
+  brule(MchColOPX.N,(m:(n(o,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PK")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n))
+ =>
+  pSMab2(r<--n);
+
+  brule(MchColOPX.N,(m:(n(o,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_CP")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n))
+ =>
+  pSMab2(r<--n);
+
+  brule(MchColOPX.N,(m:(n(o,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PR")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n))
+ =>
+  pSMab2(r<--n);
+
+
+  brule(MchColOPX.N,(m:(n(o,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_SG")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN r<--n END))
+ =>
+  pSMab2(IF G THEN r<--n END);
+
+  brule(MchColOPX.N,(m:(n(o,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PK")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN r<--n END))
+ =>
+  pSMab2(IF G THEN r<--n END);
+
+  brule(MchColOPX.N,(m:(n(o,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_CP")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN r<--n END))
+ =>
+  pSMab2(IF G THEN r<--n END);
+
+  brule(MchColOPX.N,(m:(n(o,?)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PR")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN r<--n END))
+ =>
+  pSMab2(IF G THEN r<--n END);
+
+
+  brule(MchColOPX.N,(m:(n(?,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_SG")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((n(p)))
+ =>
+  pSMab2(n(p));
+
+  brule(MchColOPX.N,(m:(n(?,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PK")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((n(p)))
+ =>
+  pSMab2(n(p));
+
+  brule(MchColOPX.N,(m:(n(?,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_CP")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((n(p)))
+ =>
+  pSMab2(n(p));
+
+  brule(MchColOPX.N,(m:(n(?,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PR")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((n(p)))
+ =>
+  pSMab2(n(p));
+
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_SG")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n(p)))
+ =>
+  pSMab2(r<--n(p));
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PK")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n(p)))
+ =>
+  pSMab2(r<--n(p));
+
+  brule(MchColOPX.N,(m:(n(?,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_CP")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN n(p) END))
+ =>
+  pSMab2(IF G THEN n(p) END);
+
+  brule(MchColOPX.N,(m:(n(?,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PR")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN n(p) END))
+ =>
+  pSMab2(IF G THEN n(p) END);
+
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_SG")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n(p)))
+ =>
+  pSMab2(r<--n(p));
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PK")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n(p)))
+ =>
+  pSMab2(r<--n(p));
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_CP")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n(p)))
+ =>
+  pSMab2(r<--n(p));
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PR")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((r<--n(p)))
+ =>
+  pSMab2(r<--n(p));
+
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_SG")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN r<--n(p) END))
+ =>
+  pSMab2(IF G THEN r<--n(p) END);
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PK")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN r<--n(p) END))
+ =>
+  pSMab2(IF G THEN r<--n(p) END);
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_CP")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN r<--n(p) END))
+ =>
+  pSMab2(IF G THEN r<--n(p) END);
+
+  brule(MchColOPX.N,(m:(n(o,i)|X|Y))) &
+  brule(MchColStringX.M,(m:S:"_PR")) &
+  ModifyCurrentProcessName(n) &
+  PrintProcess((IF G THEN r<--n(p) END))
+ =>
+  pSMab2(IF G THEN r<--n(p) END);
+
+
+  /***  ignore ack op of _EV machines ***/
+
+  brule(ACK_OpNamesX.N,(n:m))
+ =>
+  pSMab2(n);
+
+
+/***/
+HERE(("++++++++++++++++++++++++++++++++++++++++"))&
+HERE((S))&
+ReadProcessGuard(G)&HERE(("ProcessGuard":G))&
+ReadProcessEventGuard(E)&HERE(("ProcessEventGuard":E))&
+ReadOpsInvoked(O)&HERE(("OpsInvoked":O))&
+ReadSensitivityList(L)&HERE(("SensitivityList":L))
+&HERE(("++++++++++++++++++++++++++++++++++++++++"))
+=>
+pSMab_info(S);
+/***/
+
+  ModifyCurrentProcessName(?) &
+  DetermineProcessGuard(S) &
+  DetermineProcessEventGuard(S) &
+  GetOpsInvoked(S) &
+  GetSensitivityList(S) &
+/*** pSMab_info(S) & ***/
+  pSMab2(S)
+ =>
+  pSMab1(S);
+
+  pSMab1(S) &
+  bprintf("\n") &
+  pSMab1(s)
+ =>
+  pSMab1(S||s);
+
+  pSMab1(S)
+ =>
+  pSMab1(BEGIN S END);
+
+  brule(TransVHDLX.5,(P,"_CM")) &
+  ReadArchOpname(a) &
+  brule(MchColOPX.N,(m:(a(o,i)|S|E))) &
+  pSMab1(S) &
+  bprintf("\nend vhdl;\n")
+ =>
+  pSMab0;
+
+  brule(TransVHDLX.5,(P,"_SM")) &
+  ReadArchOpname(a) &
+  brule(MchColOPX.N,(m:(a(o,i)|S|E))) &
+  pSMab1(S) &
+  bprintf("\nend vhdl;\n")
+ =>
+  pSMab0
+
+END
+
+&
+
+THEORY PrintCMSIGNALX IS
+
+#define PrintCMSIGNAL \
+      bcall(((ARI~;MAP;WRITE;MODR;RULE)~;PrintCMSIGNALX)~:pCMs)
+
+  ?;  /* list of signals to be printed */
+
+
+  bcrer(SIGNALX,v)
+ =>
+  vsp5(v);
+
+  Printsp(VHDL_tab) &
+  bprintf("signal ") &
+  PrintCommaList(V) &
+  bprintf(": ") &
+  PrintActType(t) &
+  bprintf(";\n") &
+  vsp5 bsmap V
+ =>
+  vsp4(V:t);
+
+  brule(PrintCMSIGNALX.1,S) &
+  bsearch(?,S,T) &
+  vsp4 bsmap T
+ =>
+  pCMs3;
+
+  brule(PrintCMSIGNALX.1,?)
+ =>
+  pCMs3;
+
+  brule(PrintCMSIGNALX.1,L) &
+  bmodr(PrintCMSIGNALX.1,(L,(v:t)))
+ =>
+  pCMs_mod(v:t);
+
+  brule(PrintCMSIGNALX.1,L) &
+  bsearch((V:t),L,M) &
+  bmodr(PrintCMSIGNALX.1,(M,(V,v:t)))
+ =>
+  pCMs_mod(v:t);
+
+  brule(INVX.N,(v:t)) &
+  pCMs_mod(s:t)
+ =>
+  pCMs_mod0(v)(s);
+
+  InformCantConnect("TMP/.Bcom") &
+  PFZ
+ =>
+  pCMs2(v);
+
+  bget("TMP/.Bcom",s) &
+  pCMs_mod0(v)(s)
+ =>
+  pCMs2(v);
+
+  pCMs1(N);
+
+  brule(PortMapX.N,(i:o)) &
+  bclose &
+  Connect("TMP/.Bcom") &
+  bprintf("%_sig",o) &
+  bclose &
+  Reappend &
+  pCMs2(i) &
+  pCMs1(N+1)
+ =>
+  pCMs1(N);
+
+  brule(TransVHDLX.5,(P,"_CM")) &
+  ReadAbs(a.b) &
+  print_dashes &
+  bprintf("\narchitecture vhdl of ") &
+  bprintf(P) &
+  bprintf(" is\n\n") &
+  pCMs1(1) &
+  pCMs3
+ =>
+  pCMs
+
+END
+
+&
+
+THEORY PrintSMSIGNALX IS
+
+#define PrintSMSIGNAL \
+      bcall(((ARI~;MAP;MODR;WRITE;RULE)~;PrintSMSIGNALX)~:pSMs)
+
+  ?;  /* list of signals to be printed */
+
+
+  bcrer(SIGNALX,v)
+ =>
+  vsp5(v);
+
+  Printsp(VHDL_tab) &
+  bprintf("signal ") &
+  PrintCommaList(V) &
+  bprintf(": ") &
+  PrintActType(t) &
+  bprintf(";\n") &
+  vsp5 bsmap V
+ =>
+  vsp4(V:t);
+
+  brule(PrintSMSIGNALX.1,S) &
+  bsearch(?,S,T) &
+  vsp4 bsmap T
+ =>
+  pSMs3;
+
+  brule(PrintSMSIGNALX.1,?)
+ =>
+  pSMs3;
+
+  brule(PrintSMSIGNALX.1,S) &
+  bmodr(PrintSMSIGNALX.1,(S,(v:t)))
+ =>
+  pSMs2(v:t);
+
+  brule(PrintSMSIGNALX.1,S) &
+  bsearch((V:t),S,T) &
+  bmodr(PrintSMSIGNALX.1,(T,(V,v:t)))
+ =>
+  pSMs2(v:t);
+
+  pSMs3
+ =>
+  pSMs_code(a)(N);
+
+  brule(MchCodeColSIGNALX.N,(m:s:S)) &
+  bcrer(SIGNALX,s) &
+  Printsp(VHDL_tab) &
+  bprintf(S) &
+  bprintf("\n") &  
+  pSMs_code(a)(N+1)
+ =>
+  pSMs_code(a)(N);
+
+  pSMs_code(a)(1)
+ =>
+  pSMs1(a)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(INVX.M,(v:t)) &
+/***
+HERE((9:v:t))&
+***/
+  pSMs2(v:t) &
+  pSMs1(a)(N+1)
+ =>
+  pSMs1(a)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(INVX.M,(v:t)) &
+  brule(ConcINVX.P,(W|v=c)) &
+/***
+HERE((8))&
+***/
+  pSMs1(a)(N+1)
+ =>
+  pSMs1(a)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(MchColConcX.M,(m:c)) &
+/***
+HERE((7))&
+***/
+  pSMs1(a)(N+1)
+ =>
+  pSMs1(a)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(MchColConcX.M,(m:c.d)) &
+  brule(MchColVARX.P,(c:v)) & /* conc var = abs var */
+  brule(INVX.J,(v:t)) &
+/***
+HERE((7a:v:t))&
+***/
+  pSMs2(v:t) &
+  pSMs1(a)(N+1)
+ =>
+  pSMs1(a)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(MchCodeColSIGNALX.M,(m:v:S)) &
+  pSMs1(a)(N+1)
+ =>
+  pSMs1(a)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(MchColStringX.M,(m:P:"_EV")) &
+  pSMs1(a)(N+1)
+ =>
+  pSMs1(a)(N);
+
+  brule(MchColVARX.N,(a:v)) &
+  pSMs1(a)(N+1)
+ =>
+  pSMs1(a)(N);
+
+  pSMs;
+
+  brule(TransVHDLX.5,(P,"_SM")) &
+  ReadAbs(a.b) &
+  print_dashes &
+  bprintf("\narchitecture vhdl of ") &
+  bprintf(P) &
+  bprintf(" is\n\n") &
+  pSMs1(a)(1) &
+  bprintf("\nbegin\n\n")
+ =>
+  pSMs
+
+END
+
+&
+
+THEORY PrintATTRIBUTEX IS
+
+#define PrintATTRIBUTE \
+      bcall(((MAP;ARI~;WRITE)~;PrintATTRIBUTEX)~:pa(1))
+
+  bprintf("  attribute %_source of %: signal is TRUE;\n",v)
+ =>
+  pa1(p,v);
+
+  brule(EVENT_OpNamesX.N,(v:T))
+ =>
+  pa1(p,v);
+
+  brule(TransVHDLX.5,(P,"_CM")) &
+  bprintf("end ") &
+  bprintf(P) &
+  bprintf(";\n")
+ =>
+  pa(N);
+
+  brule(TransVHDLX.5,(P,"_SM")) &
+  bprintf("end ") &
+  bprintf(P) &
+  bprintf(";\n")
+ =>
+  pa(N);
+
+  brule(PROMOTESColAssgnX.N,(p:V)) &
+  pa1(p) bsmap V &
+  pa(N+1)
+ =>
+  pa(N)
+
+END
+
+&
+
+THEORY PrintPortMapsX IS
+
+#define PrintPortMaps \
+    bcall(((ARI;MAP;MODR;SUB~;WRITE)~;PrintPortMapsX)~:ppm(1))
+
+
+  ?; /* for printing nl */
+
+  ?; /* for rename */
+
+
+  brule(PrintPortMapsX.2,n) &
+  bprintf(",\n              ")
+ =>
+  pc;
+
+  brule(PrintPortMapsX.1,0) &
+  bmodr(PrintPortMapsX.1,1)
+ =>
+  pc;
+
+
+
+
+  ppm_fork1(a:b);
+
+  brule(PortMapX.N,(c:b)) &
+  bprintf(  "\n  % <= %_sig;\n",a,b)
+ =>
+  ppm_fork1(a:b);
+
+  ppm_fork(N);
+
+  brule(OutMapX.N,(a:b)) &
+  ppm_fork1(a:b) &
+  ppm_fork(N+1)
+ =>
+  ppm_fork(N);
+
+
+  Writef(("\n\n    Error - can't determine port map for % ..",bsrv v berv))   &
+  FlagVHDLError
+ =>
+  ppm2(v);
+
+
+
+
+  pc &
+  brule(OutMapX.N,(o:v)) &
+  brule(PrintPortMapsX.2,(A:=B)) &
+  [A:=B]bprintf("% => %",v,o)
+ =>
+  ppm2(v);
+
+  pc &
+  brule(InMapX.N,(v:i)) &
+  brule(PrintPortMapsX.2,(A:=B)) &
+  [A:=B]bprintf("% => %",v,i)
+ =>
+  ppm2(v);
+
+  pc &
+  brule(PortMapX.N,(w:v)) &
+  brule(PrintPortMapsX.2,(A:=B)) &
+  bprintf("% => %_sig",[A:=B]v,v)
+ =>
+  ppm2(v);
+
+  pc &
+  brule(PortMapX.N,(v:w)) &
+  brule(PrintPortMapsX.2,(A:=B)) &
+  bprintf("% => %_sig",[A:=B]v,w)
+ =>
+  ppm2(v);
+
+  ppm2 bsmap V
+ =>
+  ppm1(V:t);
+
+  ppm1(?);
+
+  ppm_fork(1) &
+  bprintf("\nend vhdl;\n")
+ =>
+  ppm(N);
+
+  brule(EntityX.N,(m(I|O))) &
+  brule(MchColStringX.M,(m:P:S)) &
+  bmodr(PrintPortMapsX.2,(aa:=aa)) &
+  bprintf("\n  c%: entity work.",N) &
+  bprintf(P) &
+  bprintf("\n    port map (") &
+  bmodr(PrintPortMapsX.1,0) &
+  ppm1 bsmap I &
+  ppm1 bsmap O &
+  bprintf(");\n") &
+  ppm(N+1)
+ =>
+  ppm(N);
+
+  brule(EntityX.N,(m(I|O))) &
+  brule(MchColStringX.M,(m:P:S)) &
+  brule(MchDotRenameStringX.J,(R.r:m:T:S)) &
+  brule(MchDotReverseRenameX.K,(R.r:A:=B)) &
+  bmodr(PrintPortMapsX.2,(A:=B)) &
+  bprintf("\n  %: work.",R) &
+  bprintf(T) &
+  bprintf("\n    port map (") &
+  bmodr(PrintPortMapsX.1,0) &
+  ppm1 bsmap I &
+  ppm1 bsmap O &
+  bprintf(");\n") &
+  ppm(N+1)
+ =>
+  ppm(N)
+
+END
+
+&
+
+THEORY PrintComponentPortsX IS
+
+#define PrintComponentPorts \
+    bcall(((ARI;MAP;MODR;WRITE;SUB)~;PrintComponentPortsX)~:pcp(1))
+
+  ?; /* for printing nl */
+
+  ?; /* components already printed */
+
+  bprintf(";\n          ")
+ =>
+  pnl;
+
+  brule(PrintComponentPortsX.1,0) &
+  bmodr(PrintComponentPortsX.1,1)
+ =>
+  pnl;
+
+  pnl &
+  PrintCommaList(V) &
+  bprintf(": out ") &
+  PrintActType(t)
+ =>
+  pcp3(V:t);
+
+  pcp3(?);
+
+  pnl &
+  PrintCommaList(V) &
+  bprintf(": in ") &
+  PrintActType(t)
+ =>
+  pcp2(V:t);
+
+  pcp2(?);
+
+
+  brule(MchColStringX.N,(e:P:S)) &
+  bprintf("\n  component ") &
+  bprintf(P) &
+  bprintf("\n    port (") &
+  bmodr(PrintComponentPortsX.1,0) &
+  pcp2 bsmap I &
+  pcp3 bsmap O &
+  bprintf(");\n  end component;\n")
+ =>
+  pcp1(e)(I)(O);
+
+  brule(MchColStringX.N,(e:P:S)) &
+  brule(MchDotRenameStringX.M,(R.r:e:T:S)) &
+  brule(MchDotReverseRenameX.J,(R.r:A:=B)) &
+  brule(PrintComponentPortsX.2,L) &
+  bmodr(PrintComponentPortsX.2,(L,T)) &
+  bprintf("\n  component ") &
+  [A:=B](bprintf(T)) &
+  bprintf("\n    port (") &
+  bmodr(PrintComponentPortsX.1,0) &
+  [A:=B](pcp2 bsmap I) &
+  [A:=B](pcp3 bsmap O) &
+  bprintf(");\n  end component;\n")
+ =>
+  pcp1(e)(I)(O);
+
+  brule(MchColStringX.N,(e:P:S)) &
+  brule(MchDotRenameStringX.M,(R.r:e:T:S)) &
+  brule(PrintComponentPortsX.2,L) &
+  bsearch(T,L,Q)                   /* unrenamed dotted component already printed */
+ =>
+  pcp1(e)(I)(O);
+
+  bprintf("\nbegin\n")
+ =>
+  pcp(N);
+
+  brule(EntityX.N,(e(I|O))) &
+  pcp1(e)(I)(O) &
+  pcp(N+1)
+ =>
+  pcp(N)
+
+END
+
+&
+
+THEORY PrintENTITY_PORTX IS
+
+#define PrintENTITY_PORT \
+      bcall(((ARI~;MAP;WRITE;MODR)~;PrintENTITY_PORTX)~:pep)
+
+  bprintf(");\n")
+ =>
+  pep3(N);
+
+
+  brule(PORT_OUTX.N,(V:t)) &
+  bprintf(";\n        ") &
+  PrintCommaList(V) &
+  bprintf(": out ") &
+  PrintActType(t) &
+  pep3(N+1)
+ =>
+  pep3(N);
+
+
+
+  pep3(1)
+ =>
+  pep1(N);
+
+  brule(PORT_INX.N,(V:t)) &
+  bprintf(";\n        ") &
+  PrintCommaList(V) &
+  bprintf(": in ") &
+  PrintActType(t) &
+  pep1(N+1)
+ =>
+  pep1(N);
+
+  brule(PORT_INX.1,(V:t)) &
+  PrintCommaList(V) &
+  bprintf(": in ") &
+  PrintActType(t) &
+  pep1(2)
+ =>
+  pep1(1);
+
+  pep;
+
+  brule(TransVHDLX.5,(P,"_CM")) &
+  bprintf("\nlibrary work, ieee, translib;\nuse work.asp_def.all;\nuse ieee.std_logic_1164.all;\nuse translib.synthesis.all;\n") &
+  print_dashes &
+  bprintf("\nentity ") &
+  bprintf(P) &
+  bprintf(" is\n  port (") &
+  pep1(1)
+ =>
+  pep;
+
+  brule(TransVHDLX.5,(P,"_SM")) &
+  bprintf("\nlibrary work, ieee, translib;\nuse work.asp_def.all;\nuse ieee.std_logic_1164.all;\nuse translib.synthesis.all;\n") &
+  print_dashes &
+  bprintf("\nentity ") &
+  bprintf(P) &
+  bprintf(" is\n  port (") &
+  pep1(1)
+ =>
+  pep
+
+END
+
+&
+
+
+THEORY PrintTYPEX IS
+
+#define PrintTYPE bcall(((ARI~;MAP;WRITE;MODR)~;PrintTYPEX)~:pt)
+
+  ?;  /* list of types to be printed */
+
+#define enum_list_line_len 6
+#define enum_list_elem_len 12
+
+  pt7(m)(n);
+
+  bnl
+ =>
+  pt7(m)(m);
+
+  Printsp(n)
+ =>
+  pt6(n);
+
+  pt6(enum_list_elem_len-blen(e)) &
+  bprintf("%,",e) &
+  pt7((m/enum_list_line_len)*enum_list_line_len)(m)
+ =>
+  pt5(e,m,n);
+
+  Printsp(enum_list_elem_len-blen(e)-1) &
+  bprintf("(%,",e)
+ =>
+  pt5(e,1,n);
+
+  Printsp(enum_list_elem_len-blen(e)) &
+  bprintf("%);\n\n",e)
+ =>
+  pt5(e,n,n);
+
+  pt6(enum_list_elem_len-blen(e)-1) &
+  bprintf("(%);\n\n",e)
+ =>
+  pt5(e,1,1);
+
+  brule(ENUMX.N,t(e)) &
+  bprintf("type % is\n\n",t) &
+  pt5 bnmap e
+ =>
+  pt4(t);
+
+  pt4(?);
+
+  bprintf ("library ieee;\nuse ieee.std_logic_1164.all;\npackage asp_def is -- Definition of data types\n\n") &
+  brule(PrintTYPEX.1,T) &
+  pt4 bsmap T &
+  bprintf("end asp_def;\n") &
+  print_dashes
+ =>
+  pt3;
+
+  brule(PrintTYPEX.1,?)
+ =>
+  pt3;
+
+  brule(PrintTYPEX.1,T) &
+  bmodr(PrintTYPEX.1,(T,t))
+ =>
+  pt2(t);
+
+  brule(PrintTYPEX.1,T) &
+  bsearch(t,T,U)
+ =>
+  pt2(t);
+
+  pt2(std_logic);
+
+  pt3
+ =>
+  pt1(N);
+
+  brule(INVX.N,(v:t)) &
+  pt1(N+1)
+ =>
+  pt1(N);
+
+  brule(INVX.N,(v:t)) &
+  brule(ENUMX.M,t(e)) &
+  pt2(t) &
+  pt1(N+1)
+ =>
+  pt1(N);
+
+  pt;
+
+/*  brule(TransVHDLX.5,(P,"_SM")) & */
+  pt1(1)
+ =>
+  pt
+
+END
+
+&
+
+THEORY StoEVENTACK_OpNamesX IS
+
+#define StoEVENTACK_OpNames \
+  bcall(((ARI~;RULE;CATL;WRITE)~;StoEVENTACK_OpNamesX)~: seao(1))
+
+  ?; /* from FifoWrite_Store */
+
+  bcrer(ACK_OpNamesX,(a:t))
+ =>
+  seao7(a:t);
+
+  brule(ACK_OpNamesX.N,(a:t))
+ =>
+  seao7(a:t);
+
+  InformCantConnect("TMP/.Bcom") &
+  PFZ
+ =>
+  seao6(P);
+
+  bget("TMP/.Bcom",x) &
+  seao7(x)
+ =>
+  seao6(P);
+
+  Connect("TMP/.Bcom") &
+  bprintf(R) &
+  bprintf("_ack:") &
+  bprintf(R) &
+  bclose &
+  seao6(R)
+ =>
+  seao5(R);
+
+
+  bcrer(EVENT_OpNamesX,(a:t))
+ =>
+  seao4(a:t);
+
+  brule(EVENT_OpNamesX.N,(a:t))
+ =>
+  seao4(a:t);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  seao3(P);
+
+  bget(".Bcom",x) &
+  seao4(x)
+ =>
+  seao3(P);
+
+  Connect(".Bcom") &
+  bprintf(R) &
+  bprintf("_event:") &
+  bprintf(R) &
+  bclose &
+  seao3(R)
+ =>
+  seao2(R);
+
+
+  brule(StoEVENTACK_OpNamesX.1,(R,S)) &
+  seao2(bcatl(R,S)) &
+  seao5(R)
+ =>
+  seao1(P);
+
+  seao(N);
+
+  brule(MchColStringX.N,x) &  
+  seao(N+1)
+ =>
+  seao(N);
+
+  brule(MchColStringX.N,(m:P:"_EV")) &
+  FifoWrite_Store((BT_POSTFIX_M,P,0),(StoEVENTACK_OpNamesX.1)) &  
+  seao1(P) &
+  seao(N+1)
+ =>
+  seao(N)
+
+END
+
+&
+
+THEORY GetOutputsX IS
+
+#define GetOutputs bcall(((ARI;MAP;RULE)~;GetOutputsX)~:go(1))
+
+
+  bcrer(OUTPUTX,(o:t))
+ =>
+  go1(t,o);
+
+  go(N);
+
+  brule(PORT_OUTX.N,(O:t)) &
+  go1(t) bsmap O &
+  go(N+1)
+ =>
+  go(N)
+
+END
+
+&
+
+THEORY AddAlreadyLoadedX IS
+
+#define AddAlreadyLoaded(x) bcall(((NEWV;RULE)~;AddAlreadyLoadedX)~:aal(x))
+
+
+  bcrer(AlreadyLoadedX,(a.b))
+ =>
+  aal(a.b);
+
+  brule(AlreadyLoadedX.N,(a.b))
+ =>
+  aal(a.b)
+
+END
+
+&
+
+THEORY LoadSeenUsedX IS
+
+#define LoadSeenUsed(x) \
+          bcall(((MAP;RULE;CATL;MODR)~;LoadSeenUsedX)~:(lsu0 bsmap (x)))
+
+  bcrer(ConcMchColOPX,(k:(s(v,u)|x|z)))
+ =>
+  lsu3(k,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  brule(ConcMchColOPX.N,(K:(s(v,u)|X|Z))) &          /* ref of a ref */
+  bmodr(ConcMchColOPX.N,(k:(s(v,u)|x|z)))
+ =>
+  lsu3(k,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  lsu3(k,n)
+ =>
+  lsu2(k)(n);
+
+  lsu3(k) bsmap (N,n)
+ =>
+  lsu2(k)(N,n);
+
+  lsu2(k)(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  lsu1(Z);
+  
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  LoadSeenUsed(A) &
+  LoadSeenUsed(B) &
+  FifoWrite_Store((BT_POSTFIX_M,k,0),(StoMchColStringX.1)) &  
+  StoMchColString(k) &
+  StoMchColSETS(k,C) &
+  StoMchColCONSTS(k,E) &
+  StoENUM(C) &
+  StoPROPERTIES(H) &
+  lsu2(k)(n) &
+  CheckForCodeFile(k(l))
+ =>
+  lsu1(Z);
+
+  bcrer(AlreadyLoadedX,(a.b)) &
+  lsu1(bcatl("ANL/",a,".",b,".anl"))
+ =>
+  lsu(a.b);
+
+  brule(AlreadyLoadedX.N,(a.b))
+ =>
+  lsu(a.b);
+
+  lsu0(?);
+
+  lsu(r.mch)
+ =>
+  lsu0(r(s):t:(u,v,w))
+
+END
+
+&
+
+THEORY StoMchColConcX IS
+
+#define StoMchColConc(x) bcall(((RULE)~;StoMchColConcX)~:sc(x))
+
+  ReadBotRef(s.t) &
+  bcrer(MchColConcX,(a:s.t))
+ =>
+  sc1(a);
+
+  ReadBotRef(a.mch)
+ =>
+  sc1(a);
+
+  GetBotRef(a.mch) &
+  sc1(a)
+ =>
+  sc(a);
+
+  brule(MchColDotRenameX.N,(x.y:r:a)) &
+  sc(a)
+ =>
+  sc(r)
+
+END
+
+&
+
+THEORY StoMchColStringX IS
+
+  ?; /* result of FifoWrite_Store */
+
+  brule(StoMchColStringX.1,(P,S)) &
+  bcrer(MchColStringX,(m:P:S))
+ =>
+  ss(m)
+
+END
+
+&
+
+THEORY StoConcINVX IS
+
+#define StoConcINV(w,x,y,z) \
+    bcall(((MAP;RULE)~;StoConcINVX)~:(sci(w,x,y) bsmap z))
+
+
+  sci1(r,m,v);
+
+  brule(MchColVARX.N,(m:v)) &
+  bcrer(ConcINVX,((m:r)|(v=v)))    /* conc var same name as abs */
+ =>
+  sci1(r,m,v);
+
+  sci1(r,m,?);
+
+  sci1(r,?,v);
+
+  sci1(r,m) bsmap V
+ =>
+  sci(r,m,V,x);
+
+  blident(a,c) &
+  bsearch(c,(V,?),W) &
+  bcrer(ConcINVX,((m:r)|(a=c)))    /* explicit inv */
+ =>
+  sci(r,m,V,(c=a));
+
+  blident(a,c) &
+  bsearch(c,(V,?),W) &
+  bcrer(ConcINVX,((m:r)|(a=c)))    /* explicit inv */
+ =>
+  sci(r,m,V,(a=c))
+
+END
+
+&
+
+THEORY CreConcRenameX IS
+
+#define CreConcRename \
+    bcall(((ARI;SUB;MODR)~;CreConcRenameX)~:ccr(1))
+
+  ?:=?;
+/*
+defined above
+#define ModifyConcRename(x)  bmodr(CreConcRenameX.1,x)
+#define ReadConcRename(x)    brule(CreConcRenameX.1,x)
+*/
+
+  ?; /* temp store */
+
+  ccr_conc_op(N);
+
+  brule(ConcMchColOPX.N,(m:(a(o,i)|S|E))) &
+  ReadConcRename(R) &
+  bmodr(ConcMchColOPX.N,(m:[R](a(o,i)|S|E))) &
+  ccr_conc_op(N+1)
+ =>
+  ccr_conc_op(N);
+
+  ccr_conc_op(1)
+ =>
+  ccr_abs_op(N);
+
+  brule(MchColOPX.N,(m:(a(o,i)|S|E))) &
+  ReadConcRename(R) &
+  bmodr(MchColOPX.N,(m:[R](a(o,i)|S|E))) &
+  ccr_abs_op(N+1)
+ =>
+  ccr_abs_op(N);
+
+  ReadConcRename((?:=?))
+ =>
+  ccr_abs_op(1);
+
+
+
+  ModifyConcRename(R)
+ =>
+  ccr2(?)(R);
+
+  ccr2(L)(A,a:=C,c)
+ =>
+  ccr2(L,(a=c))(A:=C);
+
+  ccr2(L)(a:=c)
+ =>
+  ccr2(L,(a=c))(?:=?);
+
+  brule(CreConcRenameX.2,L) &
+  bmodr(CreConcRenameX.2,(L,(a=c)))
+ =>
+  ccr1(a=c);
+
+  brule(CreConcRenameX.2,L) &
+  bsearch((c=d),L,M) &
+  bmodr(CreConcRenameX.2,(M,(a=d)))
+ =>
+  ccr1(a=c);
+
+  brule(CreConcRenameX.2,L) &
+  ccr2(L)(?:=?) &
+  ccr_abs_op(1)
+ =>
+  ccr(N);
+
+  brule(ConcINVX.N,(x|y)) &
+  ccr1(y) &
+  ccr(N+1)
+ =>
+  ccr(N)
+
+END
+
+&
+
+THEORY GetAbsVarsNotRefinedX IS
+
+#define GetAbsVarsNotRefined \
+    bcall(((ARI;FLAT;RULE;MODR)~;GetAbsVarsNotRefinedX)~:gavnr(1))
+
+  ?;
+/*
+defined above
+#define ModifyAbsVarsNotRefined(x)  bmodr(GetAbsVarsNotRefinedX.1,x)
+#define ReadAbsVarsNotRefined(x)    brule(GetAbsVarsNotRefinedX.1,x)
+*/
+
+  bsearch(?,V,W) &
+  ModifyAbsVarsNotRefined(W)
+ =>
+  gavnr1(N)(V);
+
+  ModifyAbsVarsNotRefined(aaa__aikJJuuHYT________)
+ =>
+  gavnr1(1)(?);
+
+  brule(AbsVarsNotRefinedX.N,(a:c:V)) &
+  gavnr1(N+1)(bflat(L,V))
+ =>
+  gavnr1(N)(L);
+
+
+
+  gavnr(m)(r)(N)(V);
+
+  bsearch(?,V,W) &
+  bcrer(AbsVarsNotRefinedX,(m:r:W))
+ =>
+  gavnr(m)(r)(N)(V);
+
+  brule(MchColVARX.N,(n:v)) &
+  gavnr(m)(r)(N+1)(V)
+ =>
+  gavnr(m)(r)(N)(V);
+
+  brule(MchColVARX.N,(m:v)) &
+  gavnr(m)(r)(N+1)(V,v)
+ =>
+  gavnr(m)(r)(N)(V);
+
+  brule(MchColVARX.N,(m:v)) &
+  ReadConcRename((A:=C)) &
+  bsearch(v,(A,?),B) &
+  gavnr(m)(r)(N+1)(V)
+ =>
+  gavnr(m)(r)(N)(V);
+
+  gavnr1(1)(?)                     /* aggregate */
+ =>
+  gavnr(N);
+
+  brule(MchColConcX.N,(m:s.t)) &
+  gavnr(m)(s)(1)(?) &
+  gavnr(N+1)
+ =>
+  gavnr(N)
+
+END
+
+&
+
+THEORY ReportAbsVarNotRefinedX IS
+
+/*
+defined above
+#define ReportAbsVarNotRefined(x,y) \
+    bcall(((ARI;MAP;SUB)~;ReportAbsVarNotRefinedX)~:ravnr(x)(y)(1))
+*/
+
+  Writef(("\n\n    Error in operation %\n\n      %\n\n    Abstract variable % of %\n    has no counterpart in %  ..",bsrv o berv,S,bsrv v berv,a,c))  
+ =>
+  ravnr1(o,S,a,c,v);
+
+  v\S
+ =>
+  ravnr1(o,S,a,c,v);
+
+  ravnr1(o,[v:=bsrv v berv](S),a,c,v)
+ =>
+  ravnr(o,S,a,c,v);
+
+  ravnr(o)(S)(N);
+
+  brule(AbsVarsNotRefinedX.N,(a:c:V)) &
+  ravnr(o,S,a,c) bsmap V &
+  ravnr(o)(S)(N+1)
+ =>
+  ravnr(o)(S)(N) 
+
+END
+
+&
+
+THEORY StoConcMchX IS
+
+#define StoConcMch \
+        bcall(((MAP;ARI;CATL;RULE;MODR)~;StoConcMchX)~:scm(1))
+
+  scm4(k,?);
+
+  AddAlreadyLoaded(r.mch) &
+  bcrer(MchColImportX,(k:r(s))) &
+  scm11(bcatl("ANL/",r,".",mch,".anl"))
+ =>
+  scm4(k,(r(s):t:(u,v,w)));
+
+  brule(MchColImportX.M,(p:r(P))) &
+  AddAlreadyLoaded(r.mch) &
+  bcrer(MchColImportX,(k:r(s))) &
+  scm11(bcatl("ANL/",r,".",mch,".anl"))
+ =>
+  scm4(k,(r(s):t:(u,v,w)));
+
+  scm3(k,?);
+
+  bcrer(MchColOPX,(k:(s(v,u)|x|z)))
+ =>
+  scm3(k,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  brule(MchColOPX.N,(m:(s(v,u)|X|Z))) &
+  bcrer(ConcMchColOPX,(k:(s(v,u)|x|z)))
+ =>
+  scm3(k,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  brule(MchColOPX.N,(m:(s(v,u)|X|Z))) &
+  brule(ConcMchColOPX.M,(K:(s(v,u)|W|Y))) &          /* ref of a ref */
+  bmodr(ConcMchColOPX.M,(k:(s(v,u)|x|z)))
+ =>
+  scm3(k,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  scm3(k,n)
+ =>
+  scm2(k)(n);
+
+  scm3(k) bsmap (N,n)
+ =>
+  scm2(k)(N,n);
+
+
+  AddAlreadyLoaded(r.ref) &
+  scm11(bcatl("ANL/",r,".",ref,".anl"))
+ =>
+  scm12(r);
+
+  IsCfg(r.mch) &
+  AddAlreadyLoaded(r.mch) &
+  scm11(bcatl("ANL/",r,".",mch,".anl"))
+ =>
+  scm12(r);
+
+  brule(AlreadyLoadedX.N,(r.t))
+ =>
+  scm12(r);
+
+  scm12(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  scm11(Z);
+  
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  LoadSeenUsed(A) &
+  LoadSeenUsed(B) &
+  FifoWrite_Store((BT_POSTFIX_M,k,0),(StoMchColStringX.1)) &  
+  StoMchColString(k) &
+  StoMchColVAR(k,Q) &
+  StoINV(k,f) &
+  StoMchColSETS(k,C) &
+  StoMchColCONSTS(k,E) &
+  StoENUM(C) &
+  StoPROPERTIES(H) &
+  scm2(k)(n) & 
+  CheckForCodeFile(k(l)) &
+  scm4(k) bsmap b &
+  StoConcINV(k,r,d,f) &
+  scm12(r)
+ =>
+  scm11(Z);
+
+
+  scm(N);
+
+  brule(MchColConcX.N,(m:s.t)) &
+  AddAlreadyLoaded(s.t) &
+  scm11(bcatl("ANL/",s,".",t,".anl")) &
+  scm(N+1)
+ =>
+  scm(N);
+
+  brule(MchColConcX.N,(m:s.t)) &
+  brule(AlreadyLoadedX.M,(s.t)) &
+  scm(N+1)
+ =>
+  scm(N)
+
+END
+
+&
+
+THEORY StoMchColCONSTSX IS
+
+  bcrer(MchColCONSTSX,(m:c))
+ =>
+  smcc(m,c);
+
+  brule(MchColCONSTSX.N,(m:c))
+ =>
+  smcc(m,c);
+
+  smcc(m,?)
+
+END
+
+&
+
+THEORY StoMchColSETSX IS
+
+  bcrer(MchColSETSX,(m:s))
+ =>
+  smcs(m,s);
+
+  brule(MchColSETSX.N,(m:s))
+ =>
+  smcs(m,s);
+
+  StoMchColENUMEL(m,e) &
+  smcs(m,s)
+ =>
+  smcs(m,s(e));
+
+  smcs(m,?)
+
+END
+
+&
+
+THEORY StoMchColENUMELX IS
+
+  bcrer(MchColENUMELX,(m:e))
+ =>
+  smcee(m,e);
+
+  brule(MchColENUMELX.N,(m:e))
+ =>
+  smcee(m,e);
+
+  smcee(m,?)
+
+END
+
+&
+
+THEORY StoENUMX IS
+
+  bcrer(ENUMELEMSX,(e:s))
+ =>
+  se2(s,e);
+
+  brule(ENUMELEMSX.N,(e:s))
+ =>
+  se2(s,e);
+
+  bcrer(NONENUMX,s)
+ =>
+  se1(s);
+
+  brule(NONENUMX.N,s)
+ =>
+  se1(s);
+
+  bcrer(ENUMX,s(E)) &
+  se2(s) bsmap E
+ =>
+  se1(s(E));
+
+  brule(ENUMX.N,s(E))
+ =>
+  se1(s(E));
+
+  se1 bsmap S
+ =>
+  se(S);
+
+  se(?)
+
+END
+
+&
+
+THEORY StoPORT_INX IS
+
+#define StoPORT_IN bcall(((MODR;WRITE);StoPORT_INX)~:spi)
+
+  ?; /* PORT_IN */
+
+  ReadAssignedTo(a) &
+  ModifyPORT_IN(a)
+ =>
+  spi4(s);
+
+  GetAssignedTo(s) &
+  spi4(s)
+ =>
+  spi3(s);
+
+  brule(MchColOPX.N,(m:(p(o,i)|S|E))) &
+  ModifyPortOpname(p) &
+  ModifyArchOpname(a) &
+  spi3(S)
+ =>
+  spi2(p,a);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  spi1;
+
+  bget(".Bcom",x) &
+  spi2(x)
+ =>
+  spi1;
+
+  brule(TransVHDLX.5,(P,S)) &
+  bsearch(S,("_SM","_CM"),T) &
+  Connect(".Bcom") &
+  bprintf(P) &
+  bprintf("_port,") &
+  bprintf(P) &
+  bprintf("_architecture") &
+  bclose &
+  spi1
+ =>
+  spi
+
+END
+
+&
+
+THEORY StoPROMOTES_PORT_INX IS
+
+#define StoPROMOTES_PORT_IN \
+      bcall(((MAP;ARI;RULE;MODR)~;StoPROMOTES_PORT_INX)~:spp(1))
+
+  bcrer(PORT_INX,(v:t))
+ =>
+  spp2(v:t);
+
+  brule(PORT_INX.N,(V:t)) &
+  bmodr(PORT_INX.N,(V,v:t))
+ =>
+  spp2(v:t);
+
+  brule(EVENT_OpNamesX.N,(v:T))
+ =>
+  spp2(v:t);
+
+  brule(INVX.M,(v:t)) &
+  spp2(v:t)
+ =>
+  spp1(v);
+
+  spp(N);
+
+  brule(PROMOTESColAssgnX.N,(p:v)) &
+  spp1 bsmap v &
+  spp(N+1)
+ =>
+  spp(N)
+
+END
+
+&
+
+THEORY StoPORTX IS
+
+#define StoPORT(x) bcall(((ARI;RULE;MODR)~;StoPORTX)~:sp(x)(1))
+
+  bcrer(PORT_OUTX,(v:t))
+ =>
+  sp1(v:t);
+
+  ReadPORT_IN(I) &
+  bsearch(v,(I,?),J) &
+  bcrer(PORT_INX,(v:t))
+ =>
+  sp1(v:t);
+
+  brule(PORT_OUTX.N,(V:t)) &
+  bmodr(PORT_OUTX.N,(V,v:t))
+ =>
+  sp1(v:t);
+
+  ReadPORT_IN(I) &
+  bsearch(v,(I,?),J) &
+  brule(PORT_INX.N,(V:t)) &
+  bmodr(PORT_INX.N,(V,v:t))
+ =>
+  sp1(v:t);
+
+  sp(a)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  sp(a)(N+1)
+ =>
+  sp(a)(N);
+
+  brule(MchColVARX.N,(a:v)) &
+  brule(INVX.M,(v:t)) &
+  sp1(v:t) &
+  sp(a)(N+1)
+ =>
+  sp(a)(N)
+
+END
+
+&
+
+THEORY StoPROMOTESColAssgnX IS
+
+#define StoPROMOTESColAssgn \
+   bcall(((ARI~;RULE)~;StoPROMOTESColAssgnX)~:spca(1))
+
+  brule(MchColOPX.N,(m:(p(o,i)|S|E))) &
+  bcrer(MchColPROMOTESX,(m:p))
+ =>  
+  smcp1(p);
+
+  smcp1 bsmap P
+ =>
+  smcp(P);
+
+  ReadAssignedTo(a) &
+  bcrer(PROMOTESColAssgnX,(p:a))
+ =>
+  spca2(p);
+
+  spca(N);
+
+  brule(MchColPROMOTESX.N,(m:p)) &
+  brule(MchColOPX.M,(m:(p(o,i)|S|E))) &
+  GetAssignedTo(S) &
+  spca2(p) &
+  spca(N+1)
+ =>
+  spca(N)
+
+END
+
+&
+
+THEORY StoMchColPROMOTESX IS
+
+#define StoMchColPROMOTES(x) bcall(((MAP;RULE)~;StoMchColPROMOTESX)~:smcp(x))
+
+  brule(MchColOPX.N,(m:(p(o,i)|S|E))) &
+  bcrer(MchColPROMOTESX,(m:p))
+ =>  
+  smcp1(p);
+
+  smcp1 bsmap P
+ =>
+  smcp(P);
+
+  smcp(?)
+
+END
+
+&
+
+THEORY StoPROPERTIESX IS
+
+#define StoPROPERTIES(x) bcall(((MAP;RULE)~;StoPROPERTIESX)~:(sp bsmap x))
+
+  bcrer(OTHER_PROPERTIESX,p)
+ =>
+  sp(p);
+
+  brule(OTHER_PROPERTIESX.N,p)
+ =>
+  sp(p);
+
+  brule(NONENUMX.N,T) &
+  bcrer(EQ_PROPERTIESX,(S=T))
+ =>
+  sp(S=T);
+
+  brule(NONENUMX.N,S) &
+  bcrer(EQ_PROPERTIESX,(S=T))
+ =>
+  sp(S=T);
+
+  brule(EQ_PROPERTIESX.N,(T=S))
+ =>
+  sp(S=T);
+
+  brule(EQ_PROPERTIESX.N,(S=T))
+ =>
+  sp(S=T);
+
+  sp(?)
+
+END
+
+&
+
+THEORY StoINVX IS
+
+/*
+defined above
+#define StoINV(x,y) bcall(((MAP;RULE)~;StoINVX)~:si(x)(y))
+*/
+  
+  si1(m,(i));
+
+/*
+  Writef(("\n\n  %\n  Can't determine type from INVARIANT clause:\n\n    %\n  ..",bsrv m berv,bsrv i=j berv))
+ =>
+  si1(m,(i=j));
+*/
+
+  brule(INVX.N,(w:t)) &
+  bcrer(INVX,(v:t))
+ =>  
+  si1(m,(w=v));
+
+  brule(INVX.N,(w:t)) &
+  bcrer(INVX,(v:t))
+ =>  
+  si1(m,(v=w));
+
+  bcrer(INVX,(v:t))
+ =>  
+  si1(m,(v:t));
+
+  si1(m) bsmap I
+ =>
+  si(m)(I);
+
+  si(m)(?)
+
+END
+
+&
+
+THEORY StoMchColVARX IS
+
+/*
+defined above
+#define StoMchColVAR(x,y) bcall(((MAP;RULE)~;StoMchColVARX)~:smcv(x,y))
+*/
+
+  bcrer(MchColVARX,(m:v))
+ =>  
+  smcv1(m,v);
+
+  smcv1(m) bsmap V
+ =>
+  smcv(m,V);
+
+  smcv(m,?)
+
+END
+
+&
+
+THEORY StoMchColOPX IS
+
+#define StoMchColOP(x,y,z) bcall(((MAP;RULE)~;StoMchColOPX)~:smco(x,y,z))
+
+
+  smco1(z);
+
+  bsearch(s,S,T) &
+  bcrer(MchColOPX,(m:(s(v,u)|x|z)))
+ =>
+  smco1(m,S,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  smco1(x,y,z)
+ =>
+  smco(x,y,z);
+
+  smco1(x,y) bsmap (Z,z)
+ =>
+  smco(x,y,(Z,z));
+
+  smco(x,y,?)
+
+END
+
+&
+
+THEORY CreEntitiesX IS
+
+#define CreEntities \
+  bcall(((ARI;MAP;RULE;MODR)~;CreEntitiesX)~:ce(1))
+
+  ?; /* 1. current imputs (i1,i2,...) */
+
+  ?; /* 2. current entity inputs (?,(i1,i2:t1),...) */
+
+  ?; /* 3. current entity outputs (?,(o1,o2:t1),...) */
+
+
+
+  brule(CreEntitiesX.3,L) &
+  bmodr(CreEntitiesX.3,(L,(o:t)))
+ =>
+  ce_add_out(o:t);
+
+  brule(CreEntitiesX.3,L) &
+  bsearch((O:t),L,M) &
+  bmodr(CreEntitiesX.3,(M,(O,o:t)))
+ =>
+  ce_add_out(o:t);
+
+
+  brule(CreEntitiesX.2,L) &
+  bmodr(CreEntitiesX.2,(L,(i:t)))
+ =>
+  ce_add_in(i:t);
+
+  brule(CreEntitiesX.2,L) &
+  bsearch((I:t),L,M) &
+  bmodr(CreEntitiesX.2,(M,(I,i:t)))
+ =>
+  ce_add_in(i:t);
+
+
+  brule(CreEntitiesX.2,I) &
+  brule(CreEntitiesX.3,O) &
+  bcrer(EntityX,(m(I|O)))
+ =>
+  ce4(m);
+
+  ce3(m)(N);
+
+  brule(MchColVARX.N,(p:v)) &
+  ce3(m)(N+1)
+ =>
+  ce3(m)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(INVX.M,(v:t)) &
+  ce_add_out(v:t) &
+  ce3(m)(N+1)
+ =>
+  ce3(m)(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(CreEntitiesX.1,I) &
+  bsearch(v,I,J) &
+  ce3(m)(N+1)
+ =>
+  ce3(m)(N);
+
+
+  brule(INVX.N,(i:t)) &
+  brule(CreEntitiesX.1,I) &
+  bmodr(CreEntitiesX.1,(I,i)) &
+  ce_add_in(i:t)
+ =>
+  ce2(i);
+
+
+  bmodr(CreEntitiesX.1,?) &
+  bmodr(CreEntitiesX.2,?) &
+  bmodr(CreEntitiesX.3,?) &
+  brule(MchColOPX.M,(m:(p(?,i)|S|s:=t))) &
+  ce2 bsmap s &
+  ce3(m)(1) &
+  ce4(m)
+ =>
+  ce1(m)(p);
+
+  ce(N);
+
+  brule(ComponentPortNamesX.N,(m:p)) &
+  ce1(m)(p) &
+  ce(N+1)
+ =>
+  ce(N)
+
+END
+
+&
+
+THEORY CrePortMapX IS
+
+#define CrePortMap \
+    bcall(((ARI;MAP;SUB;FLAT;MODR;RULE)~;CrePortMapX)~:cpm)
+
+  ?; /* 1. list of port ops invoked in CM arch op */
+
+  ?; /* 2. list of all inputs */
+
+  ?; /* 3. list of all outputs */
+
+  ?; /* 4. list of external inputs */
+
+  ?; /* 5. list of external outputs */
+
+
+  cpmeo(N);
+
+  brule(PORT_OUTX.N,(I:t)) &
+  brule(CrePortMapX.5,L) &
+  bmodr(CrePortMapX.5,bflat(L,I)) &
+  cpmeo(N+1)
+ =>
+  cpmeo(N);
+
+
+  cpmei(N);
+
+  brule(PORT_INX.N,(I:t)) &
+  brule(CrePortMapX.4,L) &
+  bmodr(CrePortMapX.4,bflat(L,I)) &
+  cpmei(N+1)
+ =>
+  cpmei(N);
+
+
+
+  cpm15(N);
+
+  brule(ActualOutputAssignmentsX.N,(o:=v)) &
+  cpm15(N+1)
+ =>
+  cpm15(N);
+
+  brule(ActualOutputAssignmentsX.N,(o:=v)) &
+  brule(CrePortMapX.4,I) &
+  bsearch(o,I,J) &
+  brule(MchColVARX.M,(m:o)) &
+  Writef(("\n\n    Error - input % of % is assigned to:\n\n      % ..",bsrv o berv,bsrv m berv,bsrv o:=v berv)) &
+  cpm15(N+1) &
+  FlagVHDLError
+ =>
+  cpm15(N);
+
+
+
+  cpm14(o)(N);
+
+  brule(ActualPortInvocationsX.N,(p(i))) &
+  cpm14(o)(N+1)
+ =>
+  cpm14(o)(N);
+
+  brule(ActualPortInvocationsX.N,(p(i))) &
+  bsearch(o,(i,?),I) &
+  Writef(("\n\n      % ..",bsrv p(i) berv))
+ =>
+  cpm14(o)(N);
+
+  cpm13(o);
+
+  brule(InMapX.M,(v:o)) &
+  brule(MchColVARX.N,(m:o)) &
+  Writef(("\n\n    Error - output % of % is used as input:  ",bsrv o berv,bsrv m berv)) &
+  cpm14(o)(1) &
+  FlagVHDLError
+ =>
+  cpm13(o);
+
+  cpm12(N);
+
+  brule(PORT_OUTX.N,(o:t)) &
+  cpm13 bsmap o &
+  cpm12(N+1)
+ =>
+  cpm12(N);
+
+
+
+  brule(MchColVARX.N,(m:o)) &
+  Writef(("\n\n    Error: output % of % is not assigned to ..",bsrv o berv,bsrv m berv)) &
+  FlagVHDLError
+ =>
+  cpm11(o);
+
+  brule(OutMapX.M,(o:v))
+ =>
+  cpm11(o);
+
+  cpm10(N);
+
+  brule(PORT_OUTX.N,(o:t)) &
+  cpm11 bsmap o &
+  cpm10(N+1)
+ =>
+  cpm10(N);
+
+
+
+  brule(MchColVARX.N,(m:i)) &
+  Writef(("\n\n    Error: input % of % is not used ..",bsrv i berv,bsrv m berv)) &
+  FlagVHDLError
+ =>
+  cpm9(i);
+
+  brule(OutMapX.M,(v:i))
+ =>
+  cpm9(i);
+
+  brule(PortMapX.M,(v:i))
+ =>
+  cpm9(i);
+
+  brule(InMapX.M,(v:i))
+ =>
+  cpm9(i);
+
+  cpm8(N);
+
+  brule(PORT_INX.N,(i:t)) &
+  cpm9 bsmap i &
+  cpm8(N+1)
+ =>
+  cpm8(N);
+
+
+
+  brule(MchColVARX.N,(m:v)) &
+  Writef(("\n\n    Warning: output % of % is not used ..",v,m))
+ =>
+  cpm7(v);
+
+  brule(OutMapX.N,(i:v))
+ =>
+  cpm7(v);
+
+  brule(PortMapX.N,(i:v))
+ =>
+  cpm7(v);
+
+  brule(InMapX.N,(i:v))
+ =>
+  cpm7(v);
+
+  cpm7(?);
+
+  brule(CrePortMapX.3,L) &
+  cpm7 bsmap L
+ =>
+  cpm6;
+
+
+
+  cpm5(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  cpm5(N+1)
+ =>
+  cpm5(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(MchColStringX.M,(m:P:"_SM")) &
+  brule(CrePortMapX.3,L) &
+  bmodr(CrePortMapX.3,(L,v)) &  
+  cpm5(N+1)
+ =>
+  cpm5(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(CrePortMapX.2,L) &
+  bsearch(v,L,M) &    /* an input */
+  cpm5(N+1)
+ =>
+  cpm5(N);
+
+  cpm4(N);
+
+  brule(ComponentPortNamesX.N,(m:p)) &
+  brule(MchColOPX.M,(m:(p(?,i)|S|s:=t))) &
+  brule(CrePortMapX.2,L) &
+  bmodr(CrePortMapX.2,bflat(L,s)) &
+  cpm4(N+1)
+ =>
+  cpm4(N);
+
+  cpm3(N);
+
+  brule(ComponentPortNamesX.N,(i:p)) &
+  ReadArchOpname(a) &
+  Writef(("\n\n    Error in %\n\n    Port operation % of % is not invoked ..",a,bsrv p berv,bsrv i berv)) &
+  FlagVHDLError
+ =>
+  cpm3(N);
+
+  brule(ComponentPortNamesX.N,(i:p)) &
+  brule(CrePortMapX.1,P) &
+  bsearch(p,P,Q) &
+  cpm3(N+1)
+ =>
+  cpm3(N);
+
+
+
+  bcrer(PortMapX,(f:a))
+ =>
+  cmp2(m)(f:=a);
+
+  brule(CrePortMapX.4,L) &
+  bsearch(i,L,M) &
+  bcrer(InMapX,(f:i))
+ =>
+  cmp2(m)(f:=i);
+
+  cmp2(m)(F:=A) &
+  cmp2(m)(f:=a)
+ =>
+  cmp2(m)(F,f:=A,a);
+
+
+
+  
+  ReadArchOpname(a) &
+  Writef(("\n\n    Error in %\n\n      % not recognized\n\n    ..",a,bsrv S berv)) &
+  FlagVHDLError
+ =>
+  cpm1(S);
+
+  brule(ComponentArchNamesX.N,(m:a))
+ =>
+  cpm1(a);
+
+  bcrer(ActualOutputAssignmentsX,(v:=o))
+ =>
+  cpm1(v:=o);
+
+  brule(CrePortMapX.5,L) &
+  bsearch(v,L,R) &
+  bcrer(OutMapX,(v:o)) &
+  bcrer(ActualOutputAssignmentsX,(v:=o))
+ =>
+  cpm1(v:=o);
+
+  cpm1(S:=T) &
+  cpm1(s:=t)
+ =>
+  cpm1(S,s:=T,t);
+
+  brule(ComponentPortNamesX.N,(m:p)) &
+  brule(MchColOPX.M,(m:(p(?,i)|S|E))) &
+  brule(CrePortMapX.1,P) &
+  bmodr(CrePortMapX.1,(P,p)) &
+  bcrer(ActualPortInvocationsX,p(s)) &
+  cmp2(m)([i:=s](E))
+ =>
+  cpm1(p(s));
+
+  cpm1(S) &
+  cpm1(T)
+ =>
+  cpm1(S||T);
+
+  cpm1(S)
+ =>
+  cpm1(BEGIN S END);
+
+/***/
+HERE((i))&
+PrintTHEORY(ComponentArchNamesX)&
+PrintTHEORY(ActualOutputAssignmentsX)&
+PrintTHEORY(ComponentPortNamesX)&
+brule(CrePortMapX.1,a)&HERE(("port ops invoked in CM arch op":a))&
+brule(CrePortMapX.2,b)&HERE(("all inputs":b))&
+brule(CrePortMapX.3,c)&HERE(("all outputs":c))&
+brule(CrePortMapX.4,d)&HERE(("external inputs":d))&
+brule(CrePortMapX.5,e)&HERE(("external outputs":e))
+=>
+CrePortMap_info(i);
+/***/
+
+  brule(TransVHDLX.5,(P,"_CM")) &
+  ReadArchOpname(a) &
+  brule(MchColOPX.N,(m:(a(o,i)|S|E))) &
+  cpmei(1) & /* external inputs in CrePortMapX.4 */
+  cpmeo(1) & /* external outputs in CrePortMapX.5 */
+  cpm1(S) &  /* cre store */
+  cpm3(1) &  /* check all port ops of ipt mch invoked */
+  cpm4(1) &  /* get all inputs in CrePortMapX.2 */
+  cpm5(1) &  /* get all outputs in CrePortMapX.3 */
+  cpm6 &     /* check all outputs used */
+  cpm8(1) &  /* check all external input used */
+  cpm10(1) & /* check all external output used */
+  cpm12(1) & /* check external output not used as input */
+  cpm15(1)   /* check external input not assigned to */
+/***
+& CrePortMap_info(a|S)
+***/
+ =>
+  cpm 
+
+END
+
+&
+
+THEORY StoreComponentPortArchNamesX IS
+
+#define StoreComponentPortArchNames \
+    bcall(((ARI;WRITE;RULE)~;StoreComponentPortArchNamesX)~:scpan(1))
+
+  InformCantConnect("TMP/.Bcom") &
+  PFZ
+ =>
+  scpan1(i);
+
+  bget("TMP/.Bcom",(p,a)) &
+  bcrer(ComponentPortNamesX,(i:p)) &
+  bcrer(ComponentArchNamesX,(i:a))
+ =>
+  scpan1(i);
+
+  scpan(N);
+
+  ReadAbs(m.mch) &
+  brule(MchColImportX.N,(r:i(P))) &
+  scpan(N+1)
+ =>
+  scpan(N);
+
+  ReadAbs(m.mch) &
+  brule(MchColImportX.N,(m:i(P))) &
+  brule(MchColStringX.M,(i:S:"_CM")) &
+  Connect("TMP/.Bcom") &
+  bprintf(S) &
+  bprintf("_port,") &
+  bprintf(S) &
+  bprintf("_architecture") &
+  bclose &
+  scpan1(i) &
+  scpan(N+1)
+ =>
+  scpan(N);
+
+  ReadAbs(m.mch) &
+  brule(MchColImportX.N,(m:i(P))) &
+  brule(MchColStringX.M,(i:S:"_SM")) &
+  Connect("TMP/.Bcom") &
+  bprintf(S) &
+  bprintf("_port,") &
+  bprintf(S) &
+  bprintf("_architecture") &
+  bclose &
+  scpan1(i) &
+  scpan(N+1)
+ =>
+  scpan(N)
+
+END
+
+&
+
+THEORY CreHtmlVHDLSLIBCodeFileX IS
+
+#define CreHtmlVHDLSLIBCodeFile(x) \
+  bcall(((MAP;CATL;SHELL;WRITE)~;CreHtmlVHDLSLIBCodeFileX)~:csh(x))
+
+
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|%\n",c)
+ =>
+  h_ref(a)(b)(c);
+
+  bstring(c) &
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|") &
+  bprintf(c) &
+  bprintf("\n")
+ =>
+  h_ref(a)(b)(c);
+
+
+  bprintf(a) &
+  bprintf("|%\n",b)
+ =>
+  h_name(a)(b);
+
+  bstring(b) &
+  bprintf(a) &
+  bprintf("|") &
+  bprintf(b) &
+  bprintf("\n")
+ =>
+  h_name(a)(b);
+
+  h_name("O")(o)
+ =>
+  h_ops(o);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  csh1(Z);
+
+  h_ref("b")("?")(s)
+ =>
+  h_ref_bold(a,s);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  h_name(bcatl("CDE/VHDL/|",k,".vhd|",k,".mch"))(k) &
+  h_ref_bold(k) bsmap keywords &
+  h_ops bsmap j &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc")
+ =>
+  csh1(Z);
+
+  Connect(".Bcom") &
+  csh1(bcatl("ANL/",a,".",mch,".anl"))
+ =>
+  csh(a.vhd)
+
+END
+
+&
+
+THEORY CreHtmlVHDLCodeFileX IS
+
+#define CreHtmlVHDLCodeFile \
+  bcall(((MAP;ARI~;CATL;SHELL;WRITE)~;CreHtmlVHDLCodeFileX)~:ch)
+
+  ?;  /* (string) filename extension */
+
+
+  InformCantExecute(x)
+ =>
+  bshell(x);
+
+
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|%\n",c)
+ =>
+  h_ref(a)(b)(c);
+
+  bstring(c) &
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|") &
+  bprintf(c) &
+  bprintf("\n")
+ =>
+  h_ref(a)(b)(c);
+
+  bprintf(a) &
+  bprintf("|%\n",b)
+ =>
+  h_name(a)(b);
+
+  bstring(b) &
+  bprintf(a) &
+  bprintf("|") &
+  bprintf(b) &
+  bprintf("\n")
+ =>
+  h_name(a)(b);
+
+
+  h_ref_consts(N);
+
+  brule(MchColCONSTSX.N,(m:c)) &
+  h_ref("c")(bcatl(m,".mch"))(c) & 
+  h_ref_consts(N+1)
+ =>
+  h_ref_consts(N);
+
+  brule(MchColCONSTSX.N,(m:c)) &
+  brule(MchColConcX.M,(m:a.b)) &
+  h_ref("c")(bcatl(a,".",b))(c) &
+  h_ref_consts(N+1)
+ =>
+  h_ref_consts(N);
+
+
+  h_ref_enumel(N);
+
+  brule(MchColENUMELX.N,(m:e)) &
+  h_ref("v")(bcatl(m,".mch"))(e) &
+  h_ref_enumel(N+1)
+ =>
+  h_ref_enumel(N);
+
+  brule(MchColENUMELX.N,(m:e)) &
+  brule(MchColConcX.M,(m:a.b)) &
+  h_ref("v")(bcatl(a,".",b))(e) &
+  h_ref_enumel(N+1)
+ =>
+  h_ref_enumel(N);
+
+
+  h_ref_sets(N);
+
+  brule(MchColSETSX.N,(m:s)) &
+  h_ref("v")(bcatl(m,".mch"))(s) &
+  h_ref_sets(N+1)
+ =>
+  h_ref_sets(N);
+
+  brule(MchColSETSX.N,(m:s)) &
+  brule(MchColConcX.M,(m:a.b)) &
+  h_ref("v")(bcatl(a,".",b))(s) &
+  h_ref_sets(N+1)
+ =>
+  h_ref_sets(N);
+
+
+  h_ref_var(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  h_ref("h")(bcatl(m,".mch"))(v) &
+  h_ref_var(N+1)
+ =>
+  h_ref_var(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(AlreadyLoadedX.M,(m.t)) &
+  h_ref("h")(bcatl(m,".",t))(v) &
+  h_ref_var(N+1)
+ =>
+  h_ref_var(N);
+
+  brule(MchColVARX.N,(m:v)) &
+  brule(MchColConcX.M,(m:a.b)) &
+  h_ref("h")(bcatl(a,".",b))(v) &
+  h_ref_var(N+1)
+ =>
+  h_ref_var(N);
+
+
+  h_ref_ops(N);
+
+  brule(MchColOPX.N,(m:(n(o,i)|S|E))) &
+  h_ref("o")(bcatl(m,".mch"))(n) &
+  h_ref_ops(N+1)
+ =>
+  h_ref_ops(N);
+
+  brule(MchColOPX.N,(m:(n(o,i)|S|E))) &
+  brule(MchColConcX.M,(m:a.b)) &
+  h_ref("o")(bcatl(a,".",b))(n) &
+  h_ref_ops(N+1)
+ =>
+  h_ref_ops(N);
+
+  brule(MchColOPX.N,(m:(n(o,i)|S|E))) &
+  brule(CodeMchColOPX.M,(m:n)) &
+  h_ref("o")(bcatl(m,".",vhd))(n) &
+  h_ref_ops(N+1)
+ =>
+  h_ref_ops(N);
+
+
+  h_ref_ipt_mch(N);
+
+  brule(MchColImportX.N,(m:i(P))) &
+  h_ref("s")(bcatl(i,".",mch))(m) &
+  h_ref_ipt_mch(N+1)
+ =>
+  h_ref_ipt_mch(N);
+
+  brule(MchColImportX.N,(m:i(P))) &
+  brule(CodeMchColOPX.M,(i:n)) &
+  h_ref("s")(bcatl(i,".",vhd))(m) &
+  h_ref_ipt_mch(N+1)
+ =>
+  h_ref_ipt_mch(N);
+
+  h_ref_ipt_mch(1)
+ =>
+  h_ref_mch(N);
+
+  brule(MchColStringX.N,(m:S:T)) &
+  brule(AlreadyLoadedX.M,(m.t)) &
+  h_ref("s")(bcatl(m,".",t))(S) &
+  h_ref_mch(N+1)
+ =>
+  h_ref_mch(N);
+
+  brule(MchColStringX.N,(m:S:T)) &
+  brule(CodeMchColOPX.M,(m:n)) &
+  h_ref("s")(bcatl(m,".",vhd))(S) &
+  h_ref_mch(N+1)
+ =>
+  h_ref_mch(N);
+
+
+  h_ref_sig(N);
+
+  brule(MchCodeColSIGNALX.N,(m:v:s)) &
+  h_ref("t")(bcatl(m,".",vhd))(v) &  
+  h_ref_sig(N+1)
+ =>
+  h_ref_sig(N);
+
+
+  h_ref("b")("?")(s)
+ =>
+  h_ref_bold(a,s);
+
+  Connect(".Bcom") &
+  h_name(bcatl("CDE/VHDL/|",s,".vhd|",a,".mch"))(s) &
+  h_ref("a")(bcatl(a,".mch"))("architecture") &
+/*
+  h_ref("p")(bcatl(a,".mch"))("port") &
+*/
+  h_ref("w")(bcatl(a,".mch"))(s) &
+  h_ref_bold(m) bsmap keywords &
+  h_ref_sig(1) &
+  h_ref_ops(1) &
+  h_ref_var(1) &
+  h_ref_sets(1) &
+  h_ref_enumel(1) &
+  h_ref_consts(1) &
+  h_ref_mch(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc")
+ =>
+  ch1(a:s);
+
+  ReadAbs(a.b) &
+  brule(MchColStringX.N,(a:s:"_CM")) &
+  ch1(a:s)
+ =>
+  ch;
+
+
+  ReadAbs(a.b) &
+  brule(MchColStringX.N,(a:s:"_SM")) &
+  ch1(a:s)
+ =>
+  ch
+
+END
+
+&
+
+THEORY TransVHDLX IS
+
+  ?; /* 1. Abs */
+
+  ?; /* 2. Conc */
+
+  ?; /* 3. Ipt */
+
+  ?; /* 4. Sees */
+
+  ?; /* 5. "test","_SL" (from BT_POSTFIX_M) */
+
+  ?; /* 6. code filename */
+
+  ?; /* 7. _SL port op name */
+
+  ?; /* 8. _SL architecture  op name */
+
+  ?; /* 9. EnumSetRewriteList for _VAL, _POS, _SUCC  & 1_PRED rewrites */
+
+
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  check_error1;
+
+  bget("TMP/.Bcom",x) &
+  Writef(("%/HTX\n",x))
+ =>
+  check_error1;
+
+  ReadAbs(a.b) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_TRL:?)) &
+  AddTrl(a.b) &
+  CreHtmlVHDLCodeFile &
+  Writef(("\n\n  VHDL translation complete\n"))
+ =>
+  check_error;
+
+
+  VHDLErrorFlagged &
+  ReadAbs(a.b) &
+  CreHtmlVHDLCodeFile &
+  Writef(("\n\n  VHDL translation aborted\n\n  CDE/VHDL/%.vhd created for inspection\n\n  Hypertext files are available in directory:\n\n    ",a)) &
+  bshell("echo blank0? > TMP/.Bcom") &
+  bshell("echo `pwd` >> TMP/.Bcom") &
+  check_error1
+ =>
+  check_error;
+
+
+  brule(TransVHDLX.5,(P,"_CM")) &
+  VHDLErrorFlagged &
+  Writef(("\n\n"))
+ =>
+  check_error;
+
+  Connect(f) &
+  ModifyCodeFilename(f)
+ =>
+  _connect(f);
+
+
+  x
+ =>
+  [?:=?]x;
+
+
+
+/*
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  tv_3_no_rename(r(s))(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  [l:=S](StoMchColOP(k,(W,?),((n)))) &
+  [l:=S]StoMchColVAR(k,Q)
+ =>
+  tv_3_no_rename(k(S))(Z);
+*/
+
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  tv_3(r(s))(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  LoadSeenUsed(A) &
+  LoadSeenUsed(B) &
+  tv_2(k) bsmap b &
+  [l:=S](StoMchColOP(k,(W,?),((n)))) &
+  FifoWrite_Store((BT_POSTFIX_M,k,0),(StoMchColStringX.1)) &  
+  StoMchColString(k) &
+  StoMchColConc(k) &
+  [l:=S]StoMchColVAR(k,Q) &
+  [l:=S]StoMchColSETS(k,C) &
+  [l:=S]StoMchColCONSTS(k,E) &
+  [l:=S]StoENUM(C) &
+  [l:=S]StoPROPERTIES(H) &
+  CheckForCodeFile(k(l))
+ =>
+  tv_3(k(S))(Z);
+
+
+  sto_rev_rename(S)(R.r)(L:=N);
+
+  brule(MchColStringX.M,(S:w:"_SM")) & /* only for _SM */
+  bcrer(MchDotReverseRenameX,(R.r:(N:=L)))
+ =>
+  sto_rev_rename(S)(R.r)(L:=N);
+
+
+  /* k is the renamed, K the non-renamed mch */
+  LoadSeenUsed(A) &
+  LoadSeenUsed(B) &
+  tv_2(k) bsmap b &
+  [l:=S](StoMchColOP(k,(W,?),((n)))) &
+  FifoWrite_Store((BT_POSTFIX_M,k,0),(StoMchColStringX.1)) &  
+  StoMchColString(k) &
+  StoMchColConc(k) &
+  [l:=S]StoMchColVAR(k,Q) &
+  [l:=S]StoMchColSETS(k,C) &
+  [l:=S]StoMchColCONSTS(k,E) &
+  [l:=S]StoENUM(C) &
+  [l:=S]StoPROPERTIES(H) &
+  CheckForCodeFile(k(l))
+ =>
+  tv_cre_rename3(k(S))(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(K(l):m:r);n);
+
+  [L:=N](tv_cre_rename3(M(S))(A)) &
+  sto_rev_rename(bnewv(R,r))(R.r)(L:=N)
+ =>
+  tv_cre_rename2(R.r)(N)(L)(M(S))(A);
+
+  tv_cre_rename2(R.r)(bnewv_(R) bslmap L)(L)(bnewv(R,r)(s))(A)
+ =>
+  tv_cre_rename1(L)(R.r(s):t:(u,v,w))(A);
+
+  bsearch(?,L,M) &
+  tv_cre_rename1(M)(x)(A)
+ =>
+  tv_cre_rename1(L)(x)(A);
+
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  tv_cre_rename1(bflat(d,j))(x)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+ =>
+  tv_cre_rename(Z)(x);
+
+  bnewv_(a,b) == bnewv(a,b);
+
+
+  tv_2(k,?);
+
+  AddAlreadyLoaded(r.mch) &
+  bcrer(MchColImportX,(k:r(s))) &
+  tv_3(r(s))(bcatl("ANL/",r,".",mch,".anl"))
+ =>
+  tv_2(k,(r(s):t:(u,v,w)));
+
+/*
+  AddAlreadyLoaded(r.mch) &
+  tv_3_no_rename(r(s))(bcatl("ANL/",r,".",mch,".anl"))
+ =>
+  tv_2_no_rename(k,(r(s):t:(u,v,w)));
+
+  brule(AlreadyLoadedX.N,(r.mch))
+ =>
+  tv_2_no_rename(k,(r(s):t:(u,v,w)));
+*/
+
+  AddAlreadyLoaded(bnewv(R,r).mch) &
+  bcall((NEWV;RULE):bcrer(MchColImportX,(k:bnewv(R,r)(s)))) &
+  bcall((NEWV;RULE):bcrer(MchColDotRenameX,(R.r:bnewv(R,r):r))) &
+/*
+  tv_2_no_rename(k,(r(s):t:(u,v,w))) &
+*/
+  tv_cre_rename(bcatl("ANL/",r,".",mch,".anl"))(R.r(s):t:(u,v,w))
+ =>
+  tv_2(k,(R.r(s):t:(u,v,w)));
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  tv_1(Z);
+ 
+  brule(TransVHDLX.5,(P,"_CM")) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  WriteDot &
+  LoadSeenUsed(A) &
+  LoadSeenUsed(B) &
+  StoMchColConc(k) &
+  StoMchColOP(k,(W,?),((n))) &
+  StoMchColVAR(k,Q) &
+  StoINV(k,f) &
+  StoENUM(C) &
+  StoMchColSETS(k,C) &
+  StoMchColCONSTS(k,E) &
+  StoPROPERTIES(H) &
+  StoPORT_IN &
+  tv_2(k) bsmap b &
+  StoMchColPROMOTES(c) &
+  StoPROMOTESColAssgn &
+  StoPORT(k) &
+  StoEVENTACK_OpNames &
+  StoPROMOTES_PORT_IN &
+  StoConcMch &
+  CreConcRename &
+  GetAbsVarsNotRefined &
+  FindTypeLocalVars &
+  CheckForCodeFile(k(l)) &
+  StoreComponentPortArchNames &
+  CreEntities &
+  CrePortMap
+ =>
+  tv_1(Z);
+ 
+  brule(TransVHDLX.5,(P,"_SM")) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  WriteDot &
+  LoadSeenUsed(A) &
+  LoadSeenUsed(B) &
+  StoMchColConc(k) &
+  StoMchColOP(k,(W,?),((n))) &
+  StoMchColVAR(k,Q) &
+  StoINV(k,f) &
+  StoENUM(C) &
+  StoMchColSETS(k,C) &
+  StoMchColCONSTS(k,E) &
+  StoPROPERTIES(H) &
+  StoPORT_IN &
+  tv_2(k) bsmap b &
+  StoMchColPROMOTES(c) &
+  StoPROMOTESColAssgn &
+  StoPORT(k) &
+  StoEVENTACK_OpNames &
+  StoPROMOTES_PORT_IN &
+  StoConcMch &
+  CreConcRename &
+  GetAbsVarsNotRefined &
+  FindTypeLocalVars &
+  CheckForCodeFile(k(l))
+ =>
+  tv_1(Z);
+ 
+  brule(TransVHDLX.5,(P,"_CM")) &
+  bcrer(MchColStringX,(a:P:"_CM")) &
+  Writef(("\n  VHDL translating Compound Module ")) &
+  Writef((P)) &
+  Writef(("\n\n    ..."))
+ =>
+  tv_trans_message(a.mch);
+
+  brule(TransVHDLX.5,(P,"_SM")) &
+  bcrer(MchColStringX,(a:P:"_SM")) &
+  Writef(("\n  VHDL translating Simple Module ")) &
+  Writef((P)) &
+  Writef(("\n\n    ..."))
+ =>
+  tv_trans_message(a.mch);
+
+  brule(TransVHDLX.5,(P,S)) &
+  bsearch(S,("_SM","_CM"),T) &
+  ModifyCodeFilename(bcatl("CDE/VHDL/",P,".vhd")) &
+  Connect(bcatl("CDE/VHDL/",P,".vhd"))
+ =>
+  tv_connect;
+
+#define print_VHDL_database \
+  PrintTHEORY(AlreadyLoadedX) & \
+  PrintTHEORY(MchColImportX) & \
+  PrintTHEORY(MchColStringX) & \
+  PrintTHEORY(MchColConcX) & \
+  PrintTHEORY(MchColDotRenameX) & \
+  PrintTHEORY(MchDotRenameStringX) & \
+  PrintTHEORY(MchDotReverseRenameX) & \
+  PrintTHEORY(MchColVARX) & \
+  PrintTHEORY(MchCodeColSIGNALX) & \
+  PrintTHEORY(MchCodeColVARX) & \
+  PrintTHEORY(LocalVARX) & \
+  PrintTHEORY(LocalVARTypeX) & \
+  PrintTHEORY(MchColPROMOTESX) & \
+  PrintTHEORY(MchColSETSX) & \
+  PrintTHEORY(MchColENUMELX) & \
+  PrintTHEORY(MchColCONSTSX) & \
+  PrintTHEORY(PROMOTESColAssgnX) & \
+  PrintTHEORY(INVX) & \
+  PrintTHEORY(ConcINVX) & \
+  PrintARule(CreConcRenameX.1) & \
+  PrintTHEORY(AbsVarsNotRefinedX) & \
+  PrintARule(GetAbsVarsNotRefinedX.1) & \
+  PrintTHEORY(LocalINVX) & \
+  PrintTHEORY(ENUMX) & \
+  PrintTHEORY(ENUMELEMSX) & \
+  PrintTHEORY(NONENUMX) & \
+  PrintTHEORY(EQ_PROPERTIESX) & \
+  PrintTHEORY(OTHER_PROPERTIESX) & \
+  PrintTHEORY(PORT_INX) & \
+  PrintTHEORY(PORT_OUTX) & \
+  PrintTHEORY(OUTPUTX) & \
+  PrintTHEORY(SIGNALX) & \
+  PrintTHEORY(EVENT_OpNamesX) & \
+  PrintTHEORY(ACK_OpNamesX) & \
+  PrintTHEORY(ComponentPortNamesX) & \
+  PrintTHEORY(ActualPortInvocationsX) & \
+  PrintTHEORY(ActualOutputAssignmentsX) & \
+  PrintTHEORY(ComponentArchNamesX) & \
+  PrintTHEORY(EntityX) & \
+  PrintTHEORY(InMapX) & \
+  PrintTHEORY(PortMapX) & \
+  PrintTHEORY(OutMapX)
+
+  tv_cont(a.b|c.d|e|f);
+
+
+
+  brule(TransVHDLX.5,(P,"_CM")) &
+  PrintCMSIGNAL
+ =>
+  print_signal;
+
+  brule(TransVHDLX.5,(P,"_SM")) &
+  PrintSMSIGNAL
+ =>
+  print_signal;
+
+
+  brule(TransVHDLX.5,(P,"_CM")) &
+  PrintComponentPorts &
+  PrintPortMaps
+ =>
+  print_arch_body;
+
+  brule(TransVHDLX.5,(P,"_SM")) &
+  PrintSMArchBody
+ =>
+  print_arch_body;
+
+
+  Writef(("\n      %",bsrv s berv))
+ =>
+  warn_sees1(s.mch);
+
+  bsearch(?,S,T) &
+  Writef(("\n\n    Warning: code from seen machine(s):\n",T)) &
+  warn_sees1 bsmap T &
+  Writef(("\n\n    will not be included in final vhd\n    module; if required, use INCLUDES\n\n  ."))
+ =>
+  warn_sees(S);
+
+  warn_sees(?);
+
+  brule(TransVHDLX.5,(P,S)) &
+  bsearch(S,("_SM","_CM"),T) &
+  tv_trans_message(a.b) &
+  warn_sees(f) &
+  ModifyAbs(a.b) &
+  ModifyConc(c.d) &
+  ModifyIpt(e) &
+  ModifySees(f) &
+  AddAlreadyLoaded(a.b) &
+  tv_1(bcatl("ANL/",a,".",b,".anl")) &
+  CheckForCodeNameClashes &
+  WriteDot &
+  tv_connect &
+  CreMchDotRenameString &
+  PrintTYPE &
+  PrintENTITY_PORT &
+  PrintATTRIBUTE &
+  print_signal &
+  GetOutputs &
+  WriteDot &
+  print_arch_body &
+  bclose &
+  WriteDot &
+  check_error
+/***
+ & print_VHDL_database
+
+ &PrintTHEORYUpTo(TransVHDLX,8)
+ &PrintTHEORY(MchColOPX)
+ &PrintTHEORY(ConcMchColOPX)
+ &PrintTHEORY(CodeMchColOPX)
+
+ &PrintTHEORY(InMapX)
+ &PrintTHEORY(PortMapX)
+ &PrintTHEORY(OutMapX)
+ &PrintTHEORY(EntityX)
+***/
+ =>
+  tv_cont(a.b|c.d|e|f);
+
+
+  bprintf("%_VAL,%'VAL\n",s,s) &
+  bprintf("%_POS,%'POS\n",s,s) &
+  bprintf("%_SUCC,%'SUCC\n",s,s) &
+  bprintf("%_PRED,%'PRED\n",s,s)
+ =>
+  tv_ChangeEnumSetFun2(s);
+
+  tv_ChangeEnumSetFun2(?);
+
+  tv_ChangeEnumSetFun1(s);
+
+  ReadEnumSetRewriteList(S) &
+  ModifyEnumSetRewriteList((S,s))  
+ =>
+  tv_ChangeEnumSetFun1(s(e));
+
+  tv_ChangeEnumSetFun1(std_logic(e));
+
+  Connect(".Bcom") &
+  ReadEnumSetRewriteList(S) &
+  brule(TransVHDLX.5,(P,T)) &
+  tv_ChangeEnumSetFun2 bsmap S &
+  bclose &
+  bshell(bcatl("$BKIT/BLIB/Greplace CDE/VHDL/",P,".vhd TMP/.BBcom 0 0 0")) &
+  bshell(bcatl("cp TMP/.BBcom CDE/VHDL/",P,".vhd")) &
+  bshell(bcatl("$BKIT/BLIB/Greplace HTX/",P,".vhd.html TMP/.BBcom 0 0 0")) &
+  bshell(bcatl("cp TMP/.BBcom HTX/",P,".vhd.html"))
+ =>
+  tv_ChangeEnumSetFun(n);
+  
+  brule(ENUMX.n,s) &
+  tv_ChangeEnumSetFun1(s) &
+  tv_ChangeEnumSetFun(n+1)
+ =>
+  tv_ChangeEnumSetFun(n);
+
+
+/***
+HERE(("a.b":a.b))&
+HERE(("c.d":c.d))&
+HERE(("e":e))&
+HERE(("f":f))&
+***/
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(TransVHDLX.5)) &
+  tv_cont(a.b|c.d|e|f) &
+  tv_ChangeEnumSetFun(1)
+ =>
+  tv(a.b|c.d|e|f) /* a.b | ref c.d (or a.b if mch) | e - inc/ipt | f - sees */
+
+END
+
+&
+
+THEORY junkX IS ? END

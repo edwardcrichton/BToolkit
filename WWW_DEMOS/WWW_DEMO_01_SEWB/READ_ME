@@ -1,0 +1,222 @@
+----------------------------------------------------------------
+
+    Each of the following demonstrations relates to
+    "Software Engineering with B", by J. B. Wordsworth,
+    published by Addison Wesley Longman, 1996,
+    ISBN 0-2-1-40356-0.
+
+----------------------------------------------------------------
+
+    If you have not yet done so, you are urged to first
+    run the `Introduction' demonstration to familiarise
+    yourself with the B-Toolkit, and before attempting any
+    proof you should run the `Proof' demonstration.
+
+----------------------------------------------------------------
+
+READ_ME for the Resource Manager demonstration
+
+This demonstration illustrates some of the facilities of the
+B-Toolkit described in Chapter 2 of "Software Engineering with B",
+by J. B. Wordsworth, published by Addison Wesley Longman, 1996,
+ISBN 0-2-1-40356-0.
+
+Detailed instructions for all the procedures are to be
+found in the supplementary material supplied by the publisher on the
+World Wide Web, as described in the book.
+
+You should be familiar with the basic aspects of B and the B-Toolkit
+illustrated in the 'MaxOfSet' development.
+
+1. Open 'RMan.mch', and review the text of the machine.  The text
+   appears in the ASCII form, rather than in the mathematical form
+   used in the book.
+
+2. Analyse the machine.
+
+3. Animate the machine using the procedure outlined in section 2.4.2
+   of the book.
+
+4. Generate the proof obligations for RMan as outlined in section
+   2.4.3 of the book.
+
+5. Run the autoprover for RMan as outlined in section 2.4.3 of the
+   book.
+
+
+----------------------------------------------------------------
+
+READ_ME for the Class Manager's Assistant demonstration
+
+This demonstration illustrates the Class Manager's Assistant machine
+described in Chapter 3 of "Software Engineering with B",
+by J. B. Wordsworth, published by Addison Wesley Longman, 1996,
+ISBN 0-2-1-40356-0.
+
+Detailed instructions for all the procedures are to be
+found in the supplementary material supplied by the publisher on the
+World Wide Web, as described in the book.
+
+You should be familiar with the basic aspects of B and the B-Toolkit
+illustrated in the 'MaxOfSet' development.
+
+1. Open 'CMA.mch', and review the text of the machine.
+
+2. Analyse the machine.
+
+3. Animate the machine using the procedure outlined in section 2.4.2
+   of the book.
+
+4. Generate the proof obligations for CMA.
+
+5. Run the autoprover for CMA as outlined in section 2.4.3 of the
+   book.
+
+
+----------------------------------------------------------------
+
+READ_ME for the Owners demonstration
+
+This demonstration illustrates the use of deferred sets and
+non-determinism of AMN described in Chapter 4 of
+"Software Engineering with B", by J. B. Wordsworth,
+published by Addison Wesley Longman, 1996, ISBN 0-2-1-40356-0.
+
+Detailed instructions for all the procedures are to be
+found in the supplementary material supplied by the publisher on the
+World Wide Web, as described in the book.
+
+You should be familiar with the basic aspects of B and the B-Toolkit
+illustrated in the 'MaxOfSet' development.
+
+1. Open 'Owners.mch' and review the text of the machine.
+
+2. Analyse the machine
+
+3. Animate the machine as outlined in section 4.5 of the book.
+
+
+----------------------------------------------------------------
+
+READ_ME for the Recoverable Resource Manager demonstration
+
+This demonstration illustrates a machine constructed from smaller
+machines as described in Chapter 5 of
+"Software Engineering with B", by J. B. Wordsworth,
+published by Addison Wesley Longman, 1996, ISBN 0-2-1-40356-0.
+
+Detailed instructions for all the procedures are to be
+found in the supplementary material supplied by the publisher on the
+World Wide Web, as described in the book.
+
+You should be familiar with the basic aspects of B and the B-Toolkit
+illustrated in the 'MaxOfSet' development.
+
+1. Open 'RRMan.mch' and review the text of the machine.
+
+2. Analyse the machine.
+
+3. Animate the machine.
+
+
+----------------------------------------------------------------
+
+READ_ME for the implementation, code generation, and sample application
+demonstration
+
+This demonstration illustrates an implementation of the
+Recoverable Resource Manager, the generation of C code from an
+implementation, and the generation of a sample application to
+exercise the generated code.  It covers the material presented in
+Chapter 8 of "Software Engineering with B", by J. B. Wordsworth,
+published by Addison Wesley Longman, 1996, ISBN 0-2-1-40356-0.
+
+Detailed instructions for all the procedures are to be
+found in the supplementary material supplied by the publisher on the
+World Wide Web, as described in the book.
+
+You should have already performed the Recoverable Resource Manager
+demonstration.
+
+1. Open 'RRManI.imp' and review the text of the implementation.
+
+2. Analyse the implementation.  Notice that the library machines are
+   introduced into the development as they are encountered by the
+   analyser.
+
+3. Generate the proof obligations, and attempt to identify them with
+   those described in chapter 8 of the book.
+
+4. Generate code for RRManI as outlined in section 8.4.1 of the book.
+
+5. Generate a sample application for RRManI and link it as outlined in
+   section 8.4.2 of the book.
+
+6. Run the sample application as outlined in section 8.4.3 of the book.
+
+
+----------------------------------------------------------------
+
+READ_ME for the Robust Recoverable Resource Manager demonstration
+
+This demonstration illustrates the Robust Recoverable Resource Manager
+of Chapter 9 of "Software Engineering with B", by J. B. Wordsworth,
+published by Addison Wesley Longman, 1996, ISBN 0-2-1-40356-0.
+
+Detailed instructions for all the procedures are to be
+found in the supplementary material supplied by the publisher on the
+World Wide Web, as described in the book.
+
+You should have already performed the Recoverable Resource Manager
+demonstration.
+
+1. Open 'RRRMan.mch' and review the text of the machine.
+
+2. Analyse the machine, but do not animate it, as there is nothing to
+   animate.
+
+3. Generate the proof obligations, and consider why there are none
+   other than that of the Context.
+
+4. Open 'RRRManI.imp' and review the text of the implementation.
+
+5. Analyse the implementation.
+
+6. Generate code for RRRManI.
+
+7. Generate a sample application for RRRManI and link it.
+
+8. Run the sample application.
+
+
+----------------------------------------------------------------
+
+READ_ME for the refinement demonstration
+
+This demonstration illustrates a refinement of the Class Manager's
+Assistant.  It covers the material presented in
+Chapter 10 of "Software Engineering with B", by J. B. Wordsworth,
+published by Addison Wesley Longman, 1996, ISBN 0-2-1-40356-0.
+
+Detailed instructions for all the procedures are to be
+found in the supplementary material supplied by the publisher on the
+World Wide Web, as described in the book.
+
+You should have already performed the Class Manager's Assistant
+demonstration.
+
+1. Open 'CMA_refined.ref' and review the text of the refinement.
+
+2. Analyse the refinement.
+
+3. Generate proof obligations for the refinement.
+
+4. Open 'CMA_ref_imp.imp' and review the text of the implementation.
+
+5. Analyse the implementation.
+
+6. Generate proof obligations for the implementation.
+
+7. Generate a sample application for CMA.
+
+8. Generate code for CMA_ref_imp, link it, and execute it.

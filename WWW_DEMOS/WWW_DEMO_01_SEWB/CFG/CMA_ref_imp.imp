@@ -1,0 +1,75 @@
+IMPLEMENTATION
+
+  CMA_ref_imp
+
+REFINES
+
+  CMA_refined
+
+SEES
+
+  Bool_TYPE
+
+IMPORTS
+
+  Both_set (STUDENT, class_size),
+  Only_set (STUDENT, class_size)
+
+INVARIANT
+
+  both = Both_sset &
+  only = Only_sset
+
+INITIALISATION
+
+  skip
+
+OPERATIONS
+
+  enrol(st) =
+    BEGIN
+      Only_ENT_SET (st)
+    END
+    ;
+
+  ans <-- isenrolled(st) =
+    VAR
+      bm, om
+    IN
+      bm <-- Both_MBR_SET (st);
+      om <-- Only_MBR_SET (st);
+      ans <-- DIS_BOOL (om, bm)
+    END
+    ;
+
+  test(st) =
+    BEGIN
+      Only_RMV_SET(st);
+      Both_ENT_SET(st)
+    END
+    ;
+
+  ans <-- istested(st) =
+    BEGIN
+      ans <-- Both_MBR_SET (st)
+    END
+    ;
+
+  leave(st) =
+    BEGIN
+      Only_RMV_SET (st);
+      Both_RMV_SET (st)
+    END
+    ;
+
+  clmax,sofar <-- how_many =
+    VAR
+      oc, bc
+    IN
+      oc <-- Only_CRD_SET;
+      bc <-- Both_CRD_SET;
+      clmax := class_size;
+      sofar:= oc + bc
+    END
+
+END

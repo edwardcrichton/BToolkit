@@ -1,0 +1,73 @@
+#! /bin/csh -f
+
+#
+# bplatform, bplatform.o bplatsize.c and SYMBOL installed
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script installs bplatform (malloc) and SYMBOL "
+echo "  in `pwd`/BKIT/BPLAT "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+
+if ( ! -d $BKIT/BPLAT ) then
+  mkdir $BKIT/BPLAT
+endif
+
+cd ../BEESRC
+
+../UTIL/_copy_release_to_c
+
+echo ""
+echo "  $CC \ "
+echo "      $CC_opt_non_Motif \ "
+echo "      -o $BKIT/BPLAT/bplatform \ "
+echo "      bplatform.c \ "
+echo "      -Dbplatform \ "
+echo "      $ALL_FLAGS \ "
+echo "      $CC_non_X_incl_dir "
+$CC \
+    $CC_opt_non_Motif \
+     -o $BKIT/BPLAT/bplatform \
+     bplatform.c \
+     -Dbplatform \
+     $ALL_FLAGS \
+     $CC_non_X_incl_dir
+
+if ($status != "0") then
+  echo ""
+  ../UTIL/_rem_copied_to_c
+  rm *.o
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+rm -f $BKIT/BPLAT/SYMBOL
+cp SYMBOL $BKIT/BPLAT
+chmod a+r $BKIT/BPLAT/SYMBOL
+
+../UTIL/_rem_copied_to_c
+
+rm *.o
+
+echo ""
+echo "  bplatform (malloc) SYMBOL installed "
+echo "  in $BKIT/BPLAT "
+echo ""

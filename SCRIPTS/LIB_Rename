@@ -1,0 +1,44 @@
+#! /bin/sh
+
+rm -f .Bter
+echo $2 > .Bcom
+stripname=`sed -e s+"Rename_"+""+g .Bcom`
+echo $1_$stripname > .BBcom
+if [ -r $BKIT/BLIB/LIB/CFG/$2.mch ]
+then
+  sed -e s+Rename+$1+g $BKIT/BLIB/LIB/CFG/$2.mch   > CFG/$1_$stripname.mch
+fi
+if [ -r $BKIT/BLIB/LIB/CFG/$2.nch ]
+then
+  sed -e s+Rename+$1+g $BKIT/BLIB/LIB/CFG/$2.nch   > CFG/$1_$stripname.mch
+fi
+sed -e s+Rename+$1+g $BKIT/BLIB/LIB/ANL/$2.mch.anl > ANL/$1_$stripname.mch.anl
+sed -e s+Rename+$1+g $BKIT/BLIB/LIB/TYP/$2.mri.typ > TYP/$1_$stripname.mri.typ
+sed -e s+Rename+$1+g $BKIT/BLIB/LIB/CDE/C/$2.g     > CDE/C/$1_$stripname.g
+sed -e s+Rename+$1+g $BKIT/BLIB/LIB/CDE/C/$2.h     > CDE/C/$1_$stripname.h
+sed -e s+Rename+$1+g $BKIT/BLIB/LIB/CDE/C/$2.c     > CDE/C/$1_$stripname.c
+if [ -r $BKIT/BLIB/LIB/CDE/C/$2.ldf ]
+then
+  sed -e s+Rename+$1+g $BKIT/BLIB/LIB/CDE/C/$2.ldf   > CDE/C/$1_$stripname.ldf
+fi
+
+echo 0 > .Bcom
+cd CDE/C
+chmod +w $1_$stripname.*
+
+if [ "$3" = "0" ]
+then
+  cc_string="$4 -D_BT_ANSIC"
+else
+  cc_string="$4"
+fi
+if [ "$5" = "0" ]
+then
+  cc_string="$cc_string -D_BT_Motif"
+fi
+$cc_string  -c $1_$stripname.c 2> ../../.Bter
+if [ $? != 0 ]
+  then
+  rm -f $1_$stripname.*
+  echo 1 > ../../.Bcom
+fi

@@ -1,0 +1,36 @@
+PROOFMETHOD RMan.mch.0.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~ /* ;FEQL~ */ )
+
+  REASONING_DEPTH 0
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    ?
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END
+
+DEFINITIONS
+
+  ?
+
+INCLUSIONS
+
+  ?

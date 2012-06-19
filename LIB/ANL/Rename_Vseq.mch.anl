@@ -1,0 +1,922 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Vseq)
+;
+(Rename_Vseq)
+;
+(Rename_Vseq : seq(VALUE) & size(Rename_Vseq) <= maxsize)
+;
+(Rename_Vseq : seq(VALUE) & size(Rename_Vseq) <= maxsize)
+;
+(?)
+;
+(Rename_Vseq := <>)
+;
+(Rename_Vseq := <>)
+;
+(Rename_FUL_SEQ,Rename_XST_IDX_SEQ,Rename_STO_SEQ,Rename_CLR_SEQ,Rename_PSH_SEQ,Rename_POP_SEQ,Rename_FST_SEQ,Rename_LST_SEQ,Rename_TAL_SEQ,Rename_KEP_SEQ,Rename_CUT_SEQ,Rename_SWP_SEQ,Rename_VAL_SEQ,Rename_LEN_SEQ,Rename_EMP_SEQ,Rename_EQL_SEQ,Rename_NEQ_SEQ,Rename_SCH_LO_EQL_SEQ,Rename_SCH_LO_NEQ_SEQ,Rename_SCH_HI_EQL_SEQ,Rename_SCH_HI_NEQ_SEQ,Rename_REV_SEQ,Rename_RHT_SEQ,Rename_LFT_SEQ,Rename_SAV_SEQ,Rename_RST_SEQ,Rename_SAVN_SEQ,Rename_RSTN_SEQ)
+;
+(Rename_FUL_SEQ , Rename_XST_IDX_SEQ , Rename_STO_SEQ , Rename_CLR_SEQ , Rename_PSH_SEQ , Rename_POP_SEQ , Rename_FST_SEQ , Rename_LST_SEQ , Rename_TAL_SEQ , Rename_KEP_SEQ , Rename_CUT_SEQ , Rename_SWP_SEQ , Rename_VAL_SEQ , Rename_LEN_SEQ , Rename_EMP_SEQ , Rename_EQL_SEQ , Rename_NEQ_SEQ , Rename_SCH_LO_EQL_SEQ , Rename_SCH_LO_NEQ_SEQ , Rename_SCH_HI_EQL_SEQ , Rename_SCH_HI_NEQ_SEQ , Rename_REV_SEQ , Rename_RHT_SEQ , Rename_LFT_SEQ , Rename_SAV_SEQ , Rename_RST_SEQ , Rename_SAVN_SEQ , Rename_RSTN_SEQ)
+;
+(Rename_Vseq(VALUE , maxsize):(card(VALUE) : NAT1 & maxsize : NAT):(?))
+;
+(
+(
+ (Rename_FUL_SEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_FUL_SEQ))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(size(Rename_Vseq) = maxsize)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(size(Rename_Vseq) = maxsize))
+ )
+ )
+)
+,
+(
+ (Rename_XST_IDX_SEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_XST_IDX_SEQ(ii)))
+;
+ (ii)
+;
+ (bb)
+;
+ (
+ (ii : 1..maxsize)
+ |
+ (
+ (bb := bool(ii : 1..size(Rename_Vseq)))
+ )
+ )
+;
+ (
+ (ii : 1..maxsize)
+ |
+ (
+ (bb := bool(ii : 1..size(Rename_Vseq)))
+ )
+ )
+)
+,
+(
+ (Rename_STO_SEQ)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_SEQ(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE & ii : 1..size(Rename_Vseq))
+ |
+ (
+ (Rename_Vseq(ii) := vv)
+ )
+ )
+;
+ (
+ (vv : VALUE & ii : 1..size(Rename_Vseq))
+ |
+ (
+ (Rename_Vseq := Rename_Vseq <+ {ii |-> vv})
+ )
+ )
+)
+,
+(
+ (Rename_CLR_SEQ)
+;
+ (? , Mod_Op , Det_Op , Rename_CLR_SEQ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Vseq := <>
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_Vseq := <>)
+ )
+ )
+)
+,
+(
+ (Rename_PSH_SEQ)
+;
+ (? , Mod_Op , Det_Op , Rename_PSH_SEQ(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE & size(Rename_Vseq) < maxsize)
+ |
+ (
+ (Rename_Vseq := Rename_Vseq <- vv)
+ )
+ )
+;
+ (
+ (vv : VALUE & size(Rename_Vseq) < maxsize)
+ |
+ (
+ (Rename_Vseq := Rename_Vseq <- vv)
+ )
+ )
+)
+,
+(
+ (Rename_POP_SEQ)
+;
+ (? , Mod_Op , Det_Op , Rename_POP_SEQ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (size(Rename_Vseq) /= 0)
+ |
+ (
+ (Rename_Vseq := front(Rename_Vseq))
+ )
+ )
+;
+ (
+ (not(size(Rename_Vseq) = 0))
+ |
+ (
+ (Rename_Vseq := front(Rename_Vseq))
+ )
+ )
+)
+,
+(
+ (Rename_FST_SEQ)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_FST_SEQ))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (size(Rename_Vseq) /= 0)
+ |
+ (
+ (vv := Rename_Vseq(1))
+ )
+ )
+;
+ (
+ (not(size(Rename_Vseq) = 0))
+ |
+ (
+ (vv := Rename_Vseq(1))
+ )
+ )
+)
+,
+(
+ (Rename_LST_SEQ)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_LST_SEQ))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (size(Rename_Vseq) /= 0)
+ |
+ (
+ (vv := Rename_Vseq(size(Rename_Vseq)))
+ )
+ )
+;
+ (
+ (not(size(Rename_Vseq) = 0))
+ |
+ (
+ (vv := Rename_Vseq(size(Rename_Vseq)))
+ )
+ )
+)
+,
+(
+ (Rename_TAL_SEQ)
+;
+ (? , Mod_Op , Det_Op , Rename_TAL_SEQ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (size(Rename_Vseq) /= 0)
+ |
+ (
+ (Rename_Vseq := tail(Rename_Vseq))
+ )
+ )
+;
+ (
+ (not(size(Rename_Vseq) = 0))
+ |
+ (
+ (Rename_Vseq := tail(Rename_Vseq))
+ )
+ )
+)
+,
+(
+ (Rename_KEP_SEQ)
+;
+ (? , Mod_Op , Det_Op , Rename_KEP_SEQ(ii))
+;
+ (ii)
+;
+ (?)
+;
+ (
+ (ii : 0..size(Rename_Vseq))
+ |
+ (
+ (Rename_Vseq := Rename_Vseq /|\ ii)
+ )
+ )
+;
+ (
+ (ii : 0..size(Rename_Vseq))
+ |
+ (
+ (Rename_Vseq := Rename_Vseq /|\ ii)
+ )
+ )
+)
+,
+(
+ (Rename_CUT_SEQ)
+;
+ (? , Mod_Op , Det_Op , Rename_CUT_SEQ(ii))
+;
+ (ii)
+;
+ (?)
+;
+ (
+ (ii : 0..size(Rename_Vseq))
+ |
+ (
+ (Rename_Vseq := Rename_Vseq \|/ ii)
+ )
+ )
+;
+ (
+ (ii : 0..size(Rename_Vseq))
+ |
+ (
+ (Rename_Vseq := Rename_Vseq \|/ ii)
+ )
+ )
+)
+,
+(
+ (Rename_SWP_SEQ)
+;
+ (? , Mod_Op , Det_Op , Rename_SWP_SEQ(ii , jj))
+;
+ (ii , jj)
+;
+ (?)
+;
+ (
+ (ii : 1..size(Rename_Vseq) & jj : 1..size(Rename_Vseq))
+ |
+ (
+ (Rename_Vseq := Rename_Vseq <+ {ii |-> Rename_Vseq(jj) , jj |-> Rename_Vseq(ii)})
+ )
+ )
+;
+ (
+ (ii : 1..size(Rename_Vseq) & jj : 1..size(Rename_Vseq))
+ |
+ (
+ (Rename_Vseq := Rename_Vseq <+ {ii |-> Rename_Vseq(jj) , jj |-> Rename_Vseq(ii)})
+ )
+ )
+)
+,
+(
+ (Rename_VAL_SEQ)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_SEQ(ii)))
+;
+ (ii)
+;
+ (vv)
+;
+ (
+ (ii : 1..size(Rename_Vseq))
+ |
+ (
+ (vv := Rename_Vseq(ii))
+ )
+ )
+;
+ (
+ (ii : 1..size(Rename_Vseq))
+ |
+ (
+ (vv := Rename_Vseq(ii))
+ )
+ )
+)
+,
+(
+ (Rename_LEN_SEQ)
+;
+ (? , Val_Op , Det_Op , (nn <-- Rename_LEN_SEQ))
+;
+ (?)
+;
+ (nn)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ nn := size(Rename_Vseq)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (nn := size(Rename_Vseq))
+ )
+ )
+)
+,
+(
+ (Rename_EMP_SEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EMP_SEQ))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_Vseq = <>)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(Rename_Vseq = <>))
+ )
+ )
+)
+,
+(
+ (Rename_EQL_SEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL_SEQ(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE & ii : 1..size(Rename_Vseq))
+ |
+ (
+ (bb := bool(Rename_Vseq(ii) = vv))
+ )
+ )
+;
+ (
+ (vv : VALUE & ii : 1..size(Rename_Vseq))
+ |
+ (
+ (bb := bool(Rename_Vseq(ii) = vv))
+ )
+ )
+)
+,
+(
+ (Rename_NEQ_SEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_NEQ_SEQ(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE & ii : 1..size(Rename_Vseq))
+ |
+ (
+ (bb := bool(Rename_Vseq(ii) /= vv))
+ )
+ )
+;
+ (
+ (vv : VALUE & ii : 1..size(Rename_Vseq))
+ |
+ (
+ (bb := bool(not(Rename_Vseq(ii) = vv)))
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_EQL_SEQ)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_EQL_SEQ(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : VALUE & jj : dom(Rename_Vseq) & kk : dom(Rename_Vseq))
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Vseq~[{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxsize})
+ END)
+ )
+ )
+;
+ (
+ (vv : VALUE & jj : dom(Rename_Vseq) & kk : dom(Rename_Vseq))
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Vseq~[{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxsize}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_NEQ_SEQ)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_NEQ_SEQ(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : VALUE & jj : dom(Rename_Vseq) & kk : dom(Rename_Vseq))
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Vseq~[VALUE-{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxsize})
+ END)
+ )
+ )
+;
+ (
+ (vv : VALUE & jj : dom(Rename_Vseq) & kk : dom(Rename_Vseq))
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Vseq~[VALUE-{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxsize}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_EQL_SEQ)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_EQL_SEQ(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : VALUE & jj : dom(Rename_Vseq) & kk : dom(Rename_Vseq))
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Vseq~[{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : VALUE & jj : dom(Rename_Vseq) & kk : dom(Rename_Vseq))
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Vseq~[{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_NEQ_SEQ)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_NEQ_SEQ(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : VALUE & jj : dom(Rename_Vseq) & kk : dom(Rename_Vseq))
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Vseq~[VALUE-{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : VALUE & jj : dom(Rename_Vseq) & kk : dom(Rename_Vseq))
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Vseq~[VALUE-{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_REV_SEQ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_REV_SEQ(ii , jj))
+;
+ (ii , jj)
+;
+ (?)
+;
+ (
+ (ii : 1..size(Rename_Vseq) & jj : 1..size(Rename_Vseq) & ii <= jj)
+ |
+ (
+ (LET aa , bb , cc BE
+ aa = 1..ii-1 <| Rename_Vseq &
+ bb = %kk.(kk : ii..jj | Rename_Vseq(jj+ii-kk)) &
+ cc = jj+1..size(Rename_Vseq) <| Rename_Vseq
+ IN
+ Rename_Vseq := aa \/ bb \/ cc
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..size(Rename_Vseq) & jj : 1..size(Rename_Vseq) & ii <= jj)
+ |
+ (
+ @(aa , bb , cc).
+ (
+ (
+ (aa = 1..ii-1 <| Rename_Vseq & bb = %kk.(kk : ii..jj | Rename_Vseq(jj+ii-kk)) & cc = jj+1..size(Rename_Vseq) <| Rename_Vseq)
+ )
+ ==>
+ (
+ (Rename_Vseq := aa \/ bb \/ cc)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_RHT_SEQ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RHT_SEQ(ii , jj , nn))
+;
+ (ii , jj , nn)
+;
+ (?)
+;
+ (
+ (ii : 1..size(Rename_Vseq) & jj : 1..size(Rename_Vseq) & nn : 1..size(Rename_Vseq) & ii <= jj)
+ |
+ (
+ (LET aa , bb , cc BE
+ aa = 1..ii+nn-1 <| Rename_Vseq &
+ bb = 1..size(Rename_Vseq) <| %kk.(kk : ii+nn..jj+nn | Rename_Vseq(kk-nn)) &
+ cc = jj+nn+1..size(Rename_Vseq) <| Rename_Vseq
+ IN
+ Rename_Vseq := aa \/ bb \/ cc
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..size(Rename_Vseq) & jj : 1..size(Rename_Vseq) & nn : 1..size(Rename_Vseq) & ii <= jj)
+ |
+ (
+ @(aa , bb , cc).
+ (
+ (
+ (aa = 1..ii+nn-1 <| Rename_Vseq & bb = 1..size(Rename_Vseq) <| %kk.(kk : ii+nn..jj+nn | Rename_Vseq(kk-nn)) & cc = jj+nn+1..size(Rename_Vseq) <| Rename_Vseq)
+ )
+ ==>
+ (
+ (Rename_Vseq := aa \/ bb \/ cc)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_LFT_SEQ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_LFT_SEQ(ii , jj , nn))
+;
+ (ii , jj , nn)
+;
+ (?)
+;
+ (
+ (ii : 1..size(Rename_Vseq) & jj : 1..size(Rename_Vseq) & nn : 1..size(Rename_Vseq) & ii <= jj)
+ |
+ (
+ (LET aa , bb , cc BE
+ aa = 1..ii-nn-1 <| Rename_Vseq &
+ bb = 1..size(Rename_Vseq) <| %kk.(kk : ii-nn..jj-nn | Rename_Vseq(kk+nn)) &
+ cc = jj-nn+1..size(Rename_Vseq) <| Rename_Vseq
+ IN
+ Rename_Vseq := aa \/ bb \/ cc
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..size(Rename_Vseq) & jj : 1..size(Rename_Vseq) & nn : 1..size(Rename_Vseq) & ii <= jj)
+ |
+ (
+ @(aa , bb , cc).
+ (
+ (
+ (aa = 1..ii-nn-1 <| Rename_Vseq & bb = 1..size(Rename_Vseq) <| %kk.(kk : ii-nn..jj-nn | Rename_Vseq(kk+nn)) & cc = jj-nn+1..size(Rename_Vseq) <| Rename_Vseq)
+ )
+ ==>
+ (
+ (Rename_Vseq := aa \/ bb \/ cc)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAV_SEQ)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_SEQ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_SEQ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_SEQ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY vseq WHERE
+ vseq : seq(VALUE) &
+ size(vseq) <= maxsize
+ THEN
+ Rename_Vseq := vseq
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(vseq).
+ (
+ (
+ (vseq : seq(VALUE) & size(vseq) <= maxsize)
+ )
+ ==>
+ (
+ (Rename_Vseq := vseq)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_SEQ)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_SEQ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_SEQ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_SEQ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY vseq WHERE
+ vseq : seq(VALUE) &
+ size(vseq) <= maxsize
+ THEN
+ Rename_Vseq := vseq
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(vseq).
+ (
+ (
+ (vseq : seq(VALUE) & size(vseq) <= maxsize)
+ )
+ ==>
+ (
+ (Rename_Vseq := vseq)
+ )
+ )
+ )
+ )
+)
+)

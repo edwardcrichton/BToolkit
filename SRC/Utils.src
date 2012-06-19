@@ -1,0 +1,2442 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define InformSessionTerminated Writef(("\n"))
+
+#define InformNotParse Writef(("\n    % %:\n\n      ",bsrv Parsing berv,bsrv error berv))
+
+#define InformCFGFileNoLongerParses(x)  Writef(("\n  % no longer parses!\n",bsrv x berv))
+
+#define InformCFGFileNoLongerExists(x)  Writef(("\n  % no longer exists!\n",bsrv x berv))
+
+#define InformLocked(x,y)  Writef(("\n    % edited, but locked by %\n",x,y))
+
+
+
+
+#define AddRule(a,b)      bcall((CATL;REV;SUB;ARI~;RULE):bcrer(a,b))
+
+#define ModifyRule(a,b,c) bcall((ARI;CATL;MODR):bmodr(a.b,c))
+
+#define ResetFile         bcall(WriteX:reset_file)
+
+#define NoFileOpen        brule(WriteX.1,?)
+
+
+#define PFZ bcall(((MODR;SHELL;WRITE)~;PromptForZeroToAbortX)~:pfz)
+
+
+THEORY BshellX IS
+
+#define Bshell(x) bcall(((CATL~;SHELL)~;BshellX)~:bs(bcatl(x)))
+
+  InformCantExecute(x) &
+  PFZ
+ =>
+  bshell(x);
+
+  bshell(x)
+ =>
+  bs(x)
+
+END
+
+&
+
+THEORY BgetX IS
+
+#define Bget(x) bcall(((CATL;MODR)~;BgetX)~:bg(bcatl(x)))
+
+#define Bget_if_parse(x) bcall(((CATL;MODR)~;BgetX)~:bg_if_parse(bcatl(x)))
+
+  ?;
+#define ReadBget(x) brule(BgetX.1,x)
+
+  bg_if_parse(x);
+
+  bget(x,y) &
+  bmodr(BgetX.1,(y))
+ =>
+  bg_if_parse(x);
+
+  Writef(("\n\n  Contents of %:\n\n",x)) &
+  Bshell(("cat ",x)) &
+  Writef(("\n\n")) &
+  InformCantConnect(x) &
+  PFZ
+ =>
+  bg(x);
+
+  bget(x,y) &
+  bmodr(BgetX.1,(y))
+ =>
+  bg(x)
+
+END
+
+&
+
+THEORY AppendX IS
+
+#define Append(x) bcall(((CATL~;MODR)~;AppendX)~:ap(bcatl(x)))
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ap(f);
+
+  bappend(f) &
+  bmodr(ConnectX.1,f)
+ =>
+  ap(f)
+
+END
+
+&
+
+THEORY ConnectX IS
+
+#define Connect(x) bcall(((CATL~;MODR)~;ConnectX)~:ct(bcatl(x)))
+
+  ?;
+#define ReadLastConnectedFile(x) brule(ConnectX.1,x)
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ct(f);
+
+  bconnect(f) &
+  bmodr(ConnectX.1,f)
+ =>
+  ct(f)
+
+END
+
+&
+
+THEORY BOXX IS
+
+  InformCantConnect(".Bbox")
+ =>
+  box1;
+
+  bget(".Bbox",x) &
+  bshell("rm -f .Bbox") &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '",x,"'"))
+ =>
+  box1;
+
+  InformCantConnect(".Bbox")
+ =>
+  box(x);
+
+  bconnect(".Bbox") &
+  bprintf("\"") &
+  bprintf("%",a) &
+  bprintf("\"") &
+  bclose &
+  box1
+ =>
+  box(a);
+
+  bstring(s) &
+  bconnect(".Bbox") &
+  bprintf("\"") &
+  bprintf(s) &
+  bprintf("\"") &
+  bclose &
+  box1
+ =>
+  box(s);
+
+  bstring(t) &
+  bconnect(".Bbox") &
+  bprintf("\"") &
+  bprintf("%",a) &
+  bprintf(" ---> ") &
+  bprintf(t) &
+  bprintf("\"") &
+  bclose &
+  box1
+ =>
+  box(a,t);
+
+  bstring(s) &
+  bconnect(".Bbox") &
+  bprintf("\"") &
+  bprintf(s) &
+  bprintf(" ---> %",a) &
+  bprintf("\"") &
+  bclose &
+  box1
+ =>
+  box(s,a);
+
+  bstring(s) &
+  bstring(t) &
+  bconnect(".Bbox") &
+  bprintf("\"") &
+  bprintf(s) &
+  bprintf(" ---> ") &
+  bprintf(t) &
+  bprintf("\"") &
+  bclose &
+  box1
+ =>
+  box(s,t)
+
+END
+
+&
+
+THEORY PrintTHEORYX IS
+
+#define PrintTHEORY(x) bcall(((ARI)~;PrintTHEORYX)~ : (Writef(("\n%",bsrv x berv)) & pt(x.1)))
+
+  Writef(("\n"))
+ =>
+  pt(t.N);
+ 
+  Writef(("\nempty\n",bsrv t berv))
+ =>
+  pt(t.1);
+ 
+  brule(t.N,r) &
+  Writef(("\n% %",N,r)) &
+  pt(t.(N+1))
+ =>
+  pt(t.N);
+
+  brule(t.N,r) &
+  btest(N<10) &
+  Writef(("\n % %",N,r)) &
+  pt(t.(N+1))
+ =>
+  pt(t.N)
+
+END
+
+&
+
+THEORY PrintTHEORYUpToX IS
+
+#define PrintTHEORYUpTo(x,y) \
+	bcall(((ARI;WRITE)~;PrintTHEORYUpToX)~ : ptut_0(x)(y))
+
+  ptut_1(t)(n)(M)(N);
+ 
+  btest(M<=n) &
+  brule(t.M,x) &
+  Writef(("\n  %: %\n",M,x))
+ =>
+  ptut_1(t)(n)(N)(N);
+ 
+  btest(M<=n) &
+  brule(t.M,x) &
+  Writef(("\n  %: %",M,x)) &
+  ptut_1(t)(n)(M+1)(N)
+ =>
+  ptut_1(t)(n)(M)(N);
+ 
+  brule(t.M,x) &
+  Writef(("\n  %: %\n",M,x))
+ =>
+  ptut_1(t)(n)(N)(N);
+ 
+  Writef(("\n% is empty\n",bsrv t berv))
+ =>
+  ptut_0(t)(n);
+
+  blent(t.N) &
+  Writef(("\n%",bsrv t berv)) &
+  ptut_1(t)(n)(1)(N)
+ =>
+  ptut_0(t)(n);
+
+  blent(t.0) &
+  Writef(("\n% is empty\n",bsrv t berv))
+ =>
+  ptut_0(t)(n)
+
+END
+
+&
+
+THEORY PrintTHEORYTotalX IS
+
+#define PrintTHEORYTotal(x) bcall(((ARI;WRITE)~;PrintTHEORYTotalX)~ : ptt_0(x))
+
+  Writef(("\n%: Empty\n",bsrv t berv))
+ =>
+  ptt_0(t);
+
+  blent(t.N) &
+  Writef(("\n%: % rules\n",bsrv t berv,N))
+ =>
+  ptt_0(t)
+
+END
+
+&
+
+THEORY PrintRuleX IS
+
+#define PrintRule(x) bcall(((WRITE)~;PrintRuleX)~ : pr_0(x))
+#define PrintARule(x) PrintRule(x)
+
+  Writef(("\n%\n  %: No rule\n",bsrv t berv,n))
+ =>
+  pr_0(t.n);
+
+  brule(t.n,x) &
+  Writef(("\n%\n  %: %\n",bsrv t berv,n,x))
+ =>
+  pr_0(t.n)
+
+END
+
+&
+
+
+
+
+
+
+THEORY CatFileIfExistsX IS
+
+#define CatFileIfExists(x,y) \
+          bcall(((CATL;SHELL)~;CatFileIfExistsX)~:cfie(x)(y))
+
+  InformCantExecute(x) &
+  PFZ
+ =>
+  bshell(x);
+
+  cfie2(f)(n)(1);
+
+/*
+  bshell(bcatl("cat ",f))
+ =>
+  cfie2(f)(0)(0);
+
+  bshell(bcatl("echo ; cat ",f))
+ =>
+  cfie2(f)(1)(0);
+*/
+
+  DisplayFileInMainWin(f)
+ =>
+  cfie2(f)(n)(0);
+
+  IfWriteToXTerm &
+  bwritef("\n") &
+  bshell(bcatl("cat ",f))
+ =>
+  cfie2(f)(n)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cfie1(f)(n);
+
+  bget(".Bcom",x) &
+  cfie2(f)(n)(x)
+ =>
+  cfie1(f)(n);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cfie1(f)(n)
+ =>
+  cfie(f)(n)
+
+END
+
+&
+
+THEORY InformCantConnectX IS
+
+  bshell(f);
+
+  icc3(f);
+
+  bget(f,x)          /* load .Berr */
+ =>
+  icc3(f);
+
+  bshell(bcatl("$BKIT/BLIB/BPrompt 'Cannot connect to file ",f," - it does not exist! '")) &
+  Writef(bcatl("\n\n    Can't connect to file\n\n      ",f,"\n\n\n")) &
+  Writef("    It does not exist!\n\n")
+ =>
+  icc2(f)(1);   /* file not exist */
+
+  bshell(bcatl("$BKIT/BLIB/BPrompt 'Cannot load file ",f,"'")) &
+  Writef(bcatl("\n\n    Can't connect to file\n\n      ",f,"\n")) &
+  bshell("echo ' ' >> _Bcom") &
+  bshell(bcatl("echo '      Contents of ",f,":' > _Bcom")) &
+  bshell("echo ' ' >> _Bcom") &
+  bshell("cat .BBcom >> _Bcom") &
+  bshell("echo ' ' >> _Bcom") &
+  icc3(f) &
+  bshell("cat .Berr >> _Bcom") &
+  bshell("echo ' ' >> _Bcom") &
+  bshell("cat _Bcom") &
+  bshell("rm _Bcom")
+ =>
+  icc2(f)(0);         /* file exists */
+
+  Writef(("\n\n\n              ---------------------------------\n\n  Can't connect to file %\n\n  It does not parse:\n\n    ",f)) &
+  bshell(bcatl("cat ",f)) &
+  Writef(("\n\n    ")) &
+  bshell("cat .Berr") &
+  Writef(("\n\n              ---------------------------------\n"))
+ =>
+  icc2(f)(0);         /* file exists */
+
+  Writef(("\n\n\n              ---------------------------------\n\n  Can't connect to file .Bprf\n\n  It does not parse:\n\n    ",f)) &
+  bshell(bcatl("cat ",".Bprf")) &
+  Writef(("\n\n    ")) &
+  bshell("cat .Berr") &
+  Writef(("\n\n              ---------------------------------\n"))
+ =>
+  icc2(".Bprf")(0);   /* ".Bprf" exists (may be an interrupt ...) */
+
+  Writef(bcatl("\n\n    Can't connect to file\n\n      ",f,"\n\n")) &
+  Writef("\n\n    Can't connect to file\n\n      .Bcom!!\n\n")
+ =>
+  icc1(f);
+
+  bget(".Bcom",x) &
+  icc2(f)(x)
+ =>
+  icc1(f);
+
+  bshell(bcatl("cp ",f," .BBcom")) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  icc1(f)
+ =>
+  icc0(f);
+
+  icc0(".BBcom"); /* confusing */
+
+  icc0(".Bcom") /* will be overwritten */
+
+END
+
+&
+
+THEORY LoadCfgX IS
+
+#define ModifyCfg(O)        bcall(MODR:bmodr(LoadCfgX.1,O))
+
+#define ModifyAnl(O)        bcall(MODR:bmodr(LoadCfgX.2,O))
+
+#define ModifyUsr(O)        bcall(MODR:bmodr(LoadCfgX.3,O))
+
+#define ModifyDmu(O)        bcall(MODR:bmodr(LoadCfgX.4,O))
+
+#define ModifyLvl(O)        bcall(MODR:bmodr(LoadCfgX.5,O))
+
+#define ModifyRef(O)        bcall(MODR:bmodr(LoadCfgX.6,O))
+
+#define ModifyPrv(O)        bcall(MODR:bmodr(LoadCfgX.8,O))
+
+#define ModifyTrl(O)        bcall(MODR:bmodr(LoadCfgX.12,O))
+
+#define ModifyLnk(O)        bcall(MODR:bmodr(LoadCfgX.13,O))
+
+#define ModifyGen(O)        bcall(MODR:bmodr(LoadCfgX.14,O))
+
+#define ModifyUsrVHDL(O)    bcall(MODR:bmodr(LoadCfgX.16,O))
+
+#define ModifyIsPASPToolkit(O)     bcall(MODR:bmodr(LoadCfgX.17,O))
+
+#define ModifyIsVHDL(O)     bcall(MODR:bmodr(LoadCfgX.18,O))
+
+#define ModifyEnvEditorString(O)        bcall(MODR:bmodr(LoadCfgX.15,O))
+#define ReadEnvEditorString(O)          brule(LoadCfgX.15,O)
+
+
+#define ClearCfg        bcall(MODR:bmodr(LoadCfgX.1,?))
+
+#define ClearAnl        bcall(MODR:bmodr(LoadCfgX.2,?))
+
+#define ClearUsr        bcall(MODR:bmodr(LoadCfgX.3,?))
+
+#define ClearDmu        bcall(MODR:bmodr(LoadCfgX.4,?))
+
+#define ClearLvl        bcall(MODR:bmodr(LoadCfgX.5,?))
+
+#define ClearRef        bcall(MODR:bmodr(LoadCfgX.6,?))
+
+#define ClearPrv        bcall(MODR:bmodr(LoadCfgX.8,?))
+
+#define ClearTrl        bcall(MODR:bmodr(LoadCfgX.12,?))
+
+#define ClearLnk        bcall(MODR:bmodr(LoadCfgX.13,?))
+
+#define ClearGen        bcall(MODR:bmodr(LoadCfgX.14,?))
+
+#define ClearUsrVHDL    bcall(MODR:bmodr(LoadCfgX.16,?))
+
+#define ClearIsPASPToolkit     bcall(MODR:bmodr(LoadCfgX.17,?))
+
+#define ClearIsVHDL     bcall(MODR:bmodr(LoadCfgX.18,?))
+
+
+#define ReadCfg(o)        brule(LoadCfgX.1,o)
+
+#define ReadAnl(o)        brule(LoadCfgX.2,o)
+
+#define ReadUsr(o)        brule(LoadCfgX.3,o)
+
+#define ReadDmu(o)        brule(LoadCfgX.4,o)
+
+#define ReadLvl(o)        brule(LoadCfgX.5,o)
+
+#define ReadRef(o)        brule(LoadCfgX.6,o)
+
+#define ReadPrv(o)        brule(LoadCfgX.8,o)
+
+#define ReadTrl(o)        brule(LoadCfgX.12,o)
+
+#define ReadLnk(o)        brule(LoadCfgX.13,o)
+
+#define ReadGen(o)        brule(LoadCfgX.14,o)
+
+#define ReadUsrVHDL(o)    brule(LoadCfgX.16,o)
+
+#define ReadIsPASPToolkit(O)     brule(LoadCfgX.17,O)
+
+#define ReadIsVHDL(O)     brule(LoadCfgX.18,O)
+
+
+#define IsCfg(o)        brule(LoadCfgX.1,O) & bsearch(o,O,Q)
+
+#define IsAnl(o)        brule(LoadCfgX.2,O) & bsearch(o,O,Q)
+
+#define IsUsr(o)        brule(LoadCfgX.3,O) & bsearch(o,O,Q)
+
+#define IsDmu(o)        brule(LoadCfgX.4,O) & bsearch(o,O,Q)
+
+#define IsDmu_Remove(o) brule(LoadCfgX.4,O) & \
+                        bsearch(o,O,Q) & \
+                        bcall(MODR: bmodr(LoadCfgX.4,Q))
+
+#define IsLvl(o)        brule(LoadCfgX.5,O) & bsearch(o,O,Q)
+
+#define IsPrv(o)        brule(LoadCfgX.8,O) & bsearch(o,O,Q)
+
+#define IsTrl(o)        brule(LoadCfgX.12,O) & bsearch(o,O,Q)
+
+#define IsLnk(o)        brule(LoadCfgX.13,O) & bsearch(o,O,Q)
+
+#define IsGen(o)        brule(LoadCfgX.14,O) & bsearch(o,O,Q)
+
+#define IsUsrVHDL(o)    brule(LoadCfgX.16,O) & bsearch(o,O,Q)
+
+#define IsPASPToolkit   brule(LoadCfgX.17,1)
+
+#define IsVHDL          brule(LoadCfgX.18,1)
+
+
+
+#define AddCfg(o)     bcall(((MODR)~;LoadCfgX)~: ac0(o))
+
+#define AddAnl(o)     bcall(((MODR)~;LoadCfgX)~: aa0(o))
+
+#define AddUsr(o)     bcall(((MODR)~;LoadCfgX)~: au0(o))
+
+#define AddDmu(o)     bcall(((MODR)~;LoadCfgX)~: ad0(o))
+
+#define AddLvl(o)     bcall(((MODR)~;LoadCfgX)~: al0(o))
+
+#define AddRef(x,y)   bcall(((MODR;MAP)~;LoadCfgX)~: ar0(x)(y))
+
+#define AddPrv(x)     bcall(((MODR;MAP)~;LoadCfgX)~: ap0(x))
+
+#define GetTopAbs(x)  bcall(((MODR;MAP)~;LoadCfgX)~: gta0(x))
+
+#define ReadTopAbs(x) brule(LoadCfgX.7,x)
+
+#define GetBotRef(x)  bcall(((MODR;MAP)~;LoadCfgX)~: gbr0(x))
+
+#define ReadBotRef(x) brule(LoadCfgX.9,x)
+
+#define AddTrl(x)     bcall(((MODR;MAP)~;LoadCfgX)~: atr0(x))
+
+#define AddLnk(x)     bcall(((MODR;MAP)~;LoadCfgX)~: alk0(x))
+
+#define AddGen(x)     bcall(((MODR;MAP)~;LoadCfgX)~: agn0(x))
+
+#define AddUsrVHDL(x)    bcall(((MODR;MAP)~;LoadCfgX)~: auvhdl0(x))
+
+
+#define UpdLvl(x)    bcall(((ARI~;MODR;MAP)~;LoadCfgX)~: ul0(x))
+
+#define UpdPrv(x)    bcall(((ARI~;MODR;MAP)~;LoadCfgX)~: up0(x))
+
+
+
+#define Modify_recseenipt_mchlist(O)  bcall(MODR:bmodr(LoadCfgX.10,O))
+
+#define Modify_recipt_mchlist(O)      bcall(MODR:bmodr(LoadCfgX.11,O))
+
+
+#define Read_recseenipt_mchlist(o)  brule(LoadCfgX.10,o)
+
+#define Read_recipt_mchlist(o)      brule(LoadCfgX.11,o)
+
+
+  ?; /* 1. Cfg */
+  ?; /* 2. Anl */
+  ?; /* 3. Usr */
+  ?; /* 4. Dmu */
+  ?; /* 5. Lvl */
+  ?; /* 6. Ref */
+  ?; /* 7. TopAbs */
+  ?; /* 8. Prv */
+  ?; /* 9. BotRef */
+  ?; /* 10. recseenipt_mchlist  - not used */
+  ?; /* 11. */
+  ?; /* 12. Trl */
+  ?; /* 13. Lnk */
+  ?; /* 14. Gen */
+  ?; /* 15. EnvEditorString */
+  ?; /* 16. UsrVHDL */
+  ?; /* 17. 1=>IsPASPToolkit Toolkit */
+  ?; /* 18. 1=>IsVHDL Toolkit */
+
+
+  brule(LoadCfgX.8,O) &
+  bsearch((a.b(n:M)),O,P) &
+  bmodr(LoadCfgX.8,(P,a.b(N:M)))
+ =>
+  up0(a.b(N));
+
+  brule(LoadCfgX.5,O) &
+  bsearch((a.b(n)),O,P) &
+  bmodr(LoadCfgX.5,(P,(a.b(n+1))))
+ =>
+  ul0(a.b);
+
+
+  bmodr(LoadCfgX.9,c)
+ =>
+  gbr2(a.b)(c);
+
+  bmodr(LoadCfgX.9,c)
+ =>
+  gbr2(a.b)(C,c);
+
+  gbr1(x);
+
+  bsearch(a.b,C,D) &
+  gbr2(a.b)(C)
+ =>
+  gbr1(a.b,C);
+
+  bmodr(LoadCfgX.9,a.b)
+ =>
+  gbr1(a.b,a.b);
+
+  ReadRef(X) &
+  gbr1(a.b) bsmap X
+ =>
+  gbr0(a.b);
+
+
+
+  bmodr(LoadCfgX.7,c)
+ =>
+  gta2(a.b)(c);
+
+  gta2(a.b)(C)
+ =>
+  gta2(a.b)(C,c);
+
+  gta1(x);
+
+  bsearch(a.b,C,D) &
+  gta2(a.b)(C)
+ =>
+  gta1(a.b,C);
+
+  bmodr(LoadCfgX.7,a.b)
+ =>
+  gta1(a.b,a.b);
+
+  ReadRef(X) &
+  gta1(a.b) bsmap X
+ =>
+  gta0(a.b);
+
+
+
+  ReadRef(X) &
+  ModifyRef((X;(x)))
+ =>
+  ar1(a.b,c,(x));
+  
+  ReadRef(X) &
+  ModifyRef((X;(C,c.d,a.b)))
+ =>
+  ar1(a.b,c,(C,c.d));
+  
+  ReadRef(X) &
+  ModifyRef((X;(c.d,a.b)))
+ =>
+  ar1(a.b,c,(c.d));
+  
+  ar1(a.b,c,?);
+  
+  ReadRef(X) &
+  ClearRef &
+  ar1(a.b,c) bsmap X
+ =>
+  ar0(a.b)(c);
+
+  ReadRef(X) &
+  ModifyRef((X;(a.mch)))
+ =>
+  ar0(a.mch)(?);
+
+
+  ReadUsrVHDL(X) &
+  ModifyUsrVHDL((X,o))
+ =>
+  auvhdl0(o);
+
+  ReadGen(X) &
+  ModifyGen((X,o))
+ =>
+  agn0(o);
+
+  ReadLnk(X) &
+  ModifyLnk((X,o))
+ =>
+  alk0(o);
+
+  ReadTrl(X) &
+  ModifyTrl((X,o))
+ =>
+  atr0(o);
+
+  ReadPrv(X) &
+  ModifyPrv((X,o))
+ =>
+  ap0(o);
+
+  ReadLvl(X) &
+  ModifyLvl((X,o))
+ =>
+  al0(o);
+
+  ReadDmu(X) &
+  ModifyDmu((X,o))
+ =>
+  ad0(o);
+
+  ReadUsr(X) &
+  ModifyUsr((X,o))
+ =>
+  au0(o);
+
+  ReadAnl(X) &
+  ModifyAnl((X,o))
+ =>
+  aa0(o);
+
+  ReadCfg(X) &
+  ModifyCfg((X,o))
+ =>
+  ac0(o)
+
+END
+
+&
+
+THEORY LoadUnloadJobsX IS
+
+  ?; ?; ?; ?; ?; ?; ?; ?; ?; ?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  bshell("rm -f .Bcjt")
+ =>
+  racjc1;
+
+  InformCantConnect(".Bcjt") &
+  PFZ
+ =>
+  iacjc1(x);
+
+  bconnect(".Bcjt") &
+  bprintf("%\n",x) &
+  bclose
+ =>
+  iacjc1(x);
+
+  iacjc1(1)
+ =>
+  iacjc0;
+
+  bget(".Bcjt",x) &
+  iacjc1(x+1)
+ =>
+  iacjc0;
+
+  bprintf("12") => pex(map);
+  bprintf("11") => pex(imp_prf);
+  bprintf("10") => pex(ref_prf);
+  bprintf("9") => pex(mch_prf);
+  bprintf("8") => pex(ops);
+  bprintf("7") => pex(doc);
+  bprintf("6") => pex(enm);
+  bprintf("5") => pex(itf);
+  bprintf("4") => pex(bse);
+  bprintf("3") => pex(imp);
+  bprintf("2") => pex(ref);
+  bprintf("1") => pex(mch);
+
+  bprintf("%\E%\E%\E0\n",n,m,x)
+ =>
+  ucj1(x:n:m);
+
+  bprintf("%\E%\E%\E",n,m,a) &
+  pex(b) &
+  bprintf("\n")
+ =>
+  ucj1(a.b:n:m);
+
+  ucj1(?);
+
+  brule(LoadUnloadJobsX.1,a) &
+  brule(LoadUnloadJobsX.2,b) &
+  brule(LoadUnloadJobsX.3,c) &
+  brule(LoadUnloadJobsX.4,d) &
+  brule(LoadUnloadJobsX.5,e) &
+  brule(LoadUnloadJobsX.6,f) &
+  brule(LoadUnloadJobsX.7,g) &
+  brule(LoadUnloadJobsX.8,h) &
+  brule(LoadUnloadJobsX.9,i) &
+  brule(LoadUnloadJobsX.10,j) &
+  GetCompletedJobs(C) &
+  ucj1 bsmap a &
+  ucj1 bsmap b &
+  ucj1 bsmap c &
+  ucj1 bsmap d &
+  ucj1 bsmap e &
+  ucj1 bsmap f &
+  ucj1 bsmap g &
+  ucj1 bsmap h &
+  ucj1 bsmap i &
+  ucj1 bsmap j &
+  ucj1 bsmap C
+ =>
+  ucj0_1(N);
+
+  brule(LoadUnloadJobsX.2,C) &
+  bmodr(LoadUnloadJobsX.2,(C;((a.mch:BT_CMT_LIB_CSTR:(b;c;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b;c;?));
+
+  brule(LoadUnloadJobsX.2,C) &
+  bmodr(LoadUnloadJobsX.2,(C;((a.mch:BT_CMT_LIB_CSTR:(b;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b;?;?));
+
+  brule(LoadUnloadJobsX.1,C) &
+  bmodr(LoadUnloadJobsX.1,(C;((a.mch:BT_CMT_LIB_CSTR:(?;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(?;?;?));
+
+  brule(LoadUnloadJobsX.3,C) &
+  bmodr(LoadUnloadJobsX.3,(C;((a.mch:BT_CMT_LIB_CSTR:(b,c;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b,c;?;?));
+
+  brule(LoadUnloadJobsX.4,C) &
+  bmodr(LoadUnloadJobsX.4,(C;((a.mch:BT_CMT_LIB_CSTR:(b,c,d;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b,c,d;?;?));
+
+  brule(LoadUnloadJobsX.5,C) &
+  bmodr(LoadUnloadJobsX.5,(C;((a.mch:BT_CMT_LIB_CSTR:(b,c,d,e;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b,c,d,e;?;?));
+
+  brule(LoadUnloadJobsX.6,C) &
+  bmodr(LoadUnloadJobsX.6,(C;((a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f;?;?));
+
+  brule(LoadUnloadJobsX.7,C) &
+  bmodr(LoadUnloadJobsX.7,(C;((a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f,g;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f,g;?;?));
+
+  brule(LoadUnloadJobsX.8,C) &
+  bmodr(LoadUnloadJobsX.8,(C;((a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f,g,h;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f,g,h;?;?));
+
+  brule(LoadUnloadJobsX.9,C) &
+  bmodr(LoadUnloadJobsX.9,(C;((a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f,g,h,i;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f,g,h,i;?;?));
+
+  brule(LoadUnloadJobsX.10,C) &
+  bmodr(LoadUnloadJobsX.10,(C;((a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f,g,h,i,j;?;?)))))
+ =>
+  ucj11(a.mch:BT_CMT_LIB_CSTR:(b,c,d,e,f,g,h,i,j;?;?));
+
+  GetCompletedJobs(C) &
+  bsearch((x:BT_CMT_LIB_CSTR:y),C,D) &
+  ucj11(x:BT_CMT_LIB_CSTR:y) &
+  ModifyCompletedJobs(D) &
+  ucj0_1(N+1)
+ =>
+  ucj0_1(N);
+
+  InformCantConnect(".Bcjm") &
+  PFZ
+ =>
+  ucj0;
+
+  bappend(".Bcjm") &
+  bmodr(LoadUnloadJobsX.1,?)&
+  bmodr(LoadUnloadJobsX.2,?)&
+  bmodr(LoadUnloadJobsX.3,?)&
+  bmodr(LoadUnloadJobsX.4,?)&
+  bmodr(LoadUnloadJobsX.5,?)&
+  bmodr(LoadUnloadJobsX.6,?)&
+  bmodr(LoadUnloadJobsX.7,?)&
+  bmodr(LoadUnloadJobsX.8,?)&
+  bmodr(LoadUnloadJobsX.9,?)&
+  bmodr(LoadUnloadJobsX.10,?) &
+  ucj0_1(0) &
+  bclose
+ =>
+  ucj0;
+
+  GetCompletedJobs(?)    /* nothing to do */
+ =>
+  ucj0;
+
+/***
+.Bjob:
+  uncompleted jobs | completed jobs | Motif flag |
+     current job |
+       cfg | anl | usr | dmu | lvl | ref
+       prv | gen | trl | lnk ! editor_string
+***/
+
+  InformCantConnect(".Bjob") &
+  PFZ
+ =>
+  uj0;
+
+  GetJobs(a) &
+  GetCompletedJobs(b) &
+  ReadMotifSetFlag(c) &
+  ReadCurrentJob(e) &
+  ReadCfg(f) &
+  ReadAnl(g) &
+  ReadUsr(h) &
+  ReadDmu(i) &
+  ReadLvl(j) &
+  ReadRef(k) &
+  ReadPrv(l) &
+  ReadGen(m) &
+  ReadUsrVHDL(d) &
+  ReadXTermFlag(n) &
+  ReadTrl(o) &
+  ReadLnk(p) &
+  ReadEnvEditorString(q) &
+  ReadIsPASPToolkit(r) &
+  ReadIsVHDL(s) &
+  bconnect(".Bjob") &
+/***
+if this changes, change BSession.c also
+***/
+  bprintf("%\n",(a|b|c|e|f|g|h|i|j|k|l|m|n|o|p|q|d|r|s)) &
+  bclose &
+  PrintBver
+ =>
+  uj0;
+
+  ModifyJobs(a) &
+/***
+HERE(("Just loaded .Bjob":a))&
+***/
+  ModifyCompletedJobs(b) &
+  SetMotifSetFlag(c) &
+  ModifyCurrentJob(e) &
+  ModifyCfg(f) &
+  ModifyAnl(g) &
+  ModifyUsr(h) &
+  ModifyDmu(i) &
+  ModifyLvl(j) &
+  ModifyRef(k) &
+  ModifyPrv(l) &
+  ModifyGen(m) &
+  ModifyUsrVHDL(d) &
+  ModifyXTermFlag(n) &
+  ModifyTrl(o) &
+  ModifyLnk(p) &
+  ModifyEnvEditorString(q) &
+  ModifyIsPASPToolkit(r) &
+  ModifyIsVHDL(s)
+ =>
+  lj1(a|b|c|e|f|g|h|i|j|k|l|m|n|o|p|q|d|r|s);
+
+  InformCantConnect(".Bjob") &
+  PFZ
+ =>
+  lj0;
+
+  bget(".Bjob",x) &
+  bcall((PersistentDataX;MODR~;CATL;SHELL)~ : chk_pda_0) & /* ver */
+  lj1(x)
+ =>
+  lj0
+
+END
+
+&
+
+THEORY CheckParseX IS
+
+#define CheckBBcomParse bcall(((SHELL)~;CheckParseX)~:cpBBcom0)
+
+#define CheckParse(x) bcall(((SHELL)~;CheckParseX)~:cp0(x))
+
+#define CheckProofParse(x) bcall(((CATL;SHELL)~;CheckParseX)~:cp_prf0(x))
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  ModifyParseJob((11:BT_CK_PARSE:0))
+ =>
+  cpBBcom;
+
+  bget(".Bcom",x) &
+  ModifyParseJob((10:BT_CK_PARSE:0))
+ =>
+  cpBBcom;
+
+  bshell("echo ' ' > .Berr") &
+  cpBBcom
+ =>
+  cpBBcom0;
+
+
+  bshell("cat .Berr")
+ =>
+  cp_prf3;
+  
+  bshell("sed -e s+'Xx___np___'+'\\newpage'+g < .Bcom > .Berr") &
+  cp_prf3
+ =>
+  cp_prf2;
+
+  Writef(("\n\n  Bad linebreak/pagebreak position\n")) &
+  bshell("sed -e s+'Xx___nl___'+'\\\\'+g < .Berr > .Bcom") &
+  cp_prf2 &
+  ModifyParseJob((1:BT_CK_PARSE:0))
+ =>
+  cp_prf1;
+
+  bget(".Bcom",w) &
+  ModifyParseJob((0:BT_CK_PARSE:0))
+ =>
+  cp_prf1;
+
+  bshell("echo '' > .Berr") &
+  bshell(bcatl("$BKIT/BLIB/LatexProofFilter 1 < ",f," > .Bcom")) &
+  cp_prf1
+ =>
+  cp_prf0(f);
+
+
+
+  ModifyParseJob((1:BT_CK_PARSE:0))
+ =>
+  cp1(f);
+
+  bget(f,w) &
+  ModifyParseJob((0:BT_CK_PARSE:0))
+ =>
+  cp1(f);
+
+
+  bshell("echo ' ' > .Berr") &
+  cp1(f)
+ =>
+  cp0(f)
+
+END
+
+&
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+THEORY CheckForSpaceX IS
+
+#define CheckForSpace      bcall(((ARI;WRITE;MODR)~;CheckForSpaceX)~: cfs)
+
+#define ResetSpace         bcall(MODR: bmodr(CheckForSpaceX.1,1))
+
+#define SetSpaceCount(x)   bcall((ARI;MODR): bmodr(CheckForSpaceX.1,x))
+
+  1;
+
+  cfs2(n)(m);
+
+  Writef((" "))
+ =>
+  cfs2(n)(n);
+
+  cfs2(n)(m*5)
+ =>
+  cfs1(n)(m);
+
+  brule(CheckForSpaceX.1,n) &
+  bmodr(CheckForSpaceX.1,(n+1)) &
+  cfs1(n)(n/5)
+ =>
+  cfs;
+
+  brule(CheckForSpaceX.1,75) &
+  bmodr(CheckForSpaceX.1,76) &
+  Writef(("\n      "))
+ =>
+  cfs;
+
+  brule(CheckForSpaceX.1,50) &
+  bmodr(CheckForSpaceX.1,51) &
+  Writef(("\n      "))
+ =>
+  cfs;
+
+  brule(CheckForSpaceX.1,25) &
+  bmodr(CheckForSpaceX.1,26) &
+  Writef(("\n      "))
+ =>
+  cfs;
+
+  brule(CheckForSpaceX.1,100) &
+  bmodr(CheckForSpaceX.1,1) &
+  Writef(("\n\n      "))
+ =>
+  cfs
+
+END
+
+&
+
+THEORY WaitX IS
+
+#define WAIT bcall(((WRITE)~;WaitX)~ : wait_0)
+
+  breade(x) &
+  Writef("\n")
+ =>
+  wait_1;
+
+  Writef("\n\n    Waiting ... <CR> to continue ") &
+  wait_1
+ =>
+  wait_0
+
+END
+
+&
+
+
+
+
+
+
+THEORY ConnectFileX IS
+
+#define ConnectFile(x) bcall((CATL;ConnectFileX)~: cf(x))
+
+#define ConnectBcom ConnectFile(".Bcom")
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cf;
+
+  bconnect(f)
+ =>
+  cf(f)
+
+END
+
+&
+
+THEORY AppendFileX IS
+
+#define AppendFile(x) bcall((CATL;AppendFileX)~: af(x))
+
+#define AppendBcom AppendFile(".Bcom")
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  af;
+
+  bappend(f)
+ =>
+  af(f)
+
+END
+
+&
+
+THEORY ClearWinX IS
+
+#define ClearMenuWin bcall((ClearWinX;WRITE):cwmen)
+
+#define ClearMainWin bcall((ClearWinX;WRITE):cwmain)
+
+
+  cwmen;
+
+  cwmain
+
+END
+
+&
+
+THEORY MotifRmbcatlX IS
+
+#define MotifRmbcatl(x) bcall(MotifRmbcatlX~:mrb(x))
+
+  ?;
+#define ReadMotifRmbcatl(x) brule(MotifRmbcatlX.1,x)
+
+  bcall(MODR:bmodr(MotifRmbcatlX.1,(a)))
+ =>
+  mrb(a);
+
+  (a.|(b.|c)) == (a.|b.|c);
+
+  bcatl(a) == a;
+
+  bcatl(a,b) == (bcatl(a).|b)
+
+/*
+;bcatl(UNION(ll),".",(ll: NAT | 0..ll --> std_logic))
+*/
+
+END
+
+&
+
+ /* leave this stiff - for Introduce.src! */
+
+#define ReadNonZeroNumber(x) brule(GetNonZeroNumberFromUserX.1,x)
+
+THEORY GetNonZeroNumberFromUserX IS ? END &
+
+
+
+THEORY MotifX IS
+
+#define CpyBselBfifoSto(y)   bcall((MODR~;MotifX)~:cpBselBfifo(y))
+
+#define BselSto            (MotifX.1)
+#define ModifyBselSto(x)   bmodr(BselSto,x)
+#define ReadBselSto(x)     brule(BselSto,x)
+
+#define BfifoSto            (MotifX.2)
+#define ModifyBfifoSto(x)   bmodr(BfifoSto,x)
+#define ReadBfifoSto(x)     brule(BfifoSto,x)
+
+#define FifoWrite_Store(X,Y) \
+    bcall((((ARI;CATL)~;WRITE)~;MotifX)~:fifo_w(X)) & \
+    bcall((MODR;MotifX)~:fifo_r) & \
+    CpyBselBfifoSto(Y)
+
+#define FifoWrite_NoStore(X) \
+    bcall((((ARI;CATL)~;WRITE)~;MotifX)~:fifo_w(X)) & \
+    bcall((MODR;MotifX)~:fifo_r)
+
+#define FifoWrite_NoRead(X) \
+    bcall((((ARI;CATL)~;WRITE)~;MotifX)~:fifo_w(X))
+
+
+  ?;  /* 1. - BselSto */
+
+  ?;  /* 2. - BfifoSto */
+
+  ?;  /* 3. - BT_BCATL_M result (not used?) */
+
+
+  bhalt
+ =>
+  bshell(f);
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+ ReadBfifoSto(b) &HERE((b))&cpBselBfifo=>
+  cpBselBfifo(a);
+
+
+  ReadBfifoSto((N:BT_LST_FLG:0)) &
+  ModifyCurrentJob(?) &
+  ModifyJobs(?) &
+  bmodr(a,N)
+ =>
+  cpBselBfifo(a);
+
+  ReadBfifoSto((0:BT_RM_ALL_JOBS:0)) &
+  ModifyCurrentJob(?) &
+  ModifyJobs(?) &
+  bmodr(a,0)
+ =>
+  cpBselBfifo(a);
+
+  ReadBfifoSto((y:BT_BSEL:0)) &
+  bmodr(a,y)
+ =>
+  cpBselBfifo(a);
+
+  ReadBfifoSto((z:BT_BSEL:0)) &
+  bsearch(?,z,y) &
+  bmodr(a,y)
+ =>
+  cpBselBfifo(a);
+
+
+
+/* HERE(("TCP read doesn't parse")) => */
+  fifo_r;
+
+  bfiforead(a) &
+  ModifyBfifoSto(a)
+ =>
+  fifo_r;
+
+  brule(MotifX.2,a) &
+/***
+HERE((557:a))&
+***/
+  bfifowrite(a)
+ =>
+  fifo_w4(s);
+
+  ReadMotifRmbcatl(t) &
+/***
+HERE((556:t))&
+***/
+  Connect(".Bcom") &
+  bprintf("%",t) &
+  bclose &
+  FifoWrite_Store((BT_BCATL_M,0,0),(MotifX.2)) &
+  fifo_w4(s)
+ =>
+  fifo_w3(s);
+
+  MotifRmbcatl(s) &
+  fifo_w3(s)
+ =>
+  fifo_w1(s);
+
+  bstring(a) &
+  bfifowrite(a)
+ =>
+  fifo_w1(a);
+
+  MotifRmbcatl(s) &
+/***
+HERE((555:s))&
+***/
+  fifo_w3(s)
+ =>
+  fifo_w2(s);
+
+  bstring(s) &
+  bfifowrite(s)
+ =>
+  fifo_w2(s);
+
+  fifo_w2(bcatl(b,"@",s))
+ =>
+  fifo_w1(b)(s);
+
+  fifo_w1(a)(bcatl(b,""))
+ =>
+  fifo_w(a,b);
+
+  fifo_w1(a)(bcatl(b,"..",c))
+ =>
+  fifo_w(a,b..c);
+
+  fifo_w1(a)(bcatl(b,".",c))
+ =>
+  fifo_w(a,b.c);
+
+  fifo_w1(a)(bcatl(b,".",c,".",d))
+ =>
+  fifo_w(a,b.c.d);
+
+  fifo_w1(a)(bcatl(b,".",c,".",d,".",e))
+ =>
+  fifo_w(a,b.c.d.e);
+
+
+
+  fifo_w1(a)(bcatl(b,"@",s))
+ =>
+  fifo_w1(a,b)(s);
+
+  fifo_w1(a)(bcatl(b,"..",c,"@",s))
+ =>
+  fifo_w1(a,b..c)(s);
+
+  fifo_w1(a)(bcatl(b,".",c,"@",s))
+ =>
+  fifo_w1(a,b.c)(s);
+
+  fifo_w1(a)(bcatl(b,".",c,".",d,"@",s))
+ =>
+  fifo_w1(a,b.c.d)(s);
+
+  fifo_w1(a)(bcatl(b,".",c,".",d,".",e,"@",s))
+ =>
+  fifo_w1(a,b.c.d.e)(s)
+
+END
+
+&
+
+THEORY MotifSyncX IS
+
+#define WaitM_UnloadBpda      bcall(((MODR;SHELL)~;MotifSyncX)~:wm_unload)
+
+#define NoWaitM_UnloadBpda    bcall(((MODR;SHELL)~;MotifSyncX)~:nw_unload)
+
+#define WaitM_DontUnloadBpda  bcall(((MODR;SHELL)~;MotifSyncX)~:wm_dont_unload)
+
+#define WaitM_ERR             bcall(((MODR;SHELL)~;MotifSyncX)~:wm_err)
+
+  1;  /* initially FromMotifIsSet set */
+
+  0;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformCantConnect(".Bpdu") &
+/* HERE((999))& */
+  PFZ
+ =>
+  wm_Bpda_unchanged;
+
+  bconnect(".Bpdu") &
+  bclose
+ =>
+  wm_Bpda_unchanged;
+
+
+
+  nw_unload;
+
+  IfNewMotif &
+/* HERE(("Bpda UNchanged - not unloading - setting .Bpdu"))& */
+  PrintBver &
+  wm_Bpda_unchanged
+/* &   USR1Sig */
+ =>
+  nw_unload;
+
+  IfNewMotif &
+  BpdaFlagIsSet &
+/* HERE(("Bpda changed - unloading - removing .Bpdu"))& */
+  bshell("rm -f .Bpdu") &
+  UnloadPersistentData
+/* &   USR1Sig */
+ =>
+  nw_unload;
+
+
+
+  wm_unload;
+
+  IfNewMotif &
+  nw_unload &
+  bcall((MODR;MotifX)~:fifo_r)
+ =>
+  wm_unload;
+
+  IfNewMotif &
+/* HERE(("Don't Unload"))& */
+  PrintBver &
+/*  USR1Sig & */
+  bcall((MODR;MotifX)~:fifo_r)
+ =>
+  wm_dont_unload;
+
+/*  USR1Sig => */
+  wm_err     /* don't wait for Motif */
+
+END
+
+&
+
+THEORY WriteX IS
+
+  ?;   /* record currently open file ( Motif _ Steve ) */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  brule(WriteX.1,f) &
+  bappend(f)
+ =>
+  reset_file ;
+
+  NoFileOpen
+ =>
+  reset_file ;
+
+
+  bconnect("TMP/.Bcom") &
+  bprintf(a) &
+  bclose &
+  FifoWrite_NoStore((BT_TEXT_FROM_BCOM_M,0,0))
+ =>
+  write(a);
+
+  bstring(a) &
+  FifoWrite_NoStore((BT_TEXT_M,a,0))
+ =>
+  write(a);
+
+  IfWriteToXTerm &
+  bwritef(a)
+ =>
+  write(a);
+
+  brule(Adjust___set___seqX.1,x) & /* SSTL - parseBase.src */
+  bwritef(a)
+ =>
+  write(a)
+
+END
+
+&
+
+THEORY PromptUserX IS
+
+
+#define PromptForData(s) \
+       bcall(((WRITE~;CATL;SHELL;MODR)~;PromptUserX)~:prompt_for_data(0)(s))
+
+#define ReadData(x)   brule(PromptUserX.1,x)
+#define ModifyData(x) bcall(MODR:bmodr(PromptUserX.1,x))
+
+
+  (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o);
+
+  (f,g,h,i,j,k,l,m,n,o,p,q,r,s,t);
+
+  (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o);
+
+  (u,v,w,x);
+
+  (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o);
+
+  (a,b,c,d,e,f);
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  "B-Toolkit (c) Copyright B-Core(UK) 1996";
+
+  FifoWrite_Store(p,(PromptUserX.1)) 
+ =>
+  prompt_for_data(N)(p)
+
+
+END
+
+&
+
+THEORY GetNumberFromUserX IS  /***** IS THIS REALLY STILL USED ????? *****/
+
+/*
+  prompts for a number, and accepts only valid input
+
+  invocation:
+    n one more than maximum number to be accepted
+  result
+    Option? prompt on screen, only valid x (0<=x<=n) accepted
+      if x=0 abort
+      else x stored in GetNumberFromUserX.1
+*/
+
+#define GetNumberFromUserTac \
+  (ARI;WRITE;MODR;PromptForZeroToAbortX;GetNumberFromUserX)~
+
+
+#define GetNumberFromUser(n) bcall(GetNumberFromUserTac:gnfu1(1)(n))
+
+#define GetpobFromUser(n)    bcall(GetNumberFromUserTac:gpfu1(1)(n))
+         
+#define GetOptionFromUser(n) bcall(GetNumberFromUserTac:gofu1(1)(n))
+         
+#define GetLemmaFromUser(n)  bcall(GetNumberFromUserTac:glfu1(1)(n))
+         
+#define GetTheoryFromUser(n) bcall(GetNumberFromUserTac:gtfu1(1)(n))
+         
+
+#define ReadNumber(x)         brule(GetNumberFromUserX.1,x)
+         
+#define ModifyNumber(x)       bmodr(GetNumberFromUserX.1,x)
+         
+#define ReadOption(x)       brule(GetNumberFromUserX.1,x)
+         
+#define ReadLemma(x)        brule(GetNumberFromUserX.1,x)
+         
+#define ReadTheory(x)       brule(GetNumberFromUserX.1,x)
+         
+
+#define SetNumber(x)    bmodr(GetNumberFromUserX.1,x)
+         
+
+  (s,t,u,v,w,x,y,z);                                   /* for result */
+
+  bwritef("\n  %: invalid input\n",bsrv x berv) &
+  gnfu1(z+1)(n)
+ =>
+  gnfu2(z)(x,n);
+
+  bnum(x) &                            /* x in range - accept */
+  btest(1<=x) &
+  btest(x<n) &
+  bmodr(GetNumberFromUserX.1,x)
+ =>
+  gnfu2(z)(x,n);
+
+  bmodr(GetNumberFromUserX.1,0)
+ =>
+  gnfu2(z)(0,n);                       /* x=0 */
+
+  ReadData(x) &
+  gnfu2(z)(x,n)
+ =>
+  gnfu1a(z)(n);
+
+  PromptForData(("\nOption? ")) &
+  gnfu1a(z)(n)
+ =>
+  gnfu1(z)(n);
+
+  PromptForData(("\nProof Obligation? ")) &
+  gnfu1a(z)(n)
+ =>
+  gpfu1(z)(n);
+
+  PromptForData(("\nOption? ")) &
+  gnfu1a(z)(n)
+ =>
+  gofu1(z)(n);
+
+  PromptForData(("\nLemma? ")) &
+  gnfu1a(z)(n)
+ =>
+  glfu1(z)(n);
+
+  PromptForData(("\nTheory? ")) &
+  gnfu1a(z)(n)
+ =>
+  gtfu1(z)(n)
+
+END
+
+&
+
+THEORY PromptForZeroToAbortX IS
+
+
+/*
+  prompts for 0 to abort (to stop window vanishing!)
+
+  invocation:
+    PromptForZeroToAbort
+  result
+    0 ... Quit appears on screen
+    when 0 entered, bhalt
+*/
+
+
+  ?;
+
+  bshell(f);           /* "rm" didn't work */
+
+  brule(PromptForZeroToAbortX.1,0) &
+  Writef(("\n  Insufficient memory?\n"))
+ =>
+  bshell(f);           /* "ls > /dev/null" didn't work */
+
+  InformCantConnect(".Bses")
+ =>
+  pfz1;
+
+  PrintToBses(0) &
+  bhalt
+ =>
+  pfz1;
+
+  bmodr(PromptForZeroToAbortX.1,0) &
+  bshell("ls > /dev/null") &
+  bmodr(PromptForZeroToAbortX.1,1) &
+  bshell("rm -f .BBcom .B.bin .Blws .Bnum .Bplt .Bpob .Bpof .Bspo .Btac .Bthy .Btot") &
+  bshell("touch .Blog") &
+  FifoWrite_NoStore((BT_RECT_FAULT_M,null.mch,0)) &
+  pfz1
+ =>
+  pfz
+
+END
+
+&
+
+THEORY PromptConfirmX IS
+
+
+#define PromptConfirm(p) bcall(((ARI;WRITE;MODR;CATL)~;PromptConfirmX)~:pc(p))
+
+#define ReadConfirm(x)  brule(PromptConfirmX.1,x)
+
+  (s,t,u,v,w,x,y,z);          /* for answer */
+
+  FifoWrite_Store((BT_PROMPT_CFM_M,x,"0"),(PromptConfirmX.1))
+ =>
+  pc(x);
+
+  FifoWrite_Store((BT_PROMPT_CFM_M,x,y),(PromptConfirmX.1))
+ =>
+  pc(x,y)
+
+END
+
+&
+
+THEORY PersistentDataX IS
+
+  chk_pda_7(x)
+ =>
+  chk_pda_6(x);
+
+  InformCantExecute(a) &
+  PFZ
+ =>
+  bshell(a);
+
+  ModifyJobs(H)
+ =>
+  modify_jobs(H);
+
+  bshell("rm -f .Brec") &
+  ModifyJobs(?)
+ =>
+  modify_jobs(?);
+
+  brule(PromptUserX.3,(i,j,k,l,m,n,o,p,q,r,s,t)) &
+  chk_pda_1(bcatl("B",v,j))
+ =>
+  chk_pda_0;
+
+  InformCantConnect(".Bses") &
+  bhalt
+ =>
+  chk_pda_7(x);
+
+  bconnect(".Bses") &
+  bshell(" rm -f .Berr") &
+  bcall(WRITE~:(bprintf("0\n")&bwritef("\n\n  B-Toolkit: Error code 14076\n\n\n"))) &
+  bhalt
+ =>
+  chk_pda_7(x);
+
+  chk_pda_6(f)
+ =>
+  chk_pda_2(f);
+
+  brule(PromptUserX.3,(i,j,k,l,m,n,o,p)) &
+  chk_pda_2(bcatl(".",x,r))
+ =>
+  chk_pda_1(x);
+
+  chk_pda_6(x)
+ =>
+  chk_pda_5(x);
+
+  chk_pda_6(x)
+ =>
+  chk_pda_4(x);
+
+  chk_pda_5(9);
+
+  bget(f,x) &
+  bshell(bcatl("rm -f ",f)) &
+  chk_pda_3(x)
+ =>
+  chk_pda_2(f);
+
+  chk_pda_6(x)
+ =>
+  chk_pda_3(x);
+
+  chk_pda_4(4);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  lpda_err_2;
+
+  chk_pda_4(a) &
+  chk_pda_5(b)
+ =>
+  chk_pda_3(a.b);
+
+  bget(".Bcom",x) &
+  lpda_err_3(x)
+ =>
+  lpda_err_2
+
+END
+
+&
+
+THEORY PrintToBsesX IS
+
+  InformCantConnect(".Bver") &
+  PFZ
+ =>
+  ptbs1;
+
+  bconnect(".Bver") &
+  bprintf("%\n",4.9) &
+  bclose
+ =>
+  ptbs1;
+
+  InformCantConnect(".Bses") &
+  PFZ
+ =>
+  ptbs(x);
+
+  bconnect(".Bses") &
+  bprintf("%\n",a) &
+  bclose
+ =>
+  ptbs(a)
+
+END
+
+&
+
+THEORY PrintToBcomX IS
+
+#define PrintToBcom(a) bcall((PrintToBcomX;WRITE):ptbc(a))
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  ptbc(x);
+
+  bconnect(".Bcom") &
+  bprintf("%\n",a)
+ =>
+  ptbc(a)
+
+END
+
+&
+
+THEORY CheckCompactionX IS
+
+#define CheckCompactionTac (CheckCompactionX;WRITE~)~
+
+#define CheckCompactionLoudly \
+		bcall(CheckCompactionTac: check_compaction_loudly)
+
+#define CheckCompactionSilently \
+		bcall(CheckCompactionTac: check_compaction_silently)
+
+#define CheckCompactionForcibly \
+		bcall(CheckCompactionTac: check_compaction_forcibly)
+
+/***
+  loudly
+***/
+
+  check_compaction_loudly;
+
+  bsparemem(m) &
+  bwritef(" %",bsrv m berv)
+ =>
+  check_compaction_loudly1;
+
+  bsparemem(m) &
+  btest(m<75) &
+  brecompact &
+  bwritef(" % ... compacted to ...",bsrv m berv)
+& check_compaction_loudly1
+ =>
+  check_compaction_loudly;
+
+/***
+  loudly -> loudly & forcibly!!!
+
+  bsparemem(m) &
+  brecompact &
+  bwritef(" % ... compacted to ...",bsrv m berv)
+& check_compaction_loudly1
+ =>
+  check_compaction_loudly;
+***/
+
+
+
+/***
+  silently
+***/
+
+  check_compaction_silently;
+
+  bsparemem(m) &
+  btest(m<75) &
+  brecompact
+ =>
+  check_compaction_silently;
+
+
+
+/***
+  forcibly
+***/
+
+  brecompact
+ =>
+  check_compaction_forcibly
+
+END
+&
+
+THEORY GetSelectionMacrosX IS
+
+  (a;b) == (a,b);
+
+  (a&b) == (a,b)
+
+END
+
+&
+
+THEORY GetSelectionListFromListX IS
+
+#define ModrSelectionListFromListPromptSto(w) \
+     bcall(MODR:bmodr(GetSelectionListFromListX.2,w))
+
+#define ReadSelectionListFromListPromptSto(v) \
+     brule(GetSelectionListFromListX.2,v)
+
+#define GetSelectionListFromListTac \
+	(GetSelectionMacrosX~;((SHELL;MAP;ARI;WRITE;MODR)~;GetSelectionListFromListX)~)
+
+#define GetSelectionListFromList(x) \
+	bcall(GetSelectionListFromListTac: get_sel_list_sort_0(x))
+
+#define GetSelectionListFromList_Prompt(x,y) \
+        ModrSelectionListFromListPromptSto(y) & \
+	bcall(GetSelectionListFromListTac: get_sel_list_sort_0(x))
+
+#define ReadSelectionList(x) \
+	brule(GetSelectionListFromListX.1,x)
+
+
+  ?;
+
+  ?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  motif_00(a)
+ =>
+  get_sel_list_0(a);
+
+  bmodr(GetSelectionListFromListX.1,?)
+ =>
+  get_sel_list_0(?);
+
+  bsearch(?,x,y) &
+  get_sel_list_0(y)
+ =>
+  get_sel_list_0(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  get_sel_list_sort3;
+
+  bget(".Bcom",x) &
+  get_sel_list_0(x)
+ =>
+  get_sel_list_sort3;
+
+  bshell("sort .Bcom > .BBcom ; mv .BBcom .Bcom ; echo '?' >> .Bcom") &
+  get_sel_list_sort3
+ =>
+  get_sel_list_sort2;
+
+  bprintf("(%),\n",x)
+ =>
+  get_sel_list_sort1(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  get_sel_list_sort_0(x);
+
+  bconnect(".Bcom") &
+  get_sel_list_sort1 bsmap x &
+  bclose &
+  get_sel_list_sort2
+ =>
+  get_sel_list_sort_0(x);
+
+
+
+  bmodr(GetSelectionListFromListX.1,x)
+ =>
+  motif_4(x);
+
+  bmodr(GetSelectionListFromListX.1,?)
+ =>
+  motif_4(0);
+
+  bsearch(?,x,y) &
+  motif_4(y)
+ =>
+  motif_4(x);
+
+  ReadSelectionList(x) &
+  motif_4(x)
+ =>
+  motif_3;
+
+  ReadSelectionListFromListPromptSto(p) &
+  ModrSelectionListFromListPromptSto(?) &
+  FifoWrite_Store((BT_GET_LIST_M,p,0),(GetSelectionListFromListX.1)) &
+  motif_3
+ =>
+  motif_2;
+
+  ReadSelectionListFromListPromptSto(?) &
+  FifoWrite_Store((BT_GET_LIST_M,0,0),(GetSelectionListFromListX.1)) &
+  motif_3
+ =>
+  motif_2;
+
+  bprintf("%\E",x)
+  =>
+  motif_1(x,m,n);
+
+  bstring(x) &
+  bprintf(x) &
+  bprintf("\E")
+  =>
+  motif_1(x,m,n);
+
+  bprintf("%\n",x)
+  =>
+  motif_1(x,n,n);
+
+  bstring(x) &
+  bprintf(x) &
+  bprintf("\n")
+  =>
+  motif_1(x,n,n);
+
+  motif_1 bnmap x
+ =>
+  motif_0(x);
+
+  bsearch(?,x,y) &
+  motif_0(y)
+ =>
+  motif_0(x);
+
+  bconnect(".Bsel") &
+  motif_0(x) &
+  bclose &
+  motif_2
+ =>
+  motif_00(x)
+
+END
+
+&
+
+THEORY DisplayFileInMainWinX IS
+
+#define DisplayFileInMainWin(x) \
+    bcall(((CATL;SHELL;WRITE;MODR)~;DisplayFileInMainWinX)~:dfimw(x))
+
+  ?;
+
+  InformCantExecute(x) &
+  PFZ
+ =>
+  bshell(x);
+
+
+  bget(F,x) &
+  HERE((x))
+ =>
+  dfimw2(F);
+
+  brule(DisplayFileInMainWinX.1,F) &
+  bshell(bcatl("echo \" > ",F)) &
+  bshell(bcatl("cat ",f," >> ",F)) &
+  bshell(bcatl("echo \" >> ",F)) &
+  dfimw2(F)
+ =>
+  dfimw2(f);
+
+  bmodr(DisplayFileInMainWinX.1,".Bcom") &
+  dfimw2(f)
+ =>
+  dfimw(f);
+
+  bmodr(DisplayFileInMainWinX.1,".BBcom") &
+  dfimw2(".Bcom")
+ =>
+  dfimw(".Bcom");
+
+  bshell(bcatl("cp ",f," .Bcom")) &
+  FifoWrite_NoStore((BT_DSP_FILE_M,".Bcom",0))
+ =>
+  dfimw(f);
+
+  FifoWrite_NoStore((BT_DSP_FILE_M,".Bcom",0))
+ =>
+  dfimw(".Bcom");
+
+
+
+
+
+
+
+
+
+
+  dfimw2(f)(1);
+
+  FifoWrite_NoStore((BT_DSP_FILE_M,f,0))
+ =>
+  dfimw2(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  dfimw1(f);
+
+  bget(".Bcom",x) &
+  dfimw2(f)(x)
+ =>
+  dfimw1(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  dfimw1(f)
+ =>
+  dfimw(f);
+
+  bshell("cp .Bcom .Btp") &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists .Btp .")) &
+  dfimw1(".Btp") &
+  bshell("rm -f .Btp")
+ =>
+  dfimw(".Bcom")
+
+END
+
+&
+
+THEORY GetSelectionFromListX IS             /* used by Animator */
+
+#define GetSelectionFromListPromptSto \
+     (GetSelectionFromListX.2)
+
+#define ReadSelectionFromListPromptSto(w) \
+     brule(GetSelectionFromListPromptSto,w)
+
+#define ModrSelectionFromListPromptSto(w) \
+     bcall(MODR:bmodr(GetSelectionFromListPromptSto,w))
+
+
+#define GetSelectionFromListTac \
+	(GetSelectionMacrosX~;((SHELL;MAP;WRITE;MODR)~;GetSelectionFromListX)~)
+
+#define GetSelectionFromList(x) \
+	bcall(GetSelectionFromListTac: get_sel_list_sort_0(x))
+
+#define GetSelectionFromList_Prompt(x,y) \
+        ModrSelectionFromListPromptSto(y) & \
+	bcall(GetSelectionFromListTac: get_sel_list_sort_0(x))
+
+#define GetSelectionFromListStore(x) \
+	bcall(GetSelectionFromListTac: get_sel_list_from_store_0(x))
+
+#define GetSelectionFromListStore_Prompt(x,y) \
+        ModrSelectionFromListPromptSto(y) & \
+	bcall(GetSelectionFromListTac: get_sel_list_from_store_0(x))
+
+#define GetSelectionFromListBselWritten \
+	bcall(GetSelectionFromListTac: motif_2)
+
+#define GetSelectionFromListBselWritten_Prompt(y) \
+        ModrSelectionFromListPromptSto(y) & \
+	bcall(GetSelectionFromListTac: motif_2)
+
+#define GetSelectionFromListBselWrittenLarge_Prompt(y) \
+        ModrSelectionFromListPromptSto(y) & \
+	bcall(GetSelectionFromListTac: motif_2L)
+
+#define ReadSelection(x) \
+	brule(GetSelectionFromListX.1,x)
+
+
+  ?;
+
+  ?;
+
+  motif_00(a)
+ =>
+  get_sel_list_0(a);
+
+  bmodr(GetSelectionFromListX.1,?)
+ =>
+  get_sel_list_0(?);
+
+  bsearch(?,x,y) &
+  get_sel_list_0(y)
+ =>
+  get_sel_list_0(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  get_sel_list_sort3;
+
+  bget(".Bcom",x) &
+  get_sel_list_0(x)
+ =>
+  get_sel_list_sort3;
+
+  bshell("sort .Bcom > .BBcom ; mv .BBcom .Bcom ; echo '?' >> .Bcom") &
+  get_sel_list_sort3
+ =>
+  get_sel_list_sort2;
+
+  bprintf("(%),\n",x)
+ =>
+  get_sel_list_sort1(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  get_sel_list_sort_0(x);
+
+  bconnect(".Bcom") &
+  get_sel_list_sort1 bsmap x &
+  bclose &
+  get_sel_list_sort2
+ =>
+  get_sel_list_sort_0(x);
+
+
+
+
+  brule(t.n,x) &
+  get_sel_list_sort_0(x)
+ =>
+  get_sel_list_from_store_0(t.n);
+
+  brule(t.n,x) &
+  bsearch(?,x,y) &
+  get_sel_list_sort_0(y)
+ =>
+  get_sel_list_from_store_0(t.n);
+
+
+
+  bmodr(GetSelectionFromListX.1,x)
+ =>
+  motif_4(x);
+
+  bmodr(GetSelectionFromListX.1,?)
+ =>
+  motif_4(0);
+
+  bsearch(?,x,y) &
+  motif_4(y)
+ =>
+  motif_4(x);
+
+  ReadSelection(x) &
+  motif_4(x)
+ =>
+  motif_3;
+
+  ReadSelectionFromListPromptSto(p) &
+  ModrSelectionFromListPromptSto(?) &
+  FifoWrite_Store((BT_GET_L_ONE_M,p,0),(GetSelectionFromListX.1)) &
+  motif_3
+ =>
+  motif_2L;
+ 
+  ReadSelectionFromListPromptSto(p) &
+  ModrSelectionFromListPromptSto(?) &
+  FifoWrite_Store((BT_GET_ONE_M,p,0),(GetSelectionFromListX.1)) &
+  motif_3
+ =>
+  motif_2;
+ 
+  ReadSelectionFromListPromptSto(?) &
+  FifoWrite_Store((BT_GET_ONE_M,0,0),(GetSelectionFromListX.1)) &
+  motif_3
+ =>
+  motif_2;
+ 
+  bprintf("%\E",x)
+  =>
+  motif_1(x,m,n);
+
+  bstring(x) &
+  bprintf(x) &
+  bprintf("\E")
+  =>
+  motif_1(x,m,n);
+
+  bstring(s) &
+  bprintf("%",x) &
+  bprintf(s) &
+  bprintf("\E")
+  =>
+  motif_1((x|s),m,n);
+
+  bprintf("%\n",x)
+  =>
+  motif_1(x,n,n);
+
+  bstring(x) &
+  bprintf(x) &
+  bprintf("\n")
+  =>
+  motif_1(x,n,n);
+
+  bstring(s) &
+  bprintf("%",x) &
+  bprintf(s) &
+  bprintf("\n")
+  =>
+  motif_1((x|s),n,n);
+
+  motif_1 bnmap x
+ =>
+  motif_0(x);
+
+  bsearch(?,x,y) &
+  motif_0(y)
+ =>
+  motif_0(x);
+
+  bconnect(".Bsel") &
+  motif_0(x) &
+  bclose &
+  motif_2
+ =>
+  motif_00(x)
+
+END
+
+&
+
+THEORY ShowDirectX IS
+
+  0       /* default is `ShowToScreenFlagSet' */
+
+END
+
+&
+
+THEORY QuitFlagX IS
+
+#define SetQuitFlag   bcall(MODR: bmodr(QuitFlagX.1,1))
+
+#define QuitFlagIsSet brule(QuitFlagX.1,1)
+
+  0
+
+END
+

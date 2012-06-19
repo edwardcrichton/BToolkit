@@ -1,0 +1,59 @@
+IMPLEMENTATION  MaxOfSetI
+
+REFINES MaxOfSet
+
+IMPORTS
+
+/*"
+Since we are concerned only with the maximum number stored,
+our design comprises a single number (to replace our abstract
+set); we use the renamable SLIB construct {\em MAX\_Nvar\/},
+providing an an encapsulation of this number:
+
+"*/
+
+  MAX_Nvar(max_val)
+
+SEES
+
+/*"
+Since we are using booleans in our design, we bring the
+appropriate library machine into scope:
+"*/
+
+  Bool_TYPE
+
+INVARIANT
+
+/*"
+We describe the relationship between the abstract set {\em numset\/}
+and the concrete variable {\em MAX\_Nvar\/} again using the
+{\em max\/} function:
+"*/
+
+  MAX_Nvar = max(numset)
+
+OPERATIONS
+
+/*"
+{\bf enter}\\[.5ex]
+The operations {\em MAX\_STO\_NVAR\/} and {\em MAX\_GTR\_NVAR\/}
+of the imported machine are used in this algorithm; if the
+newly-introduced {\em num\/} is greater than the value currently
+stored, then we store this new value:
+"*/
+  enter(num) =
+   VAR bb IN
+     bb <-- MAX_GTR_NVAR(num);
+     IF bb = FALSE THEN MAX_STO_NVAR(num) END
+   END;
+
+/*"
+{\bf enter}\\[.5ex]
+The operation {\em MAX\_VAL\_NVAR\/} provides an immediate
+implementation for this query operation:
+"*/
+  mx <-- maximum =
+    BEGIN mx <-- MAX_VAL_NVAR END
+
+END

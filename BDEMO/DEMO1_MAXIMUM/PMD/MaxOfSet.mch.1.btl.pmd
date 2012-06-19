@@ -1,0 +1,11 @@
+PROOFMETHOD MaxOfSet.mch.1.btl IS
+
+  THEORY BToolUsersTheory IS
+    ?
+  END
+  &
+  THEORY FwdBToolUsersTheory IS
+    ?
+  END
+
+END

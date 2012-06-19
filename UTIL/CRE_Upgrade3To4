@@ -1,0 +1,113 @@
+#! /bin/csh -f
+
+#
+# b created
+#
+
+set curdir = `pwd`
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script creates Upgrade3To4 "
+echo "  as $BKIT/BLIB/Upgrade3To4 "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+cd ../MOTIF
+
+if ( ! -d ../BKIT ) then
+  mkdir ../BKIT
+endif
+
+if ( ! -d ../BKIT/BLIB ) then
+  mkdir ../BKIT/BLIB
+endif
+
+################################
+# compile Upgrade3To4
+################################
+
+echo ""
+echo "  ----------------------------------------------------------------------"
+echo "  Compiling Upgrade3To4.o"
+echo ""
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_Motif \ "
+echo "      -c Upgrade3To4.c \ "
+echo "      -DBTOOL_FLAG -DBTOOLM_FLAG \ "
+echo "      $ALL_FLAGS \ "
+echo "      $CC_X_incl_dir "
+$CC \
+    $CC_opt_Motif \
+     -c Upgrade3To4.c \
+     -DBTOOL_FLAG -DBTOOLM_FLAG -DBTOOLM_BKIT_FLAG \
+     $ALL_FLAGS \
+     $CC_X_incl_dir
+
+if ($status != "0") then
+  echo ""
+  rm -f Upgrade3To4.o
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+echo "  ----------------------------------------------------------------------"
+echo "   Linking Upgrade3To4"
+echo ""
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_Motif \ "
+echo "      -o Upgrade3To4 \ "
+echo "      $ALL_FLAGS \ "
+echo "      Upgrade3To4.o \ "
+echo "      $CC_X_incl_dir \ "
+echo "      $CC_X_link_dir \ "
+echo "      $CC_X_link_lib \ "
+echo "      $CC_non_X_link_lib "
+$CC \
+    $CC_opt_Motif \
+     -o Upgrade3To4 \
+     $ALL_FLAGS \
+     Upgrade3To4.o \
+     $CC_X_incl_dir \
+     $CC_X_link_dir \
+     $CC_X_link_lib \
+     $CC_non_X_link_lib
+
+if ($status != "0") then
+  echo ""
+  rm -f Upgrade3To4.o
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+rm -f Upgrade3To4.o
+
+if ( ! -d $BKIT/BPLAT ) then
+  mkdir $BKIT/BPLAT
+endif
+
+cp Upgrade3To4 $BKIT/BLIB
+rm -f Upgrade3To4 > /dev/null
+
+echo ""
+echo " Upgrade3To4 created in"
+echo "  $BKIT/BLIB/Upgrade3To4 "
+echo ""

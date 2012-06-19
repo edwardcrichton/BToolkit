@@ -1,0 +1,426 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_fstr_obj">
+  <TITLE>The Rename_fstr_obj machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>      Rename_fstr_obj(maxobj,maxmem)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>  maxobj&gt;0
+
+<A NAME="SEES"><B>SEES</B></A>         <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Rename_fstr_ctx.mch.html#MACHINE">Rename_fstr_ctx</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>    Rename_fstrtok, Rename_fstrstruct, Rename_fstrmem
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_fstrtok <: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A> &
+  Rename_fstrstruct: Rename_fstrtok --&gt; seq(0..255) &
+  Rename_fstrmem:  NAT
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_fstrtok, Rename_fstrstruct, Rename_fstrmem := {},{}, 0
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/****************** General query functions *******************/
+
+  bb <-- <A NAME="OPNAME!Rename_MEM_FUL_FSTR_OBJ">Rename_MEM_FUL_FSTR_OBJ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(Rename_fstrmem=maxmem)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_OBJ_FUL_FSTR_OBJ">Rename_OBJ_FUL_FSTR_OBJ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(card(Rename_fstrtok) = maxobj)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_FSTR_OBJ">Rename_XST_FSTR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A>
+  <B>THEN</B>
+    bb:=<B>bool</B>(pp:Rename_fstrtok)
+  <B>END</B>;
+
+  pp <-- <A NAME="OPNAME!Rename_ANY_FSTR_OBJ">Rename_ANY_FSTR_OBJ</A> =
+  <B>BEGIN</B>
+    pp :: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A>
+  <B>END</B>;
+
+
+/*************** Creating and deleting strings ******************/
+
+  <A NAME="OPNAME!Rename_INI_FSTR_OBJ">Rename_INI_FSTR_OBJ</A> =
+  <B>BEGIN</B>
+    Rename_fstrtok, Rename_fstrstruct, Rename_fstrmem := {},{}, 0
+  <B>END</B>;
+
+
+  bb,pp <-- <A NAME="OPNAME!Rename_CRE_FSTR_OBJ">Rename_CRE_FSTR_OBJ</A> =
+  <B>IF</B> card(Rename_fstrtok) < maxobj <B>THEN</B>
+      <B>ANY</B> qq <B>WHERE</B>
+        qq: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A> - Rename_fstrtok
+      <B>THEN</B>
+        Rename_fstrstruct(qq):=<> ||
+        Rename_fstrtok := Rename_fstrtok \/ {qq} ||
+        pp:=qq ||
+        bb:= TRUE
+      <B>END</B>
+  <B>ELSE</B>
+      bb:=FALSE
+  <B>END</B>;
+
+
+  bb,pp <-- <A NAME="OPNAME!Rename_NEW_FSTR_OBJ">Rename_NEW_FSTR_OBJ</A>(nn) =
+  <B>PRE</B>
+     card(Rename_fstrtok) &lt; maxobj &
+     nn : seq(0..255) 
+     /* Rename_fstrmem + size(nn) &lt;= maxmem */
+  <B>THEN</B> 
+     <B>IF</B> Rename_fstrmem + size(nn) <= maxmem <B>THEN</B>
+       <B>ANY</B> qq <B>WHERE</B>
+         qq: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A> - Rename_fstrtok
+       <B>THEN</B>
+         Rename_fstrstruct(qq):=nn ||
+         Rename_fstrtok := Rename_fstrtok \/ {qq} ||
+         Rename_fstrmem := Rename_fstrmem + size(nn) ||
+         pp:=qq ||
+         bb:=TRUE
+       <B>END</B>
+     <B>ELSE</B>
+       bb := FALSE ||
+       pp :: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A>
+     <B>END</B>
+ <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_KIL_FSTR_OBJ">Rename_KIL_FSTR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_fstrtok
+  <B>THEN</B>
+    Rename_fstrstruct :=  {pp} &lt;<| Rename_fstrstruct ||
+    Rename_fstrtok := Rename_fstrtok - {pp} ||
+    Rename_fstrmem := Rename_fstrmem - size(Rename_fstrstruct(pp))
+  <B>END</B>;
+
+
+/*********************** Query operations ***********************/
+
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_FSTR_OBJ">Rename_VAL_FSTR_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    ii:1..size(Rename_fstrstruct(pp))
+  <B>THEN</B> 
+    vv:=Rename_fstrstruct(pp)(ii)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EMP_FSTR_OBJ">Rename_EMP_FSTR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_fstrtok
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_fstrstruct(pp)=<>)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_IDX_FSTR_OBJ">Rename_XST_IDX_FSTR_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp: Rename_fstrtok &
+    ii: 1..maxmem
+  <B>THEN</B>
+    bb:=<B>bool</B>(ii:1..size(Rename_fstrstruct(pp)))
+  <B>END</B>;
+
+  nn <-- <A NAME="OPNAME!Rename_LEN_FSTR_OBJ">Rename_LEN_FSTR_OBJ</A>(pp)=
+  <B>PRE</B>
+    pp: Rename_fstrtok
+  <B>THEN</B>
+    nn:=size(Rename_fstrstruct(pp))
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_SMR_FSTR_OBJ">Rename_SMR_FSTR_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+     tt : Rename_fstrtok &
+     ss : Rename_fstrtok
+  <B>THEN</B>
+    bb :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> 
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_FSTR_OBJ">Rename_EQL_FSTR_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+     tt : Rename_fstrtok &
+     ss : Rename_fstrtok
+  <B>THEN</B>
+     bb := <B>bool</B>(Rename_fstrstruct(tt) = Rename_fstrstruct(ss))
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_LIT_FSTR_OBJ">Rename_EQL_LIT_FSTR_OBJ</A>(tt,nn) =
+  <B>PRE</B>
+     tt : Rename_fstrtok &
+     nn : seq(0..255)
+  <B>THEN</B>
+     bb := <B>bool</B>(Rename_fstrstruct(tt) = nn)
+  <B>END</B>;
+
+
+  ss <-- <A NAME="OPNAME!Rename_XTR_FSTR_OBJ">Rename_XTR_FSTR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp : Rename_fstrtok
+  <B>THEN</B>
+    ss := Rename_fstrstruct(pp)
+  <B>END</B>;
+
+/**************** String operations **************************/
+
+  <A NAME="OPNAME!Rename_CLR_FSTR_OBJ">Rename_CLR_FSTR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_fstrtok
+  <B>THEN</B>
+    Rename_fstrstruct(pp) := <> ||
+    Rename_fstrmem := (
+     Rename_fstrmem - size(Rename_fstrstruct(pp))
+    )
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_PSH_FSTR_OBJ">Rename_PSH_FSTR_OBJ</A>(pp,vv) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    vv: 0..255 
+    /* Rename_fstrmem&lt;maxmem */
+  <B>THEN</B>
+    <B>IF</B> Rename_fstrmem<maxmem <B>THEN</B>
+      Rename_fstrstruct(pp):=Rename_fstrstruct(pp) &lt;- vv ||
+      Rename_fstrmem:=Rename_fstrmem+1 ||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_KEP_FSTR_OBJ">Rename_KEP_FSTR_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    ii:0..size(Rename_fstrstruct(pp))
+  <B>THEN</B>
+    Rename_fstrstruct(pp):=Rename_fstrstruct(pp) /|\ ii ||
+    Rename_fstrmem:= (
+     Rename_fstrmem-size(Rename_fstrstruct(pp))+ii
+    )
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_CUT_FSTR_OBJ">Rename_CUT_FSTR_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    ii:0..size(Rename_fstrstruct(pp))
+  <B>THEN</B>
+    Rename_fstrstruct(pp):=Rename_fstrstruct(pp) \|/ ii ||
+    Rename_fstrmem:=Rename_fstrmem-ii
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_REV_FSTR_OBJ">Rename_REV_FSTR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp:Rename_fstrtok
+  <B>THEN</B>
+    Rename_fstrstruct(pp):=rev(Rename_fstrstruct(pp))
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SWP_FSTR_OBJ">Rename_SWP_FSTR_OBJ</A>(pp,ii,jj) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    ii:0..size(Rename_fstrstruct(pp)) &
+    jj:0..size(Rename_fstrstruct(pp))
+  <B>THEN</B>
+    Rename_fstrstruct(pp):= (
+     Rename_fstrstruct(pp) &lt;+ (
+        {ii |-&gt; Rename_fstrstruct(pp)(jj), jj |-&gt; Rename_fstrstruct(pp)(ii)}
+        )
+     )
+
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_POP_FSTR_OBJ">Rename_POP_FSTR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    size(Rename_fstrstruct(pp))/=0
+  <B>THEN</B>
+    Rename_fstrstruct(pp):= front(Rename_fstrstruct(pp)) ||
+    Rename_fstrmem:=Rename_fstrmem-1
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_STO_FSTR_OBJ">Rename_STO_FSTR_OBJ</A>(pp,ii,vv) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    vv:0..255 &
+    ii:1..size(Rename_fstrstruct(pp))
+  <B>THEN</B> 
+    Rename_fstrstruct(pp)(ii):=vv
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_APP_FSTR_OBJ">Rename_APP_FSTR_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    qq:Rename_fstrtok 
+    /* Rename_fstrmem+size(Rename_fstrstruct(qq))&lt;=maxmem */
+  <B>THEN</B>
+    <B>IF</B>
+      Rename_fstrmem+size(Rename_fstrstruct(qq))&lt;=maxmem
+   <B>THEN</B>
+      Rename_fstrstruct(pp):= ( 
+       Rename_fstrstruct(pp)^Rename_fstrstruct(qq) 
+      ) ||
+      Rename_fstrmem:= (
+       Rename_fstrmem+size(Rename_fstrstruct(qq)) 
+      )||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_CPY_FSTR_OBJ">Rename_CPY_FSTR_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    qq:Rename_fstrtok 
+    /* Rename_fstrmem- (
+     size(Rename_fstrstruct(qq))+size(Rename_fstrstruct(pp)) 
+     ) &lt;=  maxmem */
+   
+  <B>THEN</B>
+    <B>IF</B> Rename_fstrmem- ( 
+        size(Rename_fstrstruct(qq))+size(Rename_fstrstruct(pp))
+         ) &lt;=  maxmem 
+   <B>THEN</B>
+      Rename_fstrstruct(qq):=Rename_fstrstruct(pp) ||
+      Rename_fstrmem:= ( 
+        Rename_fstrmem- (
+           size(Rename_fstrstruct(qq))+size(Rename_fstrstruct(pp))
+        )
+      ) ||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_OVR_FSTR_OBJ">Rename_OVR_FSTR_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_fstrtok &
+    qq:Rename_fstrtok 
+    /* Rename_fstrmem + (
+    size(Rename_fstrstruct(qq))-size(Rename_fstrstruct(pp))
+    ) &lt;= maxmem */
+  <B>THEN</B>
+    <B>IF</B>
+      Rename_fstrmem+ (
+        size(Rename_fstrstruct(qq))-size(Rename_fstrstruct(pp))
+      ) &lt;=  maxmem 
+    <B>THEN</B>
+      Rename_fstrstruct(pp):= (
+        Rename_fstrstruct(pp) &lt;+ Rename_fstrstruct(qq)
+      ) ||
+      Rename_fstrmem:= (
+         Rename_fstrmem+ (
+            max({0,(size(Rename_fstrstruct(qq))-size(Rename_fstrstruct(pp)))}) 
+         )
+      )||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+ /******************** Persistent Data facilities ***********************/
+
+/***********  save/restore host byte order ***********/
+
+  <A NAME="OPNAME!Rename_SAV_FSTR_OBJ">Rename_SAV_FSTR_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RST_FSTR_OBJ">Rename_RST_FSTR_OBJ</A> =
+  <B>ANY</B>
+    sstrn,sstro,stotstr
+  <B>WHERE</B>
+    sstrn <: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A> &
+    sstro: sstrn --&gt; seq(0..255) &
+    stotstr:  NAT 
+  <B>THEN</B>
+    Rename_fstrstruct := sstro ||
+    Rename_fstrtok := sstrn ||
+    Rename_fstrmem := stotstr
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SAVN_FSTR_OBJ">Rename_SAVN_FSTR_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+/***********  save/restore network byte order ***********/
+
+  <A NAME="OPNAME!Rename_RSTN_FSTR_OBJ">Rename_RSTN_FSTR_OBJ</A> =
+  <B>ANY</B>
+    sstrn,sstro,stotstr
+  <B>WHERE</B>
+    sstrn <: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A> &
+    sstro: sstrn --&gt; seq(0..255) &
+    stotstr:  NAT 
+  <B>THEN</B>
+    Rename_fstrstruct := sstro ||
+    Rename_fstrtok := sstrn ||
+    Rename_fstrmem := stotstr
+  <B>END</B>;
+
+
+/**************************** Browsing ********************************/
+
+  nn,pp <-- <A NAME="OPNAME!Rename_FIRST_FSTR_OBJ">Rename_FIRST_FSTR_OBJ</A> =  
+  <B>IF</B> not(Rename_fstrtok = {}) <B>THEN</B>
+     pp :: Rename_fstrtok || 
+     nn := card(Rename_fstrtok) 
+  <B>ELSE</B>
+     pp :: <A HREF="Rename_fstr_ctx.mch.html#SETS">Rename_FSTROBJ</A> ||
+     nn := 0
+  <B>END</B>;
+
+  nn,qq <-- <A NAME="OPNAME!Rename_NEXT_FSTR_OBJ">Rename_NEXT_FSTR_OBJ</A>(mm,pp) = 
+  <B>PRE</B>
+    pp : Rename_fstrtok &
+    mm : NAT1
+  <B>THEN</B>
+    nn := mm-1 ||
+    qq :: Rename_fstrtok
+  <B>END</B>
+
+
+
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:46 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

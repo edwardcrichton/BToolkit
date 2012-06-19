@@ -1,0 +1,223 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Vffnc">
+  <TITLE>The Rename_Vffnc machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>         Rename_Vffnc(VALUE,rcdsiz)
+
+<A NAME="SEES"><B>SEES</B></A>            <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>       Rename_UnPack, Rename_CHARperWORD
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+  Rename_UnPack : (NAT +-&gt; VALUE) --&gt; <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+  Rename_CHARperWORD = 4
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>       Rename_Vfnc
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>       Rename_Vfnc: 1..rcdsiz +-&gt; VALUE 
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>  Rename_Vfnc := {} 
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  bb <-- <A NAME="OPNAME!Rename_TST_FLD_FNC">Rename_TST_FLD_FNC</A>(ff) =
+  <B>PRE</B>
+    ff: NAT
+  <B>THEN</B>
+    bb:=<B>bool</B>(ff:1..rcdsiz)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_DEF_FNC">Rename_DEF_FNC</A>(ff) =
+  <B>PRE</B>
+    ff: 1..rcdsiz
+  <B>THEN</B>
+    bb:=<B>bool</B>(ff:dom(Rename_Vfnc))
+  <B>END</B>;
+
+  bb,dd <-- <A NAME="OPNAME!Rename_FREE_FNC">Rename_FREE_FNC</A> =
+  <B>IF</B> (1..rcdsiz )- dom(Rename_Vfnc) /= {}  <B>THEN</B>
+    bb := TRUE ||
+    dd :: (1..rcdsiz) - dom(Rename_Vfnc)
+  <B>ELSE</B>
+    bb := FALSE ||
+    dd :: 1..rcdsiz 
+  <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_STO_FNC">Rename_STO_FNC</A>(ff,vv) =
+  <B>PRE</B>
+    ff:1..rcdsiz &
+    vv:VALUE
+  <B>THEN</B> 
+    Rename_Vfnc(ff):=vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RMV_FNC">Rename_RMV_FNC</A>(ff) =
+  <B>PRE</B>
+    ff:dom(Rename_Vfnc) 
+  <B>THEN</B> 
+    Rename_Vfnc:={ff} &lt;<| Rename_Vfnc
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_FNC">Rename_VAL_FNC</A>(ff) =
+  <B>PRE</B>
+    ff:dom(Rename_Vfnc)
+  <B>THEN</B> 
+    vv:=Rename_Vfnc(ff)
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_FNC">Rename_EQL_FNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    ff:dom(Rename_Vfnc)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Vfnc(ff)=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_NEQ_FNC">Rename_NEQ_FNC</A>(ff,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    ff:dom(Rename_Vfnc)
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Vfnc(ff)/=vv)
+  <B>END</B>;
+
+
+
+/********************* Additional FFNC facilities ************************/
+
+
+
+ <A NAME="OPNAME!Rename_MOV_FFNC">Rename_MOV_FFNC</A>(ii,jj,ll) =
+    <B>PRE</B>
+      ii: 1..rcdsiz &
+      jj: 1..rcdsiz &
+      ll : 1..rcdsiz &
+      ii..(ii+ll-1) /\ jj..(jj+ll-1) = {}  &
+      jj..(jj+ll-1) &lt;:  1..rcdsiz &
+      ii..(ii+ll-1) &lt;: dom(Rename_Vfnc) 
+    <B>THEN</B>
+       <B>ANY</B> newsegment <B>WHERE</B>
+          newsegment : (jj..(jj+ll-1)) --&gt; VALUE &
+          newsegment = %xx.(xx:jj..(jj+ll-1)|Rename_Vfnc(ii+(jj-xx)))
+       <B>THEN</B>
+         Rename_Vfnc := Rename_Vfnc &lt;+ newsegment
+       <B>END</B>
+    <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_OVR_FFNC">Rename_OVR_FFNC</A>(ii,ll,aa) =
+    <B>PRE</B>
+      ii: 1..rcdsiz &
+      ll: 1..rcdsiz &
+      ii..(ii+ll-1) &lt;: 1..rcdsiz &
+      aa: <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+      ll *  Rename_CHARperWORD &gt; size(aa) 
+    <B>THEN</B>
+       <B>ANY</B> newsegment <B>WHERE</B>
+          newsegment : (ii..(ii+ll-1)) --&gt; VALUE &
+          Rename_UnPack(newsegment) = aa
+       <B>THEN</B>
+         Rename_Vfnc := Rename_Vfnc &lt;+ newsegment
+       <B>END</B>
+    <B>END</B>;
+
+   <A NAME="OPNAME!Rename_OVR_LIT_FFNC">Rename_OVR_LIT_FFNC</A>(ii,ll,aa) =
+    <B>PRE</B>
+      ii: 1..rcdsiz &
+      ll: 1..rcdsiz &
+      ii..(ii+ll-1) &lt;: 1..rcdsiz &
+      aa: <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+      size(aa) &lt; 1000 &
+      ll * Rename_CHARperWORD &gt; size(aa) 
+    <B>THEN</B>
+       <B>ANY</B> newsegment <B>WHERE</B>
+          newsegment : (ii..(ii+ll-1)) --&gt; VALUE &
+          Rename_UnPack(newsegment) = aa
+       <B>THEN</B>
+         Rename_Vfnc := Rename_Vfnc &lt;+ newsegment
+       <B>END</B>
+    <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_XTR_FFNC">Rename_XTR_FFNC</A>(ii,ll) =
+    <B>PRE</B>
+      ii: 1..rcdsiz  &
+      ll: 1..rcdsiz  &
+      ll &lt;= 250 &
+      ii..(ii+ll-1) &lt;: dom(Rename_Vfnc) 
+    <B>THEN</B>
+      <B>ANY</B> str <B>WHERE</B>
+         str : <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+         str = Rename_UnPack( (ii..(ii+ll-1))&lt;<|Rename_Vfnc ) 
+      <B>THEN</B>
+         vv := str 
+      <B>END</B>
+    <B>END</B>;
+   
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_FFNC">Rename_EQL_FFNC</A>(ii,ll,vv) =
+    <B>PRE</B>
+      ii: 1..rcdsiz &
+      ll : 1..rcdsiz &
+      ii..(ii+ll-1) &lt;: dom(Rename_Vfnc) &
+      vv: <A HREF="String_TYPE.mch.html#SETS">STRING</A>
+    <B>THEN</B>
+       bb := <B>bool</B>( Rename_UnPack( (ii..(ii+ll-1))&lt;<|Rename_Vfnc  ) = vv)
+      
+    <B>END</B>;
+
+
+/**************  save/restore host byte order **************/
+
+   <A NAME="OPNAME!Rename_SAV_FNC">Rename_SAV_FNC</A> = <B>BEGIN</B> <B>skip</B> <B>END</B>;
+
+ 
+   <A NAME="OPNAME!Rename_RST_FNC">Rename_RST_FNC</A> =
+   <B>BEGIN</B>
+      Rename_Vfnc  :: 1..rcdsiz +-&gt; VALUE 
+   <B>END</B>;
+
+/**************  save/restore network byte order **************/
+
+   <A NAME="OPNAME!Rename_SAVN_FNC">Rename_SAVN_FNC</A> = <B>BEGIN</B> <B>skip</B> <B>END</B>;
+
+ 
+   <A NAME="OPNAME!Rename_RSTN_FNC">Rename_RSTN_FNC</A> =
+   <B>BEGIN</B>
+      Rename_Vfnc  :: 1..rcdsiz +-&gt; VALUE 
+   <B>END</B>
+
+
+
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:22 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

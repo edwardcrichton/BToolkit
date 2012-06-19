@@ -1,0 +1,399 @@
+(
+(Uns_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_uns)
+;
+(Rename_uns)
+;
+(Rename_uns: UNSIGNED)
+;
+(Rename_uns: UNSIGNED)
+;
+(?)
+;
+(Rename_uns:: UNSIGNED)
+;
+(@Rename_unsx.(Rename_unsx: UNSIGNED ==> Rename_uns:=Rename_unsx))
+;
+(Rename_VAL,Rename_STO,Rename_INC,Rename_DEC,Rename_ADD,Rename_SUB,Rename_MUL,Rename_DIV,Rename_MOD,Rename_AND,Rename_OR,Rename_XOR,Rename_NOT)
+;
+(Rename_VAL,Rename_STO,Rename_INC,Rename_DEC,Rename_ADD,Rename_SUB,Rename_MUL,Rename_DIV,Rename_MOD,Rename_AND,Rename_OR,Rename_XOR,Rename_NOT)
+;
+(Rename_Uns(?):(?):(?))
+;
+(
+(
+ (Rename_VAL)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_VAL))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv:=Rename_uns
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (vv:=Rename_uns)
+ )
+ )
+)
+,
+(
+ (Rename_STO)
+;
+ (?,Mod_Op,Det_Op,Rename_STO(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED)
+ |
+ (
+ (BEGIN
+ Rename_uns:=vv
+ END)
+ )
+ )
+;
+ (
+ (vv: UNSIGNED)
+ |
+ (
+ (Rename_uns:=vv)
+ )
+ )
+)
+,
+(
+ (Rename_INC)
+;
+ (?,Val_Op,Det_Op,Rename_INC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_uns+n2u(1): UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UADD(Rename_uns,n2u(1)))
+ )
+ )
+;
+ (
+ (Rename_uns+n2u(1): UNSIGNED & Rename_uns: UNSIGNED & n2u(1): UNSIGNED)
+ |
+ (
+ (Rename_uns:=Rename_uns+n2u(1))
+ )
+ )
+)
+,
+(
+ (Rename_DEC)
+;
+ (?,Val_Op,Det_Op,Rename_DEC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_uns-n2u(1): UNSIGNED)
+ |
+ (
+ (Rename_uns <-- USUB(Rename_uns,n2u(1)))
+ )
+ )
+;
+ (
+ (Rename_uns-n2u(1): UNSIGNED & Rename_uns: UNSIGNED & n2u(1): UNSIGNED)
+ |
+ (
+ (Rename_uns:=Rename_uns-n2u(1))
+ )
+ )
+)
+,
+(
+ (Rename_ADD)
+;
+ (?,Val_Op,Det_Op,Rename_ADD(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED & Rename_uns+vv: UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UADD(Rename_uns,vv))
+ )
+ )
+;
+ (
+ (vv: UNSIGNED & Rename_uns+vv: UNSIGNED & Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=Rename_uns+vv)
+ )
+ )
+)
+,
+(
+ (Rename_SUB)
+;
+ (?,Val_Op,Det_Op,Rename_SUB(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED & Rename_uns-vv: UNSIGNED)
+ |
+ (
+ (Rename_uns <-- USUB(Rename_uns,vv))
+ )
+ )
+;
+ (
+ (vv: UNSIGNED & Rename_uns-vv: UNSIGNED & Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=Rename_uns-vv)
+ )
+ )
+)
+,
+(
+ (Rename_MUL)
+;
+ (?,Val_Op,Det_Op,Rename_MUL(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED & Rename_uns*vv: UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UMUL(Rename_uns,vv))
+ )
+ )
+;
+ (
+ (vv: UNSIGNED & Rename_uns*vv: UNSIGNED & Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=Rename_uns*vv)
+ )
+ )
+)
+,
+(
+ (Rename_DIV)
+;
+ (?,Val_Op,Det_Op,Rename_DIV(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED & vv/=MinUns & Rename_uns/vv: UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UDIV(Rename_uns,vv))
+ )
+ )
+;
+ (
+ (vv: UNSIGNED & not(vv = MinUns) & Rename_uns/vv: UNSIGNED & Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=Rename_uns/vv)
+ )
+ )
+)
+,
+(
+ (Rename_MOD)
+;
+ (?,Val_Op,Det_Op,Rename_MOD(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED & vv/=MinUns & Rename_uns mod vv: UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UMOD(Rename_uns,vv))
+ )
+ )
+;
+ (
+ (vv: UNSIGNED & not(vv = MinUns) & Rename_uns mod vv: UNSIGNED & Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=Rename_uns mod vv)
+ )
+ )
+)
+,
+(
+ (Rename_AND)
+;
+ (?,Val_Op,Det_Op,Rename_AND(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED)
+ |
+ (
+ (BEGIN
+ Rename_uns <-- UAND(Rename_uns,vv)
+ END)
+ )
+ )
+;
+ (
+ (vv: UNSIGNED & Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=bs2u(u2bs(Rename_uns)><u2bs(vv);
+bnd))
+ )
+ )
+)
+,
+(
+ (Rename_OR)
+;
+ (?,Val_Op,Det_Op,Rename_OR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED)
+ |
+ (
+ (BEGIN
+ Rename_uns <-- UOR(Rename_uns,vv)
+ END)
+ )
+ )
+;
+ (
+ (vv: UNSIGNED & Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=bs2u(u2bs(Rename_uns)><u2bs(vv);
+bor))
+ )
+ )
+)
+,
+(
+ (Rename_XOR)
+;
+ (?,Val_Op,Det_Op,Rename_XOR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: UNSIGNED)
+ |
+ (
+ (BEGIN
+ Rename_uns <-- UXOR(Rename_uns,vv)
+ END)
+ )
+ )
+;
+ (
+ (vv: UNSIGNED & Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=bs2u(u2bs(Rename_uns)><u2bs(vv);
+bxr))
+ )
+ )
+)
+,
+(
+ (Rename_NOT)
+;
+ (?,Val_Op,Det_Op,Rename_NOT)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_uns <-- UNOT(Rename_uns)
+ END)
+ )
+ )
+;
+ (
+ (Rename_uns: UNSIGNED)
+ |
+ (
+ (Rename_uns:=bs2u(u2bs(Rename_uns);
+bcp))
+ )
+ )
+)
+)

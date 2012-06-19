@@ -1,0 +1,787 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(Rename_SEQOBJ)
+;
+(Rename_SEQOBJ)
+;
+(?)
+;
+(?)
+;
+(card(Rename_SEQOBJ) = maxobj & card(Rename_SEQOBJ) : NAT1)
+;
+(card(Rename_SEQOBJ) = maxobj & card(Rename_SEQOBJ) : NAT1)
+;
+(?)
+;
+(?)
+;
+(Rename_seqobj , Rename_seqfun , Rename_seqmem)
+;
+(Rename_seqobj , Rename_seqfun , Rename_seqmem)
+;
+(Rename_seqobj <: Rename_SEQOBJ & Rename_seqfun : Rename_seqobj --> seq(VALUE) & Rename_seqmem = SIGMA(ss).(ss : Rename_seqobj | size(Rename_seqfun(ss))) & Rename_seqmem <= maxmem)
+;
+(Rename_seqobj <: Rename_SEQOBJ & Rename_seqfun : Rename_seqobj --> seq(VALUE) & Rename_seqmem = SIGMA(ss).(ss : Rename_seqobj | size(Rename_seqfun(ss))) & Rename_seqmem <= maxmem)
+;
+(?)
+;
+(Rename_seqobj , Rename_seqfun , Rename_seqmem := {} , {} , 0)
+;
+(Rename_seqobj , Rename_seqfun , Rename_seqmem := {} , {} , 0)
+;
+(Rename_BiSeqObj_FULL_MEM,Rename_BiSeqObj_FULL_OBJ,Rename_BiSeqObj_CRE,Rename_BiSeqObj_KILL,Rename_BiSeqObj_VLD_OBJ,Rename_BiSeqObj_VLD_IDX,Rename_BiSeqObj_OBJ_TOT,Rename_BiSeqObj_LEN,Rename_BiSeqObj_FRST,Rename_BiSeqObj_LAST,Rename_BiSeqObj_VAL,Rename_BiSeqObj_CLR,Rename_BiSeqObj_STO,Rename_BiSeqObj_INS,Rename_BiSeqObj_SWP,Rename_BiSeqObj_PUSH,Rename_BiSeqObj_APP,Rename_BiSeqObj_POP,Rename_BiSeqObj_FRONT,Rename_BiSeqObj_DEL,Rename_BiSeqObj_RTN,Rename_BiSeqObj_RMV,Rename_BiSeqObj_CPY,Rename_BiSeqObj_CAT)
+;
+(Rename_BiSeqObj_FULL_MEM , Rename_BiSeqObj_FULL_OBJ , Rename_BiSeqObj_CRE , Rename_BiSeqObj_KILL , Rename_BiSeqObj_VLD_OBJ , Rename_BiSeqObj_VLD_IDX , Rename_BiSeqObj_OBJ_TOT , Rename_BiSeqObj_LEN , Rename_BiSeqObj_FRST , Rename_BiSeqObj_LAST , Rename_BiSeqObj_VAL , Rename_BiSeqObj_CLR , Rename_BiSeqObj_STO , Rename_BiSeqObj_INS , Rename_BiSeqObj_SWP , Rename_BiSeqObj_PUSH , Rename_BiSeqObj_APP , Rename_BiSeqObj_POP , Rename_BiSeqObj_FRONT , Rename_BiSeqObj_DEL , Rename_BiSeqObj_RTN , Rename_BiSeqObj_RMV , Rename_BiSeqObj_CPY , Rename_BiSeqObj_CAT)
+;
+(Rename_BiSeqObj(VALUE , maxobj , maxmem):(maxobj : 1..127 & maxmem : 1..127 & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_BiSeqObj_FULL_MEM)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiSeqObj_FULL_MEM))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_seqmem = maxmem)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(Rename_seqmem = maxmem))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_FULL_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiSeqObj_FULL_OBJ))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_seqobj = Rename_SEQOBJ)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(Rename_seqobj = Rename_SEQOBJ))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_CRE)
+;
+ (? , Mod_Op , NonDet_Op , (obj <-- Rename_BiSeqObj_CRE))
+;
+ (?)
+;
+ (obj)
+;
+ (
+ (Rename_seqobj /= Rename_SEQOBJ)
+ |
+ (
+ (ANY newobj WHERE
+ newobj : Rename_SEQOBJ-Rename_seqobj
+ THEN
+ Rename_seqobj := Rename_seqobj \/ {newobj} ||
+ Rename_seqfun(newobj) := <> ||
+ obj := newobj
+ END)
+ )
+ )
+;
+ (
+ (not(Rename_seqobj = Rename_SEQOBJ))
+ |
+ (
+ @(newobj).
+ (
+ (
+ (newobj : Rename_SEQOBJ-Rename_seqobj)
+ )
+ ==>
+ (
+ (Rename_seqobj , Rename_seqfun , obj := Rename_seqobj \/ {newobj} , Rename_seqfun <+ {newobj |-> <>} , newobj)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_KILL)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_KILL(obj))
+;
+ (obj)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj)
+ |
+ (
+ (
+ (
+ (Rename_seqfun := {obj} <<| Rename_seqfun)
+ )
+ ||
+ (
+ (Rename_seqobj := Rename_seqobj-{obj})
+ )
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem-size(Rename_seqfun(obj)))
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj)
+ |
+ (
+ (Rename_seqfun , Rename_seqobj , Rename_seqmem := {obj} <<| Rename_seqfun , Rename_seqobj-{obj} , Rename_seqmem-size(Rename_seqfun(obj)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_VLD_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiSeqObj_VLD_OBJ(obj)))
+;
+ (obj)
+;
+ (bb)
+;
+ (
+ (obj : Rename_SEQOBJ)
+ |
+ (
+ (BEGIN
+ bb := bool(obj : Rename_seqobj)
+ END)
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ)
+ |
+ (
+ (bb := bool(obj : Rename_seqobj))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_VLD_IDX)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiSeqObj_VLD_IDX(obj , idx)))
+;
+ (obj , idx)
+;
+ (bb)
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE)
+ |
+ (
+ (BEGIN
+ bb := bool(obj : Rename_seqobj &
+ b2n(idx) : 1..size(Rename_seqfun(obj)))
+ END)
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE)
+ |
+ (
+ (bb := bool(obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj))))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_OBJ_TOT)
+;
+ (? , Val_Op , Det_Op , (tt <-- Rename_BiSeqObj_OBJ_TOT))
+;
+ (?)
+;
+ (tt)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ tt := n2b(card(Rename_seqobj))
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (tt := n2b(card(Rename_seqobj)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_LEN)
+;
+ (? , Val_Op , Det_Op , (ll <-- Rename_BiSeqObj_LEN(obj)))
+;
+ (obj)
+;
+ (ll)
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj)
+ |
+ (
+ (ll := n2b(size(Rename_seqfun(obj))))
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj)
+ |
+ (
+ (ll := n2b(size(Rename_seqfun(obj))))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_FRST)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_BiSeqObj_FRST(obj)))
+;
+ (obj)
+;
+ (vv)
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj & size(Rename_seqfun(obj)) > 0)
+ |
+ (
+ (vv := Rename_seqfun(obj)(1))
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj & 0 < size(Rename_seqfun(obj)))
+ |
+ (
+ (vv := Rename_seqfun(obj)(1))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_LAST)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_BiSeqObj_LAST(obj)))
+;
+ (obj)
+;
+ (vv)
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj & size(Rename_seqfun(obj)) > 0)
+ |
+ (
+ (vv := Rename_seqfun(obj)(size(Rename_seqfun(obj))))
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj & 0 < size(Rename_seqfun(obj)))
+ |
+ (
+ (vv := Rename_seqfun(obj)(size(Rename_seqfun(obj))))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_BiSeqObj_VAL(obj , idx)))
+;
+ (obj , idx)
+;
+ (vv)
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (vv := Rename_seqfun(obj)(b2n(idx)))
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (vv := Rename_seqfun(obj)(b2n(idx)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_CLR)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_CLR(obj))
+;
+ (obj)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj)
+ |
+ (
+ (
+ (Rename_seqfun(obj) := <>)
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem-size(Rename_seqfun(obj)))
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj)
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> <>} , Rename_seqmem-size(Rename_seqfun(obj)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_STO(obj , idx , vv))
+;
+ (obj , idx , vv)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & vv : VALUE & obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun(obj)(b2n(idx)) := vv)
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & vv : VALUE & obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun := Rename_seqfun <+ {obj |-> (Rename_seqfun(obj) <+ {b2n(idx) |-> vv})})
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_INS)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_INS(obj , idx , vv))
+;
+ (obj , idx , vv)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & vv : VALUE & obj : Rename_seqobj & Rename_seqmem < maxmem & b2n(idx) : 2..size(Rename_seqfun(obj)))
+ |
+ (
+ (
+ (Rename_seqfun(obj) := Rename_seqfun(obj) /|\ b2n(idx)-1 ^ [vv] ^ (Rename_seqfun(obj) \|/ b2n(idx)-1))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem+1)
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & vv : VALUE & obj : Rename_seqobj & Rename_seqmem < maxmem & b2n(idx) : 2..size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> (Rename_seqfun(obj) /|\ b2n(idx)-1 ^ [vv] ^ (Rename_seqfun(obj) \|/ b2n(idx)-1))} , Rename_seqmem+1)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_SWP)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_SWP(obj , idx1 , idx2))
+;
+ (obj , idx1 , idx2)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & idx1 : BYTE & idx2 : BYTE & obj : Rename_seqobj & b2n(idx1) : 1..size(Rename_seqfun(obj)) & b2n(idx2) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun(obj) := Rename_seqfun(obj) <+ {b2n(idx1) |-> Rename_seqfun(obj)(b2n(idx2)) , b2n(idx2) |-> Rename_seqfun(obj)(b2n(idx1))})
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & idx1 : BYTE & idx2 : BYTE & obj : Rename_seqobj & b2n(idx1) : 1..size(Rename_seqfun(obj)) & b2n(idx2) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun := Rename_seqfun <+ {obj |-> (Rename_seqfun(obj) <+ {b2n(idx1) |-> Rename_seqfun(obj)(b2n(idx2)) , b2n(idx2) |-> Rename_seqfun(obj)(b2n(idx1))})})
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_PUSH)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_PUSH(obj , vv))
+;
+ (obj , vv)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & vv : VALUE & obj : Rename_seqobj & Rename_seqmem < maxmem)
+ |
+ (
+ (
+ (Rename_seqfun(obj) := vv -> Rename_seqfun(obj))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem+1)
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & vv : VALUE & obj : Rename_seqobj & Rename_seqmem < maxmem)
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> (vv -> Rename_seqfun(obj))} , Rename_seqmem+1)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_APP)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_APP(obj , vv))
+;
+ (obj , vv)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & vv : VALUE & obj : Rename_seqobj & Rename_seqmem < maxmem)
+ |
+ (
+ (
+ (Rename_seqfun(obj) := Rename_seqfun(obj) <- vv)
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem+1)
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & vv : VALUE & obj : Rename_seqobj & Rename_seqmem < maxmem)
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> (Rename_seqfun(obj) <- vv)} , Rename_seqmem+1)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_POP)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_POP(obj))
+;
+ (obj)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj & size(Rename_seqfun(obj)) > 0)
+ |
+ (
+ (
+ (Rename_seqfun(obj) := tail(Rename_seqfun(obj)))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem-1)
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj & 0 < size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> tail(Rename_seqfun(obj))} , Rename_seqmem-1)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_FRONT)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_FRONT(obj))
+;
+ (obj)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj & size(Rename_seqfun(obj)) > 0)
+ |
+ (
+ (
+ (Rename_seqfun(obj) := front(Rename_seqfun(obj)))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem-1)
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & obj : Rename_seqobj & 0 < size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> front(Rename_seqfun(obj))} , Rename_seqmem-1)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_DEL)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_DEL(obj , idx))
+;
+ (obj , idx)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & obj : Rename_seqobj & size(Rename_seqfun(obj)) > 0 & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (
+ (Rename_seqfun(obj) := Rename_seqfun(obj) /|\ b2n(idx)-1 ^ (Rename_seqfun(obj) \|/ b2n(idx)))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem-1)
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & obj : Rename_seqobj & 0 < size(Rename_seqfun(obj)) & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> (Rename_seqfun(obj) /|\ b2n(idx)-1 ^ (Rename_seqfun(obj) \|/ b2n(idx)))} , Rename_seqmem-1)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_RTN)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_RTN(obj , idx))
+;
+ (obj , idx)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (
+ (Rename_seqfun(obj) := Rename_seqfun(obj) /|\ b2n(idx))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem+size(Rename_seqfun(obj))-b2n(idx))
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> (Rename_seqfun(obj) /|\ b2n(idx))} , Rename_seqmem+size(Rename_seqfun(obj))-b2n(idx))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_RMV)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_RMV(obj , idx))
+;
+ (obj , idx)
+;
+ (?)
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (
+ (Rename_seqfun(obj) := Rename_seqfun(obj) \|/ b2n(idx))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem-size(Rename_seqfun(obj))+b2n(idx))
+ )
+ )
+ )
+;
+ (
+ (obj : Rename_SEQOBJ & idx : BYTE & obj : Rename_seqobj & b2n(idx) : 1..size(Rename_seqfun(obj)))
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj |-> (Rename_seqfun(obj) \|/ b2n(idx))} , Rename_seqmem-size(Rename_seqfun(obj))+b2n(idx))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_CPY)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_CPY(obj1 , obj2))
+;
+ (obj1 , obj2)
+;
+ (?)
+;
+ (
+ (obj1 : Rename_SEQOBJ & obj2 : Rename_SEQOBJ & obj1 : Rename_seqobj & obj2 : Rename_seqobj & size(Rename_seqfun(obj2)) = 0 & Rename_seqmem+size(Rename_seqfun(obj1)) <= maxmem)
+ |
+ (
+ (
+ (Rename_seqfun(obj2) := Rename_seqfun(obj1))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem+size(Rename_seqfun(obj1)))
+ )
+ )
+ )
+;
+ (
+ (obj1 : Rename_SEQOBJ & obj2 : Rename_SEQOBJ & obj1 : Rename_seqobj & obj2 : Rename_seqobj & size(Rename_seqfun(obj2)) = 0 & Rename_seqmem+size(Rename_seqfun(obj1)) <= maxmem)
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj2 |-> Rename_seqfun(obj1)} , Rename_seqmem+size(Rename_seqfun(obj1)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeqObj_CAT)
+;
+ (? , Mod_Op , Det_Op , Rename_BiSeqObj_CAT(obj1 , obj2))
+;
+ (obj1 , obj2)
+;
+ (?)
+;
+ (
+ (obj1 : Rename_SEQOBJ & obj2 : Rename_SEQOBJ & obj1 : Rename_seqobj & obj2 : Rename_seqobj & Rename_seqmem+size(Rename_seqfun(obj1)) <= maxmem)
+ |
+ (
+ (
+ (Rename_seqfun(obj2) := Rename_seqfun(obj2) ^ Rename_seqfun(obj1))
+ )
+ ||
+ (
+ (Rename_seqmem := Rename_seqmem+size(Rename_seqfun(obj1)))
+ )
+ )
+ )
+;
+ (
+ (obj1 : Rename_SEQOBJ & obj2 : Rename_SEQOBJ & obj1 : Rename_seqobj & obj2 : Rename_seqobj & Rename_seqmem+size(Rename_seqfun(obj1)) <= maxmem)
+ |
+ (
+ (Rename_seqfun , Rename_seqmem := Rename_seqfun <+ {obj2 |-> (Rename_seqfun(obj2) ^ Rename_seqfun(obj1))} , Rename_seqmem+size(Rename_seqfun(obj1)))
+ )
+ )
+)
+)

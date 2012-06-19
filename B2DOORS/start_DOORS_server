@@ -1,0 +1,4 @@
+#! /bin/csh -f
+setenv DOORSHOME `pwd`
+setenv DOORSDATA `pwd`/data
+./etc/lmgrd -c ./lib/license.dat

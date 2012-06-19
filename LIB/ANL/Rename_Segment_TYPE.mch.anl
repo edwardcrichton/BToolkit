@@ -1,0 +1,117 @@
+(
+ (?);
+ (
+ (
+ ?
+ )
+ |
+ (
+ ?
+ )
+ )
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_ASSIGN_ANY_SEG,Rename_CPY_SEG)
+;
+(Rename_ASSIGN_ANY_SEG,Rename_CPY_SEG)
+;
+(Rename_Segment_TYPE(WORD):(card(WORD): NAT1):(?))
+;
+(
+(
+ (Rename_ASSIGN_ANY_SEG)
+;
+ (?,Val_Op,NonDet_Op,(rr <-- Rename_ASSIGN_ANY_SEG))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ rr:: WORD
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx: WORD)
+ )
+ ==>
+ (
+ (rr:=rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_CPY_SEG)
+;
+ (?,Val_Op,Det_Op,(rr <-- Rename_CPY_SEG(ss)))
+;
+ (ss)
+;
+ (rr)
+;
+ (
+ (ss: WORD)
+ |
+ (
+ (rr:=ss)
+ )
+ )
+;
+ (
+ (ss: WORD)
+ |
+ (
+ (rr:=ss)
+ )
+ )
+)
+)

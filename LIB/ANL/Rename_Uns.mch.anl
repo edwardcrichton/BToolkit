@@ -1,0 +1,349 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Uns_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_uns)
+;
+(Rename_uns)
+;
+(Rename_uns : UNSIGNED)
+;
+(Rename_uns : UNSIGNED)
+;
+(?)
+;
+(Rename_uns :: UNSIGNED)
+;
+(@Rename_unsx.(Rename_unsx : UNSIGNED ==> Rename_uns := Rename_unsx))
+;
+(Rename_VAL,Rename_STO,Rename_INC,Rename_DEC,Rename_ADD,Rename_SUB,Rename_MUL,Rename_DIV,Rename_MOD,Rename_LEFT,Rename_RIGHT)
+;
+(Rename_VAL , Rename_STO , Rename_INC , Rename_DEC , Rename_ADD , Rename_SUB , Rename_MUL , Rename_DIV , Rename_MOD , Rename_LEFT , Rename_RIGHT)
+;
+(Rename_Uns(init_val):(init_val : 0..65535):(?))
+;
+(
+(
+ (Rename_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv := Rename_uns
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (vv := Rename_uns)
+ )
+ )
+)
+,
+(
+ (Rename_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_STO(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : UNSIGNED)
+ |
+ (
+ (BEGIN
+ Rename_uns := vv
+ END)
+ )
+ )
+;
+ (
+ (vv : UNSIGNED)
+ |
+ (
+ (Rename_uns := vv)
+ )
+ )
+)
+,
+(
+ (Rename_INC)
+;
+ (? , Val_Op , Det_Op , Rename_INC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_uns+n2u(1) : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UADD(Rename_uns , n2u(1)))
+ )
+ )
+;
+ (
+ (Rename_uns+n2u(1) : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UADD(Rename_uns , n2u(1)))
+ )
+ )
+)
+,
+(
+ (Rename_DEC)
+;
+ (? , Val_Op , Det_Op , Rename_DEC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_uns-n2u(1) : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- USUB(Rename_uns , n2u(1)))
+ )
+ )
+;
+ (
+ (Rename_uns-n2u(1) : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- USUB(Rename_uns , n2u(1)))
+ )
+ )
+)
+,
+(
+ (Rename_ADD)
+;
+ (? , Val_Op , Det_Op , Rename_ADD(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : UNSIGNED & Rename_uns+vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UADD(Rename_uns , vv))
+ )
+ )
+;
+ (
+ (vv : UNSIGNED & Rename_uns+vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UADD(Rename_uns , vv))
+ )
+ )
+)
+,
+(
+ (Rename_SUB)
+;
+ (? , Val_Op , Det_Op , Rename_SUB(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : UNSIGNED & Rename_uns-vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- USUB(Rename_uns , vv))
+ )
+ )
+;
+ (
+ (vv : UNSIGNED & Rename_uns-vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- USUB(Rename_uns , vv))
+ )
+ )
+)
+,
+(
+ (Rename_MUL)
+;
+ (? , Val_Op , Det_Op , Rename_MUL(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : UNSIGNED & Rename_uns*vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UMUL(Rename_uns , vv))
+ )
+ )
+;
+ (
+ (vv : UNSIGNED & Rename_uns*vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UMUL(Rename_uns , vv))
+ )
+ )
+)
+,
+(
+ (Rename_DIV)
+;
+ (? , Val_Op , Det_Op , Rename_DIV(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : UNSIGNED & vv /= n2u(0) & Rename_uns/vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UDIV(Rename_uns , vv))
+ )
+ )
+;
+ (
+ (vv : UNSIGNED & not(vv = n2u(0)) & Rename_uns/vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UDIV(Rename_uns , vv))
+ )
+ )
+)
+,
+(
+ (Rename_MOD)
+;
+ (? , Val_Op , Det_Op , Rename_MOD(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : UNSIGNED & vv /= n2u(0) & Rename_uns mod vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UMOD(Rename_uns , vv))
+ )
+ )
+;
+ (
+ (vv : UNSIGNED & not(vv = n2u(0)) & Rename_uns mod vv : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- UMOD(Rename_uns , vv))
+ )
+ )
+)
+,
+(
+ (Rename_LEFT)
+;
+ (? , Val_Op , Det_Op , Rename_LEFT)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_uns*n2u(2) : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- ULEFT(Rename_uns))
+ )
+ )
+;
+ (
+ (Rename_uns*n2u(2) : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- ULEFT(Rename_uns))
+ )
+ )
+)
+,
+(
+ (Rename_RIGHT)
+;
+ (? , Val_Op , Det_Op , Rename_RIGHT)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_uns/n2u(2) : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- URIGHT(Rename_uns))
+ )
+ )
+;
+ (
+ (Rename_uns/n2u(2) : UNSIGNED)
+ |
+ (
+ (Rename_uns <-- URIGHT(Rename_uns))
+ )
+ )
+)
+)

@@ -1,0 +1,2210 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY StoSeenByAbsX IS
+
+#define StoSeenByAbs(x) bcall(((MODR;MAP)~;StoSeenByAbsX)~:(sba bsmap x))
+
+  sba(x);
+
+  brule(CreItfX.6,M) &
+  bmodr(CreItfX.6,(M,m)) 
+ =>
+  sba(m(p):q:r)
+
+END
+
+&
+
+THEORY CreOpsX IS
+
+
+  ReadPropsStore(Z) &
+  ModrPropsStore((Z,T))
+ =>
+  update_PropsStore(T);
+
+  ReadPropsStore(Z) &
+  bsearch(T,Z,Y)
+ =>
+  update_PropsStore(T);
+
+
+  ReadIOLIBStore(Z) &
+  ModrIOLIBStore((Z,T))
+ =>
+  update_IOLIBStore(T);
+
+  ReadIOLIBStore(Z) &
+  bsearch(T,Z,Y)
+ =>
+  update_IOLIBStore(T);
+
+
+
+  ReadLocalInpVarsStore(V) &
+  ModrLocalInpVarsStore((V,v))
+ =>
+  sto_loc_inp(v);
+
+  ReadLocalInpVarsStore(?) &
+  ModrLocalInpVarsStore((?))
+ =>
+  sto_loc_inp(v);
+
+  bident(v) &
+  ReadLocalInpVarsStore(V) &
+  ModrLocalInpVarsStore((V,bnewv(v,X)))
+ =>
+  sto_loc_inp(v);
+
+  bident(v) &
+  ReadLocalInpVarsStore(?) &
+  ModrLocalInpVarsStore((bnewv(v,X)))
+ =>
+  sto_loc_inp(v);
+
+  sto_loc_inp(?);
+
+
+
+  ReadLocalOutVarsStore(V) &
+  ModrLocalOutVarsStore((V,v))
+ =>
+  sto_loc_out(v);
+
+  ReadLocalOutVarsStore(?) &
+  ModrLocalOutVarsStore((?))
+ =>
+  sto_loc_out(v);
+
+  bident(v) &
+  ReadLocalOutVarsStore(V) &
+  ModrLocalOutVarsStore((V,bnewv(v,X)))
+ =>
+  sto_loc_out(v);
+
+  bident(v) &
+  ReadLocalOutVarsStore(?) &
+  ModrLocalOutVarsStore((bnewv(v,X)))
+ =>
+  sto_loc_out(v);
+
+  sto_loc_out(?);
+
+
+
+  ReadLocalInpVarsStore(A) &
+  ReadLocalOutVarsStore(B) &
+  ReadCre_OpsInpTempStore(I) &
+  ReadLocalInpVarsStore(V) &
+  ReadLocalOutVarsStore(P) &
+  ReadCre_OpsOutTempStore(O) &
+  bcrer(OpsX,(n(bflat(A,B))(bflat(I;NWL(1);(P<--n(V));O))))
+ =>
+  cre_ops_4(m,n)(o;i);
+
+  ReadLocalInpVarsStore(?) &
+  ReadLocalOutVarsStore(B) &
+  ReadCre_OpsInpTempStore(I) &
+  ReadLocalInpVarsStore(V) &
+  ReadLocalOutVarsStore(P) &
+  ReadCre_OpsOutTempStore(O) &
+  bcrer(OpsX,(n(B)(bflat(I;NWL(1);(P<--n(V));O))))
+ =>
+  cre_ops_4(m,n)(o;i);
+
+  ReadLocalInpVarsStore(A) &
+  ReadLocalOutVarsStore(?) &
+  ReadCre_OpsInpTempStore(I) &
+  ReadLocalInpVarsStore(V) &
+  ReadLocalOutVarsStore(P) &
+  ReadCre_OpsOutTempStore(O) &
+  bcrer(OpsX,(n(A)(bflat(I;NWL(1);(P<--n(V));O))))
+ =>
+  cre_ops_4(m,n)(o;i);
+
+  ReadLocalInpVarsStore(?) &
+  ReadLocalOutVarsStore(?) &
+  ReadCre_OpsInpTempStore(I) &
+  ReadLocalInpVarsStore(V) &
+  ReadLocalOutVarsStore(P) &
+  ReadCre_OpsOutTempStore(O) &
+  bcrer(OpsX,(n(bflat(I;NWL(1);(P<--n(V));O))))
+ =>
+  cre_ops_4(m,n)(o;i);
+
+  ReadLocalOutVarsStore(B) &
+  ReadLocalOutVarsStore(P) &
+  ReadCre_OpsOutTempStore(O) &
+  bcrer(OpsX,(n(B)(bflat((P<--n);O))))
+ =>
+  cre_ops_4(m,n)(o;?);
+
+  ReadLocalOutVarsStore(?) &
+  ReadLocalOutVarsStore(P) &
+  ReadCre_OpsOutTempStore(O) &
+  bcrer(OpsX,(n(bflat((P<--n);O))))
+ =>
+  cre_ops_4(m,n)(o;?);
+
+  ReadLocalInpVarsStore(A) &
+  ReadCre_OpsInpTempStore(I) &
+  ReadLocalInpVarsStore(V) &
+  bcrer(OpsX,(n(A)(bflat(I;(n(V))))))
+ =>
+  cre_ops_4(m,n)(?;i);
+
+  ReadLocalInpVarsStore(?) &
+  ReadCre_OpsInpTempStore(I) &
+  ReadLocalInpVarsStore(V) &
+  bcrer(OpsX,(n(bflat(I;(n(V))))))
+ =>
+  cre_ops_4(m,n)(?;i);
+
+  bcrer(OpsX,(n(n)))
+ =>
+  cre_ops_4(m,n)(?;?);
+
+
+
+/***
+  out
+***/
+
+
+/*** string definitions ***/
+
+  ReadCre_OpsOutTempStore(S) &
+  ModrCre_OpsOutTempStore((S;(f(s);t;u)))
+ =>
+  cre_string_def_out_0(n)(f(s);t;u);
+
+  ModrCre_OpsOutTempStore((f(s);t;u))
+ =>
+  cre_string_def_out_0(1)(f(s);t;u);
+
+
+  brule(NumStringNX.1,N) &
+  brule(StringNX.N,x) &
+  bmodr(NumStringNX.1,(N+1)) &
+  bcrer(StringDefX,(x:s)) &
+  ReadCre_OpsOutTempStore(S) &
+  ModrCre_OpsOutTempStore((S;(f(x);t;u)))
+ =>
+  cre_string_def_out_0(n)(f(s);t;u);
+
+  brule(NumStringNX.1,N) &
+  brule(StringNX.N,x) &
+  bmodr(NumStringNX.1,(N+1)) &
+  bcrer(StringDefX,(x:s)) &
+  ModrCre_OpsOutTempStore((f(x);t;u))
+ =>
+  cre_string_def_out_0(1)(f(s);t;u);
+
+
+  cre_string_def_out_0(f(s));
+  brule(StringDefX.I,(x:s)) &
+  ReadCre_OpsOutTempStore(S) &
+  ModrCre_OpsOutTempStore((S;(f(x);t;u)))
+ =>
+  cre_string_def_out_0(n)(f(s);t;u);
+
+  cre_string_def_out_0(f(s));
+  brule(StringDefX.I,(x:s)) &
+  ModrCre_OpsOutTempStore((f(x);t;u))
+ =>
+  cre_string_def_out_0(1)(f(s);t;u);
+
+
+/*** nothing found 
+
+  InformCantGenerateForType(n,o,T) &
+  SetCIONoMiniRemakeFlag &
+  SetCIOError
+ =>
+  cre_ops_out_2(m,n,o,T,M,N)(?);
+
+***** accept ANYTHING   ****/
+
+  WarningDefaultForPOW(n,o,T) &
+  update_IOLIBStore((T)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Abstract Token represented by NAT returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_2(m,n,o,(T),M,N)(v);
+
+  
+
+/*** default for POW ***/
+
+  WarningDefaultForPOW(n,o,T) &
+  update_IOLIBStore(POW(T)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Abstract Token (POW(",T,")/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_2(m,n,o,POW(T),M,N)(?);
+  
+/*** default for seq ***/
+
+  WarningDefaultForseq(n,o,T) &
+  update_IOLIBStore(seq(T)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Abstract Token (seq(",T,")/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_2(m,n,o,seq(T),M,N)(?);
+  
+
+
+/*** POW\/POW  ***/
+
+  cre_ops_out_2(m,n,o,POW(T),M,N)(U)
+ =>
+  cre_ops_out_2(m,n,o,POW(T),M,N)(U;u);
+  
+/*** POW(SET)\/POW(SET)  ***/
+
+  bident(x) &
+  bsearch(POW(T),y,z) &
+  update_IOLIBStore(POW(T)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (POW(",T,")/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_2(m,n,o,POW(T),M,N)(U;(x=y));
+  
+/*** POW(PARAMSET)\/POW(PARAMSET)  ***/
+
+  bident(x) &
+  bsearch(POW(T),y,z) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_IOLIBStore(POW(SCALAR)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (POW(",T,")/",Token,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_2(m,n,o,POW(T),M,N)(U;(x=y));
+  
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  cre_ops_out_2(m,n,o,seq(T),M,N)(U)
+ =>
+  cre_ops_out_1(m,n,o,seq(T),M,N);
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  cre_ops_out_2(m,n,o,POW(T),M,N)(U)
+ =>
+  cre_ops_out_1(m,n,o,POW(T),M,N);
+
+/*** Accept ANYTHING  ***/
+
+  ReadImpTypeStore(U) &
+  cre_ops_out_2(m,n,o,(T),M,N)(U)
+ =>
+  cre_ops_out_1(m,n,o,(T),M,N);
+
+/*** SET * SET ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=(S*T)),U,V) &
+  bident(u) &
+  update_IOLIBStore((S*T)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token ((",S,"*",T,")/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,(S*T),M,N);
+
+
+/*** POW(SET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  update_IOLIBStore(POW(T)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (POW(",T,")/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_1(m,n,o,POW(T),M,N);
+
+  ReadImpTypeStore(U) &
+  bsearch((POW(POW(NAT*BOOL))=u),U,V) &
+  bident(u) &
+  update_IOLIBStore(POW(POW(NAT*BOOL))) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (POW(",BOOL,")/",Token,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_1(m,n,o,POW(POW(NAT*BOOL)),M,N);
+
+
+/*** PARAMSET*PARAMSET ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=(S*T)),U,V) &
+  bident(u) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_IOLIBStore((SCALAR*SCALAR)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token ((",S,"*",T,")/",Token,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_1(m,n,o,(S*T),M,N);
+
+/*** POW(PARAMSET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_IOLIBStore(POW(SCALAR)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (POW(",T,")/",Token,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_1(m,n,o,POW(T),M,N);
+
+/*** seq  ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((seq(T)=u),U,V) &
+  bident(u) &
+  update_IOLIBStore(seq(T)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (seq(",T,")/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_1(m,n,o,seq(T),M,N);
+
+  ReadImpTypeStore(U) &
+  bsearch((seq(POW(NAT*BOOL))=u),U,V) &
+  bident(u) &
+  update_IOLIBStore(seq(POW(NAT*BOOL))) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (seq(",BOOL,")/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+*/
+ =>
+  cre_ops_out_1(m,n,o,seq(POW(NAT*BOOL)),M,N);
+
+
+/*** ABSOBJ set ***/
+
+  bident(T) &
+  update_IOLIBStore(T) &
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (",T,"/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+*/
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+
+/*** deferred set ***/
+
+  bident(T) &
+  ReadSetPropsStore(Y) &
+  bsearch((given(T)),Y,Z) &
+  update_IOLIBStore(T) &
+/*
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Token (",T,"/",NAT,") returned in ",o,": ")));Itf_PUT_TOK(bnewv(o,X));NWL(1))
+*/
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  ",T," (Token) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+
+/*** deferred set - check ImpSeenPropsStore next ***/
+
+  bident(T) &
+  ReadImpSeenPropsStore(U) &
+  bsearch((T=seq(CHAR)),U,V) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (STRING) returned in ",o,": "));PUT_STR(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+  bident(T) &
+  ReadImpSeenPropsStore(U) &
+  bsearch((T=POW(NAT*CHAR)),U,V) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (STRING) returned in ",o,": "));PUT_STR(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+
+/*** deferred set - check ImpTypeStore first ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((T=seq(CHAR)),U,V) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (STRING) returned in ",o,": "));PUT_STR(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((T=POW(NAT*CHAR)),U,V) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (STRING) returned in ",o,": "));PUT_STR(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+
+/*** machine parameters found ***/
+
+  bident(T) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Value (",T,"/",NAT,") returned in ",o,": ")));PUT_NAT(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+
+/*** enumeration found ***/
+
+  bident(T) &
+  ReadSetsStore(E) &
+  bsearch((T(W)),E,F) &
+  update_IOLIBStore(T) &
+/*
+  update_EnumStore(T(W)) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  (",T," value) returned in ",o,": ")));bnewv(PUT_,T)(bnewv(o,X));NWL(1))
+*/
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  (",T," value) returned in ",o,": ")));Itf_PUT_ACT_TOK(T,bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+
+/*** dimensioned set ***/
+
+  bident(T) &
+  ReadSetsStore(E) &
+  bsearch((T[W]),E,F) &                 /* dimensioned set */
+  bnum(W) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_out_0(M)(PUT_STR((bcatl("  Value (",T,"[",W,"]) returned in ",o,": ")));PUT_STR(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,T,M,N);
+
+
+/*** basic_io stuff ***/
+
+/* BITS */
+
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (BITS) returned in ",o,":"));PUT_BTS(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,BITS,M,N);
+
+/* BITSEQ */
+
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (BITSEQ) returned in ",o,":"));BSPUT_BITSEQ(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,BITSEQ,M,N);
+
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (STRING) returned in ",o,": "));PUT_STR(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,STRING,M,N);
+
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (STRING/WORD[",l,"]) returned in ",o,": "));PUT_STR(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,STRING(l),M,N);
+
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (BOOL) returned in ",o,": "));PUT_BOOL(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,BOOL,M,N);
+
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (CHAR) returned in ",o,": "));PUT_CHR(bnewv(o,X));NWL(1))
+ =>
+  cre_ops_out_1(m,n,o,CHAR,M,N);
+
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (NAT) returned in ",o,": "));PUT_NBR(bnewv(o,X));NWL(1)) 
+ =>
+  cre_ops_out_1(m,n,o,NAT,M,N);
+
+  cre_string_def_out_0(M)(PUT_STR(bcatl("  Value (INT) returned in ",o,": "));PUT_INT(bnewv(o,X));NWL(1)) 
+ =>
+  cre_ops_out_1(m,n,o,INTEGER,M,N);
+
+
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:t),T,S) &
+  cre_ops_out_1(m,n,o,t,M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:0..255),T,S) &
+  cre_ops_out_1(m,n,o,CHAR,M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:W),T,S) &
+  ReadSetPropsStore(U) &
+  bsearch((given(W[k])),U,R) &
+  cre_ops_out_1(m,n,o,STRING(k),M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:seq(CHAR)),T,S) &
+  cre_ops_out_1(m,n,o,STRING,M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:POW(NAT*CHAR)),T,S) &
+  cre_ops_out_1(m,n,o,STRING,M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+/* BITS */
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:POW(NAT*BOOL)),T,S) &
+  cre_ops_out_1(m,n,o,BITS,M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+/* BITSEQ */
+
+/***
+VERY TEMPORARY until Ib fixes TypeChecker ...
+***/
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:POW(NAT*NAT)),T,S) &
+  ReadImpTypeStore(U) &
+  bsearch((BITSEQ = POW(NAT*NAT)),U,V) &
+  cre_ops_out_1(m,n,o,BITSEQ,M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:POW(NAT*NAT)),T,S) &
+  ReadSetPropsStore(U) &
+  bsearch((BITSEQ = POW(NAT*NAT)),U,V) &
+  cre_ops_out_1(m,n,o,BITSEQ,M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+  
+
+  ReadCurrTypeStore(T) &
+  bsearch((o:seq(NAT)),T,S) &
+  ReadImpTypeStore(U) &
+  bsearch((u=seq(NAT)),U,V) &
+  bident(u) &
+  cre_ops_out_1(m,n,o,seq(NAT),M,N)
+ =>
+  cre_ops_out_0(m,n,o,M,N);
+
+  cre_ops_out_0(m,n,?,M,N);
+
+
+
+/***
+  inp
+***/
+
+/*** string definitions ***/
+
+  ReadCre_OpsInpTempStore(S) &
+  ModrCre_OpsInpTempStore((S;(r<--f(s))))
+ =>
+  cre_string_def_inp_0(n)(r<--f(s));
+
+  ModrCre_OpsInpTempStore((r<--f(s)))
+ =>
+  cre_string_def_inp_0(1)(r<--f(s));
+
+
+  bstring(s) &
+  brule(NumStringNX.1,N) &
+  brule(StringNX.N,x) &
+  bmodr(NumStringNX.1,(N+1)) &
+  bcrer(StringDefX,(x:s)) &
+  ReadCre_OpsInpTempStore(S) &
+  ModrCre_OpsInpTempStore((S;(r<--f(x))))
+ =>
+  cre_string_def_inp_0(n)(r<--f(s));
+
+  bstring(s) &
+  brule(NumStringNX.1,N) &
+  brule(StringNX.N,x) &
+  bmodr(NumStringNX.1,(N+1)) &
+  bcrer(StringDefX,(x:s)) &
+  ReadCre_OpsInpTempStore(S) &
+  ModrCre_OpsInpTempStore((S;(r<--f(t,x))))
+ =>
+  cre_string_def_inp_0(n)(r<--f(t,s));
+
+  bstring(s) &
+  brule(NumStringNX.1,N) &
+  brule(StringNX.N,x) &
+  bmodr(NumStringNX.1,(N+1)) &
+  bcrer(StringDefX,(x:s)) &
+  ModrCre_OpsInpTempStore((r<--f(x)))
+ =>
+  cre_string_def_inp_0(1)(r<--f(s));
+
+  bstring(s) &
+  brule(NumStringNX.1,N) &
+  brule(StringNX.N,x) &
+  bmodr(NumStringNX.1,(N+1)) &
+  bcrer(StringDefX,(x:s)) &
+  ModrCre_OpsInpTempStore((r<--f(t,x)))
+ =>
+  cre_string_def_inp_0(1)(r<--f(t,s));
+
+
+/*
+  cre_string_def_inp_0(r<--f(s));
+*/
+  bstring(s) &
+  brule(StringDefX.I,(x:s)) &
+  ReadCre_OpsInpTempStore(S) &
+  ModrCre_OpsInpTempStore((S;(r<--f(x))))
+ =>
+  cre_string_def_inp_0(n)(r<--f(s));
+
+  bstring(s) &
+  brule(StringDefX.I,(x:s)) &
+  ReadCre_OpsInpTempStore(S) &
+  ModrCre_OpsInpTempStore((S;(r<--f(t,x))))
+ =>
+  cre_string_def_inp_0(n)(r<--f(t,s));
+
+
+/*
+  cre_string_def_inp_0(r<--f(s));
+*/
+  bstring(s) &
+  brule(StringDefX.I,(x:s)) &
+  ModrCre_OpsInpTempStore((r<--f(x)))
+ =>
+  cre_string_def_inp_0(1)(r<--f(s));
+
+/*
+  cre_string_def_inp_0(r<--f(t,s));
+*/
+  bstring(s) &
+  brule(StringDefX.I,(x:s)) &
+  ModrCre_OpsInpTempStore((r<--f(t,x)))
+ =>
+  cre_string_def_inp_0(1)(r<--f(t,s));
+
+
+/*** nothing found ***/
+
+  InformCantGenerateForType(n,i,T) &
+  SetCIONoMiniRemakeFlag &
+  SetCIOError
+ =>
+  cre_ops_inp_2(m,n,i,T,M,N)(?);
+
+/***** Accept ANYTHING  ****/
+
+  WarningDefaultForPOW(n,i,T) &
+  update_IOLIBStore((T)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input abstract token (NAT) Token for ",i,": ")))
+ =>
+  cre_ops_inp_2(m,n,i,(T),M,N)(v);
+
+/*** default for POW ***/
+
+  WarningDefaultForPOW(n,i,T) &
+  update_IOLIBStore(POW(T)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (POW(",T,")/",NAT,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_2(m,n,i,POW(T),M,N)(?);
+
+/*** default for seq ***/
+
+  WarningDefaultForseq(n,i,T) &
+  update_IOLIBStore(seq(T)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (seq(",T,")/",NAT,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_2(m,n,i,POW(NAT*T),M,N)(?);
+
+
+/*** POW(SET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  update_IOLIBStore(POW(T)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (POW(",T,")/",NAT,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_1(m,n,i,POW(T),M,N);
+
+/*** POW\/POW ***/
+
+  cre_ops_inp_2(m,n,i,POW(T),M,N)(U)
+ =>
+  cre_ops_inp_2(m,n,i,POW(T),M,N)(U;u);
+  
+/*** POW(SET)\/POW(SET)  ***/
+
+  bident(x) &
+  bsearch(POW(T),y,z) &
+  update_IOLIBStore(POW(T)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (POW(",T,")/",NAT,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_2(m,n,i,POW(T),M,N)(U;(x=y));
+  
+/*** POW(PARAMSET)\/POW(PARAMSET)  ***/
+
+  bident(x) &
+  bsearch(POW(T),y,z) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_IOLIBStore(POW(SCALAR)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (POW(",T,")/",Token,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_2(m,n,i,POW(T),M,N)(U;(x=y));
+  
+
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  cre_ops_inp_2(m,n,i,POW(NAT*T),M,N)(U)
+ =>
+  cre_ops_inp_1(m,n,i,POW(NAT*T),M,N);
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  cre_ops_inp_2(m,n,i,POW(T),M,N)(U)
+ =>
+  cre_ops_inp_1(m,n,i,POW(T),M,N);
+
+
+/***** Accept ANYTHING ****/
+
+  ReadImpTypeStore(U) &
+  cre_ops_inp_2(m,n,i,(T),M,N)(U)
+ =>
+  cre_ops_inp_1(m,n,i,(T),M,N);
+
+
+/*** (SET*SET) ***/
+
+
+  ReadImpTypeStore(U) &
+  bsearch((u=(S*T)),U,V) &
+  bident(u) &
+  update_IOLIBStore((S*T)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input ((",S,"*",T,")/",NAT,") Token for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,(S*T),M,N);
+
+/*** POW(SET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  update_IOLIBStore(POW(T)) &
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (POW(",T,")/",NAT,") Token for ",i,": ")))
+*/
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,POW(T),M,N);
+
+  ReadImpTypeStore(U) &
+  bsearch((POW(POW(NAT*BOOL))=u),U,V) &
+  bident(u) &
+  update_IOLIBStore(POW(POW(NAT*BOOL))) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (POW(",BOOL,")/",NAT,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",BOOL," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_1(m,n,i,POW(T),M,N);
+
+/*** (PARAMSET*PARAMSET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=(S*T)),U,V) &
+  bident(u) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_IOLIBStore((SCALAR*SCALAR)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input ((",S,"*",T,")/",Token,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_1(m,n,i,POW(T),M,N);
+
+
+/*** POW(PARAMSET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_IOLIBStore(POW(SCALAR)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (POW(",T,")/",Token,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_1(m,n,i,POW(T),M,N);
+
+/*** seq ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((seq(T)=u),U,V) &
+  bident(u) &
+  update_IOLIBStore(seq(T)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (seq(",T,")/",NAT,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_1(m,n,i,seq(T),M,N);
+
+  ReadImpTypeStore(U) &
+  bsearch((seq(POW(NAT*BOOL))=u),U,V) &
+  bident(u) &
+  update_IOLIBStore(seq(POW(NAT*BOOL))) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (seq(",BOOL,")/",NAT,") Token for ",i,": ")))
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",BOOL," (Token) for ",i,": ")))
+*/
+ =>
+  cre_ops_inp_1(m,n,i,seq(POW(NAT*BOOL)),M,N);
+
+/*** ABSOBJ set ***/
+
+  bident(T) &
+  update_IOLIBStore(T) &
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (",T,"/",NAT,") Token for ",i,": ")))
+*/
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",NAT," (Token) for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+
+/*** deferred set ***/
+
+  bident(T) &
+  ReadSetPropsStore(Y) &
+  bsearch((given(T)),Y,Z) &
+  update_IOLIBStore(T) &
+/*
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (",T,"/",NAT,") Token for ",i,": ")))
+*/
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input ",T," (Token) for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+/*** INTEGER ***/
+
+/*
+  update_IOLIBStore(INTEGER) &
+/?
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_TOK(bcatl("  Input (",T,"/",NAT,") Token for ",i,": ")))
+?/
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_INT(bcatl("  Input (",T,"/",INT,") Value for ",i,": ")))
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(INTEGER,bcatl("  Input ",INT," (Token) for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,INTEGER,M,N);
+*/
+
+
+/*** deferred set - check ImpSeenPropsStore next ***/
+
+  bident(T) &
+  ReadImpSeenPropsStore(U) &
+  bsearch((T=seq(CHAR)),U,V) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_STR(bcatl("  Input (STRING) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+  bident(T) &
+  ReadImpSeenPropsStore(U) &
+  bsearch((T=POW(NAT*CHAR)),U,V) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_STR(bcatl("  Input (STRING) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+
+/*** deferred set - check ImpTypeStore first ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((T=seq(CHAR)),U,V) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_STR(bcatl("  Input (STRING) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((T=POW(NAT*CHAR)),U,V) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_STR(bcatl("  Input (STRING) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+
+/*** machine parameters found ***/
+
+  bident(T) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_NAT(bcatl("  Input (",T,"/",NAT,") Value for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+
+/*** enumeration found ***/
+
+  bident(T) &
+  ReadSetsStore(E) &
+  bsearch((T(W)),E,F) &
+  update_IOLIBStore(T) &
+/*
+  update_EnumStore(T(W)) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--bnewv(GET_PROMPT_,T)(bcatl("  Input (",T," value) for ",i,": ")))
+*/
+  cre_string_def_inp_0(M)(bnewv(i,X)<--Itf_GET_PROMPT_ACT_TOK(T,bcatl("  Input (",T," value) for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+
+/*** dimensioned set ***/
+
+  bident(T) &
+  ReadSetsStore(E) &
+  bsearch((T[W]),E,F) &                 /* dimensioned set */
+  bnum(W) &
+  update_PropsStore(T=STRING) &
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_STR(bcatl("  Input (",T,"[",W,"]) Value for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,T,M,N);
+
+/*** basic_io stuff ***/
+
+/* BITS */
+
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_BTS(bcatl("  Input (BITS/(0,1's)) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,BITS,M,N);
+
+/* BITSEQ */
+
+  cre_string_def_inp_0(M)(bnewv(i,X)<--BSGET_PROMPT_BITSEQ(bcatl("  Input (BITSEQ/(0,1's)) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,BITSEQ,M,N);
+
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_STR(bcatl("  Input (STRING) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,STRING,M,N);
+
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_STR(bcatl("  Input (STRING/WORD[",l,"]) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,STRING(l),M,N);
+
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_CHR(bcatl("  Input (CHAR) Value for ",i,": ")))
+ =>
+  cre_ops_inp_1(m,n,i,CHAR,M,N);
+
+
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_BOOL(bcatl("  Input (BOOL) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,BOOL,M,N);
+
+
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_NAT(bcatl("  Input (NAT) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,NAT,M,N);
+
+  cre_string_def_inp_0(M)(bnewv(i,X)<--GET_PROMPT_INT(bcatl("  Input (INT) Value for ",i,": "))) 
+ =>
+  cre_ops_inp_1(m,n,i,INTEGER,M,N);
+
+
+
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:t),T,S) &
+  cre_ops_inp_1(m,n,i,t,M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:0..255),T,S) &
+  cre_ops_inp_1(m,n,i,CHAR,M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:W),T,S) &
+  ReadSetPropsStore(U) &
+  bsearch( (given(W[k])),U,R) &
+  cre_ops_inp_1(m,n,i,STRING(k),M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:seq(CHAR)),T,S) &
+  cre_ops_inp_1(m,n,i,STRING,M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*CHAR)),T,S) &
+  cre_ops_inp_1(m,n,i,STRING,M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+/* BITSEQ */
+
+/***
+VERY TEMPORARY until Ib fixes TypeChecker ...
+***/
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*NAT)),T,S) &
+  ReadImpTypeStore(U) &
+  bsearch((BITSEQ = POW(NAT*NAT)),U,V) &
+  cre_ops_inp_1(m,n,i,BITSEQ,M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*NAT)),T,S) &
+  ReadSetPropsStore(U) &
+  bsearch((BITSEQ = POW(NAT*NAT)),U,V) &
+  cre_ops_inp_1(m,n,i,BITSEQ,M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+/* BITS */
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*BOOL)),T,S) &
+  cre_ops_inp_1(m,n,i,BITS,M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+  
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:seq(NAT)),T,S) &
+  ReadImpTypeStore(U) &
+  bsearch((u=seq(NAT)),U,V) &
+  bident(u) &
+  cre_ops_inp_1(m,n,i,seq(NAT),M,N)
+ =>
+  cre_ops_inp_0(m,n,i,M,N);
+
+  cre_ops_inp_0(m,n,?,M,N);
+
+
+
+  WriteDot &
+  ReadOpTypesStore(X) &
+  bsearch((n(o;i)==t),X,Y) &
+  ModrCurrTypeStore((t&?)) &
+  ModrLocalInpVarsStore(?) &
+  ModrLocalOutVarsStore(?) &
+  sto_loc_inp bsmap (i) &
+  sto_loc_out bsmap (o) &
+  cre_ops_inp_0(m,n) bnmap i &
+  cre_ops_out_0(m,n) bnmap o &
+  cre_ops_4(m,n)(o;i)
+ =>
+  cre_ops_3(m,n)
+
+END
+
+&
+
+
+THEORY CreAbsX IS
+
+#define cre_abs_tac   ((CATL;WRITE;MAP)~;CreAbsX)~
+
+#define CreAbs(x,y)   bcall(cre_abs_tac: cre_abs_0(x)(y))
+
+
+  bprintf("%_OP,",x)
+ =>
+  cre_abs_2(x,m,n);
+
+  bprintf("%_OP",x)
+ =>
+  cre_abs_2(x,n,n);
+
+  bconnect(F) &
+  bprintf("MACHINE          %Io\n\nSETS\n\n  %_Ops = {%_Menu_OP,",m) &
+  cre_abs_2 bnmap n &
+  bprintf(",Quit_OP}\n\nOPERATIONS\n\n  %_Menu = BEGIN skip END;  \n\n  op<--Get_%_Op = BEGIN op::%_Ops END\n\nEND\n",m)
+ =>
+  cre_abs_1(m)(F)(n);
+
+  WriteDot &
+  cre_abs_1(m)(bcatl("CFG/",m,"Io.mch"))(n)
+ =>
+  cre_abs_0(m)(n);
+
+  CIOErrorFlagged
+ =>
+  cre_abs_0(m)(n)
+
+END
+
+&
+
+THEORY CreItfAbsX IS
+
+#define cre_itf_abs_tac   ((CATL;WRITE;MAP)~;CreItfAbsX)~
+
+#define CreItfAbs(x,y)   bcall(cre_itf_abs_tac: cre_itf_abs_0(x)(y))
+
+
+  InformCantConnect(F) &
+  PFZ
+ =>
+  cre_itf_abs_1(m)(F)(n);
+
+  bconnect(F) &
+  bprintf("MACHINE          %Itf\n\nOPERATIONS\n\n  main = BEGIN skip END\n\nEND\n",m)
+ =>
+  cre_itf_abs_1(m)(F)(n);
+
+  WriteDot &
+  cre_itf_abs_1(m)(bcatl("CFG/",m,"Itf.mch"))(n)
+ =>
+  cre_itf_abs_0(m)(n);
+
+  CIOErrorFlagged
+ =>
+  cre_itf_abs_0(m)(n)
+
+END
+
+&
+
+THEORY CreItfX IS
+
+#define cre_itf_tac   ((CATL;WRITE;MAP;FLAT;MODR;NEWV;ARI~)~;CreItfX)~
+
+#define CreItf(x,y)   bcall(cre_itf_tac: cre_itf_0(x)(y))
+
+
+  ?;  /* 1. op */
+
+  ?;  /* 2. count */
+
+  ?;  /* 3. SEES */
+
+  ?;  /* 4. Itf_token_io param list printed so far */
+
+  ?;  /* 5. PROPERTIES printed by DEFDINITIONS ... */
+
+  ?;  /* 6. SEEN by abstraction */
+
+  ?;  /* 7. IMPORTED list printed */
+
+#define read_token_io_param(x) brule(CreItfX.4,x)
+
+
+#define record_imported(z)   bcall(((NEWV;MODR)~;CreItfX)~:rcd_ipt(z))
+#define Read_record_imported(z)  brule(CreItfX.7,z)
+
+  brule(CreItfX.7,I) &
+  bmodr(CreItfX.7,(I,i))
+ =>
+  rcd_ipt(i);
+
+
+  brule(CreItfX.4,X) &
+  bmodr(CreItfX.4,(X,x))
+ =>
+  add_token_io_param(x);
+
+#define ReadOpVar(x)     brule(CreItfX.1,x)
+#define ReadCountVar(x)  brule(CreItfX.2,x)
+
+  cre_fresh(bnewv(v,x))(n)
+ =>
+  cre_fresh(v)(n);
+
+  brule(CIOParseX.1,O) &
+  brule(CIOParseX.2,V) &
+  v\O &
+  v\V &
+  bmodr(CreItfX.n,v)
+ =>
+  cre_fresh(v)(n);
+
+  bprintf("              %;\n",s)
+ =>
+  print_NonIO_Op_2(s,m,n);
+
+  bprintf("              %\n",s)
+ =>
+  print_NonIO_Op_2(s,n,n);
+
+  bprintf("            %;\n",s)
+ =>
+  print_NonIO_Op_1(s);
+
+  brule(OpsX.I,o(s)) &
+  print_NonIO_Op_1 bsmap s
+ =>
+  print_NonIO_Op_0(o);
+
+  brule(OpsX.I,o(v)(s)) &
+  bprintf("            VAR % IN\n",v) &
+  print_NonIO_Op_2 bnmap s &
+  bprintf("            END;\n")
+ =>
+  print_NonIO_Op_0(o);
+
+  bprintf("          OR %_OP THEN\n            NWL(1);\n",o) &
+  print_NonIO_Op_0(o) &
+  bprintf("            NWL(1)\n")
+ =>
+  print_or(o,m,n);
+
+
+
+  bprintf(",\n  %",m) &
+  record_imported(m)
+ =>
+  check_seen_not_ipt_1(m.mch);
+
+  ReadImportedCIOList(L) &
+  bsearch(m(p),L,M) &
+  bprintf(",\n  %",m(p)) &
+  record_imported(m)
+ =>
+  check_seen_not_ipt_1(m.mch);
+
+  Read_record_imported(L) &
+  bsearch(m,(L,?),M)
+/***
+&HERE((2:"record_imported":m))
+***/
+ =>
+  check_seen_not_ipt_1(m.mch);
+
+  check_seen_not_ipt_1(basic_io.mch);
+
+  check_seen_not_ipt_1(file_dump.mch);
+
+  check_seen_not_ipt_1(Scalar_TYPE.mch);
+
+  check_seen_not_ipt_1(String_TYPE.mch);
+
+  check_seen_not_ipt_1(Bool_TYPE.mch);
+
+  check_seen_not_ipt_1(Bit_TYPE.mch);
+
+  check_seen_not_ipt_1(?);
+
+  ReadSeenNotImportedStore(L) &
+  check_seen_not_ipt_1 bsmap L
+ =>
+  check_seen_not_ipt_0;
+
+  ReadSeenNotImportedStore(?)
+ =>
+  check_seen_not_ipt_0;
+
+
+/*
+  ModrEnumNameStore(x) &
+  bprintf(",\n  %",x) &
+  record_imported(x)
+ =>
+  get_enum_name_0(x);
+
+  get_enum_name_0(bnewv(m,EnumItf))
+ =>
+  check_enum_0(m);
+
+  GetCurrentConstruct(R.t) &
+  IsCfg(R.enm)                       /! interfacing an enm-gen !/
+ =>
+  check_enum_0(m);
+
+  ReadEnumStore(?)
+ =>
+  check_enum_0(m);
+*/
+
+
+
+  bprintf("% \/ ",T) &
+  add_token_io_param(T) &
+  check_token_io_1(X)
+ =>
+  check_token_io_1(X,T);
+
+  read_token_io_param(A) &
+  bsearch(T,A,B) &                 /* already printed */
+  check_token_io_1(X)
+ =>
+  check_token_io_1(X,T);
+
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &                 /* T is formal SET param */
+  check_token_io_1(X,SCALAR)
+ =>
+  check_token_io_1(X,T);
+
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &                 /* T is formal SET param */
+  check_token_io_1(X,POW(SCALAR))
+ =>
+  check_token_io_1(X,POW(T));
+
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &                 /* T is formal SET param */
+  check_token_io_1(X,seq(SCALAR))
+ =>
+  check_token_io_1(X,seq(T));
+
+  check_token_io_1(X)
+ =>
+  check_token_io_1(X,STRING);
+
+/* BITS */
+
+  check_token_io_1(X)
+ =>
+  check_token_io_1(X,BITS);
+
+  check_token_io_1(?);
+
+  ReadActualParamsStore(P) &
+  ReadIOLIBStore(X) &
+  bprintf(",\n  Itf_token_io(") &
+  add_token_io_param(SCALAR) &
+  check_token_io_1(X) &
+  SetScalarFlag &
+  bprintf("SCALAR)") &
+  record_imported(Itf_token_io)
+ =>
+  check_token_io_0;
+
+  ReadActualParamsStore(P) &
+  ReadIOLIBStore(?) &
+  bprintf(",\n  Itf_token_io(") &
+  add_token_io_param(SCALAR) &
+  SetScalarFlag &
+  bprintf("SCALAR)") &
+  record_imported(Itf_token_io)
+ =>
+  check_token_io_0;
+
+  ReadActualParamsStore(?) &
+  ReadIOLIBStore(X) &
+  bprintf(",\n  Itf_token_io(") &
+  add_token_io_param(SCALAR) &
+  check_token_io_1(X) &
+  SetScalarFlag &
+  bprintf("SCALAR)") &
+  record_imported(Itf_token_io)
+ =>
+  check_token_io_0;
+
+  ReadIOLIBStore(?) &
+  ReadActualParamsStore(?) &
+  SetScalarFlag &
+  bprintf(",\n  Itf_token_io(SCALAR)") &
+  record_imported(Itf_token_io)
+ =>
+  check_token_io_0;
+
+
+
+  brule(CreItfX.3,A) &   /* seen at top level */
+  bmodr(CreItfX.3,(A,a))
+ =>
+  check_sees_01(a);
+
+  brule(CreItfX.3,A) &   /* seen at top level */
+  bsearch(a,A,B)         /* already there     */
+ =>
+  check_sees_01(a);
+
+  brule(CreItfX.7,A) &   /* imported at top level */
+  bsearch(a,A,B)
+ =>
+  check_sees_01(a);
+
+  check_sees_01(?);
+
+  brule(CreItfX.6,A) &   /* seen by abs */
+  check_sees_01 bsmap A
+ =>
+  check_sees_0;
+
+
+
+
+  Writef(("    %\n",s))
+ =>
+  check_sees_err_1(s);
+
+  Writef(("\n\n  % is IMPORTED at a lower level,\n  but needs to be SEEN by the interface",s)) &
+  Writef(("\n\n  In order to construct a non-Motif interface,\n  move % from IMPORTS to SEES\n",s)) &
+  SetCIONoMiniRemakeFlag &
+  SetCIOError
+ =>
+  check_sees_err(s);
+
+  Writef(("\n\n  The following machines:\n\n")) &
+  check_sees_err_1 bsmap (S,s) &
+  Writef(("\n  are IMPORTED at a lower level,\n  but need to be SEEN by the interface")) &
+  Writef(("\n\n  In order to construct a non-Motif interface,\n  move them from IMPORTS to SEES\n")) &
+  SetCIONoMiniRemakeFlag &
+  SetCIOError
+ =>
+  check_sees_err(S,s);
+
+/*
+  brule(CreItfX.3,X) &
+  bsearch(?,X,Y) &
+HERE((Y)) &
+  bprintf("\n\nSEES             %",Y)
+ =>
+  check_sees_1;
+*/
+
+  brule(CreItfX.3,X) &
+  bsearch(?,X,Y) &
+  check_sees_err(Y)
+ =>
+  check_sees_1;
+
+  brule(CreItfX.3,?)
+ =>
+  check_sees_1;
+
+
+
+  check_sees(a);
+
+  ReadRecImportedStore(L) &
+  bsearch(a.mch,L,M) &
+  brule(CreItfX.3,X) &
+  bmodr(CreItfX.3,(X,a))
+ =>
+  check_sees(a);
+
+  ReadRecImportedStore(L) &
+  bsearch(a.mch,L,M) &
+  brule(CreItfX.3,X) &
+  bsearch(a,X,Y)
+ =>
+  check_sees(a);
+
+  GetCurrentConstruct(a.itf)
+ =>
+  check_sees(a);
+
+  Read_record_imported(L) &
+  bsearch(a,(L,?),M)
+/***
+&HERE((3:"record_imported":a))
+***/
+ =>
+  check_sees(a);
+
+
+
+  check_ipt(a);
+
+  ReadSeenNotImportedStore(X) &
+  bsearch(a.mch,X,Y) &
+  bprintf(",\n  %",a) &
+  record_imported(a)
+ =>
+  check_ipt(a);
+
+  ReadSeenNotImportedStore(X) &
+  bsearch(Scalar_TYPE.mch,X,Y) &
+  bprintf(",\n  %",Scalar_TYPE) &
+  SetScalarFlag &
+  record_imported(Scalar_TYPE)
+ =>
+  check_ipt(Scalar_TYPE);
+
+  ScalarFlagSet &
+  bprintf(",\n  %",Scalar_TYPE) &
+  record_imported(Scalar_TYPE)
+ =>
+  check_ipt(Scalar_TYPE);
+
+/* BITS  */
+
+  bprintf(",\n  %",Bool_TYPE) &
+  record_imported(Bool_TYPE)
+ =>
+  check_ipt(Bool_TYPE);
+
+  bprintf(",\n  %",String_TYPE) &
+  record_imported(String_TYPE)
+ =>
+  check_ipt(String_TYPE);
+
+  bprintf(",\n  %",String_TYPE) &
+  record_imported(String_TYPE)
+ =>
+  check_ipt(String_TYPE);
+
+/*  */
+
+  bprintf(",\n  %",file_dump) &
+  record_imported(file_dump)
+ =>
+  check_ipt(file_dump);
+
+  bprintf(",\n  %",basic_io) &
+  record_imported(basic_io)
+ =>
+  check_ipt(basic_io);
+
+  ReadRecImportedStore(L) &
+  bsearch(a.mch,L,M)
+ =>
+  check_ipt(a);
+
+  GetCurrentConstruct(a.itf)
+ =>
+  check_ipt(a);
+
+
+  Read_record_imported(L) &
+  bsearch(a,(L,?),M)
+/***
+&HERE((1:"record_imported":a))
+***/
+ =>
+  check_ipt(a);
+
+
+
+  ReadActualParamsStore(P) &
+  bprintf("(%)",P)
+ =>
+  check_for_itf_params;
+
+  ReadActualParamsStore(?)
+ =>
+  check_for_itf_params;
+
+
+  
+  bprintf(" &\n  %",p)
+ =>
+  check_properties2(p,m,n);
+
+  bprintf("\n\nPROPERTIES\n\n  %",p)
+ =>
+  check_properties2(p,1,n);
+
+  brule(CreItfX.5,1) &
+  bprintf(" &\n  %",p)
+ =>
+  check_properties2(p,1,n);
+
+  check_properties2 bnmap P
+ =>
+  check_properties1(P);
+
+  check_properties1(?);
+
+  bsearch(?,P,Q) &
+  check_properties1(Q)
+ =>
+  check_properties1(P);
+
+/*
+  ReadPropsStore(P) &
+  ReadImpSeenPropsStore(Q) &
+  check_properties1(bflat(P;Q))
+ =>
+  check_properties;
+*/
+  ReadPropsStore(P) &
+  check_properties1(P)
+ =>
+  check_properties;
+
+
+
+
+  check_definitions_1(n);
+
+  brule(StringDefX.n,(x:s)) &
+  bprintf(" &\n  % = %",x,s) &
+  check_definitions_1(n+1)
+ =>
+  check_definitions_1(n);
+
+  bmodr(CreItfX.5,1) &
+  brule(StringDefX.1,(x:s)) &
+  bprintf("\n\nPROPERTIES\n\n  % = %",x,s) &
+  check_definitions_1(2)
+ =>
+  check_definitions_1(1);
+
+
+  bprintf(", %",x)
+ =>
+  check_definitions_nl(n)(m)(x);
+
+  bprintf(",\n  %",x)
+ =>
+  check_definitions_nl(n)(n)(x);
+
+  check_definitions(n);
+
+  brule(StringDefX.n,(x:s)) &
+  check_definitions_nl(n-1)(((n-1)/7)*7)(x) &
+  check_definitions(n+1)
+ =>
+  check_definitions(n);
+
+  check_definitions(1);
+
+  brule(StringDefX.1,(x:s)) &
+  bprintf("\n\nCONSTANTS\n\n  %",x) &
+  check_definitions(2) &
+  check_definitions_1(1)
+ =>
+  check_definitions(1);
+
+
+  bmodr(CreImpX.2,m) &
+  bconnect(F) &
+  GetCurrentConstruct(A.B) &
+  ReadOpVar(o) &
+  ReadCountVar(c) &
+  bprintf("IMPLEMENTATION   %ItfI\n\nREFINES          %Itf\n\nIMPORTS\n\n  %",m,m,A,m) &
+  check_for_itf_params &
+  bprintf(",\n  %Io",m) &
+  record_imported(bnewv(m,Io)) &
+/*
+  check_enum_0(m) &
+*/
+  bmodr(CreItfX.4,?) &
+  check_token_io_0 &
+  check_ipt bsmap (basic_io,file_dump,Bit_TYPE, /* BitSeq_TYPE,Byt_TYPE, */ Scalar_TYPE,Bool_TYPE,String_TYPE) &
+  check_seen_not_ipt_0 &
+  bmodr(CreItfX.3,?) &
+  check_sees bsmap (basic_io,file_dump,Bit_TYPE, /* BitSeq_TYPE,Byt_TYPE, */ Scalar_TYPE,Bool_TYPE,String_TYPE) &
+/***
+  check_sees_ipt_below &
+***/
+  check_sees_0 &
+  check_sees_1 &
+  check_definitions(1) &
+  check_properties &
+  bprintf("\n\nOPERATIONS\n\n  main =\n    VAR %,% IN\n      % := MaxScalar; % := %_Menu_OP;\n      WHILE % /= 0 & % /= Quit_OP DO\n        CASE % OF\n          EITHER %_Menu_OP THEN\n            NWL(1); %_Menu; NWL(1)\n",c,o,c,o,m,c,o,o,m,m) &
+  print_or bnmap n &
+  bprintf("          END\n        END;\n        % <-- Get_%_Op; % := % - 1\n      VARIANT\n        %\n      INVARIANT\n        true\n      END\n    END\n\nEND\n",o,m,c,c,c)
+ =>
+  cre_itf_1(m)(F)(n);
+
+  WriteDot &
+  cre_fresh(op)(1) &
+  cre_fresh(count)(2) &
+  cre_itf_1(m)(bcatl("CFG/",m,"ItfI.imp"))(n)
+ =>
+  cre_itf_0(m)(n);
+
+  CIOErrorFlagged
+ =>
+  cre_itf_0(m)(n)
+
+END
+
+&
+
+THEORY CreImpX IS
+
+#define cre_imp_tac   ((CATL;ARI~;WRITE;MAP;MODR)~;CreImpX)~
+
+#define CreImp(x,y)   bcall(cre_imp_tac: cre_imp_0(x)(y))
+
+
+  ?;
+
+  ?; /* 2. machine name */
+
+  brule(CreImpX.1,N) &
+  bprintf("      opcode <-- GET_PROMPT_NBR(string1,%);\n",N)
+ =>
+  print_prompt;
+
+  bprintf("        OR % THEN\n          op:=%_OP\n",m,o)
+ =>
+  print_case(o,m,n);
+
+  bprintf("        OR % THEN\n          op:=%_OP\n",n,o) &
+  bprintf("        OR % THEN\n          op:=Quit_OP\n",(n+1))
+ =>
+  print_case(o,n,n);
+
+  brule(CreImpX.1,n) &
+  bprintf("%",n)
+ =>
+  print_total_no_ops;
+
+  bprintf("      PUT_STR(\"  % %\");\n      NWL(1);\n",m,o)
+ =>
+  print_selections(o,m,n);
+
+  btest(m>9) &
+  bprintf("      PUT_STR(\" % %\");\n      NWL(1);\n",m,o)
+ =>
+  print_selections(o,m,n);
+
+  bprintf("      PUT_STR(\"  % %\");\n      NWL(2);\n",n,o) &
+  bprintf("      PUT_STR(\"  % Quit\");\n      NWL(1)\n",(n+1),o) &
+  bmodr(CreImpX.1,(n+1))
+ =>
+  print_selections(o,n,n);
+
+  btest(n>8) &
+  bprintf("      PUT_STR(\"  % %\");\n      NWL(2);\n",n,o) &
+  bprintf("      PUT_STR(\" % Quit\");\n      NWL(1)\n",(n+1)) &
+  bmodr(CreImpX.1,(n+1))
+ =>
+  print_selections(o,n,n);
+
+  btest(n>9) &
+  bprintf("      PUT_STR(\" % %\");\n      NWL(2);\n",n,o) &
+  bprintf("      PUT_STR(\" % Quit\");\n      NWL(1)\n",(n+1)) &
+  bmodr(CreImpX.1,(n+1))
+ =>
+  print_selections(o,n,n);
+
+  bconnect(F) &
+  bprintf("IMPLEMENTATION   %IoI\n\nREFINES          %Io\n\nSEES             basic_io, String_TYPE \n\nCONSTANTS        string1\n\nPROPERTIES       string1 =\"% operation number? \"\n\nOPERATIONS\n\n  %_Menu =\n    BEGIN\n      PUT_STR(\"  0 % Menu \");\n      NWL(2);\n",m) &
+  print_selections bnmap n &
+  bprintf("    END;\n\n  op<--Get_%_Op =\n    VAR opcode IN\n",m) &
+  print_prompt &
+  bprintf("      CASE opcode OF\n        EITHER 0 THEN\n          op:=%_Menu_OP\n",m) &
+  print_case bnmap n &
+  bprintf("        END\n      END\n    END\n\nEND\n")
+ =>
+  cre_imp_1(m)(F)(n);
+
+  WriteDot &
+  cre_imp_1(m)(bcatl("CFG/",m,"IoI.imp"))(n)
+ =>
+  cre_imp_0(m)(n);
+
+  CIOErrorFlagged
+ =>
+  cre_imp_0(m)(n)
+
+END
+
+&
+
+
+
+/*
+THEORY CreEnmX IS
+
+#define cre_enm_tac   ((CATL;WRITE;MAP)~;CreEnmX)~
+
+#define CreEnm        bcall(cre_enm_tac: cre_enm_0)
+
+
+  bprintf("\n  %;",S,E)
+ =>
+  cre_enm_2(S(E),M,N);
+
+  bprintf("\n  %",S,E)
+ =>
+  cre_enm_2(S(E),N,N);
+
+
+
+  check_seen_not_imp_1(?);
+
+  bident(a) &
+  bprintf(", %",a)
+ =>
+  check_seen_not_imp_1(a.mch);
+
+  ReadSeenNotImportedStore(x) &
+  check_seen_not_imp_1 bsmap x
+ =>
+  check_seen_not_imp_0;
+
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cre_enm_1(E)(f);
+
+  bconnect(f) &
+  ReadEnumStore(S) &
+  GetCurrentConstruct(R.t) &
+  bprintf("ENUMERATION\n\n  %\n\nSEES\n\n  %",E,R) &
+  check_seen_not_imp_0 &
+  bprintf("\n\nSETS\n") &
+  cre_enm_2 bnmap S &
+  bprintf("\n\nEND\n")
+ =>
+  cre_enm_1(E)(f);
+
+  ReadEnumNameStore(E) &
+  cre_enm_1(E)(bcatl("CFG/",E,".enm"))
+ =>
+  cre_enm_0;
+
+  GetCurrentConstruct(R.t) &
+  IsCfg(R.enm)                       /! interfacing an enm-gen !/
+ =>
+  cre_enm_0;
+
+  ReadEnumNameStore(?)
+ =>
+  cre_enm_0;
+
+  CIOErrorFlagged
+ =>
+  cre_enm_0
+
+END
+
+&
+*/
+
+
+THEORY CIOGenerateX IS
+
+#define CIO_tac         ((REV;FLAT~;CATL;MODR;RULE)~;CIOGenerateX)~
+
+#define CIOGenerate      bcall(CIO_tac: CIO_00)
+
+/*
+  Cre_Ops(m,n) &
+*/
+  GetBotRef(m.mch) &
+  bcall(cre_ops_tac:
+    ( save_sets(m)(n)(bcatl("ANL/",m,".mch.anl")) &
+      load_imp_typ_file_0 &
+      load_seen_not_imp_0 &
+      load_ImpSeenPropsStore00 &
+      load_MchSeenImpPropsStore00 &
+      cre_ops_1(m)(n)(bcatl("TYP/",m,".mri.typ")) &
+/*
+  CIO_TypeConfusionIntoOpTypesSto &
+*/
+/***
+print_type_info &
+PrintTHEORY(TypeConfusionRewritesX)&
+***/
+      cre_ops_3(m) bsmap (n) &
+      introduce_force_0
+    )  ) &
+  CreAbs(m,n) &
+  CreImp(m,n) &
+  CreItfAbs(m,n) &
+  CreItf(m,n)
+/*
+  CreEnm
+*/
+ =>
+  CIO_4(m)(n); /* m mch name, n ops list (no ? ) */
+
+  CIOErrorFlagged &
+  OfferCIOFailureOptions
+ =>
+  CIO_4(m)(n);
+
+  bsearch(?,X,Y) &
+  CIO_4(m)(Y)
+ =>
+  CIO_3(m)(N)(?)(X);
+
+  GetCurrentConstruct(x.itf) &
+  InformNotOperationName(x,o) &
+  SetCIOError
+ =>
+  CIO_3(m)(N)(O,o)(X);
+
+  bsearch(o,N,P) &
+  CIO_3(m)(P)(O)(X,o)
+ =>
+  CIO_3(m)(N)(O,o)(X);
+
+  brule(CIOParseX.1,O) &
+  CIO_3(m)(bflat(?,n))(bflat(?,brev(O)))(?)
+ =>
+  CIO_2(m)(n);
+
+  CIOErrorFlagged
+ =>
+  CIO_2(m)(n);
+
+  brule(CIOParseX.1,?) &
+  CIO_4(m)(n)
+ =>
+  CIO_2(m)(n);
+
+  Writef(("\n    % has no operations\n",m)) &
+  SetCIONoMiniRemakeFlag &
+  SetCIOError
+ =>
+  CIO_2(m)(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  CIO_1(m)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  bmodr(CIOParseX.2,d) &       
+  StoreOpheaders(n) &
+  StoreParams(l) &
+  CheckParams &
+  StoSeenByAbs(A) &
+  StoSeenByAbs(B) &
+  CIO_2(k)(j)
+ =>
+  CIO_1(k)(Z);
+
+  ClearCIOError &
+  CIO_1(m)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  CIO_0(m);
+
+  GetCurrentConstruct(x.itf) &
+  CIO_0(x)
+ =>
+  CIO_00;
+
+  CIOErrorFlagged
+ =>
+  CIO_00
+
+END
+
+&
+
+THEORY CIOFromUserX IS
+
+  ?;?;?;?;?;
+
+  GetCurrentConstruct(s.itf) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((a.mch:BT_CMT_GEN_CSTR:s.itf);(b.imp:BT_CMT_GEN_CSTR:s.itf);(c.mch:BT_CMT_GEN_CSTR:s.itf);(d.imp:BT_CMT_GEN_CSTR:s.itf);(s.itf:BT_CIO:(s,file_dump)))) &
+  AddCfg(a.mch) &
+  AddCfg(b.imp) &
+  AddCfg(c.mch) &
+  AddCfg(d.imp) &
+  AddGen(s.itf)
+ =>
+  update(a)(b)(c)(d);
+
+  GetCurrentConstruct(s.itf) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((E.enm:BT_CMT_GEN_CSTR:s.itf);(a.mch:BT_CMT_GEN_CSTR:s.itf);(b.imp:BT_CMT_GEN_CSTR:s.itf);(c.mch:BT_CMT_GEN_CSTR:s.itf);(d.imp:BT_CMT_GEN_CSTR:s.itf);(s.itf:BT_CIO:(s,file_dump)))) &
+  AddCfg(E.enm) &
+  AddCfg(a.mch) &
+  AddCfg(b.imp) &
+  AddCfg(c.mch) &
+  AddCfg(d.imp) &
+  AddGen(s.itf)
+ =>
+  update(E)(a)(b)(c)(d);
+
+/*
+  ReadEnumNameStore(E) &
+  GetJobs(X) &
+  AddJobs(X,((E.enm:BT_ENUM:0);(a.mch:BT_NML:0);(b.imp:BT_NML:0);(c.mch:BT_NML:0);(d.imp:BT_NML:0);(d.imp:BT_TRL:0);(d.imp:BT_LNK:0))) &
+  update(E)(a)(b)(c)(d)
+ =>
+  check_error_1(a)(b)(c)(d);
+
+  ReadEnumNameStore(E) &
+  GetJobs(X) &
+  bsearch((y:BT_GEN:0),X,Y) &
+  AddJobs(Y,((E.enm:BT_ENUM:0);(a.mch:BT_NML:0);(b.imp:BT_NML:0);(c.mch:BT_NML:0);(d.imp:BT_NML:0);(d.imp:BT_TRL:0);(d.imp:BT_LNK:0);(0:BT_TRN:0))) &
+  update(E)(a)(b)(c)(d)
+ =>
+  check_error_1(a)(b)(c)(d);
+
+  GetCurrentConstruct(R.t) &
+  IsCfg(R.enm) &                     /! interfacing an enm-gen !/
+  GetJobs(X) &
+  AddJobs(X,((a.mch:BT_NML:0);(b.imp:BT_NML:0);(c.mch:BT_NML:0);(d.imp:BT_NML:0);(d.imp:BT_TRL:0);(d.imp:BT_LNK:0))) &
+  update(a)(b)(c)(d)
+ =>
+  check_error_1(a)(b)(c)(d);
+*/
+
+/*
+  ReadEnumNameStore(?) &
+*/
+  GetJobs(X) &
+  AddJobs(X,((a.mch:BT_NML:0);(b.imp:BT_NML:0);(c.mch:BT_NML:0);(d.imp:BT_NML:0);(d.imp:BT_TRL:0);(d.imp:BT_LNK:0))) &
+  update(a)(b)(c)(d)
+ =>
+  check_error_1(a)(b)(c)(d);
+
+
+/*
+  GetCurrentConstruct(R.t) &
+  IsCfg(R.enm) &                     /! interfacing an enm-gen !/
+  GetJobs(X) &
+  bsearch((y:BT_GEN:0),X,Y) &
+  AddJobs(Y,((a.mch:BT_NML:0);(b.imp:BT_NML:0);(c.mch:BT_NML:0);(d.imp:BT_NML:0);(d.imp:BT_TRL:0);(d.imp:BT_LNK:0);(0:BT_TRN:0))) &
+  update(a)(b)(c)(d)
+ =>
+  check_error_1(a)(b)(c)(d);
+
+  ReadEnumNameStore(?) &
+  GetJobs(X) &
+  bsearch((y:BT_GEN:0),X,Y) &
+  AddJobs(Y,((a.mch:BT_NML:0);(b.imp:BT_NML:0);(c.mch:BT_NML:0);(d.imp:BT_NML:0);(d.imp:BT_TRL:0);(d.imp:BT_LNK:0);(0:BT_TRN:0))) &
+  update(a)(b)(c)(d)
+ =>
+  check_error_1(a)(b)(c)(d);
+
+
+  ReadEnumNameStore(E) &
+  GetCurrentConstruct(x.itf) &
+  check_error_1(bnewv(x,Io))(bnewv(x,IoI))(bnewv(x,Itf))(bnewv(x,ItfI)) &
+  Writef(("\n\n    Generated:\n      %Io.mch\n      %IoI.imp\n      %Itf.mch\n      %ItfI.imp\n      %.enm\n",x,x,x,x,E))
+ =>
+  check_error;
+
+  GetCurrentConstruct(R.t) &
+  IsCfg(R.enm) &                     /! interfacing an enm-gen !/
+  GetCurrentConstruct(x.itf) &
+  check_error_1(bnewv(x,Io))(bnewv(x,IoI))(bnewv(x,Itf))(bnewv(x,ItfI)) &
+  Writef(("\n\n    Generated:\n      %Io.mch\n      %IoI.imp\n      %Itf.mch\n      %ItfI.imp\n",x))
+ =>
+  check_error;
+*/
+
+/*
+  ReadEnumNameStore(?) &
+*/
+  GetCurrentConstruct(x.itf) &
+  check_error_1(bnewv(x,Io))(bnewv(x,IoI))(bnewv(x,Itf))(bnewv(x,ItfI)) &
+  Writef(("\n\n    Generated:\n      %Io.mch\n      %IoI.imp\n      %Itf.mch\n      %ItfI.imp\n",x))
+ =>
+  check_error;
+
+  CIOErrorFlagged &
+  OfferCIOFailureOptions
+ =>
+  check_error;
+
+/***
+HERE((a.mch|c.d|e|f|g))&
+***/
+  SetNonMotifItf &
+  ClearCIOError &
+  Writef(("\n  Generating Non-Motif INTERFACE % ",a)) &
+  WriteDot &
+  SetCurrentConstruct(a.itf) &
+  SetConstructImp(c.d) &
+  ModrRecImportedStore(e) &
+  ModrSeenNotImportedStore(f) &
+  CheckSeenNotImportedAgainst_SLIB_ldf(a,c) &
+  bcall(MODR:bmodr(CIOErrorX.2,(a.mch|c.d|e|f))) &
+  CIOParse &
+  ClearScalarFlag &
+  CIOGenerate &
+  check_error
+/***
+&print_database
+***/
+/***
+&print_type_info
+***/
+ =>
+  cio_2(a.mch|c.d|e|f|g)
+
+ /* (a.mch | c.imp | imported | seen not imported | output from GetLinkList) */
+
+END
+
+/*
+  cio_2(aaa.mch | aaa_1.imp | ?,nn_Nvar.mch,pp_Vvar.mch |
+      ?,String_TYPE.mch |  ?,nn_Nvar.mch,...)
+*/

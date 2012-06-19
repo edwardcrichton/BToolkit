@@ -1,0 +1,145 @@
+(
+ (?)
+ ;
+ (
+ (
+ (Rename_EVENT == (Rename_event = '1'))
+ )
+ |
+ (
+ (Rename_EVENT == (Rename_event = '1'))
+ )
+ )
+ )
+;
+(
+(VHDL_PK(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename , Rename_event)
+;
+(Rename , Rename_event)
+;
+(Rename : std_logic & Rename_event : std_logic)
+;
+(Rename : std_logic & Rename_event : std_logic)
+;
+(?)
+;
+(BEGIN
+ Rename := '0' ||
+ Rename_event := '0'
+ END)
+;
+(Rename , Rename_event := '0' , '0')
+;
+(Rename_chg,Rename_ack)
+;
+(Rename_chg , Rename_ack)
+;
+(Rename_EV(?):(?):(?))
+;
+(
+(
+ (Rename_chg)
+;
+ (? , Mod_Op , Det_Op , Rename_chg)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ IF Rename = '1' THEN
+ Rename := '0'
+ ELSE
+ Rename := '1'
+ END ||
+ Rename_event := '1'
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (
+ (Rename = '1')
+ )
+ ==>
+ (
+ (Rename := '0')
+ )
+ )
+ []
+ (
+ (
+ (not(Rename = '1'))
+ )
+ ==>
+ (
+ (Rename := '1')
+ )
+ )
+ )
+ ||
+ (
+ (Rename_event := '1')
+ )
+ )
+ )
+)
+,
+(
+ (Rename_ack)
+;
+ (? , Mod_Op , Det_Op , Rename_ack)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_event := '0'
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_event := '0')
+ )
+ )
+)
+)

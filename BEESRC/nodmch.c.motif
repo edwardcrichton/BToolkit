@@ -1,0 +1,386 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+int last_seq_tot = 0;
+
+print_live_seq(src)
+{
+  int ni, nj, nk, nfound, ntot;
+  static int live_seq = 0;
+/***
+return;
+***/
+  ntot = 0;
+  printf ( "->->->->-> %s\n", src );
+  for ( ni = 1 ; ni <= vnbs ; ni++ ) {
+    nfound = 0;
+    nj = 1;
+    while ( ( nj <= ttms ) && ( ! nfound ) ) {
+      if ( ni == tmbs [ nj ] ) nfound = 1;
+      nj++;
+    }
+    if ( ! nfound ) {
+/*      if ( ni >= 235 ) printf ( " %d", ni ); */
+      ntot++;
+    }
+  }
+  printf ( "             live seq=%d (=%d-%d dead) (max=%d)", ntot, vnbs, ttms,max_seq );
+  if ( ntot != vnbs-ttms) {
+    printf ( " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" );
+    printf ( "\n            dead seq: " );
+    for ( nj = 1 ; nj <= ttms ; nj ++ ) { printf ( "%d ", tmbs [ nj ] ); }
+    printf ( "(dead %d)\n", ttms );
+  }
+/*
+  printf ( "(%d)\n", ttms );
+*/
+  if ( live_seq ) {
+    if     ( live_seq > ntot ) printf ( "\n->->->->->->-> %d seq killed since last report\n", live_seq - ntot );
+    else                       printf ( "\n->->->->->->-> %d seq created since last report\n", ntot - live_seq );
+  }
+  else {
+    printf ( "\n" );
+  }
+  live_seq = ntot;
+}
+
+/*
+#define print_seq_info(src) \
+  if ( strlen ( src ) ) printf ( "          %s\n", src ); \
+  if ( (vnbs-ttms)-last_seq_tot == 0 ) \
+    printf ( "            seq: tot %d no diff\n", (vnbs-ttms) ); \
+  else if ( (vnbs-ttms)-last_seq_tot > 0 ) \
+    printf ( "            seq: tot %d diff +%d\n", (vnbs-ttms), (vnbs-ttms)-last_seq_tot); \
+    else \
+    printf ( "            seq: tot %d diff %d\n", (vnbs-ttms), (vnbs-ttms)-last_seq_tot); \
+  last_seq_tot = (vnbs-ttms); \
+  print_live_seq("")
+*/
+
+/***/
+#define print_seq_info(src) ;
+/***/
+
+/*
+#define print_live_nodes(src) \
+{ \
+  int ni, nj, nk, nfound, ntot; \
+  ntot = 0; \
+  printf ( "\n          %s\n            live nodes:", src ); \
+  for ( ni = 1 ; ni <= nod ; ni++ ) { \
+    nfound = 0; \
+    nj = 1; \
+    while ( ( nj <= nttm ) && ( ! nfound ) ) { \
+      if ( ni == ntmb [ nj ] ) nfound = 1; \
+      nj++; \
+    } \
+    if ( ! nfound ) { \
+      printf ( " %d", ni ); \
+      ntot++; \
+      if ( len ( sons_nod ( ni ) ) ) { \
+        printf ( "(%d", val ( sons_nod ( ni ), 1 ) ); \
+        for ( nk = 2 ; nk <= len ( sons_nod ( ni ) ) ; nk++ ) { \
+          printf ( " %d", val ( sons_nod ( ni ), nk ) ); \
+	} \
+        printf ( ")" ); \
+      } \
+    } \
+  } \
+  printf ( " (%d=%d-%d)\n            dead nodes: ", ntot, nod, nttm ); \
+  for ( nj = 1 ; nj <= nttm ; nj ++ ) { printf ( "%d ", ntmb [ nj ] ); } \
+  printf ( "(%d)\n", nttm ); \
+  print_seq_info(""); \
+}
+*/
+
+/***/
+#define print_live_nodes(src) ;
+/***/
+
+
+/*  ; return DONE  */
+                
+/*  NODE MACHINE DECLARATION  */
+                
+/*           
+int info[max_nod+1];
+int fath[max_nod+1];
+int cptr[max_nod+1];
+int sons[max_nod+1];
+int snbr[max_nod+1];
+int ntmb[max_nod+1];
+ */
+extern int info[];
+extern int fath[];
+extern int cptr[];
+extern int sons[];
+extern int snbr[];
+extern int ntmb[];
+extern int pssubrr[];
+extern int max_nod;
+int nod;
+int nttm;
+                  
+/*  PROGRAMS FOR NODE MACHINE  */
+                
+                  
+
+#define ini_nod nod=0; nttm=0
+
+#define info_nod(n)  info[n]
+
+#define fath_nod(n)  fath[n]
+
+#define cptr_nod(n)  cptr[n]
+
+#define sons_nod(n)  sons[n]
+
+#define snbr_nod(n)  snbr[n]
+mak_nodfunc()
+#define mak_nod mak_nodfunc()
+{register int n ;
+print_live_nodes("mak_nod");
+  if( nttm!=0 ){
+    n=ntmb[nttm];
+    nttm=nttm-1;
+  } else if( nod<max_nod ){
+    nod=nod+1;
+    n=nod;
+  } else {
+            if ( ! exit_flag ) {
+              exit_flag = 1;
+              max_toolfunc();
+              Popup_Info ( "     Node memory full!    " );
+	    }
+            else {
+              static int count = 0;
+              XmUpdateDisplay ( top_level );
+              sleep ( 1 );
+              count++;
+              if ( count == 5 ) exit___( 1 );
+	    }
+  }
+  return n;
+}
+
+sup_nod(n)
+{
+  nttm=nttm+1;
+  ntmb[nttm]=n;
+}
+
+cre_nod(i,f)
+{register int n,s ;
+  n=mak_nod;
+  s=sons_nod(f);
+  info_nod(n)=i;
+  fath_nod(n)=f;
+  cptr_nod(n)=0;
+  sons_nod(n)=cre(4);
+  psh(s,n);
+  snbr_nod(n)=len(s);
+}
+
+cre_nod_return_node(i,f)
+{register int n,s ;
+  n=mak_nod;
+  s=sons_nod(f);
+  info_nod(n)=i;
+  fath_nod(n)=f;
+  cptr_nod(n)=0;
+  sons_nod(n)=cre(4);
+  psh(s,n);
+  snbr_nod(n)=len(s);
+  return n;
+}
+
+cre_root_nod(i)
+{register int n ;
+  n=mak_nod;
+  info_nod(n)=i;
+  fath_nod(n)=0;
+  cptr_nod(n)=0;
+  sons_nod(n)=cre(4);
+  snbr_nod(n)=0;
+  return n;
+}
+
+kil_nod(n)
+{register int s,i,v ;
+  s=sons_nod(n);
+  itr(s,i,v,kil_nod(v));
+  kil(s);
+  sup_nod(n);
+/***
+printf ( " -->>-->> killing node %d\n", n );
+***/
+}
+
+
+#define itr_nod(n,i,v,s1,s2,s3) i=n; while( i!=fath_nod(n) ){ v=info_nod(i); if( cptr_nod(i)==0 ){ s1 ;}; if( cptr_nod(i)==len(sons_nod(i)) ){ cptr_nod(i)=0; s3; i=fath_nod(i) ;} else if( cptr_nod(i)==0 ){ cptr_nod(i)=1; i=fst(sons_nod(i)) ;} else { cptr_nod(i)=cptr_nod(i)+1; s2; i=val(sons_nod(i),cptr_nod(i)) ;}  ;}
+
+up_nod(p,n)    
+/*  remove recursion  */
+{register int f,s,m,up_nod_res ;
+  f=fath_nod(n);
+  if( f==fath_nod(p) ){
+    up_nod_res=0;
+  } else {
+    s=sons_nod(f);
+    m=snbr_nod(n);
+    if( m==len(s) ){
+      up_nod_res=up_nod(p,f);
+    } else {
+      up_nod_res=val(s,m+1);
+    };
+  }
+; return up_nod_res;
+}
+
+next_nod(p,n)
+{register int s,next_nod_res ;
+  s=sons_nod(n);
+  if( len(s)!=0 ){
+    next_nod_res=fst(s);
+  } else {
+    next_nod_res=up_nod(p,n);
+  }
+; return next_nod_res;
+}
+
+upp_nod(p,n)    
+/*  remove recursion  */
+{register int f,s,m,upp_nod_res ;
+  f=fath_nod(n);
+  if( f==fath_nod(p) ){
+    upp_nod_res=0;
+  } else {
+    s=sons_nod(f);
+    m=snbr_nod(n);
+    if( m==len(s) ){
+      upp_nod_res=upp_nod(p,f);
+    } else {
+      upp_nod_res=val(s,m+1);
+    };
+  }
+; return upp_nod_res;
+}
+
+nextp_nod(p,n)
+{register int s,nextp_nod_res ;
+  s=sons_nod(n);
+  if( len(s)!=0 ){
+    nextp_nod_res=fst(s);
+  } else {
+    nextp_nod_res=upp_nod(p,n);
+  }
+; return nextp_nod_res;
+}
+
+down_nod(n)
+{register int k,s ;
+  k=n;
+  s=sons_nod(k);
+  while( len(s)!=0 ){
+    k=lst(s);
+    s=sons_nod(k);
+}
+; return k;
+}
+
+prev_nod(p,n)
+{register int m,f,s,prev_nod_res ;
+  if( n==p ){
+    prev_nod_res=p;
+  } else {
+    m=snbr_nod(n);
+    if( m>1 ){
+      f=fath_nod(n);
+      s=sons_nod(f);
+      prev_nod_res=down_nod(val(s,m-1));
+    } else {
+      prev_nod_res=fath_nod(n);
+    };
+  }
+; return prev_nod_res;
+}
+
+#define itr_asc_nod(p,n,m,g,S) m=n; while( m!=fath_nod(p) ){ g=info_nod(m); S; m=fath_nod(m) ;}
+
+#define xst_asc_nod(p,n,m,g,P,S1,S2) stp=stp+1; stack[stp-1]=FALSE; m=n; while( m!=fath_nod(p) ){ g=info_nod(m); if( P ){ S1; stack[stp-1]=TRUE; m=fath_nod(p) ;} else { m=fath_nod(m) ;}  ;}; if( stack[stp-1]==FALSE ){ S2  ;}; stp=stp-1
+
+#define itr_next_nod(p,n,m,g,S) m=n; while( m!=0 ){ g=info_nod(m); S; m=next_nod(p,m) ;}
+sta_nodfunc()
+#define sta_nod sta_nodfunc()
+{
+/*
+  fprintf(bstdout,"      Max Number of Nodes:           ");
+  fprintf(bstdout,"%8d\n",max_nod);
+  fprintf(bstdout,"      Number of Used Nodes:          ");
+  fprintf(bstdout,"%8d\n",nod);
+  fprintf(bstdout,"      Number of Dead Nodes:          ");
+  fprintf(bstdout,"%8d\n",nttm);
+  fprintf(bstdout,"      Number of Live Nodes:          ");
+  fprintf(bstdout,"%8d\n\n",nod-nttm);
+*/
+  int i;
+  char buf [ 100 ];
+  strcpy ( buf, "\n\n          Max Number of Nodes:           ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, max_nod );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Used Nodes:          ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, nod );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Dead Nodes:          ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, nttm );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  strcpy ( buf, "\n          Number of Live Nodes:          ");
+  str_buf [ 0 ] = '\0';
+  CreNumInBuf ( str_buf, nod-nttm );
+  i = strlen ( str_buf );
+  while ( i++ < 8 ) strcat ( buf, " " );
+  strcat ( buf, str_buf );
+  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+}
+
+hello1(i,j)
+  unsigned int *i;
+  int j;
+{
+  return (*i%j);
+}
+
+hello2(i,j)
+  unsigned int *i;
+  int j;
+{
+  return (*i/j);
+}
+

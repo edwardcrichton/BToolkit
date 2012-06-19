@@ -1,0 +1,1398 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define DisplayErrorBox(x,y) \
+   bcall((CATL;SHELL):bshell(bcatl("$BKIT/BLIB/BPrompt '  ",x,"   ",y,"  '")))
+
+#define Bmodr(x,y) bcall(MODR:bmodr(x,y))
+
+
+/*
+#define BOX(x)  bcall(((WRITE;CATL;SHELL;ARI)~;BOXX)~:box(x))
+*/
+#define BOX(x)  Writef((x))&Writef("\n")
+
+#define SBOX(x) bcall((CATL;SHELL): \
+          bshell(bcatl("$BKIT/BLIB/BPrompt '",x,"'")))
+
+#define WritefRAW(a) \
+          bcall(((WRITE)~;WriteX)~:write(a))
+
+#define WritefNoARI(a) \
+          bcall(((CATL;SHELL;WRITE)~;WriteX)~:write(a))
+
+#define Writef(a) \
+          bcall(((CATL;SHELL;ARI~;WRITE)~;WriteX)~:write(a))
+
+#define Writef_sub(a) \
+          bcall(((CATL;SHELL;ARI~;WRITE)~;WriteX)~:write(a))
+
+
+#define HERERAW(N)    WritefRAW(("\n> % <\n",N))
+#define HERENOARI(N)  WritefNoARI(("\n> % <\n",N))
+#define HERE(N)       Writef(("\n> % <\n",N))
+/* #define HERE(N)       Writef((HERE:N)) */
+#define HERE1(N)      Writef(("(%)",N))
+#define HERE2(N)      Writef(("[%]",N))
+
+#define TIME bcall(SHELL:bshell("date"))
+
+#define BT_EDT             1
+#define BT_TYP             2
+#define BT_GBMI            3
+#define BT_DMU             4
+#define BT_ANL             5
+#define BT_ANM             6
+#define BT_POG             7
+#define BT_AUP             8
+#define BT_INP             9
+/*
+#define BT_RMK            10
+*/
+#define BT_NEW            11
+#define BT_RMV            12
+#define BT_SRC            13
+#define BT_RST            14
+#define BT_STA            15
+/* #define BT_SEL            16 */
+#define BT_EDT_ANL_POG    17
+#define BT_EDT_ANL        18
+#define BT_EDT_ANL_TYP    19
+#define BT_EDT_ANL_ANM    20
+#define BT_SHW            21
+#define BT_EDT_GBM        22
+#define BT_OPN            23
+#define BT_CMT_CSTR       24
+#define BT_CLO            25
+#define BT_PRV            26
+#define BT_GEN            27
+#define BT_OPN_HLP        28
+#define BT_OPN_PAL        29
+#define BT_CLO_HLP        30
+#define BT_CLO_PAL        31
+#define BT_TRN            32
+#define BT_RMV_LEV        33
+#define BT_MAIN           34
+/*
+#define BT_EDT_ANM_THY    35
+*/
+#define BT_LIB            36
+#define BT_TRL            37
+#define BT_LNK            38
+#define BT_ENUM           39
+#define BT_RMV_SGL        40
+#define BT_SRC_SGL        41
+#define BT_RUN            42
+#define BT_EDT_ENUM       43
+#define BT_RNM            44
+#define BT_SHELL          45
+#define BT_AUP_MAT_RMK    46
+#define BT_ENV            47
+#define BT_CMT_EDT        48
+#define BT_UTILS          49
+#define BT_RFRSH          50
+/*
+#define BT_RMK_NO_CHK     51
+*/
+#define BT_FRC_RMK        52
+#define BT_SAF_SVE        53
+/*
+#define BT_FIND           54
+*/
+#define BT_NML            55
+#define BT_EDT_NML        56
+#define BT_EDT_NML_POG    57
+#define BT_EDT_NML_ANM    58
+#define BT_CIO            59
+#define BT_EDT_CIO        60
+#define BT_LIB_FRC        61
+#define BT_EDT_NML_ANMT   62
+#define BT_SRC_FRC        63
+#define BT_CLO_ALL_EDT    64
+#define BT_REM_UNU_LIB    65
+#define BT_EXP            66
+#define BT_TLIB           67
+#define BT_DOC            68
+#define BT_RSTD           69
+#define BT_RSTC           70
+#define BT_ENUM_NML       71
+#define BT_GBO            72
+#define BT_EDT_GBO        73
+#define BT_PFP            74
+#define BT_PNP            75
+#define BT_PUP            76
+#define BT_UAP            77
+#define BT_TLIB_FRC       78
+#define BT_PEXP           79
+#define BT_PFP_RMK        80
+#define BT_GCBO           81
+#define BT_GCBMC          82
+#define BT_EDT_GCBO       83
+#define BT_EDT_GCBMC      84
+#define BT_CRE_SLIB       85
+#define BT_GBMI_REM       86
+#define BT_LP             87
+#define BT_MOTIF_INIT     88
+#define BT_MOTIF_QUIT     89
+#define BT_RSTP           90
+#define BT_SET_FLAGS      91
+#define BT_FIND_MOTIF     92
+
+#define BT_MOTIF_ERR_NO_BERR  94
+#define BT_CMT_NEW_MCH        95
+#define BT_CMT_NEW_REF        96
+#define BT_CMT_NEW_REF_ANL    97
+#define BT_CMT_NEW_IMP        98
+
+#define BT_CMT_NEW_BASE      100
+#define BT_CMT_NEW_ENUM      101
+#define BT_CMT_NEW_ENUM_ANL  102
+#define BT_CMT_NEW_ITF       103
+#define BT_CMT_NEW_ITF_ANL   104
+#define BT_CMT_NEW_DOC       105
+#define BT_CMT_NEW_DOC_CFG   106
+#define BT_CMT_EDT_MOTIF     107
+#define BT_CLO_M             108
+#define BT_SGL_STA           109
+#define BT_CK_PARSE          110
+#define BT_RM_ALL_JOBS       111
+#define BT_CNT_MINI_REMK     112
+#define BT_CMT_OPEN_CSTR     113
+#define BT_CMT_LIB_CSTR      114
+#define BT_NML_WITH_ENV      115
+#define BT_TLIB_WITH_ENV     116
+#define BT_LIB_FRC_WITH_ENV  117
+#define BT_DMU_WITH_ENV      118
+#define BT_DOC_WITH_ENV      119
+#define BT_POG_WITH_ENV      120
+#define BT_AUP_WITH_ENV      121
+#define BT_REF_ANL_WITH_ENV  122
+#define BT_IMP_ANL_WITH_ENV  123
+#define BT_ITF_ANL_WITH_ENV  124
+#define BT_CMT_GEN_CSTR      125
+#define BT_CMT_OPEN_GEN_CSTR 126
+#define BT_GBO_WITH_ENV      127
+#define BT_GBMI_WITH_ENV     128
+#define BT_ENUM_ANL_WITH_ENV 129
+#define BT_ENUM_WITH_ENV     130
+#define BT_CIO_WITH_ENV      131
+#define BT_TRL_WITH_IPT_SEES 132
+#define BT_SKIP              133
+#define BT_LNK_WITH_IPT      134
+#define BT_FIND_WITH_ENV     135
+#define BT_ANM_WITH_ENV      136
+#define BT_PFP_WITH_ENV      137
+#define BT_DOC_CFG_WITH_ENV  138
+#define BT_DMU_RMK           139
+#define BT_CIOM              140
+#define BT_CIOM_WITH_ENV     141
+#define BT_CIO_CIOM          142
+#define BT_ANM_FINI          143
+#define BT_NML_PRIORITY      144
+#define BT_NOOP              145
+#define BT_SUB_LIB_FRC       146
+/* #define BT_RST_MAIN          147 */
+#define BT_ENUM_DELAY        148
+#define BT_DMU_PARSE_ERR     149
+#define BT_LST_FLG           150
+#define BT_NML_TRL           151
+#define BT_BSEL              152
+/*
+#define BT_EXE_BGD           153
+*/
+#define BT_NOTPARSE          154
+#define BT_CDG               155
+/* BT_XTM_BGD hard-wired */
+#define BT_XTM_BGD           156
+#define BT_PASP_FIN          157
+#define BT_PASP_SLIB_HTX     158
+#define BT_CMT_NEW_MCH_VHDL  159
+#define BT_CMT_NEW_REF_VHDL  160
+#define BT_CMT_NEW_IMP_VHDL  161
+#define BT_CMT_OPEN_VHDL_CSTR 162
+#define BT_CMT_VHDL_CSTR     163
+#define BT_TRL_VHDL_WITH_IPT_SEES 164
+#define BT_CMT_NEW_ENM_VHDL  165
+#define BT_ENUM_VHDL_WITH_ENV 166
+#define BT_VHDL_LIB_FRC_WITH_ENV 167
+#define BT_VHDL_LIB_FRC       168
+#define BT_CMT_VHDL_LIB_CSTR  169
+#define BT_SUB_VHDL_LIB_FRC   170
+#define BT_CMT_NEW_CM_CFG_VHDL 171
+#define BT_NEW_DIR            172
+#define BT_CK_PARSE_BCOM      173
+#define BT_BCOM_NOTPARSE      174
+#define BT_VHDL_SLIB_HTX      175
+#define BT_CRE_VHDL_SLIB_1    176
+#define BT_CRE_VHDL_SLIB_2    177
+#define BT_VHDL_SYTX          178
+#define BT_PASP_SYTX          179
+#define BT_BTL_INI            180
+#define BT_BTL_RUN            181
+#define BT_INP_ASK_FINI       182
+#define BT_BTL_AUP_INI        183
+#define BT_BTL_AUP            184
+#define BT_BTL_AUP_INI_FIRST  185
+#define BT_BTL_FINI           186
+#define BT_PFP_BTL            187
+#define BT_PFP_RMK_BTL        188
+#define BT_PFP_WITH_ENV_BTL   189
+#define BT_PNP_BTL            190
+#define BT_CRE_HTML_WITH_ENV  191
+#define BT_CRE_HTML           192
+#define BT_IN_LINED_OPS       193
+#define BT_PROB_BINARY        194
+/* above also appears in BSession.c */
+#define BT_CHK_FOR_OPS        195
+#define BT_QUERY_LNK          196
+#define BT_ANM_EXE_STEP_WITH_ENV 197
+#define BT_ANM_EXE_AUTO_WITH_ENV 198
+#define BT_ANM_EXE_STEP       199
+#define BT_ANM_EXE_AUTO       200
+#define BT_ANM_EXE_STEP_FINI  201
+#define BT_ANM_EXE_AUTO_FINI  202
+#define BT_ANM_EMPTY_SCRIPT   203
+#define BT_MOTIF_PANIC_QUIT   204
+#define BT_BTL_RLD_REQ        205
+#define BT_BTL_RLD_FINI       206
+#define BT_PRINT_IN_LINED_OP  207
+#define BT_PRINT_EXTERN       208
+#define BT_CRE_PASP_SLIB      209
+
+
+
+/*  The following are the codes used for BNewMotif  */
+
+#define BT_QUIT_M              999000
+
+#define BT_MINI_RMK_M          999007
+/* #define BT_ANM_THY_CLO_M       999008 */
+/* #define BT_ANM_INI_STATE_M     999009 */
+/* #define BT_ANM_MINI_RMK_EDT_THY_M  999010*/
+
+#define BT_CMT_NOT_PARSE_M     999012
+#define BT_PROMPT_CFM_M        999013
+
+#define BT_GET_STRING_M        999015
+#define BT_GET_LIST_M          999016
+#define BT_GET_ONE_M           999017
+#define BT_EDT_PROCD_M         999018
+#define BT_ERR_M               999019
+
+
+#define BT_CURR_ENV_M          999024
+#define BT_TEXT_M              999025
+#define BT_RMV_EDT_M           999026
+#define BT_RECT_FAULT_M        999027
+#define BT_GET_L_ONE_M         999028
+#define BT_POB_RHL_M           999029
+#define BT_POB_RH__M           999030
+#define BT_POB_R_L_M           999031
+#define BT_POB_R___M           999032
+#define BT_LEM_RHR_M           999033
+#define BT_LEM_R_R_M           999034
+#define BT_LEM__HR_M           999035
+#define BT_LEM___R_M           999036
+
+
+#define BT_ANM_PRCD_M          999039
+#define BT_ANM_DISP_OP_M       999040
+#define BT_ANM_GET_OP_M        999041
+
+#define BT_LEM____RLD_FAIL_M   999043
+
+
+#define BT_GET_CHOICE_M        999046
+#define BT_PARSE_M             999047
+#define BT_REC_LISTS_M         999048
+#define BT_CIO_RMK_M           999049
+#define BT_TRL_M               999050
+#define BT_LNK_M               999051
+#define BT_PFP_M               999052
+#define BT_CRE_SLIB_M          999053
+#define BT_CRE_SLIB_FINI_M     999054
+#define BT_DMU_M               999055
+#define BT_INTERIM_COMP_JOBS_M 999056
+#define BT_CRE_SLIB_INI_M      999057
+#define BT_INTERRUPT_M         999058
+#define BT_ANM_UTILS_M         999059
+#define BT_MAIN_ENV_M          999060
+/*
+#define BT_ANM_MINI_RMK_ONLY_THY_M  999061
+*/
+/*
+#define BT_EXPORT_TLIB_DONE    999062
+*/
+#define BT_DMU_PRASE_ERROR_M   999063
+#define BT_INI_M               999064
+#define BT_ENV_M               999065
+/*
+#define BT_EXE_BGD_M           999066
+*/
+#define BT_CANT_DISCH_GOAL_M   999067
+#define BT_XTM_BGD_M           999068
+#define BT_DSP_FILE_M          999069
+#define BT_XTERM_REQD_M        999070
+#define BT_PMD_INCL_M          999071
+#define BT_POSTFIX_M           999072
+#define BT_BCATL_M             999073
+#define BT_TEXT_FROM_BCOM_M    999074
+#define BT_ADD_UND_M           999075
+#define BT_SPLIT_AT_FIRST_UND_M 999076
+#define BT_NEW_DIR_M           999077
+#define BT_BCOM_PARSE_M        999078
+#define BT_CRE_VHDL_SLIB_1_M   999079
+#define BT_CRE_VHDL_SLIB_2_M   999080
+#define BT_BITSTR2SET_M        999081
+#define BT_SPLIT_AT_SECOND_UND_M 999082
+#define BT_BTL_M               999083
+#define BT_INP_ASK_FINI_M      999084
+#define BT_BTL_AUP_M           999085
+#define BT_PFP_BTL_M           999086
+#define BT_PNP_BTL_M           999087
+#define BT_IPR_HYP_M           999088
+#define BT_IPR_THY_M           999089
+#define BT_IPR_RUL_M           999090
+#define BT_IPR_RUL_RANGE_M     999091
+
+
+#define BT_ANM_PRCD_FALSE_M    999094
+#define BT_EDT_ANM_THY_M       999095
+#define BT_MINOR_ERR_M         999096
+
+#define BT_FILE_PARSE_NEW_M    999098
+#define BT_CHK_MCH_NAME_PARSES_M 999099
+#define BT_CRE_HTML_RETURN_M   999100
+#define BT_LEM_RHR_NOT_PARSE_M 999101
+#define BT_IN_LINED_OPS_M      999102
+/* #define BT_C_PRE_PROCESS_M     999103 */
+#define BT_CHK_FOR_OPS_M       999104
+#define BT_ANM_MULTI_INP_M     999105
+#define BT_ANM_DSP_1_M         999106
+#define BT_ANM_DSP_2_M         999107
+#define BT_ANM_DSP_3_M         999108
+#define BT_MULTI_ERR_STR_M     999109
+#define BT_ANM_OK_CONT_M       999110
+#define BT_IPT_CLOSURE_M       999111
+#define BT_IPT_DSGN_CHK_M      999112
+#define BT_DUP_IPT_CHK_M       999113
+#define BT_QUERY_LNK_M         999114
+#define BT_PROB_BINARY_M       999115
+#define BT_ANM_GET_EXE_STEP_M  999116
+#define BT_ANM_EXE_STEP_FINI_M 999117
+#define BT_ANM_EXE_AUTO_FINI_M 999118
+#define BT_ANM_EMPTY_SCRIPT_M  999119
+#define BT_PASP_APP_UNDERSC_M  999120
+#define BT_PASP_MULTI_INP_M    999121
+#define BT_INFO_DONT_WAIT_M    999122
+#define BT_BTL_RLD_M           999123
+#define BT_PRINT_IN_LINED_OP_M 999124
+#define BT_PRINT_EXTERN_M      999125
+
+
+
+#define c_keywords_html \
+  ("while","do","for","case","switch","break","extern","if","else","else{","void","#include","#define","#ifdef","#ifndef","#else","#endif","extern","{","}","[","]","[]","int","char","FILE","printf","fprintf","return","register","unsigned","getchar","putchar","strlen","strcpy","strcat","fflush","stdout","gets","puts","fwrite","fread","sizeof","fopen","fclose","HISTORY","VERSION","DATE")
+
+#define PASP_keywords_html \
+  ("CONST","FILE","TRANSLATED","FILTERED","FROM","CREATED","BY","DATE","TIME","VERSION","MODULE","BEGIN","VAR","END","BOOLEAN","BYTE","UNSIGNED","IF","AND","OR","NOT","THEN","ELSE","UADD","USUB","UMUL","UDIV","UMOD","ULE","UGE","ULT","UGT","UEQ","UNE","UAND","UOR","UXOR","UNOT","BNOT","{>AT","{>","<}","IMPORT","EXPORT","PROCEDURE","FUNCTION","MEMORY_MAP","IS","ARRAY","OF","AT","READONLY","WRITEONLY","NVRAM","HISTORY","SLIB","SPEC","INTRODUCED","FOR","USED","{","}","[","]","WHILE","DO")
+
+
+#define amn_keywords_html \
+  {"MACHINE","REFINEMENT","IMPLEMENTATION","END"}
+
+
+#define Set_REASONING_DEPTH(x)  bcall(MODR:bmodr(ParseX.4,x))
+#define Read_REASONING_DEPTH(x) brule(ParseX.4,x)
+
+#define ModifyPROOFMETHODTactic(y,z) \
+		bcall((FLAT;MODR):bmodr(PROOFMETHODTacticX.1,(y,z)))
+#define ReadPROOFMETHODTactic(y,z) \
+		brule(PROOFMETHODTacticX.1,(y,z))
+#define RemovePROOFMETHODTactic \
+		bcall(MODR:bmodr(PROOFMETHODTacticX.1,?))
+
+#define LemmaIsBeingAttempted        brule(ProveLemmaX.1,1)
+#define POBIsBeingAttempted          brule(ProveLemmaX.1,0)
+
+#define DMU_Language_Flag_LaTeX2e 0
+#define DMU_Language_Flag_LaTeX   1
+#define DMU_Language_Flag_GML     2
+
+#define Prog_Language_Flag_ANSI_C 0
+#define Prog_Language_Flag_C      1
+#define Prog_Language_Flag_PLX    2
+#define Prog_Language_Flag_CICS   3
+#define Prog_Language_Flag_PASP   4
+
+
+#define FromMotifIsSet             brule(MotifSyncX.1,1)
+#define ResetFromMotif             bcall(MODR: bmodr(MotifSyncX.1,0))
+#define SetFromMotif               bcall(MODR: bmodr(MotifSyncX.1,1))
+
+#define ReadMotifSetFlag(x)      brule(MotifSyncX.1,x)
+#define SetMotifSetFlag(x)       bcall(MODR: bmodr(MotifSyncX.1,x))
+
+
+#define ModifyXTermFlag(x)   bcall(MODR:bmodr(MotifSyncX.2,x))
+#define ReadXTermFlag(x)     brule(MotifSyncX.2,x)
+#define SetWriteToXTerm      bcall(MODR:bmodr(MotifSyncX.2,1))
+#define SetDontWriteToXTerm  bcall(MODR:bmodr(MotifSyncX.2,0))
+#define IfWriteToXTerm       brule(MotifSyncX.2,1)
+
+
+#define WriteDot  Writef(".")
+
+
+ 
+#define ReadCurrentJob(x) brule(ParseX.5,x)
+
+#define ModifyCurrentJob(x)  bcall(MODR:bmodr(ParseX.5,x))
+
+
+
+#define LoadPersistentData \
+                bcall((PersistentDataX;MODR~;CATL;SHELL)~ : lpda_with_0)
+
+#define LoadPersistentDataWithoutGetUpDep \
+		bcall((PersistentDataX;MODR~;CATL;SHELL)~ : lpda_without_0)
+
+#define UnloadPersistentData \
+		bcall((PersistentDataX;WRITE;CATL;SHELL)~ : upda_0)
+
+#define UnloadPersistentDataWithNL \
+		bcall((MAP;PersistentDataX;WRITE;CATL;SHELL)~ : upda_nl_0)
+
+
+#define LoadAndSetFlagsFromMotif \
+                bcall((PersistentDataX;MODR~;CATL;SHELL)~ : lpda_env_motif_0)
+
+
+#define PrintToBses(a) bcall((PrintToBsesX;WRITE)~:ptbs(a))
+
+#define PrintBver      bcall((PrintToBsesX;WRITE)~:ptbs1)
+
+
+
+
+#define WriteSpace               Writef((" "))
+
+#define IfNewMotif               brule(ParseEnvX.2,5)
+
+#define IfMotif                  brule(ParseEnvX.2,5)
+
+#define IfToolkit(N)             brule(ParseX.1,N)
+
+
+
+
+#define LoadJobs            bcall((MODR;LoadUnloadJobsX)~:lj0)
+
+#define UnloadJobs          bcall((WRITE;LoadUnloadJobsX)~:uj0)
+
+#define LoadToolkit(N)           UnloadJobs & \
+                                 PrintToBses(N) & \
+                                 bhalt
+
+
+
+
+
+#define ModifyToolkitNumber(N)   bcall((FLAT;MODR): bmodr(ParseX.1,N))
+
+
+
+#define GetJobs(X)               brule(ParseX.2,(X))
+
+#define ModifyJobs(Y) \
+      bcall((FLAT;MODR): bmodr(ParseX.2,Y))
+
+#define AddJob(X,x) \
+      bcall((FLAT;CATL;NEWV;MODR): bmodr(ParseX.2,bflat(X;x)))
+
+#define AddJobs(X,x) \
+      bcall((FLAT;CATL;NEWV;MODR): bmodr(ParseX.2,bflat(X;x)))
+
+#define AddPriorityJob(X,x) \
+      bsearch(?,X,Z) & \
+      bcall((FLAT;NEWV;MODR): bmodr(ParseX.2,bflat(?;x;Z)))
+
+#define ClearJobs \
+      bcall((FLAT;MODR): bmodr(ParseX.2,?))
+
+#define NoJobs                   brule(ParseX.2,?)
+
+#define QuitRequested            brule(ParseX.2,_)
+
+
+
+#define GetCompletedJobs(X)        brule(ParseX.6,(X))
+
+#define ClearCompletedJobs         bcall(MODR:bmodr(ParseX.6,?))
+
+#define NoCompletedJobs            brule(ParseX.6,?)
+
+#define UnloadCompletedJobs \
+      bcall(((WRITE;MAP;MODR)~;LoadUnloadJobsX)~:ucj0)
+
+#define ModifyCompletedJobs(Y) \
+      bcall((ARI~;FLAT;CATL;MODR): bmodr(ParseX.6,Y))
+
+
+
+
+
+#define ResetAppendedCompletedJobsCount \
+		bcall(((SHELL)~;LoadUnloadJobsX)~:racjc1)
+
+#define ReadAppendedCompletedJobsCount(x) \
+		bget(".Bcjt",x)
+
+#define IncAppendedCompletedJobsCount \
+		bcall(((ARI;WRITE)~;LoadUnloadJobsX)~:iacjc0)
+
+
+
+/***
+now appended to .Bcjm as well, and keep count
+***/
+#define AddCompletedJobs(X,x) \
+      bcall((ARI~;FLAT;CATL;MODR): bmodr(ParseX.6,bflat(X;x))) & \
+      UnloadCompletedJobs & \
+      ClearCompletedJobs & \
+      IncAppendedCompletedJobsCount
+
+
+
+#define ModifyParseJob(x)  bcall(MODR:bmodr(ParseX.7,x))
+#define ClearParseJob      ModifyParseJob(?)
+#define ParseJob(x)        brule(ParseX.7,(x:BT_CK_PARSE:0))
+
+
+
+
+#define QuitToolkit              CloseEditProcesses & \
+                                 CloseHelpDirect & \
+                                 ClosePaletteDirect & \
+                                 ModifyJobs(?) & \
+                                 ModifyCompletedJobs(?) & \
+                                 PrintToBses(0)
+
+
+
+#define IfInterProver \
+    brule(InterProverFromUserX.11,1)
+#define SetInterProverFlag \
+    bcall((FLAT;MODR): bmodr(InterProverFromUserX.11,1))
+
+#define InterProverDepthIs(x)  brule(InterProverDepthX.1,x)
+
+
+#define SetAutoProverFlag \
+    bcall((FLAT;MODR): bmodr(InterProverFromUserX.11,2))
+#define IfAutoProver \
+    brule(InterProverFromUserX.11,2)
+
+#define IfProofPrinter \
+    brule(IsProofPrinterX.1,1)
+
+#define SetBToolProver \
+    bmodr(BToolProverFromUserX.5,1)
+#define IfBToolProver \
+    brule(BToolProverFromUserX.5,1)
+
+
+
+
+#define ModifyInput(z) \
+            bcall((FLAT;ARI~;MODR): bmodr(GetNumberFromUserX.1,z))
+
+#define ReadInput(z)               brule(GetNumberFromUserX.1,z)
+
+#define ReadNonZeroInput(z)        brule(GetNonZeroNumberFromUserX.1,z)
+
+#define ReadNumberOrQuitInput(z)   brule(GetNumberOrQuitFromUserX.1,z)
+
+
+/* error messages (are the first two needed?) */
+
+
+#define bwarn bsrv Warning berv
+
+#define berr bsrv ERROR berv
+
+#define InformNotConfigured(f) Writef(("\n    % is not configured",f))
+
+#define InformBpdFormatError Writef(("\n    Persistent Data format error"))
+
+#define InformUnknownEnvironment(x) Writef(("\nAlien environment: %\n\nKnown environments: \"TeleType\" \"SunView\" \"X\" \"Motif\"\n",berr,bsrv x berv))
+
+#define InformCantConnect(x) bcall(((CATL;SHELL)~;InformCantConnectX)~:icc0(x))
+
+#define InformCantExecute(f) Writef(bcatl("\n\n    Can't execute:\n\n      ",f,"\n\n"))
+
+
+
+/**************************************************************************/
+
+/************************************************
+    AutoProver/InterProver/ProofPrinter tactics
+************************************************/
+
+/***
+     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     THESE MUST AGREE WITH btl_fwd_tac in BMotif_globals.c
+     <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+***/
+
+#define REASONING_DEPTH_0_Tac \
+( \
+   ExpandHypX; \
+   PropertiesX; \
+   FwdPredicate0X; \
+   FwdEqual0X; \
+   FwdContra0X; \
+   ARI; \
+   SUB \
+)
+
+#define REASONING_DEPTH_1_Tac \
+( \
+   REASONING_DEPTH_0_Tac; \
+   FwdContra1X; \
+   FwdPredicate1X; \
+   FwdNotEqual1X; \
+   FwdEqual1X; \
+   FwdFunction1X; \
+   FwdRelation1X; \
+   FwdSequence1X; \
+   FwdInNat1X; \
+   FwdInSet1X; \
+   FwdInclusion1X; \
+   FwdNotInSet1X; \
+   FwdLessThanOrEqual1X; \
+   FwdLessThan1X \
+)
+
+#define REASONING_DEPTH_2_Tac \
+( \
+   REASONING_DEPTH_1_Tac; \
+   FwdContra2X; \
+   FwdPredicate2X; \
+   FwdNotEqual2X; \
+   FwdEqual2X; \
+   FwdFunction2X; \
+   FwdRelation2X; \
+   FwdSequence2X; \
+   FwdInNat2X; \
+   FwdInSet2X; \
+   FwdInclusion2X; \
+   FwdNotInSet2X; \
+   FwdLessThanOrEqual2X; \
+   FwdLessThan2X \
+)
+
+
+
+#define Tac_Rewrite_Simplify_FWD_0 \
+( \
+  ARI~; \
+  ( \
+    RewriteToFalseOrTrueX~; \
+    ( \
+      RewriteNonHypLogic1X; \
+      FLAT \
+    )~; \
+    RewriteHypLogic1X~;RewriteNonHypLogic2X;RewriteHypLogic2X \
+  )~; \
+  RewritePredicate0X~; \
+  RewriteRelation0X~; \
+  ( \
+    ARI~; \
+    RewriteNat0X \
+  )~; \
+  RewriteSet0X~; \
+  RewriteSequence0X~; \
+  ( \
+    ARI~; \
+    RewriteAlgebra0X \
+  )~; \
+  SUB~ \
+)
+
+#define Tac_Rewrite_Simplify_FWD_1 \
+( \
+  Tac_Rewrite_Simplify_FWD_0; \
+  RewritePredicate1X~; \
+  RewriteRelation1X~; \
+  ( \
+    ARI~; \
+    RewriteNat1X \
+  )~; \
+  RewriteSet1X~; \
+  RewriteSequence1X~; \
+  ( \
+    ARI~; \
+    RewriteAlgebra1X \
+  )~ \
+)
+
+#define Tac_Rewrite_Simplify_FWD_2 \
+( \
+  Tac_Rewrite_Simplify_FWD_1; \
+  RewritePredicate2X~; \
+  RewriteRelation2X~; \
+  ( \
+    ARI~; \
+    RewriteNat2X \
+  )~; \
+  RewriteSet2X~; \
+  RewriteSequence2X~; \
+  ( \
+    ARI~; \
+    RewriteAlgebra2X \
+  )~ \
+)
+
+
+
+/**************************************************************************/
+
+/********************************
+    POGenerator lemma tactics 
+
+********************************/
+
+#define POGLemmaFTac \
+    ( \
+       ExpandHypX~; \
+       PropertiesX~; \
+       FwdPOGTheoryX~; \
+       FwdEqual0X~; \
+       FwdContra0X~; \
+       ARI; \
+       SUB \
+    )~
+
+/*
+#define ProcessAndCreateLemmasTac \
+    ( \
+      ( \
+        ( \
+          ( \
+            ( \
+              ( \
+                (GEN;SUB~;SimplifyHypX~;DED;FLAT;ARI)~; \
+                ( \
+                  RewriteToFalseOrTrueX~; \
+                  (RewriteNonHypLogic1X;RewriteNonHypLogic2X;FLAT)~ \
+                )~; \
+                (GEN;SUB~;SimplifyHypX~;DED;FLAT;ARI)~; \
+                ( \
+                  RewriteToFalseOrTrueX~; \
+                  RewriteFromHypToFalseOrTrueX~; \
+                  (RewriteNonHypLogic1X;FLAT)~; \
+                  RewriteNonHypLogic2X~; \
+                  RewriteHypLogic1X; \
+                  FLAT~ \
+                )~ \
+              )~; \
+              RewriteHypLogic2X \
+            )~; \
+            ((GEN;SUB~;SimplifyHypX~;DED;FLAT;ARI)~;NotForAllToExistX)~; \
+            (OnePointRewriteX;SUB)~; \
+            (OnePointX;SUB)~; \
+            (DischargeExistX;ExistenceX~);\
+            POGTheory_DischargeExistX~ \
+          )~; \
+          CheckOrX~ \
+        )~; \
+        (FreeX~;(FactorX;MAP;FLAT~;MODR)~)~ \
+      )~; \
+      PrintLemmaX \
+    )~
+*/
+
+
+#define ProcessAndCreateLemmasTac \
+( \
+  ( \
+    ( \
+      ( \
+        ( \
+          ( \
+            ( \
+              (GEN;SUB~;SimplifyHypX~;DED;FLAT;ARI)~; \
+              ( \
+                (DischargeEnumMembershipX)~; \
+                (DischargeExistX;ExistenceX~)~; \
+                POGTheory_DischargeExistX~; \
+                (OnePointX;SUB)~; \
+                (OnePointRewriteX;SUB)~; \
+                ( \
+                  RewriteToFalseOrTrueX~; \
+                  (RewriteNonHypLogic1X;FLAT)~; \
+                  RewriteNonHypLogic2X; \
+                  FLAT~ \
+                )~ \
+              )~ \
+            )~; \
+            RewriteFromHypToFalseOrTrueX~; \
+            RewriteHypLogic1X~ \
+          ); \
+          RewriteHypLogic2X~ \
+        )~; \
+        NotForAllToExistX~; \
+        POGTheory_DischargeExistX~ \
+      )~; \
+      CheckOrX~ \
+    )~; \
+    (FreeX~;(FactorX;MAP;FLAT~;MODR)~)~; \
+    POGTheory_GeneralX~ \
+  )~; \
+  PrintLemmaX \
+)~
+
+
+
+#define SubsCalculus ((AnyX;FLAT)~;Expansion__subsX;ProcessSubsX)
+
+#define SpecInvariantLemmaTac \
+  ( \
+    ReplaceInvariantX; \
+    GEN; (NEWV~;SUB)~; \
+    SimplifyHypX~; \
+    ( \
+       (FLAT~;(GEN;SimplifyHypX~;DED)~;ARI~;SpecCalculusX;RULE;ARI~;MODR)~; \
+       SubsCalculus \
+    )~ \
+  )
+
+#define RefInvariantLemmaTac \
+  ( \
+    FLAT~; \
+    ReplaceInvariantX; \
+    GEN; (NEWV~;SUB)~; \
+    (SimplifyHypX~;DED)~; \
+    InitRefCalculusX; \
+    ( \
+       (FLAT~;(GEN;SimplifyHypX~;DED)~;ARI~;RefCalculusX;RULE;ARI~;MODR)~; \
+       SubsCalculus \
+    )~ \
+  )
+
+#define NonSubstitutionRefInvariantLemmaTac \
+  ( \
+    ( \
+       (FLAT~;(GEN;SimplifyHypX~;DED)~;ARI~;RefCalculusX;RULE;ARI~;MODR)~; \
+       SubsCalculus \
+    )~ \
+  )
+
+
+#define ProcessAndCreateLemmas(a) \
+         bcall((ProcessAndCreateLemmasTac,POGLemmaFTac) : (a))
+
+#define ProcessSpecPOBthroughCalculus(a) \
+          bcall((SpecInvariantLemmaTac,POGLemmaFTac):(a))
+
+#define ProcessRefPOBthroughCalculus(a) \
+          bcall((RefInvariantLemmaTac,POGLemmaFTac):(a))
+
+
+
+/*************************************************************/
+
+
+
+#define InformConfigError     Writef(("\n\n    % error\n",bsrv Dependency berv))
+
+#define InformDependencyError Writef(("\n\n    % error\n",bsrv Dependency berv))
+
+#define InformCurrentError    Writef(("\n\n    % error\n",bsrv Configuration berv))
+
+#define InformCheckPointError Writef(("\n\n    % error\n",bsrv CheckPoint berv))
+
+
+#define ReadDependencies(z)   brule(DependencyX.1,(z))
+
+#define ModifyDependencies(z) \
+      bcall((ARI~;FLAT;MODR): bmodr(DependencyX.1,z))
+
+#define ReadCurrentState(z)     brule(CurrentX.1,(z))
+
+#define ModifyCurrentState(z) \
+      bcall((ARI~;FLAT;MODR): bmodr(CurrentX.1,z)) & \
+      SetBpdaFlag
+
+#define ReadCheckPointState(z)    brule(CheckPointX.1,(z))
+#define ModifyCheckPointState(z) \
+      bcall((ARI~;FLAT;MODR): bmodr(CheckPointX.1,z))
+
+#define ReadCurrentlySelectedConstruct(z)    brule(ShowOptionsX.1,(z))
+#define NoCurrentlySelectedConstruct         brule(ShowOptionsX.1,?)
+#define ModifyCurrentlySelectedConstruct(z)  \
+          bcall((FLAT;MODR): bmodr(ShowOptionsX.1,z))
+
+
+#define  NormaliserErrorFlagged   brule(NormaliserErrorX.1,1)
+
+#define  AnalyserErrorFlagged          brule(AnalyserErrorX.1,1)
+#define  AnalyserAbortErrorFlagged     brule(AnalyserErrorX.2,1)
+
+#define  TypeCheckerErrorFlagged  brule(TypeCheckerMessageX.1,1)
+
+#define  POGeneratorErrorFlagged  brule(POGeneratorErrorX.1,1)
+
+#define  AutoProverErrorFlagged   brule(AutoProverErrorX.1,1)
+
+#define GenBaseErrorFlagged       brule(GBErrorX.1,1)
+
+#define GenCBErrorFlagged         brule(GCBErrorX.1,1)
+
+#define  DMUErrorFlagged          brule(DMUErrorX.1,1)
+
+#define  LPErrorFlagged           brule(LPErrorX.1,1)
+
+#define  CommitErrorFlagged       brule(CommitErrorX.1,1)
+
+#define  TRLErrorFlagged          brule(TRLErrorX.1,1)
+
+#define  LNKErrorFlagged          brule(LNKErrorX.1,1)
+
+#define  EnumErrorFlagged         brule(EnumErrorX.1,1)
+
+#define  CIOErrorFlagged          brule(CIOErrorX.1,1)
+
+#define  ThmErrorFlagged          brule(ThmErrorX.1,1)
+
+
+
+#define blank_space  blank0? blank2 blank0? 
+
+
+
+#define ModifyUpDep(z)  bcall(MODR: bmodr(GetUpDepX.1,z))
+
+#define GetUpDep(a)     bcall(((GetUpDepX~;MODR)~):gud0(a))
+
+#define ClearUpDep      bcall(MODR: bmodr(GetUpDepX.1,?))
+
+#define ReadUpDep(a)    brule(GetUpDepX.1,a)
+
+#define NoUpDep         brule(GetUpDepX.1,?)
+
+
+
+#define GetDnDep(a)  bcall(((GetDnDepX~;MODR)~):gdd0(a))
+
+#define ReadDnDep(a) brule(GetDnDepX.1,(a))
+
+#define NoDnDep      brule(GetDnDepX.1,?)
+
+
+#define ShowUpDep(a) bcall((((WRITE;ShowUpDepX)~;REV;MAP)~):sud0(a))
+
+#define ShowDnDep(a) bcall((((WRITE;ShowDnDepX)~;MAP)~):sdd0(a))
+
+
+#define RecordLastUpDep(x) bcall(MODR: bmodr(GetUpDepX.2,x))
+
+#define RecordLastDnDep(x) bcall(MODR: bmodr(GetDnDepX.2,x))
+
+
+#define CleanLastUpDep  bcall(MODR: bmodr(GetUpDepX.2,?))
+
+#define CleanLastDnDep  bcall(MODR: bmodr(GetDnDepX.2,?))
+
+
+#define ReadLastUpDep(x)  brule(GetUpDepX.2,(x))
+
+#define ReadLastDnDep(x)  brule(GetDnDepX.2,(x))
+
+
+
+#define RemUpDnDep(a) \
+ bcall((((NEWV;MAP;WRITE;CATL;FLAT;MODR;SHELL;ARI)~;RemUpDnDepX)~): \
+							rem_up_dn_dep(a))
+
+#define ResetUpCrtCfg(a) \
+ bcall((((NEWV;MAP;WRITE;CATL;FLAT;MODR;SHELL;ARI)~;ResetUpCrtCfgX)~): \
+							reset_up_crt_cfg(a))
+
+
+#define RemUpDnDocDep(a) \
+ bcall((((MAP;MODR)~;RemUpDnDocDepX)~): rem_up_dn_dep_doc_init(a))
+
+#define ResetUpCrtCfgDoc(a) \
+ bcall((((MAP;MODR)~;ResetUpCrtCfgDocX)~): reset_up_crt_cfg_doc(a))
+
+
+
+#define KillEdit_On_CommitFlagSet        brule(KillEditOnCommitX.1,0)
+
+#define DoNotKillEdit_On_CommitFlagSet   brule(KillEditOnCommitX.1,1)
+
+#define ReadEdit_On_CommitFlag(x)        brule(KillEditOnCommitX.1,(x))
+
+#define SetKillEdit_On_CommitFlag \
+	bcall(MODR: bmodr(KillEditOnCommitX.1,0))
+
+#define SetDoNotKillEdit_On_CommitFlag \
+	bcall(MODR: bmodr(KillEditOnCommitX.1,1))
+
+#define SetEdit_On_CommitFlag(x) \
+	bcall(MODR: bmodr(KillEditOnCommitX.1,x))
+
+
+
+
+#define SetRemake_pog_on_Flag   bcall(MODR: bmodr(RemakeX.1,1))
+
+#define SetRemake_pog_off_Flag  bcall(MODR: bmodr(RemakeX.1,0))
+
+#define Remake_pog_on_FlagSet   brule(RemakeX.1,1)
+
+#define Remake_pog_off_FlagSet  brule(RemakeX.1,0)
+
+#define SetRemake_pog_Flag(x)   bcall(MODR: bmodr(RemakeX.1,x))
+
+#define ReadRemake_pog_Flag(x)  brule(RemakeX.1,(x))
+
+
+
+
+#define SetRemake_apr_on_ppf_on_Flag   bcall(MODR: bmodr(RemakeX.2,3))
+
+#define SetRemake_apr_off_ppf_on_Flag  bcall(MODR: bmodr(RemakeX.2,2))
+
+#define SetRemake_apr_on_ppf_off_Flag   bcall(MODR: bmodr(RemakeX.2,1))
+
+#define SetRemake_apr_off_ppf_off_Flag  bcall(MODR: bmodr(RemakeX.2,0))
+
+#define Remake_apr_on_ppf_on_FlagSet    brule(RemakeX.2,3)
+
+#define Remake_apr_off_ppf_on_FlagSet   brule(RemakeX.2,2)
+
+#define Remake_apr_on_ppf_off_FlagSet   brule(RemakeX.2,1)
+
+#define Remake_apr_off_ppf_off_FlagSet  brule(RemakeX.2,0)
+
+#define SetRemake_apr_Flag(x)   bcall(MODR: bmodr(RemakeX.2,x))
+
+#define ReadRemake_apr_Flag(x)  brule(RemakeX.2,(x))
+
+
+
+
+
+#define SetRemake_dmu_on_Flag   bcall(MODR: bmodr(RemakeX.3,1))
+
+#define SetRemake_dmu_off_Flag  bcall(MODR: bmodr(RemakeX.3,0))
+
+#define Remake_dmu_on_FlagSet   brule(RemakeX.3,1)
+
+#define Remake_dmu_off_FlagSet  brule(RemakeX.3,0)
+
+#define SetRemake_dmu_Flag(x)   bcall(MODR: bmodr(RemakeX.3,x))
+
+#define ReadRemake_dmu_Flag(x)  brule(RemakeX.3,(x))
+
+
+
+#define SetRemake_trl_on_Flag   bcall(MODR: bmodr(RemakeX.4,1))
+
+#define SetRemake_trl_off_Flag  bcall(MODR: bmodr(RemakeX.4,0))
+
+#define Remake_trl_on_FlagSet   brule(RemakeX.4,1)
+
+#define Remake_trl_off_FlagSet  brule(RemakeX.4,0)
+
+#define SetRemake_trl_Flag(x)   bcall(MODR: bmodr(RemakeX.4,x))
+
+#define ReadRemake_trl_Flag(x)  brule(RemakeX.4,(x))
+
+
+
+#define SetRemake_lnk_on_Flag   bcall(MODR: bmodr(RemakeX.5,1))
+
+#define SetRemake_lnk_off_Flag  bcall(MODR: bmodr(RemakeX.5,0))
+
+#define Remake_lnk_on_FlagSet   brule(RemakeX.5,1)
+
+#define Remake_lnk_off_FlagSet  brule(RemakeX.5,0)
+
+#define SetRemake_lnk_Flag(x)   bcall(MODR: bmodr(RemakeX.5,x))
+
+#define ReadRemake_lnk_Flag(x)  brule(RemakeX.5,(x))
+
+
+
+#define SetRemake_cio_on_Flag   bcall(MODR: bmodr(RemakeX.6,1))
+
+#define SetRemake_cio_off_Flag  bcall(MODR: bmodr(RemakeX.6,0))
+
+#define Remake_cio_on_FlagSet   brule(RemakeX.6,1)
+
+#define Remake_cio_off_FlagSet  brule(RemakeX.6,0)
+
+#define SetRemake_cio_Flag(x)   bcall(MODR: bmodr(RemakeX.6,x))
+
+#define ReadRemake_cio_Flag(x)  brule(RemakeX.6,(x))
+
+
+
+
+
+#define ShowToScreenFlagSet         brule(ShowDirectX.1,0)
+
+#define ShowToPrinterFlagSet        brule(ShowDirectX.1,1)
+
+#define ReadShownFlag(y)            brule(ShowDirectX.1,(y))
+
+#define SetShowToScreenFlag         bcall(MODR: bmodr(ShowDirectX.1,0))
+
+#define SetShowToPrinterFlag        bcall(MODR: bmodr(ShowDirectX.1,1))
+
+#define SetShowFlag(y)              bcall(MODR: bmodr(ShowDirectX.1,y))
+
+
+
+
+#define Set_hid_LIB_on_Flag   bcall(MODR: bmodr(ShowOptionsX.11,1))
+
+#define Set_hid_LIB_off_Flag  bcall(MODR: bmodr(ShowOptionsX.11,0))
+
+#define hid_LIB_on_FlagSet    brule(ShowOptionsX.11,1)
+
+#define hid_LIB_off_FlagSet   brule(ShowOptionsX.11,0)
+
+#define Set_hid_LIB_Flag(x)   bcall(MODR: bmodr(ShowOptionsX.11,x))
+
+#define Read_hid_LIB_Flag(x)  brule(ShowOptionsX.11,(x))
+
+
+
+
+#define Set_hid_gen_on_Flag   bcall(MODR: bmodr(ShowOptionsX.12,1))
+
+#define Set_hid_gen_off_Flag  bcall(MODR: bmodr(ShowOptionsX.12,0))
+
+#define hid_gen_on_FlagSet    brule(ShowOptionsX.12,1)
+
+#define hid_gen_off_FlagSet   brule(ShowOptionsX.12,0)
+
+#define Set_hid_gen_Flag(x)   bcall(MODR: bmodr(ShowOptionsX.12,x))
+
+#define Read_hid_gen_Flag(x)  brule(ShowOptionsX.12,(x))
+
+
+
+#define Set_hid_sub_tree_Flag(x)   bcall(MODR: bmodr(ShowOptionsX.13,x))
+
+#define Read_hid_sub_tree_Flag(x)  brule(ShowOptionsX.13,(x))
+
+
+#define Set_dep_Flag(x)        bcall(MODR: bmodr(ShowOptionsX.14,x))
+
+#define Read_dep_Flag(x)       brule(ShowOptionsX.14,(x))
+
+#define Set_show_dep_Flag      bcall(MODR: bmodr(ShowOptionsX.14,1))
+
+#define Set_no_show_dep_Flag   bcall(MODR: bmodr(ShowOptionsX.14,0))
+
+#define Show_dep_Flag_set      brule(ShowOptionsX.14,1)
+
+#define No_Show_dep_Flag_set   brule(ShowOptionsX.14,0)
+
+
+
+#define Set_DMU_Labels_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.15,x))
+
+#define No_DMU_Labels_Flag_set       brule(ShowOptionsX.15,0)
+
+#define DMU_Labels_Flag_set          brule(ShowOptionsX.15,1)
+
+
+
+
+#define Set_DMU_ClIndex_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.16,x))
+
+#define No_DMU_ClIndex_Flag_set       brule(ShowOptionsX.16,0)
+
+#define DMU_ClIndex_Flag_set          brule(ShowOptionsX.16,1)
+
+
+
+#define Set_DMU_CoIndex_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.17,x))
+
+#define No_DMU_CoIndex_Flag_set       brule(ShowOptionsX.17,0)
+
+#define DMU_CoIndex_Flag_set          brule(ShowOptionsX.17,1)
+
+
+
+#define Set_DMU_GIndex_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.18,x))
+
+#define No_DMU_GIndex_Flag_set       brule(ShowOptionsX.18,0)
+
+#define DMU_GIndex_Flag_set          brule(ShowOptionsX.18,1)
+
+
+
+
+#define Set_Prog_Language_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.19,x))
+
+#define Read_Prog_Language_Flag(x)      brule(ShowOptionsX.19,(x))
+
+#define ANSI_C_Prog_Language_Flag_set   brule(ShowOptionsX.19,0)
+
+#define C_Prog_Language_Flag_set        brule(ShowOptionsX.19,1)
+
+#define PLX_CMS_Prog_Language_Flag_set  brule(ShowOptionsX.19,2)
+
+#define PLX_CICS_Prog_Language_Flag_set brule(ShowOptionsX.19,3)
+
+#define PASP_Prog_Language_Flag_set     brule(ShowOptionsX.19,4)
+
+#define Set_C_Prog_Language_Flag        bcall(MODR: bmodr(ShowOptionsX.19,1))
+
+#define Set_PLX_CMS_Prog_Language_Flag  bcall(MODR: bmodr(ShowOptionsX.19,2))
+
+#define Set_PLX_CICS_Prog_Language_Flag bcall(MODR: bmodr(ShowOptionsX.19,3))
+
+#define Set_PASP_Prog_Language_Flag     bcall(MODR: bmodr(ShowOptionsX.19,4))
+
+
+
+#define Set_DMU_Language_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.20,x))
+
+#define Read_DMU_Language_Flag(x)      brule(ShowOptionsX.20,(x))
+
+#define Latex2e_DMU_Language_Flag_set  brule(ShowOptionsX.20,0)
+
+#define Latex_DMU_Language_Flag_set    brule(ShowOptionsX.20,1)
+
+#define GML_DMU_Language_Flag_set      brule(ShowOptionsX.20,2)
+
+#define Set_Latex2e_DMU_Language_Flag  bcall(MODR: bmodr(ShowOptionsX.20,0))
+
+#define Set_Latex_DMU_Language_Flag    bcall(MODR: bmodr(ShowOptionsX.20,1))
+
+#define Set_GML_DMU_Language_Flag      bcall(MODR: bmodr(ShowOptionsX.20,2))
+
+
+
+
+#define Set_Point_Size_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.21,x))
+
+#define Ten_Point_Size_Flag_set      brule(ShowOptionsX.21,10)
+
+#define Eleven_Point_Size_Flag_set   brule(ShowOptionsX.21,11)
+
+#define Twelve_Point_Size_Flag_set   brule(ShowOptionsX.21,12)
+
+
+
+#define Set_DMU_eps_Flag(x)          bcall(MODR: bmodr(ShowOptionsX.24,x))
+
+#define DMU_eps_Flag_set             brule(ShowOptionsX.24,1)
+
+#define DMU_eps_Flag_not_set         brule(ShowOptionsX.24,0)
+
+
+
+#define BASE_PICTURE_TOOL_VERSION    brule(ShowOptionsX.3,1)
+
+#define Set_Base_Picture_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.22,x))
+
+#define Read_Base_Picture_Flag(x)      brule(ShowOptionsX.22,(x))
+
+#define No_Base_Picture_Flag_set       brule(ShowOptionsX.22,0)
+
+#define Base_Picture_Flag_set          brule(ShowOptionsX.22,1)
+
+#define Set_No_Base_Picture_Flag_set   bcall(MODR: bmodr(ShowOptionsX.22,0))
+
+#define Set_Base_Picture_Flag_set      bcall(MODR: bmodr(ShowOptionsX.22,1))
+
+
+
+#define Set_Latex_Proof_Flag(x)       bcall(MODR: bmodr(ShowOptionsX.23,x))
+
+#define Read_Latex_Proof_Flag(x)      brule(ShowOptionsX.23,(x))
+
+#define No_Latex_Proof_Flag_set       brule(ShowOptionsX.23,0)
+
+#define Latex_Proof_Flag_set          brule(ShowOptionsX.23,1)
+
+#define Set_No_Latex_Proof_Flag_set   bcall(MODR: bmodr(ShowOptionsX.23,0))
+
+#define Set_Latex_Proof_Flag_set      bcall(MODR: bmodr(ShowOptionsX.23,1))
+
+
+
+
+
+#define RemoveAssociatedFilesAndEditsTac \
+         ((NEWV;CATL;SHELL;ARI)~;RemoveAssociatedFilesAndEditsX)~
+
+#define RemoveAssociatedFilesAndEdits(x) \
+         bcall(RemoveAssociatedFilesAndEditsTac: \
+                  ( \
+                    rem_assoc_latex_files(x) & \
+                    rem_assoc_files(x) & \
+                    kill_assoc_edits(x) \
+                  ) \
+              )
+
+#define DefinitelyRemoveAssociatedFilesAndEdits(x) \
+         bcall(RemoveAssociatedFilesAndEditsTac: \
+                  ( \
+                    rem_assoc_latex_files(x) & \
+                    rem_assoc_files(x) & \
+                    definitely_kill_assoc_edits(x) \
+                  ) \
+              )
+
+#define RemoveAssociatedLatexFilesAndEdits(x) \
+         bcall(RemoveAssociatedFilesAndEditsTac: \
+                  ( \
+                    rem_assoc_latex_files(x) & \
+                    kill_assoc_edits(x) \
+                  ) \
+              )
+
+#define DefinitelyRemoveAssociatedLatexFilesAndEdits(x) \
+         bcall(RemoveAssociatedFilesAndEditsTac: \
+                  ( \
+                    rem_assoc_latex_files(x) & \
+                    definitely_kill_assoc_edits(x) \
+                  ) \
+              )
+
+
+#define removeTac ((ARI;WRITE;MAP;MODR~;CATL;SHELL)~;RemoveX)~
+
+#define RemoveUnusedLIB	bcall(removeTac:rm_unu_LIB_0)
+
+#define InformNoUnuLIB   Writef(("\n    No unused LIB constructs\n"))
+
+#define InformTEAMLIBNotSet \
+	Writef(("\n  Environment variable BTEAMLIB not set\n"))
+

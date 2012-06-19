@@ -1,0 +1,37 @@
+REFINEMENT
+
+  MaxSoFarR
+
+REFINES
+
+  MaxOfSet
+
+VARIABLES
+
+  maxnum
+
+INVARIANT
+
+  maxnum : NAT & 
+
+  maxnum = max({0} \/ numset) 
+  
+
+INITIALISATION
+
+  maxnum := 0
+
+OPERATIONS
+
+  enter(new) = 
+     PRE
+       new : NAT1
+     THEN
+       maxnum := max({maxnum,new})
+     END;
+
+  mx <-- maximum = 
+    BEGIN mx := maxnum END
+
+END
+

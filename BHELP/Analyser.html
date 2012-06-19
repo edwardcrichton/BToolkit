@@ -1,0 +1,165 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Analyser</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#66FFFF" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Analyser"></A>
+<H1>
+The Analyser (anl)</H1>
+Analysis is the first stage of processing necessary for a <A HREF="AMNotation.html#MACHINE">MACHINE</A>,
+<A HREF="AMNotation.html#REFINEMENT">REFINEMENT</A> or <A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>
+and is a prerequisite for the application of the <A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerator
+(pog)</A> --- and hence the <A HREF="AutoProver.html#AutoProver">Provers</A>
+--- the <A HREF="Animator.html#Animator">Animator (anm)</A> and <A HREF="DocumentMarkUp.html#Document_Mark_Up">Documentation
+Tool (dmu)</A>.
+
+<P>The <A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerator</A>
+automatically invokes the Analyser for a construct which has not been analysed.
+Thus for a newly-introduced MACHINE, REFINEMENT or IMPLEMENTATION only
+the Editor, Analyser and POGenerator options are available.
+
+<P>The Analyser (anl) is invoked from the <A HREF="BToolkit.html#Environments!Main">Main
+Environment</A>, and is applicable to all specifications, refinements and
+implementations not currently analysed.
+
+<P>Analysis comprises three distinct phases: normalisation, syntax-checking
+and type-checking. The&nbsp;<A NAME="Normaliser"></A>Normaliser produces
+an internal form ---&nbsp;<A NAME="Analysed_Form"></A>the analysed form
+--- for the construct, expanding subordinate constructs where necessary.
+The SyntaxChecker performs syntactic checks on the construct, and the TypeChecker
+performs checks for type correctness.
+
+<P>If the Analyser succeeds, an internal form of the construct is created
+and stored in the directory ANL, and a summary of the type information
+(in internal form) is placed in a ``<A NAME="Type_File"></A>Type File''
+in the TYP directory, for use by the other tools.
+
+<P>The dependencies between parent and subordinate constructs are built
+up and recorded by the Analyser. Any record of such a dependency will be
+removed when the parent or one of its subordinates has been edited such
+that the mathematical content is changed, and the change committed (by
+one of the <A HREF="Commit.html#Commit">Commit</A>, <A HREF="Close.html#Close">Close</A>
+or <A HREF="Remake.html#Remake">Remake</A> tools); the parent's analysed
+form (and all subsequent processing on the construct) will also be lost
+(although it may be automatically reconstructed using the Remake tool).
+
+<P>If an error is detected during analysis then the <A HREF="MiniRemake.html#MiniRemake">MiniRemake</A>
+option is offered.
+
+<P>A by-product of Analysis is the creation of a <A HREF="Hypertext.html">hypertext
+file</A> for the analysed construct, containing links to all subordinate
+constructs.
+<H2>
+Edited Files</H2>
+If the Analyser is requested for a construct which is being currently <A HREF="Editor.html#Editor">edited</A>,
+and the edited version (i.e. that version in the <A HREF="BToolkit.html#Development_Environment">SRC</A>
+directory) differs from that of the committed version (in the system CFG
+directory), three options are offered:-
+<UL>
+<LI>
+Proceed after committing</LI>
+
+<LI>
+Proceed without committing</LI>
+
+<LI>
+Show Difference (between the SRC and CFG files)</LI>
+</UL>
+Accepting the commit option will have the same effect as that described
+for the <A HREF="Commit.html#Commit>Commit</A> tool.<P><H2>Subordinate Constructs</H2>The <A HREF=" Analyser.html#Normaliser>Normaliser</A>
+will need to access the analysed form for all constructs subordinate to
+that which is being currently analysed. (A construct `A' is dependent on
+a construct `B' if `A' <A HREF="Structuring.html#SEES_Clause!Using">SEES</A>,
+<A HREF="Structuring.html#USES_Clause!Using">USES</A>, <A HREF="Structuring.html#INCLUDES_Clause!Using">INCLUDES</A>,
+<A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTS</A> or <A HREF="Structuring.html#REFINES_Clause">REFINES</A>
+`B.' Conversely, `B' is said to be a subordinate construct of `A'.)
+
+<P>If a subordinate construct is configured but not currently analysed,
+the subordinate construct will first be analysed; this process is recursive.
+
+<P>If a subordinate construct is not configured, the Normaliser will search
+first in the <A HREF="SystemLibrary.html#System_Library">SLIB</A> directory
+(taking account of any `dot rename' prefixes), and then the <A HREF="BToolkit.html#Development_Environment">SRC</A>
+directory; if found, it will first be introduced and then analysed.
+
+<P>If the above search is not successful, the Normaliser will check to
+see whether the subconstruct is generated from an <A HREF="Enumerator.html#Enumerator">ENUMERATION</A>;
+if the appropriate enumeration is configured, it will be generated. If
+the enumeration is not configured but exists in the <A HREF="BToolkit.html#Development_Environment">SRC</A>
+directory, it is first committed and the the machine generated.
+<H2>
+Type Determination</H2>
+Each variable (a state variable, a constant, a quantified variable in a
+predicate or a local variable within an operation) is given a type by the&nbsp;<A NAME="TypeChecker"></A>i.e.
+the tool determines to which set within a pool of sets the variable belongs.
+The pool of sets consists of the sets given in the <A HREF="AMNotation.html#SETS_Clause">SETS</A>
+clause and in the formal parameter list, together with all other sets which
+can be constructed from the given sets by means of the power set operation
+(<A HREF="MathsNotation.html#Sets!Power">POW</A>) and the Cartesian product
+operation (*).
+
+<P>For example:
+
+<P>if <TT>cc</TT> is a constant and if <TT>CSET</TT> is a given set and
+the <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clause contains
+<OL>
+<LI>
+<TT>cc &lt;: CSET</TT></LI>
+
+<BR>then <TT>cc</TT> is given type <TT>POW(CSET)</TT>
+<LI>
+<TT>cc = 7</TT></LI>
+
+<BR>then <TT>cc</TT> is given type <TT>NAT</TT>
+<LI>
+<TT>cc : NAT --> CSET</TT></LI>
+
+<BR>then <TT>cc</TT> is given type <TT>POW(NAT*CSET)</TT></OL>
+if <TT>ASET</TT> is also given and <TT>aa</TT> and <TT>rel</TT> are variables
+and the <A HREF="AMNotation.html#INVARIANT_Clause">INVARIANT</A> clause
+contains
+<OL>
+<LI>
+<TT>aa &lt;: ASET</TT></LI>
+
+<BR>then <TT>aa</TT> is given type <TT>POW(ASET)</TT>
+<LI>
+<TT>aa = cc</TT></LI>
+
+<BR>then <TT>bb</TT> is given the same type as <TT>cc</TT>
+<LI>
+<TT>rel : ASET &lt;-> CSET</TT> then <TT>rel</TT> is given type <TT>POW(ASET*CSET)</TT></LI>
+</OL>
+if <TT>bb</TT> is a local variable and <TT>bb := 1</TT> is the first statement
+encountered by the TypeChecker then <TT>bb</TT> is given type <TT>NAT</TT>.
+
+<P>An error is reported if a type of a variable cannot be determined.
+<H2>
+Type Checking</H2>
+Given the type of all variables then all formulae in which they occur are
+checked for type consistency (so in the expression <TT>aa=bb</TT>, <TT>aa</TT>
+and <TT>bb</TT> must be of the same type). An error is reported if a formulae
+does not type check, and an explanation is given.yes
+
+<P>Often the error is due to an inconsistent use of externally defined
+variables or operations. The <A HREF="Find.html#Find">Find</A> facility
+will provide the type of those externally defined variables or operations.
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25  ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

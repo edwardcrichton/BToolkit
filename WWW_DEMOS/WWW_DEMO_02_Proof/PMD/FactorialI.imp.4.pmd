@@ -1,0 +1,34 @@
+PROOFMETHOD FactorialI.imp.4.pmd IS
+
+  USETAC           (UsersTheory~),(FwdUsersTheory~)
+
+  ON               comp_fac.(13,19)
+
+  REASONING_DEPTH  2
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    binhyp(a = n*b) &
+    n=1
+   =>
+    b=a;
+
+    not(n=0)
+   => 
+    (math_fac(n-1)*k*n) == (math_fac(n)*k)
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END

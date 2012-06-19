@@ -1,0 +1,103 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of String_TYPE">
+  <TITLE>The String_TYPE machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>     String_TYPE
+
+<A NAME="SEES"><B>SEES</B></A>        <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="SETS"><B>SETS</B></A>
+
+ CHAR = 
+ { 
+ B_SOH, B_STX, B_ETX, B_EOT, B_ENQ, B_ACK, B_BEL, B_BS,
+ B_HT, B_LF, B_VT, B_FF, B_CR, B_SO, B_SI,
+ B_DLE, B_DC1, B_DC2, B_DC3, B_DC4, B_NAK,
+ B_SYN, B_ETB, B_CAN, B_EM, B_SUB, B_ESC,
+ B_FS, B_GS, B_RS, B_US, B_SPACE,
+
+ B_EXCL  /* ! */, 
+ B_QUOT  /* " */,
+ B_HSH   /* # */,
+ B_DOLL  /* $ */,
+ B_PCT   /* % */,
+ B_AMP   /* & */,
+ B_SQUOT /* ' */,
+ B_OPAR  /* ( */,
+ B_CPAR  /* ) */,
+ B_MUL   /* * */,
+ B_PLUS  /* + */,
+ B_COM   /* , */,
+ B_MINUS /* - */,
+ B_DOT   /* . */,
+ B_DIV   /* / */,
+
+
+ '0', '1', '2','3','4','5','6','7','8','9',  
+
+ B_COL   /* : */,
+ B_SCOL  /* ; */,
+ B_LESS  /* &lt; */,
+ B_EQL   /* = */,
+ B_GTR   /* &gt; */,
+ B_QUERY /* ? */,
+ B_CADD  /* @ */,
+
+ 'A','B','C','D','E','F','G','H','I','J','K','L',
+ 'M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+
+ B_OBRK  /* [ */,
+ B_SLSH  /* \ */,
+ B_CBRK  /* ] */,
+ B_HAT   /* ^ */,
+ B_UNL   /* _ */,
+ B_BSQ   /* ` */,
+
+ 'a','b','c','d','e','f','g','h','i','j','k','l',
+ 'm','n','o','p','q','r','s','u','v','w','x','y','z',
+
+ B_OBRC   /* { */,
+ B_BAR    /* | */,
+ B_CBRC   /* } */,
+ B_TLD    /* ~ */,
+ B_DEL
+ };
+
+ STRING
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+  STRING = { ss | ss : seq(CHAR) & size(ss) &lt;= 1000 }
+
+  /* literal string in AMN are written as: "a string" in ANSI C */
+
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:35:41 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

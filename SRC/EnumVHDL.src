@@ -1,0 +1,1176 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define EnumVHDLDirect(x) \
+  bcall(((FLAT;ARI;CATL;MODR;MAP;SUB;RULE;WRITE)~;EnumVHDLX)~:ev(x))
+
+#define FlagVHDLError     bcall(MODR:bmodr(VHDLErrorX.1,1))
+#define VHDLErrorFlagged  brule(VHDLErrorX.1,1)
+
+
+
+
+THEORY VHDLErrorX IS ? END &
+
+THEORY VHDLFlagsX IS
+
+  ?
+#define ModifyOpIsPOS   bmodr(VHDLFlagsX.1,1)
+#define ModifyOpIsVAL   bmodr(VHDLFlagsX.1,2)
+#define ModifyOpIsSUCC  bmodr(VHDLFlagsX.1,3)
+#define ModifyOpIsPRED  bmodr(VHDLFlagsX.1,4)
+#define OpIsPOS   brule(VHDLFlagsX.1,1)
+#define OpIsVAL   brule(VHDLFlagsX.1,2)
+#define OpIsSUCC  brule(VHDLFlagsX.1,3)
+#define OpIsPRED  brule(VHDLFlagsX.1,4)
+
+END
+
+&
+
+THEORY VHDLSETSX END & /* S(E):n:m - n = no elems, m is max id length */
+
+THEORY PrintspX IS
+
+#define Printsp(x)   bcall(((WRITE;ARI~)~;PrintspX)~:ps(x))
+
+  ps(n);
+
+  bprintf(" ")
+ =>
+  ps(1);
+
+  btest(n>=2) &
+  bprintf("  ") &
+  ps(n-2)
+ =>
+  ps(n);
+
+  btest(n>=4) &
+  bprintf("    ") &
+  ps(n-4)
+ =>
+  ps(n);
+
+  btest(n>=8) &
+  bprintf("        ") &
+  ps(n-8)
+ =>
+  ps(n);
+
+  btest(n>=16) &
+  bprintf("                ") &
+  ps(n-16)
+ =>
+  ps(n)
+
+END
+
+&
+
+THEORY PrintTypX IS
+
+#define PrintTyp bcall(((ARI~;CATL;WRITE;MODR;MAP)~;PrintTypX)~:pt)
+
+  ?; /* 1=> ; reqd */
+
+
+  bprintf(";\n")
+ =>
+  ps_sc;
+
+  brule(PrintAnlX.1,0) &
+  bmodr(PrintAnlX.1,1)
+ =>
+  ps_sc;
+
+
+  ps_sc &
+  bprintf("(%_VAL: POW(NAT*%))",S,S) &
+  ps_sc &
+  bprintf("(%_POS: POW(%*NAT))",S,S) &
+  ps_sc &
+  bprintf("(%_SUCC: POW(%*%))",S,S) &
+  ps_sc &
+  bprintf("(%_PRED: POW(%*%))",S,S)
+ =>
+  pt_POW1(S(e));
+
+  bident(e) &
+  ps_sc &
+  bprintf("(%_VAL: POW(NAT*%))",S,S) &
+  ps_sc &
+  bprintf("(%_POS: POW(%*NAT))",S,S)
+ =>
+  pt_POW1(S(e));
+
+  pt_POW(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  pt_POW1(S(e)) &
+  pt_POW(N+1)
+ =>
+  pt_POW(N);
+
+
+
+  ps_sc &
+  bprintf("(%: %)",e,S)
+ =>
+  pt_enum1(S,e);
+
+
+
+  pt_given_enum(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  ps_sc &
+  bprintf("(given(%))",S) &
+  ps_sc &
+  bprintf("(given_enum(%))",S(e)) &
+  pt_enum1(S) bsmap e &
+  pt_given_enum(N+1)
+ =>
+  pt_given_enum(N);
+
+
+
+  brule(EnumVHDLX.1,a.enm) &
+  brule(EnumVHDLX.2,(P,"_EN")) &
+  Connect(bcatl("TYP/",P,"_PK.mri.typ")) &
+  bmodr(PrintAnlX.1,0) &
+  WriteDot &
+  pt_given_enum(1) &
+  pt_POW(1) &
+  bprintf("\n|\n(?)\n") &
+  bclose
+ =>
+  pt;
+
+  VHDLErrorFlagged
+ =>
+  pt
+
+END
+
+&
+
+THEORY PrintAnlX IS
+
+#define PrintAnl bcall(((ARI~;CATL;WRITE;MODR;MAP)~;PrintAnlX)~:pa)
+
+  ?; /* 1=> & reqd */
+
+  ?; /* 1=> , reqd */
+
+
+  bprintf(" &\n")
+ =>
+  ps_amp;
+
+  brule(PrintAnlX.1,0) &
+  bmodr(PrintAnlX.1,1) &
+  bprintf("\n")
+ =>
+  ps_amp;
+
+
+  bprintf(",")
+ =>
+  ps_com;
+
+  brule(PrintAnlX.2,0) &
+  bmodr(PrintAnlX.2,1)
+ =>
+  ps_com;
+
+
+
+
+  OpIsSUCC &
+  ps_com &
+  bprintf("%|->%",a,b)
+ =>
+  pa_SUCC_PRED2(a,b);
+
+  OpIsPRED &
+  ps_com &
+  bprintf("%|->%",b,a)
+ =>
+  pa_SUCC_PRED2(a,b);
+
+  pa_SUCC_PRED2(a,b)
+ =>
+  pa_SUCC_PRED1(a,b);
+
+  pa_SUCC_PRED1(E,a) &
+  pa_SUCC_PRED2(a,b)
+ =>
+  pa_SUCC_PRED1(E,a,b);
+
+  OpIsSUCC &
+  ps_amp &
+  bprintf("%_SUCC = {",S) &
+  bmodr(PrintAnlX.2,0) &
+  pa_SUCC_PRED1(e) &
+  bprintf("}")
+ =>
+  pa_SUCC_PRED(S(e));
+
+  OpIsPRED &
+  ps_amp &
+  bprintf("%_PRED = {",S) &
+  bmodr(PrintAnlX.2,0) &
+  pa_SUCC_PRED1(e) &
+  bprintf("}")
+ =>
+  pa_SUCC_PRED(S(e));
+
+
+
+  OpIsPOS &
+  ps_com &
+  bprintf("%|->%",e,m)
+ =>
+  pa_POS_VAL1(e,m,n);
+
+  OpIsVAL &
+  ps_com &
+  bprintf("%|->%",m,e)
+ =>
+  pa_POS_VAL1(e,m,n);
+
+  OpIsPOS &
+  ps_amp &
+  bprintf("%_POS = {",S) &
+  bmodr(PrintAnlX.2,0) &
+  pa_POS_VAL1 bnmap e &
+  bprintf("}")
+ =>
+  pa_POS_VAL(S(e));
+
+  OpIsVAL &
+  ps_amp &
+  bprintf("%_VAL = {",S) &
+  bmodr(PrintAnlX.2,0) &
+  pa_POS_VAL1 bnmap e &
+  bprintf("}")
+ =>
+  pa_POS_VAL(S(e));
+
+
+
+  pa_props_1(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  ModifyOpIsVAL &
+  pa_POS_VAL(S(e)) &
+  ps_amp &
+  bprintf("%_POS = %_VAL~",S,S) &
+/*
+  ModifyOpIsPOS &
+  pa_POS_VAL(S(e)) &
+*/
+  ModifyOpIsSUCC &
+  pa_SUCC_PRED(S(e)) &
+  ps_amp &
+  bprintf("%_PRED = %_SUCC~",S,S) &
+/*
+  ModifyOpIsPRED &
+  pa_SUCC_PRED(S(e)) &
+*/
+  pa_props_1(N+1)
+ =>
+  pa_props_1(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  bident(e) &
+  ModifyOpIsVAL &
+  pa_POS_VAL(S(e)) &
+  ps_amp &
+  bprintf("%_POS = %VAL~",S,S) &
+/*
+  ModifyOpIsPOS &
+  pa_POS_VAL(S(e)) &
+*/
+  pa_props_1(N+1)
+ =>
+  pa_props_1(N);
+
+  bmodr(PrintAnlX.1,0) &
+  bprintf("(") &
+  pa_props_1(1) &
+  bprintf("\n)\n;\n")
+ =>
+  pa_props;
+
+
+
+  pa_consts_1(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  bprintf(",\n%_VAL,%_POS,%_SUCC,%_PRED",S,S,S,S) &
+  pa_consts_1(N+1)
+ =>
+  pa_consts_1(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  bident(e) &
+  bprintf(",\n%_POS,%_VAL",S,S) &
+  pa_consts_1(N+1)
+ =>
+  pa_consts_1(N);
+
+  brule(VHDLSETSX.1,(S(e):n:m)) &
+  bprintf("\n%_VAL,%_POS,%_SUCC,%_PRED",S,S,S,S) &
+  pa_consts_1(2)
+ =>
+  pa_consts_1(1);
+
+  brule(VHDLSETSX.1,(S(e):n:m)) &
+  bident(e) &
+  bprintf("\n%_VAL,%_POS",S,S) &
+  pa_consts_1(2)
+ =>
+  pa_consts_1(1);
+
+  bprintf("(") &
+  pa_consts_1(1) &
+  bprintf("\n)\n;\n")
+ =>
+  pa_consts;
+
+
+  
+  pa_sets_1(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  bprintf(",\n%",S(e)) &
+  pa_sets_1(N+1)
+ =>
+  pa_sets_1(N);
+
+  brule(VHDLSETSX.1,(S(e):n:m)) &
+  bprintf("\n%",S(e)) &
+  pa_sets_1(2)
+ =>
+  pa_sets_1(1);
+
+  bprintf("(") &
+  pa_sets_1(1) &
+  bprintf("\n)\n;\n")
+ =>
+  pa_sets;
+
+
+  brule(EnumVHDLX.2,(P,"_EN")) &
+  Connect(bcatl("ANL/",P,"_PK.mch.anl")) &
+  WriteDot &
+  bprintf("(\n(?);\n (\n (\n ?\n )\n |\n (\n ?\n )\n )\n)\n;\n") &
+  bprintf("(?)\n;\n(?)\n;\n") &
+  pa_sets &
+  pa_sets &
+  pa_consts &
+  pa_consts &
+  pa_props &
+  pa_props &
+  bprintf("(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n") &
+  bprintf("(%(") &
+  bprintf(P) &
+  bprintf("_PK(?)):(?):(?))\n;\n(?)\n") &
+  bclose
+ =>
+  pa;
+
+  VHDLErrorFlagged
+ =>
+  pa
+
+END
+
+&
+
+THEORY PrintMchX IS
+
+#define PrintMch bcall(((ARI~;CATL;WRITE;MAP;MODR)~;PrintMchX)~:pm)
+#define max_set_el  4
+ /* 4 max_set_el gives list of length 4 (SETS) */
+
+#define max_prop1_el 3
+ /* 3 max_prop1_el gives list of length 3 (VAL/POS) */
+
+#define max_prop2_el        2
+#define max_prop2_el_plus_1 3
+ /* 2 max_prop2_el gives list of length 2 (SUCC/PRED) */
+
+
+  ?; /* 1 => >=max_prop1_el set elements */
+#define SetSplitLine     bmodr(PrintMchX.1,1)
+#define SetNotSplitLine  bmodr(PrintMchX.1,0)
+#define SplitLine        brule(PrintMchX.1,1)
+
+  ?; /* 2 spaces to be indented */
+#define ModifyIndent(x)  bmodr(PrintMchX.2,x)
+#define ReadIndent(x)    brule(PrintMchX.2,x)
+
+  ?; /* 3 count for SUCC/PRED */
+
+  ?; /* 4 max enum elem len */
+#define ModifyMaxElemLen(x)  bmodr(PrintMchX.4,x)
+#define ReadMaxElemLen(x)    brule(PrintMchX.4,x)
+
+  ?; /* 5 prev enum elem len */
+#define ModifyPrevElemLen(x)  bmodr(PrintMchX.5,x)
+#define ReadPrevElemLen(x)    brule(PrintMchX.5,x)
+
+
+  /******************** SUCC/PRED ****************/
+
+  ReadPrevElemLen(p) &
+  ReadMaxElemLen(M) &
+  bprintf(",") & 
+  Printsp((2*M)-p+1)
+ =>
+  pm_SUCC_PRED4(m)(n);
+
+  ReadIndent(i) &
+  bprintf(",\n")  &  
+  Printsp(i)
+ =>
+  pm_SUCC_PRED4(m)(m);
+
+  brule(PrintMchX.3,n) &
+  bprintf(", ")  &
+  bmodr(PrintMchX.3,(n+1))
+ =>
+  pm_SUCC_PRED3;
+
+  SplitLine &
+  brule(PrintMchX.3,n) &
+  pm_SUCC_PRED4(n)((n/max_prop2_el)*max_prop2_el) &
+  bmodr(PrintMchX.3,(n+1))
+ =>
+  pm_SUCC_PRED3;
+
+  brule(PrintMchX.3,0) &
+  bmodr(PrintMchX.3,1)
+ =>
+  pm_SUCC_PRED3;
+
+  OpIsPRED &
+  pm_SUCC_PRED3 &
+  bprintf("%|->%",b,a) &
+  ModifyPrevElemLen(blen(a)+blen(b))
+ =>
+  pm_SUCC_PRED2(a,b);
+
+  OpIsSUCC &
+  pm_SUCC_PRED3 &
+  bprintf("%|->%",a,b) &
+  ModifyPrevElemLen(blen(a)+blen(b))
+ =>
+  pm_SUCC_PRED2(a,b);
+
+  pm_SUCC_PRED1(a);
+
+  pm_SUCC_PRED2(a,b)
+ =>
+  pm_SUCC_PRED1(a,b);
+
+  pm_SUCC_PRED1(E,a) &
+  pm_SUCC_PRED2(a,b)
+ =>
+  pm_SUCC_PRED1(E,a,b);
+
+  OpIsPRED &
+  bprintf("  %_PRED = { ",S)
+ =>
+  pm_SUCC_PRED_0(S);
+
+  OpIsSUCC &
+  bprintf("  %_SUCC = { ",S)
+ =>
+  pm_SUCC_PRED_0(S);
+
+  SetSplitLine &
+  ModifyIndent(blen(S)+12) &
+  bmodr(PrintMchX.3,0) &
+  pm_SUCC_PRED_0(S) &
+  pm_SUCC_PRED1(e) &
+  bprintf("\n") &
+  Printsp(blen(S)+10) &
+  bprintf("}")
+ =>
+  pm_SUCC_PRED(S(e):n);
+
+  btest(n<=max_prop2_el_plus_1) &
+  ModifyIndent(blen(S)+12) &
+  SetNotSplitLine &
+  bmodr(PrintMchX.3,0) &
+  pm_SUCC_PRED_0(S) &
+  pm_SUCC_PRED1(e) &
+  bprintf(" }")
+ =>
+  pm_SUCC_PRED(S(e):n);
+
+
+
+  /******************** POS/VAL ****************/
+
+
+  ModifyPrevElemLen(blen(e)+2)
+ =>
+  pm_ModifyPrevElemLen(e,n);
+  
+  btest(n<99) &
+  ModifyPrevElemLen(blen(e)+1)
+ =>
+  pm_ModifyPrevElemLen(e,n);
+  
+  btest(n<9) &
+  ModifyPrevElemLen(blen(e))
+ =>
+  pm_ModifyPrevElemLen(e,n);
+  
+  ReadPrevElemLen(p) &
+  ReadMaxElemLen(m) &
+  Printsp(m-p+1)
+ =>
+  pm_POS_VAL3;
+
+  OpIsPOS &
+  bprintf(",")  &
+  pm_POS_VAL3 &
+  bprintf("%|->%",e,m)  &
+  pm_ModifyPrevElemLen(e,m)
+ =>
+  pm_POS_VAL2(e)(m)(n);
+
+  OpIsVAL &
+  bprintf(",")  &
+  pm_POS_VAL3 &
+  bprintf("%|->%",m,e)  &
+  pm_ModifyPrevElemLen(e,m)
+ =>
+  pm_POS_VAL2(e)(m)(n);
+
+  OpIsPOS &
+  ReadIndent(i) &
+  bprintf(",\n")  &  
+  Printsp(i) &
+  bprintf("%|->%",e,m)  &
+  pm_ModifyPrevElemLen(e,m)
+ =>
+  pm_POS_VAL2(e)(m)(m);
+
+  OpIsVAL &
+  ReadIndent(i) &
+  bprintf(",\n")  &  
+  Printsp(i) &
+  bprintf("%|->%",m,e)  &
+  pm_ModifyPrevElemLen(e,m)
+ =>
+  pm_POS_VAL2(e)(m)(m);
+
+  OpIsPOS &
+  bprintf(", %|->%",e,m) &
+  pm_ModifyPrevElemLen(e,m)
+ =>
+  pm_POS_VAL1(e,m,n);
+
+  OpIsVAL &
+  bprintf(", %|->%",m,e) &
+  pm_ModifyPrevElemLen(e,m)
+ =>
+  pm_POS_VAL1(e,m,n);
+
+  SplitLine &
+  pm_POS_VAL2(e)(m)(((m)/max_prop1_el)*max_prop1_el)
+ =>
+  pm_POS_VAL1(e,m,n);
+
+  OpIsPOS &
+  bprintf("%|->%",e,0) &
+  pm_ModifyPrevElemLen(e,0)
+ =>
+  pm_POS_VAL1(e,0,n);
+
+  OpIsVAL &
+  bprintf("%|->%",0,e) &
+  pm_ModifyPrevElemLen(e,0)
+ =>
+  pm_POS_VAL1(e,0,n);
+
+  pm_POS_VAL1(e,m-1,n)
+ =>
+  pm_POS_VAL1_dec(e,m,n);
+
+  OpIsPOS &
+  bprintf("  %_POS = { ",S)
+ =>
+  pm_POS_VAL_0(S);
+
+  OpIsVAL &
+  bprintf("  %_VAL = { ",S)
+ =>
+  pm_POS_VAL_0(S);
+
+  SetSplitLine &
+  ModifyIndent(blen(S)+11) &
+  pm_POS_VAL_0(S) &
+  pm_POS_VAL1_dec bnmap e &
+  bprintf("\n") &
+  Printsp(blen(S)+9) &
+  bprintf("}")
+ =>
+  pm_POS_VAL(S(e):n);
+
+  btest(n<=max_prop1_el) &
+  SetNotSplitLine &
+  pm_POS_VAL_0(S) &
+  pm_POS_VAL1_dec bnmap e &
+  bprintf(" }")
+ =>
+  pm_POS_VAL(S(e):n);
+
+
+
+
+  /******************** PROPS ****************/
+
+  ModifyOpIsVAL &
+  pm_POS_VAL(S(e):n) &
+  bprintf(" &\n\n  %_POS = %_VAL~ &\n\n",S,S) &
+/*
+  ModifyOpIsPOS &
+  pm_POS_VAL(S(e):n) &
+  bprintf(" &\n\n") &
+*/
+  ModifyOpIsSUCC &
+  pm_SUCC_PRED(S(e):n) &
+  bprintf(" &\n\n  %_PRED = %_SUCC~",S,S)
+/*
+  bprintf(" &\n\n") &
+  ModifyOpIsPRED &
+  pm_SUCC_PRED(S(e):n)
+*/
+ =>
+  pm_PROPS_1(S(e):n);
+
+  bident(e) &
+  ModifyOpIsVAL &
+  pm_POS_VAL(S(e):n) &
+  bprintf(" &\n\n  %_POS = %_VAL~",S,S)
+/*
+  bprintf(" &\n\n") &
+  ModifyOpIsVAL &
+  pm_POS_VAL(S(e):n)
+*/
+ =>
+  pm_PROPS_1(S(e):n);
+
+
+  pm_PROPS(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  ModifyMaxElemLen(m) &
+  bprintf(" &\n\n\n") &
+  pm_PROPS_1(S(e):n) &
+  pm_PROPS(N+1)
+ =>
+  pm_PROPS(N);
+
+  brule(VHDLSETSX.1,(S(e):n:m)) &
+  ModifyMaxElemLen(m) &
+  bprintf("\n\nPROPERTIES\n\n") &
+  pm_PROPS_1(S(e):n) &
+  pm_PROPS(2)
+ =>
+  pm_PROPS(1);
+
+
+  /******************** CONSTS ****************/
+
+  pm_CONSTS(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  bprintf(",\n\n  %_VAL, %_POS, %_SUCC, %_PRED",S) &
+  pm_CONSTS(N+1)
+ =>
+  pm_CONSTS(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  bident(e) &
+  bprintf(",\n\n  %_VAL, %_POS",S) &
+  pm_CONSTS(N+1)
+ =>
+  pm_CONSTS(N);
+
+  brule(VHDLSETSX.1,(S(e):n:m)) &
+  bprintf("\n\nCONSTANTS\n") &
+  bprintf("\n  %_VAL, %_POS, %_SUCC, %_PRED",S) &
+  pm_CONSTS(2)
+ =>
+  pm_CONSTS(1);
+
+  brule(VHDLSETSX.1,(S(e):n:m)) &
+  bident(e) &
+  bprintf("\n\nCONSTANTS\n") &
+  bprintf("\n  %_VAL, %_POS",S) &
+  pm_CONSTS(2)
+ =>
+  pm_CONSTS(1);
+
+
+
+  /******************** SETS ****************/
+
+  ReadPrevElemLen(p) &
+  ReadMaxElemLen(m) &
+  Printsp(m-p+1)
+ =>
+  pm_SETS3;
+
+  bprintf(",",e)  &
+  pm_SETS3 &
+  bprintf("%",e)  &
+  ModifyPrevElemLen(blen(e))  
+ =>
+  pm_SETS2(e)(m)(n);
+
+  ReadIndent(i) &
+  bprintf(",\n")  &  
+  Printsp(i) &
+  bprintf("%",e)  &
+  ModifyPrevElemLen(blen(e))  
+ =>
+  pm_SETS2(e)(m)(m);
+
+  bprintf(", %",e) &
+  ModifyPrevElemLen(blen(e))
+ =>
+  pm_SETS1(e,m,n);
+
+  SplitLine &
+  pm_SETS2(e)(m-1)(((m-1)/max_set_el)*max_set_el)
+ =>
+  pm_SETS1(e,m,n);
+
+  bprintf("%",e) &
+  ModifyPrevElemLen(blen(e))
+ =>
+  pm_SETS1(e,1,n);
+
+
+
+  pm_SETS(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  ModifyMaxElemLen(m) &
+  SetSplitLine &
+  ModifyIndent(blen(S)+7) &
+  bprintf(";\n\n  % = { ",S) &
+  pm_SETS1 bnmap e &
+  bprintf("\n") &
+  Printsp(blen(S)+4) &
+  bprintf(" }") &
+  pm_SETS(N+1)
+ =>
+  pm_SETS(N);
+
+  brule(VHDLSETSX.N,(S(e):n:m)) &
+  ModifyMaxElemLen(m) &
+  btest(n<=max_set_el) &
+  SetNotSplitLine &
+  bprintf(";\n\n  % = { ",S) &
+  pm_SETS1 bnmap e &
+  bprintf(" }") &
+  pm_SETS(N+1)
+ =>
+  pm_SETS(N);
+
+  brule(VHDLSETSX.1,(S(e):n:m)) &
+  ModifyMaxElemLen(m) &
+  SetSplitLine &
+  ModifyIndent(blen(S)+7) &
+  bprintf("\n\nSETS\n\n  % = { ",S) &
+  pm_SETS1 bnmap e &
+  bprintf("\n") &
+  Printsp(blen(S)+4) &
+  bprintf("}") &
+  pm_SETS(2)
+ =>
+  pm_SETS(1);
+
+  brule(VHDLSETSX.1,(S(e):n:m)) &
+  ModifyMaxElemLen(m) &
+  btest(n<=max_set_el) &
+  SetNotSplitLine &
+  bprintf("\n\nSETS\n\n  % = { ",S) &
+  pm_SETS1 bnmap e &
+  bprintf(" }") &
+  pm_SETS(2)
+ =>
+  pm_SETS(1);
+
+
+  brule(EnumVHDLX.1,b.enm) &
+  brule(EnumVHDLX.2,(P,"_EN")) &
+  Connect(bcatl("CFG/",P,"_PK.mch")) &
+  WriteDot &
+  bprintf("MACHINE          ") &
+  bprintf(P) &
+  bprintf("_PK") &
+  bprintf("\n\n/*  This Package has been generated from Enumeration % */",b) &
+  pm_SETS(1) &
+  pm_CONSTS(1) &
+  pm_PROPS(1) &
+  bprintf("\n\n\nEND\n") &
+  bclose
+/***
+&bprintf("\n---------------------------------------------\n")
+&bcall((CATL;SHELL):bshell(bcatl("cat CFG/",P,"_PK.mch")))
+&bprintf("\n---------------------------------------------\n")
+***/
+ =>
+  pm;
+
+  VHDLErrorFlagged
+ =>
+  pm
+
+END
+
+&
+
+THEORY EnumVHDLX IS
+
+  ?; /* 1. a.enm ModifyEnm/ReadEnm */
+#define ModifyEnm(x) bmodr(EnumVHDLX.1,x)
+#define ReadEnm(x)   brule(EnumVHDLX.1,x)
+
+  ?; /* 2. "test","_EN" (from BT_POSTFIX_M) */
+
+  ?; /* 3. */
+#define ModifyEnmElems(x) bmodr(EnumVHDLX.3,x)
+#define ReadEnmElems(x)   brule(EnumVHDLX.3,x)
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  check_error2;
+
+  brule(EnumVHDLX.1,b.enm) &
+  brule(EnumVHDLX.2,(P,"_EN")) &
+  bget(".Bcom",a) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((b.enm:BT_ENUM:?);(a.mch:BT_CMT_GEN_CSTR:b.enm))) &
+  AddCfg(a.mch) &
+  AddAnl(a.mch) &
+  AddGen(a.enm) &
+  CreHtml(a.mch) &
+  Writef(("\n\n  Created VHDL Package ")) &
+  Writef((P)) &
+  Writef(("\n"))
+ =>
+  check_error2;
+
+  brule(EnumVHDLX.2,(P,"_EN")) &
+  Connect(".Bcom") &
+  bprintf(P) &
+  bprintf("_PK") &
+  bclose &
+  check_error2
+ =>
+  check_error1;
+
+  brule(EnumVHDLX.2,(P,"_EN")) &
+  WriteDot &
+  check_error1
+ =>
+  check_error;
+
+  VHDLErrorFlagged &
+  Writef(("\n  Enumeration aborted\n"))
+ =>
+  check_error;
+
+
+  brule(VHDLSETSX.J,(S(E):N)) &
+  bmodr(VHDLSETSX.J,(S(E):N:n))
+ =>
+  ev_sto_4(S)(m)(n);
+
+  btest(m>n) &
+  brule(VHDLSETSX.J,(S(E):N)) &
+  bmodr(VHDLSETSX.J,(S(E):N:m))
+ =>
+  ev_sto_4(S)(m)(n);
+
+  ev_sto_2(S)(E)(n)
+ =>
+  ev_sto_3(S)(E)(m)(n);
+
+  btest(m>n) &
+  ev_sto_2(S)(E)(m)
+ =>
+  ev_sto_3(S)(E)(m)(n);
+
+  ev_sto_4(S)(blen(e))(n)
+ =>
+  ev_sto_2(S)(e)(n);
+
+  ev_sto_3(S)(E)(blen(e))(n)
+ =>
+  ev_sto_2(S)(E,e)(n);
+
+  brule(VHDLSETSX.J,S(E)) &
+  bmodr(VHDLSETSX.J,(S(E):(N+1)))
+ =>
+  ev_sto_1(S)(e)(N);
+
+  ev_sto_1(S)(E)(N+1)
+ =>
+  ev_sto_1(S)(E,e)(N);
+
+  bcrer(VHDLSETSX,S(e)) &
+  ev_sto_1(S)(e)(0) &
+  ev_sto_2(S)(e)(0) &
+  ReadEnmElems(E) &
+  ModifyEnmElems(bflat(E,e))
+ =>
+  ev_sto(S(e));
+
+  VHDLErrorFlagged
+ =>
+  ev_sto(S(e));
+
+
+  ev6_1(S)(e)(N);
+
+  brule(VHDLSETSX.N,x) &
+  ev6_1(S)(e)(N+1)
+ =>
+  ev6_1(S)(e)(N);
+
+  brule(VHDLSETSX.N,e(E)) &
+  Writef(("\n\n    Element % of % is also a SETS name\n",bsrv e berv,bsrv S berv)) &
+  FlagVHDLError
+ =>
+  ev6_1(S)(e)(N);
+
+  ev6_1(S)(e)(1)
+ =>
+  ev6(S,e);
+
+
+  ev7_1(S)(N);
+
+  brule(VHDLSETSX.N,x) &
+  ev7_1(S)(N+1)
+ =>
+  ev7_1(S)(N);
+
+  brule(VHDLSETSX.N,S(E)) &
+  Writef(("\n\n    Repetition of SETS names %\n",bsrv S berv)) &
+  FlagVHDLError
+ =>
+  ev7_1(S)(N);
+
+  ev7_1(S)(1)
+ =>
+  ev7(S);
+
+
+
+  ev8(S(e));
+
+  bsearch(S,(e,?),F) &
+  Writef(("\n\n    SET % contains element %\n",bsrv S berv)) &
+  FlagVHDLError  
+ =>
+  ev8(S(e));
+
+
+
+  brule(VHDLSETSX.N,S(E)) &
+  ev_err_2(e)(N+1)
+ =>
+  ev_err_2(e)(N);
+
+  brule(VHDLSETSX.N,S(E)) &
+  bsearch(e,(E,?),F) &
+  Writef(("%\n",bsrv S berv))
+ =>
+  ev_err_2(e)(N);
+
+
+
+  ev5(S,e);
+
+  ReadEnmElems(E) &
+  bsearch(e,(E,?),F) &
+  Writef(("\n\n    Element % appears in % and ",bsrv e berv,bsrv S berv)) &
+  ev_err_2(e)(1) &
+  FlagVHDLError
+ =>
+  ev5(S,e);
+
+
+  Writef(("\n      Element of % not an identifier %\n",bsrv S berv,bsrv e berv))
+ =>
+  ev_err_1(S)(e);
+
+  bident(e)
+ =>
+  ev_err_1(S)(e);
+
+  ev_err_1(S)(E) &
+  ev_err_1(S)(e) &
+  Writef(("\n      Separator in % should be a comma: %  %  %\n",bsrv S berv,E,bsrv blank0? JOK2 blank0? berv,e))
+ =>
+  ev_err_1(S)(E JOK2 e);
+
+  ev_err_1(S)(E) &
+  Writef(("\n      Element of % not an identifier %\n",bsrv S berv,bsrv e berv))
+ =>
+  ev_err_1(S)(E,e);
+
+  bident(e) &
+  ev_err_1(S)(E) 
+ =>
+  ev_err_1(S)(E,e);
+
+  bsearch(e,(E,?),F) &
+  ev_err_1(S)(E) &
+  Writef(("\n      Repetition of element % in %\n",bsrv e berv,bsrv S berv))
+ =>
+  ev_err_1(S)(E,e);
+
+  Writef(("\n\n    SETS syntax error:\n\n      %\n",bsrv S berv)) &
+  FlagVHDLError
+ =>
+  ev4(S);
+
+  Writef(("\n\n    SETS name not an identifier: %\n",bsrv S berv)) &
+  ev_err_1(S)(e) &
+  FlagVHDLError
+ =>
+  ev4(S={e});
+
+  bident(S) &
+  Writef(("\n\n    % error: %\n\n    not a (comma) list of unique identifiers:\n",bsrv S berv,bsrv e berv)) &
+  ev_err_1(S)(e) &
+  FlagVHDLError
+ =>
+  ev4(S={e});
+
+  bident(S) &
+  blident(e) &
+  ev8(S(e)) &
+  ev7(S) &
+  ev6(S) bsmap e &
+  ev5(S) bsmap e &
+  ev_sto(S(e))
+ =>
+  ev4(S={e});
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ev2(f);
+
+  Writef(("\n\n    SETS syntax error:\n\n      %\n",bsrv S berv)) &
+  FlagVHDLError
+ =>
+  ev3_1(S);
+
+  Writef(("\n\n    SETS clause separator should be a semi-colon: %\n",bsrv blank0? JOK2 blank0? berv)) &
+  FlagVHDLError
+ =>
+  ev3_1(S JOK2 s);
+
+  ev4(S=E)
+ =>
+  ev3_1(S=E);
+
+  Writef(("\n\n    SETS clause separator should be a semi-colon\n")) &
+  FlagVHDLError
+ =>
+  ev3_1((S=E) JOK2 s);
+
+  Writef(("\n\n    SETS clause separator should be a semi-colon\n")) &
+  FlagVHDLError
+ =>
+  ev3_1(S=(E JOK2 s));
+
+  Writef(("\n\n    SETS clause separator should be a semi-colon\n")) &
+  FlagVHDLError
+ =>
+  ev3_1(S=E JOK2 s);
+
+  ev3_1(S) &
+  ev3_1(s)
+ =>
+  ev3_1(S;s);
+
+  ReadEnm(a.enm) &
+  Writef(("\n\n    Filename/ENUMERATION name differ: %/%\n",bsrv a berv,bsrv b berv)) &
+  FlagVHDLError
+ =>
+  ev3(ENUMERATION b SETS S END);
+
+  ReadEnm(a.enm) &
+  ev3_1(S)
+ =>
+  ev3(ENUMERATION a SETS S END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ev2(f);
+
+  bget(f,x) &
+  ev3(x)
+ =>
+  ev2(f);
+
+  brule(EnumVHDLX.2,(P,"_EN")) &
+  Writef(("\n  VHDL Enumerating ")) &
+  Writef((P)) &
+  Writef(("\n\n    ..")) &
+  ev2(f) &
+/***
+PrintTHEORYUpTo(EnumVHDLX,3)&
+PrintTHEORY(VHDLSETSX)&
+***/
+  PrintMch &
+  PrintAnl &
+  PrintTyp
+ =>
+  ev1(f);
+
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(EnumVHDLX.2)) &
+  ModifyEnm(a.enm) &
+  ev1(bcatl("CFG/",a,".enm")) &
+  check_error
+ =>
+  ev(a.enm)
+
+END

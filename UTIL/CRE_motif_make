@@ -1,0 +1,19 @@
+#! /bin/csh -f
+
+echo ""
+echo "  -------------------------------------------------------------------"
+echo "  This script makes BMotif (malloc - without compiling underlying base)"
+echo "  in `pwd`/BKIT/BLIB "
+echo "  -------------------------------------------------------------------"
+echo ""
+
+
+
+cd ../MOTIF
+
+make
+
+exit ($status)
+
+
+###################################################################################

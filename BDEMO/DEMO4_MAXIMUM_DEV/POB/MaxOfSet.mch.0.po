@@ -1,0 +1,39 @@
+THEORY PropertiesX END
+&
+THEORY EnumerateX END
+&
+THEORY NotEqualX END
+&
+THEORY RewriteToFalseOrTrueX END
+&
+THEORY FwdContra0X END
+&
+THEORY FwdEqual1X END
+&
+THEORY ExpandHypX IS
+  inv(MaxOfSet) => numset <: 1..maxint;
+  cst(MaxOfSet) => maxint : NAT;
+  pre(enter) => new : NAT1;
+  pre(enter) => new <= maxint;
+  pre(maximum) => not(numset = {})
+END
+&
+THEORY Initialisation IS
+  cst(MaxOfSet) & ctx(MaxOfSet) => {} <: 1..maxint
+END
+&
+THEORY enter IS
+  cst(MaxOfSet) & ctx(MaxOfSet) & inv(MaxOfSet) & asn(MaxOfSet) & pre(enter) => numset \/ {new} <: 1..maxint
+END
+&
+THEORY maximum
+END
+&
+THEORY Context
+END
+&
+THEORY Assertions
+END
+&
+THEORY Constraints
+END

@@ -1,0 +1,11 @@
+PROOFMETHOD Person2I.imp.0.btl IS
+
+  THEORY BToolUsersTheory IS
+    ?
+  END
+  &
+  THEORY FwdBToolUsersTheory IS
+    ?
+  END
+
+END

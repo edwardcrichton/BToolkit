@@ -1,0 +1,36 @@
+PROOFMETHOD Owners.mch.1.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~ /* ;FEQL~ */ )
+
+  REASONING_DEPTH 1
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    ?
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END
+
+DEFINITIONS
+
+  ?
+
+INCLUSIONS
+
+  "PMD/Owners.mch.0.pmd"

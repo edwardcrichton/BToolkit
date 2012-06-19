@@ -1,0 +1,765 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define TransCDirectTac ((WRITE;CATL~;SHELL;MODR;REV;FLAT;NEWV;MAP)~;TransCX)~
+
+#define LinkCDirectTac ((WRITE;CATL~;SHELL;MODR;MAP)~;LinkCX)~
+
+
+
+
+#define TransCDirect(x) bcall(TransCDirectTac:tc00(x))
+
+#define LinkCDirect(x)  bcall(LinkCDirectTac:lc_0(x))
+
+
+
+#define TransCtac \
+       (PASP_rewritesX~;(LMAP;FLAT;MAP;WRITE;TransC_parse_implementationX;RULE)~;WRITE)
+
+#define TransC(a)      bcall(TransCtac: transc_store(a))
+
+
+#define TransC_body_tac   (var~;NEWV;((ARI;MAP;SUB;WRITE)~;TransC_bodyX)~)
+
+
+#define InformNotTranslated(x) \
+	Writef(("\n    % is not translated\n",x))
+
+#define InformNoAnalysedImplementation(x) \
+	Writef(("\n    % has no (analysed) implementation\n",x))
+
+#define InformSeenMchNotImported(x,y,z) \
+	Writef(("\n    % is SEEN (by %) but not IMPORTED\n\n  Can't link %\n",bsrv x berv,y,z))
+
+#define InformImportedTwice(x,y,z) \
+	Writef(("\n    Duplicate IMPORT of % (by %)\n\n  Can't compile %\n",bsrv x berv,y,z))
+
+#define InformSeenMchNotImportedError(x,z) \
+	Writef(("\n    % is SEEN but not IMPORTED\n\n  Can't link %\n",bsrv x berv,y,z))
+
+
+
+/*
+#define InformSiblingImport(x,y,z) \
+	Writef(("\n  % is SEEN by %\n  but IMPORTED by sub-construct %\n\n  Can't translate/compile %\n",bsrv x berv,z,y,z))
+*/
+
+
+
+#define InformImplementationRecursion(a,b,c) \
+  Writef(("\n    IMPORTS/SEES recursion: % and %\n\n  Can't compile/compile %\n",bsrv a berv,bsrv b berv,c))
+
+#define InformImortsSeesRecursion(x,y) \
+  Writef(("\n    IMPORTS/SEES recursion: %/%\n\n  Can't translate/compile %\n",bsrv x berv,bsrv y berv))
+
+#define CreHtmlCCodeFile \
+  bcall(((MAP;ARI~;NEWV;CATL;SHELL;WRITE;RULE)~;CreHtmlCCodeFileX)~:ch0)
+
+#define SetProcessingPromotedOp    bcall(MODR:bmodr(TransC_hdrX.2,1))
+#define ResetProcessingPromotedOp  bcall(MODR:bmodr(TransC_hdrX.2,0))
+#define ProcessingPromotedOp       brule(TransC_hdrX.2,1)
+
+
+#define ModifyCurrentOpParamReame(x)  bcall(MODR:bmodr(TransC_trans_implementationX.1,x))
+#define ReadCurrentOpParamName(x)     brule(TransC_trans_implementationX.1,x)
+
+
+THEORY PASP_rewritesX IS
+
+
+/* Byt_TYPE */
+
+  n2b(x) == x;
+
+  b2n(x) == x;
+
+  b2bs(x) == x;
+
+  bs2b(x) == x;
+
+
+/* Uns_TYPE */
+
+  n2u(x) == x;
+
+  u2n(x) == x;
+
+  u2bs(x) == x;
+
+  bs2u(x) == x;
+
+
+/* Sgn_TYPE */
+
+  n2ps(x) == x;
+
+  n2ns(x) == (0-x);
+
+  ps2n(x) == x;
+
+  ns2n(x) == (0-x);
+
+
+/* BitSeq_TYPE */
+
+  n2bs(x) == x;
+
+  bs2n(x) == x;
+
+
+/* PASP_TYPE */
+
+  b2u(x) == x;
+
+  u2b(x) == x;
+
+  u2ps(x) == x;
+
+  ps2u(x) == x;
+
+  u2ns(x) == (0-x);
+
+  ns2u(x) == (0-x)
+
+
+END
+
+&
+
+
+THEORY TRLErrorX IS 0 END &
+
+#define ClearTRLError bcall(MODR:bmodr(TRLErrorX.1,0))
+
+#define SetTRLError   bcall(MODR:bmodr(TRLErrorX.1,1))
+
+THEORY TransCCleanX IS
+
+#define CleanTransC bcall(((MAP;RULE;MODR)~;TransCCleanX)~: trans_c_clean0)
+
+  bclean(t);
+
+  bclean(t)
+ =>
+  trans_c_clean(t);
+
+  ResetProcessingPromotedOp &
+  trans_c_clean bsmap 
+    (
+       var,
+       val,
+       PromotedHeaderX,
+       ImportedSeenEnumValConstValX,
+/*
+       TransC_NatParam_storeX,
+*/
+       TransC_properties_storeX,
+       TransC_all_properties_storeX,
+       TransC_all_constants_storeX,
+       TransC_sets_storeX,
+       TransC_all_enum_sets_storeX,
+/*
+       TransC_mch_setX,
+*/
+       TransC_vis_sets_storeX,
+       TransC_vis_constants_storeX,
+       TransC_imports_storeX,
+       TransC_sees_storeX,
+       TransC_initialisation_storeX,
+       TransC_operations_storeX,
+       TransC_operations_param_renameX,
+       TransC_iptX
+     ) &
+  bmodr(LoadTypeFileX.1,?) &
+  bmodr(LoadTypeFileX.2,?) &
+  bmodr(LoadTypeFileX.3,?) &
+  ModifyCurrentOpParamReame(aaa:=aaa)
+ =>
+  trans_c_clean0
+
+END
+
+&
+
+THEORY OpColMchX END &
+
+THEORY StoreOpColMchX IS
+
+#define StoreOpColMch \
+  bcall(((MAP;RULE)~;StoreOpColMchX)~:spocm)
+
+  bcrer(OpColMchX,(s:k))
+ =>
+  spocm3(k,(s;t;u;v;W;Y));
+
+  spocm3(k,?);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  spocm3(k,n)
+ =>
+  spocm2(k);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);(N,n))) &
+  spocm3(k) bsmap (N,n)
+ =>
+  spocm2(k);
+
+  Bget(("ANL/",k,".mch.anl")) &
+  spocm2(k)
+ =>
+  spocm1(k.mch);
+
+  spocm1(?);
+
+  bclean(OpColMchX) &
+  brule(TransCX.3,I) & /* ReadTrlIpt(I) */
+  spocm1 bsmap I
+/***
+&PrintTHEORY(OpColMchX)
+***/
+ =>
+  spocm
+
+END
+
+&
+
+THEORY TransCX IS
+
+  ?;
+
+  ?;
+
+/*
+#define AlreadyTriedStore          (TransCX.2)
+#define ReadAlreadyTriedStore(x)   brule(AlreadyTriedStore,x)
+#define ModrAlreadyTriedStore(x)   bmodr(AlreadyTriedStore,x)
+*/
+
+#define ModifyTrlImp(x)  bcall(MODR:bmodr(TransCX.1,x))
+#define ModifyTrlAbs(x)  bcall(MODR:bmodr(TransCX.2,x))
+#define ReadTrlImp(x)    brule(TransCX.1,x)
+#define ReadTrlAbs(x)    brule(TransCX.2,x)
+
+
+  ?;?;
+
+#define ModifyTrlIpt(x)  bcall(MODR:bmodr(TransCX.3,x)) /* don't change - hardwored above! */
+#define ModifyTrlSeen(x) bcall(MODR:bmodr(TransCX.4,x))
+#define ReadTrlIpt(x)    brule(TransCX.3,x)
+#define ReadTrlSeen(x)   brule(TransCX.4,x)
+
+
+  ?;  /* 5. non-promoted ops */
+
+  ?;  /* 6. promoted ops */
+#define ModifyPromotedOps(x)  bcall(MODR:bmodr(TransCX.6,x))
+#define ReadPromotedOps(x)    brule(TransCX.6,x)
+
+
+  Writef(("\n")) &
+  InformCantExecute(x) &
+  PFZ
+ =>
+  bshell(x);
+
+  rem_run_job;
+
+  ReadTopLevelAbstraction(a.mch) &
+  GetJobs(X) &
+  bsearch((a.mch:BT_RUN:0),X,Y) &
+  ModifyJobs(Y)
+ =>
+  rem_run_job;
+
+
+  rem_lnk_job(s.imp);
+
+  GetJobs(X) &
+  bsearch((s.imp:BT_LNK:0),X,Y) &
+  ModifyJobs(Y)
+ =>
+  rem_lnk_job(s.imp);
+
+
+  rem_trl_job(s.imp);
+
+  GetJobs(X) &
+  bsearch((s.imp:BT_TRL:0),X,Y) &
+  ModifyJobs(Y)
+ =>
+  rem_trl_job(s.imp);
+
+
+  rem_trl_job(s.imp) &
+  rem_lnk_job(s.imp) &
+  GetTopLevelAbstraction(s.imp) &
+  rem_run_job
+ =>
+  rem_job(s.imp);
+
+
+  
+  ReadTrlAbs(m.mch) &
+  bshell(bcatl("rm -f CDE/C/",m," CDE/C/",m,".o")) &
+  Writef(("\n\n  Translation aborted (Programming Language Flag: C)\n"))
+ =>
+  check_error1(a)(1);
+
+  brule(TransC_parse_implementationX.2,Prog_Language_Flag_ANSI_C) &
+  ReadTrlAbs(m.mch) &
+  bshell(bcatl("rm -f CDE/C/",m," CDE/C/",m,".o")) &
+  Writef(("\n\n  Translation aborted (Programming Language Flag: ANSI C)\n"))
+ =>
+  check_error1(a)(1);
+
+  Writef("    ") &
+  CreHtmlCCodeFile &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_TRL:?)) &
+  AddTrl(a.imp) &
+  Writef(("\n\n  Compilation complete\n"))
+ =>
+  check_error1(a)(2);  /* warnings reported */
+
+  CreHtmlCCodeFile &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_TRL:?)) &
+  AddTrl(a.imp) &
+  Writef(("\n\n  Compilation complete\n"))
+ =>
+  check_error1(a)(0);  /* no warnings reported */
+
+  Writef(("\n")) &
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  check_error(a);
+
+  bget(".Bcom",x) &
+  check_error1(a)(x)
+ =>
+  check_error(a);
+
+
+/*
+HERE(1)&bstatistics&
+*/
+  brule(TransCX.5,O) &
+  TransC((h,O,G,C,A,b,k(l)))
+ =>
+  trans_c33(h,G,C,A,b,k(l));
+
+
+  trans_c3(x);
+
+  brule(TransCX.5,O) &
+  bmodr(TransCX.5,(O,(K|w|x)))
+ =>
+  trans_c3(P,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  bsearch(s,P,Q) &         /* promoted */
+  bcall(RULE:bcrer(PromotedHeaderX,(s:(K))))
+ =>
+  trans_c3(P,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+
+
+
+  /***
+  TransCFile:
+	$1 	name (eg, Bool_TYPE)
+	$2	1=>TransCFilter/NLFilter - from Translators 0=>skip - from Enum.src
+	$3 	compiler string
+	$4 	0=>Motif 1=>Non-Motif
+	$5 	0=>ANSIC 1=>non_ANSIC
+  ***/
+  WriteDot &
+  brule(TransC_parse_implementationX.6,z) &    /* 0=>Motif 1=>Non-Motif */
+  brule(TransC_parse_implementationX.3,c) &    /* cc flags etc. */
+  brule(TransC_parse_implementationX.2,n) &    /* 0=>ANSIC 1=>non_ANSIC */
+  bshell(bcatl("$BKIT/BLIB/TransCFile ",M," 1 ",c, " ",z," ",n)) &
+  check_error(a)
+ =>
+  trans_c2_1(a.imp)(M);
+
+  TRLErrorFlagged &
+  Writef("\n\n  Translation aborted\n (Programming Language Flag: C)")
+ =>
+  trans_c2_1(a.imp)(M);
+
+  brule(TransC_parse_implementationX.2,Prog_Language_Flag_ANSI_C) &
+  TRLErrorFlagged &
+  Writef("\n\n  Translation aborted (Programming Language Flag: ANSI C)\n")
+ =>
+  trans_c2_1(a.imp)(M);
+
+/*
+HERE(3ab)&bstatistics&
+*/
+  bmodr(TransC_parse_implementationX.1,l) &   /* parameters */
+  bmodr(TransCX.5,?) &
+  bmodr(TransC_constsX.3,E) &
+  bmodr(TransC_parametersX.1,m) &
+  ModifyPromotedOps(c) &
+  trans_c3((c,?),n) &
+  trans_c33(h,G,C,A,b,k(l)) &
+  trans_c2_1(a.imp)(M)                                               /* 1 op */
+ =>
+  trans_c2(a.imp)(M.R)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+/*
+HERE(3aa)&bstatistics&
+*/
+  bmodr(TransC_parse_implementationX.1,l) &   /* parameters */
+  bmodr(TransCX.5,?) &
+  bmodr(TransC_constsX.3,E) &
+  bmodr(TransC_parametersX.1,m) &
+  ModifyPromotedOps(c) &
+  trans_c3(c,?) bsmap (N,n) &
+  trans_c33(h,G,C,A,b,k(l)) &
+  trans_c2_1(a.imp)(M)                                               /* > 1 op */
+ =>
+  trans_c2(a.imp)(M.R)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);(N,n));
+
+  Writef(("\n")) &
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  trans_c1(a.imp)(m.b)(Z);
+
+  bstring(Z) &
+  bget(Z,X) &
+  bmodr(LoadTypeFileX.2,a.imp) &
+  trans_c2(a.imp)(m.b)(X)
+ =>
+  trans_c1(a.imp)(m.b)(Z);
+
+  Writef(("\n  C-translating/compiling IMPLEMENTATION %\n\n    %.obj ",a,b)) &
+  ModifyTrlImp(a.imp) &
+  ModifyTrlAbs(b.mch) &
+  ModifyTrlIpt(c) &
+  StoreOpColMch &
+  ModifyTrlSeen(d) &
+  trans_c1(a.imp)(b.mch)(bcatl("ANL/",a,".imp.anl"))
+ =>
+  tc00(a.imp|b.mch|c|d)
+
+END
+
+&
+
+THEORY LinkOpNamesX END &           /* REMEMBER TO COPY TO CIOM.src */
+
+THEORY CheckOverlapOpNamesX IS
+
+#define CheckOverlapOpNames(x) \
+       bcall(((MAP;CATL;RULE;WRITE;MODR)~;CheckOverlapOpNamesX):coon0(x))
+
+  ?; /* current imp promotes list */
+
+  bcrer(LinkOpNamesX,(k:o))
+ =>
+  coon4(k,o);
+
+  brule(LinkOpNamesX.N,(l:o)) &
+  Writef(("\n\n  Link Error - operation % appears in\n\n    % and %\n",bsrv o berv,bsrv l berv,bsrv k berv)) &
+  bmodr(LNKErrorX.1,1) /* SetLNKError */
+ =>
+  coon4(k,o);
+
+  coon4(k,o);
+
+  brule(CheckOverlapOpNamesX.1,P) &
+  bsearch(o,P,Q)
+/***
+&HERE((o:" is promoted"))
+***/
+ =>
+  coon4(k,o);
+
+  coon4(k,?);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  bmodr(CheckOverlapOpNamesX.1,(c,?)) &
+  coon4(P) bsmap j
+ =>
+  coon3(P)(Z);
+
+  ReadBotRef(r.s) &
+  coon3(a)(bcatl("ANL/",r,".",s,".anl"))
+ =>
+  coon2(a.mch);
+
+  coon1(x);
+
+  GetBotRef(a.mch) &
+  coon2(a.mch)
+ =>
+  coon1(a.mch);
+
+  coon1 bsmap O
+ =>
+  coon0(O)
+
+END
+
+&
+
+THEORY LNKErrorX IS 0 END &
+
+#define ClearLNKError bcall(MODR:bmodr(LNKErrorX.1,0))
+
+#define SetLNKError   bcall(MODR:bmodr(LNKErrorX.1,1))
+#define LNKErrorSet   brule(LNKErrorX.1,1)
+
+THEORY LinkCX IS
+
+  ?;
+
+  ?;
+
+#define ReadIptFileList(x)     brule(LinkCX.2,x)
+
+#define ModifyIptFileList(x)   bmodr(LinkCX.2,x)
+
+  ?;
+
+#define ReadTranslatorLinkList(x) brule(LinkCX.3,x)
+#define ModrTranslatorLinkList(x) bmodr(LinkCX.3,x)
+
+
+  InformCantExecute(x) &
+  PFZ
+ =>
+  bshell(x);
+
+
+  rem_job(s.imp);
+
+  GetJobs(X) &
+  bsearch((s.imp:BT_LNK:0),X,Y) &
+  ModifyJobs(Y)
+ =>
+  rem_job(s.imp);
+
+
+  Writef(("\n  Linking aborted\n")) &
+  SetLNKError &
+  rem_job(a.imp)
+ =>
+  check_error1(a)(1);
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_LNK:?)) &
+  AddLnk(a.imp) &
+  Writef(("\n\n  Linking complete\n"))
+ =>
+  check_error1(a)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  check_error(a);
+
+  bget(".Bcom",x) &
+  check_error1(a)(x)
+ =>
+  check_error(a);
+
+
+
+  /***
+  LinkCFile:
+	$1 	name (eg, Bool_TYPE)
+	$2	0=>Translators.src 1=>CIOM.src
+	$3 	compiler string
+	$4 	Non-X Link Libraries
+	$5 	X Link Libraries
+	$6 	0=>ANSIC 1=>non_ANSIC
+	$7 	0=>Motif 1=>Non-Motif
+  ***/
+  brule(TransC_parse_implementationX.3,A) &
+  brule(TransC_parse_implementationX.4,B) &
+  brule(TransC_parse_implementationX.5,C) &
+  brule(TransC_parse_implementationX.2,D) &
+  brule(TransC_parse_implementationX.6,E) &
+  WriteDot &
+  bclose &   /* .Bcom */
+  bshell(bcatl("$BKIT/BLIB/LinkCFile ",a, " 0 ",A," ",B," ",C," ",D," ",E)) &
+  check_error(i)
+ =>
+  lc_11(i)(a);
+
+  ReadTranslatorLinkList(L) &
+  bprintf("%.% ",l,o) &
+  ModrTranslatorLinkList((L,l))
+ =>
+  lc_10(l.mch);
+
+  lc_10(?);
+
+
+  
+  ReadIptFileList(L) &
+  ModifyIptFileList((L,i.mch)) &
+  ReadTranslatorLinkList(P) &
+  bprintf("%.% ",i,o) &
+  ModrTranslatorLinkList((P,i)) &
+  lc_ldf_PASP_0(bcatl("CDE/PASP/",i,".ldf"))
+ =>
+  lc_ldf_PASP_1(i:f:a);
+
+  ReadTranslatorLinkList(L) &
+  bsearch(i,L,M) &
+  lc_ldf_PASP_0(bcatl("CDE/PASP/",i,".ldf"))
+ =>
+  lc_ldf_PASP_1(i:f:a);
+
+  lc_ldf_PASP_1(?);
+
+  lc_ldf_PASP_0(f);
+
+  bget(f,(x|y)) &
+  lc_ldf_PASP_1 bsmap y
+ =>
+  lc_ldf_PASP_0(f);
+
+
+
+  ReadIptFileList(L) &
+  ModifyIptFileList((L,i.mch)) &
+  ReadTranslatorLinkList(P) &
+  bprintf("%.% ",i,o) &
+  ModrTranslatorLinkList((P,i)) &
+  lc_ldf_0(i.mch)
+ =>
+  lc_ldf_2(i);
+
+  ReadTranslatorLinkList(L) &
+  bsearch(i,L,M) &
+  lc_ldf_0(i.mch)
+ =>
+  lc_ldf_2(i);
+
+  lc_ldf_2(i)
+ =>
+  lc_ldf_2(i(p));
+
+  lc_ldf_2(?);
+
+  lc_ldf_1(f);
+
+  bget(f,(x|y)) &
+  lc_ldf_2 bsmap y
+ =>
+  lc_ldf_1(f);
+
+  lc_ldf_1(bcatl("CDE/C/",i,".ldf")) &
+  lc_ldf_PASP_0(bcatl("CDE/PASP/",i,".ldf"))
+ =>
+  lc_ldf_0(i.mch);
+
+  lc_ldf_0(?);
+
+  ReadTrlIpt(L) &
+  Connect(".Bcom") &
+  bprintf("C.c ") &
+  ModrTranslatorLinkList((?,a)) &
+  ModifyIptFileList(L) &
+  lc_10 bsmap (L) &
+  lc_ldf_0 bsmap L &
+  bprintf("%.o\n",a) &
+  lc_11(i)(a)
+ =>
+  lc_9(i)(a);
+
+  lc_9(i)(a)
+ =>
+  lc_9_0(i)(a);
+
+  ReadTrlImp(s.imp) &
+  Writef((" error\n\n    Parameters: %\n\n  Can't link a parameterised construct\n",bsrv l berv)) &
+  Writef(("\n  Linking aborted\n")) &
+  SetLNKError &
+  rem_job(s.imp)
+ =>
+  check_for_main_and_parameters1(P)(R)(W)(l);
+
+  ReadTrlImp(s.imp) &
+  Writef((" error\n\n    No % operation\n",bsrv main berv)) &
+  Writef(("\n  Linking aborted\n")) &
+  SetLNKError &
+  rem_job(s.imp)
+ =>
+  check_for_main_and_parameters1(P)(R)(W)(?);
+
+  ClearLNKError &
+  WriteDot &
+  lc_9_0(P)(R)
+ =>
+  check_for_main_and_parameters1(P)(R)(main)(?);
+
+  bsearch(main,W,X) &
+  ClearLNKError &
+  WriteDot &
+  lc_9_0(P)(R)
+ =>
+  check_for_main_and_parameters1(P)(R)(W)(?);
+
+  bstring(Z) &
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  check_for_main_and_parameters(P)(R)(Z);
+
+  bstring(Z) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  WriteDot &
+  check_for_main_and_parameters1(P)(R)(W)(l)
+ =>
+  check_for_main_and_parameters(P)(R)(Z);
+
+  Writef(("\n  C-linking IMPLEMENTATION %\n\n    % ",a,b)) &
+  WriteDot &
+  check_for_main_and_parameters(a)(b)(bcatl("ANL/",b,".mch.anl"))
+ =>
+  lc_8(a.imp)(b.mch);
+
+
+  bcall(TransC_parse_implementationX~:load_Bplf) &
+  lc_8(a.imp)(b.mch)
+ =>
+  chk_overlap_ops_err(a)(b);
+
+  LNKErrorSet &
+  Writef(("\n  Linking aborted\n")) &
+  rem_job(a.imp)  
+ =>
+  chk_overlap_ops_err(a)(b);
+
+  ModifyTrlImp(a.imp) &
+  ModifyTrlAbs(b.mch) &
+  ModifyTrlIpt(c) &
+  CheckOverlapOpNames((c,b.mch)) &
+  chk_overlap_ops_err(a)(b)
+ =>
+  lc_0(a.imp|b.mch|c)
+
+END

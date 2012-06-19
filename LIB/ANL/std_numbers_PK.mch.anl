@@ -1,0 +1,57 @@
+(
+ (?)
+ ;
+ (
+ (
+ (a**b == exp(a,b))
+ )
+ |
+ (
+ (a**b == exp(a,b))
+ )
+ )
+ )
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(num_range,exp)
+;
+(num_range,exp)
+;
+(num_range: 1..255 --> POW(0..255) & exp: NAT*NAT --> NAT & !nn.(nn: NAT => num_range(nn) = 0..nn) & !(xx,nn).(xx: NAT & nn: NAT => exp(xx,0) = 1 & exp(xx,nn+1) = exp(xx,nn)*nn))
+;
+(num_range: 1..255 --> POW(0..255) & exp: NAT*NAT --> NAT & !nn.(nn: NAT => num_range(nn) = 0..nn) & !(xx,nn).(xx: NAT & nn: NAT => exp(xx,0) = 1 & exp(xx,nn+1) = exp(xx,nn)*nn))
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(std_numbers_PK(?):(?):(?))
+;
+(
+?
+)

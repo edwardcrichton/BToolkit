@@ -1,0 +1,12 @@
+INTERFACE     CMA(/* class_size */ 30, /* STUDENT */ SCALAR)
+
+OPERATIONS
+
+  enrol,
+  isenrolled,
+  test,
+  istested,
+  leave,
+  how_many
+
+END

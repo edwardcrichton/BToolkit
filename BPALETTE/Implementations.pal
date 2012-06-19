@@ -1,0 +1,57 @@
+ ***************
+ IMPLEMENTATIONS
+ ***************
+
+IMPLEMENTATION
+  imp
+
+REFINES
+  mch
+
+SEES
+  mch,...,mch
+
+IMPORTS
+  mch(prm,...,prm),
+   ...,
+  mch(prm,...,prm)
+
+PROMOTES
+  op,...,op
+
+SETS
+  set;...;set;
+  enumset = {el,...,el};
+   ...;
+  enumset = {el,...,el}
+
+CONSTANTS
+  cst,...,cst
+
+PROPERTIES
+  pred & ... & pred
+
+INVARIANT
+ pred & ... & pred  
+
+ASSERTIONS
+  pred & ... & pred 
+
+DEFINITIONS
+  frm == frm;
+  ...;
+  frm == frm
+
+INITIALISATION
+  asub
+
+OPERATIONS
+  op;
+  ...;
+  op
+
+END
+
+
+
+

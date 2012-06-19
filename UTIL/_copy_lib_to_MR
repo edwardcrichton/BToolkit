@@ -1,0 +1,41 @@
+#! /bin/csh -f
+
+echo ""
+echo "  Copies AMN CFG/ANL/TYP/HTX files "
+echo ""
+echo "    from: "
+echo "          ~/TOOLKIT/LIB"
+echo "    to:"
+echo "          $MR/LIB"
+echo ""
+echo ""
+
+echo -n "  Proceed? "
+set answer=$<
+echo ""
+if ( $answer != "" && $answer != "y" && $answer != "yes" ) then
+  echo "  Installation aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+
+cd ~/TOOLKIT/LIB/CFG
+cp *.mch $MR/LIB/CFG
+echo "  CFG -> $MR/LIB/CFG"
+
+cd ~/TOOLKIT/LIB/ANL
+cp * $MR/LIB/ANL
+echo "  ANL -> $MR/LIB/ANL"
+
+cd ~/TOOLKIT/LIB/TYP
+cp * $MR/LIB/TYP
+echo "  TYP -> $MR/LIB/TYP"
+
+cd ~/TOOLKIT/LIB/HTX
+cp * $MR/LIB/HTX
+echo "  HTX -> $MR/LIB/HTX"
+
+echo ""
+echo ""

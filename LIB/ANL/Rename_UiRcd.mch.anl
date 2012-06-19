@@ -1,0 +1,297 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Uns_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(Rename_UiRcd)
+;
+(Rename_UiRcd)
+;
+(?)
+;
+(?)
+;
+(card(Rename_UiRcd) = maxrcd & card(Rename_UiRcd) : NAT1)
+;
+(card(Rename_UiRcd) = maxrcd & card(Rename_UiRcd) : NAT1)
+;
+(?)
+;
+(?)
+;
+(Rename_rcd , Rename_rcd_fnc)
+;
+(Rename_rcd , Rename_rcd_fnc)
+;
+(Rename_rcd <: Rename_UiRcd & Rename_rcd_fnc : Rename_rcd --> (1..numfld +-> VALUE))
+;
+(Rename_rcd <: Rename_UiRcd & Rename_rcd_fnc : Rename_rcd --> (1..numfld +-> VALUE))
+;
+(?)
+;
+(Rename_rcd : Rename_rcd <: Rename_UiRcd || Rename_rcd_fnc :: Rename_rcd --> (1..numfld +-> VALUE))
+;
+(@Rename_rcdx.(Rename_rcdx <: Rename_UiRcd ==> Rename_rcd := Rename_rcdx) || @Rename_rcd_fncx.(Rename_rcd_fncx : Rename_rcd --> (1..numfld +-> VALUE) ==> Rename_rcd_fnc := Rename_rcd_fncx))
+;
+(Rename_UiRcd_RST,Rename_UiRcd_IDX,Rename_UiRcd_FULL,Rename_UiRcd_CRE,Rename_UiRcd_KILL,Rename_UiRcd_VLD,Rename_UiRcd_STO,Rename_UiRcd_VAL)
+;
+(Rename_UiRcd_RST , Rename_UiRcd_IDX , Rename_UiRcd_FULL , Rename_UiRcd_CRE , Rename_UiRcd_KILL , Rename_UiRcd_VLD , Rename_UiRcd_STO , Rename_UiRcd_VAL)
+;
+(Rename_UiRcd(VALUE , numfld , maxrcd):(numfld > 0 & maxrcd > 0 & numfld*maxrcd < 65535 & maxrcd : NAT & numfld : NAT & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_UiRcd_RST)
+;
+ (? , Mod_Op , Det_Op , Rename_UiRcd_RST)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_rcd := {} ||
+ Rename_rcd_fnc := {}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_rcd , Rename_rcd_fnc := {} , {})
+ )
+ )
+)
+,
+(
+ (Rename_UiRcd_IDX)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_UiRcd_IDX(idx)))
+;
+ (idx)
+;
+ (bb)
+;
+ (
+ (idx : UNSIGNED)
+ |
+ (
+ (BEGIN
+ bb := bool(u2n(idx) : 0..numfld)
+ END)
+ )
+ )
+;
+ (
+ (idx : UNSIGNED)
+ |
+ (
+ (bb := bool(u2n(idx) : 0..numfld))
+ )
+ )
+)
+,
+(
+ (Rename_UiRcd_FULL)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_UiRcd_FULL))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_rcd = Rename_UiRcd)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(Rename_rcd = Rename_UiRcd))
+ )
+ )
+)
+,
+(
+ (Rename_UiRcd_CRE)
+;
+ (? , Mod_Op , NonDet_Op , (rr <-- Rename_UiRcd_CRE))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (Rename_rcd /= Rename_UiRcd)
+ |
+ (
+ (ANY new_rcd WHERE
+ new_rcd : Rename_UiRcd-Rename_rcd
+ THEN
+ Rename_rcd := Rename_rcd \/ {new_rcd} ||
+ Rename_rcd_fnc(new_rcd) := {} ||
+ rr := new_rcd
+ END)
+ )
+ )
+;
+ (
+ (not(Rename_rcd = Rename_UiRcd))
+ |
+ (
+ @(new_rcd).
+ (
+ (
+ (new_rcd : Rename_UiRcd-Rename_rcd)
+ )
+ ==>
+ (
+ (Rename_rcd , Rename_rcd_fnc , rr := Rename_rcd \/ {new_rcd} , Rename_rcd_fnc <+ {new_rcd |-> {}} , new_rcd)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_UiRcd_KILL)
+;
+ (? , Mod_Op , Det_Op , Rename_UiRcd_KILL(rr))
+;
+ (rr)
+;
+ (?)
+;
+ (
+ (rr : Rename_UiRcd & rr : Rename_rcd)
+ |
+ (
+ (
+ (Rename_rcd := Rename_rcd-{rr})
+ )
+ ||
+ (
+ (Rename_rcd_fnc := {rr} <<| Rename_rcd_fnc)
+ )
+ )
+ )
+;
+ (
+ (rr : Rename_UiRcd & rr : Rename_rcd)
+ |
+ (
+ (Rename_rcd , Rename_rcd_fnc := Rename_rcd-{rr} , {rr} <<| Rename_rcd_fnc)
+ )
+ )
+)
+,
+(
+ (Rename_UiRcd_VLD)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_UiRcd_VLD(rr)))
+;
+ (rr)
+;
+ (bb)
+;
+ (
+ (rr : Rename_UiRcd)
+ |
+ (
+ (BEGIN
+ bb := bool(rr : Rename_rcd)
+ END)
+ )
+ )
+;
+ (
+ (rr : Rename_UiRcd)
+ |
+ (
+ (bb := bool(rr : Rename_rcd))
+ )
+ )
+)
+,
+(
+ (Rename_UiRcd_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_UiRcd_STO(rr , idx , vv))
+;
+ (rr , idx , vv)
+;
+ (?)
+;
+ (
+ (rr : Rename_UiRcd & idx : UNSIGNED & vv : VALUE & rr : Rename_rcd & u2n(idx) : 1..numfld)
+ |
+ (
+ (Rename_rcd_fnc(rr)(u2n(idx)) := vv)
+ )
+ )
+;
+ (
+ (rr : Rename_UiRcd & idx : UNSIGNED & vv : VALUE & rr : Rename_rcd & u2n(idx) : 1..numfld)
+ |
+ (
+ (Rename_rcd_fnc := Rename_rcd_fnc <+ {rr |-> (Rename_rcd_fnc(rr) <+ {u2n(idx) |-> vv})})
+ )
+ )
+)
+,
+(
+ (Rename_UiRcd_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_UiRcd_VAL(rr , idx)))
+;
+ (rr , idx)
+;
+ (vv)
+;
+ (
+ (rr : Rename_UiRcd & idx : UNSIGNED & rr : Rename_rcd & u2n(idx) : 1..numfld)
+ |
+ (
+ (vv := Rename_rcd_fnc(rr)(u2n(idx)))
+ )
+ )
+;
+ (
+ (rr : Rename_UiRcd & idx : UNSIGNED & rr : Rename_rcd & u2n(idx) : 1..numfld)
+ |
+ (
+ (vv := Rename_rcd_fnc(rr)(u2n(idx)))
+ )
+ )
+)
+)

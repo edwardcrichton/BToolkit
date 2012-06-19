@@ -1,0 +1,46 @@
+    ***********
+    REFINEMENTS
+    ***********
+
+REFINEMENT
+  ref
+
+REFINES
+  mch
+
+SEES
+  mch,...,mch
+
+SETS
+  set;...;set;
+  enumset = {el,...,el};
+  ...;
+  enumset = {el,...,el}
+
+CONSTANTS
+  cst,...,cst
+
+PROPERTIES  
+  pred & .... & pred
+
+VARIABLES
+  vrb,...,vrb
+
+INVARIANT
+  pred & ... & pred  
+
+ASSERTIONS
+  pred & ... & pred 
+
+DEFINITIONS
+  frm == frm;
+  ...;
+  frm == frm
+
+INITIALISATION
+  asub
+
+OPERATIONS
+  op;...;op
+
+END

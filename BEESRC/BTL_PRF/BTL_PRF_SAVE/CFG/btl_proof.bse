@@ -1,0 +1,25 @@
+SYSTEM       btl_proof
+
+SUPPORTS     DummyI
+
+IS
+
+  BASE
+    btl_prf
+  MANDATORY
+    pob_thy_str   : STRING[25];
+    pob_nn        : NAT;
+    reason_depth  : NAT;
+    prf_seq       : SEQ(prf_seq_stp)[25]
+  END;
+
+  BASE
+    prf_seq_stp
+  MANDATORY
+    stp_type     : NAT;
+    stp_thy_str  : STRING[25];
+    stp_rule_str : STRING[100];
+    stp_posn     : NAT
+  END
+
+END

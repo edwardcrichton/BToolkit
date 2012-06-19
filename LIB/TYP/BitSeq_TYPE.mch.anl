@@ -1,0 +1,336 @@
+(
+(Byt_TYPE(?):(?):((?),(?),(?)))
+,
+(String_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(BITSEQ)
+;
+(BITSEQ)
+;
+(BITSEQ0,power,n2bs,bs2n)
+;
+(BITSEQ0,power,n2bs,bs2n)
+;
+(BITSEQ = 1..8 --> {0,1} & BITSEQ0 = [0,0,0,0,0,0,0,0] & power: NAT*NAT --> NAT & n2bs = (n2b;
+b2bs) & bs2n = n2bs~ & card(BITSEQ): NAT1)
+;
+(BITSEQ = 1..8 --> {0,1} & BITSEQ0 = [0,0,0,0,0,0,0,0] & power: NAT*NAT --> NAT & n2bs = (n2b;
+b2bs) & bs2n = n2bs~ & card(BITSEQ): NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(BSAND,BSOR,BSXOR,BSNOT,BSXTR,BSSET,BFBS,BIBS,BSGET,BSPUT)
+;
+(BSAND,BSOR,BSXOR,BSNOT,BSXTR,BSSET,BFBS,BIBS,BSGET,BSPUT)
+;
+(BitSeq_TYPE(?):(?):(?))
+;
+(
+(
+ (BSAND)
+;
+ (?,Val_Op,Det_Op,(rr <-- BSAND(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BITSEQ & bb: BITSEQ)
+ |
+ (
+ (BEGIN
+ rr:=(aa><bb;
+ bnd)
+ END)
+ )
+ )
+;
+ (
+ (aa: BITSEQ & bb: BITSEQ)
+ |
+ (
+ (rr:=(aa><bb;
+bnd))
+ )
+ )
+)
+,
+(
+ (BSOR)
+;
+ (?,Val_Op,Det_Op,(rr <-- BSOR(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BITSEQ & bb: BITSEQ)
+ |
+ (
+ (BEGIN
+ rr:=(aa><bb;
+ bor)
+ END)
+ )
+ )
+;
+ (
+ (aa: BITSEQ & bb: BITSEQ)
+ |
+ (
+ (rr:=(aa><bb;
+bor))
+ )
+ )
+)
+,
+(
+ (BSXOR)
+;
+ (?,Val_Op,Det_Op,(rr <-- BSXOR(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: BITSEQ & bb: BITSEQ)
+ |
+ (
+ (BEGIN
+ rr:=(aa><bb;
+ bxr)
+ END)
+ )
+ )
+;
+ (
+ (aa: BITSEQ & bb: BITSEQ)
+ |
+ (
+ (rr:=(aa><bb;
+bxr))
+ )
+ )
+)
+,
+(
+ (BSNOT)
+;
+ (?,Val_Op,Det_Op,(rr <-- BSNOT(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: BITSEQ)
+ |
+ (
+ (BEGIN
+ rr:=(aa;
+ bcp)
+ END)
+ )
+ )
+;
+ (
+ (aa: BITSEQ)
+ |
+ (
+ (rr:=(aa;
+bcp))
+ )
+ )
+)
+,
+(
+ (BSXTR)
+;
+ (?,Val_Op,Det_Op,(rr <-- BSXTR(aa,ii)))
+;
+ (aa,ii)
+;
+ (rr)
+;
+ (
+ (aa: BITSEQ & ii: BYTE & b2n(ii): 0..7)
+ |
+ (
+ (rr:=n2b(aa(b2n(ii)+1)))
+ )
+ )
+;
+ (
+ (aa: BITSEQ & ii: BYTE & b2n(ii): 0..7)
+ |
+ (
+ (rr:=n2b(aa(b2n(ii)+1)))
+ )
+ )
+)
+,
+(
+ (BSSET)
+;
+ (?,Val_Op,Det_Op,(rr <-- BSSET(aa,ii,vv)))
+;
+ (aa,ii,vv)
+;
+ (rr)
+;
+ (
+ (aa: BITSEQ & ii: BYTE & vv: BYTE & b2n(ii): 0..7 & b2n(vv): {0,1})
+ |
+ (
+ (rr:=bs2b(aa<+{b2n(ii)+1|->b2n(vv)}))
+ )
+ )
+;
+ (
+ (aa: BITSEQ & ii: BYTE & vv: BYTE & b2n(ii): 0..7 & b2n(vv): {0,1})
+ |
+ (
+ (rr:=bs2b(aa<+{b2n(ii)+1|->b2n(vv)}))
+ )
+ )
+)
+,
+(
+ (BFBS)
+;
+ (?,Val_Op,Det_Op,(rr <-- BFBS(aa,ii,jj)))
+;
+ (aa,ii,jj)
+;
+ (rr)
+;
+ (
+ (aa: BITSEQ & ii: BYTE & jj: BYTE & b2n(ii): 0..7 & b2n(jj): 0..7 & ii<=jj)
+ |
+ (
+ (rr:=bs2b(aa\|/b2n(ii)/|\b2n(jj)-b2n(ii)+1^(BITSEQ0/|\7-b2n(jj)+b2n(ii))))
+ )
+ )
+;
+ (
+ (aa: BITSEQ & ii: BYTE & jj: BYTE & b2n(ii): 0..7 & b2n(jj): 0..7 & ii<=jj)
+ |
+ (
+ (rr:=bs2b(aa\|/b2n(ii)/|\b2n(jj)-b2n(ii)+1^(BITSEQ0/|\7-b2n(jj)+b2n(ii))))
+ )
+ )
+)
+,
+(
+ (BIBS)
+;
+ (?,Val_Op,Det_Op,(rr <-- BIBS(aa,bb,ii,jj)))
+;
+ (aa,bb,ii,jj)
+;
+ (rr)
+;
+ (
+ (aa: BITSEQ & bb: BYTE & ii: BYTE & jj: BYTE & b2n(ii): 0..7 & b2n(jj): 0..7 & ii<=jj & b2n(bb)<power(2,b2n(jj-ii)))
+ |
+ (
+ (rr:=aa/|\b2n(ii)^(b2bs(bb)/|\b2n(jj)-b2n(ii)+1)^(aa/|\7-b2n(jj)))
+ )
+ )
+;
+ (
+ (aa: BITSEQ & bb: BYTE & ii: BYTE & jj: BYTE & b2n(ii): 0..7 & b2n(jj): 0..7 & ii<=jj & b2n(bb)<power(2,b2n(jj-ii)))
+ |
+ (
+ (rr:=aa/|\b2n(ii)^(b2bs(bb)/|\b2n(jj)-b2n(ii)+1)^(aa/|\7-b2n(jj)))
+ )
+ )
+)
+,
+(
+ (BSGET)
+;
+ (?,Val_Op,NonDet_Op,(rr <-- BSGET(ss)))
+;
+ (ss)
+;
+ (rr)
+;
+ (
+ (ss: STRING)
+ |
+ (
+ (BEGIN
+ rr:: BITSEQ
+ END)
+ )
+ )
+;
+ (
+ (ss: STRING)
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx: BITSEQ)
+ )
+ ==>
+ (
+ (rr:=rrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (BSPUT)
+;
+ (?,Val_Op,Det_Op,BSPUT(ss))
+;
+ (ss)
+;
+ (?)
+;
+ (
+ (ss: BITSEQ)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (ss: BITSEQ)
+ |
+ (
+ (skip)
+ )
+ )
+)
+)

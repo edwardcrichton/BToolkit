@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+  <TITLE>The std_number_PK machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre><A NAME="MACHINE">MACHINE</A>           std_number_PK
+
+<A NAME="CONSTANTS">CONSTANTS</A>
+
+   num_range, exp 
+
+/*" {\em 0 .. nn\/} also recognized as {\em num\_range(nn)} "*/
+
+PROPERTIES
+
+   num_range  : 1..255 --&gt; POW(0..255) &
+
+   exp : NAT * NAT --&gt; NAT &
+
+   !(nn). ( nn : NAT =&gt; num_range(nn) = 0..nn ) &
+
+   !(xx,nn). ( xx : NAT & nn : NAT =&gt; ( 
+               exp(xx,0) = 1 &
+               exp(xx,nn+1) = exp(xx,nn) * nn ) 
+             )  
+
+<A NAME="DEFINITIONS">DEFINITIONS</A>
+
+  a ** b == exp(a,b) 
+
+END
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

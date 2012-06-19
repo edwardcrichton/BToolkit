@@ -1,0 +1,30 @@
+#! /bin/sh
+
+platform=`cat .Bpla`
+if [ "$BEDIT" ]
+then
+  if [ $platform = "Solaris" ]
+  then
+    if [ $PWD ]
+    then
+      $BEDIT $PWD/$1&
+    else
+      $BEDIT `pwd`/$1&
+    fi
+  else
+    $BEDIT $1&
+  fi
+else
+  if [ $platform = "Solaris" ]
+  then
+    if [ $PWD ]
+    then
+      textedit -title "BEdit" -n "BEdit" $PWD/$1&
+    else
+      textedit -title "BEdit" -n "BEdit" `pwd`/$1&
+    fi
+  else
+    xedit -title "BEdit" -n "BEdit" $1&
+  fi
+fi
+echo $! > .Bed

@@ -1,0 +1,443 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define PrettyPrint(x)         bcall(((ARI~;WRITE)~;ppX)~ : pp(1)(x))
+
+THEORY ppX IS
+
+#define ppJOK2s     ((? & ?),(? or ?),(? => ?))
+
+#define isppJOK2(x) bsearch(x,ppJOK2s,y)
+
+  0;
+#define SetPrettyPrintToScreen bcall(MODR : bmodr(ppX.1,0))
+#define SetPrettyPrintToFile   bcall(MODR : bmodr(ppX.1,1))
+#define PrettyPrintSetToFile   brule(ppX.1,1)
+
+  0;
+#define SetPrettyPrintBSelFlag     bcall(MODR : bmodr(ppX.2,1))
+#define UnSetPrettyPrintBSelFlag   bcall(MODR : bmodr(ppX.2,0))
+#define PrettyPrintBSelFlagSet     brule(ppX.2,1)
+
+
+  Writef((a))
+ =>
+  _writef(a);
+
+  PrettyPrintSetToFile &
+  bprintf(a)
+ =>
+  _writef(a);
+
+
+
+  _writef("\n")
+ =>
+  _writefnl;
+
+  PrettyPrintBSelFlagSet &
+  _writef("`")
+ =>
+  _writefnl;
+
+
+
+  ps(n);
+
+  _writef("    ")
+ =>
+  ps(1);
+
+  _writef("        ")
+ =>
+  ps(2);
+
+  btest(n>2) &
+  _writef("        ") &
+  ps(n-2)
+ =>
+  ps(n);
+
+  btest(n>4) &
+  _writef("                ") &
+  ps(n-4)
+ =>
+  ps(n);
+
+  btest(n>8) &
+  _writef("                                ") &
+  ps(n-8)
+ =>
+  ps(n);
+
+
+  ps(n) &
+  _writef(("%",a))
+ =>
+  pp(n)(a);
+
+  bstring(a) &
+  ps(n) &
+  _writef(a)
+ =>
+  pp(n)(a);
+
+  bstring(a) &
+  ps(n) &
+  _writef((a,b))
+ =>
+  pp(n)(a,b);
+
+
+
+
+  /***
+  substitution
+  ***/
+  
+  pp(n)([s]) &
+  pp(0)(" (") &
+  _writefnl &
+  pp(n+1)(JOK1 p) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)([s](JOK1 p));
+
+  isppJOK2(? JOK2 ?) &
+  pp(n)([s]) &
+  pp(0)(" (") &
+  _writefnl &
+  pp(n+1)(p JOK2 q) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)([s](p JOK2 q));
+
+  /***
+  =>
+  ***/
+
+  pp(n)("(") &
+  _writefnl &
+  pp(n+1)(a) &
+  _writefnl &
+  pp(n)("   =>") &
+  _writefnl &
+  pp(n+1)(b) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)(a=>b);
+
+
+  /***
+  not
+  ***/
+  pp(n)("not(") &
+  _writefnl &
+  pp(n+1)(!a.b) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)(not(!a.b));
+
+  pp(n)("not(") &
+  _writefnl &
+  pp(n+1)(#a.b) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)(not(#a.b));
+
+  isppJOK2(? JOK2 ?) &
+  pp(n)("not(") &
+  _writefnl &
+  pp(n+1)(a JOK2 b) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)(not(a JOK2 b));
+
+  pp(n)("not(") &
+  _writefnl &
+  pp(n+1)(not(a)) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)(not(not(a)));
+
+
+  /***
+  # !
+  ***/
+  pp(n)("!(%).(",a) &
+  _writefnl &
+  pp(n+1)(b) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)(!a.b);
+
+  pp(n)("#(%).(",a) &
+  _writefnl &
+  pp(n+1)(b) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)(#a.b);
+
+
+  /***
+  or &
+  ***/
+  pp(n)(a) &
+  pp(0)("  or") &
+  _writefnl &
+  pp(n)(b)
+ =>
+  pp(n)(a or b);
+
+  pp(n)("(") &
+  _writefnl &
+  pp(n+1)(a) &
+  _writefnl &
+  pp(n)(")") &
+  _writefnl &
+  pp(n)("or") &
+  _writefnl &
+  pp(n)("(") &
+  _writefnl &
+  pp(n+1)(b) &
+  _writefnl &
+  pp(n)(")")
+ =>
+  pp(n)(a or b);
+
+  pp(n)(a) &
+  pp(0)(" &") &
+  _writefnl &
+  pp(n)(b)
+ =>
+  pp(n)(a&b);
+
+
+
+  _writef("%",h) 
+ =>
+  pp_inner_imp(h);
+ 
+  pp_inner_imp(H) &
+  _writef(" &\n    %",h)  
+ =>
+  pp_inner_imp(H&h);
+ 
+  _writef("   (") &
+  pp_inner_imp(h) &
+  _writef("\n   =>\n") &
+  pp(1)(g) &
+  _writef(")") 
+ =>
+  pp(1)(h=>g);
+
+
+
+
+  _writef("  cst(%)\n =>\n",m,m) &
+  pp(1)(g)
+ =>
+  pp(1)(cst(m)=>g);
+
+  _writef("  cst(%)\n =>\n",m,m) &
+/*
+  pp(1)(h) &
+  _writef("\n   =>\n") &
+  pp(1)(g)
+*/
+  pp(1)(h=>g)
+ =>
+  pp(1)(cst(m)=>(h=>g));
+
+  _writef("  cst(%) & ctx(%)\n =>\n",m,m) &
+  pp(1)(g)
+ =>
+  pp(1)(cst(m)&ctx(m)=>g);
+
+  _writef("  cst(%) & ctx(%)\n =>\n",m,m) &
+/*
+  pp(1)(h) &
+  _writef("\n   =>\n") &
+  pp(1)(g)
+*/
+  pp(1)(h=>g)
+ =>
+  pp(1)(cst(m)&ctx(m)=>(h=>g));
+
+  _writef("  cst(%) & ctx(%) &\n  inv(%)\n =>\n",m,m) &
+  pp(1)(g)
+ =>
+  pp(1)(cst(m)&ctx(m)&inv(m)=>g);
+
+  _writef("  cst(%) & ctx(%) &\n  inv(%)\n =>\n",m,m) &
+/*
+  pp(1)(h) &
+  _writef("\n   =>\n") &
+  pp(1)(g)
+*/
+  pp(1)(h=>g)
+ =>
+  pp(1)(cst(m)&ctx(m)&inv(m)=>(h=>g));
+
+  _writef("  cst(%) & ctx(%) &\n  inv(%) & asn(%) &\n  pre(%)\n =>\n",m,m,m,m,o) &
+  pp(1)(g)
+ =>
+  pp(1)(cst(m)&ctx(m)&inv(m)&asn(m)&pre(o)=>g);
+
+  _writef("  cst(%) & ctx(%) &\n  inv(%) & asn(%) &\n  pre(%)\n =>\n",m,m,m,m,o) &
+/*
+  pp(1)(h) &
+  _writef("\n   =>\n") &
+  pp(1)(g)
+*/
+  pp(1)(h=>g)
+ =>
+  pp(1)(cst(m)&ctx(m)&inv(m)&asn(m)&pre(o)=>(h=>g))
+
+END
+
+/*
+&
+
+THEORY TEST IS
+
+  PrettyPrint
+(  cst(factorial_1$1) &
+  ctx(factorial_1$1) &
+  inv(factorial_1$1) &
+  asn(factorial_1$1) &
+  pre(comp_fac) &
+  inp = 0
+ =>
+    (
+      (
+      1 = math_fac(inp)
+      )
+    or
+      (
+      1 = 0
+    )
+  )
+)
+;
+
+  PrettyPrint
+(
+  cst(TopLevelI$1) & ctx(TopLevelI$1) & inv(TopLevelI$1) & asn(TopLevelI$1) & pre(RecordCommand) => (xx: BOOL & not(xx = TRUE) => #checkingresult.(checkingresult: BOOL & not((checkingresult = TRUE => not(checkingresult = xx & com$1 = checkcom$1)) & (checkingresult = xx => checkingresult = TRUE))))
+
+)
+
+;
+
+  PrettyPrint
+(
+  (
+    (
+        AAA&
+        FALSE = TRUE &
+        FALSE = xx &
+        com$1 = comToBits~(comToBits(com$1))
+    )
+    or
+    (
+        BBB &
+        FALSE = xx &
+        checkcom$1 = comToBits~(comToBits(com$1)) &
+        not(FALSE = TRUE)
+    )
+  )
+ or
+  (
+    (
+        CCC &
+        FALSE = TRUE &
+        FALSE = xx &
+        com$1 = comToBits~(comToBits(com$1))
+    )
+    or
+    (
+        DDD &
+        FALSE = xx &
+        checkcom$1 = comToBits~(comToBits(com$1)) &
+        not(FALSE = TRUE)
+    )
+  )
+)
+
+;
+
+  PrettyPrint
+(
+    [checkingresult:=xx]not((checkingresult = TRUE => not(checkingresult = xx & com$1 = comToBits~(comToBits(com$1)))) & (checkingresult = xx & checkcom$1 = comToBits~(comToBits(com$1)) => checkingresult = TRUE))
+)
+
+;
+
+  PrettyPrint
+(
+  aa&ee=>(bb=>(cc&dd&(ee&ff=>gg&hh)))
+)
+
+;
+
+  PrettyPrint
+(
+  not(!(aa,bb).(1&2))
+)
+
+;
+
+  PrettyPrint
+(
+      not(!(lcmd$0,lcmdsn$0).(lcmd$0: NAT & lcmdsn$0: BOOL 
+      & (lcmdsn$0 = TRUE => lcmd$0<=1000) & (lcmdsn$0 = 
+      FALSE => lcmd$0<=3500) & (lcmdsn$0 = oms$1 => lcmd$0
+      <=omc$1 & omc$1<=lcmd$0+14 or (omc$1<=lcmd$0 & lcmd$0
+      <=omc$1+14)) & (not(lcmdsn$0 = oms$1) => omc$1+lcmd$0
+      <=14) => !(fcmd$0).(fcmd$0: NAT & fcmd$0<=1000 => not
+      (lcmd$0 = lcmd & lcmdsn$0 = lcmdsn & fcmd$0 = fcmd & 
+      0 = fcmd))) & !(lcmd$0,lcmdsn$0).(lcmd$0: NAT & 
+      lcmdsn$0: BOOL & (lcmdsn$0 = TRUE => lcmd$0<=1000) & 
+      (lcmdsn$0 = FALSE => lcmd$0<=3500) & (lcmdsn$0 = oms$
+      1 => lcmd$0<=omc$1 & omc$1<=lcmd$0+14 or (omc$1<=lcmd
+      $0 & lcmd$0<=omc$1+14)) & (not(lcmdsn$0 = oms$1) => 
+      omc$1+lcmd$0<=14) => !(fcmd$0).(fcmd$0: NAT & fcmd$0
+      <=1000 => not(lcmd$0 = lcmd & lcmdsn$0 = lcmdsn & 
+      fcmd$0 = fcmd & flimcmd$1 = fcmd))))
+
+)
+
+;
+
+  PrettyPrint
+(
+#checkingresult.(checkingresult: {FALSE,TRUE} & not((checkingresult = TRUE => not(checkingresult = TRUE & com$1 = comToBits~(comToBits(com$1)))) & (checkingresult = TRUE & checkcom$1 = comToBits~(comToBits(com$1)) => checkingresult = TRUE)))
+
+)
+
+END
+*/

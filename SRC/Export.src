@@ -1,0 +1,918 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define exp_tac ((MAP;ARI;WRITE;FLAT;MAP;MODR~;CATL;SHELL;FLAT)~;ExportX)~
+
+#define ExportDirect(x)  bcall(exp_tac: exp_chk_TL_0(x))
+
+#define InformAlreadyExistsTLIB(x)   Writef(("\n\n  % already exists in TLIB!\n",bsrv x berv))
+
+#define InformNothingToExport    Writef(("\n    Nothing to export\n"))
+
+#define InformNothingToExport    Writef(("\n    Nothing to export\n"))
+
+#define InformExportNoImp(x)     Writef(("\n    % has no (analysed) implementation\n",x))
+
+#define InformNotTranslated(x)   Writef(("\n    % has not been translated/compiled\n",x))
+
+#define InformSeenMchNotImportedExp(x,y) \
+	Writef(("    % (SEEN by %)\n",bsrv x berv,y))
+
+
+
+
+
+#define InformCodeAlreadyPresent(m,x) \
+	Writef(("\n\n    Code for % is already present in TLIB\n\n      (as a sub-module 0f %)",m,bsrv x berv))
+
+#define ExportIdentifierTooLong(s,x) \
+  Writef(("\n\n    ")) & \
+  Writef((s)) & \
+  Writef((" %\n    Too long for export (max length 23) ",bsrv x berv))
+
+#define InformBadParamType(x) \
+  Writef(("\n\n    Bad parameter type: %\n\n      Parameters should be sets or have type NAT",bsrv x berv))
+
+
+THEORY TransC_ppX IS
+
+ PV1;PV2;PV3;PV4;PV5;PV6;PV7;PV8;PV9;PV10;
+ PV11;PV12;PV13;PV14;PV15;PV16;PV17;PV18;PV19;PV20;
+ PV21;PV22;PV23;PV24;PV25;PV26;PV27;PV28;PV29;PV30;
+ PV31;PV32;PV33;PV34;PV35;PV36;PV37;PV38;PV39;PV40;
+ PV41;PV42;PV43;PV44;PV45;PV46;PV47;PV48;PV49;PV50
+
+END
+
+&
+
+THEORY ExportX IS
+
+
+  ?;  /* 0. 1=> plx (so don't write done, but BT_PEXP ) */
+
+#define ResetPLXFlag     bcall(MODR : bmodr(ExportX.1,0))
+#define SetPLXFlag       bcall(MODR : bmodr(ExportX.1,1))
+#define PLXFlagNotSet    brule(ExportX.1,0)
+#define PLXFlagSet       brule(ExportX.1,1)
+
+  ?;  /* 2. 1=>ExportError, 0=>not */
+
+#define ResetExportError     bcall(MODR : bmodr(ExportX.2,0))
+#define FlagExportError      bcall(MODR : bmodr(ExportX.2,1))
+#define ExportErrorFlagged   brule(ExportX.2,1)
+
+  ?;  /* 3. recursive subsid mchs also being exported (?,a.mch,...) */
+
+#define ModrRecursiveImportList_Export(x) bcall((FLAT;MODR) : bmodr(ExportX.3,x))
+#define ReadRecursiveImportList_Export(x) brule(ExportX.3,x)
+
+  ?;  /* 4. (non-recursive) export list (?,a.mch,...) */
+
+#define ModrImportList_Export(x) bcall((FLAT;MODR) : bmodr(ExportX.4,x))
+#define ReadImportList_Export(x) brule(ExportX.4,x)
+
+  ?;  /* 5. parameter list (?,(paramnamem_pn_val),...) */
+
+#define ModrParameterList_Export(x) bcall((NEWV~;MODR) : bmodr(ExportX.5,x))
+#define ReadParameterList_Export(x) brule(ExportX.5,x)
+
+  ?;  /* 6. typ file (global_typ;?) */
+
+#define ModrTypInfo_Export(x) bcall(MODR : bmodr(ExportX.6,x))
+#define ReadTypInfo_Export(x) brule(ExportX.6,x)
+
+  ?;  /* 7. (non-recursive) export list (?,a.mch,...) */
+
+#define ModrSeenNotImported_Export(x) bcall(MODR : bmodr(ExportX.7,x))
+#define ReadSeenNotImported_Export(x) brule(ExportX.7,x)
+
+  ?;  /* 8. seen/dependency list (?,a.mch,...) */
+
+#define ModrSeenDep_Export(x) bcall(MODR : bmodr(ExportX.8,x))
+#define ReadSeenDep_Export(x) brule(ExportX.8,x)
+
+
+#define AugmentSeenDep_Export aug_0
+
+
+#define RemoveRecursiveImportFromSeen ris_0
+
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+
+  ris_1(m);
+
+  ReadSeenDep_Export(S) &
+  bsearch(m,S,T) &
+  ModrSeenDep_Export(T)
+ =>
+  ris_1(m);
+  
+  ris_1(?);
+  
+  ReadRecursiveImportList_Export(I) &
+  ris_1 bsmap I
+ =>
+  ris_0;
+
+
+
+  ReadSeenDep_Export(S) &
+  ModrSeenDep_Export((S,m.mch))
+ =>
+  aug_3(m);
+
+  ReadSeenDep_Export(S) &
+  bsearch(m.mch,S,T)
+ =>
+  aug_3(m);
+
+  ReadRecursiveImportList_Export(I) &
+  bsearch(m.mch,I,J)
+ =>
+  aug_3(m);
+
+  aug_3(m)
+ =>
+  aug_3(m.mch);
+
+  aug_3(?);
+
+  aug_2(m)(f);
+
+  bget(f,(a|M)) &
+  aug_3 bsmap M &
+  aug_1 bsmap M
+ =>
+  aug_2(m)(f);
+
+  aug_2(m)(bcatl("CDE/C/",m,".ldf"))
+ =>
+  aug_1(m);
+
+  aug_1(m)
+ =>
+  aug_1(m.mch);
+
+  aug_1(?);
+
+  ReadSeenDep_Export(S) &
+  ReadRecursiveImportList_Export(I) &
+  aug_1 bsmap S &
+  aug_1 bsmap I
+ =>
+  aug_0;
+
+
+
+  Writef(("     %\n",l))
+ =>
+  write_pdf4(l);
+
+  Writef((" with dependency: %\n",l))
+ =>
+  write_pdf3(l);
+
+  Writef((" with dependencies:\n")) &
+  write_pdf4 bsmap (L,l)
+ =>
+  write_pdf3(L,l);
+
+  Writef((" with no dependencies\n"))
+ =>
+  write_pdf3(?);
+
+  bsearch(?,L,M) &
+  write_pdf3(M)
+ =>
+  write_pdf3(L);
+
+  bprintf(",%",a)
+ =>
+  write_pdf2(a.mch,m,n);
+
+  bprintf("%",a)
+ =>
+  write_pdf2(a.mch,1,n);
+
+  bprintf("?")
+ =>
+  write_pdf2(?,1,1);
+
+  bprintf("(?)\n|\n(") &
+  write_pdf2 bnmap L &
+  bprintf(")\n") &
+  bclose
+ =>
+  write_pdf1(L);
+
+  bsearch(?,L,M) &
+  write_pdf1(M)
+ =>
+  write_pdf1(L);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  write_pdf(m)(f);
+
+  bconnect(f) &
+  ReadSeenDep_Export(L) &
+  write_pdf1(L) &
+  Writef(("\n\n  Exported % to TLIB",m)) &
+  write_pdf3(L) &
+  bshell(bcatl("cp CDE/C/",m,".ldf $BTEAMLIB/CDE/C/",m,".ldf ; rm -f CDE/C/",m,".ldf"))
+ =>
+  write_pdf(m)(f);
+
+  ExportErrorFlagged
+ =>
+  write_pdf(m)(f);
+
+
+
+  SetPLXFlag
+ =>
+  chk_plx_5;
+
+  ExportErrorFlagged
+ =>
+  chk_plx_5;
+
+  Writef(("\n\n  Export aborted\n",a)) &
+  CatFileIfExists(".Bter",1) &
+  clean(a) &
+  FlagExportError
+ =>
+  chk_plx_41(a.mch)(x);
+
+  chk_plx_41(a.mch)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_plx_31(a.mch);
+
+  bget(".Bcom",x) &
+  chk_plx_41(a.mch)(x)
+ =>
+  chk_plx_31(a.mch);
+
+  bshell(bcatl("$BKIT/BLIB/ExportPLXFile 11 ",a)) &
+  chk_plx_31(a.mch)
+ =>
+  chk_plx_21(a.mch);
+
+  chk_plx_21(?);
+
+  Writef(("\n\n  Export aborted\n",a)) &
+  CatFileIfExists(".Bter",1) &
+  clean(a) &
+  FlagExportError
+ =>
+  chk_plx_4(a.mch)(x);
+
+  chk_plx_4(a.mch)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_plx_3(a.mch);
+
+  bget(".Bcom",x) &
+  chk_plx_4(a.mch)(x)
+ =>
+  chk_plx_3(a.mch);
+
+  bshell(bcatl("$BKIT/BLIB/ExportPLXFile 10 ",a)) &
+  chk_plx_3(a.mch)
+ =>
+  chk_plx_2(a.mch);
+
+
+  ExportErrorFlagged
+ =>
+  x;
+
+
+  bshell(bcatl("rm -f $BTEAMLIB/CFG/",m,".mch $BTEAMLIB/ANL/",m,".mch.anl $BTEAMLIB/TYP/",m,".mri.typ $BTEAMLIB/CDE/C/",m,".* $BTEAMLIB/CDE/PLX/",m,".*"))
+ =>
+  clean1(m);
+
+  clean1(m)
+ =>
+  clean1(m.mch);
+
+  clean1(?);
+
+/*** ReadRecursiveImportList_Export(L) &
+  clean1 bsmap L & ***/
+  clean1(m)
+ =>
+  clean(m);
+
+
+  GetJobs(X) &
+  ResetPLXFlag &
+  ModifyJobs((X;(m.mch:BT_PEXP:0))) &
+  WriteDot &
+  LoadToolkit(12)
+ =>
+  exp_29(m.mch);
+
+  GetCompletedJobs(X) &
+  PLXFlagNotSet &
+  AddCompletedJobs(X,(m.mch:BT_EXPORT_TLIB_DONE:(?)))  
+ =>
+  exp_29(m.mch);
+
+  exp_29(m.mch)
+ =>
+  exp_27(m.mch)(s.imp);
+
+  ExportErrorFlagged
+ =>
+  exp_27(m.mch)(s.imp);
+
+  Writef(("\n\n  Can't compile (exported) %.c - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  check_compiles_3(m.mch)(s.imp)(1);
+
+  bshell(bcatl("rm -f $BTEAMLIB/CDE/C/",m,".o"))
+ =>
+  check_compiles_3(m.mch)(s.imp)(0);
+
+  InformCantConnect(".Bcom") &
+  clean(m)
+ =>
+  check_compiles_2(m.mch)(s.imp);
+
+  bget(".Bcom",x) &
+  check_compiles_3(m.mch)(s.imp)(x)
+ =>
+  check_compiles_2(m.mch)(s.imp);
+
+/***
+  check it actually compiles!
+***/
+  bshell(bcatl("$BKIT/BLIB/ExportFile 50 ",m)) &
+  check_compiles_2(m.mch)(s.imp)
+ => 
+  check_compiles_1(m.mch)(s.imp);
+
+  InformCantConnect(".Bcom") &
+  clean(m)
+ =>
+  check_compiles_0_1(m.mch)(s.imp)(?)(S);
+
+  bconnect(".BBcom") &
+  bprintf(S) &
+  bclose &
+  check_compiles_1(m.mch)(s.imp)
+ => 
+  check_compiles_0_1(m.mch)(s.imp)(?)(S);
+
+  check_compiles_0_1(m.mch)(s.imp)(L)(bcatl("#define ",v," 99\n",S))
+ =>
+  check_compiles_0_1(m.mch)(s.imp)(L,(a:v))(S);
+
+  ReadParameterList_Export(L) &
+  check_compiles_0_1(m.mch)(s.imp)(L)("\n")
+ =>
+  check_compiles_0(m.mch)(s.imp);
+
+  check_compiles_0(m.mch)(s.imp) &
+  exp_27(m.mch)(s.imp)
+ =>
+  exp_26_2(m.mch)(s.imp)(x);
+
+  Writef(("\n\n  Can't copy %.c - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_26_2(m.mch)(s.imp)(4);
+
+  Writef(("\n\n  Can't expand %.c - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_26_2(m.mch)(s.imp)(3);
+
+  Writef(("\n\n  Can't copy %.h - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_26_2(m.mch)(s.imp)(2);
+
+  Writef(("\n\n  Can't copy %.g - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_26_2(m.mch)(s.imp)(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  exp_26_1(m.mch)(s.imp);
+
+  bget(".Bcom",x) &
+  exp_26_2(m.mch)(s.imp)(x)
+ =>
+  exp_26_1(m.mch)(s.imp);
+
+
+
+  WriteDot &
+  bshell(bcatl("sed -e s+'#include \"",b,".h\"'+''+g < CDE/C/",m,".H > CDE/C/",m,".I ; mv CDE/C/",m,".I CDE/C/",m,".H")) &
+  bshell(bcatl("sed -e s+'#include \"",b,".g\"'+''+g < CDE/C/",m,".G > CDE/C/",m,".J ; mv CDE/C/",m,".J CDE/C/",m,".G"))
+ =>
+  rm_include_h_g_1(m.mch,b.mch);
+
+  rm_include_h_g_1(m.mch,?);
+
+  ReadImportList_Export(L) &
+  rm_include_h_g_1(m.mch) bsmap L
+ =>
+  rm_include_h_g_0(m.mch);
+
+
+/***
+  m.h,h.g copied to m.H,m.G
+    (all #includes of subsid files removed - otherwise, duplication!)
+  m.H NLfiltered > TLIB/m.h
+  m.G DFiltered, NLfiltered > TLIB/m.g
+    (thus removing also all #defines of subsidiary parameter values)
+  #include "m.h" > TLIB/m.c
+  #include <stdio.h> >> TLIB/m.c
+  extern FILE *dump_file; >> TLIB/m.c
+    (the latter two required since removed form all imported .c files)
+  m.G copied m.J before  DFiltering
+    m.J IFiltered, NLfiltered > C.d 
+     (further removes int declarations of its own parameters, just
+      leaving #defines of subsidiary parameter values)
+    C.c >> C.d
+      (C.c already contained imported .c files with static int declarations)
+    C.d moved to C.c
+  C.c expanded, EFiltered, NLfiltered >> TLIB/m.c
+    (external int definitions removed)
+***/
+  bshell(bcatl("cp CDE/C/",m,".h CDE/C/",m,".H")) &
+  bshell(bcatl("cp CDE/C/",m,".g CDE/C/",m,".G")) &
+  rm_include_h_g_0(m.mch) &
+  bshell(bcatl("cp CDE/C/",m,".G CDE/C/",m,".J")) &
+  bshell(bcatl("$BKIT/BLIB/ExportFile 30 ",m)) &
+  WriteDot &
+  exp_26_1(m.mch)(s.imp)
+ =>
+  exp_26(m.mch)(s.imp);
+
+  ExportErrorFlagged
+ =>
+  exp_26(m.mch)(s.imp);
+
+
+  Writef(("\n\n  Can't copy %.1 - aborted\n",a)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_25(m.mch)(s.imp)(a)(X)(2);
+
+  Writef(("\n\n  Can't expand %.c - aborted\n",a)) &
+   CatFileIfExists(".Bter",1) &
+ clean(m) &
+  FlagExportError
+ =>
+  exp_25(m.mch)(s.imp)(a)(X)(1);
+
+  exp_23(m.mch)(s.imp)(X)
+ =>
+  exp_25(m.mch)(s.imp)(a)(X)(0);
+
+  exp_26(m.mch)(s.imp)
+ =>
+  exp_25(m.mch)(s.imp)(a)(?)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  exp_24(m.mch)(s.imp)(a)(X);
+
+  bget(".Bcom",x) &
+  exp_25(m.mch)(s.imp)(a)(X)(x)
+ =>
+  exp_24(m.mch)(s.imp)(a)(X);
+
+  bshell(bcatl("sed -e s+'\<",o,"\>'+'static ",o,"'+g < CDE/C/",a,".C > CDE/C/",a,".D ; mv CDE/C/",a,".D CDE/C/",a,".C"))
+  =>
+  add_static_imp_ops_1(a.mch,o);
+
+  add_static_imp_ops_1(a.mch,?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  add_static_imp_ops_0(p.mch)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  bshell(bcatl("sed -e s+'\<INI_",p,"\>'+'static INI_",p,"'+g < CDE/C/",p,".C > CDE/C/",p,".D ; mv CDE/C/",p,".D CDE/C/",p,".C")) &
+  WriteDot &
+  add_static_imp_ops_1(p.mch) bsmap j
+ =>
+  add_static_imp_ops_0(p.mch)(Z);
+
+
+  bshell(bcatl("sed -e s+'#include <stdio.h>'+''+g < CDE/C/",a,".H > CDE/C/",a,".h")) &
+  WriteDot
+ =>
+  rm_stdio_dump_file_dot_H(a);
+
+  bshell(bcatl("sed -e s+'#include <stdio.h>'+''+g < CDE/C/",a,".C > CDE/C/",a,".D")) &
+  bshell(bcatl("sed -e s+'extern FILE \*dump_file;'+''+g < CDE/C/",a,".D > CDE/C/",a,".C ; rm -f CDE/C/",a,".D")) &
+  WriteDot &
+  rm_stdio_dump_file_dot_H(a)
+ =>
+  rm_stdio_dump_file(a);
+
+
+
+/***
+.c
+  (imported modules) a.c copied to a.C,
+  #include <stdio.h>, extern FILE *dump_file; removed from a.C
+    (otherwise duplication)
+  static declarations added for each operation
+  a.C expanded, NLfiltered >> C.c
+    (C.c already contains the imported code containing
+     static int declarations of all subsid data)
+.H
+  #include <stdio.h> removed -> .h
+***/
+  bshell(bcatl("cp CDE/C/",a,".c CDE/C/",a,".C")) &
+  rm_stdio_dump_file(a) &
+  add_static_imp_ops_0(a.mch)(bcatl("ANL/",a,".mch.anl")) &
+  bshell(bcatl("$BKIT/BLIB/ExportFile 3 ",a)) &
+  WriteDot &
+  exp_24(m.mch)(s.imp)(a)(X)
+ =>
+  exp_23(m.mch)(s.imp)(X,a.mch);
+
+  ExportErrorFlagged
+ =>
+  exp_23(m.mch)(s.imp)(X,a.mch);
+
+  Writef(("\n\n  Can't compile %.c - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_22b(m.mch)(s.imp)(4);
+
+  Writef(("\n\n  Can't copy %.mri.typ - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_22b(m.mch)(s.imp)(3);
+
+  Writef(("\n\n  Can't copy %.mch.anl - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_22b(m.mch)(s.imp)(2);
+
+  Writef(("\n\n  Can't copy %.mch - aborted\n",m)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_22b(m.mch)(s.imp)(1);
+
+  exp_22b(m.mch)(s.imp)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  exp_22a(m.mch)(s.imp);
+
+  bget(".Bcom",x) &
+  exp_22b(m.mch)(s.imp)(x)
+ =>
+  exp_22a(m.mch)(s.imp);
+
+/***
+  m.mch being exported
+  CFG/m.mch, ANL/m.mch.anl, TYP/m.mri.typ created in TLIB
+  m.c >> C.c (C.c initially empty)
+  PLX
+***/
+  bshell(bcatl("$BKIT/BLIB/ExportFile 2 ",m)) &
+  WriteDot &
+  exp_22a(m.mch)(s.imp) &
+  exp_23(m.mch)(s.imp)(X)
+ =>
+  exp_22(m.mch)(s.imp)(X);
+
+  ExportErrorFlagged
+ =>
+  exp_22(m.mch)(s.imp)(X);
+
+  Writef(("\n\n  Can't copy %.g - aborted\n",a)) &
+  CatFileIfExists(".Bter",1) &
+  clean(m) &
+  FlagExportError
+ =>
+  exp_21_2(a.mch)(1);
+
+  exp_21_2(a.mch)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  exp_21_1(a.mch);
+
+  bget(".Bcom",x) &
+  exp_21_2(a.mch)(x)
+ =>
+  exp_21_1(a.mch);
+
+/***
+  m.mch being exported
+  a.mch are directly imported by m.mch (the machine being exported)
+    a.g expanded, static added to int, >> C.c (imported mchs)
+      (thus all subsid int declarations are static in C.c
+       which will already contain code for m.c)
+***/
+  bshell(bcatl("$BKIT/BLIB/ExportFile 5 ",a)) &
+  WriteDot &
+  exp_21_1(a.mch)
+ =>
+  exp_21(a.mch);
+
+  exp_21(?);
+
+  bshell("rm -f CDE/C/C.c") &
+  exp_21 bsmap Y &
+  exp_22(m.mch)(s.imp)(X)
+ =>
+  exp_20(m.mch)(s.imp)(Y)(X);
+
+/***
+  m.mch being exported
+  nothing imported (even recursively)!!!!
+    CFG/m.mch, ANL/m.mch.anl, TYP/m.mri.typ created in TLIB
+    m.c >> C.c (C.c initially empty)
+    PLX
+***/
+  bshell("rm -f CDE/C/C.c") &
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/ExportFile 2 ",m)) &
+  exp_22a(m.mch)(s.imp) &
+  exp_26(m.mch)(s.imp)
+ =>
+  exp_20(m.mch)(s.imp)(?)(?);
+
+  ReadImportList_Export(Y) &
+  ReadRecursiveImportList_Export(X) &
+  exp_20(m.mch)(s.imp)(Y)(X)
+ =>
+  exp_3(m.mch)(s.imp);
+
+  ExportErrorFlagged &
+  clean(m) &
+  Writef(("\n\n  Export aborted\n")) &
+  CatFileIfExists(".Bter",1)
+ =>
+  exp_3(m.mch)(s.imp);
+
+
+  
+  InformBadParamType(v) &
+  FlagExportError
+ =>
+  check_params_types_1(v:p);
+
+  ReadTypInfo_Export(T) &
+  bsearch((v:NAT),T,U)
+ =>
+  check_params_types_1(v:p);
+
+  check_params_types_1(?);
+
+  ReadParameterList_Export(L) &
+  check_params_types_1 bsmap L
+ =>
+  check_params_types_0(m.mch)(s.imp);
+
+
+
+
+  ModrTypInfo_Export((B;?))
+ =>
+  load_typ_file_1(m.mch)(s.imp)(B|C);
+
+  ModrTypInfo_Export((B;?))
+ =>
+  load_typ_file_1(m.mch)(s.imp)(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  load_typ_file_0(m.mch)(s.imp)(f);
+
+  bget(f,x) &
+  load_typ_file_1(m.mch)(s.imp)(x)
+ =>
+  load_typ_file_0(m.mch)(s.imp)(f);
+
+  ReadParameterList_Export(L) &
+  ModrParameterList_Export((L,(p:z)))
+ =>
+  chk_params_1(p)(z);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_params_0_1(p);
+
+  bget(".Bcom",z) &
+  chk_params_1(p)(z)
+ =>
+  chk_params_0_1(p);
+
+  chk_params_0(m,p,a,b);
+
+  bident(p) &
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_params_0(m,p,a,b);
+
+  bident(p) &
+  bconnect(".Bcom") &
+  bprintf("%",m) &
+  bprintf("PV") &
+  bprintf("%",a) &
+  chk_params_0_1(p)
+ =>
+  chk_params_0(m,p,a,b);
+
+  bident(p) &
+  brule(TransC_ppX.a,z) &
+  chk_params_1(p)(bnewv(m,z))
+ =>
+  chk_params_0(m,p,a,b);
+
+  bUpident(p)
+ =>
+  chk_params_0(m,p,a,b);
+
+  ExportIdentifierTooLong(s,a) &
+  FlagExportError
+ =>
+  chk_id_length_2(s)(a)(n);
+
+  btest(n<24)
+ =>
+  chk_id_length_2(s)(a)(n);
+
+  chk_id_length_1(s,a);
+
+  bident(a) &
+  chk_id_length_2(s)(a)(blen(a))
+ =>
+  chk_id_length_1(s,a);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  chk_id_length_0(m.mch)(s.imp)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  chk_id_length_1("OPERATIONS name") bsmap W &
+  chk_id_length_1("VARIABLES name") bsmap d &
+  ModrParameterList_Export(?) &
+  chk_params_0(M) bnmap (l)
+ =>
+  chk_id_length_0(M.mch)(s.imp)(Z);
+
+
+  chk_id_length_0(m.mch)(s.imp)(bcatl("ANL/",s,".imp.anl")) &
+  load_typ_file_0(m.mch)(s.imp)(bcatl("TYP/",s,".mri.typ")) &
+  check_params_types_0(m.mch)(s.imp) &
+  exp_3(m.mch)(s.imp)
+ =>
+  exp_chk_TL_2(m.mch)(s.imp)(0);
+
+  InformTEAMLIBLocked
+ =>
+  exp_chk_TL_2(m.mch)(s.imp)(7);
+
+  InformTEAMLIBBpdaNotExist
+ =>
+  exp_chk_TL_2(m.mch)(s.imp)(6);
+
+  InformTEAMLIBCDENotExist
+ =>
+  exp_chk_TL_2(m.mch)(s.imp)(5);
+
+  InformTEAMLIBTYPNotExist
+ =>
+  exp_chk_TL_2(m.mch)(s.imp)(4);
+
+  InformTEAMLIBANLNotExist
+ =>
+  exp_chk_TL_2(m.mch)(s.imp)(3);
+
+  InformTEAMLIBCFGNotExist
+ =>
+  exp_chk_TL_2(m.mch)(s.imp)(2);
+
+  InformTEAMLIBNotSet
+ =>
+  exp_chk_TL_2(m.mch)(s.imp)(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  exp_chk_TL_1(m.mch)(s.imp);
+
+  bget(".Bcom",x) &
+  exp_chk_TL_2(m.mch)(s.imp)(x)
+ =>
+  exp_chk_TL_1(m.mch)(s.imp);
+
+  copy_rec_ipt_dot_H_dot_h(?);
+
+  bshell(bcatl("cp CDE/C/",a,".H CDE/C/",a,".h"))
+ =>
+  copy_rec_ipt_dot_H_dot_h(a.mch);
+
+  copy_rec_ipt_dot_h_dot_H(?);
+
+  bshell(bcatl("cp CDE/C/",a,".h CDE/C/",a,".H"))
+ =>
+  copy_rec_ipt_dot_h_dot_H(a.mch);
+
+  /***
+  S: spec seen list (dependency list - superset of W)
+  I: non-recursive import list
+  R: recursive import list
+  W: seen but not imported list
+  ***/
+/***
+HERE((m.mch|s.imp|S|I|R|W))&
+***/
+  Writef(("\n  Exporting % to TLIB ",m)) &
+  ResetExportError &
+  ResetPLXFlag &
+  ModrSeenDep_Export(S) &
+  ModrSeenNotImported_Export(W) &
+  ModrImportList_Export(I) &
+  ModrRecursiveImportList_Export(R) &
+  RemoveRecursiveImportFromSeen &
+  AugmentSeenDep_Export &
+  bshell("$BKIT/BLIB/ExportFile 1") &
+  copy_rec_ipt_dot_h_dot_H bsmap (R,m.mch) &
+  exp_chk_TL_1(m.mch)(s.imp) &
+  copy_rec_ipt_dot_H_dot_h bsmap (R,m.mch) &
+  write_pdf(m)(bcatl("CDE/C/",m,".ldf")) &
+  bshell("rm -f CDE/C/*.C CDE/C/*.D CDE/C/C.* CDE/C/*.i CDE/C/*.H CDE/C/*.I CDE/C/*.G CDE/C/*.J")
+/***
+&PrintTHEORYUpTo(ExportX,8)
+***/
+ =>
+  exp_chk_TL_0(m.mch|s.imp|S|I|R|W)
+
+END

@@ -1,0 +1,32 @@
+/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.02
+  VERSION:          B-Toolkit Beta 4.23
+  DATE:             04/08/98
+added `char * _Rename_UiArrO_Rename_ARROBJ [] = { "Rename_ARROBJ" };'
+***/
+
+char * _Rename_UiArrO_Rename_ARROBJ [] = { "Rename_ARROBJ" };
+
+int Rename_UiArrOP1 = Rename_UiArrOPV1;
+int Rename_UiArrOP2 = Rename_UiArrOPV2;
+
+
+#define Rename_C_UiArrPV1 1
+#define Rename_C_UiArrPV2 1
+#define Rename_C_UiArrPV3 (Rename_UiArrOPV1*Rename_UiArrOPV2)
+
+#include "Rename_C_UiArr.g"
+
+#include "Rename_M_Byt.g"
+
+#define Rename_O_BiArrPV1 1
+#define Rename_O_BiArrPV2 1
+#define Rename_O_BiArrPV3 Rename_UiArrOPV1
+
+#include "Rename_O_BiArr.g"
+

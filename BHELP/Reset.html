@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>Reset</TITLE>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Reset"><HR></A>
+<H1>Reset</H1>
+
+There are several ways of invoking the Reset command.
+<OL>
+<LI>
+From the
+<A HREF="BToolkit.html#Constructs!Area">Constructs Area</A>
+of the 
+<A HREF="BToolkit.html#Environments!Main">Main Environment</A>, the
+<A HREF="BToolkit.html#Environments!Provers">Provers Environment</A>, the
+<A HREF="BToolkit.html#Environments!Generators">Generators Environment</A>, the
+<A HREF="BToolkit.html#Environments!Translators">Translators Environment</A>, and the <A HREF="BToolkit.html#Environments!Documents">Documents Environment</A>.
+This allows an individual construct to be reset to varying degrees (see
+<A HREF="ResetConstruct.html#Reset_Construct">ResetConstruct</A>).<P>
+
+<LI>
+From the
+<A HREF="BToolkit.html#Construct">Top Bar Construct</A>
+pull-down,
+which allows the user to
+reset all constructs, maked-up documents, code or proof:
+<UL>
+ <LI> Reset All Constructs
+ <LI> Remove All Marked-up Documents
+ <LI> Remove All Code
+ <LI> Remove All Proofs
+</UL>
+<P>
+In the last three options only the processed documents/code/proofs are
+reset; no other changes are made. Note that code corresponding to a
+<A HREF="SystemLibrary.html#System_Library">library machine</A>, 
+or that which has been generated through an
+<A HREF="Enumerator.html#Enumerator">enumeration</A> 
+is not reset by the penultimate option.<P>
+
+For all four options, the current state can be restored through the
+<A HREF="Remake.html">Remake</A> tool; note that the last option is thus
+different from <A HREF="RemoveLevel.html">Reverting to a Previous Proof Level</A>
+when a remake will not restore that level.
+</OL>
+<P>
+Resetting all constructs places the system under development in a
+state in which previously 
+<A HREF="Commit.html#Commit">committed</A> 
+constructs remain committed but no
+further processing has been done, and so all the constructs require
+<A HREF="Analyser.html#Analyser">re-analysis</A>, 
+etc.. However, knowledge of the state of the system prior
+to the reset is retained and the system can be restored automatically
+(after any editing) to that state by use of 
+<A HREF="Remake.html#Remake">Remake</A>. 
+All 
+<A HREF="SystemLibrary.html#System_Library">library machines</A> 
+are retained, but all 
+<A HREF="BToolkit.html#Environments!Generators">generated machines</A> 
+are removed (although the
+<A HREF="Analyser.html#Analyser">Analyser</A>, 
+<A HREF="BaseGen.html#Base_Generators">BaseGen</A>, 
+<A HREF="Enumerator.html#Enumerator">Enumerator</A> 
+and
+<A HREF="Interface.html#Interface!Generator">Interface</A> 
+tools will participate in the remake to regenerate/reproduce
+the constructs). All code is also removed, with the exception of that
+of the library machines.
+<P>
+Thus a Reset all constructs immediately followed by a 
+<A HREF="Remake.html#Remake">Remake</A> 
+will result in the system restored (at least) to its present state.
+
+<P>
+<HR WIDTH="60%">
+<P>
+<P><CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

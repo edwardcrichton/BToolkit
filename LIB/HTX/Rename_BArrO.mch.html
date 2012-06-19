@@ -1,0 +1,222 @@
+<HTML>
+<HEAD>
+  <TITLE>The Rename_BArrO machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre>/*
+Description: Machine adapted from the object sequence.  This array sequences has many
+simplifications.  Each array has a fixed length.  There is a seperation of concerns.
+Array object are for storage primarily.  It is assumed that those wishing to 
+undertake arithmetic manipulation of index contents or comparsons of index values
+will use the individual array machines.
+ Operations FULL, XST, INI, CRE, VAL, NXT, EQL, STO, NXT_STO, CPY, FILL
+
+
+History :
+080597 v0.01 : Created.
+130597 v0.02 : Member operation removed - possibility of reading unwritten
+ 	       locations.
+*/
+<A NAME="MACHINE">MACHINE</A>
+
+  Rename_BArrO(maxobj,ub)	
+/* `maxobj - max no. objects,  no. of storage locations. */	
+
+SEES
+
+ <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>, <A HREF="Uns_TYPE.mch.html#MACHINE">Uns_TYPE</A>
+
+CONSTRAINTS
+
+  maxobj&gt;0 & maxobj&lt;256 & ub&gt;0 & maxobj*ub&lt;=32768
+  
+<A NAME="SETS">SETS</A>
+
+  ARROBJ
+
+<A NAME="CONSTANTS">CONSTANTS</A>
+  lb
+
+PROPERTIES
+
+  card(ARROBJ) = maxobj &
+  lb = <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(1)
+
+VARIABLES
+
+  BAO_arr,
+  BAO_arrtok,		/* array identifiers (tokens). */
+  BAO_arrstruct,	/* structure consisting of each array and its token. */
+  BAO_nxt		/* array pointer structure. */
+
+<A NAME="INVARIANT">INVARIANT</A>
+
+  BAO_arr : <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(lb)..ub +-&gt; <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+  BAO_arrtok &lt;: ARROBJ &
+  BAO_arrstruct: BAO_arrtok --&gt; (<A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(lb)..ub +-&gt; <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) &
+  BAO_nxt :  BAO_arrtok --&gt; NAT
+
+INITIALISATION
+
+  BAO_arr, BAO_arrtok, BAO_arrstruct, BAO_nxt := {},{},{},{}
+
+OPERATIONS
+
+/******************  General query functions *********************/
+
+
+  /* Are all the tokens used up. */
+  bb &lt;-- <A NAME="Rename_BAO_OBJ_FUL">Rename_BAO_OBJ_FUL</A> =
+  BEGIN
+    bb:=bool(ARROBJ =  BAO_arrtok)
+  END;
+
+  /* Does the array `pp' exist? */
+  bb &lt;-- <A NAME="Rename_BAO_XST">Rename_BAO_XST</A>(pp) =
+  PRE
+    pp: ARROBJ
+  THEN
+    bb:=bool(pp:BAO_arrtok)
+  END;
+
+
+/******************  Creating and deleting sequences **************/
+
+
+  /* Reset all pointers. */
+  <A NAME="Rename_BAO_INI">Rename_BAO_INI</A> =
+  BEGIN
+    BAO_arrtok, BAO_arrstruct,  BAO_nxt := {},{}, {}
+  END;
+
+  /* Create an array structure. */
+  bb,pp &lt;-- <A NAME="Rename_BAO_CRE">Rename_BAO_CRE</A> =
+  IF BAO_arrtok /= ARROBJ THEN
+      ANY qq WHERE
+        qq: ARROBJ - BAO_arrtok
+      THEN
+        BAO_arrstruct(qq):= {} ||	/* EMPTY MAP */
+        BAO_nxt(qq) := <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(lb) ||
+        BAO_arrtok := BAO_arrtok \/ {qq} ||
+        pp:=qq ||
+        bb := TRUE
+      END
+  ELSE
+      bb:= FALSE || pp :: ARROBJ
+  END;
+
+/* No need to kill one array kill all with INI. */
+
+/******************  Query functions for individual sequences **********/
+
+  /* View contents of location. */
+  vv &lt;-- <A NAME="Rename_BAO_VAL">Rename_BAO_VAL</A>(pp,ii) =
+  PRE
+    ii : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> &
+    pp:BAO_arrtok &
+    <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii):dom(BAO_arrstruct(pp))
+  THEN 
+    vv:=BAO_arrstruct(pp)(<A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii))
+  END;
+
+
+  /* Next available storage location in `pp'. */
+  nn &lt;-- <A NAME="Rename_BAO_NXT">Rename_BAO_NXT</A>(pp) =
+  PRE
+    pp : BAO_arrtok
+  THEN
+    nn := <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(BAO_nxt(pp))
+  END;
+
+
+  /* Are two array contents equal (notincluding next points). */
+  bb &lt;-- <A NAME="Rename_BAO_EQL">Rename_BAO_EQL</A>(ss,tt) =
+  PRE
+     tt : BAO_arrtok &
+     ss : BAO_arrtok
+  THEN
+     bb := bool(BAO_arrstruct(tt) = BAO_arrstruct(ss))
+  END;
+
+/******************   Sequence Operations ***********************/
+
+ /* Store vv in array pp at location ii and set next location to ii+1 */
+ <A NAME="Rename_BAO_STO">Rename_BAO_STO</A>(pp,ii,vv) =
+  PRE
+    pp : BAO_arrtok &
+    vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+    ii : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> &
+    <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii) : <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(lb)..ub
+  THEN 
+    BAO_arrstruct(pp)(<A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii)) := vv ||
+
+    IF <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii) &lt; ub THEN
+      BAO_nxt(pp) := <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii) + 1 /* Next available position recorded. */
+    ELSE 
+      BAO_nxt(pp) := <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(lb)	 /* Wraps around. */
+    END
+  END;
+
+
+ /* Store vv in array pp at `next' location and inc next location. */
+  <A NAME="Rename_BAO_STO_NXT">Rename_BAO_STO_NXT</A>(pp,vv) =
+  PRE
+    pp: BAO_arrtok &
+    vv: <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>
+  THEN
+    BAO_arrstruct(pp)(BAO_nxt(pp)) := vv ||
+
+    IF BAO_nxt(pp) &lt; ub THEN
+      BAO_nxt(pp) := BAO_nxt(pp) + 1 /* Next available position recorded.*/
+    ELSE 
+      BAO_nxt(pp) := <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(lb)		    /* Wraps around. */
+    END
+  END;
+
+
+  /* Copy array pp to array qq. */
+  <A NAME="Rename_BAO_CPY">Rename_BAO_CPY</A>(pp,qq) =
+  PRE
+    pp:BAO_arrtok &
+    qq:BAO_arrtok 
+  THEN
+    BAO_arrstruct(qq):=BAO_arrstruct(pp)
+  END;
+
+
+/* fill store. */
+  <A NAME="Rename_BAO_FILL">Rename_BAO_FILL</A>(pp: ARROBJ & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+  BEGIN
+    ANY array WHERE
+      array : <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(lb)..ub +-&gt; <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+      card(array) = ub &
+      ran(array) = {vv}
+    THEN
+      BAO_arrstruct(pp) := array
+    END
+         ||
+    BAO_nxt(pp):= <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(lb)		/* wraps around. */
+  END
+
+END
+
+
+
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

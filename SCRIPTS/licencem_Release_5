@@ -1,0 +1,174 @@
+#! /bin/csh -f
+
+#
+#  licencem_Release_5: master file in $MR/SCRIPTS
+#
+#  DO NOT EDIT ~/bin VERSION
+#
+#  COPY TO ~/bin AFTER EDITING
+#
+#  execute from the directory in which B.licence is to be created;
+#  this directory should contain ip address pairs in .ipaddresses
+#  and .lm; as example of the latter:
+#
+#      PROTECTION:                                  not used
+#
+#      COUNT:                                       2500
+#
+#      NO OF INSTALLATION DAYS ALLOWED FROM NOW:    0
+#
+#      EXPIRY DATE (eg. 1997:05):                   1996:08
+#
+#      LICENCENAME:                                 B.licence.rubbish
+#
+# if LICENCENAME is not present, B.licence used (upward compatability)
+#
+# if a hardware licence, BHW.licence will be produced
+#
+
+
+if ($1 != "") then
+  echo ""
+  echo "  licencem: no argument required"
+  echo ""
+  $BKIT/BLIB/BPrompt "        Licence not created      "
+  exit ( 1 )
+endif
+
+echo ""
+echo "  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+echo ""
+echo "     Script for creating a licence file in:"
+echo ""
+echo "       `pwd`"
+echo ""
+echo "     Input is taken from the file:"
+echo ""
+echo "       `pwd`/.ipaddresses"
+echo "       `pwd`/.lm"
+echo ""
+echo "  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+echo ""
+
+if ( ! -r .lm ) then
+  echo ""
+  echo -n "    .lm does no exist - create template now? "
+  set answer=$<
+  echo ""
+  if ( $answer != "" && $answer != "y" && $answer != "yes" ) then
+    echo ""
+    echo "  Creation of `pwd`/.lm aborted"
+    echo ""
+    echo ""
+  else
+    echo '' > .lm
+    echo "                 Don't edit the labels\!\! " >> .lm
+    echo ' ' >> .lm
+    echo '     For a permanent licence, use the expiry date 1990:01 ' >> .lm
+    echo ' ' >> .lm
+    echo '       If COUNT is not used, make it high (eg. 1625839) ' >> .lm
+    echo ' ' >> .lm
+    echo '  ***** The installation days should be AN ABSOLUTE MINIMUM ***** ' >> .lm
+    echo ' ' >> .lm
+    echo '  If a hardware licence LICENCENAME will automatically be BHW.licence ' >> .lm
+    echo ' ' >> .lm
+    echo ' ' >> .lm
+    echo '              -------------------------------- ' >> .lm
+    echo ' ' >> .lm
+    echo '      PROTECTION (NOTUSED):                        NOTUSED' >> .lm
+    echo ' ' >> .lm
+    echo '      COUNT:                                       1625839 ' >> .lm
+    echo ' ' >> .lm
+    echo '      NO OF INSTALLATION DAYS ALLOWED FROM NOW:    0 ' >> .lm
+    echo ' ' >> .lm
+    echo '      EXPIRY DATE (eg. 1998:05):                   2001:01 ' >> .lm
+    echo ' ' >> .lm
+    echo '      LICENCENAME:                                 B.licence ' >> .lm
+    echo ' ' >> .lm
+    echo '              -------------------------------- ' >> .lm
+    echo '' >> .lm
+    xedit .lm &
+    echo ""
+    echo "  Run licencem again after editing"
+    echo ""
+  endif
+  $BKIT/BLIB/BPrompt "        B.licence not created      "
+  exit ( 1 )
+endif
+
+echo ""
+echo "  Contents of .lm: "
+echo "  ---------------"
+echo ""
+cat .lm
+echo ""
+echo -n "  Proceed? "
+set answer=$<
+echo ""
+if ( $answer != "" && $answer != "y" && $answer != "yes" ) then
+  echo "  Creation of Licence aborted"
+  echo ""
+  echo ""
+  xedit .lm &
+  $BKIT/BLIB/BPrompt "        Licence not created      "
+  exit ( 1 )
+endif
+
+if ( -r B.licence ) then
+  echo ""
+  echo "  licencem:"
+  echo ""
+  echo "    `pwd`/B.licence already exists ... "
+  echo ""
+  echo "    ... copying B.licence to B.licence.save "
+  cp B.licence B.licence.save
+  rm -f B.licence
+endif
+
+$HOME/bin/CreBToolkitlmLic_Release_5
+if ( $status != 0 ) then
+  rm -f B.licence
+  echo ""
+  echo "  Creation of Licence aborted"
+  echo ""
+  $BKIT/BLIB/BPrompt "        Licence not created      "
+  exit ( 1 )
+endif
+
+set lic_name = `cat .Bcom`
+rm -f .Bcom
+
+#
+# old stuff
+#
+rm -f READ_ME.B.licence
+
+echo "  Uuencoding ... "
+uuencode $lic_name $lic_name > $lic_name.uu
+if ( $status != 0 ) then
+  echo ""
+  echo ""
+  echo "  licencem:"
+  echo ""
+  echo "    uuencode $lic_name $lic_name > $lic_name.uu failed"
+  echo ""
+  $HOME/bin/ErrorBox "licencem: uuencode $lic_name $lic_name > $lic_name.uu failed"
+  exit (1)
+endif
+
+# ls -al
+echo ""  
+echo "  Licence file:   `pwd`/$lic_name"
+echo ""  
+echo "  Uuencoded file: `pwd`/$lic_name.uu"
+echo "" 
+
+cat .lm.log
+
+echo ""
+echo ""
+ls -l
+echo ""
+echo ""
+echo "  Done (.lm.log listed above)"
+echo ""

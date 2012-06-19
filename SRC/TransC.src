@@ -1,0 +1,3748 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define ANSI_C_set \
+       brule(TransC_parse_implementationX.2,Prog_Language_Flag_ANSI_C)
+
+
+#define InformLocalOutputClash(o,p) \
+	Writef(("\n\n  Bad use of output parameter in operation %\n\n    %\n\n    ",bsrv o berv,p))
+
+#define Warningskip(x) \
+	Writef(("\n    Warning: skip appears in % .",x))
+
+#define Warningskipinit \
+	Writef(("\n    Warning: skip appears in INITIALISATION ."))
+
+#define ReadCurrentOpName(O) brule(TransC_hdrX.1,O)
+
+#define ReadOpTypeInfo(x)   brule(LoadTypeFileX.1,x)
+#define ModifyOpTypeInfo(x) bcall((FLAT;MODR):bmodr(LoadTypeFileX.1,x))
+
+#define ReadGivenSetInfo(x)   brule(LoadTypeFileX.3,x)
+#define ModifyGivenSetInfo(x) bmodr(LoadTypeFileX.3,x)
+
+#define ReadNATVarConsts(x)   brule(LoadTypeFileX.4,x)
+#define ModifyNATVarConsts(x) bmodr(LoadTypeFileX.4,x)
+
+#define ReadGlobalEqualityTypeInfo(x)   brule(LoadTypeFileX.5,x)
+#define ModifyGlobalEqualityTypeInfo(x) bmodr(LoadTypeFileX.5,x)
+
+#define InformNotEvaluateToNum(x,y) \
+        Writef(("\n    Warning: Constant % does not evaluate to a number:\n      %\n    ",x,y))
+
+#define InformNotSet(x) \
+        Writef(("\n    Warning: Constant % is not set .",x))
+
+#define VBLStack(x) bcall(((MODR;WRITE)~;VBLStackX)~: vs_0(x))
+
+#define GetNextVRB bcall(((MODR;WRITE)~;VBLStackX)~: gnvs)
+
+#define RmOutLevelVRB bcall(((MODR;WRITE)~;VBLStackX)~: rm_out)
+
+#define TranslateOpHeader_c(x)  bcall((TransC_hdrX;MAP;SUB;WRITE;RULE)~:trans_hdr_c(x))
+
+#define TranslateOpHeader_h(x)  bcall((TransC_hdrX;MAP;SUB;WRITE;RULE)~:trans_hdr_h(x))
+
+
+THEORY val IS ? END &
+
+THEORY var IS ? END &
+
+
+THEORY PromotedHeaderX END &
+
+THEORY TransC_NatParam_storeX END &
+
+THEORY TransC_properties_storeX END &
+
+THEORY TransC_sets_storeX END &
+
+THEORY TransC_all_enum_sets_storeX END &
+
+/*
+THEORY TransC_mch_setX END &
+*/
+
+THEORY TransC_all_properties_storeX END &
+
+THEORY TransC_all_constants_storeX END &
+
+THEORY TransC_vis_sets_storeX END &
+
+THEORY TransC_vis_constants_storeX END &
+
+THEORY TransC_imports_storeX END &
+
+THEORY TransC_sees_storeX END &
+
+THEORY TransC_initialisation_storeX END &
+
+THEORY TransC_operations_storeX END &
+
+THEORY TransC_iptX END &
+
+THEORY BadUseOutpurVarX IS
+
+#define BadUseOutpurVar(x) bcall(((MAP;SUB)~;BadUseOutpurVarX)~: bu_0(x))
+
+  ReadCurrentOpName(O) &
+  [v:= bsrv v berv]InformLocalOutputClash(O,E)
+ =>
+  bu_1(E,v);
+
+  v\E
+ =>
+  bu_1(E,v);
+
+  brule(oprm.J,Out(R)) &
+  bu_1(E) bsmap R
+ =>
+  bu_0(E)
+
+END
+
+&
+
+THEORY bappend_CDEC_X IS
+
+#define TransCAppend(x) bcall((CATL;bappend_CDEC_X)~: ap(x))
+
+  bclose &
+  Append(f)
+ =>
+  ap1(f);
+
+  ap1(bcatl("CDE/C/",f))
+ =>
+  ap(f)
+
+END
+
+&
+
+THEORY TransC_PX IS
+
+ P1;P2;P3;P4;P5;P6;P7;P8;P9;P10
+
+END
+
+&
+
+THEORY TransC_PVX IS
+
+ PV1;PV2;PV3;PV4;PV5;PV6;PV7;PV8;PV9;PV10;PV11;PV12;PV13;PV14;PV15;PV16;PV17;PV18;PV19;PV20
+
+END
+
+&
+
+THEORY CreVarValX IS
+
+#define CreVarVal(x,y,z) \
+	bcall(((CATL;SHELL;NEWV;RULE)~;CreVarValX)~ : cvv(x)(y)(z))
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cval_1(p);
+
+  bget(".Bcom",x) &
+  bcrelr(val,(p == x))
+ =>
+  cval_1(p);
+
+  bshell(bcatl("echo ",m,"PV",i," > .Bcom")) &
+  cval_1(p)
+ =>
+  cval_0(m)(p)(i);
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cvar_1(p);
+
+  bget(".Bcom",x) &
+  bcrelr(var,(p == x))
+ =>
+  cvar_1(p);
+
+  bshell(bcatl("echo ",m,"P",i," > .Bcom")) &
+  cvar_1(p)
+ =>
+  cvar_0(m)(p)(i);
+
+
+  cval_0(m)(p)(i) &
+  cvar_0(m)(p)(i)
+ =>
+  cvv(m)(p)(i);
+
+  brule(TransC_PX.i,P) &
+  brule(TransC_PVX.i,V) &
+  bcrelr(val,(p == bnewv(m,V))) &
+  bcrelr(var,(p == bnewv(m,P)))
+/***
+&PrintTHEORY(var)
+***/
+ =>
+  cvv(m)(p)(i)
+
+END
+
+&
+
+THEORY StoreOwnPVX IS
+
+#define StoreOwnPV(x) bcall(((NEWV~;MAP;MODR;WRITE)~;StoreOwnPVX)~:sopv1(x))
+
+  ?;
+#define ModrOwnPVvalues(x) bmodr(StoreOwnPVX.1,x)
+#define ReadOwnPVvalues(x) brule(StoreOwnPVX.1,x)
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  sopv3(m,M);
+
+  bget(".Bcom",v) &
+  ReadOwnPVvalues(V) &
+  ModrOwnPVvalues((V,v))
+ =>
+  sopv3(m,M);
+
+  Connect(".Bcom") &
+  bprintf("%PV%",m,M) &
+  bclose &
+  sopv3(m,M)
+ =>
+  sopv2(m,p,M,N);
+
+  ReadTrlAbs(a.b) &
+  sopv2(a) bnmap p
+ =>
+  sopv1(m(p))
+
+END
+
+&
+
+THEORY GetInlinedOpsX IS
+
+#define GetInlinedOps \
+  bcall(GetInlinedOpsX~:gio0)
+
+  ?; /* not used */
+#define ModifyInLinedOps(x) bcall(MODR:bmodr(GetInlinedOpsX.1,x))
+#define ReadInLinedOps(x)   brule(GetInlinedOpsX.1,x)
+
+
+  FifoWrite_NoStore((BT_IN_LINED_OPS_M,(I),0)) &
+  gio1
+ =>
+  gio(I);
+
+  (a.mch) == (a);
+
+  (a,b.mch) == (a;b);
+
+  gio(?);
+
+  bsearch(?,I,J) &
+  gio(J)
+ =>
+  gio(I);
+
+
+  ReadBfifoSto((o:BT_IN_LINED_OPS:0)) &
+/***
+HERE(("Inlined ops":gio1:o))&
+***/
+  ModifyInLinedOps(o)
+ =>
+  gio1;
+
+
+  ReadTrlIpt(I) &
+  ModifyInLinedOps(?) &
+  gio(I)
+ =>  
+  gio0
+
+END
+
+&
+
+THEORY CreHtmlCCodeFileX IS
+
+/*
+In Translators.src
+#define CreHtmlCCodeFile \
+  bcall(((MAP;ARI~;NEWV;CATL;SHELL;WRITE;RULE)~;CreHtmlCCodeFileX)~:ch0)
+*/
+
+
+/*
+  OWN (NAME)     ("<A NAME=\"%!%\">%</A>\n",CONST,c1,c1)
+    M MCH
+    O OP
+    C CONST
+
+  OTHERS (REF)   ("<A HREF=\"%.p.html#%!%\">%</A>\n",mchname,CONST,c1,c1) 
+    m MCH
+    o OP
+    c CONST
+*/
+
+  ?;
+#define ModifyOwnEnumElemMch(x) bcall((FLAT;MODR):bmodr(CreHtmlCCodeFileX.1,x))
+#define ReadOwnEnumElemMch(x)   brule(CreHtmlCCodeFileX.1,x)
+
+  ?;
+#define ModifyOwnConstsMch(x) bcall(MODR:bmodr(CreHtmlCCodeFileX.2,x))
+#define ReadOwnConstsMch(x)   brule(CreHtmlCCodeFileX.2,x)
+
+  ?; /* 3. not used */
+
+  ?;  /* CreHtmlCCodeFileX.4 - temp store */
+
+  InformCantExecute(x)
+ =>
+  bshell(x);
+
+
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|%\n",c)
+ =>
+  h_ref(a)(b)(c);
+
+  bstring(c) &
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|") &
+  bprintf(c) &
+  bprintf("\n")
+ =>
+  h_ref(a)(b)(c);
+
+  bprintf(a) &
+  bprintf("|%\n",b)
+ =>
+  h_name(a)(b);
+
+  bstring(b) &
+  bprintf(a) &
+  bprintf("|") &
+  bprintf(b) &
+  bprintf("\n")
+ =>
+  h_name(a)(b);
+
+
+  h_ref_sub_consts(N);
+
+  brule(SubMchColConsts.N,,(m:c)) &
+  h_ref("c")(bcatl(m,".h"))(c) &
+  h_ref_sub_consts(N+1)
+ =>
+  h_ref_sub_consts(N);
+
+
+  h_ref_sub_enumel(N);
+
+  brule(SubMchColEnum.N,(m:e)) &
+  h_ref("v")(bcatl(m,".h"))(e) &
+  h_ref_sub_enumel(N+1)
+ =>
+  h_ref_sub_enumel(N);
+
+
+  h_ref_sub_var(N);
+
+  brule(SubMchColVars.N,(m:v)) &
+  h_ref("h")(bcatl(m,".g"))(v) &
+  h_ref_sub_var(N+1)
+ =>
+  h_ref_sub_var(N);
+
+
+  h_ref_sub_ops(N);
+
+  brule(SubMchColOps.N,(m:o)) &
+  h_ref("o")(bcatl(m,".c"))(o) &
+  h_ref_sub_ops(N+1)
+ =>
+  h_ref_sub_ops(N);
+
+  brule(SubMchColOps.N,(m:o)) &
+  ReadInLinedOps(O) &
+/***
+HERE(("inlined ops":h_ref_sub_ops:O))&
+***/
+  bsearch(o,O,P) &
+  h_ref("o")(bcatl(m,".h"))(o) &
+  h_ref_sub_ops(N+1)
+ =>
+  h_ref_sub_ops(N);
+
+
+  h_ref_sub_mch(N);
+
+  brule(SubMchColConc.N,(m:r.s)) &
+  h_ref("x")(bcatl(m,".c"))(bcatl(m,".c")) &
+  h_ref("x")(bcatl(m,".h"))(bcatl(m,".h")) &
+  h_ref("x")(bcatl(m,".g"))(bcatl(m,".g")) &
+  h_ref_sub_mch(N+1)
+ =>
+  h_ref_sub_mch(N);
+
+
+  h_ref_own_enumel_imp(N);
+
+  brule(OwnMchColEnum_Imp.N,(m:e)) &
+  h_name("S")(e) &
+  h_ref_own_enumel_imp(N+1)
+ =>
+  h_ref_own_enumel_imp(N);
+
+
+  h_ref_own_enumel_mch(N);
+
+  brule(OwnMchColEnum_Mch.N,(m:e)) &
+  h_name("T")(e) &
+  h_ref_own_enumel_mch(N+1)
+ =>
+  h_ref_own_enumel_mch(N);
+
+
+  h_ref_own_consts_imp(N);
+
+  brule(OwnMchColConsts_Imp.N,(m:e)) &
+  h_name("C")(e) &
+  h_ref_own_consts_imp(N+1)
+ =>
+  h_ref_own_consts_imp(N);
+
+
+  h_ref_own_consts_mch(N);
+
+  brule(OwnMchColConsts_Mch.N,(m:e)) &
+  h_name("D")(e) &
+  h_ref_own_consts_mch(N+1)
+ =>
+  h_ref_own_consts_mch(N);
+
+
+  h_ref_own_ops(N);
+
+  brule(OwnMchColOps.N,(m:o)) &
+  h_name("O")(o) &
+  h_ref_own_ops(N+1)
+ =>
+  h_ref_own_ops(N);
+
+
+
+  h_ref("b")("?")(s)
+ =>
+  h_ref_bold(a,s);
+
+
+
+  ReadTrlAbs(a.b) &
+  ReadTrlImp(r.imp) &
+  Connect(".Bcom") &
+  h_name(bcatl("CDE/C/|",a,".c|",r,".imp"))(a) &
+  h_ref("w")(bcatl(a,".mch"))(a) &
+  h_ref_bold(m) bsmap c_keywords_html &
+  h_ref("x")(bcatl(a,".c"))(bcatl(a,".c")) &
+  h_ref("x")(bcatl(a,".h"))(bcatl(a,".h")) &
+  h_ref("x")(bcatl(a,".g"))(bcatl(a,".g")) &
+  h_ref_sub_ops(1) &
+  h_ref_sub_var(1) &
+  h_ref_sub_enumel(1) &
+  h_ref_sub_consts(1) &
+  h_ref_sub_mch(1) &
+  h_ref_own_ops(1) &
+  h_ref_own_enumel_mch(1) &
+  h_ref_own_enumel_imp(1) &
+  h_ref_own_consts_mch(1) &
+  h_ref_own_consts_imp(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc") &
+
+  Connect(".Bcom") &
+  h_name(bcatl("CDE/C/|",a,".h|",r,".imp"))(a) &
+  h_ref("w")(bcatl(a,".mch"))(a) &
+  h_ref_bold(m) bsmap c_keywords_html &
+  h_ref("x")(bcatl(a,".c"))(bcatl(a,".c")) &
+  h_ref("x")(bcatl(a,".h"))(bcatl(a,".h")) &
+  h_ref("x")(bcatl(a,".g"))(bcatl(a,".g")) &
+  h_ref_sub_ops(1) &
+  h_ref_sub_var(1) &
+  h_ref_sub_enumel(1) &
+  h_ref_sub_consts(1) &
+  h_ref_sub_mch(1) &
+  h_ref_own_ops(1) &
+  h_ref_own_enumel_mch(1) &
+  h_ref_own_enumel_imp(1) &
+  h_ref_own_consts_mch(1) &
+  h_ref_own_consts_imp(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc") &
+
+  Connect(".Bcom") &
+  h_name(bcatl("CDE/C/|",a,".g|",r,".imp"))(a) &
+  h_ref("w")(bcatl(a,".mch"))(a) &
+  h_ref_bold(m) bsmap c_keywords_html &
+  h_ref("x")(bcatl(a,".c"))(bcatl(a,".c")) &
+  h_ref("x")(bcatl(a,".h"))(bcatl(a,".h")) &
+  h_ref("x")(bcatl(a,".g"))(bcatl(a,".g")) &
+  h_ref_sub_ops(1) &
+  h_ref_sub_var(1) &
+  h_ref_sub_enumel(1) &
+  h_ref_sub_consts(1) &
+  h_ref_sub_mch(1) &
+  h_ref_own_ops(1) &
+  h_ref_own_enumel_mch(1) &
+  h_ref_own_enumel_imp(1) &
+  h_ref_own_consts_mch(1) &
+  h_ref_own_consts_imp(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc")
+ =>
+  ch;
+
+  bcrer(SubMchColVars,(a:v))
+ =>
+  ch_load_sub_vars(a,v);
+  
+  ch_load_sub_vars(a,?);
+  
+
+  bcrer(SubMchColOps,(a:b))
+ =>
+  ch_load_sub_ops(a,b);
+  
+  ch_load_sub_ops(a,?);
+  
+
+  bcrer(SubMchColConsts,(a:c))
+ =>
+  ch_load_sub_const(a,c);
+  
+  ch_load_sub_const(a,?);
+  
+
+  bcrer(SubMchColEnum,(a:e))
+ =>
+  ch_load_sub_sets1(a,e);
+  
+  ch_load_sub_sets(x);
+
+  ch_load_sub_sets1(a) bsmap e
+ =>
+  ch_load_sub_sets(a,s(e));
+  
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ch_load_sub2(a)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ch_load_sub_vars(a) bsmap d &
+  ch_load_sub_sets(a) bsmap D &
+  ch_load_sub_const(a) bsmap F &
+  ch_load_sub_ops(a,(bnewv(INI_,a))) &
+  ch_load_sub_ops(a) bsmap j
+ =>
+  ch_load_sub2(a)(Z);
+
+  ReadBotRef(r.s) &
+  bcrer(SubMchColConc,(a:r.s)) &
+  ch_load_sub2(a)(bcatl("ANL/",r,".",s,".anl"))
+ =>
+  ch_load_sub1(a);
+
+  ch_load_sub(x);
+
+  GetBotRef(a.mch) &
+  ch_load_sub1(a)
+ =>
+  ch_load_sub(a.mch);
+
+
+
+  bcrer(OwnMchColOps,((a:i):b))
+ =>
+  ch_load_own_ops((a:i),b);
+  
+  ch_load_own_ops((a:i),?);
+  
+
+  bcrer(OwnMchColConsts_Imp,((a:i):c))
+ =>
+  ch_load_own_const((a:i),c);
+  
+  ReadOwnEConstsMch(C) &
+  bsearch(c,C,D) &
+  bcrer(OwnMchColConsts_Mch,((a:i):c))
+ =>
+  ch_load_own_const((a:i),c);
+  
+  ch_load_own_const((a:i),?);
+  
+
+  bcrer(OwnMchColEnum_Imp,((a:i):e))
+ =>
+  ch_load_own_sets1((a:i),e);
+  
+  ReadOwnEnumElemMch(E) &
+  bsearch(e,E,F) &
+  bcrer(OwnMchColEnum_Mch,((a:i):e))
+ =>
+  ch_load_own_sets1((a:i),e);
+  
+  ch_load_own_sets(x);
+
+  ch_load_own_sets1((a:i)) bsmap e
+ =>
+  ch_load_own_sets((a:i),s(e));
+  
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ch_load_own(a:i)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ch_load_own_sets(a:I) bsmap D &
+  ch_load_own_const(a:I) bsmap F &
+  ch_load_own_ops((a:I),(bnewv(INI_,a))) &
+  ch_load_own_ops(a:I) bsmap j
+ =>
+  ch_load_own(a:I)(Z);
+
+
+  ch_sto_mch_enum_elem(x);
+
+  ReadOwnEnumElemMch(E) &
+  ModifyOwnEnumElemMch(bflat(E,e)) 
+ =>
+  ch_sto_mch_enum_elem(S(e));
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ch_sto_mch_enum_elem_consts(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ch_sto_mch_enum_elem bsmap D &
+  ModifyOwnConstsMch(F)
+ =>
+  ch_sto_mch_enum_elem_consts(Z);
+
+/***
+ReadInLinedOps(A)&HERE(("InLined":A))=>junk;
+***/
+
+  ReadTrlAbs(a.mch) &
+  ReadTrlImp(i.imp) &
+  ReadTrlIpt(I) &
+  ReadTrlSeen(S) &
+/***
+junk&
+***/
+  ch_sto_mch_enum_elem_consts(bcatl("ANL/",a,".mch.anl")) &
+  ch_load_own(a:i)(bcatl("ANL/",i,".imp.anl")) &
+  ch_load_sub bsmap I &
+  ch_load_sub bsmap S &
+/***
+PrintTHEORY(SubMchColConc) &
+PrintTHEORY(SubMchColEnum) &
+PrintTHEORY(SubMchColOps) &
+PrintTHEORY(SubMchColConsts) &
+PrintTHEORY(SubMchColVars) &
+PrintTHEORY(OwnMchColOps) &
+PrintTHEORY(OwnMchColEnum_Mch) &
+PrintTHEORY(OwnMchColEnum_Imp) &
+PrintTHEORY(OwnMchColConsts_Mch) &
+PrintTHEORY(OwnMchColConsts_Imp) &
+***/
+  ch
+ =>
+  ch0;
+
+  TRLErrorFlagged 
+ =>
+  x
+
+END
+
+&
+
+THEORY TransC_parametersX IS
+
+#define TranslateParamsG(m) \
+     bcall((TransC_parametersX;MAP;NEWV~;RULE;NEWV~;WRITE)~: tp_g(m))
+
+#define TranslateParamsH(m) \
+     bcall((TransC_parametersX;MAP;NEWV~;RULE;NEWV~;WRITE)~: tp_h(m))
+
+  ?; /* constraints */
+
+  bprintf("extern int %",m) &
+  bprintf("P") &
+  bprintf("%;\n",i)
+ =>
+  tp1_h(m,p,i,j);
+
+  brule(TransC_parametersX.1,C) &
+  bsearch((card(p):NAT1),(C&?),D) &
+  CreVarVal(m,p,i) &
+  bprintf("extern char * %",m) &
+  bprintf("P") &
+  bprintf("% [];\n",i)   
+ =>
+  tp1_h(m,p,i,j);
+ 
+  tp1_h(m) bnmap (P) &
+  bprintf("\n")
+ =>
+  tp_h(m(P));
+
+
+
+  CreVarVal(m,p,i) &
+  bprintf("int %",m) &
+  bprintf("P") &
+  bprintf("% = %PV%;\n",i,m,i)   
+ =>
+  tp1_g(m,p,i,j);
+
+  brule(TransC_parametersX.1,C) &
+  bsearch((card(p):NAT1),(C&?),D) &
+  CreVarVal(m,p,i) &
+  bprintf("char * %",m) &
+  bprintf("P") &
+  bprintf("% [] = %PV%;\n",i,m,i)   
+ =>
+  tp1_g(m,p,i,j);
+
+
+  WriteDot &
+  tp1_g(m) bnmap (P) &
+  bprintf("\n")
+ =>
+  tp_g(m(P))
+
+END
+
+&
+
+THEORY TransC_importsX IS
+
+#define TranslateImportsH \
+	bcall((TransC_importsX;RULE;MAP;val~;NEWV;WRITE)~: ti_h)
+
+#define TranslateImportsG \
+	bcall((TransC_importsX;RULE;MAP;val~;NEWV;WRITE)~: ti_g)
+
+#define TranslateImportsC \
+	bcall((TransC_importsX;RULE;MAP;val~;NEWV;WRITE)~: ti_c)
+
+
+  bprintf("#include \"%.h\"\n",m) /* so this is an SLIB */
+ =>
+  ti1_h(m);
+
+  IsGen(m.mch)
+ =>
+  ti1_h(m);
+
+  IsUsr(m.mch)
+ =>
+  ti1_h(m);
+
+  ti1_h(m)
+ =>
+  ti1_h(R.m);
+
+  ti1_h(m)
+ =>
+  ti1_h(m(P));
+
+  ti1_h(?);
+
+  ti1_h(x);  /* don't #include imported SLIB machine .h files
+                in the .h file of this machine
+             */
+
+
+  brule(TransC_imports_storeX.1,I) &
+  WriteDot &
+  ti1_h bsmap I &
+  bprintf("\n")
+ =>
+  ti_h;
+
+
+
+  bprintf("#include \"%.h\"\n",m)
+ =>
+  ti1_c(m);
+
+  ti1_c(m)
+ =>
+  ti1_c(m(p));
+
+  ti1_c(m)
+ =>
+  ti1_c(R.m);
+
+  brule(TransC_imports_storeX.1,I) &
+  ti1_c bsmap I &
+  bprintf("\n")
+ =>
+  ti_c;
+
+
+  bcall(WRITE : bprintf(", \"%\"",e))
+ =>
+  trans_prm_val1(e);
+
+
+
+/***
+PrintTHEORY(TransC_sets_storeX)&
+PrintTHEORY(ImportedSeenEnumValConstValX)&
+HERE((e))&
+PrintTHEORY(TransC_all_enum_sets_storeX)&
+***/
+  bcall(WRITE : bprintf("{ \"%\" }\n",e))           /* seen/imported set */
+ =>
+  trans_prm_val(m,i,e);
+
+  brule(TransC_all_enum_sets_storeX.N,e(n)) &  /* seen/imported enum set */
+  bcall(WRITE : bprintf("{ \"\"")) &
+  trans_prm_val1 bsmap n &
+  bcall(WRITE : bprintf(", \"_%\" }\n",e))
+ =>
+  trans_prm_val(m,i,e);
+
+  bident(e) &
+  brule(TransC_sets_storeX.1,S) &           /* own deferred set */
+  bsearch(e,(S,?),T) &
+  bcall(WRITE : bprintf("{\"%\"}\n",e))
+ =>
+  trans_prm_val(m,i,e);
+
+  bident(e) &
+  brule(TransC_sets_storeX.1,S) &           /* own enumerated set */
+  bsearch(e(n),(S,?),T) &
+  bcall(WRITE : bprintf("{ \"\"")) &
+  trans_prm_val1 bsmap n &
+  bcall(WRITE : bprintf(", \"_%\" }\n",e))
+ =>
+  trans_prm_val(m,i,e);
+
+  bcall(WRITE : bprintf("%",a))
+ =>
+  trans_prm_val_union(a);
+
+  trans_prm_val_union(a) &
+  bcall(WRITE : bprintf("\\\\/")) &
+  trans_prm_val_union(b)
+ =>
+  trans_prm_val_union(a\/b);
+
+  bcall(WRITE : bprintf("{ \"")) &
+  trans_prm_val_union(a\/b) &
+  bcall(WRITE : bprintf("\" }\n"))
+ =>
+  trans_prm_val(m,i,(a\/b));
+
+/*
+  bcall(WRITE : bprintf("{\"%\"}\n",(a\/b)))
+ =>
+  trans_prm_val(m,i,(a\/b));
+*/
+
+  ReadGivenSetInfo(G) &                /* own dimensioned set */
+  bsearch((given(b[n])),G,H) &
+  bcall(WRITE : bprintf("%\n",n))
+ =>
+  trans_prm_val(m,i,(a\/b));
+
+  bcall(WRITE : bprintf("{\"%\"}\n",(a..b)))
+ =>
+  trans_prm_val(m,i,(a..b));
+
+  ReadOwnPVvalues(E) &                      /* ?,testPV1,testPV2 */
+  bsearch(e,E,F) &
+  bcall(WRITE : bprintf("%\n",e))
+ =>
+  trans_prm_val(m,i,e);
+
+  brule(TransC_NatParam_storeX.I,m(N)) &
+  bsearch(i,(N,?),Q) &
+  bcall(WRITE : bprintf("(%)\n",e))
+ =>
+  trans_prm_val(m,i,e);
+
+  brule(TransC_NatParam_storeX.I,m(N)) &    /* eg. b1_ffnc_obj(?,2,3) */
+  bsearch(i,(N,?),Q) &
+  bident(e) &
+  bcall(WRITE : bprintf("%\n",e))
+ =>
+  trans_prm_val(m,i,e);
+
+  bnum(e) &
+  bcall(WRITE : bprintf("%\n",e))
+ =>
+  trans_prm_val(m,i,e);
+
+  ReadGivenSetInfo(G) &
+  bsearch((given(s[n])),G,H) &
+  bcall(WRITE : bprintf("%\n",n))
+ =>
+  trans_prm_val(m,i,s);
+
+/***
+PrintTHEORY(TransC_NatParam_storeX)&
+ReadGivenSetInfo(G) &HERE((LoadTypeFileX.3:G))&
+junk
+=>
+trans_prm_val(m,i,s);
+
+PrintTHEORY(TransC_NatParam_storeX)&
+ReadGivenSetInfo(G) &HERE((LoadTypeFileX.3:G))&
+brule(TransC_sets_storeX.1,S)&HERE((TransC_sets_storeX.1:S))&
+junk
+=>
+trans_prm_val(m,i,s);
+***/
+
+
+  bprintf("#define %PV% ",m,i) &
+  bcall((val~;(TransC_all_properties_storeX~;ImportedSeenEnumValConstValX~)~;(MAP;ARI~;TransC_importsX)~) : trans_prm_val(m,i,e))
+ =>
+  trans_prm(m,e,i,j);
+
+  bprintf("#define %%PV% ",R,m,i) &
+  bcall((val~;(TransC_all_properties_storeX~;ImportedSeenEnumValConstValX~)~;(MAP;ARI~;TransC_importsX)~) : trans_prm_val((R.m),i,e))
+ =>
+  trans_prm(R.m,e,i,j);
+
+
+
+  bcrelr(TransC_iptX,m) &
+  bprintf("\n#include \"%.g\"\n",m)
+ =>
+  ti1_g(m);
+
+  bcrelr(TransC_iptX,m) &
+  bprintf("\n") &
+  trans_prm(m) bnmap (P) &
+  bprintf("\n#include \"%.g\"\n",m)
+ =>
+  ti1_g(m(P));
+
+  bcrelr(TransC_iptX,R.m) &
+  bprintf("\n") &
+  trans_prm(R.m) bnmap (P) &
+  bprintf("\n#include \"%.g\"\n\n",R.m)
+ =>
+  ti1_g(R.m(P));
+
+  brule(TransC_imports_storeX.1,I) &
+  WriteDot &
+  ti1_g bsmap I &
+  bprintf("\n")
+ =>
+  ti_g
+
+END
+
+&
+
+THEORY TransC_seesX IS
+
+#define TranslateSeesC bcall((TransC_seesX;MAP;WRITE)~: ts_c)
+
+
+  bprintf("#include \"%.h\"\n",m)
+ =>
+  ts1_c(m);
+
+  ts1_c(m)
+ =>
+  ts1_c(m(p));
+
+  ts1_c(m)
+ =>
+  ts1_c(R.m);
+
+  brule(TransC_sees_storeX.1,S) &
+  WriteDot &
+  ts1_c bsmap S &
+  bprintf("\n")
+ =>
+  ts_c
+
+END
+
+&
+
+THEORY TransC_setsX IS
+
+#define TranslateSetsG bcall(((MAP;RULE)~;TransC_setsX)~ : ts_ENUM_g)
+
+#define TranslateSetsH bcall(((MAP;WRITE;RULE)~;TransC_setsX)~ : ts_h)
+
+#define TranslateSetsC bcall(((MAP;WRITE;RULE)~;TransC_setsX)~ : ts_c)
+
+
+
+  bcall(WRITE : bprintf("{ \"%\" };\n",e))     /* seen/imported set */
+ =>
+  ts1_ENUM1_g(e);
+
+  brule(TransC_all_enum_sets_storeX.N,e(n)) & /* seen/imported enum set */
+  bcall(WRITE : bprintf("{ \"\"")) &
+  ts_ENUM_g_elem bsmap n &
+  bcall(WRITE : bprintf(", \"_%\" };\n",e))
+ =>
+  ts1_ENUM1_g(e);
+
+  bident(e) &
+  brule(TransC_sets_storeX.1,S) &             /* own deferred set */
+  bsearch(e,(S,?),T) &
+  bcall(WRITE : bprintf("{\"%\"};\n",e))
+ =>
+  ts1_ENUM1_g(e);
+
+  bident(e) &
+  brule(TransC_sets_storeX.1,S) &             /* own enumerated set */
+  bsearch(e(n),(S,?),T) &
+  bcall(WRITE : bprintf("{ \"\"")) &
+  ts_ENUM_g_elem bsmap n &
+  bcall(WRITE : bprintf(", \"_%\" };\n",e))
+ =>
+  ts1_ENUM1_g(e);
+
+  bcall(WRITE : bprintf("%",a))
+ =>
+  ts1_ENUM1_g_union(a);
+
+  trans_prm_val_union(a) &
+  bcall(WRITE : bprintf("\\\\/")) &
+  ts1_ENUM1_g_union(b)
+ =>
+  ts1_ENUM1_g_union(a\/b);
+
+
+  bcall(WRITE : bprintf("{ \"")) &
+  ts1_ENUM1_g_union(a\/b) &
+  bcall(WRITE : bprintf("\" };\n"))
+ =>
+  ts1_ENUM1_g(a\/b);
+
+  bcall(WRITE : bprintf("{\"%\"};\n",(a..b)))
+ =>
+  ts1_ENUM1_g(a..b);
+
+  ReadTrlAbs(m.b) &
+  bcall(WRITE : bprintf("char * _%_% [] = ",m,s)) &
+  bcall(((TransC_all_properties_storeX~;ImportedSeenEnumValConstValX~)~;(MAP;TransC_setsX)~) : ts1_ENUM1_g(s))
+ =>
+  ts1_ENUM_g(s);
+
+
+
+/*
+  ReadTrlAbs(m.b) &
+  bprintf("char * _%_% [] = { \"%\" };\n",m,s,s)
+ =>
+  ts1_ENUM_g(s);
+*/
+
+
+
+  bcall(WRITE : bprintf(", \"%\"",e))
+ =>
+  ts_ENUM_g_elem(e);
+
+  ReadTrlAbs(m.b) &
+  bcall(WRITE : bprintf("char * _%_% [] = { \"\"",m,s,s)) &
+  ts_ENUM_g_elem bsmap E &
+  bcall(WRITE : bprintf(", \"_%\" };\n",s))
+ =>
+  ts1_ENUM_g(s(E));
+
+
+
+  ts1_ENUM_g(s[n]);
+
+  brule(TransC_sets_storeX.1,S) &
+  WriteDot &
+  ts1_ENUM_g bsmap S &
+  bcall(WRITE : bprintf("\n"))
+ =>
+  ts_ENUM_g;
+
+
+
+
+/*
+  ts1_c(x);
+
+  te bnmap E                    /! include non-visible enum sets only !/
+ =>
+  ts1_c(s(E));
+
+  brule(TransC_vis_sets_storeX.1,P) &
+  bsearch(s(E),P,Q)
+ =>
+  ts1_c(s(E));
+
+  brule(TransC_sets_storeX.1,S) &
+  WriteDot &
+  ts1_c bsmap S &
+  bprintf("\n")
+ =>
+  ts_c;
+*/
+
+  ts_c;
+
+
+
+  bprintf("#define % %\n",e,m) &
+  bcrer(TransC_all_properties_storeX,(e==m))
+ =>
+  ts_enum_elem_h1(e,m,n);
+
+  ts_enum_elem_h(s);
+
+  brule(TransC_vis_sets_storeX.1,P) &
+  bsearch(s(E),P,Q) &
+  ts_enum_elem_h1 bnmap E       /* include visible enum sets only */
+ =>
+  ts_enum_elem_h(s(E));
+
+  ts_enum_elem_h(s[n]);         /* ignore sets with dimentional attribute */
+
+
+
+
+
+  ReadTrlAbs(m.b) &
+  bprintf("#define % _%_%\n",s,m,s)
+ =>
+  ts_ENUM2_h(s);
+
+  ReadTrlAbs(m.b) &
+  bprintf("#define % _%_%\n",s,m,s)
+ =>
+  ts_ENUM2_h(s(E));
+
+  bprintf("#define % %\n",s,n)
+ =>
+  ts_ENUM2_h(s[n]);
+
+
+
+  ReadTrlAbs(m.b) &
+  bprintf("extern char * _%_% [];\n",m,s)
+ =>
+  ts_ENUM1_h(s);
+
+  ReadTrlAbs(m.b) &
+  bprintf("extern char * _%_% [];\n",m,s)
+ =>
+  ts_ENUM1_h(s(E));
+
+  ts_ENUM1_h(s[n]);
+
+
+
+  brule(TransC_sets_storeX.1,S) &
+  WriteDot &
+  ts_ENUM1_h bsmap S &
+  bprintf("\n") &
+  ts_ENUM2_h bsmap S &
+  bprintf("\n") &
+  ts_enum_elem_h bsmap S &
+  bprintf("\n")
+ =>
+  ts_h
+
+END
+
+&
+
+THEORY TransC_constsX IS
+
+#define TranslateConstsH bcall(((MAP;WRITE;MODR)~;TransC_constsX)~ : tc_h)
+
+#define TranslateConstsC bcall(((MAP;WRITE;MODR)~;TransC_constsX)~ : tc_c)
+
+#define CheckUnsetConstants \
+        bcall(((MAP;WRITE;MODR)~;TransC_constsX)~ : ck_unset_0)
+
+  ?;
+
+  ?;  /* list of #defined constants */
+
+  ?;  /* local constant list (E) */
+
+  ck_unset_1(c);
+
+  ReadNATVarConsts(C) &
+  bsearch(c,C,D) &
+  InformNotSet(c)
+ =>
+  ck_unset_1(c);
+
+  brule(TransC_constsX.2,C) &
+  bsearch(c,C,D)
+ =>
+  ck_unset_1(c);
+
+  ck_unset_1(?);
+
+  brule(TransC_constsX.3,C) &
+/***
+HERE((C))&
+brule(TransC_constsX.2,W) &HERE((W))&
+ReadNATVarConsts(V) &HERE((V))&
+***/
+  ck_unset_1 bsmap C
+ =>
+  ck_unset_0;
+
+
+  brule(TransC_constsX.2,C) &
+  bmodr(TransC_constsX.2,(C,c))
+ =>
+  upd_defined(c);
+
+  brule(TransC_constsX.2,C) &
+  bsearch(c,C,D)
+ =>
+  upd_defined(c);
+
+
+  InformNotEvaluateToNum(c,e)
+ =>
+  tc_val_check_num(c,e)(N);
+
+  brule(TransC_all_enum_sets_storeX.N,s(E)) &
+  tc_val_check_num(c,e)(N+1)
+ =>
+  tc_val_check_num(c,e)(N);
+
+  brule(TransC_all_enum_sets_storeX.N,s(E)) &
+  bsearch(e,(E,?),F)
+ =>
+  tc_val_check_num(c,e)(N);
+
+
+  brule(TransC_constsX.1,c) &
+  bcall((ARI;TransC_constsX)~:tc_val_check_num(c,e)(1)) &
+  bcall((WRITE) : bprintf("(%)\n",e))
+ =>
+  tc_val(e);
+
+  bcall((WRITE) : bprintf("{%}\n",e))    /* brackets not necessary! */
+ =>
+  tc_val({e});
+
+  bstring(e) &
+  bcall((WRITE) : bprintf("%\n",e))      /* brackets not necessary! */
+ =>
+  tc_val(e);
+
+  bnum(e) &
+  bcall((WRITE) : bprintf("%\n",e))      /* brackets not necessary! */
+ =>
+  tc_val(e);
+
+
+  tc1_c(x);
+
+  brule(TransC_all_constants_storeX.1,C) &
+  bsearch(c,C,D) &                       /* include non-visible consts only */
+  bcall((val~;WRITE): bprintf("#define % ",c)) &
+  upd_defined(c) &
+  bmodr(TransC_constsX.1,c) &
+  bcall((var~;TransC_all_properties_storeX~;ARI~;TransC_constsX) : tc_val(e))
+ =>
+  tc1_c(c=e);
+
+  brule(TransC_all_constants_storeX.1,C) &
+  bsearch(c,C,D) &
+  brule(TransC_vis_constants_storeX.1,P) &
+  bsearch(c,P,Q)
+ =>
+  tc1_c(c=e);
+
+  brule(TransC_properties_storeX.1,P) &
+  tc1_c bsmap P &
+  bprintf("\n")
+ =>
+  tc_c;
+
+
+  tc1_h(x);
+
+  brule(TransC_all_constants_storeX.1,C) &
+  bsearch(c,C,D) &
+  brule(TransC_vis_constants_storeX.1,P) &
+  bsearch(c,P,Q) &                        /* include visible consts only */
+  bcall((var~;WRITE): bprintf("#define % ",c)) &
+  upd_defined(c) &
+  bmodr(TransC_constsX.1,c) &
+  bcall((var~;TransC_all_properties_storeX~;ARI~;TransC_constsX) : tc_val(e))
+ =>
+  tc1_h(c=e);
+
+/***
+PrintRule(TransC_constsX.1) &
+PrintTHEORY(TransC_NatParam_storeX) &
+PrintTHEORY(TransC_properties_storeX) &
+PrintTHEORY(TransC_sets_storeX) &
+PrintTHEORY(TransC_all_enum_sets_storeX) &
+PrintTHEORY(TransC_all_properties_storeX) &
+PrintTHEORY(TransC_all_constants_storeX) &
+PrintTHEORY(TransC_vis_sets_storeX) &
+PrintTHEORY(TransC_vis_constants_storeX) &
+PrintTHEORY(TransC_imports_storeX) &
+PrintTHEORY(TransC_sees_storeX) &
+PrintTHEORY(TransC_initialisation_storeX) &
+PrintTHEORY(TransC_operations_storeX) &
+PrintTHEORY(TransC_iptX) &
+PrintTHEORY(ImportedSeenEnumValConstValX) &
+PrintRule(TransC_all_constants_storeX.1) &
+PrintRule(TransC_vis_constants_storeX.1) &
+PrintTHEORYUpTo(TransC_constsX,3) &
+PrintTHEORYUpTo(LoadTypeFileX,4) &
+PrintTHEORY(var) &
+***/
+/***
+PrintTHEORY(TransC_imports_storeX) &
+PrintTHEORY(TransC_sees_storeX) &
+PrintTHEORY(TransC_operations_storeX) &
+PrintTHEORY(TransC_iptX) &
+***/
+  brule(TransC_properties_storeX.1,P) &
+  tc1_h bsmap P &
+  bprintf("\n")
+ =>
+  tc_h
+
+END
+
+&
+
+THEORY TransC_initX IS
+
+#define TranslateInitC(m,h) \
+	bcall((var~;((WRITE;RULE;ARI)~;TransC_initX)~) : ti_c(m)(h))
+
+#define TranslateInitH(m,h) \
+	bcall(((WRITE;RULE;ARI)~;TransC_initX)~ : ti_h(m)(h))
+
+  ?; /* 0 => no imports, so print `;' */
+
+
+  bprintf("void INI_%();\n",m)
+ =>
+  ti_h(m)(h);
+
+  ANSI_C_set &
+  bprintf("void INI_%(void);\n",m)
+ =>
+  ti_h(m)(h);
+
+
+
+  ti_c_chk_ipt(m)(h);
+
+  brule(TransC_initX.1,0) &
+  bprintf("  ;")
+ =>
+  ti_c_chk_ipt(m)(h);
+
+  trans_ipt_mch(i);
+
+  brule(TransC_iptX.i,m) &
+  bcall(TransC_body_tac : indent(1)) &
+  bprintf("INI_%();\n",m) &
+  bcall(MODR:bmodr(TransC_initX.1,1)) &
+  trans_ipt_mch(i+1)
+ =>
+  trans_ipt_mch(i);
+
+  WriteDot &
+  bcall(MODR:bmodr(TransC_hdrX.1,"INITIALISATION")) &
+  bcall(MODR:bmodr(TransC_initX.1,0)) &
+  bprintf("void\nINI_%()\n{\n",m) &
+  trans_ipt_mch(1) &
+  bclean(oprm) &
+  ti_c_chk_ipt(m)(h) &
+  bprintf("\n}\n\n")
+ =>
+  ti_c(m)(h);
+
+  ANSI_C_set &
+  WriteDot &
+  bcall(MODR:bmodr(TransC_hdrX.1,"INITIALISATION")) &
+  bcall(MODR:bmodr(TransC_initX.1,0)) &
+  bprintf("void\nINI_%(void)\n{\n",m) &
+  trans_ipt_mch(1) &
+  bclean(oprm) &
+  ti_c_chk_ipt(m)(h) &
+  bprintf("\n}\n\n")
+ =>
+  ti_c(m)(h);
+
+  brule(TransC_initialisation_storeX.1,I) &
+  RmOutLevelVRB &
+  WriteDot &
+  bcall(MODR:bmodr(TransC_initX.1,0)) &
+  bcall(MODR:bmodr(TransC_hdrX.1,"INITIALISATION")) &
+  bprintf("void\nINI_%()\n{\n",m) &
+  trans_ipt_mch(1) &
+  bclean(oprm) &
+  bcall(TransC_body_tac : trans_bod(1,I)) &
+  ti_c_chk_ipt(m)(h) &
+  bprintf("\n}\n\n")
+ =>
+  ti_c(m)(h);
+
+  ANSI_C_set &
+  brule(TransC_initialisation_storeX.1,I) &
+  RmOutLevelVRB &
+  WriteDot &
+  bcall(MODR:bmodr(TransC_initX.1,0)) &
+  bcall(MODR:bmodr(TransC_hdrX.1,"INITIALISATION")) &
+  bprintf("void\nINI_%(void)\n{\n",m) &
+  trans_ipt_mch(1) &
+  bclean(oprm) &
+  bcall(TransC_body_tac : trans_bod(1,I)) &
+  ti_c_chk_ipt(m)(h) &
+  bprintf("\n}\n\n")
+ =>
+  ti_c(m)(h);
+
+  brule(TransC_initialisation_storeX.1,VAR I END) &
+  WriteDot &
+  bcall(MODR:bmodr(TransC_initX.1,0)) &
+  bcall(MODR:bmodr(TransC_hdrX.1,"INITIALISATION")) &
+  bprintf("void\nINI_%()\n{\n",m) &
+  trans_ipt_mch(1) &
+  bclean(oprm) &
+  bcall(TransC_body_tac : trans_bod(1,VAR I END)) &
+  ti_c_chk_ipt(m)(h) &
+  bprintf("\n}\n\n")
+ =>
+  ti_c(m)(h);
+
+  ANSI_C_set &
+  brule(TransC_initialisation_storeX.1,VAR I END) &
+  WriteDot &
+  bcall(MODR:bmodr(TransC_initX.1,0)) &
+  bcall(MODR:bmodr(TransC_hdrX.1,"INITIALISATION")) &
+  bprintf("void\nINI_%(void)\n{\n",m) &
+  trans_ipt_mch(1) &
+  bclean(oprm) &
+  bcall(TransC_body_tac : trans_bod(1,VAR I END)) &
+  ti_c_chk_ipt(m)(h) &
+  bprintf("\n}\n\n")
+ =>
+  ti_c(m)(h);
+
+  brule(TransC_initialisation_storeX.1,BEGIN I END) &
+  RmOutLevelVRB &
+  WriteDot &
+  bcall(MODR:bmodr(TransC_initX.1,0)) &
+  bcall(MODR:bmodr(TransC_hdrX.1,"INITIALISATION")) &
+  bprintf("void\nINI_%()\n{\n",m) &
+  trans_ipt_mch(1) &
+  bclean(oprm) &
+  bcall(TransC_body_tac : trans_bod(1,I)) &
+  ti_c_chk_ipt(m)(h) &
+  bprintf("\n}\n\n")
+ =>
+  ti_c(m)(h);
+
+  ANSI_C_set &
+  brule(TransC_initialisation_storeX.1,BEGIN I END) &
+  RmOutLevelVRB &
+  WriteDot &
+  bcall(MODR:bmodr(TransC_initX.1,0)) &
+  bcall(MODR:bmodr(TransC_hdrX.1,"INITIALISATION")) &
+  bprintf("void\nINI_%(void)\n{\n",m) &
+  trans_ipt_mch(1) &
+  bclean(oprm) &
+  bcall(TransC_body_tac : trans_bod(1,I)) &
+  ti_c_chk_ipt(m)(h) &
+  bprintf("\n}\n\n")
+ =>
+  ti_c(m)(h)
+
+END
+
+&
+
+THEORY oprm END
+
+&
+
+THEORY TransC_operationsX IS
+
+#define TranslateOpsC(m) \
+	bcall((ARI;SUB;TransC_operationsX;RULE;WRITE)~: to_c(1)(m))
+
+#define TranslateOpsH(m) \
+	bcall(((ARI;WRITE;REV;MAP;SUB)~;TransC_operationsX)~: to_h(1)(m))
+
+  ?;
+#define ReadExternMchPrinted(x)    brule(TransC_operationsX.1,x)
+#define ModifyExternMchPrinted(x)  bcall(MODR:bmodr(TransC_operationsX.1,x))
+
+  ModifyCurrentOpParamReame((aaa:=aaa))
+ =>
+  to_modify_curr_op_rename(o=s);
+
+  brule(TransC_operations_param_renameX.J,(o:R)) &
+  ModifyCurrentOpParamReame(R)
+ =>
+  to_modify_curr_op_rename(o(i)=s);
+
+  brule(TransC_operations_param_renameX.J,(o:R)) &
+  ModifyCurrentOpParamReame(R)
+ =>
+  to_modify_curr_op_rename(r<--o=s);
+
+  brule(TransC_operations_param_renameX.J,(o:R)) &
+  ModifyCurrentOpParamReame(R)
+ =>
+  to_modify_curr_op_rename(r<--o(i)=s);
+
+
+
+
+  ReadBfifoSto((o:BT_PRINT_EXTERN:0)) &
+/***
+HERE(("BT_PRINT_EXTERN":m:o))&
+***/
+  bprintf(o)
+ =>
+  to_extern_h1(m);
+
+  ReadExternMchPrinted(M) &
+  ModifyExternMchPrinted((M,m)) &
+  FifoWrite_NoStore((BT_PRINT_EXTERN_M,m,0)) &  
+  to_extern_h1(m)
+ =>
+  to_extern_h(m);
+
+  ReadExternMchPrinted(M) &
+  bsearch(m,M,N)
+ =>
+  to_extern_h(m);
+
+
+
+  ReadBfifoSto((o:BT_PRINT_IN_LINED_OP:0)) &
+/***
+HERE(("inlined def of":n:o))&
+***/
+  bprintf(o) &
+  bprintf("\n")
+ =>
+  to2_h_inlined(n);
+
+  brule(PromotedHeaderX.I,(n:(H))) &
+/***
+HERE(("not inlined":to2_h:n))&
+***/
+  bprintf("void ") &
+  TranslateOpHeader_h(H) &
+  bprintf(";\n")
+ =>
+  to2_h(n);
+
+  brule(PromotedHeaderX.I,(n:(H))) &
+  ReadInLinedOps(N) &
+  bsearch(n,N,M) &
+  brule(OpColMchX.J,(n:m)) &
+/***
+HERE(("inlined":n:m))&
+***/
+/***/
+Writef(("\n\n    % is an in-lined SLIB operation\n",n)) &
+Writef(("    and promoting it can not yet be guaranteed to work\n\n    ...")) &
+/***/
+  to_extern_h(m) &
+  FifoWrite_NoStore((BT_PRINT_IN_LINED_OP_M,((n,"!",m)),0)) &
+  to2_h_inlined(n)
+ =>
+  to2_h(n);
+
+  to2_h(?);
+
+
+
+
+  bprintf("void ") &
+  TranslateOpHeader_h(h) &
+  bprintf(";\n")
+ =>
+  to1_h(m,(h=b));
+
+  bprintf("int ") &
+  TranslateOpHeader_h(main) &
+  bprintf(";\n")
+ =>
+  to1_h(m,(main=b));
+
+
+
+  ReadPromotedOps(P) &
+/***
+HERE(("PromotedOps":P))&
+***/
+  SetProcessingPromotedOp &
+  ModifyExternMchPrinted(?) &
+  to2_h bsmap brev(P) &
+  ResetProcessingPromotedOp
+ =>
+  to_h(N)(m);
+
+  brule(TransC_operations_storeX.N,o) &
+  to_modify_curr_op_rename(o) &
+  to1_h(m,o) &
+  to_h(N+1)(m)
+ =>
+  to_h(N)(m);
+
+
+
+  to1_c(m,tso(?));
+
+  WriteDot &
+  bclean(oprm) &
+  bprintf("void\n") &
+  TranslateOpHeader_c(h) &
+  bprintf("\n") &
+  bcall(TransC_body_tac : trans_bod_0(0,b)) &
+  bprintf("\n\n")
+ =>
+  to1_c(m,(h=b));
+
+  WriteDot &
+  bclean(oprm) &
+  bprintf("int\n") &
+  TranslateOpHeader_c(main) &
+  RmOutLevelVRB &
+  bprintf("\n{\n") &
+  bcall(TransC_body_tac : trans_bod(1,(bnewv(INI_,m); b))) &
+  bprintf ("\n  return 0;\n}\n")
+ =>
+  to1_c(m,(main=b));
+
+  WriteDot &
+  bclean(oprm) &
+  bprintf("int\n") &
+  TranslateOpHeader_c(main) &
+  bprintf("\n{\n") &
+  bcall(TransC_body_tac : trans_bod(1,(bnewv(INI_,m); VAR b END))) &
+  bprintf ("\n  return 0;\n}\n")
+ =>
+  to1_c(m,(main=VAR b END));
+
+  WriteDot &
+  bclean(oprm) &
+  bprintf("int\n") &
+  TranslateOpHeader_c(main) &
+  bprintf("\n{\n") &
+  bcall(TransC_body_tac : trans_bod(1,(bnewv(INI_,m);BEGIN b END))) &
+  bprintf ("\n  return 0;\n}\n")
+ =>
+  to1_c(m,(main=BEGIN b END));
+
+
+  to_c(N)(m);
+
+  brule(TransC_operations_storeX.N,o) &
+  to_modify_curr_op_rename(o) &
+  to1_c(m,o) &
+  to_c(N+1)(m)
+ =>
+  to_c(N)(m)
+
+END
+
+&
+
+THEORY TransC_hdrX IS
+
+  ?;
+
+  ?;  /* ProcessingPromotedOp */
+
+
+
+  ReadCurrentOpParamName(R) &
+  [R](bprintf(x))
+ =>
+  bprintf_delay(x);
+
+
+/***
+output params C
+***/
+  bprintf_delay("*%",x) &
+  bcrelr(oprm,x)
+ =>
+  out_param_1(x);
+
+  out_param_1(x) &
+  bprintf_delay(",")
+ =>
+  out_param_0(x,i,j);
+
+  out_param_1(x)
+ =>
+  out_param_0(x,j,j);
+
+
+/***
+output params ANSI C
+***/
+  bprintf_delay("int *%",x) &
+  bcrelr(oprm,x)
+ =>
+  out_param_ANSI_1(x);
+
+  out_param_ANSI_1(x) &
+  bprintf_delay(",")
+ =>
+  out_param_ANSI_0(x,i,j);
+
+  out_param_ANSI_1(x)
+ =>
+  out_param_ANSI_0(x,j,j);
+
+
+
+/***
+input params C
+***/
+
+  bprintf_delay("%",x)
+ =>
+  in_param_2(x:t);
+
+  ReadGlobalEqualityTypeInfo(T) &
+  bsearch((t=s),T,U) &
+  in_param_2(x:s)
+ =>
+  in_param_2(x:t);
+
+  ReadGlobalEqualityTypeInfo(T) &
+  bsearch((t=STRING),T,U) &
+  bprintf_delay("*%",x)
+ =>
+  in_param_2(x:t);
+
+
+  bprintf_delay("*%",x)
+ =>
+  in_param_2(x:seq(CHAR));
+
+  bprintf_delay("*%",x)
+ =>
+  in_param_2(x:POW(NAT*CHAR));
+
+  bprintf_delay("*%",x)
+ =>
+  in_param_2(x:STRING);
+
+
+  ReadOpTypeInfo(T) &
+  brule(TransC_hdrX.1,n) &
+  bsearch((n(o;i)==t),T,U) &
+  bsearch((x:w),(t&?),u) &
+  in_param_2(x:w) &
+  bcrelr(iprm,x)
+ =>
+  in_param_1(x);
+
+
+
+  in_param_1(x) &
+  bprintf_delay(",")
+ =>
+  in_param_0(x,i,j);
+
+  in_param_1(x)
+ =>
+  in_param_0(x,j,j);
+
+
+
+
+/***
+input params ANSI C
+***/
+
+  bprintf_delay("int %",x)
+ =>
+  in_param_ANSI_2(x:t);
+
+  ReadGlobalEqualityTypeInfo(T) &
+  bsearch((t=s),T,U) &
+  in_param_ANSI_2(x:s)
+ =>
+  in_param_ANSI_2(x:t);
+
+  ReadGlobalEqualityTypeInfo(T) &
+  bsearch((t=STRING),T,U) &
+  bprintf_delay("int *%",x)
+ =>
+  in_param_ANSI_2(x:t);
+
+
+  bprintf_delay("int *%",x)
+ =>
+  in_param_ANSI_2(x:seq(CHAR));
+
+  bprintf_delay("int *%",x)
+ =>
+  in_param_ANSI_2(x:POW(NAT*CHAR));
+
+  bprintf_delay("int *%",x)
+ =>
+  in_param_ANSI_2(x:STRING);
+
+
+  ReadOpTypeInfo(T) &
+  brule(TransC_hdrX.1,n) &
+  bsearch((n(o;i)==t),T,U) &
+  bsearch((x:w),(t&?),u) &
+  in_param_ANSI_2(x:w) &
+  bcrelr(iprm,x)
+ =>
+  in_param_ANSI_1(x);
+
+
+
+  in_param_ANSI_1(x) &
+  bprintf_delay(",")
+ =>
+  in_param_ANSI_0(x,i,j);
+
+  in_param_ANSI_1(x)
+ =>
+  in_param_ANSI_0(x,j,j);
+
+
+
+
+  brule(VBLStackX.2,X) &
+  bsearch(o,X,Y) &
+  bcall(MODR: bmodr(VBLStackX.1,(?|?,VBL(?))))
+ =>
+  load_VBL(o);
+
+  brule(VBLStackX.2,X) &
+  bsearch(o((?|T)),X,Y) &
+  bcall(MODR: bmodr(VBLStackX.1,(?|?,T)))
+ =>
+  load_VBL(o);
+
+  ProcessingPromotedOp
+ =>
+  load_VBL(o);
+
+
+
+
+  bprintf_delay("%()",o)
+ =>
+  trans_hdr_h(o);
+  
+  bprintf_delay("%()",o)
+ =>
+  trans_hdr_h(o(p));
+  
+  bprintf_delay("%()",o)
+ =>
+  trans_hdr_h(r<--o);
+  
+  bprintf_delay("%()",o)
+ =>
+  trans_hdr_h(r<--o(p));
+  
+  ANSI_C_set &
+  trans_hdr_c(o)
+ =>
+  trans_hdr_h(o);
+  
+
+
+
+  bcall(MODR:bmodr(TransC_hdrX.1,o)) &
+  bprintf_delay("%()",o) &
+  load_VBL(o)
+ =>
+  trans_hdr_c(o);
+
+  ANSI_C_set &
+  bcall(MODR:bmodr(TransC_hdrX.1,o)) &
+  bprintf_delay("%(void)",o) &
+  load_VBL(o)
+ =>
+  trans_hdr_c(o);
+
+  bcall(MODR:bmodr(TransC_hdrX.1,main)) &
+  bprintf_delay("main(argc,argv)\nint argc;\nchar **argv;") &
+  load_VBL(main)
+ =>
+  trans_hdr_c(main);
+
+  ANSI_C_set &
+  bcall(MODR:bmodr(TransC_hdrX.1,main)) &
+  bprintf_delay("main(int argc,char **argv)") &
+  load_VBL(main)
+ =>
+  trans_hdr_c(main);
+
+
+
+  bcall(MODR:bmodr(TransC_hdrX.1,o)) &
+  bprintf_delay("%(%)\n",o,r) &
+  bprintf_delay("int ") &
+  out_param_0 bnmap (r) &
+  bprintf_delay(";") &
+  bcrelr(oprm,(Out(r))) &
+  load_VBL(o)
+ =>
+  trans_hdr_c(r <-- o);
+
+  ANSI_C_set &
+  bcall(MODR:bmodr(TransC_hdrX.1,o)) &
+  bprintf_delay("%(",o) &
+  out_param_ANSI_0 bnmap (r) &
+  bprintf_delay(")") &
+  bcrelr(oprm,(Out(r))) &
+  load_VBL(o)
+ =>
+  trans_hdr_c(r <-- o);
+
+
+
+  bcall(MODR:bmodr(TransC_hdrX.1,o)) &
+  bprintf_delay("%(%)\n",o,p) &
+  bprintf_delay("int ") &
+  in_param_0 bnmap (p) &
+  bprintf_delay(";") &
+  load_VBL(o)
+ =>
+  trans_hdr_c(o(p));
+
+  ANSI_C_set &
+  bcall(MODR:bmodr(TransC_hdrX.1,o)) &
+  bprintf_delay("%(",o) &
+  in_param_ANSI_0 bnmap (p) &
+  bprintf_delay(")") &
+  load_VBL(o)
+ =>
+  trans_hdr_c(o(p));
+
+
+
+  bcall(MODR:bmodr(TransC_hdrX.1,o)) &
+  bprintf_delay("%(%,%)\n",o,r,p) &
+  bprintf_delay("int ") &
+  out_param_0 bnmap (r) &
+  bprintf_delay(",") &
+  in_param_0 bnmap (p) &
+  bprintf_delay(";") &
+  bcrelr(oprm,(Out(r))) &
+  load_VBL(o)
+ =>
+  trans_hdr_c(r <-- o(p));
+
+  ANSI_C_set &
+  bcall(MODR:bmodr(TransC_hdrX.1,o)) &
+  bprintf_delay("%(",o) &
+  out_param_ANSI_0 bnmap (r) &
+  bprintf_delay(",") &
+  in_param_ANSI_0 bnmap (p) &
+  bprintf_delay(")") &
+  bcrelr(oprm,(Out(r))) &
+  load_VBL(o)
+ =>
+  trans_hdr_c(r <-- o(p))
+
+END
+
+&
+
+THEORY VBLStackX IS
+
+/* opname =
+      VAR aa,bb IN
+        aa:=TRUE;
+        bb:=TRUE;
+        VAR cc IN
+          cc:=TRUE
+        END;
+        VAR ff,gg IN
+          ff:=TRUE;
+          gg:=TRUE
+        END
+      END;
+      VAR ii IN
+        ii:=TRUE
+      END
+
+?;
+imp_name(? | VBL(?));
+opname(? | VBL(?,VBL(?,VBL(?,cc(5)),VBL(?,gg(5),ff(5)),bb(5),aa(5)),VBL(?,ii(5)))))
+*/
+
+/* defined above:
+
+#define GetNextVRB bcall(((MODR;WRITE)~;VBLStackX)~: gnvs)
+
+#define RmOutLevelVRB bcall(((MODR;WRITE)~;VBLStackX)~: rm_out)
+*/
+
+  ?;?;
+
+  brule(VBLStackX.1,(X|Y)) &
+HERE((gnvs:Y))
+ =>
+  gnvs;
+
+
+  brule(VBLStackX.1,(X|(?,VBL(Y)))) &
+  bmodr(VBLStackX.1,(X|(Y)))
+ =>
+  rm_out;
+
+  brule(VBLStackX.1,(X|Y)) &
+  bsearch(VBL(A),Y,Z) &
+  bmodr(VBLStackX.1,(X|Z|A))
+ =>
+  gnvs;
+
+
+  bmodr(VBLStackX.1,(X))
+ =>
+  vs_3(X);
+
+  vs_3(X)
+ =>
+  vs_3(X|?);
+
+  brule(VBLStackX.1,(X)) &
+  vs_3(X)
+ =>
+  vs_2;
+
+  ReadCurrentOpName(O) &
+  Writef(("\n      %:\n        structured type \"%\" defaulted to int .",O,x)) &
+  bprintf("%",x)
+ =>
+  vs_1(x);
+
+  ReadCurrentOpName("INITIALISATION") &
+  Writef(("\n      INITIALISATION:\n        structured type \"%\" defaulted to int .",x)) &
+  bprintf("%",x)
+ =>
+  vs_1(x);
+
+/*
+  brule(VBLStackX.1,(X|Y)) &
+  bsearch(x,Y,Z) &             /? string - integer array of 250(=1000) ?/
+  bmodr(VBLStackX.1,(X|Z)) &
+  bcall(RULE: bcrer(oprm,x) ) &                 
+  bprintf("%[250]",x)
+ =>
+  vs_1(x);
+*/
+
+  brule(VBLStackX.1,(X|Y)) &
+  bsearch(x,Y,Z) &             /* string - integer array of 500(=2000) */
+  bmodr(VBLStackX.1,(X|Z)) &
+  bcall(RULE: bcrer(oprm,x) ) &                 
+  bprintf("%[500]",x)
+ =>
+  vs_1(x);
+
+  brule(VBLStackX.1,(X|Y)) &
+  bsearch(x(s),Y,Z) &           /* Type given  - defaults to integer */
+  bmodr(VBLStackX.1,(X|Z)) &
+  bprintf("%",x)
+ =>
+  vs_1(x);
+
+  brule(VBLStackX.1,(X|Y)) &
+  bsearch(x(n),Y,Z) &          /* Array size given  - integer array */
+  bnum(n) &
+  bmodr(VBLStackX.1,(X|Z)) &
+/* To remember that this variable is like an output parameter ! */
+  bcall(RULE: bcrer(oprm,x) ) &                 
+  bprintf("%[%]",x,n)
+ =>
+  vs_1(x);
+
+  vs_1(x) &
+  vs_2
+ =>
+  vs_0(x)
+
+/*
+  ;VBLStack(aa) & VBLStack(AA) & VBLStack(bb) & VBLStack(BB) & VBLStack(cc) & VBLStack(DD) & VBLStack(dd) & VBLStack(EE) & VBLStack(ee)
+*/
+
+
+END
+
+&
+
+THEORY TransC_bodyX IS
+
+/*  defined in Translatore.src
+#define TransC_body_tac \
+       (var~;NEWV;((ARI;MAP;SUB;WRITE)~;TransC_bodyX)~)
+*/
+
+  ?;
+
+  ?;
+#define flag_bracket     bcall(MODR:bmodr(TransC_bodyX.2,1))
+#define unflag_bracket   bcall(MODR:bmodr(TransC_bodyX.2,0))
+#define bracket_flagged  brule(TransC_bodyX.2,1)
+
+   ReadCurrentOpParamName(R) &
+   [R](bprintf(x))
+  =>
+   bprintf_delay(x);
+
+  (a & b) == ((a) && (b));
+
+  (a or b) == ((a) || (b));
+
+
+
+  bcall((SUB~;MODR): bmodr(TransC_bodyX.1,[i:=?]X))
+ =>
+  act_param_typ_2(i)(X);                       /* no inp param */
+
+  bcall((SUB~;MODR): bmodr(TransC_bodyX.1,X))
+ =>
+  act_param_typ_2(?)(X);                       /* no inp param */
+
+  act_param_typ_2(I)([i:=?]X)
+ =>
+  act_param_typ_2(I,i)(X);                     /* no inp param */
+
+  act_param_typ_2(i)(([o:=r]t)&?)
+ =>
+  act_param_typ_1(o)(r)(i)(t);
+
+/*
+  ReadOpTypeInfo(T) &HERE((T))&HERE((junk:n,r))
+ =>
+  act_param_typ_0(n)(r);
+*/
+
+  ReadOpTypeInfo(T) &
+  bsearch((n(o;i)==t),T,U) &
+  act_param_typ_1(o)(r)(i)(t)
+ =>
+  act_param_typ_0(n)(r);
+
+
+
+  /***
+  outermost (operation) brackets
+  ***/
+
+  RmOutLevelVRB &
+  flag_bracket &
+  bprintf_delay("{\n") &
+  trans_bod_chk_bracket(1,x) &
+  bprintf_delay("\n}")
+ =>
+  trans_bod_0(0,x);
+
+  trans_bod(0,VAR x END)
+ =>
+  trans_bod_0(0,VAR x END);
+
+  RmOutLevelVRB &
+  flag_bracket &
+  bprintf_delay("{\n") &
+  trans_bod_chk_bracket(1,x) &
+  bprintf_delay("\n}")
+ =>
+  trans_bod_0(0,BEGIN x END);
+
+
+
+  bprintf_delay(",")
+ =>
+  comma(m,n);
+
+  comma(n,n);
+
+  bprintf_delay("&%",x) &
+  comma(m,n)
+ =>
+  trans_oprm(x,m,n);
+
+  brule(oprm.J,Out(O)) &
+  bsearch(x,(O,?),P) &
+  bprintf_delay("%",x) &
+  comma(m,n)
+ =>
+  trans_oprm(x,m,n);
+
+/*
+  brule(TransC_bodyX.1,T) &
+  bsearch((x:WORD),T,U) &
+  bprintf_delay("%",x) &
+  comma(m,n)
+ =>
+  trans_oprm(x,m,n);
+*/
+
+  brule(TransC_bodyX.1,T) &
+  bsearch((x:seq(CHAR)),T,U) &
+  bprintf_delay("%",x) &
+  comma(m,n)
+ =>
+  trans_oprm(x,m,n);
+
+  brule(TransC_bodyX.1,T) &
+  bsearch((x:POW(NAT*CHAR)),T,U) &
+  bprintf_delay("%",x) &
+  comma(m,n)
+ =>
+  trans_oprm(x,m,n);
+
+
+
+  Writef(("\n\n    Error in operation %:\n\n      Output parameter % not an identifier\n\n    ",bsrv r berv,o)) &
+  SetTRLError
+ =>
+  trans_oprm_chk_ident(o,r);
+
+  bident(r)
+ =>
+  trans_oprm_chk_ident(o,r);
+
+  act_param_typ_0(o)(r) &
+  trans_oprm_chk_ident(o) bsmap r &
+  trans_oprm bnmap r
+ =>
+  trans_list_oprm(o)(r);
+
+
+ /* input params */
+
+
+  bprintf_delay("%",i)
+ =>
+  trans_iprm1(i);
+
+  bstring(i) &
+  bprintf_delay(" (int *)%",i)
+ =>
+  trans_iprm1(i);
+
+  brule(oprm.j,Out(O)) &
+  bsearch(i,(O,?),J) &
+  bprintf_delay("*%",i)   /* what if it's also a string ??? */
+ =>
+  trans_iprm1(i);
+
+  bstring(i) &
+  brule(oprm.j,Out(O)) &
+  bsearch(i,(O,?),J) &
+  bprintf_delay("%",i)
+ =>
+  trans_iprm1(i);
+
+  trans_iprm1(i) &
+  bprintf_delay(",")
+ =>
+  trans_iprm(i,m,n);
+
+  trans_iprm1(i)
+ =>
+  trans_iprm(i,n,n);
+
+
+  Writef(("\n    Warning: Input parameter of operation %\n      %\n    may cause compiler error\n    ",o,p))
+ =>
+  trans_iprm_chk_ident_num(o,p);
+
+  bstring(p)
+ =>
+  trans_iprm_chk_ident_num(o,p);
+
+  bnum(p)
+ =>
+  trans_iprm_chk_ident_num(o,p);
+
+  bident(p)
+ =>
+  trans_iprm_chk_ident_num(o,p);
+
+
+             /* procedure calls */
+
+  indent(i) &
+  bprintf_delay("%();",o)
+ =>
+  trans_bod(i,o);
+
+  indent(i) &
+  bprintf_delay("%(",o) &
+  trans_list_oprm(o)(r) &
+  bprintf_delay(");")
+ =>
+  trans_bod(i,(r <-- o));
+
+  indent(i) &
+  bprintf_delay("%(",o) &
+  trans_iprm_chk_ident_num(o) bsmap p &
+  trans_iprm bnmap p &
+  bprintf_delay(");")
+ =>
+  trans_bod(i,o(p));
+
+  indent(i) &
+  bprintf_delay("%(",o) &
+  trans_list_oprm(o)(r) &
+  bprintf_delay(",") &
+  trans_iprm_chk_ident_num(o) bsmap p &
+  trans_iprm bnmap p &
+  bprintf_delay(");")
+ =>
+  trans_bod(i,(r <-- o(p)));
+
+
+             /* begin unnecessary ... */
+
+
+  trans_bod_chk_bracket(i,B)
+ =>
+  trans_bod_rem_begin(i,B);
+
+  trans_bod_rem_begin(i,B)
+ =>
+  trans_bod_rem_begin(i,BEGIN B END);
+
+
+             /* begin ... end  construct */
+
+
+  trans_bod(i,(x))
+ =>
+  trans_bod(i,BEGIN x END);
+
+
+
+                   /* var ... in ... end  construct */
+
+  VBLStack(v)
+ =>
+  var_stack(v);
+
+  var_stack(V) &
+  bprintf_delay(",") &
+  VBLStack(v)
+ =>
+  var_stack(V,v);
+
+  indent(i) &
+  bprintf_delay("{\n") &
+  indent(i+1) &
+  bprintf_delay("int ") &
+  GetNextVRB &
+  var_stack(v) &
+  bprintf_delay(";\n") &
+  trans_bod_rem_begin(i+1,B) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,VAR v IN B END);
+
+
+  bracket_flagged &
+  indent(i) &
+  bprintf_delay("int ") &
+  GetNextVRB &
+  var_stack(v) &
+  bprintf_delay(";\n") &
+  trans_bod_rem_begin(i,B) 
+ =>
+  trans_bod(i,VAR v IN B END);
+
+
+                         /* skip */
+
+  indent(i) &
+  ReadCurrentOpName(O) &
+  Warningskip(O) &
+  bprintf_delay(";")
+ =>
+  trans_bod(i,skip);
+
+  indent(i) &
+  ReadCurrentOpName(S) &
+  bstring(S) &
+/*
+  Warningskipinit &
+*/
+  bprintf_delay(";")
+ =>
+  trans_bod(i,skip);
+
+
+                    /* if ... then ... else ... end  construct */
+
+  indent(i) &
+  bprintf_delay("if ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,B) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,IF E THEN B END);
+ 
+  brule(oprm.J,Out(R)) &
+  BadUseOutpurVar(E) &
+  SetTRLError
+ =>
+  trans_bod (i,IF E THEN B END);
+ 
+  brule(oprm.J,Out(R)) &
+  R\E &
+  indent(i) &
+  bprintf_delay("if ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,B) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,IF E THEN B END);
+ 
+ 
+  indent(i) &
+  bprintf_delay("if ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,B) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}\n") &
+  indent(i) &
+  bprintf_delay("else {\n") &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,C) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,IF E THEN B ELSE C END);
+
+  brule(oprm.J,Out(R)) &
+  BadUseOutpurVar(E) &
+  SetTRLError
+ =>
+  trans_bod(i,IF E THEN B ELSE C END);
+
+
+  brule(oprm.J,Out(R)) &
+  R\E &
+  indent(i) &
+  bprintf_delay("if ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,B) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}\n") &
+  indent(i) &
+  bprintf_delay("else {\n") &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,C) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,IF E THEN B ELSE C END);
+
+
+              /* if ... then ... elsif ... else ... end  construct */
+
+
+  indent(i) &
+  bprintf_delay("if ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,S) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}\n") &
+  indent(i) &
+  bprintf_delay("else if ( % ) {\n",F) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,T)
+ =>
+  trans_if(i,(E THEN S ELSIF F THEN T));
+
+  brule(oprm.J,Out(R)) &
+  R\F &
+  BadUseOutpurVar(E) &
+  SetTRLError
+ =>
+  trans_if(i,(E THEN S ELSIF F THEN T));
+
+  brule(oprm.J,Out(R)) &
+  R\E &
+  BadUseOutpurVar(F) &
+  SetTRLError
+ =>
+  trans_if(i,(E THEN S ELSIF F THEN T));
+
+  brule(oprm.J,Out(R)) &
+  R\E &
+  R\F &
+  indent(i) &
+  bprintf_delay("if ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,S) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}\n") &
+  indent(i) &
+  bprintf_delay("else if ( % ) {\n",F) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,T)
+ =>
+  trans_if(i,(E THEN S ELSIF F THEN T));
+
+
+
+
+
+  trans_if(i,(A ELSIF E THEN S)) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}\n") &
+  indent(i) &
+  bprintf_delay("else if ( % ) {\n",F) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,T)
+ =>
+  trans_if(i,(A ELSIF E THEN S ELSIF F THEN T));
+
+  brule(oprm.J,Out(R)) &
+  BadUseOutpurVar(F) &
+  SetTRLError
+ =>
+  trans_if(i,(A ELSIF E THEN S ELSIF F THEN T));
+
+  brule(oprm.J,Out(R)) &
+  R\F &
+  trans_if(i,(A ELSIF E THEN S)) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}\n") &
+  indent(i) &
+  bprintf_delay("else if ( % ) {\n",F) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,T)
+ =>
+  trans_if(i,(A ELSIF E THEN S ELSIF F THEN T));
+
+
+
+  trans_if(i,(A ELSIF E THEN S)) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,IF A ELSIF E THEN S END);
+
+
+  trans_if(i,(A ELSIF E THEN S)) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}\n") &
+  indent(i) &
+  bprintf_delay("else {\n") &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,U) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,IF A ELSIF E THEN S ELSE U END);
+
+
+                        /* while construct */
+
+
+  indent(i) &
+  bprintf_delay("while ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,B) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,WHILE E DO B END);
+
+  brule(oprm.J,Out(R)) &
+  BadUseOutpurVar(E) &
+  SetTRLError
+ =>
+  trans_bod(i,WHILE E DO B END);
+
+  brule(oprm.J,Out(R)) &
+  R\E &
+  indent(i) &
+  bprintf_delay("while ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,B) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,WHILE E DO B END);
+
+
+
+  trans_bod(i,WHILE E DO B END)
+ =>
+  trans_bod(i,WHILE E DO B INVARIANT I VARIANT V END);
+
+  trans_bod(i,WHILE E DO B END)
+ =>
+  trans_bod(i,WHILE E DO B VARIANT V INVARIANT I END);
+
+                         /* case construct */
+
+
+  bprintf_delay("% :case ",e)
+ =>
+  trans_enum_elem(e,n,m);
+
+  bprintf_delay("%",e)
+ =>
+  trans_enum_elem(e,n,n);
+
+  trans_enum_elem bnmap E
+ =>
+  trans_enum(E);
+
+
+
+  indent(i) &
+  bprintf_delay("case ") &
+  trans_enum(E) &
+  bprintf_delay(" :\n") &
+  trans_bod_rem_begin(i+1,S)
+ =>
+  trans_either(i,(E THEN S));
+
+  indent(i) &
+  bprintf_delay("case ") &
+  trans_enum(E) &
+  bprintf_delay(" :\n") &
+  trans_bod_rem_begin(i+1,S) &
+  bprintf_delay("\n") &
+  indent(i+1) &
+  bprintf_delay("break;\n") &
+  indent(i) &
+  bprintf_delay("case ") &
+  trans_enum(F) &
+  bprintf_delay(" :\n") &
+  trans_bod_rem_begin(i+1,T)
+ =>
+  trans_either(i,(E THEN S OR F THEN T));
+
+  trans_either(i,(A OR E THEN S)) &
+  bprintf_delay("\n") &
+  indent(i+1) &
+  bprintf_delay("break;\n") &
+  indent(i) &
+  bprintf_delay("case ") &
+  trans_enum(F) &
+  bprintf_delay(" :\n") &
+  trans_bod_rem_begin(i+1,T)
+ =>
+  trans_either(i,(A OR E THEN S OR F THEN T));
+  
+
+  trans_either(i,(A THEN B)) &
+  bprintf_delay("\n") &
+  indent(i+1) &
+  bprintf_delay("break;")
+ =>
+  trans_bod(i,EITHER A THEN B END);
+
+
+  trans_either(i,(A OR E THEN B)) &
+  bprintf_delay("\n") &
+  indent(i+1) &
+  bprintf_delay("break;")
+ =>
+  trans_bod(i,EITHER A OR E THEN B END);
+
+
+
+  trans_either(i,(A THEN B)) &
+  bprintf_delay("\n") &
+  indent(i+1) &
+  bprintf_delay("break;\n") &
+  indent(i) &
+  bprintf_delay("default:\n") &
+  trans_bod_rem_begin(i+1,C) &
+  bprintf_delay("\n") &
+  indent(i+1) &
+  bprintf_delay("break;")
+ =>
+  trans_bod(i,EITHER A THEN B ELSE C END);
+
+
+
+  trans_either(i,(A OR E THEN B)) &
+  bprintf_delay("\n") &
+  indent(i+1) &
+  bprintf_delay("break;\n") &
+  indent(i) &
+  bprintf_delay("default:\n") &
+  trans_bod_rem_begin(i+1,C) &
+  bprintf_delay("\n") &
+  indent(i+1) &
+  bprintf_delay("break;")
+ =>
+  trans_bod(i,EITHER A OR E THEN B ELSE C END);
+
+  indent(i) &
+  bprintf_delay("switch ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,S) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,CASE E OF S END);
+
+  brule(oprm.J,Out(R)) &
+  BadUseOutpurVar(E) &
+  SetTRLError
+ =>
+  trans_bod(i,CASE E OF S END);
+
+
+  brule(oprm.J,Out(R)) &
+  R\E &
+  indent(i) &
+  bprintf_delay("switch ( % ) {\n",E) &
+  flag_bracket &
+  trans_bod_rem_begin(i+1,S) &
+  bprintf_delay("\n") &
+  indent(i) &
+  bprintf_delay("}")
+ =>
+  trans_bod(i,CASE E OF S END);
+
+
+
+                          /* sequencing */
+
+  trans_bod(i,S) &
+  bprintf_delay(";\n") &
+  trans_bod(i,T)
+ =>
+  trans_bod(i,(S;T));
+
+                         /* assignment */
+
+  indent(i) &
+  bprintf_delay("% := %;",v,e)
+ =>
+  trans_bod(i,(v:=e));
+
+  brule(oprm.j,v) &
+  indent(i) &
+  bprintf_delay("*% := %;",v,e)
+ =>
+  trans_bod(i,(v:=e));
+
+  brule(oprm.J,Out(R)) &
+  BadUseOutpurVar(e) &
+  SetTRLError
+ =>
+  trans_bod(i,(v:=e));
+
+  brule(oprm.J,Out(R)) &
+  R\e &
+  indent(i) &
+  bprintf_delay("% := %;",v,e)
+ =>
+  trans_bod(i,(v:=e));
+
+  brule(oprm.J,Out(R)) &
+  R\e &
+  brule(oprm.j,v) &
+  indent(i) &
+  bprintf_delay("*% := %;",v,e)
+ =>
+  trans_bod(i,(v:=e));
+
+
+
+  unflag_bracket &
+  trans_bod(x)
+ =>
+  trans_bod_chk_bracket(x);
+
+
+  unflag_bracket &
+  trans_bod(x)
+ =>
+  trans_bod_chk_bracket(x);
+
+  trans_bod(i,VAR v IN B END)
+ =>
+  trans_bod_chk_bracket(i,VAR v IN B END);
+
+
+                      /* indentation */
+
+  bprintf_delay("  ") &
+  indent(i-1)
+ =>
+  indent(i);
+
+  bprintf_delay("          ") => indent(5);
+
+  bprintf_delay("        ") => indent(4);
+
+  bprintf_delay("      ") => indent(3);
+
+  bprintf_delay("    ") => indent(2);
+
+  bprintf_delay("  ") => indent(1);
+
+  indent(0)
+
+END
+
+
+&
+
+THEORY TransC_trans_implementationX IS
+
+#define TranslateImp(m,g,h,c) \
+	bcall(((CATL~;SHELL)~;TransC_trans_implementationX)~ : \
+		trans_impl(m,g,h,c))
+
+  aaa:=aaa; /* CurrentOpName */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  TransCAppend(c)
+ =>
+  trans_sees(c);
+
+  brule(TransC_sees_storeX.1,S) &
+  TransCAppend(c) &
+  TranslateSeesC
+ =>
+  trans_sees(c);
+
+
+
+  TransCAppend(h) &
+  TransCAppend(g) &
+  TransCAppend(c)
+ =>
+  trans_imports(g,c,h);
+
+  brule(TransC_imports_storeX.1,I) &
+  TransCAppend(h) &
+  TranslateImportsH &
+  TransCAppend(g) &
+  TranslateImportsG &
+  TransCAppend(c) &
+  TranslateImportsC
+ =>
+  trans_imports(g,c,h);
+
+
+  TransCAppend(h) &
+  TransCAppend(c)
+ =>
+  trans_consts(h,c);                      /* no consts to translate */
+
+  brule(TransC_properties_storeX.1,I) &   /* consts to translate */
+  bcall(MODR:bmodr(TransC_constsX.2,?)) &
+  TransCAppend(h) &
+  TranslateConstsH &
+  TransCAppend(c) &
+  TranslateConstsC &
+  CheckUnsetConstants
+ =>
+  trans_consts(h,c);
+
+
+
+  TransCAppend(g) &
+  TransCAppend(h) &
+  TransCAppend(c)
+ =>
+  trans_sets(g,h,c);                      /* no sets to translate */
+
+  brule(TransC_sets_storeX.1,S) &         /* sets to translate */
+  TransCAppend(g) &
+  TranslateSetsG &
+  TransCAppend(h) &
+  TranslateSetsH &
+  TransCAppend(c) &
+  TranslateSetsC
+ =>
+  trans_sets(g,h,c);
+
+
+
+  TransCAppend(c) &
+  TranslateInitC(m,h) &
+  TransCAppend(h) &
+  TranslateInitH(m,h)
+ =>
+  trans_init(m,h,c);
+
+
+
+  TransCAppend(c)
+ =>
+  trans_ops(m,c,h);
+
+
+
+  TranslateOpsH(m)  /* there may be promoted ops */
+ =>
+  trans_ops(m,c,h);
+
+  brule(TransC_operations_storeX.1,O) &
+  TransCAppend(c) &
+/***
+PrintTHEORY(TransC_operations_param_renameX)&
+***/
+  TranslateOpsC(m) &
+  TransCAppend(h) &
+  TranslateOpsH(m)
+ =>
+  trans_ops(m,c,h);
+
+
+
+  TransCAppend(c) &
+  bcall(WRITE : bprintf("#include %\n\n",h)) &
+  trans_consts(h,c) &
+  trans_sets(g,h,c) &
+  trans_imports(g,c,h) &
+  trans_sees(c) &
+  trans_init(m,h,c) &
+  trans_ops(m,c,h)
+ =>
+  trans_clauses(m,g,h,c);
+
+
+  bshell(bcatl("rm -f CDE/C/",g," CDE/C/",h," CDE/C/",c)) & 
+  bshell(bcatl("rm -f HTX/",g,".html HTX/",h,".html HTX/",c,".html")) &
+  GetInlinedOps &
+  TransCAppend(g) &
+  TransCAppend(h) &
+  trans_clauses(m,g,h,c)
+ =>
+  trans_impl(m,g,h,c);
+ 
+  bshell(bcatl("rm -f CDE/C/",g," CDE/C/",h," CDE/C/",c)) &
+  bshell(bcatl("rm -f HTX/",g,".html HTX/",h,".html HTX/",c,".html")) &
+  GetInlinedOps &
+  TransCAppend(g) &
+  TranslateParamsG(m(p)) &
+  TransCAppend(h) &
+  TranslateParamsH(m(p)) &
+  trans_clauses(m,g,h,c)
+ =>
+  trans_impl(m(p),g,h,c)
+
+END
+
+&
+
+THEORY StoreAllPropertiesConstantsX IS
+
+#define StoreAllPropertiesConstants(x) \
+	bcall(((MAP;CATL;RULE)~;StoreAllPropertiesConstantsX)~ : sapc_0(x))
+
+  sapc_2(x);
+  
+  bident(a) &
+  bcrer(TransC_all_properties_storeX,(a==b))
+ =>
+  sapc_2(a=b);
+  
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  sapc_1(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  sapc_2 bsmap G &              /* local props (not incl import) of imp */
+  bcrer(TransC_all_constants_storeX,(F,?))  /* full consts ... */
+ =>
+  sapc_1(Z);
+
+  sapc_1(bcatl("ANL/",a,".imp.anl"))
+ =>
+  sapc_0(a.imp)
+
+END
+
+&
+
+THEORY StoreVisSetConstNamesX IS
+
+#define StoreVisSetConstNames(x) \
+	bcall(((CATL;MAP;RULE)~;StoreVisSetConstNamesX)~ : svsc(x))
+
+
+  svsc2(x);
+
+  bcrer(TransC_all_enum_sets_storeX,S(E))
+ =>
+  svsc2(S(E));
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  svsc1(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  bcrer(TransC_vis_sets_storeX,(D,?)) &           /* full spec set list */
+  bcrer(TransC_vis_constants_storeX,(F,?)) &      /* full spec const list */
+  svsc2 bsmap D
+ =>
+  svsc1(Z);
+
+  WriteDot &
+  svsc1(bcatl("ANL/",a,".mch.anl"))
+ =>
+  svsc(a.mch)
+
+END
+
+&
+
+THEORY LoadTypeFileX IS
+
+#define LoadTypeFile bcall(((MAP;CATL;NEWV;FLAT;MODR)~;LoadTypeFileX)~: ltf_0)
+
+  ?;  /* OpTypeInfo: (o(O;I)==t);... */
+
+  ?;  /* the current construct: a.imp */
+
+  ?;  /* GivenSetInfo: given(o);... */
+
+  ?;  /* NATVarConsts */
+
+  ?;  /* GlobalEqualityTypeInfo */
+
+
+  add_global1(a=b);
+
+  bident(a) &
+  bident(b) &
+  ReadGlobalEqualityTypeInfo(T) &
+  ModifyGlobalEqualityTypeInfo(bflat(T&(a=b)))
+ =>
+  add_global1(a=b);
+
+  ReadGlobalEqualityTypeInfo(T) &
+  bsearch((a=b),T,U)
+ =>
+  add_global1(a=b);
+
+  add_global1(a=a);
+
+
+  POW(NAT*CHAR) == STRING;
+
+  seq(CHAR) == STRING;
+
+  SCALAR == NAT;
+
+
+  
+
+  bsearch(a,X,Y) &
+  bmodr(VBLStackX.1,(?|?,VBL(?))) &
+  bmodr(VBLStackX.2,X) 
+ =>
+  ltfv_1(a,X);
+ 
+  bsearch(a(?|T),X,Y) &
+  bmodr(VBLStackX.1,(?|?,T)) &
+  bmodr(VBLStackX.2,X) 
+ =>
+  ltfv_1(a,X);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ltfv_0(a,f);
+
+  bget(f,X) &
+  ltfv_1(a,X)
+ =>
+  ltfv_0(a,f);
+
+  upd_given(x);
+
+  ReadGivenSetInfo(G) &
+  ModifyGivenSetInfo((G;given(g[n])))
+ =>
+  upd_given(given(g[n]));
+
+  ReadOpTypeInfo(T) &
+  ModifyOpTypeInfo(bflat(T;(bnewv(R,t)(u)==v)))
+ =>
+  upd_rename1(R,(t(u)==v));
+
+  upd_rename1(R,?);
+
+  upd_rename1(R) bsmap A
+ =>
+  upd_rename(R)(A);
+
+  ReadOpTypeInfo(T) &
+  ModifyOpTypeInfo(bflat(T;t))
+ =>
+  upd(t);
+
+  upd(?);
+
+
+  ltf_1(bcatl("TYP/",a,".mri.typ"))
+ =>
+  ltfseenipt(a.mch);
+
+  ltf_rename_1(R)(bcatl("TYP/",a,".mri.typ"))
+ =>
+  ltfseenipt(R.a.mch);
+
+  ltfseenipt(?);
+
+  ReadTrlIpt(L) &
+  ltfseenipt bsmap L
+ =>
+  ltfipt_0;
+
+  ReadTrlSeen(L) &
+  ltfseenipt bsmap L
+ =>
+  ltfseen_0;
+
+  upd_given bsmap (B)
+ =>
+  ltf_rename_2(R)(B|C);             /* no ops */
+
+  upd_rename(R)(A) &
+  upd_given bsmap (B)
+ =>
+  ltf_2(A|B|C);
+
+  upd_rename(R)(A) &
+  upd_given bsmap (B)
+ =>
+  ltf_rename_2(R)(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ltf_rename_1(R)(f);
+
+  bget(f,X) &
+  ltf_rename_2(R)(X)
+ =>
+  ltf_rename_1(R)(f);
+
+  upd_NAT_SCALAR(x);
+
+  ReadNATVarConsts(C) &
+  ModifyNATVarConsts((C,c))
+ =>
+  upd_NAT_SCALAR(c:SCALAR);
+
+  ReadNATVarConsts(C) &
+  bsearch(c,C,D)
+ =>
+  upd_NAT_SCALAR(c:SCALAR);
+
+  ReadNATVarConsts(C) &
+  ModifyNATVarConsts((C,c))
+ =>
+  upd_NAT_SCALAR(c:NAT);
+
+  ReadNATVarConsts(C) &
+  bsearch(c,C,D)
+ =>
+  upd_NAT_SCALAR(c:NAT);
+
+  ReadGlobalEqualityTypeInfo(T) &
+  bsearch((NAT=S),T,U) &
+  upd_NAT_SCALAR(c:NAT)
+ =>
+  upd_NAT_SCALAR(c:S);
+
+  ReadGlobalEqualityTypeInfo(T) &
+  bsearch((S=NAT),T,U) &
+  upd_NAT_SCALAR(c:NAT)
+ =>
+  upd_NAT_SCALAR(c:S);
+
+  add_global(x);
+
+  add_global1(a=b)
+ =>
+  add_global(a=b);
+
+  add_global bsmap B &
+  upd_NAT_SCALAR bsmap B &
+  upd_given bsmap (B)              /* no ops */
+ =>
+  ltf_2(B|C);
+
+  upd(A) &
+  add_global bsmap B &
+  upd_NAT_SCALAR bsmap B &
+  upd_given bsmap (B)
+ =>
+  ltf_2(A|B|C);
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ltf_1(f);
+
+  bget(f,X) &
+  ltf_2(X)
+ =>
+  ltf_1(f);
+
+  brule(LoadTypeFileX.2,a.imp) &
+  ModifyNATVarConsts(?) &
+  ltf_1(bcatl("TYP/",a,".mri.typ")) &
+  ltfseen_0 &
+  ltfipt_0 &
+  ltfv_0(a,bcatl("TYP/",a,".imp.typ")) 
+ =>
+  ltf_0
+
+END
+
+&
+
+THEORY ImportedSeenEnumValConstValX END &
+
+THEORY StoreFormalImportsParamsX IS
+
+#define StoreFormalImportsParams(x) \
+	bcall(((CATL;MAP;RULE;MODR;RULE)~;StoreFormalImportsParamsX)~ : \
+		(sfip_0 bsmap x))
+#define StoreSeenESetsConsts(x) \
+	bcall(((CATL;MAP;RULE;MODR;RULE)~;StoreFormalImportsParamsX)~ : \
+		(ss_0 bsmap x))
+#define StoreImportedESetsConsts(x) \
+	bcall(((CATL;MAP;RULE;MODR;RULE)~;StoreFormalImportsParamsX)~ : \
+		(si_0 bsmap x))
+  bcrer(TransC_all_properties_storeX,(c==v))
+ =>
+  st_const_1(c=v);
+
+  brule(TransC_all_properties_storeX.n,(c==v))
+ =>
+  st_const_1(c=v);
+
+  st_const_0(x);
+
+  bsearch(c,C,D) &
+  bcrer(ImportedSeenEnumValConstValX,(c==v)) &
+  st_const_1(c=v)
+ =>
+  st_const_0(C,(c=v));
+
+  bcrer(ImportedSeenEnumValConstValX,(e==m))
+ =>
+  st_enum_1(e,m,n);
+
+
+  st_enum_0(x);
+
+  bcrer(TransC_all_enum_sets_storeX,S(E)) &
+  st_enum_1 bnmap E
+ =>
+  st_enum_0(S(E));
+
+
+/*
+  bcrer(TransC_mch_setX,(S:r))
+ =>
+  st_mch_set(r,S);
+
+  bcrer(TransC_mch_setX,(S:r))
+ =>
+  st_mch_set(r,S(E));
+
+  st_mch_set(r,?);
+*/
+
+
+  brule(TransC_NatParam_storeX.I,m(N)) &
+  bmodr(TransC_NatParam_storeX.I,m(N,i))
+ =>
+  sfip_3(m,p,i,j);
+
+  bUpident(p)
+ =>
+  sfip_3(m,p,i,j);
+
+  bcrer(TransC_NatParam_storeX,m(?)) &
+  sfip_3(m) bnmap l
+ =>
+  sfip_2(m)(l);
+  
+
+  
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ss_ref1(X)(Z);
+
+  WriteDot &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  st_enum_0 bsmap D &
+/*  st_mch_set(r) bsmap D & */
+  st_const_0(E,?) bsmap G &
+  st_const_0(C,?) bsmap G
+ =>
+  ss_ref1(X)(Z);
+
+  si_ref(r.mch);
+
+  ReadBotRef(i.imp) &
+  ss_ref1(i)(bcatl("ANL/",i,".imp.anl"))
+ =>
+  si_ref(r.mch);
+
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ss_1(X)(Z);
+
+/*
+  WriteDot &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  st_enum_0 bsmap D &
+  st_const_0(E,?) bsmap G  (repetition)
+ =>
+  ss_1(X)(Z);
+*/
+
+
+/*
+  ss_1(r)(bcatl("ANL/",r,".mch.anl")) &
+*/
+  GetBotRef(r.mch) &
+  si_ref(r.mch)
+ =>
+  si_0(r(p):t:(u,v,w));
+
+/*
+  ss_1(r)(bcatl("ANL/",r,".mch.anl")) &
+*/
+  GetBotRef(r.mch) &
+  si_ref(r.mch)
+ =>
+  ss_0(r(p):t:(u,v,w));
+
+  ss_0(r(s):t:(u,v,w))
+ =>
+  ss_0(R.r(s):t:(u,v,w));
+
+  si_0(?);
+
+  ss_0(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  sfip_1(X)(Z);
+
+  WriteDot &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  sfip_2(X)(l)
+ =>
+  sfip_1(X)(Z);
+
+  sfip_1(r)(bcatl("ANL/",r,".mch.anl"))
+ =>
+  sfip_0(r(p):t:(u,v,w));
+
+  sfip_1(R.r)(bcatl("ANL/",r,".mch.anl"))
+ =>
+  sfip_0(R.r(p):t:(u,v,w));
+
+  sfip_0(r(?):t:(u,v,w));
+
+  sfip_0(R.r(?):t:(u,v,w));
+
+  sfip_0(?)
+
+END
+
+&
+
+THEORY StoreSeenPropsX IS
+
+#define StoreSeenProps(x) bcall(((CATL;MAP;RULE)~;StoreSeenPropsX)~: \
+        (ssp_0 bsmap x))
+
+  ssp_2(x);
+  
+  bident(a) &
+  bcrer(TransC_all_properties_storeX,(a==b))
+ =>
+  ssp_2(a=b);
+
+  brule(TransC_all_properties_storeX.n,(a==b))
+ =>
+  ssp_2(a=b);
+
+  ssp_imp(r.mch);
+
+  ReadBotRef(i.imp) &
+  ssp_1(bcatl("ANL/",i,".imp.anl"))
+ =>
+  ssp_imp(r.mch);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ssp_1(Z);
+  
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ssp_2 bsmap H
+ =>
+  ssp_1(Z);
+
+  ssp_1(bcatl("ANL/",r,".mch.anl")) &
+  GetBotRef(r.mch) &
+  ssp_imp(r.mch)
+ =>
+  ssp_0(r(s):t:(u,v,w));
+
+  ssp_0(r(s):t:(u,v,w))
+ =>
+  ssp_0(R.r(s):t:(u,v,w));
+
+  ssp_0(?)
+
+END
+
+&
+
+
+
+
+
+THEORY TransC_parse_implementationX IS
+
+  ?;    /* 1. parameters */
+
+  ?;    /* 2. 0=>ANSIC 1=>non_ANSIC */
+
+  ?;    /* 3. C Compiler/Flags */
+
+  ?;    /* 4. Non-X Link Libraries */
+
+  ?;    /* 5. X Link Libraries */
+
+  ?;    /* 6. 0=>Motif 1=>Non-Motif */
+
+  InformCantConnect(".Bplf") &
+  PFZ
+ =>
+  load_Bplf;
+
+  bget(".Bplf",(z;x;a;b;c)) &
+  bcall(MODR:bmodr(TransC_parse_implementationX.6,z)) &    /* Interface_Option     */
+  bcall(MODR:bmodr(TransC_parse_implementationX.2,x)) &    /* Prog_Language_Option */
+  bcall(MODR:bmodr(TransC_parse_implementationX.3,a)) &    /* cc_compiler_str_num  */
+  bcall(MODR:bmodr(TransC_parse_implementationX.4,b)) &    /* cc_link_lib_str_num  */
+  bcall(MODR:bmodr(TransC_parse_implementationX.5,c))      /* cc_Xlink_lib_str_num */
+ =>
+  load_Bplf;
+
+  ReadTrlAbs(m.b) &
+  WriteDot &
+  StoreAllPropertiesConstants(k.imp) &
+  StoreVisSetConstNames(m.b) &
+  TranslateImp(m(p),bcatl(m,".g"),bcatl(m,".h"),bcatl(m,".c"))
+ =>
+  TransC_parse(k(p));
+
+  ReadTrlAbs(m.b) &
+  WriteDot &
+  StoreAllPropertiesConstants(k.imp) &
+  StoreVisSetConstNames(m.b) &
+  TranslateImp(m,bcatl(m,".g"),bcatl(m,".h"),bcatl(m,".c"))
+ =>
+  TransC_parse(k(?));
+
+
+
+
+  bcrer(TransC_initialisation_storeX,i)
+ =>
+  transc_store_initialisation(i);
+
+  transc_store_initialisation(?);
+
+  bcrer(TransC_properties_storeX,p)
+ =>
+  transc_store_properties(p);
+
+  transc_store_properties(?);
+
+  bcrer(TransC_sets_storeX,s)
+ =>
+  transc_store_sets(s);
+
+  transc_store_sets(?);
+
+  bcrer(TransC_sees_storeX,s)
+ =>
+  transc_store_sees(s);
+
+  transc_store_sees(?);
+
+  bcrer(TransC_imports_storeX,i)
+ =>
+  transc_store_imports(i);
+
+  transc_store_imports(?);
+
+
+  tss(?) == (?);
+
+  tss(r(s):t:(u,v,w)) == (r);
+
+  tss(r(?):t:(u,v,w)) == (r);
+
+  tss(R.r(s):t:(u,v,w)) == (R.r);
+
+  tss(R.r(?):t:(u,v,w)) == (R.r);
+
+
+  tsi(?) == (?);
+
+  tsi(r(s):t:(u,v,w)) == (r(s));
+
+  tsi(r(?):t:(u,v,w)) == (r);
+
+  tsi(R.r(s):t:(u,v,w)) == (R.r(s));
+
+  tsi(R.r(?):t:(u,v,w)) == (R.r);
+
+  tsi(?) == (?);
+
+
+  ReadBget(A) &
+  bsearch(?,A,B) &
+  bcrer(TransC_operations_param_renameX,(o:(P:=B))) 
+ =>
+  transc_op_param_rename3(o)(P);
+
+  bprintf(",_%",p)
+ =>
+  transc_op_param_rename2(p);
+
+  Connect("TMP/.Bcom") &
+  bprintf("?") &
+  transc_op_param_rename2 bsmap P &
+  bclose &
+  Bget("TMP/.Bcom") &
+  transc_op_param_rename3(o)(P)
+ =>
+  transc_op_param_rename1(o)(P);
+
+  transc_op_param_rename(?);
+
+  transc_op_param_rename(o|p|s);
+
+  transc_op_param_rename1(o)(i)
+ =>
+  transc_op_param_rename(o(i)|p|s);
+
+  transc_op_param_rename1(o)(r)
+ =>
+  transc_op_param_rename(r<--o|p|s);
+
+  transc_op_param_rename1(o)(bflat(r,i))
+ =>
+  transc_op_param_rename(r<--o(i)|p|s);
+
+
+
+
+
+/***
+  bcrer(TransC_operations_storeX,(K=PRE w THEN x END))
+ =>
+  transc_store_operations(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  bcrer(TransC_operations_storeX,(K=x))
+ =>
+  transc_store_operations(s;(?,I,J,K);u;v;(true|x);(y|z));
+***/
+
+
+  transc_store_operations(?);
+
+  bcrer(TransC_operations_storeX,(K=PRE w THEN x END))
+ =>
+  transc_store_operations(K|w|x);
+
+  bcrer(TransC_operations_storeX,(K=x))
+ =>
+  transc_store_operations(K|true|x);
+
+
+  WriteDot &
+  StoreOwnPV(k(l)) &
+/*** new 04:08:97 ***/
+  bcall(((CATL;MAP;RULE;MODR;RULE)~;StoreFormalImportsParamsX)~ : (st_const_0(C,?) bsmap G)) &
+  load_Bplf &
+  LoadTypeFile &
+  transc_store_initialisation(h) &
+  transc_store_operations(n) &
+  transc_op_param_rename(n) &
+  WriteDot &
+  transc_store_properties(G) &
+  StoreSeenProps(A) &
+  WriteDot &
+  transc_store_sets(C) &
+  transc_store_sees(tss bslmap A) &
+  WriteDot &
+  transc_store_imports(tsi bslmap b) &
+  StoreFormalImportsParams(b) &
+  StoreImportedESetsConsts(b) &
+  StoreSeenESetsConsts(A) &
+  TransC_parse(k(l))
+ =>
+  transc_store(h,n,G,C,A,b,k(l));
+
+  WriteDot &
+  StoreOwnPV(k(l)) &
+/*** new 04:08:97 ***/
+  bcall(((CATL;MAP;RULE;MODR;RULE)~;StoreFormalImportsParamsX)~ : (st_const_0(C,?) bsmap G)) &
+  load_Bplf &
+  LoadTypeFile &
+  transc_store_initialisation(h) &
+  transc_store_operations bsmap (N,n) &
+  transc_op_param_rename bsmap (N,n) &
+  WriteDot &
+  transc_store_properties(G) &
+  StoreSeenProps(A) &
+  WriteDot &
+  transc_store_sets(C) &
+  transc_store_sees(tss bslmap A) &
+  WriteDot &
+  transc_store_imports(tsi bslmap b) &
+  StoreFormalImportsParams(b) &
+  StoreImportedESetsConsts(b) &
+  StoreSeenESetsConsts(A) &
+  TransC_parse(k(l))
+ =>
+  transc_store(h,(N,n),G,C,A,b,k(l))
+
+END

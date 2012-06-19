@@ -1,0 +1,2236 @@
+/* Copyright (c) 1988-96, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+
+
+#include "GlobalDefs.src"
+
+
+
+
+#define InformNothingConfigured Writef(("\n  % % %\n",bsrv No berv,bsrv machines berv,bsrv configured berv))
+
+#define InformSearchUnsuccessful Writef(("\n  % %\n",bsrv Search berv,bsrv unsuccessful berv))
+
+#define InformFileAlreadyExists(x)  Writef(("\n    % already exists\n",bsrv x berv))
+
+#define InformAlreadyConfigured(x) Writef(("\n    % is already configured\n",bsrv x berv))
+
+#define InformNameAlreadyUsed(x) Writef(("\n    Name % is already used\n",bsrv x berv))
+
+#define InformNotIdentifier(x) Writef(("\n    % is not an identifier\n",bsrv x berv))
+
+#define InformDoesNotParse(x)  Writef(("\n    %\n\n    % does not parse\n",bwarn,x))
+
+#define InformCantWriteBerr Writef(("\n    %\n\n    Can't write to \".Berr\"\n",berr))
+
+#define InformErrorInvokingVi Writef(("\n    %\n\n    Error invoking vi\n",berr))
+
+
+
+#define SelectConstructFilesToBcom \
+        bcall(((WRITE;MODR;MAP;SelectConstructFilesToBcomX)~):scftbc)
+
+
+#define ShowMainOptions \
+       bcall(((CATL~;MAP;ARI;WRITE;FLAT;MODR;ShowMainOptionsX)~):so0)
+
+/*  REMOVE CATL when Toolkit3 & 4 menus done */
+#define ShowEnvironmentOptions \
+       bcall(((CATL~;MAP;ARI;WRITE;FLAT;MODR;ShowEnvironmentOptionsX)~):so0)
+
+#define ShowGeneratorOptions \
+       bcall(((CATL~;MAP;ARI;WRITE;FLAT;MODR;ShowGeneratorOptionsX)~):so0)
+
+#define ShowProverOptions \
+       bcall(((CATL~;MAP;ARI;WRITE;FLAT;MODR;ShowProverOptionsX)~):so0)
+
+#define ShowTranslatorOptions \
+       bcall(((CATL~;MAP;ARI;WRITE;FLAT;MODR;ShowTranslatorOptionsX)~):so0)
+
+#define ShowUtilitiesOptions \
+       bcall(((CATL~;MAP;ARI;WRITE;FLAT;MODR;ShowUtilitiesOptionsX)~):so0)
+
+
+
+#include "Toolkit_core.src"
+
+&
+
+#include "Utils.src"
+
+&
+
+#include "CreHtml.src"
+
+&
+
+#include "Introduce.src"
+
+&
+
+#include "Find.src"
+
+&
+
+#include "Export.src"
+
+&
+
+
+
+THEORY ParseX IS
+
+  ?;
+
+  GetJobs(X) &
+/* X & */
+  ClearJobs
+ =>
+  x;
+
+  GetJobs(?;X) &
+/***
+ X &
+***/
+  ClearJobs
+ =>
+  x;
+
+  GetJobs(X) &
+  bsearch((x:BT_BSEL:y),X,Y) &
+  ClearJobs
+ =>
+  x;
+
+  InformCantExecute(f)
+ =>
+  bshell(f);
+
+
+/********************** process stored fifo ******************/
+
+
+  process_stored_fifo1(?);
+
+  /***
+  add job request from motif
+  ***/
+  bnum(n) &
+  GetJobs(X) &
+  AddJob(X,(a:n:b))
+ =>
+  process_stored_fifo1(a:n:b);
+
+  /***
+  Remake - add Remake job requests from motif & get env
+  ***/
+  GetJobs(X) &
+  bsearch(?,a,b) &
+  AddJob(X,(b)) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_ENV_M,0,0))
+ =>
+  process_stored_fifo1(a|_);
+
+  ReadBfifoSto(a) &
+  process_stored_fifo1(a)
+ =>
+  process_stored_fifo;
+
+
+/********** Display Menu/Parse checked  ********************/
+
+/***
+GetCompletedJobs(C)&
+HERE((C))&
+***/
+  NoJobs &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  ClearAnl &
+  ClearCfg &
+  ClearUsr &
+  ClearDmu &
+  ClearLvl &
+  ClearRef &
+  ClearPrv &
+  ClearGen &
+  ClearUsrVHDL &
+  ClearIsPASPToolkit &
+  ClearIsVHDL &
+  bshell("touch .Blog") &  /* in case .Blog doesn't exist */
+  SetDontWriteToXTerm &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_CURR_ENV_M,0,0))
+ =>
+  run; 
+
+/*********************** Motif - Opt_25 ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_LST_FLG:0),X,Y) &
+  ModifyJobs((Y;(x:BT_LST_FLG:(x+7415)))) &
+  SetWriteToXTerm &
+  LoadToolkit(9)
+ =>
+  run;
+
+/*********************** Problem with toolkit binary ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_PROB_BINARY:0),X,Y) &     /* from BSession */
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_PROB_BINARY_M,0,0))
+ =>
+  run;
+
+/******************************* BT_QUERY_LNK ****************************/
+
+  brule(ParseX.1,L) &
+  bsearch(?,L,M) &
+  SetFromMotif &
+/***
+HERE((BT_QUERY_LNK_M:M))&
+***/
+  FifoWrite_NoStore((BT_QUERY_LNK_M,M,0))
+ =>
+  run_lnk2;
+
+  brule(ParseX.1,L) &
+  Bmodr(ParseX.1,(L;(k:0)))
+ =>
+  run_lnk1(k);
+
+  brule(ParseX.1,L) &
+  Bmodr(ParseX.1,(L;(k:0)))
+ =>
+  run_lnk1_PASP(k)(x);
+
+  brule(ParseX.1,L) &
+  Bmodr(ParseX.1,(L;(k:1)))
+ =>
+  run_lnk1_PASP(k)(MAIN;t;?;?;W;Y);      /* no input/no output */
+
+  IsPASPToolkit &                     /* single op MAIN */
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;MAIN;(k(?):m:R);n)) &
+  run_lnk1_PASP(k)(n)
+ =>
+  run_lnk1(k);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(?):m:R);n)) &
+  bsearch(main,(j,?),a) &
+  brule(ParseX.1,L) &
+  Bmodr(ParseX.1,(L;(k:1)))
+ =>
+  run_lnk1(k);
+
+  run_lnk(?);
+
+  Bget(("ANL/",k,".imp.anl")) &
+  run_lnk1(k)
+ =>
+  run_lnk(k.imp);
+
+  GetJobs(X) &
+  bsearch((x:BT_QUERY_LNK:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  Bmodr(ParseX.1,?) &
+/***
+HERE((BT_QUERY_LNK:x))&
+***/
+  bcall(((MAP;MODR)~;ParseX)~:run_lnk bsmap x) &
+  run_lnk2
+ =>
+  run;
+
+/*********************** Motif - commit new construct ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_CM_CFG_VHDL:y),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_CM_CFG_VHDL(y|x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_ENM_VHDL:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_ENM_VHDL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_IMP_VHDL:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_IMP_VHDL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_REF_VHDL:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_REF_VHDL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_MCH_VHDL:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_MCH_VHDL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_MCH:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_MCH(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_REF:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_REF(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_REF_ANL:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_REF_ANL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_REF_ANL_WITH_ENV:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  IntroduceNEW_REF_ANL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_IMP:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_IMP(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_IMP_ANL_WITH_ENV:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  IntroduceNEW_IMP_ANL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_BASE:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_BASE(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_ENUM:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_ENUM(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM_ANL_WITH_ENV:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  IntroduceNEW_ENUM_ANL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_ITF:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_ITF(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_ITF_ANL:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_ITF_ANL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ITF_ANL_WITH_ENV:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  IntroduceNEW_ITF_ANL(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_DOC:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_DOC(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_DOC_CFG_WITH_ENV:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  IntroduceNEW_DOC_CFG(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_NEW_DOC_CFG:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW_DOC_CFG(x)
+ =>
+  run;
+
+/*********************** Motif_Error ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_MOTIF_ERR_NO_BERR:0),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_ERR_M,x,0))
+ =>
+  run;
+
+/*********************** run_Bdmf ********************/
+
+
+  Writef(("\n  .Bdmf format error: %\n",x)) &
+  PFZ
+ =>
+  run_Bdmf1(x);
+
+  bnum(a) &
+  bnum(b) &
+  bnum(c) &
+  bnum(d) &
+  bstring(s) &
+  bstring(t) &
+  SetWriteToXTerm &
+  LoadToolkit(6)
+ =>
+  run_Bdmf1(a,b,c,d,s,t);
+
+  InformCantConnect(".Bdmf") &
+  PFZ
+ =>
+  run_Bdmf;
+
+  bget(".Bdmf",x) &
+  run_Bdmf1(x)
+ =>
+  run_Bdmf;
+
+
+/*********************** DOC ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_DOC:0),X,Y) &
+  run_Bdmf
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_DOC:0),X,Y) &
+  IsDmu(x) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_DOC_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_DOC:0)) &
+  store_env(y) &
+  run_Bdmf
+ =>
+  run;
+
+/***********************  LatexProof ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_LP:n),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(6)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b:BT_LP:n),X,Y) &
+  IsDmu(a.b.n.prf) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+/*********************** Load Flags from Motif ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_SET_FLAGS:0),X,Y) &
+  ModifyJobs(Y) &
+  LoadAndSetFlagsFromMotif
+ =>
+  run;
+
+/*********************** Utilities ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_UTILS:0),X,Y) &
+  ShowUtilitiesOptions
+ =>
+  run;
+
+/*********************** User Application ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_UAP:0),X,Y) &
+  bsearch((y:BT_UTILS:0),Y,Z) &
+  ModifyJobs(Z) &
+  SetWriteToXTerm &
+  LoadToolkit(19)
+ =>
+  run;
+
+/*********************** Export ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_EXP:0),X,Y) &
+  ModifyJobs(Y) &
+  ExportDirect(x)
+ =>
+  run;
+
+/*********************** Cre_SLIB ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_SLIB:y),X,Y) &
+  ModifyJobs((Y;(x:BT_CRE_SLIB:0))) &
+  store_env(y) &
+  SetWriteToXTerm &
+  LoadToolkit(24)
+ =>
+  run;
+
+/*********************** Safety Save ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_SAF_SVE:0),X,Y) &
+  SafetySaveDirect &
+  ModifyJobs(Y)
+ =>
+  run;
+
+/*********************** BShell ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_SHELL:0),X,Y) &
+  ModifyJobs(Y) &
+  bshell("$BKIT/BLIB/BShellFile&")
+ =>
+  run;
+
+/*********************** Find MOTIF ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_FIND_WITH_ENV:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  Find(x)
+ =>
+  run;
+
+/*********************** Generators ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_GEN:0),X,Y) &
+  ShowGeneratorOptions
+ =>
+  run;
+
+/*********************** Translators ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_TRN:0),X,Y) &
+  ShowTranslatorOptions
+ =>
+  run;
+
+/*********************** CIO ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CIOM:y),X,Y) &     /* after MiniRemake */
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CIO:y),X,Y) &      /* after MiniRemake */
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CIO_CIOM:0),X,Y) &
+  ModifyJobs(Y) &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  UnloadJobs &
+  bshell("touch .Blog") &  /* in case .Blog doesn't exist */
+  SetFromMotif &
+  FifoWrite_NoStore((BT_CIO_RMK_M,x,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CIOM:y),X,Y) &
+  SetDontWriteToXTerm &
+  Writef(("\n  Interface requires SLIB file_dump ...\n")) &
+  IntroduceSLIBConstructForce((?,file_dump)) &
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CIO:y),X,Y) &
+  SetDontWriteToXTerm &
+  Writef(("\n  Interface requires SLIB file_dump ...\n")) &
+  IntroduceSLIBConstructForce((?,file_dump)) &
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CIOM:y),X,Y) &
+  IsCfg(file_dump.mch) &
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CIO:y),X,Y) &
+  IsCfg(file_dump.mch) &
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CIOM_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_CIOM:0)) &
+  store_env(y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CIO_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_CIO:0)) &
+  store_env(y)
+ =>
+  run;
+
+/******************** Fin (PASP) *****************/
+
+  GetJobs(X) &
+  bsearch((x:BT_PASP_FIN:y),X,Y) &
+  store_env(y) &
+  ModifyJobs((Y;(x:BT_PASP_FIN:0))) &
+  run_Bplf
+ =>
+  run;
+
+/******************** Run (PASP) *****************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RUN:y),X,Y) &
+  store_env(y) &
+  ModifyJobs((Y;(x:BT_RUN:0))) &
+  run_Bplf
+ =>
+  run;
+
+/*********************** Link ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_LNK:0),X,Y) &
+  ModifyJobs(Y) &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  UnloadJobs &
+  bshell("touch .Blog") &  /* in case .Blog doesn't exist */
+  SetFromMotif &
+  FifoWrite_NoStore((BT_LNK_M,x,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_LNK_WITH_IPT:y),X,Y) &
+  store_env(y) &
+  ModifyJobs((Y;(x:BT_LNK_WITH_IPT:0))) &
+  run_Bplf
+ =>
+  run;
+
+
+/*********************** Cre VHDL SLIB ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_VHDL_SLIB_2:1),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_CRE_VHDL_SLIB_2_M,x,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_VHDL_SLIB_2:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(38)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_VHDL_SLIB_1:1),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_CRE_VHDL_SLIB_1_M,x,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_VHDL_SLIB_1:0),X,Y) &
+  LoadToolkit(1038) /* No XTerm - Other than Toolkit1 */
+ =>
+  run;
+
+/*********************** VHDL Translate ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL_VHDL_WITH_IPT_SEES:y),X,Y) &
+  store_env(y) &
+  ModifyJobs((Y;(x:BT_TRL_VHDL_WITH_IPT_SEES:0))) &
+  SetWriteToXTerm &
+  LoadToolkit(36)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL_VHDL_WITH_IPT_SEES:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(36)
+ =>
+  run;
+
+/************** CreHtml (Whitespace edit) ************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_HTML:0),X,Y) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1002)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_HTML_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_CRE_HTML:0)) &
+  store_env(y) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1002)
+ =>
+  run;
+
+
+/********************* Cre PASP SLIB ******************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CRE_PASP_SLIB:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(35)
+ =>
+  run;
+
+/*********************** Translate ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL_WITH_IPT_SEES:0),X,Y) &
+  ModifyJobs(Y) &
+  Writef(("\n  .Bplf format error: %\n",n))
+ =>
+  run_Bplf1(n);
+
+  SetWriteToXTerm &
+  LoadToolkit(35)
+ =>
+  run_Bplf1(Prog_Language_Flag_PASP);
+
+  SetWriteToXTerm &
+  LoadToolkit(7)
+ =>
+  run_Bplf1(Prog_Language_Flag_C);
+
+  SetWriteToXTerm &
+  LoadToolkit(7)
+ =>
+  run_Bplf1(Prog_Language_Flag_ANSI_C);
+
+  GetJobs(X) &
+  bsearch((x:BT_LNK_WITH_IPT:0),X,Y) &
+  ModifyJobs(Y) &
+  InformCantConnect(".Bplf")
+ =>
+  run_Bplf;
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL_WITH_IPT_SEES:0),X,Y) &
+  ModifyJobs(Y) &
+  InformCantConnect(".Bplf")
+ =>
+  run_Bplf;
+
+  bget(".Bplf",(z;n;a;b;c)) &
+  run_Bplf1(n)
+ =>
+  run_Bplf;
+
+
+  GetJobs(X) &
+  bsearch((x:BT_NML_TRL:0),X,Y) &     /* after MiniRemake */
+  ModifyJobs((Y;(x:BT_TRL:0);(x:BT_NML:0))) &
+  SetWriteToXTerm &
+  LoadToolkit(2)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL:0),X,Y) &   /* not re-analysed after mini-remake */
+  ModifyJobs(Y)             /* shouldn't bee needed, but just in case ... */
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL:0),X,Y) &
+  IsAnl(x) &
+  ModifyJobs(Y) &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  UnloadJobs &
+  bshell("touch .Blog") &  /* in case .Blog doesn't exist */
+  SetFromMotif &
+  FifoWrite_NoStore((BT_TRL_M,x,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL:0),X,Y) &
+  IsTrl(x) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL_WITH_IPT_SEES:y),X,Y) &
+  store_env(y) &
+  ModifyJobs((Y;(x:BT_TRL_WITH_IPT_SEES:0))) &
+  run_Bplf
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TRL_WITH_IPT_SEES:0),X,Y) &
+  run_Bplf
+ =>
+  run;
+
+/**************** DMU parse error **************/
+
+
+  bshell(bcatl("cat .Berr >> ",f)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_DMU_PRASE_ERROR_M:f))
+ =>
+  run_parse_error(a.b)(f);
+
+  bget(f,x)  /* load .Berr */
+ =>
+  run_parse_error(a.b)(f);
+
+  GetJobs(X) &
+  bsearch((x:BT_DMU_PARSE_ERR:f),X,Y) &
+  ModifyJobs(Y) &
+  run_parse_error(x)(f)
+ =>
+  run;
+
+
+/*********************** DMU ********************/
+
+
+  GetJobs(X) &
+  bsearch((x:BT_DMU_RMK:n),X,Y) &
+  ModifyJobs(Y) &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  UnloadJobs &
+  bshell("touch .Blog") &  /* in case .Blog doesn't exist */
+  SetFromMotif &
+  FifoWrite_NoStore((BT_DMU_M,x,n))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b:BT_DMU_RMK:n),X,Y) &
+  IsDmu(a.b.n.prf) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_DMU:L),X,Y) &
+  run_Bdmf
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_DMU:L),X,Y) &
+  IsDmu(x) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_DMU_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_DMU:0)) &
+  store_env(y)
+ =>
+  run;
+
+/*********************** Provers ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_PRV:0),X,Y) &
+  ShowProverOptions
+ =>
+  run;
+
+/***********************  PrintProof ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_PFP_RMK:n),X,Y) &
+  ModifyJobs(Y) &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  UnloadJobs &
+  bshell("touch .Blog") &  /* in case .Blog doesn't exist */
+  SetFromMotif &
+  FifoWrite_NoStore((BT_PFP_M,x,n))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PUP:0),X,Y) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1013)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PNP_BTL:n),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(13)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PNP_BTL_M:y),X,Y) &
+  ModifyJobs(Y) &
+  FifoWrite_NoStore((BT_PNP_BTL_M,x,y))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PNP:n),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(13)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PFP_WITH_ENV_BTL:y),X,Y) &
+  AddJob(Y,(x:BT_PFP_BTL:0)) &
+  store_env(y) &
+  SetWriteToXTerm &
+  LoadToolkit(13)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PFP_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_PFP:0)) &
+  store_env(y) &
+  SetWriteToXTerm &
+  LoadToolkit(13)
+ =>
+  run;
+
+/***********************  BToolProver ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_RLD_FINI:y),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_BTL_RLD_M,x,y))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_RUN:y),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_BTL_M,x,y))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_RLD_REQ:y),X,Y) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1039)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_FINI:y),X,Y) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1039)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_INI:y),X,Y) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1039)
+ =>
+  run;
+
+/***********************  InterProver ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_INP_ASK_FINI:y),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_INP_ASK_FINI_M,x,y))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_INP:y),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(31)
+ =>
+  run;
+
+/***********************  BToolProver - auto ( 1 ) ********************/
+
+  SetWriteToXTerm &
+  LoadToolkit(39)
+ =>
+  run_BT_BTL_AUP_INI(a.b.n);
+
+  IsLvl(a.b(n)) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1039)
+ =>
+  run_BT_BTL_AUP_INI(a.b.n);
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_AUP_INI:y),X,Y) & /* keep above BT_AUP */
+  run_BT_BTL_AUP_INI(x)
+ =>
+  run;
+
+/***********************  AutoProver ********************/
+
+  GetJobs(X) &
+  bsearch((a.b.n:BT_AUP:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(3)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.n:BT_AUP:0),X,Y) &
+  IsLvl(a.b(N)) &
+  btest(N>n) &
+  ModifyJobs(Y)                     /* quietly remove job */
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_AUP_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_AUP:0)) &
+  store_env(y)
+ =>
+  run;
+
+/***********************  BToolProver - auto ( 2 ) ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_AUP:y),X,Y) & /* keep below BT_AUP */
+  ModifyJobs(Y) &
+  SetFromMotif &
+  bshell("touch .Blog") &
+  FifoWrite_NoStore((BT_BTL_AUP_M,x,y))
+ =>
+  run;
+
+/*************  BToolProver before AutoProver ************/
+
+  GetJobs(X) &
+  bsearch((x:BT_BTL_AUP_INI_FIRST:y),X,Y) &
+  AddPriorityJob(Y,(x:BT_BTL_AUP_INI:y)) &
+  run_BT_BTL_AUP_INI(x)
+ =>
+  run;
+
+/***********************  Refresh ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RFRSH:o),X,Y) &
+  ModifyJobs(Y) &
+  Writef(("\n  Menu refreshed\n"))
+ =>
+  run;
+
+/***********************  RemoveLevel ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RMV_LEV:n),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(3)
+ =>
+  run;
+
+/*********************** Main ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_MAIN:0),X,Y) &
+  Writef(("\n  Main Menu\n")) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_MAIN:0),X,Y) &
+  bsearch((y:BT_UTILS:0),Y,Z) &
+  Writef(("\n  Main Menu\n")) &
+  ModifyJobs(Z)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_MAIN:0),X,Y) &
+  bsearch((y:BT_GEN:0),Y,Z) &
+  Writef(("\n  Main Menu\n")) &
+  ModifyJobs(Z)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_MAIN:0),X,Y) &
+  bsearch((y:BT_PRV:0),Y,Z) &
+  Writef(("\n  Main Menu\n")) &
+  ModifyJobs(Z)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_MAIN:0),X,Y) &
+  bsearch((y:BT_TRN:0),Y,Z) &
+  Writef(("\n  Main Menu\n")) &
+  ModifyJobs(Z)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CLO_M:0),X,Y) &
+  ModifyJobs(Y) &
+  CloseDirectMotif(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CLO:0),X,Y) &
+  ModifyJobs(Y) &
+  CloseDirect(x)
+ =>
+  run;
+
+/*********************** Status ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_SGL_STA:0),X,Y) &
+  ModifyJobs(Y) &
+  ShowCfgStatus(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_STA:0),X,Y) &
+  ModifyJobs(Y) &
+  StatusDirect
+ =>
+  run;
+
+/******************* IntroduceTLIBConstruct ****************/
+
+  GetJobs(X) &
+  bsearch((x:BT_TLIB:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceTLIBConstructMotif
+ =>
+  run;
+
+
+/******************* IntroduceSRCConstruct ****************/
+
+  GetJobs(X) &
+  bsearch((L:BT_SRC:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  IntroduceSRCConstructMotif(L)
+ =>
+  run;
+
+/******************* IntroduceNEWConstruct ****************/
+
+  GetJobs(X) &
+  bsearch((x:BT_NEW:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceNEW
+ =>
+  run;
+
+/*********************** ResetPpf ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RSTP:0),X,Y) &
+  ModifyJobs(Y) &
+  ResetPpfDirect
+ =>
+  run;
+
+/*********************** ResetCde ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RSTC:0),X,Y) &
+  ModifyJobs(Y) &
+  ResetCdeDirect
+ =>
+  run;
+
+/*********************** ResetDoc ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RSTD:0),X,Y) &
+  ModifyJobs(Y) &
+  ResetDocDirect
+ =>
+  run;
+
+/*********************** Reset ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RST:0),X,Y) &
+  ModifyJobs(Y) &
+  ResetDirect
+ =>
+  run;
+
+/*********************** Remove ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RMV:0),X,Y) &
+  ModifyJobs(Y) &
+  RemoveDirect
+ =>
+  run;
+
+/*********************** Close All ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CLO_ALL_EDT:0),X,Y) &
+  ModifyJobs(Y) &
+  CloseEditProcesses
+ =>
+  run;
+
+/*********************** Rem Unused LIB ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_REM_UNU_LIB:0),X,Y) &
+  ModifyJobs(Y) &
+  RemoveUnusedLIB
+ =>
+  run;
+
+/************************ Rename ***********************/
+
+  GetJobs(X) &
+  bsearch((0:BT_RNM:0),X,Y) &
+  ModifyJobs(Y) &
+  RenameDirect
+ =>
+  run;
+
+/****************** Remove Single ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RMV_SGL:0),X,Y) &
+  ModifyJobs(Y) &
+  RemoveDirectSingle(x)
+ =>
+  run;
+
+/*************** Remove Single Enforced *****************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RMV_SGL_EFD:0),X,Y) &
+  ModifyJobs(Y) &
+  RemoveDirectSingleEnforced(x)
+ =>
+  run;
+
+/********************** Delayed Enum *******************/
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM_DELAY:0),X,Y) &
+  AddJob(Y,(x:BT_ENUM:0)) &
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+/*********************** POG ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_POG:0),X,Y) &
+  AddJob(X,(x:BT_NML:0))            /* analysis required */
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_POG:0),X,Y) &
+  IsAnl(x) &
+  SetWriteToXTerm &
+  LoadToolkit(5)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_POG_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_POG:0)) &
+  store_env(y)
+ =>
+  run;
+
+/*************** Animator - check ops ***************/
+
+  SetFromMotif &
+  FifoWrite_NoStore((BT_CHK_FOR_OPS_M,1,a))
+ =>
+  chk_ops1(a.b)(O);
+
+  SetFromMotif &
+  FifoWrite_NoStore((BT_CHK_FOR_OPS_M,0,a))
+ =>
+  chk_ops1(a.b)(?);
+
+  InformCantConnect(z) &
+  PFZ
+ =>
+  chk_ops(Z)(z);
+
+  bget(z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  chk_ops1(Z)(j)
+ =>
+  chk_ops(Z)(z);
+
+  GetJobs(X) &
+  bsearch((a.b:BT_CHK_FOR_OPS:0),X,Y) &
+  ModifyJobs(Y) &
+  chk_ops(a.b)(bcatl("ANL/",a,".",b,".anl"))
+ =>
+  run;
+
+/*********************** Animator ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EMPTY_SCRIPT:0),X,Y) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1009)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EMPTY_SCRIPT_M:0),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_ANM_EMPTY_SCRIPT_M,x,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EXE_FROM_INI_M:0),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_ANM_EXE_FROM_INI_M,x,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EXE_FROM_INI:y),X,Y) &
+  SetDontWriteToXTerm &
+  LoadToolkit(1009)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EXE_AUTO_FINI:y),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_ANM_EXE_AUTO_FINI_M,y,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EXE_STEP_FINI:0),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_ANM_EXE_STEP_FINI_M,0,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_FINI:0),X,Y) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EXE_AUTO_WITH_ENV:y),X,Y) &
+  store_env(y) &
+  AddJob(Y,(x:BT_ANM_EXE_AUTO:0)) &
+  SetWriteToXTerm &
+  LoadToolkit(9)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EXE_STEP_WITH_ENV:y),X,Y) &
+  store_env(y) &
+  AddJob(Y,(x:BT_ANM_EXE_STEP:0)) &
+  SetWriteToXTerm &
+  LoadToolkit(9)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_WITH_ENV:y),X,Y) &
+  store_env(y) &
+  AddJob(Y,(x:BT_ANM:0)) &
+  SetWriteToXTerm &
+  LoadToolkit(9)
+ =>
+  run;
+
+/*********************** Normaliser ********************/
+
+  bstring(k) &
+  ModifyCfg(a) &
+  ModifyAnl(b) &
+  ModifyUsr(c) &
+  ModifyDmu(d) &
+  ModifyLvl(e) &
+  ModifyRef(f) &
+  ModifyPrv(g) &
+  ModifyGen(h) &
+  ModifyTrl(i) &
+  ModifyLnk(j) &
+  ModifyEnvEditorString(k) &
+  ModifyUsrVHDL(l) &
+  ModifyIsPASPToolkit(m) &
+  ModifyIsVHDL(n)
+ =>
+  store_env(a|b|c|d|e|f|g|h|i|j|k|l|m|n);
+
+  GetJobs(X) &
+  bsearch((x:BT_NML:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(2)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_NML_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_NML:0)) &
+  store_env(y) &
+  SetWriteToXTerm &
+  LoadToolkit(2)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TYP:0),X,Y) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANL:0),X,Y) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x.imp:BT_NML:0),X,Y) &
+  IsAnl(x.imp) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x.ref:BT_NML:0),X,Y) &
+  IsAnl(x.ref) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x.mch:BT_NML:0),X,Y) &
+  IsAnl(x.mch) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+
+/*********************** GenBase **********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_GBMI_REM:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(16)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.bse:BT_GBMI:0),X,Y) &
+/*  SetDontWriteToXTerm & */
+  Writef(("\n    GenBase: %.ops not generated\n",a)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.bse:BT_GBMI:0),X,Y) &
+  IsCfg(a.ops) &
+  SetWriteToXTerm &
+  LoadToolkit(16)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.bse:BT_GBMI_WITH_ENV:y),X,Y) &
+  AddJob(Y,(a.bse:BT_GBMI:0)) &
+  store_env(y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_GBO:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(16)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_GBO_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_GBO:0)) &
+  store_env(y) &
+  SetWriteToXTerm &
+  LoadToolkit(16)
+ =>
+  run;
+
+/*********************** Enum ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM_WITH_ENV:y),X,Y) &
+  AddJob(Y,(x:BT_ENUM:0)) &
+  store_env(y) &
+  SetWriteToXTerm &
+  LoadToolkit(4)
+ =>
+  run;
+
+/*********************** VHDL Enumerate ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM_VHDL_WITH_ENV:y),X,Y) &
+  store_env(y) &
+  ModifyJobs((Y;(x:BT_ENUM_VHDL_WITH_ENV:0))) &
+  SetWriteToXTerm &
+  LoadToolkit(37)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM_VHDL_WITH_ENV:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(37)
+ =>
+  run;
+
+/*********************** Enum-Normaliser ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_ENUM_NML:0),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(2)
+ =>
+  run;
+
+/******************* IntroduceTLIBConstructForce ****************/
+
+  GetJobs(X) &
+  bsearch((x:BT_TLIB_FRC:c),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceTLIBConstructForce(x,c)
+ =>
+  run;
+
+  IfWriteToXTerm &
+  GetJobs(X) &
+  bsearch((x:BT_TLIB_FRC:c),X,Y) &
+  LoadToolkit(32)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_TLIB_WITH_ENV:y),X,Y) &
+  store_env(y) &
+  ModifyJobs(Y) &
+  IntroduceTLIBConstructForceEnv(x)
+ =>
+  run;
+
+/******************* IntroduceSLIBConstructForce ****************/
+
+  GetJobs(X) &
+  bsearch(((x,y):BT_LIB_FRC:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceSLIBConstructForce((x,y))
+ =>
+  run;
+
+  IfWriteToXTerm &
+  GetJobs(X) &
+  bsearch(((x,y):BT_LIB_FRC:0),X,Y) &
+  LoadToolkit(32)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch(((x):BT_LIB_FRC_WITH_ENV:y),X,Y) &
+  ModifyJobs(Y) &
+  store_env(y) &
+  IntroduceSLIBConstructForce((x))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch(((x):BT_SUB_LIB_FRC:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceSLIBConstructForce((x))
+ =>
+  run;
+
+/******************* IntroduceVHDLSLIBConstructForce ****************/
+
+  GetJobs(X) &
+  bsearch((x:BT_VHDL_SLIB_HTX:1),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(36)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_VHDL_SLIB_HTX:0),X,Y) &
+  ModifyJobs((Y;(x:BT_VHDL_SLIB_HTX:1))) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_XTERM_REQD_M,"B-VHDL-Introduce-SLIB",0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch(((x):BT_VHDL_LIB_FRC_WITH_ENV:y),X,Y) &
+  store_env(y) &
+  ModifyJobs(Y) &
+  IntroduceVHDLSLIBConstructForce((x))
+ =>
+  run;
+
+  IfWriteToXTerm &
+  GetJobs(X) &
+  bsearch(((x):BT_VHDL_LIB_FRC_WITH_ENV:y),X,Y) &
+  store_env(y) &
+  LoadToolkit(32)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch(((x):BT_VHDL_LIB_FRC_WITH_ENV:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceVHDLSLIBConstructForce((x))
+ =>
+  run;
+
+  IfWriteToXTerm &
+  GetJobs(X) &
+  bsearch(((x):BT_VHDL_LIB_FRC_WITH_ENV:0),X,Y) &
+  LoadToolkit(32)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch(((x):BT_SUB_VHDL_LIB_FRC:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceVHDLSLIBConstructForce((x))
+ =>
+  run;
+
+  IfWriteToXTerm &
+  GetJobs(X) &
+  bsearch(((x):BT_SUB_VHDL_LIB_FRC:0),X,Y) &
+  LoadToolkit(32)
+ =>
+  run;
+
+/******************* IntroduceSRCConstructForce ****************/
+
+  GetJobs(X) &
+  bsearch((x:BT_SRC_FRC:0),X,Y) &
+  ModifyJobs(Y) &
+  IntroduceSRCConstructForce(x)
+ =>
+  run;
+
+  IfWriteToXTerm &
+  GetJobs(X) &
+  bsearch((x:BT_SRC_FRC:0),X,Y) &
+  LoadToolkit(32)
+ =>
+  run;
+
+/*********************** CommitEdit ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_EDT:0),X,Y) &
+  ModifyJobs(Y) &
+  CommitEditDirect
+ =>
+  run;
+
+/*********************** CommitConstruct ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CMT_CSTR:0),X,Y) &
+  ModifyJobs(Y) &
+  CommitConstructDirect(x)
+ =>
+  run;
+
+/*********************** CloseHelp ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CLO_HLP:0),X,Y) &
+  ModifyJobs(Y) &
+  CloseHelpDirect
+ =>
+  run;
+
+/*********************** OpenHelp ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_OPN_HLP:0),X,Y) &
+  ModifyJobs(Y) &
+  HelpDirect
+ =>
+  run;
+
+/*********************** ClosePallette ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_CLO_PAL:0),X,Y) &
+  ModifyJobs(Y) &
+  ClosePaletteDirect
+ =>
+  run;
+
+/*********************** OpenPallette ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_OPN_PAL:0),X,Y) &
+  ModifyJobs(Y) &
+  PaletteDirect
+ =>
+  run;
+
+
+/*********************** Open ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_OPN:0),X,Y) &
+  ModifyJobs(Y) &
+  OpenDirect(x)
+ =>
+  run;
+
+/*********************** CheckParse ********************/
+
+  GetJobs(X) &
+  bsearch((0:BT_CK_PARSE_BCOM:0),X,Y) &
+  ModifyJobs(Y) &
+  CheckBBcomParse
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CK_PARSE:1),X,Y) &
+  ModifyJobs(Y) &
+  CheckProofParse(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_CK_PARSE:0),X,Y) &
+  ModifyJobs(Y) &
+  CheckParse(x)
+ =>
+  run;
+
+/******************* ContinueMiniRemake *****************/
+
+  GetJobs(X) &
+  AddPriorityJob(X,(j))
+ =>
+  run_mini_rmk_add_priority_job(j);
+
+  run_mini_rmk_add_priority_job(?);
+
+  bsearch(?,j,k) &
+  run_mini_rmk_add_priority_job(k)
+ =>
+  run_mini_rmk_add_priority_job(j);
+
+  ReadCurrentJob(j) &
+  ModifyCurrentJob(?) &
+  run_mini_rmk_add_priority_job(j)
+ =>
+  run_mini_rmk;
+
+  ModifyJobs((?;j))
+ =>
+  run_mini_rmk_mod_jobs(j);
+
+  ModifyJobs((?))
+ =>
+  run_mini_rmk_mod_jobs(?);
+
+  bsearch(?,j,k) &
+  run_mini_rmk_mod_jobs(k)
+ =>
+  run_mini_rmk_mod_jobs(j);
+
+  GetJobs(?) &
+  ReadCurrentJob(j) &
+  ModifyCurrentJob(?) &
+  run_mini_rmk_mod_jobs(j)
+ =>
+  run_mini_rmk;
+
+  GetJobs(X) &
+  bsearch((x:BT_CNT_MINI_REMK:y),X,Y) &
+  store_env(y) &
+  ModifyJobs(Y) &
+  run_mini_rmk
+ =>
+  run;
+
+/************************* MiniRemake ***********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_MINI_RMK_M:0),X,Y) &
+  ModifyJobs(Y) &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  UnloadJobs &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_MINI_RMK_M,x,0))
+ =>
+  run;
+
+/*********************** SKIP ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_SKIP:0),X,Y) &
+/*  SetWriteToXTerm & */                 /*** <<<<<<<<<<-------- why? ***/
+  ModifyJobs(Y)
+ =>
+  run;
+
+/*********************** NOOP ********************/
+
+  GetJobs(X) &
+  bsearch((0:BT_NOOP:0),X,Y) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+/*********************** Remove all jobs ********************/
+
+  GetJobs(X) &
+  bsearch((x:BT_RM_ALL_JOBS:0),X,Y) &
+  ModifyCurrentJob(?) &
+  ModifyJobs(?)
+ =>
+  run;
+
+/*********************** Load Environment ********************/
+
+  GetJobs(X) &
+  bsearch((0:BT_ENV:e),X,Y) &
+  ModifyJobs(Y) &
+  store_env(e)
+ =>
+  run;
+
+/*************** Intro SLIB PASP HTX *************/
+
+  GetJobs(X) &
+  bsearch((x:BT_PASP_SLIB_HTX:1),X,Y) &
+  SetWriteToXTerm &
+  LoadToolkit(1035) /* No XTerm - Other than Toolkit1 */
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PASP_SLIB_HTX:0),X,Y) &
+  ModifyJobs((Y;(x:BT_PASP_SLIB_HTX:1)))
+ =>
+  run;
+
+/****************************************************************/
+/***************      CHECK INTERIM_COMP_JOBS     ***************/
+/****************************************************************/
+
+  ReadAppendedCompletedJobsCount(N) &  /* bget(".Bcjt",N) */
+  btest(N>0) &
+  UnloadCompletedJobs &
+  ClearCompletedJobs &
+  ResetAppendedCompletedJobsCount &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_INTERIM_COMP_JOBS_M,0,0))
+ =>
+  run;
+
+/****************************************************************/
+/**********************      CHECK PARSE      *******************/
+/****************************************************************/
+
+  GetJobs(X) &
+  bsearch((0:BT_BCOM_NOTPARSE:0),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_BCOM_PARSE_M,1,0))
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((0:BT_NOTPARSE:0),X,Y) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_PARSE_M,1,0))
+ =>
+  run;
+
+  ParseJob(11) &                 /* BBcom doesn't parse */
+  ClearParseJob &
+  bshell("cp .Berr .Bcom") &
+  GetJobs(X) &
+  AddJob(X,(0:BT_BCOM_NOTPARSE:0)) &
+  LoadToolkit(1)                 /* reload to reset! */
+ =>
+  run;
+
+  ParseJob(1) &                  /* doesn't parse */
+  ClearParseJob &
+  bshell("cp .Berr .Bcom") &
+  GetJobs(X) &
+  AddJob(X,(0:BT_NOTPARSE:0)) &
+  LoadToolkit(1)                 /* reload to reset! */
+ =>
+  run;
+
+  ParseJob(10) &                 /* BBcom parses */
+  ClearParseJob &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_BCOM_PARSE_M,0,0))
+ =>
+  run;
+
+  ParseJob(0) &                  /* parses */
+  ClearParseJob &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_PARSE_M,0,0))
+ =>
+  run;
+
+
+/****************************************************************/
+/**************      CHECK FOR XTERM BACKGROUND     *************/
+/****************************************************************/
+
+  GetJobs(X) &
+  bsearch((s:BT_XTM_BGD:0),X,Y) &
+  bshell(bcatl("xterm -fn -*-courier-bold-r-*--12-* -sl 2500 -sb -fg black -bg Ivory1 -title ",s," -e $BKIT/BLIB/WaitX & \n echo $! > .Bpix")) &
+  ModifyJobs(Y) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_XTM_BGD_M,0,0))
+ =>
+  run;
+
+/****************************************************************/
+/**************      CHECK FOR CANT_DISCH_GOAL      *************/
+/****************************************************************/
+
+  GetJobs(X) &
+  bsearch((0:BT_CDG:0),X,Y) &
+  ModifyCurrentJob(?) &
+  ModifyJobs(?) &
+  ClearParseJob &
+  ModifyCompletedJobs(?) &
+  SetFromMotif &
+  FifoWrite_NoStore((BT_CANT_DISCH_GOAL_M,0,0))
+ =>
+  run;
+
+/****************************************************************/
+/********************      CHECK FOR NEW DIR     ****************/
+/****************************************************************/
+
+  GetJobs(X) &
+  bsearch((0:BT_NEW_DIR:0),X,Y) &
+  ModifyJobs(?) &
+  ModifyCompletedJobs(?) &
+  PrintToBses(998) &
+  bhalt
+ =>
+  run;
+
+/****************************************************************/
+/*********************      CHECK FOR QUIT     ******************/
+/****************************************************************/
+
+  GetJobs(X) &
+  bsearch((x:BT_MOTIF_PANIC_QUIT:y),X,Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_MOTIF_QUIT:y),X,Y) &
+  SetQuitFlag &
+  ModifyJobs(?) &
+  ModifyCompletedJobs(?) &
+  FifoWrite_NoRead((BT_QUIT_M,0,(y+1837))) &
+  PrintToBses(0) &
+  bhalt
+ =>
+  run
+
+END
+
+&
+
+THEORY ParseInitX IS
+
+  0;                           /* loop flag (bredo) */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  ModifyToolkitNumber(1)
+ =>
+  store_toolkit_number ;          /* needed by Toolkit_core */
+
+  /***
+  No Motif flags set
+  ***/
+/*  SetDontWriteToXTerm & */
+  run &
+  bredo                   /* 1$toolkit$1$1 */
+ =>
+  run0;
+
+  /***
+  FromMotif is set
+  ***/
+  FromMotifIsSet &
+  ResetFromMotif &
+  process_stored_fifo &
+  bredo                   /* 1$toolkit$1$1 */
+ =>
+  run0;
+
+/****************************************************************************/
+
+
+  /***
+  ini sequence
+  ***/
+
+  /***
+  second - pwd not ok
+  ***/
+  FifoWrite_NoRead((BT_INI_M,0,0)) &  /* pwd doesn't parse */
+  ModifyJobs(?) &
+  ModifyCompletedJobs(?) &
+  PrintToBses(0) &
+  bhalt
+ =>
+  0$toolkit$0$0$0;
+
+  /***
+  second - pwd ok
+  ***/
+  bget(".BBcom",x) &                      /* pwd parses ok */
+  bshell("echo '1$toolkit$1$1' > .Benv") &
+  SetDontWriteToXTerm &
+  FifoWrite_NoStore((BT_INI_M,1,0)) &
+  bredo                                   /* 0$toolkit$0$0 */
+ =>
+  0$toolkit$0$0$0;
+
+#define test_fifo bcall((DED;ARI;test_fifoX)~:(rrr=>tt(1)))
+
+  /***
+  first
+  ***/
+  bmodr(ParseInitX.1,1) &
+  bmodr(ParseEnvX.2,1) &
+  bshell("echo blank0? > .BBcom") &
+  bshell("echo `pwd` >> .BBcom") &
+/***
+  test_fifo &
+***/
+  0$toolkit$0$0$0
+ =>
+  0$toolkit$0$0;
+
+  /***
+  third & subsequent (bredo)
+  ***/
+
+  brule(ParseInitX.1,1) &
+  run0
+ =>
+  0$toolkit$0$0;
+
+/****************************************************************************/
+
+  /***
+  not ini sequence
+  ***/
+
+  bmodr(ParseInitX.1,1) &  /* first loop (not ini) */
+  bmodr(ParseEnvX.2,1) &
+  LoadJobs &
+  run0
+ =>
+  1$toolkit$1$1;
+
+  brule(ParseInitX.1,1) &  /* subsequent loops (bredo) */
+  run0
+ =>
+  1$toolkit$1$1
+
+END
+
+/***
+&
+
+THEORY test_fifoX IS
+
+  bfiforead(a) &
+  tt(N+1)
+ =>
+  tt(N);
+
+  bfiforead(a) &
+  bstatistics
+ =>
+  tt(2000);
+
+  bfiforead(a) &
+  bstatistics &
+  tt(2)
+ =>
+  tt(1)
+
+END
+
+***/

@@ -1,0 +1,140 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_UiArrO1">
+  <TITLE>The Rename_UiArrO1 machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+V1.0
+  VERSION:          B-Toolkit Beta 4.32
+  DATE:             18/02/99
+***/
+
+/*
+Description: Machine adapted from Rename_UiArrO1.
+This is a single object machine.
+
+History :
+180299 v0.01 : Created.
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>             Rename_UiArrO1(ub,init_elem)	
+/* ub - the lenght of the object */	
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>         1&lt;=ub & ub<=65535 & init_elem <= 255
+  
+<A NAME="SEES"><B>SEES</B></A>                <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="PASP_TYPE.mch.html#MACHINE">PASP_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>
+
+  Rename_UiAO1_arr,	/* the single array */
+  Rename_UiAO1_nxt	/* array pointer */
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_UiAO1_arr : 1..ub --&gt; <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A> &
+  Rename_UiAO1_nxt : 1..ub
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  <B>BEGIN</B>
+    <B>ANY</B> array <B>WHERE</B>
+      array : 1..ub --&gt; <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A> &
+      ran(array) = {<A HREF="PASP_TYPE.mch.html#CONSTANTS">n2b</A>(init_elem)}
+    <B>THEN</B>
+      Rename_UiAO1_arr := array
+    <B>END</B> ||
+    Rename_UiAO1_nxt := 1		/* wraps around. */
+  <B>END</B>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  /******************  Reset **************/
+
+  /* Reset */
+  <A NAME="OPNAME!Rename_UiAO1_RST">Rename_UiAO1_RST</A> =
+    <B>BEGIN</B> Rename_UiAO1_arr :: 1..ub --&gt; <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A> || Rename_UiAO1_nxt := 1 <B>END</B>;
+
+  /******************  Query functions **********/
+
+  /* View contents of location. */
+  vv <-- <A NAME="OPNAME!Rename_UiAO1_VAL">Rename_UiAO1_VAL</A>(ii : <A HREF="PASP_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>PRE</B>
+      <A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii) : 1..ub
+    <B>THEN</B>
+      vv := Rename_UiAO1_arr(<A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii))
+    <B>END</B>;
+
+  /* Next available storage location */
+  nn <-- <A NAME="OPNAME!Rename_UiAO1_NXT">Rename_UiAO1_NXT</A> =
+    <B>BEGIN</B>
+      nn := <A HREF="PASP_TYPE.mch.html#CONSTANTS">n2u</A>(Rename_UiAO1_nxt)
+    <B>END</B>;
+
+ /******************  Modify functions ***********************/
+
+  /* Store vv at location ii and set next location to ii+1 */
+  <A NAME="OPNAME!Rename_UiAO1_STO">Rename_UiAO1_STO</A>(ii : <A HREF="PASP_TYPE.mch.html#SETS">UNSIGNED</A> & vv : <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B>
+     <A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii) : 1..ub
+   <B>THEN</B> 
+     Rename_UiAO1_arr(<A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii)) := vv ||
+     <B>IF</B> <A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii) < ub <B>THEN</B>
+       Rename_UiAO1_nxt := <A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii) + 1	/* Next available position recorded. */
+     <B>ELSE</B> 
+       Rename_UiAO1_nxt := 1		/* Wraps around. */
+     <B>END</B>
+   <B>END</B>;
+
+  /* Store vv at `next' location and inc next location. */
+  <A NAME="OPNAME!Rename_UiAO1_STO_NXT">Rename_UiAO1_STO_NXT</A>(vv :<A HREF="PASP_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B>
+      Rename_UiAO1_arr(Rename_UiAO1_nxt) := vv ||
+      <B>IF</B> Rename_UiAO1_nxt < ub <B>THEN</B>
+        Rename_UiAO1_nxt := Rename_UiAO1_nxt + 1	/* Next available position recorded.*/
+      <B>ELSE</B> 
+        Rename_UiAO1_nxt := 1				/* Wraps around. */
+      <B>END</B>
+    <B>END</B>;
+
+  /* fill store. */
+  <A NAME="OPNAME!Rename_UiAO1_FILL">Rename_UiAO1_FILL</A>(vv : <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B>
+      <B>ANY</B> array <B>WHERE</B>
+        array : 1..ub --&gt; <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A> &
+        ran(array) = {vv}
+      <B>THEN</B>
+        Rename_UiAO1_arr := array
+      <B>END</B> ||
+      Rename_UiAO1_nxt := 1		/* wraps around. */
+    <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:08:07 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

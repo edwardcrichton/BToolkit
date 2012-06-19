@@ -1,0 +1,277 @@
+IMPLEMENTATION
+
+  Person1I
+
+REFINES
+
+  Person1
+
+SEES
+
+  Bool_TYPE, String_TYPE
+
+IMPORTS
+
+/*"
+We import a string object machine to hold people's names; we
+allow each name (string) to be, on average, of length $25$; thus
+{\em maxobj\/} will be set to {\em max\_person\/} and {\em maxmem\/}
+will be the product of {\em max\_person\/} and $25$:
+"*/
+
+  Name_str_obj(max_person , max_person*25),
+  Name_str_ctx,
+
+/*"
+We import a function object machine to hold the people's
+names tokens ({\em Name\_STROBJ\/}, provided by the above string
+object machine), their ages ({\em NAT\/}) and sex ({\em SEX\/});
+thus {\em VALUE\/} is the union of these sets and we require $3$,
+fields, and so set {\em maxfld\/} to $3$ and {\em maxobj\/} to the
+product of {\em max\_person\/} and $3$:
+"*/
+
+  Person1_fnc_obj(Name_STROBJ\/NAT\/SEX , 3 , max_person*3),
+  Person1_fnc_ctx,
+
+/*"
+We also import a file io machine for persistent storage facilities:
+"*/
+
+  Person1_file_dump
+
+CONSTANTS
+
+/*"
+The constants will determine the field positions in the function
+object machine:
+"*/
+
+  name_idx, age_idx, sex_idx
+
+PROPERTIES
+
+/*"
+The abstract and concrete `object' sets are equated
+"*/
+
+  PERSON = Person1_FNCOBJ &
+
+/*"
+The fields will hold the name string token, age and sex, in that order:
+"*/
+
+  name_idx = 1 &
+  age_idx = 2 &
+  sex_idx = 3
+
+INVARIANT
+
+/*"
+The relationship between the abstract and concrete variables is now defined:
+"*/
+
+  person = Person1_fnctok &
+
+/*"
+For each {\em person\/} (token) the {\em name\/} token is stored in the 
+{\em name\_idx\/} location of the function object machine, and the name
+string itself is stored in that name token of the string object machine:
+"*/
+
+  !pp.(pp:dom(Person1_fncstruct) => name_idx:dom(Person1_fncstruct(pp))) &
+
+  !pp.(pp:dom(Person1_fncstruct) => (
+          Person1_fncstruct(pp)(name_idx): dom(Name_strstruct))
+          ) &
+
+  !pp.(pp:dom(person_name) => (
+          person_name(pp) = Name_strstruct(Person1_fncstruct(pp)(name_idx)))
+          ) &
+
+/*"
+{\em age\/} is stored in the {\em age\_idx\/} location of the function
+object machine:
+"*/
+
+  !pp.(pp:dom(Person1_fncstruct) => age_idx:dom(Person1_fncstruct(pp))) &
+
+  !pp.(pp:dom(person_age) => person_age(pp) = Person1_fncstruct(pp)(age_idx)) &
+
+/*"
+{\em sex\/} is stored in the {\em sex\_idx\/} location of the function
+object machine:
+"*/
+
+  !pp.(pp:dom(Person1_fncstruct) => sex_idx:dom(Person1_fncstruct(pp))) &
+
+  !pp.(pp:dom(person_sex) => person_sex(pp) = Person1_fncstruct(pp)(sex_idx))
+
+OPERATIONS
+
+/*"
+{\bf Add\_person}\\
+To add a new person, we create a new string object with
+{\em name\_inp\/}; if successful (it may fail because we haven't
+allowed for sufficient memory when importing the string object
+machine) we create a new function token; if successful we then
+store the newly-created string token, {\em age\_inp\/} and
+{\em sex\_inp\/} in the appropriate fields for that function token,
+and if the creation of the function token failed then we must
+kill the string token that was created:
+"*/
+
+  rep <-- Add_person(name_inp,age_inp,sex_inp) =
+    VAR rep_0,Name_str_tok,Person1_fnc_tok IN
+      rep_0,Name_str_tok<--Name_NEW_STR_OBJ(name_inp);
+      IF rep_0=TRUE THEN
+        rep_0,Person1_fnc_tok<--Person1_CRE_FNC_OBJ;
+        IF rep_0=TRUE THEN
+          Person1_STO_FNC_OBJ(Person1_fnc_tok,name_idx,Name_str_tok);
+          Person1_STO_FNC_OBJ(Person1_fnc_tok,age_idx,age_inp);
+          Person1_STO_FNC_OBJ(Person1_fnc_tok,sex_idx,sex_inp)
+        ELSE
+          Name_KIL_STR_OBJ(Name_str_tok)
+        END
+      END;
+      rep:=rep_0
+    END;
+
+
+/*"
+{\bf Get\_person\_details}\\
+To find a person's age and sex for a given name input, we
+iterate through the function object machine, using the
+{\em FIRST\/} and {\em NEXT\/} operations:
+"*/
+
+  rep,age_out,sex_out <-- Get_person_details(name_inp) =
+    VAR found,loc,Person1_fnc_tok,Name_str_tok IN
+      found:=FALSE;
+
+/*"
+We get the first function token; if the location returned is
+$0$, there are no people currently stored, and so we set {\em rep\/}
+to {\em FALSE\/}, otherwise we we look up the string token and check to see
+whether the {\em name\_inp\/} is literally equal to the value of the
+string corresponding to that string token in the string object machine,
+and enter the loop.
+"*/
+
+      loc,Person1_fnc_tok<--Person1_FIRST_FNC_OBJ;
+      IF loc /= 0 THEN
+        Name_str_tok<--Person1_VAL_FNC_OBJ(Person1_fnc_tok,name_idx);
+        found<--Name_EQL_LIT_STR_OBJ(Name_str_tok,name_inp);
+/*"
+
+The loop continues until either the location is $1$ (the last valid
+function token returned by the {\em NEXT\_FNC\_OBJ\/} operation)
+or {\em found\/} is {\em TRUE\/}. At each cycle we get the next
+function token, the corresponding string token and test for literal
+string equality:
+"*/
+
+        WHILE loc/=1 & found=FALSE DO
+          loc,Person1_fnc_tok<--Person1_NEXT_FNC_OBJ(loc,Person1_fnc_tok);
+          Name_str_tok<--Person1_VAL_FNC_OBJ(Person1_fnc_tok,name_idx);
+          found<--Name_EQL_LIT_STR_OBJ(Name_str_tok,name_inp)
+        INVARIANT
+          Person1_fnc_tok: dom(person_name) &
+          Person1_fnc_tok = Person1_locate(loc) &
+          loc: 1..card(Person1_fnctok) &
+          name_idx: dom(Person1_fncstruct(Person1_locate(loc))) &
+          (found=FALSE => !ii.(ii:loc..card(Person1_fnctok) => (
+             not(Name_strstruct(Person1_fncstruct(Person1_locate(ii))(name_idx))=name_inp)
+             ))) &
+          (found=TRUE => (
+              Name_strstruct(Person1_fncstruct(Person1_locate(loc))(name_idx)) = name_inp
+              ))             
+        VARIANT
+          loc
+        END;
+        IF found=TRUE THEN
+          rep:=TRUE;
+          age_out<--Person1_VAL_FNC_OBJ(Person1_fnc_tok,age_idx);
+          sex_out<--Person1_VAL_FNC_OBJ(Person1_fnc_tok,sex_idx)
+        ELSE
+          rep:=FALSE;
+          age_out:=0;
+          sex_out:=male
+        END
+      ELSE
+        rep:=FALSE;
+        age_out:=0;
+        sex_out:=male
+      END
+    END;
+
+/*"
+{\bf Remove\_Person1}\\
+This operation is simliar to the previous one, but this time when
+we have found a match with {\em name\_inp\/} we use the {\em KIL\/}
+operations of both object machines to free memory that is no longer
+being used:
+"*/
+
+  rep<--Remove_person(name_inp) =
+    VAR found,loc,Person1_fnc_tok,Name_str_tok IN
+      found:=FALSE;
+      loc,Person1_fnc_tok<--Person1_FIRST_FNC_OBJ;
+      IF loc /= 0 THEN
+        Name_str_tok<--Person1_VAL_FNC_OBJ(Person1_fnc_tok,name_idx);
+        found<--Name_EQL_LIT_STR_OBJ(Name_str_tok,name_inp);
+        WHILE loc/=1 & found=FALSE DO
+          loc,Person1_fnc_tok<--Person1_NEXT_FNC_OBJ(loc,Person1_fnc_tok);
+          Name_str_tok<--Person1_VAL_FNC_OBJ(Person1_fnc_tok,name_idx);
+          found<--Name_EQL_LIT_STR_OBJ(Name_str_tok,name_inp)
+        INVARIANT
+          Person1_fnc_tok: dom(person_name) &
+          Person1_fnc_tok = Person1_locate(loc) &
+          loc: 1..card(Person1_fnctok) &
+          name_idx: dom(Person1_fncstruct(Person1_locate(loc))) &
+          (found=FALSE => !ii.(ii:loc..card(Person1_fnctok) => (
+             not(Name_strstruct(Person1_fncstruct(Person1_locate(ii))(name_idx))=name_inp)
+             ))) &
+          (found=TRUE => (
+              Name_strstruct(Person1_fncstruct(Person1_locate(loc))(name_idx))=name_inp
+              ))
+        VARIANT
+          loc
+        END;
+        IF found = TRUE THEN
+          Name_KIL_STR_OBJ(Name_str_tok);
+          Person1_KIL_FNC_OBJ(Person1_fnc_tok)
+        END
+      END;
+        rep:=found
+     END;
+
+/*"
+{\bf Save\_Person1}\\
+To save, we use the {\em SAV\/} operations of the object machines:
+"*/
+
+  Save_Person1 =
+    VAR rep IN
+      rep <-- Person1_open_write_dump;
+      Name_SAV_STR_OBJ;
+      Person1_SAV_FNC_OBJ;
+      rep <-- Person1_close_dump
+    END;
+
+/*"
+{\bf Restore\_Person1}\\
+To restore, we use the {\em RST\/} operations of the object machines:
+"*/
+
+  Restore_Person1 =
+    VAR rep IN
+      rep <-- Person1_open_read_dump;
+      Name_RST_STR_OBJ;
+      Person1_RST_FNC_OBJ;
+      rep <-- Person1_close_dump
+    END
+
+
+END
+

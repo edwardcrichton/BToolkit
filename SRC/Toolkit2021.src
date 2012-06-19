@@ -1,0 +1,2118 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+#define  ClearPOGeneratorError    bcall(MODR:bmodr(POGeneratorErrorX.1,0))
+
+#define  FlagPOGeneratorError     bcall(MODR:bmodr(POGeneratorErrorX.1,1))
+
+
+#define InformSubstitutionErrorMsg(x,y) Writef(("\n\n    Operation %\n\n      Can't simplify substitution:\n\n      %\n",bsrv x berv,bsrv y berv))
+
+
+#define OpNotInScope(x)  Writef(("\n      Operation % not in scope\n",bsrv o berv))
+
+#define InformRelLhsSubstitutionError(x,y,z) Writef(("\n\n    % Substitution Error:\n\n      %\n\n    Repetition of % in variable list \n",bsrv x berv,bsrv y berv,bsrv z berv))
+
+
+
+#define GarbageCollect(i) bcall((GarbageCollectX;ARI;MODR): gc(i))
+
+
+#define ReadPOBCount(x)     brule(AddPOBX.1,x)
+
+
+
+#define WriteInterim(x,y) \
+       bcall(((CATL;RULE;MODR;WRITE)~;WriteInterimX)~:wi0(x)(y))
+
+
+
+THEORY POGeneratorErrorX IS 0 END &
+
+
+THEORY ReplaceInvariantX IS
+
+  brule(LoadDotTheoriesX.8,I) &
+  [s]I
+ =>
+  [s]?;
+
+  brule(LoadDotTheoriesX.8,I) &
+  (c=>[s]I)
+ =>
+  (c=>[s]?);
+
+  brule(LoadDotTheoriesX.8,I) &
+  (b=>(c=>[s]I))
+ =>
+  (b=>(c=>[s]?));
+
+  brule(LoadDotTheoriesX.8,I) &
+  (a=>(b=>(c=>[s]I)))
+ =>
+  (a=>(b=>(c=>[s]?)));
+
+
+  brule(LoadDotTheoriesX.8,I) &
+  [s][t]I
+ =>
+  [s][t]?;
+
+  brule(LoadDotTheoriesX.8,I) &
+  (c=>[s][t]I)
+ =>
+  (c=>[s][t]?);
+
+  brule(LoadDotTheoriesX.8,I) &
+  (b=>(c=>[s][t]I))
+ =>
+  (b=>(c=>[s][t]?));
+
+  brule(LoadDotTheoriesX.8,I) &
+  (a=>(b=>(c=>[s][t]I)))
+ =>
+  (a=>(b=>(c=>[s][t]?)));
+
+
+  brule(LoadDotTheoriesX.8,I) &
+  [s]not([t]not(I))
+ =>
+  [s]not([t]not(?));
+
+  brule(LoadDotTheoriesX.8,I) &
+  (c=>[s]not([t]not(I)))
+ =>
+  (c=>[s]not([t]not(?)));
+
+  brule(LoadDotTheoriesX.8,I) &
+  (b=>(c=>[s]not([t]not(I))))
+ =>
+  (b=>(c=>[s]not([t]not(?))));
+
+  brule(LoadDotTheoriesX.8,I) &
+  (a=>(b=>(c=>[s]not([t]not(I)))))
+ =>
+  (a=>(b=>(c=>[s]not([t]not(?)))));
+
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY ConstructAlphaConversionX IS
+
+/*
+  perform alpha conversion: @a.b || c to @d.([a:=d]b || c) (d not free in c)
+
+  input: ConstructAlphaConversion(a,b,c)
+    a a variable list
+    b a generalised substitution
+    c a generalised substitution
+  result
+    @a.b || c to @d.([a:=d]b || c) (d not free in c)
+    stored in ConstructAlphaConversionX.1
+*/
+
+#define ConstructAlphaConversion(a,b,c) \
+  bcall(((NEWV;ConstructAlphaConversionX)~;REV;ConstructAlphaConversionX): \
+      cac1(a)(a)(?)(b)(c))
+
+
+  ?;                     /* for result */
+
+  bcall((ARI;SUB;MODR):bmodr(ConstructAlphaConversionX.1,(@a.([v:=a]b || c))))
+ =>
+  cac4(v)(a,?)(b)(c);
+
+  cac3(v)(a,bnewv(c,x))(d)(e)
+ =>
+  cac3(v)(a,c)(d)(e);
+
+  c\e &
+  cac4(v)(brev(a,c))(d)(e)
+ =>
+  cac3(v)(a,c)(d)(e);
+
+  cac3(v)(c,bnewv(a,x))(d)(e)
+ =>
+  cac1(v)(a)(c)(d)(e);
+
+  a\e &
+  cac4(v)(brev(c,a))(d)(e)
+ =>
+  cac1(v)(a)(c)(d)(e);
+
+  cac2(v)(a)(b,bnewv(c,x))(d)(e)
+ =>
+  cac2(v)(a)(b,c)(d)(e);
+
+  c\e &
+  cac1(v)(a)(b,c)(d)(e)
+ =>
+  cac2(v)(a)(b,c)(d)(e);
+
+  cac2(v)(a)(c,bnewv(b,x))(d)(e)
+ =>
+  cac1(v)(a,b)(c)(d)(e);
+
+
+  b\e &
+  cac1(v)(a)(c,b)(d)(e)
+ =>
+  cac1(v)(a,b)(c)(d)(e)
+
+END
+
+&
+
+THEORY SimplifyHypX IS
+
+  ?;
+
+  brule(SimplifyHypX.1,a) &
+  bcall(MODR: bmodr(SimplifyHypX.1,?)) &
+  ((a&?)=>b)
+ =>
+  ________gJoal____(b);
+
+  brule(SimplifyHypX.1,true) &
+  bcall(MODR: bmodr(SimplifyHypX.1,?)) &
+  b
+ =>
+  ________gJoal____(b);
+
+/*
+  brule(SimplifyHypX.1,false) &                   /? discharged by pog !!! ?/
+  bcall(MODR: bmodr(SimplifyHypX.1,?))
+ =>
+  ________gJoal____(b);
+*/
+
+  bmodr(SimplifyHypX.1,a)
+ =>
+  __________hUyp____(a);
+
+/***
+HERE(("SimplifyHyp for goal":(b)))&PrintARule(StandardizeX.1)&
+***/
+  bcall((((((StandardizeX~;RewriteToFalseOrTrueX~;(RewriteNonHypLogic1X;FLAT)~)~;RewriteHypLogic1X~;RewriteNonHypLogic2X;RewriteHypLogic2X;FLAT~)~;(OnePointRewriteX;SUB)~;(OnePointX;SUB)~;FLAT;GEN;ARI)~;DED)~;SimplifyHypX;MODR): __________hUyp____(a)) &
+  ________gJoal____(b)
+ =>
+  (a=>b)
+
+END
+
+&
+
+THEORY DischargeEnumMembershipX IS
+
+  GeneratingNonTrivialPOB &
+  brule(EnumerateX.N,(binhyp(ctx(m)) => S == {E})) &
+  binhyp(ctx(m)) &
+  bsearch(e,(E,?),F)
+/***
+&HERE((ctx(m):e:S))
+***/
+ =>
+  e:S
+
+END
+
+&
+
+THEORY DischargeExistX IS
+
+/***
+moved to SetOfRules
+***/
+
+  bsearch(true,b,c) &
+  (#a.c)
+ =>
+  (#a.b);
+
+  bsearch(?,b,c) &
+  (#a.c)
+ =>
+  (#a.b);
+
+  bsearch(true,a,c) &
+  (#c.b)
+ =>
+  (#a.b);
+
+  bsearch(?,a,c) &
+  (#c.b)
+ =>
+  (#a.b)
+
+END
+
+&
+
+THEORY FactorX IS
+
+  ?;   /* 1. non-factor variable list */
+
+  ?;   /* 2. factor variable */
+
+  ?;   /* 3. non-factored preds (X) */
+
+  ?;   /* 4. factored preds (Y) */
+
+  ?;   /* 5. all predicates */
+
+
+/* HERE((5:1))& */
+  brule(FactorX.5,b) &
+  bmodr(FactorX.5,?) &
+  bmodr(FactorX.1,?) &
+  bmodr(FactorX.2,?) &
+  bmodr(FactorX.3,?) &
+  bmodr(FactorX.4,?) &
+  bcall((DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:(#A.b))   /* prev is old goal */
+ =>
+  factor1(A);
+
+/* HERE((5:2))& */
+  bident(x) &
+  brule(FactorX.5,b) &
+  bmodr(FactorX.1,y) &
+  bmodr(FactorX.2,x) &
+  bmodr(FactorX.3,?) &
+  bmodr(FactorX.4,?) &
+  factor bsmap b &
+  factor_res(y,x)
+ =>
+  factor1(x,y);
+
+/* HERE((5:3))& */
+  bsearch(s,A,t) &
+  brule(FactorX.5,b) &
+  bmodr(FactorX.1,t) &
+  bmodr(FactorX.2,s) &
+  bmodr(FactorX.3,?) &
+  bmodr(FactorX.4,?) &
+  factor bsmap b &
+  factor_res(t,s)
+ =>
+  factor1(A);
+
+/* HERE((5:4))& */
+  factor1(A,a)
+ =>
+  factor_res(A,a);                   /* nothing factored */
+
+/* HERE((5:5))& */
+  brule(FactorX.3,X) &    /* some factored */
+  brule(FactorX.4,Y) &
+  a\X &
+  A\Y &
+  bsearch(?,Y,W) &
+  bsearch(?,X,Z) &
+  bmodr(FactorX.4,?) &
+  bmodr(FactorX.1,?) &
+  bmodr(FactorX.2,?) &
+  bmodr(FactorX.3,?) &
+  bmodr(FactorX.4,?) &
+  (#a.W) &
+  (#A.Z)
+ =>
+  factor_res(A,a);
+
+/* HERE((5:6))& */
+  brule(FactorX.3,?) &    /* everything factored */
+  brule(FactorX.4,Y) &
+  brule(FactorX.5,b) &
+  bmodr(FactorX.5,?) &
+  bmodr(FactorX.1,?) &
+  bmodr(FactorX.2,?) &
+  bmodr(FactorX.3,?) &
+  bmodr(FactorX.4,?) &
+  gpoc6(h => #a.b)
+ =>
+  factor_res(A,a);
+
+/* HERE((5:7))& */
+  brule(FactorX.4,?) &    /* nothing factored */
+  factor1(A,a)
+ =>
+  factor_res(A,a);
+
+
+
+/* HERE((5:8))& */
+  brule(FactorX.3,X) &
+  bmodr(FactorX.3,(X&b))
+ =>
+  factor(b);
+
+/* HERE((5:9))& */
+  brule(FactorX.1,A) &
+  brule(FactorX.2,a) &
+  brule(FactorX.3,X) &
+  brule(FactorX.4,Y) &
+  A\b &
+  a\X &
+  bmodr(FactorX.4,(Y&b))
+ =>
+  factor(b);
+
+/* HERE((5:10))& */
+  brule(FactorX.4,Y) &
+  bsearch(b,Y,Z)                   /* duplicate */
+ =>
+  factor(b);
+
+/* HERE((5:11))& */
+  brule(FactorX.3,X) &
+  bsearch(b,X,Z)                   /* duplicate */
+ =>
+  factor(b);
+
+
+/* HERE((5:12))& */
+  bmodr(FactorX.5,b) &
+  bmodr(FactorX.1,A) &
+  bmodr(FactorX.2,a) &
+  bmodr(FactorX.3,?) &
+  bmodr(FactorX.4,?) &
+  factor bsmap b &
+  factor_res(A,a)
+ =>
+  fctr(#(A,a).b)
+
+END
+
+&
+
+THEORY ORtbdX END &
+
+THEORY ORdX END &
+
+THEORY OrFlagX IS
+
+#define SetOrFlag     bcall(MODR: bmodr(OrFlagX.1,1))
+
+#define ClearOrFlag   bcall(MODR: bmodr(OrFlagX.1,0))
+
+#define OrFlagSet     brule(OrFlagX.1,1)
+
+#define OrFlagNotSet  brule(OrFlagX.1,0)
+
+ 0
+
+END
+
+&
+
+THEORY DisjStoX END &
+
+
+THEORY CheckOrX IS
+
+  bsearch(a,b,c) 
+ =>
+  (a=>b) == (a=>c);
+
+  (a=>(b=>c)) == (bflat(a&b)=>c);
+
+  (a&(b&c)) == (a&b&c);
+
+  not(a&b) == (not(a) or not(b))
+
+END
+
+&
+
+THEORY OnePointX IS
+
+/*****
+  Apply one-point rule
+*****/
+
+/* HERE((3:1))& */
+  bsearch((a=a),b,c) &
+  (#a.c)
+ =>
+  (#a.b);
+
+
+/* HERE((3:2))& */
+  bsearch((x=y),b,c) &               /* rotate */
+  (#a.(c&(x=y)))
+ =>
+  (#a.b);
+
+
+/* HERE((3:3))& */
+  bsearch((x=a),b,c) &
+  a\x &
+  [a:=x]c
+ =>
+  (#a.b);
+
+/* HERE((3:4))& */
+  bsearch((a=x),b,c) &
+  a\x &
+  [a:=x]c
+ =>
+  (#a.b);
+
+
+/* HERE((3:5))& */
+  bsearch((y=x),b,c) &
+  x\y &
+  bsearch(x,a,s) &
+  (#s.[x:=y]c)
+ =>
+  (#a.b);
+
+/* HERE((3:6))& */
+  bsearch((x=y),b,c) &
+  x\y &
+  bsearch(x,a,s) &
+  (#s.[x:=y]c)
+ =>
+  (#a.b)
+
+END
+
+ &
+
+THEORY FreeX IS
+
+
+ /*****
+   Free quantified predicates
+ *****/
+
+
+ /* rules to catch `old goal' */
+
+/* HERE((4:1))& */
+   bcall((FLAT;DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:(#a.bflat(x&y)))
+  =>
+   po_free3(a)(x)(y);
+
+/* HERE((4:2))& */
+   bcall((FLAT;DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:(#a.bflat(x&y)))
+  =>
+   po_free2(a)(x)(y);
+
+/* HERE((4:3))& */
+   bcall((FLAT;DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:(#a.bflat(x&y&z)))
+  =>
+   po_free1(a)(x)(y)(z);
+
+
+
+/* HERE((4:4))& */
+   bcall((DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:x)
+  =>
+   po_free7(x);
+
+
+/* HERE((4:5))& */
+   bcall((DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:x)
+  =>
+   po_free6(x);
+
+/* HERE((4:6))& */
+   fctr(#(A,a).b)
+  =>
+   po_free6(#(A,a).b);
+
+/* HERE((4:7))& */
+   x
+  =>
+   po_free6(x);
+
+/* HERE((4:8))& */
+   po_free6(true);
+
+/* HERE((4:9))& */
+   binhyp(not(b={}))
+  =>
+   po_free6(#a.(a:b));
+
+
+
+
+/* HERE((4:10))& */
+   bcall((DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:x)
+  =>
+   po_free5(x);
+
+/* HERE((4:11))& */
+   fctr(#(A,a).b)
+  =>
+   po_free5(#(A,a).b);
+
+/* HERE((4:12))& */
+   x
+  =>
+   po_free5(x);
+
+/* HERE((4:13))& */
+   po_free5(true);
+
+/* HERE((4:14))& */
+   binhyp(not(b={}))
+  =>
+   po_free5(#a.(a:b));
+
+
+
+
+
+/* HERE((4:15))& */
+   bsearch(true,s,t) &
+   bcall((DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:(#t.x))
+  =>
+   po_free4(s)(x);
+
+/* HERE((4:16))& */
+   bsearch(true,s,t) &
+   po_free6(#t.x)
+  =>
+   po_free4(s)(x);
+
+/* HERE((4:17))& */
+   bsearch(?,s,t) &
+   bcall((DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:(#t.x))
+  =>
+   po_free4(s)(x);
+
+/* HERE((4:18))& */
+   bsearch(?,s,t) &
+   po_free6(#t.x)
+  =>
+   po_free4(s)(x);
+
+
+
+/* HERE((4:19))& */
+   x
+  =>
+   po_free4(true)(x);      /* nothing quantified */
+
+/* HERE((4:20))& */
+   x
+  =>
+   po_free4(?)(x);         /* nothing quantified */
+
+/* HERE((4:21))& */
+   po_free4(s,b)(x)
+  => 
+   po_free3(b)(s)(x);
+
+/* HERE((4:22))& */
+   b\x &
+   po_free4(s)(x)
+  => 
+   po_free3(b)(s)(x);
+
+/* HERE((4:23))& */
+   po_free3(a)(s,b)(x)
+  => 
+   po_free3(a,b)(s)(x);
+
+/* HERE((4:24))& */
+   b\x &
+   po_free3(a)(s)(x)
+  => 
+   po_free3(a,b)(s)(x);
+
+/* HERE((4:25))& */
+   po_free2(a)(x)(y);
+
+/* HERE((4:26))& */
+   po_free3(a)(?)(x) &
+   y
+  =>
+   po_free2(a)(x)(y);
+
+/* HERE((4:27))& */
+   bcall((DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:(#a.x))
+  =>
+   po_free2(a)(x)(true);    /* nothing freed */
+
+/* HERE((4:28))& */
+   bcall((DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~:(#a.x))
+  =>
+   po_free2(a)(x)(?);       /* nothing freed */
+
+/* HERE((4:29))& */
+   po_free5(#a.x)
+  =>
+   po_free2(a)(x)(true);    /* nothing freed */
+
+/* HERE((4:30))& */
+   po_free5(#a.x)
+  =>
+   po_free2(a)(x)(?);       /* nothing freed */
+
+/* HERE((4:31))& */
+   po_free3(a)(?)(x)
+  =>
+   po_free2(a)(x)(true);    /* nothing freed */
+
+/* HERE((4:32))& */
+   po_free3(a)(?)(x)
+  =>
+   po_free2(a)(x)(?);       /* nothing freed */
+
+/* HERE((4:33))& */
+   y
+  =>
+   po_free2(a)(true)(y);    /* nothing quantified */
+
+/* HERE((4:34))& */
+   y
+  =>
+   po_free2(a)(?)(y);       /* nothing quantified */
+
+/* HERE((4:35))& */
+   bsearch(true,y,t) &
+   po_free2(a)(x)(t)
+  =>
+   po_free2(a)(x)(y);
+
+/* HERE((4:36))& */
+   bsearch(?,y,t) &
+   po_free2(a)(x)(t)
+  =>
+   po_free2(a)(x)(y);
+
+/* HERE((4:37))& */
+   bsearch(true,x,s) &
+   po_free2(a)(s)(y)
+  =>
+   po_free2(a)(x)(y);
+
+/* HERE((4:38))& */
+   bsearch(?,x,s) &
+   po_free2(a)(s)(y)
+  =>
+   po_free2(a)(x)(y);
+
+/* HERE((4:39))& */
+   po_free2(a)(x&c)(y)
+  =>
+   po_free1(a)(c)(x)(y);
+
+/* HERE((4:40))& */
+   a\c &
+   po_free2(a)(x)(y&c)
+  =>
+   po_free1(a)(c)(x)(y);
+
+/* HERE((4:41))& */
+   po_free1(a)(b)(x&c)(y)
+  =>
+   po_free1(a)(b&c)(x)(y);
+
+/* HERE((4:42))& */
+   a\c &
+   po_free1(a)(b)(x)(y&c)
+  =>
+   po_free1(a)(b&c)(x)(y);
+
+/* HERE((4:43))& */
+   po_free1(a)(b)(?)(?)
+  =>
+   (#a.b)
+
+ END
+
+ &
+
+ THEORY ExistenceX IS
+
+   bsearch((a:SCALAR),P,Q) &
+   a\Q &
+   (#(A).(Q))
+  =>
+   (#(A,a).(P));
+
+/* HERE((1:1))& */
+   bsearch((a:NAT1),P,Q) &
+   a\Q &
+   (#(A).(Q))
+  =>
+   (#(A,a).(P));
+
+/* HERE((1:2))& */
+   bsearch((a:NAT),P,Q) &
+   a\Q &
+   (#(A).(Q))
+  =>
+   (#(A,a).(P));
+
+/* HERE((1:8))& */
+   bsearch(true,P,Q) &
+   (#a.(Q))
+  =>
+   (#a.(P))
+
+ END
+
+&
+
+THEORY OnePointRewriteX IS
+
+/* HERE((2:1))& */
+  bsearch((x=y),b,c)               /* rotate */
+ =>
+  (#a.b) == (#a.(c&(x=y)));
+
+/* HERE((2:2))& */
+  bsearch((a=a),b,c)
+ =>
+  (#a.b) == (#a.c);
+
+/* HERE((2:11))& */
+  a\b
+ =>
+  (#(A,a).b) == (#A.b);
+
+/* HERE((2:12))& */
+  a\b
+ =>
+  (#a.b) == (b);
+
+/* HERE((2:13))& */
+  bsearch((a=x),b,c) &
+  a\x
+ =>
+  (#a.b) == [a:=x]c;
+
+/* HERE((2:14))& */
+  bsearch((x=a),b,c) &
+  a\x
+ =>
+  (#a.b) == [a:=x]c;
+
+/* HERE((2:15))& */
+  bsearch((y=x),b,c) &
+  x\y &
+  bsearch(x,a,s)
+ =>
+  (#a.b) == (#s.[x:=y]c);
+
+/* HERE((2:16))& */
+  bsearch((x=y),b,c) &
+  x\y &
+  bsearch(x,a,s)
+ =>
+  (#a.b) == (#s.[x:=y]c)
+
+END
+
+&
+
+THEORY AddPOBX IS
+
+#define AddPOB(x) bcall(((SUB;ARI;MODR;WRITE)~;AddPOBX)~ : ap(x))
+
+#define FiniPOB       bcall(((MODR;WRITE)~;AddPOBX)~ : fp)
+
+
+#define CurrentlyProcessingChoice    brule(ProcessChoiceX.1,1)
+
+#define ProcessChoiceIni bcall(((MODR;WRITE)~;ProcessChoiceX)~ : pc_ini)
+
+#define ProcessChoiceInterim bcall(((MODR;WRITE)~;ProcessChoiceX)~ : pc_interim)
+
+#define ProcessChoiceFini bcall(((MODR;WRITE)~;ProcessChoiceX)~ : pc_fini)
+
+#define ProcessChoice(x) bcall(((MODR;WRITE)~;ProcessChoiceX)~ : pc(x))
+
+
+
+  0;  /* no pobs */
+
+  brule(AddPOBX.1,n) &
+  bmodr(AddPOBX.1,(n+1))
+ =>
+  inc_pob_count;
+
+  brule(LoadDotTheoriesX.4,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  fp;
+
+  brule(LoadDotTheoriesX.4,f) &
+  bappend(f) &
+  bprintf("\nEND\n") &
+  bclose
+ =>
+  fp;
+
+  bprintf("  %",x)
+ =>
+  ap1(x);
+
+  bprintf("  ( % )",#a.b)
+ =>
+  ap1(#a.b);
+
+  brule(LoadDotTheoriesX.4,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ap(x);
+
+  brule(LoadDotTheoriesX.13,R) &          /* MchDollar0Rename */
+  brule(LoadDotTheoriesX.5,1) &           /* not first lemma of thy */
+  brule(LoadDotTheoriesX.4,f) &
+  bappend(f) &
+  bprintf(";\n") &
+  ap1([R]x) &
+  bclose &
+  inc_pob_count
+ =>
+  ap(x);
+
+  brule(LoadDotTheoriesX.13,R) &          /* MchDollar0Rename */
+  brule(LoadDotTheoriesX.5,0) &           /* first lemma of thy */
+  brule(LoadDotTheoriesX.4,f) &
+  bappend(f) &
+  brule(LoadDotTheoriesX.1,a) &
+/*
+  Writef(("%:\n      ",a)) &
+*/
+  bmodr(LoadDotTheoriesX.5,1) &
+  bprintf(" IS\n") &
+  ap1([R]x) &
+  bclose &
+  inc_pob_count
+ =>
+  ap(x)
+
+END
+
+&
+
+THEORY LemmaStoreX END &
+
+THEORY InformSubstitutionErrorX IS
+
+#define InformSubstitutionError(x,y) \
+  InformSubstitutionErrorMsg(x,y) & \
+  bcall(InformSubstitutionErrorX~:y)
+
+  ?; /* ops not in scope already reported */
+
+  x;
+
+  brule(InformSubstitutionErrorX.1,O) &
+  bcall(MODR:bmodr(InformSubstitutionErrorX.1,(O,o))) &
+  OpNotInScope(o)
+ =>
+  _OpNotInScope(o);
+
+  brule(InformSubstitutionErrorX.1,O) &
+  bsearch(o,O,P)
+ =>
+  _OpNotInScope(o);
+
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  ([o]p) == p;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  ([o(i)]p) == p;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  ([r<--o]p) == p;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  ([r<--o(i)]p) == p;
+
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (s ; o) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (o ; s) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (s || o) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (o || s) == s;
+
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (s ; o(i)) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (o(i) ; s) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (s || o(i)) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (o(i) || s) == s;
+
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (s ; r<--o) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (r<--o ; s) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (s || r<--o) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (r<--o || s) == s;
+
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (s ; r<--o(i)) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (r<--o(i) ; s) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (s || r<--o(i)) == s;
+
+  bident(o) &
+  _OpNotInScope(o)
+ =>
+  (r<--o(i) || s) == s;
+
+
+  (s [] t) == (s || t);
+
+  (@v.s) == (s);
+
+  (g ==> s) == (s);
+
+
+  ([skip]p) == p;
+
+  (s ; skip) == s;
+
+  (skip ; s) == s;
+
+  (s || skip) == s;
+
+  (skip || s) == s;
+
+
+  blident(a)
+ =>
+  (a:=b) == skip
+
+END
+
+&
+
+THEORY PrintSubsErrorX IS
+
+#define PrintSubsError(x) bcall(((SUB)~;PrintSubsErrorX)~:pse(x))
+
+
+  brule(LoadDotTheoriesX.1,l) &
+  InformSubstitutionError(l,s)
+ =>
+  pse1(s)(X);
+
+  pse1(s)(V)
+ =>
+  pse1(s)(V,v);
+
+/*
+  bsearch(v,V,W) &
+  brule(LoadDotTheoriesX.1,l) &
+  InformRelLhsSubstitutionError(l,s,v)
+ =>
+  pse1(s)(v,v);
+*/
+
+  bsearch(v,(V,?),W) &
+  brule(LoadDotTheoriesX.1,l) &
+  InformRelLhsSubstitutionError(l,s,v)
+ =>
+  pse1([s]i)(V,v);
+
+  brule(LoadDotTheoriesX.1,l) &
+  InformSubstitutionError(l,s)
+ =>
+  pse(s);
+
+  pse1([s:=t]i)(s)
+ =>
+  pse([s:=t]i);
+
+  blident(s) &
+  brule(LoadDotTheoriesX.1,l) &
+  InformSubstitutionError(l,([s:=t]i))
+ =>
+  pse([s:=t]i);
+
+  ([a][b]i) == ([b]i);
+
+  ([skip]i) == i;
+
+  (s || skip) == s;
+
+  (skip || s ) == s;
+
+  (skip ; s ) == s;
+
+  (s ; skip) == s
+
+END
+
+&
+
+THEORY PrintLemmaX IS
+
+/*
+  math/type p.o. created as a result of proving invariant or refinement
+  pob are printed if not discharged 
+
+  invocation:
+    current goal
+    
+*/
+
+  ?;
+
+  bcall((RULE;DischargeExistX;POGTheory_DischargeExistX~;PrintLemmaX)~ : nontrivial(a))
+ =>
+  a;
+
+  brule(LoadDotTheoriesX.9,L) &         /* given set assumption equalities */
+  bsearch(a,L,M) &
+  brule(LoadDotTheoriesX.10,A) &
+  bmodr(LoadDotTheoriesX.10,(A&a))      /* record */
+ =>
+  a;
+
+  brule(LoadDotTheoriesX.9,L) &         /* given set assumption equalities */
+  bsearch((a=t),L,M) &
+  brule(LoadDotTheoriesX.10,A) &
+  bmodr(LoadDotTheoriesX.10,(A&(a=d)))      /* record */
+ =>
+  a=d;
+
+
+  AddPOB(L)
+ =>
+  nontrivial2(L);
+
+  bsearch(cst(m),H,I) &
+  AddPOB((cst(m))=>(I=>g))
+ =>
+  nontrivial2(H=>g);
+
+  bsearch(cst(m),H,I) &
+  bsearch(ctx(m),I,J) &
+  AddPOB((cst(m)&ctx(m))=>(J=>g))
+ =>
+  nontrivial2(H=>g);
+
+  bsearch(cst(m),H,ctx(m)) &
+  AddPOB((cst(m)&ctx(m))=>(g))
+ =>
+  nontrivial2(H=>g);
+
+  bsearch(cst(m),H,I) &
+  bsearch(ctx(m),I,J) &
+  bsearch(inv(m),J,K) &
+  AddPOB((cst(m)&ctx(m)&inv(m))=>(K=>g))
+ =>
+  nontrivial2(H=>g);
+
+  bsearch(cst(m),H,I) &
+  bsearch(ctx(m),I,inv(m)) &
+  AddPOB((cst(m)&ctx(m)&inv(m))=>(g))
+ =>
+  nontrivial2(H=>g);
+
+  bsearch(cst(m),H,I) &
+  bsearch(ctx(m),I,J) &
+  bsearch(asn(m),J,K) &
+  bsearch(inv(m),K,L) &
+  bsearch(pre(o),L,M) &
+  AddPOB((cst(m)&ctx(m)&inv(m)&asn(m)&pre(o))=>(M=>g))
+ =>
+  nontrivial2(H=>g);
+
+  bsearch(cst(m),H,I) &
+  bsearch(ctx(m),I,J) &
+  bsearch(asn(m),J,K) &
+  bsearch(inv(m),K,pre(o)) &
+  AddPOB((cst(m)&ctx(m)&inv(m)&asn(m)&pre(o))=>(g))
+ =>
+  nontrivial2(H=>g);
+
+
+
+  brule(LemmaStoreX.n,L) &
+  bpop(LemmaStoreX) &
+  nontrivial2(L)
+ =>
+  nontrivial1;
+
+
+
+
+  brule(LemmaStoreX.n,l) &
+  brule(LoadDotTheoriesX.6,L) &
+  bcall(MODR : bmodr(LoadDotTheoriesX.6,(L;l))) &
+  nontrivial1 &
+  WriteDot &
+  CheckForSpace
+ =>
+  nontrivial1_0;
+
+  brule(LemmaStoreX.n,l) &
+  brule(LoadDotTheoriesX.6,L) &
+  bsearch(l,L,M) &
+  bpop(LemmaStoreX)
+ =>
+  nontrivial1_0;
+
+
+
+  bcall(MODR : bmodr(LemmaStoreX.I,(g)))
+ =>
+  nontrivial_rem_qm_1(I)(g);
+
+  bsearch(?,h,i) &
+  nontrivial_rem_qm_1(I)(i=>g)
+ =>
+  nontrivial_rem_qm_1(I)(h=>g);
+
+  brule(LemmaStoreX.I,a) &
+  nontrivial_rem_qm_1(I)(a)
+ =>
+  nontrivial_rem_qm_0;
+
+  bcrer(LemmaStoreX,a) &     /* to get non-generated hypotheses */
+  nontrivial_rem_qm_0 &
+/***
+HERE((nontrivial(a)))&
+***/
+  nontrivial1_0
+ =>
+  nontrivial(a);
+
+  PrintSubsError([s]a) &
+  FlagPOGeneratorError
+ =>
+  nontrivial([s]a);
+
+  POGeneratorErrorFlagged
+ =>
+  a
+
+END
+
+&
+
+THEORY genvarX IS
+
+  ?;
+
+  brule(genvarX.1,L) &
+  brule(LoadDotTheoriesX.11,(I|(s:t))) &
+  !L.([s:=t](__subs(n)))
+ =>
+  loop_forall1(?)(__subs(n));
+
+  brule(LoadDotTheoriesX.11,(I|(s:t))) &
+  bcall((SUB;MODR):bmodr(genvarX.1,([s:=t]L))) &
+  loop_forall1(?)(__subs(n))
+ =>
+  loop_forall(L)(__subs(n));
+
+
+  loop(A,R),S,(P;T)
+ =>
+  loop(A,R),(S;T),P;
+
+  loop(A,L,R),S,(P;T)
+ =>
+  loop(A,L,R),(S;T),P;
+
+  loop(A,R),S,(P;T)
+ =>
+  loop(A,R),(S || T),P;
+
+  loop(A,L,R),S,(P;T)
+ =>
+  loop(A,L,R),(S || T),P;
+
+  loop(A,R),S,(P;T)
+ =>
+  loop(A,R),(S [] T),P;
+
+  loop(A,L,R),S,(P;T)
+ =>
+  loop(A,L,R),(S [] T),P;
+
+  loop(A,R),S,P
+ =>
+  loop(A,R),(Q | S),P;
+
+  loop(A,L,R),S,P
+ =>
+  loop(A,L,R),(Q | S),P;
+
+  loop(A,R),S,P
+ =>
+  loop(A,R),(Q==>S),P;
+
+  loop(A,L,R),S,P
+ =>
+  loop(A,L,R),(Q==>S),P;
+
+  loop(A,(R,X)),S,P
+ =>
+  loop(A,R),@X.S,P;
+
+  loop(A,L,(R,X)),S,P
+ =>
+  loop(A,L,R),@X.S,P;
+
+
+
+  !L.A
+ =>
+  loop(A,L,R),skip,skip;
+
+  brule(LoadDotTheoriesX.11,(I|(s:t))) &
+  loop_forall(L)(__subs(n))
+ =>
+  loop(__subs(n),L,R),skip,skip;
+
+
+
+
+  loop(A,R),T,P
+ =>
+  loop(A,R),skip,(P;T);
+
+  loop(A,L,R),T,P
+ =>
+  loop(A,L,R),skip,(P;T);
+
+  loop(A,R),skip,P
+ =>
+  loop(A,R),(X:=E),P;
+
+  X\R &
+  loop(A,X,R),skip,P
+ =>
+  loop(A,R),(X:=E),P;
+
+  loop(A,L,R),skip,P
+ =>
+  loop(A,L,R),(X:=E),P;
+
+  X\R &
+  X\L &
+  loop(A,(L,X),R),skip,P
+ =>
+  loop(A,L,R),(X:=E),P;
+
+  loop(A,R),(Y:=F),P
+ =>
+  loop(A,R),(Y,X:=F,E),P;
+
+  X\R &
+  loop(A,X,R),(Y:=F),P
+ =>
+  loop(A,R),(Y,X:=F,E),P;
+
+  loop(A,L,R),(Y:=F),P
+ =>
+  loop(A,L,R),(Y,X:=F,E),P;
+
+  X\R &
+  X\L &
+  loop(A,(L,X),R),(Y:=F),P
+ =>
+  loop(A,L,R),(Y,X:=F,E),P
+
+END
+
+&
+
+THEORY CleanX IS
+
+  clean(T);
+
+  brule(T.i,j) &
+  bclean(T)
+ =>
+  clean(T)
+
+END
+
+&
+
+THEORY GarbageCollectX IS
+
+  brule(SubsCntX.i,n) &
+  bmodr(SubsCntX.i,(n-1))
+ =>
+  gc(i);
+
+  brule(SubsCntX.i,1) &
+  bmodr(TmpSubsX.i,?)
+ =>
+  gc(i)
+
+
+END
+
+&
+
+THEORY TmpSubsX END
+
+&
+
+THEORY SubsCntX END
+
+&
+
+THEORY StoreTrivialOrAllFlagX IS
+
+#define StoreTrivialOrAllFlag bcall((StoreTrivialOrAllFlagX~;MODR):stoaf)
+
+  ?;  /* 0=>non-trivial 1=>all  - defined in Toolkit20.src & Toolkit21.src */
+
+  ReadBget(x) &
+  bmodr(StoreTrivialOrAllFlagX.1,x)
+ =>
+  stoaf1;
+
+  Bget("TMP/.Bpog") &
+  stoaf1
+ =>
+  stoaf
+
+END
+
+&
+
+THEORY LoadDotTheoriesX IS
+
+#define LoadDotTheories \
+  bcall(((RULE;SHELL;MODR)~;LoadDotTheoriesX)~ : ldt_0)
+
+#define LoadDotBpbl \
+  bcall(((CATL;SHELL;MODR;WRITE)~;LoadDotTheoriesX)~ : lBpbl_0("POB/.Bpbl"))
+
+
+  ?;         /* 1. current theory being processed */
+
+  ?;         /* 2. all theories to be processed (temp) */
+
+  ?;         /* 3. a.b */
+
+  ?;         /* 4. po filename */
+
+  0;         /* 5. 0=>1st of theory,1 => not */
+
+  ?;         /* 6. lemmas already printed */
+  
+  ?;         /* 7. top level abstraction */
+  
+  ?;         /* 8. invariant */
+
+  ?;         /* 9. type info from .BBcom: given set assumption equalities */
+
+  ?;         /* 10. non-generated assumptions: ?&(a=b)&(c=d)&... */
+
+  ?;         /* 11. .Loop: (Inv|(s:t)) ... [s:=t]... */
+
+  ?;         /* 12. flag for subs in cre_lem */
+
+  ?;         /* 13. MchDollar0Rename */
+
+
+  bmodr(LoadDotTheoriesX.13,(aa:=aa))
+/***
+&HERE(("Toolkit2021 : MchDollar0Rename" -- aa:=aa))
+***/
+ =>
+  ld_MchDollar0Rename(f);
+
+  bget(f,R) &
+  bmodr(LoadDotTheoriesX.13,R)
+/***
+&HERE(("Toolkit2021 : MchDollar0Rename" -- R))
+***/
+ =>
+  ld_MchDollar0Rename(f);
+
+
+  ldt_5(f);  /* only .imp have loop */
+
+  bget(f,x) &
+  bmodr(LoadDotTheoriesX.11,x)
+ =>
+  ldt_5(f);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ldt_4(f);
+
+  bget(f,x) &
+  bmodr(LoadDotTheoriesX.9,x)
+ =>
+  ldt_4(f);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ldt_3(f);
+
+  bget(f,x) &
+  bmodr(LoadDotTheoriesX.8,x)
+ =>
+  ldt_3(f);
+
+  ldt_2(x);
+
+  bcrelr(a,b)
+ =>
+  ldt_2(THEORY a IS b END);
+
+  bsearch(true,b,c) &
+/***
+HERE((THEORY AbstractSeenX IS b END))&
+***/
+  bcrelr(ExpandHypX,c)
+ =>
+  ldt_2(THEORY AbstractSeenX IS b END);
+
+  ldt_2(THEORY AbstractSeenX IS true END);
+
+  ldt_1a(f);  /* might not exist */
+
+  bget(f,x) &
+  ldt_2(x)
+ =>
+  ldt_1a(f);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ldt_1(f);
+
+  bget(f,x) &
+  ldt_2(x)
+ =>
+  ldt_1(f);
+
+  ldt_1a("POB/.AbstractSeenX") &  /* won't exist for .mch */
+  ldt_1("POB/.ExpandHypX") &
+  ldt_1("POB/.PropertiesX") &
+  ldt_1("POB/.EnumerateX") &
+  ldt_1a("POB/.NotEqualX") &
+  ldt_1a("POB/.RewriteToFalseOrTrueX") &
+  ldt_1a("POB/.FwdContra0X") &
+  ldt_1a("POB/.FwdEqual1X") &
+  ldt_3("POB/.Invariant") &
+  ldt_4(".BBcom") &             /* given set assumptions */
+  ldt_5("POB/.Loop") &
+  ld_MchDollar0Rename("POB/.MchBSRename") &
+  bshell("rm -f POB/.AbstractSeenX POB/.ExpandHypX POB/.PropertiesX POB/.EnumerateX POB/.NotEqualX POB/.RewriteToFalseOrTrueX  POB/.FwdContra0X  POB/.FwdEqual1X  POB/.Invariant  POB/.Loop .BBcom POB/.MchBSRename")
+ =>
+  ldt_0;
+
+
+  InformCantConnect(z) &
+  PFZ
+ =>
+  lBpbl_1(f)(w|x|y|z);
+
+  bappend(z) &
+  bmodr(LoadDotTheoriesX.2,x) &
+  bmodr(LoadDotTheoriesX.7,w) &
+  bmodr(LoadDotTheoriesX.3,y) &
+  bmodr(LoadDotTheoriesX.4,z)
+ =>
+  lBpbl_1(f)(w|x|y|z);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lBpbl_0(f);
+
+  StoreTrivialOrAllFlag &
+  bget(f,(w|x|y|z)) &
+  lBpbl_1(f)(w|x|y|z) &
+  bshell(bcatl("rm -f ",f))
+ =>
+  lBpbl_0(f)
+
+END
+
+&
+
+THEORY FactoriseLemmasX IS
+
+#define FactoriseLemmas(x) \
+  bcall(((LMAP;MODR;REV)~;FactoriseLemmasX)~ : fopl_0(x))
+
+  ?;
+
+
+  fopl_0(cst(a))(a)(X)(?)(?)(?)
+ =>
+  fopl_0_1(cst(a))(a)(X);
+
+  rmcst(a,b) == b;
+
+  rmcst(a,(cst(a)=>b)) == b;
+
+
+
+  bsearch((ctx(a)=>x),X,Y) &
+  fopl_1(?)(a)(X)(?)(?)(?)
+ =>
+  fopl_0(X);                           /* find value of a */
+
+  bsearch((ctx(a) & inv(a) & asn(a)=>x),X,Y) &
+  fopl_1(?)(a)(X)(?)(?)(?)
+ =>
+  fopl_0(X);                           /* find value of a */
+
+  bsearch((ctx(a) & inv(a) & asn(a) & pre(o)=>x),X,Y) &
+  fopl_1(?)(a)(X)(?)(?)(?)
+ =>
+  fopl_0(X);                           /* find value of a */
+
+
+
+  bsearch((cst(a)=>b),X,Y) &
+  fopl_0_1(cst(a))(a)(rmcst(a) bslmap X)
+ =>
+  fopl_0(X);
+
+
+  bmodr(FactoriseLemmasX.1,X)
+ =>
+  fopl_5(?)(X);
+
+  bmodr(FactoriseLemmasX.1,(cst(a)=>X))
+ =>
+  fopl_5(cst(a))(X);
+
+
+
+  fopl_5(s)(ctx(a)=>W&X) 
+ =>
+  fopl_4(s)(a)(W&?)(X);
+
+  fopl_5(s)(ctx(a)=>X)
+ =>
+  fopl_4(s)(a)(?)(X);
+
+
+
+  fopl_4(s)(a)(W)(inv(a) & asn(a)=>V&X)
+ =>
+  fopl_3(s)(a)(V&?)(W)(X);
+
+  fopl_4(s)(a)(W)(inv(a) & asn(a)=>X)
+ =>
+  fopl_3(s)(a)(?)(W)(X);
+
+
+
+  brule(LoadDotTheoriesX.6,o) &
+  fopl_3(s)(a)(V)(W)(pre(o)=>U)
+ =>
+  fopl_2(s)(a)(U&?)(V)(W);
+
+  fopl_3(s)(a)(V)(W)(true)
+ =>
+  fopl_2(s)(a)(?)(V)(W);
+
+
+
+
+
+  fopl_2(s)(a)(brev(U))(brev(V))(brev(W))
+ =>
+  fopl_1(s)(a)(?)(U)(V)(W);
+
+  fopl_1(s)(a)(X)(U)(V)(W&x)
+ =>
+  fopl_1(s)(a)(X;(ctx(a)=>x))(U)(V)(W);
+
+  fopl_1(s)(a)(X)(U)(V&x)(W)
+ =>
+  fopl_1(s)(a)(X;(inv(a) & asn(a)=>x))(U)(V)(W);
+
+  fopl_1(s)(a)(X)(U&x)(V)(W)
+ =>
+  fopl_1(s)(a)(X;(ctx(a) & inv(a) & asn(a) & pre(o)=>x))(U)(V)(W)
+
+END
+
+&
+
+THEORY GetNextPOBFileX IS
+
+#define ProcessPOBFiles \
+  bcall(((REV;CATL;SHELL;CATL;MODR;WRITE;RULE;MAP;FLAT;ARI)~;GetNextPOBFileX)~ : \
+     gn_0)
+
+
+  ?;  /* not used */
+
+  ?;  /* "PMD/a.b.0.pmd" */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  CreatePmdTemplate(pog) &
+  Writef(("\n\n  % Proof Obligations\n",n))
+ =>
+  prt_lemma_count1(n);
+
+  CreatePmdTemplate(pog) &
+  Writef(("\n\n  1 Proof Obligation\n"))
+ =>
+  prt_lemma_count1(1);
+
+  brule(LoadDotTheoriesX.4,f) &              /* po file */
+  Writef(("\n  No Proof Obligations\n")) &
+  bshell(bcatl("rm -f ",f))
+ =>
+  prt_lemma_count1(0);
+
+  ReadPOBCount(x) &
+  prt_lemma_count1(x)
+ =>
+  prt_lemma_count;
+
+
+
+  Writef(("\n      %",a))
+ =>
+  prt_assumptions1(a);
+
+  prt_assumptions1(?);
+
+  brule(LoadDotTheoriesX.10,L) &
+  Writef(("\n    Assumptions:")) &
+  prt_assumptions1 bsmap L &
+  Writef("\n\n")
+ =>
+  prt_assumptions;
+
+  brule(LoadDotTheoriesX.10,?)      /* none */
+ =>
+  prt_assumptions;
+
+
+
+
+  brule(LoadDotTheoriesX.3,a.b) &
+  FiniPOB &
+  bmodr(GetNextPOBFileX.2,(bcatl("PMD/",a,".",b,".0.pmd"))) &
+  prt_assumptions &
+  prt_lemma_count &
+  ReadPOBCount(c) &                      /* total no of pob produced */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_POG:c)) &
+  AddLvl(a.b(0)) &
+  AddPrv(a.b(c:c)) &
+  LoadToolkit(1)
+ =>
+  gn_fini;
+
+
+
+  bshell(bcatl("rm -f ",f))
+ =>
+  clean_files2(f);
+
+  clean_files2(?);
+
+  bshell(bcatl("rm -f POB/.",t))
+ =>
+  clean_files1(t);
+
+  clean_files1(?);
+
+  bshell(bcatl("rm -f POB/.",t)) &
+  clean_files1(T)
+ =>
+  clean_files1(T,t);
+
+  clean_files1(T)
+ =>
+  clean_files1(T,?);
+
+  brule(LoadDotTheoriesX.1,t) &
+  brule(LoadDotTheoriesX.2,T) &
+  brule(LoadDotTheoriesX.4,f) &
+  bshell(bcatl("rm -f POB/.Bpbl POB/.EnumerateX POB/.NotEqualX  POB/.RewriteToFalseOrTrueX POB/.FwdContra0X POB/.FwdEqual1X POB/.ExpandHypX POB/.PropertiesX POB/.Invariant POB/.MchBSRename")) &
+  clean_files1(T,t) &
+  clean_files2(f)
+ =>
+  clean_files;
+
+
+  check_error;
+
+  POGeneratorErrorFlagged &
+  brule(LoadDotTheoriesX.3,a.b) &
+  GetJobs(X) &
+/*
+  AddJobs(X,((a.b:BT_EDT_NML_POG:0);(a.b:BT_EDT:0))) &
+*/
+  AddJobs(X,((a.b:BT_MINI_RMK_M:0);(a.b:BT_POG:0))) &
+  clean_files &
+  LoadToolkit(1)
+ =>
+  check_error;
+
+
+  bclean(InterimFileNameX);
+
+  CheckCompactionSilently &
+  bclean(TmpSubsX) &
+  bclean(SubsCntX) &
+  bclean(InterimFileNameX) &
+/***
+HERE((43:x))&
+PrintTHEORY(ExpandHypX)&
+***/
+  ProcessRefPOBthroughCalculus(x) &
+  check_error
+ =>
+  cre_lem_2(x);
+
+  brule(LoadDotTheoriesX.3,a.mch) &
+  CheckCompactionSilently &
+/***
+HERE(("ProcessSpecPOBthroughCalculus":x))&
+***/
+  ProcessSpecPOBthroughCalculus(x) &
+  check_error
+ =>
+  cre_lem_2(x);
+
+  brule(LoadDotTheoriesX.12,2)
+ =>
+  (WHILE a DO b VARIANT c VARIANT d VARIANT e END) ==
+    (WHILE a DO b INVARIANT c INVARIANT d VARIANT e END); /* INVARIANT! */
+
+  bmodr(LoadDotTheoriesX.12,2) &
+  cre_lem_2(x)
+ =>
+  cre_lem_1(x);  
+
+  brule(LoadDotTheoriesX.3,x.imp) &
+  brule(LoadDotTheoriesX.12,1) &
+  brule(LoadDotTheoriesX.11,(i|s:t))
+ =>
+  (WHILE a DO b INVARIANT c VARIANT d END) ==
+    (WHILE a DO b VARIANT i VARIANT c VARIANT d END);    /* VARIANT! */
+
+  IsVHDL &
+  brule(LoadDotTheoriesX.3,x.ref) &
+  brule(LoadDotTheoriesX.12,1) &
+  brule(LoadDotTheoriesX.11,(i|s:t))
+ =>
+  (WHILE a DO b INVARIANT c VARIANT d END) ==
+    (WHILE a DO b VARIANT i VARIANT c VARIANT d END);    /* VARIANT! */
+
+
+  bmodr(LoadDotTheoriesX.12,1) &
+  cre_lem_1(x)
+ =>
+  cre_lem_0(x);  
+
+/*
+  cre_lem_0(?);
+*/
+
+ 
+  bsearch(?,L,M) &
+  bsearch(l,M,P) &
+  bconnect(F) &
+  bprintf("?;%",P) &
+  bclose &
+  cre_lem_0(l) &
+  gn_4(N+1)(F)
+ =>
+  gn_5(N)(F)(L);
+
+  brule(LoadDotTheoriesX.1,a) &
+  Writef(("\n    %:\n      ",a)) &
+  bsearch(?,L,M) &
+  bsearch(l,M,P) &
+  bconnect(F) &
+  bprintf("?;%",P) &
+  bclose &
+  cre_lem_0(l) &
+  gn_4(1)(F)
+ =>
+  gn_5(0)(F)(L);
+
+  cre_lem_0(l)
+ =>
+  gn_5(N)(F)(?;l);
+
+  brule(LoadDotTheoriesX.1,a) &
+  Writef(("\n    %:\n      ",a)) &
+  cre_lem_0(l)
+ =>
+  gn_5(0)(F)(?;l);
+
+  gn_5(N)(F)(?);
+
+  brule(LoadDotTheoriesX.1,a) &
+  Writef(("\n    %:\n      ",a))
+ =>
+  gn_5(0)(F)(?);
+
+  brule(LoadDotTheoriesX.1,Context)
+ =>
+  gn_5(0)(F)(?);
+
+  brule(LoadDotTheoriesX.1,Assertions)
+ =>
+  gn_5(0)(F)(?);
+
+  brule(LoadDotTheoriesX.1,Constraints)
+ =>
+  gn_5(0)(F)(?);
+
+  InformCantConnect(F) &
+  PFZ
+ =>
+  gn_4(N)(F);
+
+  bget(F,x) &
+/* HERE((F:x))& */
+  bshell(bcatl("rm -f ",F)) &
+  bshell("rm -f POB/.I.*") &  
+  gn_5(N)(F)(x)
+ =>
+  gn_4(N)(F);
+
+  brule(LoadDotTheoriesX.4,f) &
+  bappend(f) &
+  bprintf("\nEND\n&\nTHEORY %",a) &
+  bclose &
+/*
+  Writef(("\n      %:\n        ",a)) &
+*/
+  gn_4(0)(F)
+ =>
+  gn_3(a)(F);
+
+  brule(LoadDotTheoriesX.5,1) &      /* something printed from prev thy */
+  bmodr(LoadDotTheoriesX.5,0) &      /* first lemma */
+  bmodr(LoadDotTheoriesX.6,?) &      /* lemmas already printed */
+  ResetSpace &
+  gn_3(a)(F)
+ =>
+  gn_2(a)(F);
+
+  brule(LoadDotTheoriesX.5,0) &      /* nothing printed from prev thy */
+  bmodr(LoadDotTheoriesX.6,?) &      /* lemmas already printed */
+  ResetSpace &
+  gn_3(a)(F)
+ =>
+  gn_2(a)(F);
+
+/***
+  brule(LoadDotTheoriesX.4,f) &
+  bappend(f) &
+  bprintf("\nEND\n&\nTHEORY %",a) &
+  bclose &
+  cre_lem_0 bsmap (x)
+ =>
+  gn_3(F)(a)(x);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gn_2(a)(f);
+
+  brule(LoadDotTheoriesX.5,1) &      /? something printed from prev thy ?/
+  bget(f,x) &
+  Writef("\n    ") &
+  bshell(bcatl("rm -f ",f)) &
+  bmodr(LoadDotTheoriesX.6,?) &      /? lemmas already printed ?/
+  ResetSpace &
+  bmodr(LoadDotTheoriesX.5,0) &      /? first lemma ?/
+  gn_3(f)(a)(x)
+ =>
+  gn_2(a)(f);
+
+  brule(LoadDotTheoriesX.5,0) &      /? nothing printed from prev thy ?/
+  bget(f,x) &
+  bshell(bcatl("rm -f ",f)) &
+  bmodr(LoadDotTheoriesX.6,?) &      /? lemmas already printed ?/
+  ResetSpace &
+  gn_3(a)(x)
+ =>
+  gn_2(a)(f);
+***/
+
+
+  bmodr(LoadDotTheoriesX.1,a) &
+  gn_2(a)(bcatl("POB/.",a))
+ =>
+  gn_1(a);
+
+  gn_1(?);
+
+  brule(LoadDotTheoriesX.2,O) &
+  Writef("\n    ") &
+  bmodr(LoadDotTheoriesX.5,0) &      /* first lemma */
+  gn_1 bsmap O &
+  gn_fini
+ =>
+  gn_0
+
+END
+
+&
+
+THEORY T19X IS
+
+  LoadJobs &
+  ClearPOGeneratorError &
+  LoadDotTheories &
+  LoadDotBpbl &
+  ProcessPOBFiles
+ =>
+  0
+
+END
+
+/*
+&
+
+THEORY TEST IS
+
+ProcessAndCreateLemmas(
+
+      not(xx = TRUE) => not(!checkingresult.(checkingresult: BOOL => com$1 <: COMMAND & tag$1: TAGS & checkingresult: BOOL & ((checkingresult = TRUE => com$1 <: COMMAND & checkingresult = TRUE & not(com$1 = com$1 & tag$1 = tag$1 & checkingresult = xx & com$1 = checkcom$1)) & (not(checkingresult = TRUE) => not(com$1 = com$1 & tag$1 = tag$1 & checkingresult = xx & checkcom$1 = checkcom$1)))))
+
+)
+
+;
+
+ProcessAndCreateLemmas(
+
+      op_top_pre(MfCommand) => (fcmd: NAT & fcmd<=1000 & 83<mfth & aoacmd$1 = retract & 700<=aoa & lcmd: NAT & lcmdsn: BOOL & (lcmdsn = TRUE => lcmd<=1000) & (lcmdsn = FALSE => lcmd<=3500) & (lcmdsn = oms$1 => lcmd<=omc$1 & omc$1<=lcmd+14 or (omc$1<=lcmd & lcmd<=omc$1+14)) & (not(lcmdsn = oms$1) => omc$1+lcmd<=14) => #(lcmdsn$0,lcmd$0).(lcmd$0: NAT & lcmdsn$0: BOOL & (lcmdsn$0 = TRUE => lcmd$0<=1000) & (lcmdsn$0 = FALSE => lcmd$0<=3500) & (lcmdsn$0 = oms$1 => lcmd$0<=omc$1 & omc$1<=lcmd$0+14 or (omc$1<=lcmd$0 & lcmd$0<=omc$1+14)) & (not(lcmdsn$0 = oms$1) => omc$1+lcmd$0<=14) & not((aoacmd$1 = retract & 700<=aoa => (83<mfth => !(fcmd$0).(fcmd$0: NAT & fcmd$0<=1000 => not(lcmd$0 = lcmd & lcmdsn$0 = lcmdsn & fcmd$0 = fcmd)))) & (not(aoacmd$1 = retract & 700<=aoa) => (not(aoacmd$1 = extend & aoa<=400) => (83<mfth => !(fcmd$0).(fcmd$0: NAT & fcmd$0<=1000 => not(lcmd$0 = lcmd & lcmdsn$0 = lcmdsn & fcmd$0 = fcmd & aoacmd$1 = extend))))))))
+&
+      (not(aoacmd$1 = 
+      extend & aoa<=400) => (83<mfth => !(fcmd$0).(fcmd$0: 
+      NAT & fcmd$0<=1000 => not(lcmd$0 = lcmd & lcmdsn$0 = 
+      lcmdsn & fcmd$0 = fcmd & aoacmd$1 = extend))))
+
+)
+
+;
+
+ProcessAndCreateLemmas(
+
+      not(!(lcmd$0,lcmdsn$0).(lcmd$0: NAT & lcmdsn$0: BOOL 
+      & (lcmdsn$0 = TRUE => lcmd$0<=1000) & (lcmdsn$0 = 
+      FALSE => lcmd$0<=3500) & (lcmdsn$0 = oms$1 => lcmd$0
+      <=omc$1 & omc$1<=lcmd$0+14 or (omc$1<=lcmd$0 & lcmd$0
+      <=omc$1+14)) & (not(lcmdsn$0 = oms$1) => omc$1+lcmd$0
+      <=14) => !(fcmd$0).(fcmd$0: NAT & fcmd$0<=1000 => not
+      (lcmd$0 = lcmd & lcmdsn$0 = lcmdsn & fcmd$0 = fcmd & 
+      0 = fcmd))) & !(lcmd$0,lcmdsn$0).(lcmd$0: NAT & 
+      lcmdsn$0: BOOL & (lcmdsn$0 = TRUE => lcmd$0<=1000) & 
+      (lcmdsn$0 = FALSE => lcmd$0<=3500) & (lcmdsn$0 = oms$
+      1 => lcmd$0<=omc$1 & omc$1<=lcmd$0+14 or (omc$1<=lcmd
+      $0 & lcmd$0<=omc$1+14)) & (not(lcmdsn$0 = oms$1) => 
+      omc$1+lcmd$0<=14) => !(fcmd$0).(fcmd$0: NAT & fcmd$0
+      <=1000 => not(lcmd$0 = lcmd & lcmdsn$0 = lcmdsn & 
+      fcmd$0 = fcmd & flimcmd$1 = fcmd))))
+
+)
+
+END
+*/

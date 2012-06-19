@@ -1,0 +1,207 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+extern int hfrm[];
+extern int hrul[];
+extern int hniv[];
+extern int huti[];
+extern int hhso[];
+extern int hspe[];
+extern int htmb[];
+extern int max_hyp;
+int hyp;
+int httm;
+                  
+/*  PROGRAMS FOR HYPO MACHINE  */
+                
+                  
+
+#define ini_hyp hyp=0; httm=0
+
+#define frm_hyp(h)  hfrm[h]
+
+#define rul_hyp(h)  hrul[h]
+
+#define niv_hyp(h)  hniv[h]
+
+#define uti_hyp(h)  huti[h]
+
+#define hso_hyp(h)  hhso[h]
+
+#define spe_hyp(g)  hspe[h]
+mak_hypfunc()
+#define mak_hyp mak_hypfunc()
+{register int h ;
+  if( httm!=0 ){
+    h=htmb[httm];
+    httm=httm-1;
+  } else if( hyp<max_hyp ){
+    hyp=hyp+1;
+    h=hyp;
+  } else {
+#ifdef BTOOL_FLAG
+    fprintf ( bstdout, "      TOO MANY HYPOTHESES (Press CR to exit)\n");
+    {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+#else
+    fprintf ( bstdout, "      bplatform: Too many hypotheses\n\n");
+#endif /* BTOOL_FLAG */
+    exit___(1);
+  }
+; return h;
+}
+
+sup_hyp(h)
+{
+  httm=httm+1;
+  htmb[httm]=h;
+}
+
+#define def_rul_hyp(h) ((rul_hyp(h)!=0)!=0)
+
+#define def_hso_hyp(h) ((hso_hyp(h)!=0)!=0)
+
+#define def_spe_hyp(h) ((spe_hyp(h)!=0)!=0)
+
+#define isa_der_hyp(h) (((def_rul_hyp(h)==TRUE) || (def_spe_hyp(h)==TRUE))!=0)
+cre_hyp(f)
+{register int h ;
+  h=mak_hyp;
+  frm_hyp(h)=f;
+  rul_hyp(h)=0;
+  niv_hyp(h)=0;
+  uti_hyp(h)=FALSE;
+  hso_hyp(h)=0;
+  spe_hyp(h)=0
+; return h;
+}
+
+kil_hyp(h)
+{
+  sup_hyp(h);
+  kil_tree(frm_hyp(h));
+  if( def_hso_hyp(h)==TRUE ){
+    kil(hso_hyp(h));
+  };
+}
+
+mod_rul_hyp(h,r)
+{
+  rul_hyp(h)=r;
+}
+
+mod_spe_hyp(h,v)
+{
+  spe_hyp(h)=v;
+}
+
+mod_hso_hyp(h,s)
+{
+  hso_hyp(h)=s;
+}
+
+mod_niv_hyp(h,n)
+{
+  niv_hyp(h)=n;
+}
+
+mod_uti_hyp(h)
+{register int i,hh ;
+  if( uti_hyp(h)==FALSE ){
+    uti_hyp(h)=TRUE;
+    if( isa_der_hyp(h)==TRUE ){
+      itr(hso_hyp(h),i,hh,mod_uti_hyp(hh));
+    };
+  };
+}
+
+                        
+/*  HYPO I/O  */
+                        
+write_hyp(h,d)
+{register int m,r,dd,i,hh ;
+  reset_res(0);
+  m=niv_hyp(h);
+  if( m<10 ){
+    write_blk_res(3);
+  } else {
+    write_blk_res(2);
+  };
+  if( isa_der_hyp(h)==TRUE ){
+    dd=d+2;
+  } else {
+    dd=d;
+  };
+  write_num_res(niv_hyp(h));
+  write_blk_res(2);
+  write_blk_res(dd);
+  write_frm_res(frm_hyp(h),6+d);
+  write_tab_res;
+  if( isa_der_hyp(h)==TRUE ){
+    itr(hso_hyp(h),i,hh,write_nat(niv_hyp(hh)); fprintf ( bstdout, " "));
+    if( def_rul_hyp(h)==TRUE ){
+      r=rul_hyp(h);
+      write_nam_the(the_rul(r));
+      fprintf ( bstdout, ".");
+      write_nat(num_rul(r));
+    };
+  } else if( 
+/* (val_root_frm(frm_hyp(h))==VRB_sym) || */
+(val_root_frm(frm_hyp(h))==BVRB_sym) ){
+    fprintf ( bstdout, "SIDE_CND");
+  } else if( val_root_frm(frm_hyp(h))==ANTI_SLASH_sym ){
+    fprintf ( bstdout, "SIDE_CND");
+  } else {
+    fprintf ( bstdout, "HYP");
+  };
+}
+
+write_ext_hyp(h,d)
+{register int m,r,dd,i,hh ;
+  reset_res(0);
+  write_res('(');
+  write_num_res(d);
+  write_res('|');
+  write_res('(');
+  write_frm_res(frm_hyp(h),0);
+  write_res(')');
+  write_res('|');
+  if( (val_root_frm(frm_hyp(h))==BVRB_sym) ){
+    fprintf ( bstdout, "SIDE_CND");
+  } else if( val_root_frm(frm_hyp(h))==ANTI_SLASH_sym ){
+    fprintf ( bstdout, "SIDE_CND");
+  } else {
+    fprintf ( bstdout, "HYP");
+  };
+  write_res(')');
+}
+
+sta_hypfunc()
+#define sta_hyp sta_hypfunc()
+{
+  fprintf(bstdout,"      Max Number of Hypos:           ");
+  fprintf(bstdout,"%8d\n",max_hyp);
+  fprintf(bstdout,"      Number of Used Hypos:          ");
+  fprintf(bstdout,"%8d\n",hyp);
+  fprintf(bstdout,"      Number of Dead Hypos:          ");
+  fprintf(bstdout,"%8d\n",httm);
+  fprintf(bstdout,"      Number of Live Hypos:          ");
+  fprintf(bstdout,"%8d\n\n",hyp-httm);
+}
+
+    
+    

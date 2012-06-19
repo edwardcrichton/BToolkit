@@ -1,0 +1,533 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Int_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(MINI,MAXI,INCI,DECI,ADDI,MULI,SUBI,DIVI,MODI,EQLI,NEQI,GTRI,GEQI,SMRI,LEQI,EQZI)
+;
+(MINI , MAXI , INCI , DECI , ADDI , MULI , SUBI , DIVI , MODI , EQLI , NEQI , GTRI , GEQI , SMRI , LEQI , EQZI)
+;
+(Int_TYPE_Ops(?):(?):(?))
+;
+(
+(
+ (MINI)
+;
+ (? , Val_Op , NonDet_Op , (uu <-- MINI(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (SELECT vv <= ww THEN
+ uu := vv
+ WHEN ww <= vv THEN
+ uu := ww
+ END)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (
+ (
+ (vv <= ww)
+ )
+ ==>
+ (
+ (uu := vv)
+ )
+ )
+ []
+ (
+ (
+ (ww <= vv)
+ )
+ ==>
+ (
+ (uu := ww)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (MAXI)
+;
+ (? , Val_Op , NonDet_Op , (uu <-- MAXI(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (SELECT vv >= ww THEN
+ uu := vv
+ WHEN ww >= vv THEN
+ uu := ww
+ END)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (
+ (
+ (ww <= vv)
+ )
+ ==>
+ (
+ (uu := vv)
+ )
+ )
+ []
+ (
+ (
+ (vv <= ww)
+ )
+ ==>
+ (
+ (uu := ww)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (INCI)
+;
+ (? , Val_Op , Det_Op , (uu <-- INCI(vv)))
+;
+ (vv)
+;
+ (uu)
+;
+ (
+ (vv : INT & vv < +2147483646)
+ |
+ (
+ (uu := vv+(+1))
+ )
+ )
+;
+ (
+ (vv : INT & vv < +2147483646)
+ |
+ (
+ (uu := vv+(+1))
+ )
+ )
+)
+,
+(
+ (DECI)
+;
+ (? , Val_Op , Det_Op , (uu <-- DECI(vv)))
+;
+ (vv)
+;
+ (uu)
+;
+ (
+ (vv : INT & vv > -2147483647)
+ |
+ (
+ (uu := vv-(+1))
+ )
+ )
+;
+ (
+ (vv : INT & -2147483647 < vv)
+ |
+ (
+ (uu := vv-(+1))
+ )
+ )
+)
+,
+(
+ (ADDI)
+;
+ (? , Val_Op , Det_Op , (uu <-- ADDI(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : INT & ww : INT & vv+ww : INT)
+ |
+ (
+ (uu := vv+ww)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT & vv+ww : INT)
+ |
+ (
+ (uu := vv+ww)
+ )
+ )
+)
+,
+(
+ (MULI)
+;
+ (? , Val_Op , Det_Op , (uu <-- MULI(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : INT & ww : INT & vv*ww : INT)
+ |
+ (
+ (uu := vv*ww)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT & vv*ww : INT)
+ |
+ (
+ (uu := vv*ww)
+ )
+ )
+)
+,
+(
+ (SUBI)
+;
+ (? , Val_Op , Det_Op , (uu <-- SUBI(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : INT & ww : INT & vv-ww : INT)
+ |
+ (
+ (uu := vv-ww)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT & vv-ww : INT)
+ |
+ (
+ (uu := vv-ww)
+ )
+ )
+)
+,
+(
+ (DIVI)
+;
+ (? , Val_Op , Det_Op , (uu <-- DIVI(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : INT & ww : INT & ww /= +0)
+ |
+ (
+ (uu := vv/ww)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT & not(ww = +0))
+ |
+ (
+ (uu := vv/ww)
+ )
+ )
+)
+,
+(
+ (MODI)
+;
+ (? , Val_Op , Det_Op , (uu <-- MODI(vv , ww)))
+;
+ (vv , ww)
+;
+ (uu)
+;
+ (
+ (vv : INT & ww : INT & ww /= +0)
+ |
+ (
+ (uu := vv-ww*(vv/ww))
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT & not(ww = +0))
+ |
+ (
+ (uu := vv-ww*(vv/ww))
+ )
+ )
+)
+,
+(
+ (EQLI)
+;
+ (? , Val_Op , Det_Op , (bb <-- EQLI(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (BEGIN
+ bb := bool(vv = ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (bb := bool(vv = ww))
+ )
+ )
+)
+,
+(
+ (NEQI)
+;
+ (? , Val_Op , Det_Op , (bb <-- NEQI(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (BEGIN
+ bb := bool(vv /= ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (bb := bool(not(vv = ww)))
+ )
+ )
+)
+,
+(
+ (GTRI)
+;
+ (? , Val_Op , Det_Op , (bb <-- GTRI(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (BEGIN
+ bb := bool(vv > ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (bb := bool(ww < vv))
+ )
+ )
+)
+,
+(
+ (GEQI)
+;
+ (? , Val_Op , Det_Op , (bb <-- GEQI(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (BEGIN
+ bb := bool(vv >= ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (bb := bool(ww <= vv))
+ )
+ )
+)
+,
+(
+ (SMRI)
+;
+ (? , Val_Op , Det_Op , (bb <-- SMRI(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (BEGIN
+ bb := bool(vv < ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (bb := bool(vv < ww))
+ )
+ )
+)
+,
+(
+ (LEQI)
+;
+ (? , Val_Op , Det_Op , (bb <-- LEQI(vv , ww)))
+;
+ (vv , ww)
+;
+ (bb)
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (BEGIN
+ bb := bool(vv <= ww)
+ END)
+ )
+ )
+;
+ (
+ (vv : INT & ww : INT)
+ |
+ (
+ (bb := bool(vv <= ww))
+ )
+ )
+)
+,
+(
+ (EQZI)
+;
+ (? , Val_Op , Det_Op , (bb <-- EQZI(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : INT)
+ |
+ (
+ (BEGIN
+ bb := bool(vv = +0)
+ END)
+ )
+ )
+;
+ (
+ (vv : INT)
+ |
+ (
+ (bb := bool(vv = +0))
+ )
+ )
+)
+)

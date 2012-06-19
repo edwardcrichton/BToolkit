@@ -1,0 +1,1173 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define ClearAutoProverError    bcall(MODR:bmodr(AutoProverErrorX.1,0))
+
+#define FlagAutoProverError     bcall(MODR:bmodr(AutoProverErrorX.1,1))
+
+
+
+
+#define apfuTac (((WRITE~;CATL;MODR;CATL;SHELL;MAP;RULE)~;AutoProverFromUserX)~)
+
+#define apfbcTac (((WRITE~;CATL;MODR;CATL;SHELL)~;AutoProverFromBComX)~)
+
+#define AutoProverFromBcom(n) bcall(apfbcTac:apfbc(n))
+
+#define AutoProverDirect(x) bcall(apfuTac:apfu4(x))
+
+#define AutoProverFromMake(x) bcall(((AutoProverFromMakeX;MODR)~):apfm(x))
+
+
+
+#define InformPROOFMETHODError Writef(("\n  PROOFMETHOD: % %\n",bsrv Incorrect berv,bsrv syntax berv))
+
+
+
+
+#define berr bsrv ERROR berv
+
+#define InformSearchComplete Writef(("\n    Search complete\n\n",a))
+
+#define InformUserTheoryNotPresent Writef(("no User-Theory\n",x))
+
+#define InformUserTheoryPresent Writef(("User-Theory present\n",x))
+
+#define InformREASONING_DEPTH_with_FEQL(x) Writef(("\n    REASONING_DEPTH %, FEQL on, ",x))
+
+#define InformREASONING_DEPTH_without_FEQL(x) Writef(("\n    REASONING_DEPTH %, FEQL off, ",x))
+
+#define InformAutoProvingMachine(p,m,a,n) Writef(("\n  AutoProving MACHINE %\n\n    Level %: %/% undischarged\n",a,n,p,m))
+
+#define InformAutoProvingRefinement(p,m,a,n) Writef(("\n  AutoProving REFINEMENT %\n\n    Level %: %/% undischarged\n",a,n,p,m))
+
+#define InformAutoProvingImplementation(p,m,a,n) Writef(("\n  AutoProving IMPLEMENTATION %\n\n    Level %: %/% undischarged\n",a,n,p,m))
+
+#define InformCantReadFile(a) Writef(("\n    %\n\n    Can't read file %\n",berr,a))
+
+#define InformCreatedPmdTemplate(f) Writef(("\n        Wrote %\n",f))
+
+#define InformAutoProofComplete Writef(("\n  AutoProof complete\n",f))
+
+#define InformSearchUnsuccessful Writef(("\n    %\n\n    Search unsucessful\n",berr))
+
+
+#define WriteDash Writef(("-"))
+
+#define WritePlus Writef(("+"))
+
+#define WriteStar Writef(("p"))
+
+THEORY AutoProverErrorX IS
+
+  0  /* 1=>error   0=>no error */
+
+END
+
+&
+
+THEORY CleanAutoProverX IS
+
+#define CleanAutoProver \
+    bcall((CleanAutoProverX;FLAT;MAP;(CleanAutoProverX;RULE)~;MODR~):cap)
+
+  bclean(t)
+ =>
+  cap1(t);
+
+  cap1(?);
+
+  brule(TempX.6,a) &
+  brule(TempX.7,b) &
+  brule(TempX.8,c) &
+  brule(TempX.9,d) &
+  brule(TempX.10,e) &
+  brule(TempX.15,f) &
+  cap1 bsmap bflat(a;b;c;d;e;f) &
+  bmodr(CheckForSpaceX.1,1) &
+  bmodr(TempX.1,?) &
+  bmodr(TempX.2,?) &
+  bmodr(TempX.3,?) &
+  bmodr(TempX.4,?) &
+  bmodr(TempX.5,?) &
+  bmodr(TempX.6,?) &
+  bmodr(TempX.7,?) &
+  bmodr(TempX.8,?) &
+  bmodr(TempX.9,?) &
+  bmodr(TempX.10,?) &
+  bmodr(TempX.11,?) &
+  bmodr(TempX.12,0) &
+  bmodr(TempX.13,0) &
+  bmodr(TempX.14,0) &
+  bmodr(TempX.15,?) &
+  bmodr(TempX.16,?) &
+  bmodr(TempX.17,?) &
+  bmodr(TempX.18,?) &
+  bmodr(TempX.19,?)
+ =>
+  cap
+
+END
+
+&
+
+THEORY InformProvedX IS
+
+
+#define InformProved(a,b,c,d) \
+   bcall((ARI~;InformProvedX)~:(ip2(b) & ip1(a) & ip4(d) & ip3(c)))
+
+
+
+
+  Writef(("\n    % proof obligations attempted this Level\n",d))
+ =>
+  ip4(d);
+
+  Writef(("\n    1 proof obligation attempted this Level\n"))
+ =>
+  ip4(1);
+
+  btest(d>9) &
+  Writef(("\n   % proof obligations attempted this Level\n",d))
+ =>
+  ip4(d);
+
+  btest(d>99) &
+  Writef(("\n  % proof obligations attempted this Level\n",d))
+ =>
+  ip4(d);
+
+  btest(d>999) &
+  Writef(("\n % proof obligations attempted this Level\n",d))
+ =>
+  ip4(d);
+
+  Writef(("\n    0 proof obligations attempted this Level!\n"))
+ =>
+  ip4(0);
+
+
+  Writef(("\n    % proof obligations remain\n",c))
+ =>
+  ip3(c);
+
+  Writef(("\n    1 proof obligation remains\n"))
+ =>
+  ip3(1);
+
+  btest(c>9) &
+  Writef(("\n   % proof obligations remain\n",c))
+ =>
+  ip3(c);
+
+  btest(c>99) &
+  Writef(("\n  % proof obligations remain\n",c))
+ =>
+  ip3(c);
+
+  btest(c>999) &
+  Writef(("\n % proof obligations remain\n",c))
+ =>
+  ip3(c);
+
+  Writef(("\n\n    % proof obligations discharged this Level",bsrv b berv))
+ =>
+  ip2(b);
+
+  Writef(("\n\n    % proof obligation discharged this Level",bsrv 1 berv))
+ =>
+  ip2(1);
+
+  btest(b>9) &
+  Writef(("\n\n   % proof obligations discharged this Level",bsrv b berv))
+ =>
+  ip2(b);
+
+  btest(b>99) &
+  Writef(("\n\n  % proof obligations discharged this Level",bsrv b berv))
+ =>
+  ip2(b);
+
+  btest(b>999) &
+  Writef(("\n\n % proof obligations discharged this Level",bsrv b berv))
+ =>
+  ip2(b);
+
+  Writef(("\n    % proof obligations discharged previously",a))
+ =>
+  ip1(a);
+
+  Writef(("\n    1 proof obligation discharged previously"))
+ =>
+  ip1(1);
+
+  btest(a>9) &
+  Writef(("\n   % proof obligations discharged previously",a))
+ =>
+  ip1(a);
+
+  btest(a>99) &
+  Writef(("\n  % proof obligations discharged previously",a))
+ =>
+  ip1(a);
+
+  btest(a>999) &
+  Writef(("\n % proof obligations discharged previously",a))
+ =>
+  ip1(a)
+
+END
+
+&
+
+THEORY GiveStatInfoX IS
+
+#define GiveStatInfo \
+       bcall((((ARI)~;GiveStatInfoX)~):gso)
+
+  brule(TempX.12,a) &    /* no of lemmas already proved */
+  brule(TempX.13,b) &    /* no of lemmas proved during this session */
+  brule(TempX.14,c) &    /* no of lemmas remaining unproved */
+  brule(TempX.20,d) &    /* no of lemmas not attempted */
+  brule(TempX.21,e) &    /* total no of lemmas */
+  InformProved(a,b,c+d,e-d-a)
+ =>
+  gso
+
+END
+
+&
+
+THEORY TempX IS 
+
+?;?;?;?;?;?;?;?;?;?;?;  /* temporary storage */
+0;                      /* no of lemmas already proved */
+0;                      /* no of lemmas proved during this session */
+0;                      /* no of lemmas remaining unproved */
+?;                      /* whoops ... forgot one */
+?;                      /* whoops ... forgot another */
+?;                      /* 17 not used */
+?;                      /* 18 store incremented .pmd file name (string) */
+?;                      /* 19 store incremented .pmd file name (non-string) */
+0;                      /* 20 no of lemmas not attempted */
+0                       /* 21 total no lemmas */
+
+END                    
+
+&
+
+THEORY NotProvedX IS
+
+/*
+  to make auto bcall terminate (sucessful) ...
+*/
+
+  brule(TempX.14,n) &
+  ModifyRule(TempX,14,(n+1))    /* increment unproved lemmas count */
+ =>
+  notproved
+
+END
+
+&
+
+
+
+THEORY CheckUsersTheoryX IS
+
+#define CheckUsersTheory(x) bcall((CheckUsersTheoryX;MODR):cut(x))
+
+
+  0;  /* for result */
+
+  cut(a.b.n.po);                    /* n>0, non-empty pmd */
+
+  brule(LoadProofMethodX.5,0) &     /*n>0,  empty pmd */
+  bmodr(CheckUsersTheoryX.1,1)
+ =>
+  cut(a.b.n.po);
+
+  cut(a.b.0.po)
+
+END
+
+&
+
+THEORY PrintAPRuleX IS
+
+/* 
+
+  invocation
+    PrintAPRule(x):
+      x the rule/lemma to be printed
+
+  result
+    POGeneratorFromUserX.1=0 => `IS x' printed
+    POGeneratorFromUserX.1=1 => `; x' printed
+
+*/
+
+/*
+#define PrintAPRule(x) bcall((ARI~;SUB~;PrintAPRuleX;WRITE;MODR):pr(x))
+*/
+#define PrintAPRule(x) bcall((PrintAPRuleX;WRITE):pr(x))
+
+  bprintf(";%",x)                     /* not first rule of theory */
+ =>
+  pr(x);
+
+  brule(ProcessLemmaFilesX.2,1) &      /* first rule of theory */
+  bprintf("IS\n%",x)
+ =>
+  pr(x)
+
+END
+
+&
+
+THEORY ExpandAPHypothesisX IS
+
+#define Expand_Hyp_If_Reqd(x) bcall(ExpandAPHypothesisX~ : chk_Hyp_Expansion(x))
+
+/***
+INV - no PRE
+   Never read directly by the AutoProver
+   If INV only required, it will have been duplicated below
+***/
+
+#define HypPatternMatch_INV(x)      brule(ExpandAPHypothesisX.1,x)
+
+#define Set_HypPatternMatch_INV(x)  bcall(MODR:bmodr(ExpandAPHypothesisX.1,x))
+
+#define Read_Exp_Hyp_INV(x)         brule(ExpandAPHypothesisX.2,x)
+
+#define Set_Exp_Hyp_INV(x)          bcall(MODR:bmodr(ExpandAPHypothesisX.2,x))
+
+
+  ?; /* 1. Current (pattern) `cst(m)&ctx(m)&inv(m)&asn(m)'
+           for which Hyp_INV expanded
+     */
+
+  ?; /* 2. Expanded Hyp_INV */
+
+/***
+INV and PRE
+   Never read directly by the AutoProver
+***/
+
+#define HypPatternMatch_INVPRE(x)      brule(ExpandAPHypothesisX.3,x)
+
+#define Set_HypPatternMatch_INVPRE(x)  bcall(MODR:bmodr(ExpandAPHypothesisX.3,x))
+
+#define Read_Exp_Hyp_INVPRE(x)         brule(ExpandAPHypothesisX.4,x)
+
+#define Set_Exp_Hyp_INVPRE(x)          bcall(MODR:bmodr(ExpandAPHypothesisX.4,x))
+
+
+/***
+Read directly by the AutoProver
+***/
+
+#define Read_Expanded_Hyp(x) brule(ExpandAPHypothesisX.4,x)
+
+
+  ?; /* 3. Current (pattern) `cst(m)&ctx(m)&inv(m)&asn(m)&pre(o)'
+           for which Hyp_INVPRE expanded
+     */
+
+  ?; /* 4. Expanded Hyp_INVPRE */
+
+
+  HypPatternMatch_INV(a) &
+  Read_Exp_Hyp_INV(b) &
+  Set_HypPatternMatch_INVPRE(a) &
+  Set_Exp_Hyp_INVPRE(b)
+ =>
+  duplicate_INV_INVPRE;
+
+  bgetallhyp(H) &
+  Set_Exp_Hyp_INVPRE(H)
+ =>
+  sto_Exp_Hyp_INVPRE;           /* not bfalse if this reached */
+
+  bgetallhyp(H) &
+  Set_Exp_Hyp_INV(H)
+ =>
+  sto_Exp_Hyp_INV;              /* not bfalse if this reached */
+
+
+  /***
+  INV now expanded - expand pre
+  ***/
+  ReadPROOFMETHODTactic(B,F) &
+/***
+HERE1((" ... Now generating pre":F)) &
+***/
+  bgetallhyp(G) &
+  Set_Exp_Hyp_INV(G) &
+  bcall(((DED;ExpandAPHypothesisX),F):(pre(o)=>sto_Exp_Hyp_INVPRE))
+ =>
+  sto_Exp_Hyp_INV(pre(o));     /* not bfalse if this reached */
+
+
+
+  /***
+  Nothing expanded - expand inv (pre not reqd)
+  ***/
+  ReadPROOFMETHODTactic(B,F) &
+/***
+HERE1(("Nothing yet expanded - generating inv":F)) &
+***/
+  Set_HypPatternMatch_INV(H) &
+  Set_Exp_Hyp_INV(bfalse) &
+  bcall(((DED;ExpandAPHypothesisX),F):(H=>sto_Exp_Hyp_INV)) &
+  duplicate_INV_INVPRE
+ =>
+  chk_Hyp_Expansion(H);
+
+  /***
+  Nothing expanded - expand inv and then pre
+  ***/
+  ReadPROOFMETHODTactic(B,F) &
+/***
+HERE1(("Nothing yet expanded - generating inv first ... ":F)) &
+***/
+  Set_HypPatternMatch_INV(H) &
+  Set_HypPatternMatch_INVPRE((H&pre(o))) &
+  Set_Exp_Hyp_INV(bfalse) &
+  Set_Exp_Hyp_INVPRE(bfalse) &
+  bcall(((DED;ExpandAPHypothesisX),F):(H=>sto_Exp_Hyp_INV(pre(o))))
+ =>
+  chk_Hyp_Expansion(H&pre(o));
+
+  /***
+  INV already expanded - expand pre
+  ***/
+  ReadPROOFMETHODTactic(B,F) &
+/***
+HERE1(("INV already expanded - generating pre":F)) &
+***/
+  HypPatternMatch_INV(H) &
+  Read_Exp_Hyp_INV(G) &
+  Set_HypPatternMatch_INVPRE((H&pre(o))) &
+  Set_Exp_Hyp_INVPRE(bfalse) &
+  bcall(DED:(G=> bcall(((DED;ExpandAPHypothesisX),F):(pre(o)=>sto_Exp_Hyp_INVPRE))))
+ =>
+  chk_Hyp_Expansion(H&pre(o));
+
+  /***
+  Hyp already expanded
+  ***/
+/***
+HERE1(("Already expanded")) &
+***/
+  HypPatternMatch_INVPRE(H)
+ =>
+  chk_Hyp_Expansion(H)
+
+END
+
+&
+
+THEORY AND_THEN_SwitchX IS
+
+  /***
+  so the conjoin is broken here rather than in SwitchX
+  (thus avoiding ols goal problems) and to ensure that
+  the original goal is presented to QueryUserX
+  ***/
+
+  bcall(SwitchX:x | QueryUserX: (SwitchX: x | x))
+ =>
+  x
+
+END
+
+&
+
+THEORY ProcessLemmaFilesX IS
+
+#define ProcessLemmaFiles \
+             bcall(((MAP;MODR;WRITE;CATL)~;ProcessLemmaFilesX)~:plf)
+
+#define OverwriteAsProved bcall((ProcessLemmaFilesX;MODR;ARI;MODR):oap)
+
+  ?;   /* current lemma */
+
+  ?;   /* no of current lemma in theory */
+
+  ?;   /* theory name */
+
+  ?;   /* 0=>proved 1=>unproved */
+
+  ?;   /* 0=>nothing yet printed */
+
+
+  brule(TempX.13,n) &
+  bmodr(ProcessLemmaFilesX.4,0) &
+  bmodr(TempX.13,(n+1))
+ =>
+  oap;
+
+  brule(ProcessLemmaFilesX.1,l) &
+  brule(ProcessLemmaFilesX.4,1) &      /* not proved */
+  PrintAPRule(1) &
+  WriteDash &
+  CheckForSpace
+ =>
+  plf4;
+
+  brule(ProcessLemmaFilesX.1,l) &
+  brule(ProcessLemmaFilesX.4,1) &      /* not proved */
+  brule(ProcessLemmaFilesX.3,BToolLemmas) &
+  brule(ProcessLemmaFilesX.1,L) &
+/***
+HERENOARI((1:L))&
+***/
+  PrintAPRule(L) &
+  WriteDash &
+  CheckForSpace
+ =>
+  plf4;
+
+  brule(ProcessLemmaFilesX.1,l) &
+  brule(ProcessLemmaFilesX.4,0) &      /* proved */
+  PrintAPRule(0) &
+  WritePlus &
+  CheckForSpace
+ =>
+  plf4;
+
+  brule(ProcessLemmaFilesX.1,l) &
+  brule(ProcessLemmaFilesX.4,0) &      /* a BToolLemmas proved */
+  brule(ProcessLemmaFilesX.3,BToolLemmas) &
+  brule(ProcessLemmaFilesX.1,L) &
+/***
+HERENOARI((2:L))&
+***/
+  PrintAPRule(bproved(L)) &
+  WritePlus &
+  CheckForSpace
+ =>
+  plf4;
+
+
+
+  /***
+  not in `StoreThyNames'
+  ***/
+  brule(TempX.20,x) &
+  ModifyRule(TempX,20,(x+1)) &        /* increment lemmas count */
+  bmodr(ProcessLemmaFilesX.1,a) &
+  bmodr(ProcessLemmaFilesX.2,m) &
+  bmodr(ProcessLemmaFilesX.4,1) &
+  PrintAPRule(1) &
+  WriteDot &
+  CheckForSpace
+ =>
+  plf3(a,m,n);
+
+/***
+  if theory name.num for current rule is in
+  theory `StoreThyNames' then attempt proof
+***/
+
+  brule(ProcessLemmaFilesX.3,T) &            /* current theory name */
+  brule(StoreThyNamesX.I,T.m) & 
+  bmodr(ProcessLemmaFilesX.1,a) &
+  bmodr(ProcessLemmaFilesX.2,m) &
+  bmodr(ProcessLemmaFilesX.4,1) &
+  bcall
+    (
+      AND_THEN_SwitchX       :    (a&OverwriteAsProved) |
+      NotProvedX             :    notproved
+    ) &
+  plf4
+ =>
+  plf3(a,m,n);
+
+  /***
+  if theory name for current rule is in
+  theory `StoreThyNames' then attempt proof
+  ***/
+  brule(ProcessLemmaFilesX.3,T) &            /* current theory name */
+  brule(StoreThyNamesX.I,T) & 
+  bmodr(ProcessLemmaFilesX.1,a) &
+  bmodr(ProcessLemmaFilesX.2,m) &
+  bmodr(ProcessLemmaFilesX.4,1) &
+  bcall
+    (
+      AND_THEN_SwitchX       :    (a&OverwriteAsProved) |
+      NotProvedX             :    notproved
+    ) &
+  plf4
+ =>
+  plf3(a,m,n);
+
+  /***
+  if the name theorywQeeZZJJJ is stored
+  in theory `StoreThyNamesX' then attempt to prove all lemmas
+  ***/
+  brule(StoreThyNamesX.I,theorywQeeZZJJJ) & 
+  bmodr(ProcessLemmaFilesX.1,a) &
+  bmodr(ProcessLemmaFilesX.2,m) &
+  bmodr(ProcessLemmaFilesX.4,1) &
+  bcall
+    (
+      AND_THEN_SwitchX       :    (a&OverwriteAsProved) |
+      NotProvedX             :    notproved
+    ) &
+  plf4
+ =>
+  plf3(a,m,n);
+
+  /***
+  already proved
+  ***/
+  brule(TempX.12,x) &
+  ModifyRule(TempX,12,(x+1)) &
+  bmodr(ProcessLemmaFilesX.2,m) &
+  PrintAPRule(0) &
+  WriteStar &
+  CheckForSpace
+ =>
+  plf3(0,m,n);
+
+  brule(TempX.12,x) &
+  ModifyRule(TempX,12,(x+1)) &
+  bmodr(ProcessLemmaFilesX.2,m) &
+/***
+HERENOARI((3:L))&
+***/
+  PrintAPRule(bproved(L)) &
+  WriteStar &
+  CheckForSpace
+ =>
+  plf3(bproved(L),m,n);       /* a BToolLemma already proved */
+
+  plf3(a,m,n)
+ =>
+  plf2a(a,m,n);
+
+  brule(TempX.21,x) &
+  ModifyRule(TempX,21,(x+n)) &        /* increment total lemmas count */
+  plf3(a,n,n)
+ =>
+  plf2a(a,n,n);
+
+  Writef(("\n    %:\n      ",l)) &
+  ResetSpace &
+  plf2a bnmap a &
+  bprintf("\nEND\n")
+ =>
+  plf2(l)(a);
+
+  bprintf("\nEND\n")
+ =>
+  plf2(l)(?);                        /* no lemmas */
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  plf1a(f)(l);
+
+  bget(f,x) &
+  bprintf("&\nTHEORY % ",l) &
+  bmodr(ProcessLemmaFilesX.3,l) &
+  plf2(l)(x)
+ =>
+  plf1a(f)(l);
+
+  brule(ProcessLemmaFilesX.5,0) &
+  bget(f,x) &
+  bprintf("THEORY % ",l) &
+  bmodr(ProcessLemmaFilesX.5,1) &
+  bmodr(ProcessLemmaFilesX.3,l) &
+  plf2(l)(x)
+ =>
+  plf1a(f)(l);
+
+  plf1a(bcatl("POB/",l,"Lemma"))(l)
+ =>
+  plf1(l);
+
+  plf1(?);
+
+  brule(DecomposePOFileX.2,l) &
+  bmodr(ProcessLemmaFilesX.5,0) &
+  plf1 bsmap l
+ =>
+  plf
+
+END
+
+&
+
+THEORY DecomposePOFileX IS
+
+#define DecomposePOFile(f) \
+      bcall((((MAP;CATL;MODR~;WRITE;RULE)~;DecomposePOFileX)~):dpo(f))
+
+  ?;   /* for (n+1) po file */
+
+  ?;   /* for Lemma names */
+
+  bclean(BToolLemmas);
+
+
+/* connect to "a.b.(n+1).po" */
+
+  brule(DecomposePOFileX.1,t) &
+  InformCantConnect(t) &
+  PFZ
+ =>
+  dpo_connect;
+
+  brule(DecomposePOFileX.1,t) &
+  bmodr(WriteX.1,t) &
+  bconnect(t)
+ =>
+  dpo_connect;
+
+
+  brule(a.m,R) &
+  bprintf("  (%);",R)
+ =>
+  dpo3(a,r,m,n);      /* not 1 since want to work for level 0 */
+
+  bprintf("(%);",0)
+ =>
+  dpo3(a,0,m,n);
+
+/***
+HERENOARI((4:L))&
+***/
+  bprintf("(%);",L)
+ =>
+  dpo3(BToolLemmas,L,m,n);
+
+  brule(a.n,R) &
+  bprintf("  (%)\n",R)
+ =>
+  dpo3(a,r,n,n);      /* not 1 since want to work for level 0 */
+
+  bprintf("(%)\n",0)
+ =>
+  dpo3(a,0,n,n);
+
+/***
+HERENOARI((5:L))&
+***/
+  bprintf("(%)\n",L)
+ =>
+  dpo3(BToolLemmas,L,n,n);
+
+  InformCantConnect(l) &
+  PFZ
+ =>
+  dpo2(l)(a)(b);
+
+  bconnect(l) &
+  bmodr(WriteX.1,l) &
+  brule(DecomposePOFileX.2,x) &
+  bmodr(DecomposePOFileX.2,(x;a)) &
+  dpo3(a) bnmap b &
+  bclean(a)
+ =>
+  dpo2(l)(a)(b);
+
+
+  dpo1(x);
+
+  dpo2(bcatl("POB/",a,"Lemma"))(a)(b)
+ =>
+  dpo1(THEORY a IS b END);
+
+
+/* ignore sys & generated info */
+
+  dpo1(THEORY ExpandHypX END);
+
+  dpo1(THEORY ExpandHypX IS a END);
+
+  dpo1(THEORY EnumerateX END);
+
+  dpo1(THEORY EnumerateX IS a END);
+
+  dpo1(THEORY NotEqualX END);
+
+  dpo1(THEORY NotEqualX IS a END);
+
+  dpo1(THEORY RewriteToFalseOrTrueX END);
+
+  dpo1(THEORY RewriteToFalseOrTrueX IS a END);
+
+  dpo1(THEORY FwdContra0X END);
+
+  dpo1(THEORY FwdContra0X IS a END);
+
+  dpo1(THEORY FwdEqual1X END);
+
+  dpo1(THEORY FwdEqual1X IS a END);
+
+  dpo1(THEORY PropertiesX END);
+
+  dpo1(THEORY PropertiesX IS a END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  dpo(f);
+
+  brule(TempX.11,g) &
+  bmodr(DecomposePOFileX.1,g) &  /* "POB/a.b.(n+1).po" */
+  bmodr(DecomposePOFileX.2,?) &
+/***
+HERE(("111"))&
+***/
+  bget(f,x) &
+/***
+HERE(("222"))&
+***/
+  dpo1 bsmap x &
+/***
+HERE(("333"))&
+***/
+  dpo_connect
+ =>
+  dpo(f)
+
+END
+
+&
+
+THEORY LoadZeroLevelPOFileX IS
+
+#define LoadZeroLevelPOFile(f,b) \
+  bcall((((MAP;CATL;MODR~;WRITE;RULE)~;LoadZeroLevelPOFileX)~):lzl_0(f)(b))
+
+  ?; /* 1 => FEQL set, 0 otherwise */
+
+
+  lzl_2(x);
+
+  bcrelr(t,a)
+ =>
+  lzl_2(THEORY t IS a END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lzl_1(f);
+
+/***
+HERE((49 --- f))&
+***/
+  bget(f,x) &
+/***
+HERE(("00"))&
+***/
+  lzl_2 bsmap x
+ =>
+  lzl_1(f);
+
+
+
+  InformUserTheoryPresent
+ =>
+  additional_inform_info2;
+
+  brule(LoadProofMethodX.1,?) &
+  InformUserTheoryNotPresent
+ =>
+  additional_inform_info2;
+
+  Read_REASONING_DEPTH(N) &
+  InformREASONING_DEPTH_without_FEQL(N) &
+  additional_inform_info2
+ =>
+  additional_inform_info1;
+
+  brule(LoadZeroLevelPOFileX.1,1) &
+  Read_REASONING_DEPTH(N) &
+  InformREASONING_DEPTH_with_FEQL(N) &
+  additional_inform_info2
+ =>
+  additional_inform_info1;
+
+  chk_FEQL(T);
+
+  bsearch((FEQL~),T,S) &
+  bmodr(LoadZeroLevelPOFileX.1,1)
+ =>
+  chk_FEQL(T);
+
+  bsearch(FEQL,T,S) &
+  bmodr(LoadZeroLevelPOFileX.1,1)
+ =>
+  chk_FEQL(T);
+
+  bmodr(LoadZeroLevelPOFileX.1,1)
+ =>
+  chk_FEQL(FEQL);
+
+  chk_FEQL(t)
+ =>
+  chk_FEQL(t~);
+
+  chk_FEQL(T) &
+  chk_FEQL(t)
+ =>
+  chk_FEQL(T;t);
+
+  bmodr(LoadZeroLevelPOFileX.1,0) &
+  ReadPROOFMETHODTactic(B,F) &
+  chk_FEQL(F) &
+  additional_inform_info1
+ =>
+  additional_inform_info;
+
+  IsPrv(m.mch(X:Y)) &
+  InformAutoProvingMachine(X,Y,m,n) &
+  additional_inform_info &
+/***
+HERE((48 --- f --- m.mch.n.po))&
+***/
+  lzl_1(f)
+ =>
+  lzl_0(f)(m.mch.n.po);
+
+  IsPrv(m.ref(X:Y)) &
+  InformAutoProvingRefinement(X,Y,m,n) &
+  additional_inform_info &
+  lzl_1(f)
+ =>
+  lzl_0(f)(m.ref.n.po);
+
+  IsPrv(m.imp(X:Y)) &
+  InformAutoProvingImplementation(X,Y,m,n) &
+  additional_inform_info &
+  lzl_1(f)
+ =>
+  lzl_0(f)(m.imp.n.po)
+
+END
+
+&
+
+THEORY GetLevelX IS
+
+#define GetLevel(x) bcall(((ARI;MODR;MAP)~;GetLevelX)~:g1(x))
+
+
+  ?;  /* Level of mch/ref/imp/int */  
+
+  bmodr(GetLevelX.1,n+1)
+ =>
+  g4(n)(x);
+
+  g4(n+1)(X)
+ =>
+  g4(n)(X,x);
+
+  g3(a.b)(C)
+ =>
+  g3(a.b)(C,x);
+
+  g4(1)(C)
+ =>
+  g3(a.b)(C,c.d,a.b);
+
+  bmodr(GetLevelX.1,1)
+ =>
+  g3(a.b)(c.d,a.b);
+
+  g2(x);
+
+  bsearch(a.b,C,D) &
+  g3(a.b)(C)
+ =>
+  g2(a.b,C);
+
+  ReadRef(X) &
+  g2(a.b) bsmap X
+ =>
+  g1(a.b);        /* b is ref or imp */
+
+  bmodr(GetLevelX.1,0)
+ =>
+  g1(a.mch)
+
+END
+
+&
+
+THEORY InterProverFromUserX IS
+
+/* for flags */
+
+?;?;?;?;?;?;?;?;?;?;?;?;?;?
+
+END
+
+&
+
+THEORY AutoProverFromUserX IS
+
+/*
+  presents a list of refinement names (obtained from proofobligations path)
+    on screen and gets selection from user
+
+  invocation:
+    AutoProverFromUserX
+  result:
+    to follow ...
+*/
+
+  ?;   /* not used */
+
+  ?;   /* a.b.n.po */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  brule(AutoProverFromUserX.2,a.b.n.po) &
+  GiveStatInfo &
+  CreatePmdTemplate(apr) &
+  brule(TempX.12,A) &           /* no of lemmas already proved */
+  brule(TempX.13,B) &           /* no of lemmas proved during this session */
+  brule(TempX.14,D) &           /* no of lemmas remaining unproved */
+  brule(TempX.20,E) &           /* no of lemmas not attempted */
+  UpdLvl(a.b) &
+  UpdPrv(a.b(D+E)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_AUP:((D+E),(A+B+D+E)))) &
+  Writef(("\n  AutoProof complete\n"))
+ =>
+  check_error;
+
+  brule(AutoProverFromUserX.2,a.b.n.po) &
+  brule(TempX.13,0) &              /* nothing proved */
+  brule(TempX.11,f) &              /* "POB/a.b.(n+1).po" */
+  bshell(bcatl("rm -f ",f)) &
+  Writef(("\n\n  AutoProver - nothing proved\n\n  Current Proof Level % maintained\n  for %\n",n,a.b))
+ =>
+  check_error;
+
+
+  ModifyJobs(X)
+ =>
+  rem_other_apr_jobs_1(X)(a.b);
+
+  bsearch((a.b:BT_AUP:N),X,Y) &
+  rem_other_apr_jobs_1(Y)(a.b)
+ =>
+  rem_other_apr_jobs_1(X)(a.b);
+
+  GetJobs(X) &
+  rem_other_apr_jobs_1(X)(a.b)
+ =>
+  rem_other_apr_jobs_0(a.b);
+
+
+
+  bstring(f) &
+  bstring(g) &
+  Writef(("    ")) &
+  LoadZeroLevelPOFile(g,b) &
+  DecomposePOFile(f) &
+  ProcessLemmaFiles &
+  bshell("rm -f POB/*Lemma") &
+  check_error
+ =>
+  apfu7a(b)(f)(g);   /* f is "a.b.n.po", g is "a.b.0.po" */
+
+  bstring(f) &   
+  bstring(g) &   
+  CheckUsersTheory(b) &
+  apfu7a(b)(f)(g)
+ =>
+  apfu7(b)(f)(g)(N);
+
+  bmodr(AutoProverFromUserX.2,b.c.r.po) &
+  CleanAutoProver &
+  GetLevel(b.c) &
+  ModifyRule(TempX,11,(bcatl("POB/",b,".",c,".",(r+1),".po"))) &
+  ModifyRule(TempX,18,(bcatl("PMD/",b,".",c,".",(r+1),".pmd"))) &
+  ModifyRule(TempX,19,(b.c.(r+1))) &
+  apfu7(b.c.r.po)(bcatl("POB/",b,".",c,".",r,".po"))(bcatl("POB/",b,".",c,".",0,".po"))(N) &
+/*
+  PrintStsFile(b.c.(r+1).po)
+*/
+  CleanAutoProver
+ =>
+  apfu6(b.c.r.po)(N);
+
+  ProofMethodLoadErrorFlagged &
+  rem_other_apr_jobs_0(b.c) &
+  Writef("\n  AutoProof aborted\n")
+ =>
+  apfu6(b.c.r.po)(N);
+
+  bstring(p) &
+  ClearAutoProverError &
+  SetAutoProverFlag &
+  ModifyPOFileName((bcatl("POB/",b,".",c,".",r,".po"))) &
+  ModifyPMDFileName((bcatl("PMD/",b,".",c,".",r,".pmd"))) &
+  ModifyBtlPMDFileName((bcatl("PMD/",b,".",c,".",r,".btl.pmd"))) &
+  LoadProofMethod &
+/*  LoadBtlProofMethod & NO - done by INCLUSION in pmd */
+  ResetSpace &
+  bmodr(ExpandAPHypothesisX.1,?) &
+  bmodr(ExpandAPHypothesisX.2,?) &
+  bmodr(ExpandAPHypothesisX.3,?) &
+  bmodr(ExpandAPHypothesisX.4,?) &
+  apfu6(b.c.r.po)(N) &
+  UnloadProofMethod &
+  bshell("rm -f .Bhyp")
+ =>
+  apfu5(b.c.r.po)(p)(N);
+
+  apfu5(b.c.r.po)(bcatl("PMD/",b,".",c,".",r,".pmd"))(N)
+ =>
+  apfu4a(b.c.r.po)(M:N);
+
+  apfu4a(b.c.r.po)(0:N);         /* no lemmas to prove (remake) */
+
+  IsPrv(b.c(X)) &
+  apfu4a(b.c.r.po)(X)
+ =>
+  apfu4(b.c.r.po)
+
+END
+
+
+
+
+&
+
+THEORY TEST IS
+
+  bcall(apfuTac:
+    apfu5(RRMan.mch.2.po)("PMD/RRMan.mch.2.pmd")(1))
+
+END
+

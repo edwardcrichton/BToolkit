@@ -1,0 +1,3 @@
+(BITSN: POW(NAT*POW(POW(NAT*BOOL))));
+(tsb: POW(BOOL*BOOL*BOOL))|
+(?)

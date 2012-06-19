@@ -1,0 +1,438 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+
+/* must agree with #define in Toolkit31.src
+   also referenced in InterProver.src       */
+#define J_to_be_instantiated abcA____uNkkJ____kkJJJJJJvvEEssWWWAAAQ_______xXx
+
+
+#define HERE(x) bcall(WRITE:bwritef("\n> % <\n",x))
+
+#define HERE1(x) bcall(WRITE:bwritef(" % ",x))
+
+#define Writef(x) bwritef(x)
+
+#define ModifyCurrentTheory(x)  bcall(MODR:bmodr(CurrentTheoryX.1,x))
+#define ReadCurrentTheory(x)    brule(CurrentTheoryX.1,x)
+
+
+THEORY  DOITX IS
+
+
+/*
+#define MakeAuto \
+    bcall((DOITX;DOITX;MAP;(RULE;FLAT;MODR;WRITE;ARI)~;DOITX)~:runauto)
+*/
+#define MakeAuto \
+    bcall((DOITX;DOITX;MAP;(RULE;FLAT;MODR;WRITE)~;DOITX)~:runauto)
+
+
+#include "MakeSetOfRules_FwdTheories.src"
+
+
+  0;  /* (original) flag for  brule(BackTrackNumX.1,J) */
+
+#define FlagBackTrackNumIsReqd   bcall(MODR:bmodr(DOITX.2,1))
+#define FlagBackTrackNumNotReqd  bcall(MODR:bmodr(DOITX.2,0))
+#define BackTrackNumIsReqd       brule(DOITX.2,1)
+#define BackTrackNumNotReqd      brule(DOITX.2,0)
+
+/*************************************************************************/
+
+/**************
+
+  run(auto) to start
+
+**************/
+
+
+  MakeAuto
+ =>
+  run(auto);
+
+
+/*************************************************************************/
+
+/**************
+
+  Theories to be modified (except SwitchX)
+
+**************/
+
+  bprintf("\n (%)",r)
+ =>
+  pt_3(r);
+
+  BackTrackNumIsReqd &
+  bprintf("\n (bcall((InstantiateAndIncBackTrackNumX;SUB):delay(%))=>%)",bcall(a),b)
+ =>
+  pt_3(bcall(a)=>b);
+
+  BackTrackNumIsReqd &
+  bprintf("\n (%&bcall((InstantiateAndIncBackTrackNumX;SUB):delay(%))=>%)",h,bcall(a),b)
+ =>
+  pt_3(h&bcall(a)=>b);
+
+
+
+   /**************
+
+     non-bcall rules
+
+   **************/
+
+  pt_3(r)
+ =>
+  pt_02(r);
+
+
+  /**************
+
+    goal change rules
+
+  **************/
+
+
+  /******* no guard(s) (no conjoin) *******/
+
+  ReadCurrentTheory(T) &
+  pt_3(bcall( t:g                     |
+              QueryUserX:((t:g) <- G) |
+              (T~;SwitchX):G            ) => G)
+ =>
+  pt_02(bcall(t:g) => G);
+
+  ReadCurrentTheory(Or2X) &
+  pt_3(bcall( t:g                     |
+              QueryUserX:((t:g) <- G)   ) => G)
+ =>
+  pt_02(bcall(t:g) => G);
+
+  ReadCurrentTheory(Or1X) &
+  pt_3(bcall( t:g                     |
+              QueryUserX:((t:g) <- G)   ) => G)
+ =>
+  pt_02(bcall(t:g) => G);
+
+  /******* guard(s) (no conjoin) *******/
+
+  ReadCurrentTheory(T) &
+  pt_3(h & bcall( t:g                     |
+                  QueryUserX:((t:g) <- G) |
+                  (T~;SwitchX):G            ) => G)
+ =>
+  pt_02(h & bcall(t:g) => G);
+
+  /******* conjoin (no guard) - FlagBackTrackNumIsReqd *******/
+
+  FlagBackTrackNumIsReqd &
+  ReadCurrentTheory(T) &
+  pt_3(bcall( t:(p&q)                                             |
+              QueryUserX:(J_to_be_instantiated <- (t:(p&q)) <- G) |
+              (T~;SwitchX):G                                        ) => G)
+ =>
+  pt_02(bcall(t:(p&q)) => G);
+
+
+  /******* conjoin (with guard) - FlagBackTrackNumIsReqd *******/
+
+  FlagBackTrackNumIsReqd &
+  ReadCurrentTheory(T) &
+  pt_3(h & bcall( t:(p&q)                                             |
+                  QueryUserX:(J_to_be_instantiated <- (t:(p&q)) <- G) |
+                  (T~;SwitchX):G                                        ) => G)
+ =>
+  pt_02(h & bcall(t:(p&q)) => G);
+
+
+
+
+  /**************
+
+    no goal change rules (ie. tactic change)
+
+  **************/
+
+
+  pt_3(h & bcall(t:g) => g)
+ =>
+  pt_02(h & bcall(t:g) => g);
+
+  pt_3(bcall(t:g) => g)
+ =>
+  pt_02(bcall(t:g) => g);
+
+
+/**************
+
+  no backtrack rules (Bcall)
+
+**************/
+
+
+  ReadCurrentTheory(T) &
+  pt_3(h & bcall(x) => G)
+ =>
+  pt_02(h & Bcall(x) => G);               /* don't go into QueryUserX */
+
+  ReadCurrentTheory(T) &
+  pt_3(bcall(x) => G)
+ =>
+  pt_02(Bcall(x) => G);                   /* don't go into QueryUserX */
+
+
+
+
+
+
+  /**************
+
+    all other theories
+
+  **************/
+
+
+  FlagBackTrackNumNotReqd &
+  bprintf("\n ") &
+  pt_02(s) &
+  bprintf(";\n")
+ =>
+  pt_01(s,m,n);
+
+  FlagBackTrackNumNotReqd &
+  pt_02(s) &
+  bprintf("\n")
+ =>
+  pt_01(s,n,n);
+
+
+
+
+  pt_01 bnmap (s)
+ =>
+  pt_00(s);
+
+
+
+/*************************************************************************/
+
+  /**************
+
+    Theories to be unchanged (SwitchX)
+
+  **************/
+
+
+  bprintf("\n (%)\n;",r)
+ =>
+  put_1(r,n,m);                 /* not last rule */
+
+  bprintf("\n (%)\n",r)
+ =>
+  put_1(r,n,n);                 /* last rule */
+
+  put_1 bnmap b
+ =>
+  put_0(b);
+
+
+
+/*************************************************************************/
+
+  /**************
+
+    Fwd Theories
+
+  **************/
+
+  bprintf("\n (%)\n",(g))
+ =>
+  pft_1(g);
+
+  bprintf("\n (%);\n",(a&b=>g)) &
+  bprintf("\n (%)\n",(b&a=>g))
+ =>
+  pft_1(a&b=>g);
+
+  bprintf("\n (%);\n",(a&b&c=>g)) &
+  bprintf("\n (%);\n",(a&c&b=>g)) &
+  bprintf("\n (%);\n",(b&a&c=>g)) &
+  bprintf("\n (%);\n",(b&c&a=>g)) &
+  bprintf("\n (%);\n",(c&a&b=>g)) &
+  bprintf("\n (%)\n",(c&b&a=>g))
+ =>
+  pft_1(a&b&c=>g);
+
+  bprintf("\n (%);\n",(a&b&c&d=>g)) &
+  bprintf("\n (%);\n",(a&b&d&c=>g)) &
+  bprintf("\n (%);\n",(a&c&b&d=>g)) &
+  bprintf("\n (%);\n",(a&c&d&b=>g)) &
+  bprintf("\n (%);\n",(a&d&b&c=>g)) &
+  bprintf("\n (%);\n",(a&d&c&b=>g)) &
+
+  bprintf("\n (%);\n",(b&c&a&d=>g)) &
+  bprintf("\n (%);\n",(b&c&d&a=>g)) &
+  bprintf("\n (%);\n",(b&d&a&c=>g)) &
+  bprintf("\n (%);\n",(b&d&c&a=>g)) &
+  bprintf("\n (%);\n",(b&a&c&d=>g)) &
+  bprintf("\n (%);\n",(b&a&d&c=>g)) &
+
+  bprintf("\n (%);\n",(c&a&b&d=>g)) &
+  bprintf("\n (%);\n",(c&a&d&b=>g)) &
+  bprintf("\n (%);\n",(c&b&a&d=>g)) &
+  bprintf("\n (%);\n",(c&b&d&a=>g)) &
+  bprintf("\n (%);\n",(c&d&a&b=>g)) &
+  bprintf("\n (%);\n",(c&d&b&a=>g)) &
+
+  bprintf("\n (%);\n",(d&a&b&c=>g)) &
+  bprintf("\n (%);\n",(d&a&c&b=>g)) &
+  bprintf("\n (%);\n",(d&b&a&c=>g)) &
+  bprintf("\n (%);\n",(d&b&c&a=>g)) &
+  bprintf("\n (%);\n",(d&c&a&b=>g)) &
+  bprintf("\n (%)\n",(d&c&b&a=>g))
+ =>
+  pft_1(a&b&c&d=>g);
+
+  pft_1(r) &           /* not last rule */
+  bprintf(";")
+ =>
+  pft_0(r,m,n);
+
+  pft_1(r)             /* last rule */
+ =>
+  pft_0(r,n,n);
+
+
+
+
+/*************************************************************************/
+
+  /**************
+
+    Empty Theories
+
+  **************/
+
+  run(THEORY a END,m,n);
+
+
+/*************************************************************************/
+
+  /**************
+
+    Theories other than SwitchX, Fwd Theories
+
+  **************/
+
+  ModifyCurrentTheory(a) &
+  bprintf("\nTHEORY % IS\n",a) &
+  pt_00(b) &
+  bprintf("\nEND\n\n&\n")
+ =>
+  run(THEORY a IS b END, n,m);             /* not last theory */
+
+  ModifyCurrentTheory(a) &
+  bprintf("\nTHEORY % IS\n",a) &
+  pt_00(b) &
+  bprintf("\nEND\n")
+ =>
+  run(THEORY a IS b END, n,n);             /* last theory */
+
+/*************************************************************************/
+
+  /**************
+
+    Fwd Theories
+
+  **************/
+
+  brule(DOITX.1,A) &
+  bsearch(a,A,B) &
+  bprintf("\nTHEORY % IS\n",a) &
+  pft_0 bnmap (b) &
+  bprintf("\nEND\n\n&\n")
+ =>
+  run(THEORY a IS b END, n,m);             /* not last theory */
+
+  brule(DOITX.1,A) &
+  bsearch(a,A,B) &
+  bprintf("\nTHEORY % IS\n",a) &
+  pft_0 bnmap (b) &
+  bprintf("\nEND\n")
+ =>
+  run(THEORY a IS b END, n,n);             /* last theory */
+
+/*************************************************************************/
+
+  /**************
+
+    SwitchX Theory
+
+  **************/
+
+  bprintf("\nTHEORY % IS\n",SwitchX) &
+  put_0(b) &
+  bprintf("\nEND\n\n&\n")
+ =>
+  run(THEORY SwitchX IS b END, m,n);       /* not last theory */
+
+
+  bprintf("\nTHEORY % IS\n",SwitchX) &
+  put_0(b) &
+  bprintf("\nEND\n")
+ =>
+  run(THEORY SwitchX IS b END, n,n);       /* last theory */
+
+
+/*************************************************************************/
+
+
+  Writef(("\n\n  Can't connect to SetOfRules_IP.made\n\n"))
+ =>
+  connectSetOfRules_IP.made;
+
+  bconnect("SetOfRules_IP.made") &
+  Writef(("-- Creating SetOfRules_IP.made ..."))
+ =>
+  connectSetOfRules_IP.made;
+
+  Writef(("\n\n  Can't connect to SetOfRules\n\n"))
+ =>
+  runauto;
+
+  bget("SetOfRules",r) &
+  connectSetOfRules_IP.made &
+  run bnmap r &
+  Writef((" done\n"))
+ =>
+  runauto
+
+/*************************************************************************/
+
+END
+
+&
+
+THEORY CurrentTheoryX IS
+
+  ?
+
+END

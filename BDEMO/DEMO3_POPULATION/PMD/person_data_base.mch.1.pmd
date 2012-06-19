@@ -1,0 +1,32 @@
+PROOFMETHOD
+
+ person_data_base.mch.1
+
+IS
+
+ USETAC
+
+  (UsersTheory~),
+  (FwdUsersTheory~)
+
+ END
+
+ &
+
+ THEORY UsersTheory IS
+
+/*
+   The folowing rule is introduced ; the rule states
+   that a partial injection  over to sets ( s and d) also
+   is a partial injection over bigger sets  ( S and D )
+*/
+
+  binhyp(f : s >+> d) &
+  s <: S &
+  d <: D 
+ =>
+  f : S >+> D
+
+ END
+
+END

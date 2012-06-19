@@ -1,0 +1,213 @@
+<HTML>
+<HEAD>
+  <TITLE>The Rename_BiArrO machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre>/*
+Description: Machine adapted from the object sequence.  This array sequences has many
+simplifications.  Each array has a fixed length.  There is a seperation of concerns.
+Array object are for storage primarily.  It is assumed that those wishing to 
+undertake arithmetic manipulation of index contents or comparsons of index values
+will use the individual array machines.
+ Operations FULL, XST, INI, CRE, VAL, NXT, EQL, STO, NXT_STO, CPY, FILL
+
+
+History :
+080597 v0.01 : Created.
+130597 v0.02 : Member operation removed - possibility of reading unwritten
+ 	       locations.
+*/
+<A NAME="MACHINE">MACHINE</A>             Rename_BiArrO(maxobj,ub)	
+/* `maxobj - max no. objects,  no. of storage locations. */	
+
+SEES                <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>, <A HREF="Uns_TYPE.mch.html#MACHINE">Uns_TYPE</A>
+
+CONSTRAINTS         maxobj: 1..255 & ub&gt;0 & maxobj*ub&lt;=32768
+  
+<A NAME="SETS">SETS</A>                Rename_ARROBJ
+
+<A NAME="CONSTANTS">CONSTANTS</A>           Rename_lb
+
+PROPERTIES          card(Rename_ARROBJ) = maxobj & Rename_lb = <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(1)
+
+VARIABLES
+
+  Rename_BiAO_arr,
+  Rename_BiAO_arrtok,		/* array identifiers (tokens). */
+  Rename_BiAO_arrstruct,	/* structure consisting of each array and its token. */
+  Rename_BiAO_nxt		/* array pointer structure. */
+
+<A NAME="INVARIANT">INVARIANT</A>
+
+  Rename_BiAO_arr : <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb)..ub +-&gt; <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+  Rename_BiAO_arrtok &lt;: Rename_ARROBJ &
+  Rename_BiAO_arrstruct: Rename_BiAO_arrtok --&gt; (<A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb)..ub +-&gt; <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) &
+  Rename_BiAO_nxt :  Rename_BiAO_arrtok --&gt; /* NAT */ <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb)..ub
+
+INITIALISATION
+
+  Rename_BiAO_arr, Rename_BiAO_arrtok, Rename_BiAO_arrstruct, Rename_BiAO_nxt :=
+       {},{},{},{}
+
+OPERATIONS
+
+/******************  General query functions *********************/
+
+
+  /* Are all the tokens used up. */
+  bb &lt;-- <A NAME="Rename_BiAO_OBJ_FUL">Rename_BiAO_OBJ_FUL</A> =
+  BEGIN
+    bb:=bool(Rename_ARROBJ =  Rename_BiAO_arrtok)
+  END;
+
+  /* Does the array `pp' exist? */
+  bb &lt;-- <A NAME="Rename_BiAO_XST">Rename_BiAO_XST</A>(pp) =
+  PRE
+    pp: Rename_ARROBJ
+  THEN
+    bb:=bool(pp:Rename_BiAO_arrtok)
+  END;
+
+
+/******************  Creating and deleting sequences **************/
+
+
+  /* Reset all pointers. */
+  <A NAME="Rename_BiAO_INI">Rename_BiAO_INI</A> =
+  BEGIN
+    Rename_BiAO_arrtok, Rename_BiAO_arrstruct,  Rename_BiAO_nxt := {},{}, {}
+  END;
+
+  /* Create an array structure. */
+  bb,pp &lt;-- <A NAME="Rename_BiAO_CRE">Rename_BiAO_CRE</A> =
+  IF Rename_BiAO_arrtok /= Rename_ARROBJ THEN
+      ANY qq WHERE
+        qq: Rename_ARROBJ - Rename_BiAO_arrtok
+      THEN
+        Rename_BiAO_arrstruct(qq):= {} ||	/* EMPTY MAP */
+        Rename_BiAO_nxt(qq) := <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb) ||
+        Rename_BiAO_arrtok := Rename_BiAO_arrtok \/ {qq} ||
+        pp:=qq ||
+        bb := TRUE
+      END
+  ELSE
+      bb:= FALSE || pp :: Rename_ARROBJ
+  END;
+
+/* No need to kill one array kill all with INI. */
+
+/******************  Query functions for individual sequences **********/
+
+  /* View contents of location. */
+  vv &lt;-- <A NAME="Rename_BiAO_VAL">Rename_BiAO_VAL</A>(pp,ii) =
+  PRE
+    ii : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> &
+    pp:Rename_BiAO_arrtok &
+    <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii):dom(Rename_BiAO_arrstruct(pp))
+  THEN 
+    vv:=Rename_BiAO_arrstruct(pp)(<A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii))
+  END;
+
+
+  /* Next available storage location in `pp'. */
+  nn &lt;-- <A NAME="Rename_Rename_BiAO_nxt">Rename_Rename_BiAO_nxt</A>(pp) =
+  PRE
+    pp : Rename_BiAO_arrtok
+  THEN
+    nn := <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(Rename_BiAO_nxt(pp))
+  END;
+
+
+  /* Are two array contents equal (notincluding next points). */
+  bb &lt;-- <A NAME="Rename_BiAO_EQL">Rename_BiAO_EQL</A>(ss,tt) =
+  PRE
+     tt : Rename_BiAO_arrtok &
+     ss : Rename_BiAO_arrtok
+  THEN
+     bb := bool(Rename_BiAO_arrstruct(tt) = Rename_BiAO_arrstruct(ss))
+  END;
+
+/******************   Sequence Operations ***********************/
+
+ /* Store vv in array pp at location ii and set next location to ii+1 */
+ <A NAME="Rename_BiAO_STO">Rename_BiAO_STO</A>(pp,ii,vv) =
+  PRE
+    pp : Rename_BiAO_arrtok &
+    vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+    ii : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> &
+    <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii) : <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb)..ub
+  THEN 
+    Rename_BiAO_arrstruct(pp)(<A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii)) := vv ||
+
+    IF <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii) &lt; ub THEN
+      Rename_BiAO_nxt(pp) := <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(ii) + 1 /* Next available position recorded. */
+    ELSE 
+      Rename_BiAO_nxt(pp) := <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb)	 /* Wraps around. */
+    END
+  END;
+
+
+ /* Store vv in array pp at `next' location and inc next location. */
+  <A NAME="Rename_BiAO_STO_NXT">Rename_BiAO_STO_NXT</A>(pp,vv) =
+  PRE
+    pp: Rename_BiAO_arrtok &
+    vv: <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>
+  THEN
+    Rename_BiAO_arrstruct(pp)(Rename_BiAO_nxt(pp)) := vv ||
+
+    IF Rename_BiAO_nxt(pp) &lt; ub THEN
+      Rename_BiAO_nxt(pp) := Rename_BiAO_nxt(pp) + 1 /* Next available position recorded.*/
+    ELSE 
+      Rename_BiAO_nxt(pp) := <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb)		    /* Wraps around. */
+    END
+  END;
+
+
+  /* Copy array pp to array qq. */
+  <A NAME="Rename_BiAO_CPY">Rename_BiAO_CPY</A>(pp,qq) =
+  PRE
+    pp:Rename_BiAO_arrtok &
+    qq:Rename_BiAO_arrtok 
+  THEN
+    Rename_BiAO_arrstruct(qq):=Rename_BiAO_arrstruct(pp)
+  END;
+
+
+/* fill store. */
+  <A NAME="Rename_BiAO_FILL">Rename_BiAO_FILL</A>(pp: Rename_ARROBJ & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+  PRE
+    pp:Rename_BiAO_arrtok
+  THEN
+    ANY array WHERE
+      array : <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb)..ub +-&gt; <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+      card(array) = ub &
+      ran(array) = {vv}
+    THEN
+      Rename_BiAO_arrstruct(pp) := array
+    END
+         ||
+    Rename_BiAO_nxt(pp):= <A HREF="Uns_TYPE.mch.html#CONSTANTS">u2n</A>(Rename_lb)		/* wraps around. */
+  END
+
+END
+
+
+
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

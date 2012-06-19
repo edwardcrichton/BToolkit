@@ -1,0 +1,72 @@
+(
+(Sgn_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(
+(ss_Sgn(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(ss_sgn)
+;
+(vv = ss_sgn)
+;
+(vv = ss_sgn & ss_sgn: SIGNED)
+;
+(?)
+;
+(ss_STO(0))
+;
+(@ss_sgnx.(ss_sgnx: SIGNED ==> ss_sgn:=ss_sgnx);
+(0: SIGNED | ss_sgn:=0))
+;
+(op)
+;
+(op)
+;
+(test_sgnI(maxval):(maxval: NAT):(test_sgn))
+;
+(
+(
+ (op)
+;
+ (?,Val_Op,Det_Op,(oo <-- op(ii)))
+;
+ (ii)
+;
+ (oo)
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+)

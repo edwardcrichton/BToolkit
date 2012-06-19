@@ -1,0 +1,19 @@
+THEORY Initialisation IS
+0;0;0;0;0
+END
+&
+THEORY newborn IS
+0;0;0;0;1
+END
+&
+THEORY mod_mother IS
+0
+END
+&
+THEORY marriage IS
+0;0
+END
+&
+THEORY death IS
+0
+END

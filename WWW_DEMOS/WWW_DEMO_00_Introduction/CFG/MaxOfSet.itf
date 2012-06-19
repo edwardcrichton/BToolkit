@@ -1,0 +1,10 @@
+INTERFACE
+
+  MaxOfSet(/* max_val */ 1000000)
+
+OPERATIONS
+
+  enter,
+  maximum
+
+END

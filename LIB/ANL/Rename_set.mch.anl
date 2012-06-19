@@ -1,0 +1,513 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_sset , Rename_ordn)
+;
+(Rename_sset , Rename_ordn)
+;
+(Rename_sset : FIN(VALUE) & Rename_ordn : perm(Rename_sset) & card(Rename_sset) <= maxcrd)
+;
+(Rename_sset : FIN(VALUE) & Rename_ordn : perm(Rename_sset) & card(Rename_sset) <= maxcrd)
+;
+(?)
+;
+(Rename_sset , Rename_ordn := {} , <>)
+;
+(Rename_sset , Rename_ordn := {} , <>)
+;
+(Rename_FUL_SET,Rename_XST_IDX_SET,Rename_CRD_SET,Rename_VAL_SET,Rename_ANY_SET,Rename_CLR_SET,Rename_ENT_SET,Rename_RMV_SET,Rename_MBR_SET,Rename_EMP_SET,Rename_SAV_SET,Rename_RST_SET,Rename_SAVN_SET,Rename_RSTN_SET)
+;
+(Rename_FUL_SET , Rename_XST_IDX_SET , Rename_CRD_SET , Rename_VAL_SET , Rename_ANY_SET , Rename_CLR_SET , Rename_ENT_SET , Rename_RMV_SET , Rename_MBR_SET , Rename_EMP_SET , Rename_SAV_SET , Rename_RST_SET , Rename_SAVN_SET , Rename_RSTN_SET)
+;
+(Rename_set(VALUE , maxcrd):(card(VALUE) : NAT1 & maxcrd : NAT):(?))
+;
+(
+(
+ (Rename_FUL_SET)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_FUL_SET))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(card(Rename_sset) = maxcrd)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(card(Rename_sset) = maxcrd))
+ )
+ )
+)
+,
+(
+ (Rename_XST_IDX_SET)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_XST_IDX_SET(ii)))
+;
+ (ii)
+;
+ (bb)
+;
+ (
+ (ii : 1..maxcrd)
+ |
+ (
+ (bb := bool(ii : 1..card(Rename_sset)))
+ )
+ )
+;
+ (
+ (ii : 1..maxcrd)
+ |
+ (
+ (bb := bool(ii : 1..card(Rename_sset)))
+ )
+ )
+)
+,
+(
+ (Rename_CRD_SET)
+;
+ (? , Val_Op , Det_Op , (nn <-- Rename_CRD_SET))
+;
+ (?)
+;
+ (nn)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ nn := card(Rename_sset)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (nn := card(Rename_sset))
+ )
+ )
+)
+,
+(
+ (Rename_VAL_SET)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_SET(ii)))
+;
+ (ii)
+;
+ (vv)
+;
+ (
+ (ii : 1..card(Rename_sset))
+ |
+ (
+ (vv := Rename_ordn(ii))
+ )
+ )
+;
+ (
+ (ii : 1..card(Rename_sset))
+ |
+ (
+ (vv := Rename_ordn(ii))
+ )
+ )
+)
+,
+(
+ (Rename_ANY_SET)
+;
+ (? , Val_Op , NonDet_Op , (vv <-- Rename_ANY_SET))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (not(Rename_sset = {}))
+ |
+ (
+ (vv :: Rename_sset)
+ )
+ )
+;
+ (
+ (not(Rename_sset = {}))
+ |
+ (
+ @(vvx).
+ (
+ (
+ (vvx : Rename_sset)
+ )
+ ==>
+ (
+ (vv := vvx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_CLR_SET)
+;
+ (? , Mod_Op , Det_Op , Rename_CLR_SET)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_sset := {} ||
+ Rename_ordn := <>
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_sset , Rename_ordn := {} , <>)
+ )
+ )
+)
+,
+(
+ (Rename_ENT_SET)
+;
+ (? , Mod_Op , NonDet_Op , Rename_ENT_SET(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE & card(Rename_sset) < maxcrd)
+ |
+ (
+ (
+ (Rename_sset := Rename_sset \/ {vv})
+ )
+ ||
+ (
+ (Rename_ordn :: perm(Rename_sset \/ {vv}))
+ )
+ )
+ )
+;
+ (
+ (vv : VALUE & card(Rename_sset) < maxcrd)
+ |
+ (
+ (
+ (Rename_sset := Rename_sset \/ {vv})
+ )
+ ||
+ (
+ @(Rename_ordnx).
+ (
+ (
+ (Rename_ordnx : perm(Rename_sset \/ {vv}))
+ )
+ ==>
+ (
+ (Rename_ordn := Rename_ordnx)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_RMV_SET)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RMV_SET(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (
+ (Rename_sset := Rename_sset-{vv})
+ )
+ ||
+ (
+ (Rename_ordn :: perm(Rename_sset-{vv}))
+ )
+ )
+ )
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (
+ (Rename_sset := Rename_sset-{vv})
+ )
+ ||
+ (
+ @(Rename_ordnx).
+ (
+ (
+ (Rename_ordnx : perm(Rename_sset-{vv}))
+ )
+ ==>
+ (
+ (Rename_ordn := Rename_ordnx)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_MBR_SET)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_MBR_SET(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (bb := bool(vv : Rename_sset))
+ )
+ )
+;
+ (
+ (vv : VALUE)
+ |
+ (
+ (bb := bool(vv : Rename_sset))
+ )
+ )
+)
+,
+(
+ (Rename_EMP_SET)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EMP_SET))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_sset = {})
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(Rename_sset = {}))
+ )
+ )
+)
+,
+(
+ (Rename_SAV_SET)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_SET)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_SET)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_SET)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY rset , rseq WHERE
+ rset : FIN(VALUE) &
+ rseq : perm(rset) &
+ card(rset) <= maxcrd
+ THEN
+ Rename_sset := rset ||
+ Rename_ordn := rseq
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rset , rseq).
+ (
+ (
+ (rset : FIN(VALUE) & rseq : perm(rset) & card(rset) <= maxcrd)
+ )
+ ==>
+ (
+ (Rename_sset , Rename_ordn := rset , rseq)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_SET)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_SET)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_SET)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_SET)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY rset , rseq WHERE
+ rset : FIN(VALUE) &
+ rseq : perm(rset) &
+ card(rset) <= maxcrd
+ THEN
+ Rename_sset := rset ||
+ Rename_ordn := rseq
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(rset , rseq).
+ (
+ (
+ (rset : FIN(VALUE) & rseq : perm(rset) & card(rset) <= maxcrd)
+ )
+ ==>
+ (
+ (Rename_sset , Rename_ordn := rset , rseq)
+ )
+ )
+ )
+ )
+)
+)

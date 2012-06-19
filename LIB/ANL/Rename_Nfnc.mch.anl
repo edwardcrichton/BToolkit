@@ -1,0 +1,683 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Nfnc)
+;
+(Rename_Nfnc)
+;
+(Rename_Nfnc : 1..maxfld +-> 0..maxint)
+;
+(Rename_Nfnc : 1..maxfld +-> 0..maxint)
+;
+(?)
+;
+(Rename_Nfnc := {})
+;
+(Rename_Nfnc := {})
+;
+(Rename_TST_FLD_NFNC,Rename_DEF_NFNC,Rename_FREE_NFNC,Rename_STO_NFNC,Rename_RMV_NFNC,Rename_ADD_NFNC,Rename_MUL_NFNC,Rename_SUB_NFNC,Rename_DIV_NFNC,Rename_MOD_NFNC,Rename_VAL_NFNC,Rename_EQL_NFNC,Rename_NEQ_NFNC,Rename_GTR_NFNC,Rename_GEQ_NFNC,Rename_SMR_NFNC,Rename_LEQ_NFNC,Rename_SAV_NFNC,Rename_RST_NFNC,Rename_SAVN_NFNC,Rename_RSTN_NFNC)
+;
+(Rename_TST_FLD_NFNC , Rename_DEF_NFNC , Rename_FREE_NFNC , Rename_STO_NFNC , Rename_RMV_NFNC , Rename_ADD_NFNC , Rename_MUL_NFNC , Rename_SUB_NFNC , Rename_DIV_NFNC , Rename_MOD_NFNC , Rename_VAL_NFNC , Rename_EQL_NFNC , Rename_NEQ_NFNC , Rename_GTR_NFNC , Rename_GEQ_NFNC , Rename_SMR_NFNC , Rename_LEQ_NFNC , Rename_SAV_NFNC , Rename_RST_NFNC , Rename_SAVN_NFNC , Rename_RSTN_NFNC)
+;
+(Rename_Nfnc(maxint , maxfld):(maxint <= 2147483646 & maxfld <= 2147483646 & maxfld : NAT & maxint : NAT):(?))
+;
+(
+(
+ (Rename_TST_FLD_NFNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_TST_FLD_NFNC(ff)))
+;
+ (ff)
+;
+ (bb)
+;
+ (
+ (ff : NAT)
+ |
+ (
+ (bb := bool(ff : 1..maxfld))
+ )
+ )
+;
+ (
+ (ff : NAT)
+ |
+ (
+ (bb := bool(ff : 1..maxfld))
+ )
+ )
+)
+,
+(
+ (Rename_DEF_NFNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_DEF_NFNC(ff)))
+;
+ (ff)
+;
+ (bb)
+;
+ (
+ (ff : 1..maxfld)
+ |
+ (
+ (bb := bool(ff : dom(Rename_Nfnc)))
+ )
+ )
+;
+ (
+ (ff : 1..maxfld)
+ |
+ (
+ (bb := bool(ff : dom(Rename_Nfnc)))
+ )
+ )
+)
+,
+(
+ (Rename_FREE_NFNC)
+;
+ (? , Val_Op , NonDet_Op , (bb , dd <-- Rename_FREE_NFNC))
+;
+ (?)
+;
+ (bb , dd)
+;
+ (
+ (true)
+ |
+ (
+ (IF (1..maxfld)-dom(Rename_Nfnc) /= {} THEN
+ bb := TRUE ||
+ dd :: (1..maxfld)-dom(Rename_Nfnc)
+ ELSE
+ bb := FALSE ||
+ dd :: 1..maxfld
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (not((1..maxfld)-dom(Rename_Nfnc) = {}))
+ )
+ ==>
+ (
+ (
+ (bb := TRUE)
+ )
+ ||
+ (
+ @(ddx).
+ (
+ (
+ (ddx : (1..maxfld)-dom(Rename_Nfnc))
+ )
+ ==>
+ (
+ (dd := ddx)
+ )
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ ((1..maxfld)-dom(Rename_Nfnc) = {})
+ )
+ ==>
+ (
+ (
+ (bb := FALSE)
+ )
+ ||
+ (
+ @(ddx).
+ (
+ (
+ (ddx : 1..maxfld)
+ )
+ ==>
+ (
+ (dd := ddx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_STO_NFNC)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_NFNC(ff , vv))
+;
+ (ff , vv)
+;
+ (?)
+;
+ (
+ (ff : 1..maxfld & vv : 0..maxint)
+ |
+ (
+ (Rename_Nfnc(ff) := vv)
+ )
+ )
+;
+ (
+ (ff : 1..maxfld & vv : 0..maxint)
+ |
+ (
+ (Rename_Nfnc := Rename_Nfnc <+ {ff |-> vv})
+ )
+ )
+)
+,
+(
+ (Rename_RMV_NFNC)
+;
+ (? , Mod_Op , Det_Op , Rename_RMV_NFNC(ff))
+;
+ (ff)
+;
+ (?)
+;
+ (
+ (ff : dom(Rename_Nfnc))
+ |
+ (
+ (Rename_Nfnc := {ff} <<| Rename_Nfnc)
+ )
+ )
+;
+ (
+ (ff : dom(Rename_Nfnc))
+ |
+ (
+ (Rename_Nfnc := {ff} <<| Rename_Nfnc)
+ )
+ )
+)
+,
+(
+ (Rename_ADD_NFNC)
+;
+ (? , Mod_Op , Det_Op , Rename_ADD_NFNC(ff , vv))
+;
+ (ff , vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc) & Rename_Nfnc(ff)+vv <= maxint)
+ |
+ (
+ (Rename_Nfnc(ff) := Rename_Nfnc(ff)+vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc) & Rename_Nfnc(ff)+vv <= maxint)
+ |
+ (
+ (Rename_Nfnc := Rename_Nfnc <+ {ff |-> Rename_Nfnc(ff)+vv})
+ )
+ )
+)
+,
+(
+ (Rename_MUL_NFNC)
+;
+ (? , Mod_Op , Det_Op , Rename_MUL_NFNC(ff , vv))
+;
+ (ff , vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc) & Rename_Nfnc(ff)*vv <= maxint)
+ |
+ (
+ (Rename_Nfnc(ff) := Rename_Nfnc(ff)*vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc) & Rename_Nfnc(ff)*vv <= maxint)
+ |
+ (
+ (Rename_Nfnc := Rename_Nfnc <+ {ff |-> Rename_Nfnc(ff)*vv})
+ )
+ )
+)
+,
+(
+ (Rename_SUB_NFNC)
+;
+ (? , Mod_Op , Det_Op , Rename_SUB_NFNC(ff , vv))
+;
+ (ff , vv)
+;
+ (?)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc) & Rename_Nfnc(ff) >= vv)
+ |
+ (
+ (Rename_Nfnc(ff) := Rename_Nfnc(ff)-vv)
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc) & vv <= Rename_Nfnc(ff))
+ |
+ (
+ (Rename_Nfnc := Rename_Nfnc <+ {ff |-> Rename_Nfnc(ff)-vv})
+ )
+ )
+)
+,
+(
+ (Rename_DIV_NFNC)
+;
+ (? , Mod_Op , Det_Op , Rename_DIV_NFNC(ff , vv))
+;
+ (ff , vv)
+;
+ (?)
+;
+ (
+ (vv : 1..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (Rename_Nfnc(ff) := Rename_Nfnc(ff)/vv)
+ )
+ )
+;
+ (
+ (vv : 1..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (Rename_Nfnc := Rename_Nfnc <+ {ff |-> Rename_Nfnc(ff)/vv})
+ )
+ )
+)
+,
+(
+ (Rename_MOD_NFNC)
+;
+ (? , Mod_Op , Det_Op , Rename_MOD_NFNC(ff , vv))
+;
+ (ff , vv)
+;
+ (?)
+;
+ (
+ (vv : 1..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (Rename_Nfnc(ff) := Rename_Nfnc(ff)-vv*(Rename_Nfnc(ff)/vv))
+ )
+ )
+;
+ (
+ (vv : 1..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (Rename_Nfnc := Rename_Nfnc <+ {ff |-> Rename_Nfnc(ff)-vv*(Rename_Nfnc(ff)/vv)})
+ )
+ )
+)
+,
+(
+ (Rename_VAL_NFNC)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_NFNC(ff)))
+;
+ (ff)
+;
+ (vv)
+;
+ (
+ (ff : dom(Rename_Nfnc))
+ |
+ (
+ (vv := Rename_Nfnc(ff))
+ )
+ )
+;
+ (
+ (ff : dom(Rename_Nfnc))
+ |
+ (
+ (vv := Rename_Nfnc(ff))
+ )
+ )
+)
+,
+(
+ (Rename_EQL_NFNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL_NFNC(ff , vv)))
+;
+ (ff , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) = vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) = vv))
+ )
+ )
+)
+,
+(
+ (Rename_NEQ_NFNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_NEQ_NFNC(ff , vv)))
+;
+ (ff , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) /= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(not(Rename_Nfnc(ff) = vv)))
+ )
+ )
+)
+,
+(
+ (Rename_GTR_NFNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_GTR_NFNC(ff , vv)))
+;
+ (ff , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) > vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(vv < Rename_Nfnc(ff)))
+ )
+ )
+)
+,
+(
+ (Rename_GEQ_NFNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_GEQ_NFNC(ff , vv)))
+;
+ (ff , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) >= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(vv <= Rename_Nfnc(ff)))
+ )
+ )
+)
+,
+(
+ (Rename_SMR_NFNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_SMR_NFNC(ff , vv)))
+;
+ (ff , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) < vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) < vv))
+ )
+ )
+)
+,
+(
+ (Rename_LEQ_NFNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_LEQ_NFNC(ff , vv)))
+;
+ (ff , vv)
+;
+ (bb)
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) <= vv))
+ )
+ )
+;
+ (
+ (vv : 0..maxint & ff : dom(Rename_Nfnc))
+ |
+ (
+ (bb := bool(Rename_Nfnc(ff) <= vv))
+ )
+ )
+)
+,
+(
+ (Rename_SAV_NFNC)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_NFNC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_NFNC)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_NFNC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Nfnc :: 1..maxfld +-> 0..maxint
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Nfncx).
+ (
+ (
+ (Rename_Nfncx : 1..maxfld +-> 0..maxint)
+ )
+ ==>
+ (
+ (Rename_Nfnc := Rename_Nfncx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_NFNC)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_NFNC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_NFNC)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_NFNC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Nfnc :: 1..maxfld +-> 0..maxint
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Nfncx).
+ (
+ (
+ (Rename_Nfncx : 1..maxfld +-> 0..maxint)
+ )
+ ==>
+ (
+ (Rename_Nfnc := Rename_Nfncx)
+ )
+ )
+ )
+ )
+)
+)

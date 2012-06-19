@@ -1,0 +1,29 @@
+PROOFMETHOD
+
+ factorial_1.imp.1
+
+IS
+
+ USETAC
+
+   (UsersTheory~),
+   (FwdUsersTheory~;FEQL~)
+
+ END
+
+ &
+
+ THEORY UsersTheory IS
+
+    binhyp(a = n*b) &
+    n=1
+   =>
+    b=a;
+
+    not(n=0)
+   => 
+    (math_fac(n-1)*k*n) == (math_fac(n)*k)
+
+ END
+
+END

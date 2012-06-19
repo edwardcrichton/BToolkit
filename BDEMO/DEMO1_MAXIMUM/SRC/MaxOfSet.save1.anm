@@ -1,0 +1,28 @@
+ANIMATE
+
+  MaxOfSet.save1.anm
+
+PARAMETER_VALUES
+
+  ?
+
+SETS_VALUES
+
+  ?
+
+CONSTANTS_VALUES
+
+  max_val = 1000000
+
+ENUM_SETS_VALUES
+
+  ?
+
+OPERATIONS
+
+  _set_state_variables :
+    (
+      (numset = {58 , 5})
+    )
+
+END

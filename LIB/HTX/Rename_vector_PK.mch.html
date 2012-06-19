@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_vector_PK">
+  <TITLE>The Rename_vector_PK machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>           Rename_vector_PK(lb,ub)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>       lb=0 & lb&lt;ub
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="VHDL_PK.mch.html#MACHINE">VHDL_PK</A>
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>         Rename_Vec, Rename_Vec2Nat,  Rename_Nat2Vec
+    
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>        
+
+   Rename_Vec = 0..ub --&gt; <A HREF="VHDL_PK.mch.html#SETS">std_logic</A> &
+   Rename_Vec2Nat : Rename_Vec --&gt; NAT &
+   Rename_Nat2Vec : NAT +-&gt; Rename_Vec &
+
+/*   Rename_Vec2Nat = 
+           %(vec). ( vec : Rename_Vec | (
+               SIGMA(nn).( nn:0..ub & vec(nn)='1' | exp(2,nn) ) 
+           )) & */
+
+  !(vec).(
+        vec : Rename_Vec =&gt;
+        Rename_Vec2Nat(vec) = SIGMA(nn).( nn:0..ub & vec(nn)='1' | <A HREF="VHDL_PK.mch.html#CONSTANTS">exp</A>(2,nn) )
+          ) &
+
+   Rename_Nat2Vec = Rename_Vec2Nat~
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+
+/* conversions */
+
+  nn <-- <A NAME="OPNAME!Rename_vec_VEC2NAT">Rename_vec_VEC2NAT</A>(vec:Rename_Vec) =
+  <B>BEGIN</B>
+    nn := Rename_Vec2Nat(vec)
+  <B>END</B>;
+
+  vec <-- <A NAME="OPNAME!Rename_vec_NAT2VEC">Rename_vec_NAT2VEC</A>(nn:NAT) =
+  <B>PRE</B> nn : dom(Rename_Nat2Vec) <B>THEN</B>
+    vec := Rename_Nat2Vec(nn)
+  <B>END</B>;
+
+
+/* enquiry */
+
+  val <-- <A NAME="OPNAME!Rename_idx_VAL">Rename_idx_VAL</A>(vec:Rename_Vec & idx:0..ub) =
+  <B>BEGIN</B>
+    val := vec(idx)
+  <B>END</B>;
+
+  sl <-- <A NAME="OPNAME!Rename_idx_EQL">Rename_idx_EQL</A>(val:<A HREF="VHDL_PK.mch.html#SETS">std_logic</A> & vec:Rename_Vec & idx:0..ub) =
+  <B>IF</B> val = vec(idx) <B>THEN</B>
+    sl := '1'
+  <B>ELSE</B>
+    sl := '0'
+  <B>END</B>;
+
+ vecout <-- <A NAME="OPNAME!Rename_vec_XTR">Rename_vec_XTR</A>(vecin:Rename_Vec & lo:0..ub & hi:0..ub) =
+  <B>PRE</B> lo <= hi <B>THEN</B>
+    vecout :=  %(nn).(nn:0..(hi-lo) | vecin(lo+nn) )  
+  <B>END</B>;
+
+/* modification */
+
+  vecout <-- <A NAME="OPNAME!Rename_idx_MOD">Rename_idx_MOD</A>(val:<A HREF="VHDL_PK.mch.html#SETS">std_logic</A> & vecin:Rename_Vec & idx:0..ub) =
+  <B>BEGIN</B>
+    vecout := vecin <+ {idx |-> val}
+  <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:11:35 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

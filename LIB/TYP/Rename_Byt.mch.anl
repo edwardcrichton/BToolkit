@@ -1,0 +1,399 @@
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_byt)
+;
+(Rename_byt)
+;
+(Rename_byt: BYTE)
+;
+(Rename_byt: BYTE)
+;
+(?)
+;
+(Rename_byt:: BYTE)
+;
+(@Rename_bytx.(Rename_bytx: BYTE ==> Rename_byt:=Rename_bytx))
+;
+(Rename_VAL,Rename_STO,Rename_INC,Rename_DEC,Rename_ADD,Rename_SUB,Rename_MUL,Rename_DIV,Rename_MOD,Rename_AND,Rename_OR,Rename_XOR,Rename_NOT)
+;
+(Rename_VAL,Rename_STO,Rename_INC,Rename_DEC,Rename_ADD,Rename_SUB,Rename_MUL,Rename_DIV,Rename_MOD,Rename_AND,Rename_OR,Rename_XOR,Rename_NOT)
+;
+(Rename_Byt(?):(?):(?))
+;
+(
+(
+ (Rename_VAL)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_VAL))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv:=Rename_byt
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (vv:=Rename_byt)
+ )
+ )
+)
+,
+(
+ (Rename_STO)
+;
+ (?,Mod_Op,Det_Op,Rename_STO(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE)
+ |
+ (
+ (BEGIN
+ Rename_byt:=vv
+ END)
+ )
+ )
+;
+ (
+ (vv: BYTE)
+ |
+ (
+ (Rename_byt:=vv)
+ )
+ )
+)
+,
+(
+ (Rename_INC)
+;
+ (?,Val_Op,Det_Op,Rename_INC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_byt+n2b(1): BYTE)
+ |
+ (
+ (Rename_byt <-- BADD(Rename_byt,n2b(1)))
+ )
+ )
+;
+ (
+ (Rename_byt+n2b(1): BYTE & Rename_byt: BYTE & n2b(1): BYTE)
+ |
+ (
+ (Rename_byt:=Rename_byt+n2b(1))
+ )
+ )
+)
+,
+(
+ (Rename_DEC)
+;
+ (?,Val_Op,Det_Op,Rename_DEC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_byt-n2b(1): BYTE)
+ |
+ (
+ (Rename_byt <-- BSUB(Rename_byt,n2b(1)))
+ )
+ )
+;
+ (
+ (Rename_byt-n2b(1): BYTE & Rename_byt: BYTE & n2b(1): BYTE)
+ |
+ (
+ (Rename_byt:=Rename_byt-n2b(1))
+ )
+ )
+)
+,
+(
+ (Rename_ADD)
+;
+ (?,Val_Op,Det_Op,Rename_ADD(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE & Rename_byt+vv: BYTE)
+ |
+ (
+ (Rename_byt <-- BADD(Rename_byt,vv))
+ )
+ )
+;
+ (
+ (vv: BYTE & Rename_byt+vv: BYTE & Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=Rename_byt+vv)
+ )
+ )
+)
+,
+(
+ (Rename_SUB)
+;
+ (?,Val_Op,Det_Op,Rename_SUB(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE & Rename_byt-vv: BYTE)
+ |
+ (
+ (Rename_byt <-- BSUB(Rename_byt,vv))
+ )
+ )
+;
+ (
+ (vv: BYTE & Rename_byt-vv: BYTE & Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=Rename_byt-vv)
+ )
+ )
+)
+,
+(
+ (Rename_MUL)
+;
+ (?,Val_Op,Det_Op,Rename_MUL(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE & Rename_byt*vv: BYTE)
+ |
+ (
+ (Rename_byt <-- BMUL(Rename_byt,vv))
+ )
+ )
+;
+ (
+ (vv: BYTE & Rename_byt*vv: BYTE & Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=Rename_byt*vv)
+ )
+ )
+)
+,
+(
+ (Rename_DIV)
+;
+ (?,Val_Op,Det_Op,Rename_DIV(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE & vv/=MinByt & Rename_byt/vv: BYTE)
+ |
+ (
+ (Rename_byt <-- BDIV(Rename_byt,vv))
+ )
+ )
+;
+ (
+ (vv: BYTE & not(vv = MinByt) & Rename_byt/vv: BYTE & Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=Rename_byt/vv)
+ )
+ )
+)
+,
+(
+ (Rename_MOD)
+;
+ (?,Val_Op,Det_Op,Rename_MOD(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE & vv/=MinByt & Rename_byt mod vv: BYTE)
+ |
+ (
+ (Rename_byt <-- BMOD(Rename_byt,vv))
+ )
+ )
+;
+ (
+ (vv: BYTE & not(vv = MinByt) & Rename_byt mod vv: BYTE & Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=Rename_byt mod vv)
+ )
+ )
+)
+,
+(
+ (Rename_AND)
+;
+ (?,Val_Op,Det_Op,Rename_AND(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE)
+ |
+ (
+ (BEGIN
+ Rename_byt <-- BAND(Rename_byt,vv)
+ END)
+ )
+ )
+;
+ (
+ (vv: BYTE & Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=bs2b(b2bs(Rename_byt)><b2bs(vv);
+bnd))
+ )
+ )
+)
+,
+(
+ (Rename_OR)
+;
+ (?,Val_Op,Det_Op,Rename_OR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE)
+ |
+ (
+ (BEGIN
+ Rename_byt <-- BOR(Rename_byt,vv)
+ END)
+ )
+ )
+;
+ (
+ (vv: BYTE & Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=bs2b(b2bs(Rename_byt)><b2bs(vv);
+bor))
+ )
+ )
+)
+,
+(
+ (Rename_XOR)
+;
+ (?,Val_Op,Det_Op,Rename_XOR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: BYTE)
+ |
+ (
+ (BEGIN
+ Rename_byt <-- BXOR(Rename_byt,vv)
+ END)
+ )
+ )
+;
+ (
+ (vv: BYTE & Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=bs2b(b2bs(Rename_byt)><b2bs(vv);
+bxr))
+ )
+ )
+)
+,
+(
+ (Rename_NOT)
+;
+ (?,Val_Op,Det_Op,Rename_NOT)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_byt <-- BNOT(Rename_byt)
+ END)
+ )
+ )
+;
+ (
+ (Rename_byt: BYTE)
+ |
+ (
+ (Rename_byt:=bs2b(b2bs(Rename_byt);
+bcp))
+ )
+ )
+)
+)

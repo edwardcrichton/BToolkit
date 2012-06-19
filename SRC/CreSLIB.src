@@ -1,0 +1,2715 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define _mm() \
+{ ?; }
+
+/***
+
+  /application/calvinapps/btoolkit/SOURCE_CONTROL/SRC/SCCS/s.CreSLIB.src
+
+  File:        CreSLIB.src
+
+  Release:     1
+  Level:       2
+  Branch:      0
+  Sequence:    0
+
+  Created:     94/06/15 14:33:31
+
+  Retrieved:   94/06/15 14:33:32
+
+***/
+
+#define CreSLIBtac      ((WRITE;CATL~;SHELL;NEWV;MODR;MAP;ARI)~;CSLIBX)~
+
+#define CreSLIBDirect(x)   bcall(CreSLIBtac:cslib_2(x))
+
+#define ReadFormalParameters(x)     brule(CSLIBX.1,x)
+#define ModifyFormalParameters(x)   bmodr(CSLIBX.1,x)
+
+#define ReadOps(x)                  brule(CSLIBX.2,x)
+#define ModifyOps(x)                bmodr(CSLIBX.2,x)
+
+#define ReadSees(x)                  brule(CSLIBX.21,x)
+#define ModifySees(x)                bmodr(CSLIBX.21,x)
+
+#define ReadEditProcNums(x)         brule(CSLIBX.3,x)	
+#define ModifyEditProcNums(x)       bmodr(CSLIBX.3,x)
+
+#define CreSLIBErrorNotFlagged  brule(CSLIBX.4,0)
+#define ClearCreSLIBError       bmodr(CSLIBX.4,0)
+#define SetCreSLIBError         bmodr(CSLIBX.4,1)
+
+#define ReadCurrOpName(x)         brule(CSLIBX.5,x)
+#define ModifyCurrOpName(x)       bmodr(CSLIBX.5,x)
+
+#define ReadOpSigs(x)         brule(CSLIBX.6,x)
+#define ModifyOpSigs(x)       bmodr(CSLIBX.6,x)
+
+#define ReadImportedOpNames(x)         brule(CSLIBX.7,x)
+#define ModifyImportedOpNames(x)       bcall((FLAT;MODR):bmodr(CSLIBX.7,x))
+
+#define ReadChangedOpList(x)         brule(CSLIBX.8,x)
+#define ModifyChangedOpList(x)       bmodr(CSLIBX.8,x)
+
+#define ReadImportedClauseList(x)         brule(CSLIBX.9,x)
+#define ModifyImportedClauseList(x)       bmodr(CSLIBX.9,x)
+
+#define ReadMchNch(x)     brule(CSLIBX.10,x)
+#define SetIsMch          bmodr(CSLIBX.10,1)
+#define SetIsNch          bmodr(CSLIBX.10,0)
+#define IsMch             brule(CSLIBX.10,1)
+#define IsNch             brule(CSLIBX.10,0)
+
+#define ReadConstants(x)         brule(CSLIBX.12,x)
+#define ModifyConstants(x)       bmodr(CSLIBX.12,x)
+
+#define ReadSets(x)         brule(CSLIBX.13,x)
+#define ModifySets(x)       bmodr(CSLIBX.13,x)
+
+#define ReadProperties(x)         brule(CSLIBX.14,x)
+#define ModifyProperties(x)       bmodr(CSLIBX.14,x)
+
+
+#define ReadINIIptOpNames(x)         brule(CSLIBX.11,x)
+#define ModifyINIIptOpNames(x)       bcall((NEWV;MODR):bmodr(CSLIBX.11,x))
+
+#define ReadParamDefList(x)         brule(CSLIBX.15,x)
+#define ModifyParamDefList(x)       bmodr(CSLIBX.15,x)
+
+
+#define InformNothingToCreate \
+		Writef(("\n    Nothing to create\n"))
+
+#define InformCreateAborted \
+		Writef(("\n  Create SLIB aborted\n"))
+
+#define InformSLIBAlreadyExists(x)  \
+		Writef(("\n    SLIB construct % already exists\n",bsrv x berv))
+
+#define InformSLIBnchAlreadyExists(x)  \
+		Writef(("\n    SLIB construct _% already exists\n",bsrv x berv))
+
+#define InformCantCreate(x) \
+		Writef(("\n    Can't create: %\n",bsrv x berv))
+
+#define InformgenplxUnsuccessful \
+		Writef(("\n    $BKIT/BLIB/genplx unsuccessful\n"))
+
+
+#define InformCantWriteSLIB(x) \
+		Writef(("\n    Can't write to $BKIT/BLIB/LIB/")) & \
+		Writef((x)) & \
+		Writef(("\n"))
+
+#define InformCreated(x) \
+		Writef(("    Created % in SLIB\n",x))
+
+#define InformCreatedIntr(x) \
+		Writef(("    Created COMMITTABLE % in SLIB\n",x))
+
+#define InformCreatedNonIntr(x) \
+		Writef(("    Created non_COMMITTABLE _% in SLIB\n",x))
+
+#define InformLDFNotParse(x) \
+		Writef(("\n    % does not parse\n",x))
+
+#define InformLDFSyntaxError(x) \
+		Writef(("\n    Library definition file syntax error:\n\n      %\n",bsrv x berv))
+
+#define InformSLIBNchNotExist(x)  \
+		Writef(("\n    Imported SLIB construct % does not exist\n",bsrv x berv))
+
+#define InformNotImportedOp(x) \
+		Writef(("\n    % is not an imported operation\n",bsrv x berv))
+
+#define InformOpNotRecognized(x) \
+		Writef(("\n    Operation % is not recognized\n",bsrv x berv))
+
+#define InformNotAnalysed(x) \
+               Writef(("\n    % is not analysed\n",bsrv x berv))
+
+#define InformParamDiscrepancy(x,y,z) \
+               Writef(("\n    %: formal/actual parameter discrepancy:\n\n      (%)/(%)\n",bsrv x berv,y,z))
+
+
+
+THEORY CSLIBKILLX IS
+
+
+#define KillEdits         bcall(((CATL;SHELL;MODR;MAP)~;CSLIBKILLX)~ : kill_edits)
+
+#define KillSingleEdit(x)  bcall(((CATL;SHELL)~;CSLIBKILLX)~ : kill_sgl_edit(x))
+
+
+  bshell(f);       /* edit already killed */
+
+  bshell(bcatl("kill -9 ",n))
+ =>
+  kill_edits1(m(n));
+
+  kill_edits1(?);
+
+  ReadEditProcNums(E) &
+  ModifyEditProcNums(?) &
+  kill_edits1 bsmap E
+ =>
+  kill_edits;
+
+  bshell(f)
+ =>
+  kill_sgl_edit(f)
+
+END
+
+&
+
+THEORY CSLIBUTILSX IS
+
+#define RemFiles(x)     bcall(((CATL;SHELL;MAP)~;CSLIBUTILSX)~ : rem_files(x))
+
+#define RemIptFiles     bcall(((CATL;SHELL;MAP)~;CSLIBUTILSX)~ : rem_ipt_files)
+
+#define RemGenFiles(x)  bcall(((CATL;SHELL)~;CSLIBUTILSX)~ : rem_gen_files(x))
+
+#define PrtParamDefsPV(x) \
+           bcall(((MAP;WRITE)~;CSLIBUTILSX)~ : prt_param_defs_PV(x))
+
+#define PrtParamDefsP(x) bcall(((MAP;WRITE)~;CSLIBUTILSX)~ : prt_param_defs_P(x))
+
+#define CPrtParams(x)   bcall(((MAP;WRITE)~;CSLIBUTILSX)~ : c_prt_params(x))
+
+#define CPrtExternParams(x) \
+            bcall(((MAP;WRITE)~;CSLIBUTILSX)~ : c_prt_extern_params(x))
+
+#define StoreEdt(x)     bcall(((MODR)~;CSLIBUTILSX)~ : sto_edt(x))
+
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(".Bed") &
+  PFZ
+ =>
+  sto_edt(m);
+
+  bget(".Bed",x) &
+  ReadEditProcNums(X) &
+  ModifyEditProcNums((X,(m(x))))
+ =>
+  sto_edt(m);
+
+
+
+  bprintf("\n  The % formal parameter `%' should be written `%PV%'",M,p,M,m)
+ =>
+  prt_param_defs_PV1(M,p,m,n);
+
+  IsNch &
+  bprintf("\n  The % formal parameter `%' should be written `_%PV%'",M,p,M,m)
+ =>
+  prt_param_defs_PV1(M,p,m,n);
+
+  ReadFormalParameters(P) &
+  prt_param_defs_PV1(m) bnmap P &
+  bprintf("\n\n")
+ =>
+  prt_param_defs_PV(m);
+
+  ReadFormalParameters(?)
+ =>
+  prt_param_defs_PV(m);
+
+
+
+  bprintf("\n  The % formal parameter `%' should be written `%P",M,p,M) &
+  bprintf("%'",m)
+ =>
+  prt_param_defs_P1(M,p,m,n);
+
+  IsNch &
+  bprintf("\n  The % formal parameter `%' should be written `_%P",M,p,M) &
+  bprintf("%'",m)
+ =>
+  prt_param_defs_P1(M,p,m,n);
+
+  ReadFormalParameters(P) &
+  prt_param_defs_P1(m) bnmap P &
+  bprintf("\n\n")
+ =>
+  prt_param_defs_P(m);
+
+  ReadFormalParameters(?)
+ =>
+  prt_param_defs_P(m);
+
+
+
+  bprintf("extern int %P",M) &
+  bprintf("%;\n",m)
+ =>
+  c_prt_extern_params1(M,p,m,n);
+
+  IsNch &
+  bprintf("extern int _%P",M) &
+  bprintf("%;\n",m)
+ =>
+  c_prt_extern_params1(M,p,m,n);
+
+  ReadFormalParameters(P) &
+  c_prt_extern_params1(m) bnmap P &
+  bprintf("\n")
+ =>
+  c_prt_extern_params(m);
+
+  ReadFormalParameters(?)
+ =>
+  c_prt_extern_params(m);
+
+
+
+  bprintf("int %P",M) &
+  bprintf("% = %PV%;\n",m,M,m)
+ =>
+  c_prt_params1(M,p,m,n);
+
+  IsNch &
+  bprintf("int _%P",M) &
+  bprintf("% = _%PV%;\n",m,M,m)
+ =>
+  c_prt_params1(M,p,m,n);
+
+  ReadFormalParameters(P) &
+  c_prt_params1(m) bnmap P &
+  bprintf("\n")
+ =>
+  c_prt_params(m);
+
+  ReadFormalParameters(?)
+ =>
+  c_prt_params(m);
+
+
+  
+  bshell(bcatl("cd SRC ; rm -f ",m,".c ",m,".g ",m,".inl ",m,".h ",m,".o ",m,".ldf")) &
+  bshell(bcatl("cd SRC ; rm -f ",m,".PLX ",m,".H ",m,".inl ",m,".i"))
+ =>
+  rem_gen_files(m);
+
+  IsNch &
+  bshell(bcatl("cd SRC ; rm -f _",m,".c _",m,".g _",m,".inl _",m,".h _",m,".o ",m,".ldf _",m,".ldf")) &
+  bshell(bcatl("cd SRC ; rm -f ",m,".PLX ",m,".H ",m,".inl ",m,".i"))
+ =>
+  rem_gen_files(m);
+
+/*******  Do not remove users edits; and recover users ldf file ;    ***********
+********  replaces the 2 rules above                                 ***********/
+  
+  bshell(bcatl("cd SRC ; rm -f ",m,".inl ",m,".o ",m,".ldf ")) &
+  bshell(bcatl("cd SRC ; rm -f ",m,".PLX ",m,".H ",m,".inl ",m,".i")) &
+  bshell(bcatl("mv SRC/",m,".LDF SRC/",m,".ldf"))
+ =>
+  rem_gen_files(m);
+
+  IsNch &
+  bshell(bcatl("cd SRC ; rm -f _",m,".inl _",m,".o _",m,".ldf")) &
+  bshell(bcatl("cd SRC ; rm -f ",m,".PLX ",m,".H ",m,".inl ",m,".i")) &
+  bshell(bcatl("mv SRC/",m,".LDF SRC/",m,".ldf"))
+ =>
+  rem_gen_files(m);
+
+/********************************************************************************/
+
+  bshell(bcatl("cd SRC ; rm -f ",i,".nch ",i,".c ",i,".g ",i,".h ",i,".o"))
+ =>
+  rem_ipt_files_1(i);
+
+  bshell(bcatl("cd SRC ; rm -f ",i,".nch ",i,".c ",i,".g ",i,".h ",i,".o"))
+ =>
+  rem_ipt_files_1(i(F));
+
+/*******  Do not remove users old edits;                             ***********
+********  replaces the 2 rules above                                 ***********/
+
+
+  bshell(bcatl("cd SRC ; rm -f ",i,".nch ",i,".o"))
+ =>
+  rem_ipt_files_1(i);
+
+  bshell(bcatl("cd SRC ; rm -f ",i,".nch ",i,".o"))
+ =>
+  rem_ipt_files_1(i(F));
+
+  
+/********************************************************************************/
+
+
+  rem_ipt_files_1(?);
+
+  ReadImportedClauseList(I) &
+  ReadSees(S) &
+  bshell(bcatl("cd SRC ; rm -f ",m,".PLX ",m,".H ",m,".inl ",m,".i")) &
+  bshell(bcatl("cd $BKIT/BLIB/LIB ; rm -f CFG/",m,".* ANL/",m,".mch.anl TYP/",m,".mri.typ")) &
+  bshell(bcatl("cd $BKIT/BLIB/LIB/CDE ; rm -f C/",m,"* CICS/",m,"*")) &
+  rem_ipt_files_1 bsmap I &
+  rem_sees_files bsmap S
+ =>
+  rem_files(m);
+
+
+  bshell(bcatl("rm -f SRC/",m,".h"))
+ =>
+  rem_sees_files(m(s):t:U);
+
+  rem_sees_files(?);
+
+  ReadImportedClauseList(I) &
+  rem_ipt_files_1 bsmap I
+ =>
+  rem_ipt_files
+
+END
+
+&
+
+THEORY CreCTemplateFilesX IS
+
+#define CreCTemplateFiles(x) \
+  bcall(((ARI;CATL;SHELL;MAP;WRITE;MODR)~;CreCTemplateFilesX)~ : c_template_files(x))
+
+#define Print_ANSIC_hdr              bprintf("void\n#ifdef _BT_ANSIC")
+#define Print_ANSIC_ftr_non_ANSIC_ftr bprintf(" )\n#else")
+#define Print_non_ANSIC_ftr          bprintf(";\n#endif\n{\n        ;\n}\n")
+
+  ?; /* comma flag */
+#define reset_comma bmodr(CreCTemplateFilesX.1,0)
+
+  bprintf(",")
+ =>
+  prt_com;
+
+  brule(CreCTemplateFilesX.1,0) &
+  bmodr(CreCTemplateFilesX.1,1)
+ =>
+  prt_com;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  prt_com &
+  bprintf(" int %",v)
+ =>
+  prt_typ_no_star(v);
+
+  prt_typ_no_star(?);
+
+  prt_com &
+  bprintf(" int * %",v)
+ =>
+  prt_typ_star(v);
+
+  prt_typ_star(?);
+
+
+  prt_com &
+  bprintf(" %",v)
+ =>
+  prt_no_star(v);
+
+  prt_no_star(?);
+
+  prt_com &
+  bprintf(" * %",v)
+ =>
+  prt_star(v);
+
+  prt_star(?);
+
+
+  IsMch &
+  Print_ANSIC_hdr &
+  bprintf("\n% (",s) &
+  reset_comma &
+  prt_typ_star bsmap v &
+  prt_typ_no_star bsmap u &
+  Print_ANSIC_ftr_non_ANSIC_ftr &
+  bprintf("\n%(",s) &
+  reset_comma &
+  prt_no_star bsmap v &
+  prt_no_star bsmap u &
+  bprintf(" )\nint    ") &
+  reset_comma &
+  prt_star bsmap v &
+  prt_no_star bsmap u &
+  Print_non_ANSIC_ftr
+ =>
+  cslib_c_14(s)(v)(u);
+
+  IsNch &
+  Print_ANSIC_hdr &
+  bprintf("\n_% (",s) &
+  reset_comma &
+  prt_typ_star bsmap v &
+  prt_typ_no_star bsmap u &
+  Print_ANSIC_ftr_non_ANSIC_ftr &
+  bprintf("\n_%(",s) &
+  reset_comma &
+  prt_no_star bsmap v &
+  prt_no_star bsmap u &
+  bprintf(" )\nint    ") &
+  reset_comma &
+  prt_star bsmap v &
+  prt_no_star bsmap u &
+  Print_non_ANSIC_ftr
+ =>
+  cslib_c_14(s)(v)(u);
+
+  IsMch &
+  bprintf("\nvoid\n% () ",s) &
+  bprintf("\n{\n        ?;\n}\n")
+ =>
+  cslib_c_14(s)(?)(?);
+
+  IsNch &
+  bprintf("\nvoid\n_% () ",s) &
+  bprintf("\n{\n        ?;\n}\n")
+ =>
+  cslib_c_14(s)(?)(?);
+
+
+
+  cslib_c_14(s)(v)(u)
+ =>
+  cslib_c_13(s;t;u;v;(w|x);(y|z));     /* v outp, u inp */
+
+  cslib_c_13(?);
+
+  cslib_c_13(o)
+ =>
+  cslib_c_12(o);
+
+  cslib_c_13 bsmap (O,o)
+ =>
+  cslib_c_12(O,o);
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_c_3(m.mch)(f)(1);
+
+  bprintf("#include \"%.h\"\n\n",m)
+ =>
+  sclib_c_sees_0(m(s):t:U);
+
+  sclib_c_sees_0(?);
+
+  bprintf("#include \"%.h\"\n\n",i)
+ =>
+  sclib_c_ipt_0(i);
+
+  bprintf("#include \"%.h\"\n\n",i)
+ =>
+  sclib_c_ipt_0(i(A));
+
+  sclib_c_ipt_0(?);
+
+  bprintf("\n        INI_%();",i)
+ =>
+  cslib_c_ini(i);
+
+  bprintf("\n        INI_%();",i)
+ =>
+  cslib_c_ini(i(A));
+
+  cslib_c_ini(I) &
+  bprintf("\n        INI_%();",i)
+ =>
+  cslib_c_ini(I,i);
+
+  cslib_c_ini(I) &
+  bprintf("\n        INI_%();",i)
+ =>
+  cslib_c_ini(I,i(A));
+
+  bprintf("\n        ?;")
+ =>
+  cslib_c_ini(?);
+
+  bprintf("#include \"%.h\"\n\n",m)
+ =>
+  cslib_c_include(m);
+
+  IsNch &
+  bprintf("#include \"_%.h\"\n\n",m)
+ =>
+  cslib_c_include(m);
+
+  bprintf("\n  Operations in this file should not appear in \"%.h\"\n",m)
+ =>
+  cslib_c_not_appear(m);
+
+  IsNch &
+  bprintf("\n  Operations in this file should not appear in \"_%.h\"\n",m)
+ =>
+  cslib_c_not_appear(m);
+
+  bprintf("INI_%()\n{",m)
+ =>
+  cslib_c_host_ini(m);
+
+  IsNch &
+  bprintf("INI__%()\n{",m)
+ =>
+  cslib_c_host_ini(m);
+
+  IsMch
+ =>
+  cslib_c__(m);
+
+  IsNch &
+  bprintf("  Note that all operation names are prepended with `_'\n\n")
+ =>
+  cslib_c__(m);
+
+  bconnect(f) &
+  ReadEnvEditorString(E) &
+  ReadImportedClauseList(I) &
+  ReadSees(S) &
+  ReadOps(O) &
+
+  sclib_c_sees_0 bsmap S &
+  sclib_c_ipt_0 bsmap I &
+  cslib_c_include(m) &
+  bprintf("/*\n") &
+  bprintf("  Do not edit the operation headers\n") &
+  bprintf("  (except to remove entire operations)\n") &
+  cslib_c_not_appear(m) &
+  PrtParamDefsP(m) &
+  cslib_c__(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n\n") &
+  cslib_c_host_ini(m) &
+  cslib_c_ini(I) &
+  bprintf("\n}\n",m) &
+  cslib_c_12(O) &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.c)
+ =>
+  cslib_c_3(m.mch)(f)(1);
+
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.c)
+ =>
+  cslib_c_3(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_c_2(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_c_3(m.mch)(f)(x)
+ =>
+  cslib_c_2(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_c_2(m.mch)(f)
+ =>
+  cslib_c_1(m.mch)(f);
+
+
+
+  bprintf("%",v)
+ =>
+  cslib_h_15(v);
+
+  cslib_h_15(V) &
+  bprintf(",%",v)
+ =>
+  cslib_h_15(V,v);
+
+  IsMch &
+  bprintf("\n#define %(",s) &
+  cslib_h_15(v) &
+  bprintf(",") &
+  cslib_h_15(u) &
+  bprintf(") \\\n{ ?; }\n")
+ =>
+  cslib_h_14(s)(v)(u);
+
+  IsNch &
+  bprintf("\n#define _%(",s) &
+  cslib_h_15(v) &
+  bprintf(",") &
+  cslib_h_15(u) &
+  bprintf(") \\\n{ ?; }\n")
+ =>
+  cslib_h_14(s)(v)(u);
+
+  IsMch &
+  bprintf("\n#define %(",s) &
+  cslib_h_15(v) &
+  bprintf(") \\\n{ ?; }\n")
+ =>
+  cslib_h_14(s)(v)(?);
+
+  IsNch &
+  bprintf("\n#define _%(",s) &
+  cslib_h_15(v) &
+  bprintf(") \\\n{ ?; }\n")
+ =>
+  cslib_h_14(s)(v)(?);
+
+  IsMch &
+  bprintf("\n#define %(",s) &
+  cslib_h_15(u) &
+  bprintf(") \\\n{ ?; }\n")
+ =>
+  cslib_h_14(s)(?)(u);
+
+  IsNch &
+  bprintf("\n#define _%(",s) &
+  cslib_h_15(u) &
+  bprintf(") \\\n{ ?; }\n")
+ =>
+  cslib_h_14(s)(?)(u);
+
+  IsMch &
+  bprintf("\n#define %() \\\n",s) &
+  bprintf("{ ?; }\n")
+ =>
+  cslib_h_14(s)(?)(?);
+
+  IsNch &
+  bprintf("\n#define _%() \\\n",s) &
+  bprintf("{ ?; }\n")
+ =>
+  cslib_h_14(s)(?)(?);
+
+  cslib_h_14(s)(v)(u)
+ =>
+  cslib_h_13(s;t;u;v;(w|x);(y|z));     /* v outp, u inp */
+
+  cslib_h_13(?);
+
+  cslib_h_13(o)
+ =>
+  cslib_h_12(o);
+
+  cslib_h_13 bsmap (O,o)
+ =>
+  cslib_h_12(O,o);
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_h_3(m.mch)(f)(1);
+
+
+  bprintf("\n#define % %",e,m)
+ =>
+  cslib_enum_1(e,m,n);
+
+  cslib_enum_0(x);
+
+  cslib_enum_1 bnmap e &
+  bprintf("\n\n")
+ =>
+  cslib_enum_0(s(e));
+
+
+  cslib_unfixed_cst_0(x);
+
+  ReadProperties(P) &
+  bsearch((c:SCALAR),P,Q) &
+  bprintf("\n#define % ?\n",c)
+ =>
+  cslib_unfixed_cst_0(c);
+
+  ReadProperties(P) &
+  bsearch((c:NAT),P,Q) &
+  bprintf("\n#define % ?\n",c)
+ =>
+  cslib_unfixed_cst_0(c);
+
+  ReadProperties(P) &
+  bsearch((c=n),P,Q) &
+  bnum(n)
+ =>
+  cslib_unfixed_cst_0(c);
+
+
+  cslib_fixed_cst_0(x);
+
+  ReadProperties(P) &
+  bsearch((c=n),P,Q) &
+  bnum(n) &
+  bprintf("\n#define % %\n",c,n)
+ =>
+  cslib_fixed_cst_0(c);
+
+  bprintf("INI_%();",i)
+ =>
+  cslib_h_ini(i);
+
+  bprintf("INI_%();",i)
+ =>
+  cslib_h_ini(i(A));
+
+  cslib_h_ini(I) &
+  bprintf(" INI_%();",i)
+ =>
+  cslib_h_ini(I,i);
+
+  cslib_h_ini(I) &
+  bprintf(" INI_%();",i)
+ =>
+  cslib_h_ini(I,i(A));
+
+
+  bprintf("?;")
+ =>
+  cslib_h_ini(?);
+
+  bprintf("\n  Operations in this file should not appear in \"%.c\"\n",m)
+ =>
+  cslib_h_not_appear(m);
+
+  IsNch &
+  bprintf("\n  Operations in this file should not appear in \"_%.c\"\n",m)
+ =>
+  cslib_h_not_appear(m);
+
+  bprintf("\n#define INI_%() \\\n",m)
+ =>
+  cslib_h_host_ini(m); 
+
+  IsNch &
+  bprintf("\n#define INI__%() \\\n",m)
+ =>
+  cslib_h_host_ini(m); 
+
+  IsMch
+ =>
+  cslib_h__(m);
+
+  IsNch &
+  bprintf("  Note that all operation names are prepended with `_'\n\n")
+ =>
+  cslib_h__(m);
+
+  bconnect(f) &
+  ReadEnvEditorString(E) &
+  ReadOps(O) &
+  ReadConstants(C) &
+  ReadSets(S) &
+  ReadImportedClauseList(I) &
+  CPrtExternParams(m) &
+  cslib_fixed_cst_0 bsmap C &
+  cslib_enum_0 bsmap S &
+  bprintf("/*\n") &
+  bprintf("  Do not edit the operation headers\n",m) &
+  cslib_h_not_appear(m) &
+  PrtParamDefsP(m) &
+  cslib_h__(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n") &
+  cslib_unfixed_cst_0 bsmap C &
+  cslib_h_host_ini(m) &
+  bprintf("{ ") &
+  cslib_h_ini(I) &
+  bprintf(" }\n") &
+  cslib_h_12(O) &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.h)
+ =>
+  cslib_h_3(m.mch)(f)(1);
+
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.h)
+ =>
+  cslib_h_3(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_h_2(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_h_3(m.mch)(f)(x)
+ =>
+  cslib_h_2(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_h_2(m.mch)(f)
+ =>
+  cslib_h_1(m.mch)(f);
+
+
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_g_3(m.mch)(f)(1);
+
+
+  
+  sclib_g_ipt_params_0(i)(N)(?);
+
+  sclib_g_ipt_params_0(i)(N)(L)
+ =>
+  sclib_g_ipt_params_0(i)(N)(L,x);
+
+  bprintf("#define %PV% (%)\n\n",i,N,a) &
+  sclib_g_ipt_params_0(i)(N+1)(L)
+ =>
+  sclib_g_ipt_params_0(i)(N)(L,(i:a));
+
+  bprintf("#include \"%.g\"\n\n",i)
+ =>
+  sclib_g_ipt_0(i);
+
+  ReadParamDefList(L) &
+  sclib_g_ipt_params_0(i)(1)(L) &
+  bprintf("#include \"%.g\"\n\n",i)
+ =>
+  sclib_g_ipt_0(i(A));
+
+  sclib_g_ipt_0(?);
+
+  bconnect(f) &
+  ReadEnvEditorString(E) &
+  ReadImportedClauseList(I) &
+  CPrtParams(m) &
+  sclib_g_ipt_0 bsmap I &
+  bprintf("/*\n") &
+  bprintf("  Do not edit above this comment\n",m) &
+  PrtParamDefsPV(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n") &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.g)
+ =>
+  cslib_g_3(m.mch)(f)(1);
+
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.g)
+ =>
+  cslib_g_3(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_g_2(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_g_3(m.mch)(f)(x)
+ =>
+  cslib_g_2(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_g_2(m.mch)(f)
+ =>
+  cslib_g_1(m.mch)(f);
+
+
+
+  IsMch &
+  bshell(bcatl("cp SRC/",m,".ldf $BKIT/BLIB/LIB/CDE/C/",m,".ldf"))
+ =>
+  c_4_ldf_2(m);
+
+  IsNch &
+  bshell(bcatl("cp SRC/_",m,".ldf $BKIT/BLIB/LIB/CDE/C/_",m,".ldf"))
+ =>
+  c_4_ldf_2(m);
+
+  bprintf("%",i)
+ =>
+  c_4_ldf_1(i);
+
+  bsearch(?,i,j) &
+  c_4_ldf_1(j)
+ =>
+  c_4_ldf_1(i);
+
+  c_4_ldf_1(I,s)
+ =>
+  c_4_ldf_1(I)(s(r):t:u);
+
+  c_4_ldf_1(I,s)(S)
+ =>
+  c_4_ldf_1(I)(S,(s(r):t:u));
+
+  c_4_ldf_1(I)
+ =>
+  c_4_ldf_1(I)(?);
+
+  bconnect(f) &
+  ReadFormalParameters(P) &
+  bprintf("(%)\n|\n",P) &
+  ReadImportedClauseList(I) &
+  ReadSees(S) &
+  bprintf("(") &
+  c_4_ldf_1(I)(S) &
+  bprintf(")\n") &
+  c_4_ldf_2(m) &
+  bclose
+ =>
+  c_4_ldf_0(m)(f);
+
+  IsMch &
+  KillEdits &
+  /* save user edits */  bshell(bcatl("cp SRC/",m,".ldf SRC/",m,".LDF")) &
+  c_4_ldf_0(m)(bcatl("SRC/",m,".ldf")) &
+  RemIptFiles &
+  RemGenFiles(m) & 
+  InformCreatedIntr(m)
+ =>
+  c_3(N)(m.mch)(0);
+
+  IsNch &
+  KillEdits &
+  /* save user edits */  bshell(bcatl("cp SRC/",m,".ldf SRC/",m,".LDF")) &
+  c_4_ldf_0(m)(bcatl("SRC/_",m,".ldf")) &
+  RemIptFiles &
+  RemGenFiles(m) & 
+  InformCreatedNonIntr(m)
+ =>
+  c_3(N)(m.mch)(0);
+
+  Writef(("\n  Can't create SLIB construct\n")) &
+  c_0(N+1)(m.mch)
+ =>
+  c_3(N)(m.mch)(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  c_2(N)(m.mch);
+
+  bget(".Bcom",x) &
+  c_3(N)(m.mch)(x)
+ =>
+  c_2(N)(m.mch);
+
+  ReadNumber(1) &
+  ReadMchNch(n) &
+  brule(CSLIBX.20,f) &  /* Prog_Language_Option */
+  brule(CSLIBX.23,a) &  /* cc_compiler_str_num  */
+  bshell(bcatl("$BKIT/BLIB/CreSLIBC 1 ",m," ",n," ",f, " ",a)) &
+  c_2(N)(m.mch)
+ =>
+  c_1(N)(m.mch);
+
+  ReadNumber(0) &
+  KillEdits &
+  RemFiles(m) &
+  InformCreateAborted
+ =>
+  c_1(N)(m.mch);
+
+  FifoWrite_Store((BT_CRE_SLIB_FINI_M,m,0),(GetNumberFromUserX.1)) &
+  c_1(N)(m.mch)
+ =>
+  c_0(N)(m.mch);
+
+
+  cslib_c_1(m.mch)(bcatl("SRC/",m,".c")) &
+  cslib_h_1(m.mch)(bcatl("SRC/",m,".h")) &
+  cslib_g_1(m.mch)(bcatl("SRC/",m,".g")) &
+  c_0(0)(m.mch)
+ =>
+  c_template_files(m);
+
+  IsNch &
+  cslib_c_1(m.mch)(bcatl("SRC/_",m,".c")) &
+  cslib_h_1(m.mch)(bcatl("SRC/_",m,".h")) &
+  cslib_g_1(m.mch)(bcatl("SRC/_",m,".g")) &
+  c_0(0)(m.mch)
+ =>
+  c_template_files(m)
+
+END
+
+&
+
+THEORY CldfX IS
+
+#define Cldf(x) bcall(((ARI;MAP;MODR;CATL;SHELL;WRITE)~;CldfX)~:c_ldf_0(0)(x))
+
+  ?;  /* for imported list error */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  c_ldf_4(N)(m)
+ =>
+  check_imported_list_result(N)(m);
+
+  brule(CldfX.1,1) &
+  bmodr(CldfX.1,0) &
+  c_ldf_0(N+1)(m)
+ =>
+  check_imported_list_result(N)(m);
+
+  Writef(("    Can't load %.nch from SLIB\n",i)) &
+  bmodr(CldfX.1,1)
+ =>
+  check_imported_list2(N)(m)(i)(f);
+
+  bget(f,x)
+ =>
+  check_imported_list2(N)(m)(i)(f);
+
+  check_imported_list2(N)(m)(i)(bcatl("$BKIT/BLIB/LIB/CFG/",i,".nch"))
+ =>
+  check_imported_list1(N)(m)(i);
+
+  Writef(("    % - IMPORTS syntax error\n",x)) &
+  bmodr(CldfX.1,1)
+ =>
+  check_imported_list(N)(m)(x);
+
+  bident(i) &
+  check_imported_list(N)(m)(I) &
+  check_imported_list1(N)(m)(i)
+ =>
+  check_imported_list(N)(m)(I,i);
+
+  bident(i) &
+  check_imported_list(N)(m)(I) &
+  check_imported_list1(N)(m)(i)
+ =>
+  check_imported_list(N)(m)(I,i(p));
+
+  bident(i) &
+  check_imported_list1(N)(m)(i)
+ =>
+  check_imported_list(N)(m)(i);
+
+  bident(i) &
+  check_imported_list1(N)(m)(i)
+ =>
+  check_imported_list(N)(m)(i(p));
+
+
+
+  ReadEnvEditorString(E) &
+  bshell(bcatl("rm -f SRC/",i,".nch")) &
+  bshell(bcatl("cp $BKIT/BLIB/LIB/CFG/",i,".nch SRC")) &
+  bshell(bcatl(E," SRC/",i,".nch","& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile SRC/",i,".nch")) & */
+  StoreEdt(i.nch) &
+  bshell(bcatl("rm -f SRC/",i,".c")) &
+  bshell(bcatl("cp $BKIT/BLIB/LIB/CDE/C/",i,".c SRC")) &
+  bshell(bcatl(E," SRC/",i,".c","& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile SRC/",i,".c")) & */
+  StoreEdt(i.c) &
+  bshell(bcatl("rm -f  SRC/",i,".h")) &
+  bshell(bcatl("cp $BKIT/BLIB/LIB/CDE/C/",i,".h SRC")) &
+  bshell(bcatl(E," SRC/",i,".h","& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile SRC/",i,".h")) & */
+  StoreEdt(i.h) &
+  bshell(bcatl("rm -f SRC/",i,".g")) &
+  bshell(bcatl("cp $BKIT/BLIB/LIB/CDE/C/",i,".g SRC")) &
+  bshell(bcatl(E," SRC/",i,".g","& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile SRC/",i,".g")) & */
+  StoreEdt(i.g)
+ =>
+  c_ldf_11(i);
+
+  c_ldf_11(i)
+ =>
+  c_ldf_11(i(A));
+
+  c_ldf_11(?);
+
+  c_ldf_10(m);
+
+  ReadImportedClauseList(I) &
+  ReadEditProcNums(E) &
+  bsearch((m.ldf)(n),E,F) &
+  ModifyEditProcNums(F) &  
+  KillSingleEdit((bcatl("kill -9 ",n))) &
+  c_ldf_11 bsmap I &
+  CreCTemplateFiles(m)
+ =>
+  c_ldf_10(m);
+
+
+
+  
+  ReadParamDefList(L) &
+  ModifyParamDefList((L,(i:a))) &
+  c_ldf_ipt_1(N)(m)(I)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(f)(a);
+
+  ReadParamDefList(L) &
+  ModifyParamDefList((L,(i:a))) &
+  c_ldf_10(m)
+ =>
+  c_ldf_ipt_4(N)(m)(?)(i)(X)(Y)(f)(a);
+
+  InformParamDiscrepancy(i,X,Y) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(?)(a);
+
+  InformParamDiscrepancy(i,X,Y) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(f)(?);
+
+  c_ldf_ipt_1(N)(m)(I)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(?)(?);   /* no params */
+
+  c_ldf_10(m)
+ =>
+  c_ldf_ipt_4(N)(m)(?)(i)(X)(Y)(?)(?);   /* no params */
+
+  InformParamDiscrepancy(i,X,Y) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(F)(A,a);
+
+  InformParamDiscrepancy(i,X,Y) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(F,f)(a);
+
+  ReadParamDefList(L) &
+  ModifyParamDefList((L,(i:a))) &
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(F)(A)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(F,f)(A,a);
+
+  InformParamDiscrepancy(i,X,Y) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(F,f)(?);
+
+  InformParamDiscrepancy(i,X,Y) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(F,f)(A,?);
+
+  bUpident(f) &
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(F)(A)
+ =>
+  c_ldf_ipt_4(N)(m)(I)(i)(X)(Y)(F,f)(A,a);
+
+  c_ldf_ipt_4(N)(m)(I)(i)(F)(A)(F)(A)
+ =>
+  c_ldf_ipt_3(N)(m)(I)(i)(A)(F|y);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  c_ldf_ipt_2(N)(m)(I)(i)(A)(f);
+
+  bget(f,x) &
+  c_ldf_ipt_3(N)(m)(I)(i)(A)(x)
+ =>
+  c_ldf_ipt_2(N)(m)(I)(i)(A)(f);
+  
+  c_ldf_ipt_2(N)(m)(?)(i)(?)(bcatl("$BKIT/BLIB/LIB/CDE/C/",i,".ldf"))
+ =>
+  c_ldf_ipt_1(N)(m)(i);
+
+  c_ldf_ipt_2(N)(m)(?)(i)(A)(bcatl("$BKIT/BLIB/LIB/CDE/C/",i,".ldf"))
+ =>
+  c_ldf_ipt_1(N)(m)(i(A));
+
+  c_ldf_ipt_2(N)(m)(I)(i)(?)(bcatl("$BKIT/BLIB/LIB/CDE/C/",i,".ldf"))
+ =>
+  c_ldf_ipt_1(N)(m)(I,i);
+
+  c_ldf_ipt_2(N)(m)(I)(i)(A)(bcatl("$BKIT/BLIB/LIB/CDE/C/",i,".ldf"))
+ =>
+  c_ldf_ipt_1(N)(m)(I,i(A));
+
+  ReadImportedClauseList(I) &
+  ModifyParamDefList(?) &
+  c_ldf_ipt_1(N)(m)(I)
+ =>
+  c_ldf_ipt_0(N)(m);
+
+
+
+
+
+
+  InformSLIBNchNotExist(i.nch) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_8(N)(m)(I)(i)(1);       /* BKIT/BLIB/LIB/CFG/i.nch not exist */
+
+  c_ldf_5(N)(m)(I)
+ =>
+  c_ldf_8(N)(m)(I)(i)(0);       /* BKIT/BLIB/LIB/CFG/i.nch exists */
+
+  c_ldf_ipt_0(N)(m)
+ =>
+  c_ldf_8(N)(m)(?)(i)(0);       /* BKIT/BLIB/LIB/CFG/i.nch exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  c_ldf_7(N)(m)(I)(i);
+
+  bget(".Bcom",x) &
+  c_ldf_8(N)(m)(I)(i)(x)
+ =>
+  c_ldf_7(N)(m)(I)(i);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",i,".nch $BKIT/BLIB/LIB/CFG")) &
+  c_ldf_7(N)(m)(I)(i)
+ =>
+  c_ldf_6(N)(m)(I)(i);
+
+  InformLDFSyntaxError(I) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_5(N)(m)(I);
+
+  bident(i) &
+  c_ldf_6(N)(m)(?)(i)
+ =>
+  c_ldf_5(N)(m)(i);
+
+  bident(i) &
+  c_ldf_6(N)(m)(?)(i)
+ =>
+  c_ldf_5(N)(m)(i(p));
+
+  bident(i) &
+  c_ldf_6(N)(m)(I)(i)
+ =>
+  c_ldf_5(N)(m)(I,i);
+
+  bident(i) &
+  c_ldf_6(N)(m)(I)(i)
+ =>
+  c_ldf_5(N)(m)(I,i(p));
+
+  ReadImportedClauseList(I) &
+  c_ldf_5(N)(m)(I)
+ =>
+  c_ldf_4(N)(m);
+
+  ReadImportedClauseList(?) &
+  c_ldf_10(m)
+ =>
+  c_ldf_4(N)(m);
+
+  InformLDFSyntaxError(x) &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_3(N)(m)(x);
+
+  ClearCreSLIBError &
+  ModifyImportedClauseList(?) &
+  c_ldf_4(N)(m)
+ =>
+  c_ldf_3(N)(m)(LIBDEF m END);
+
+  ClearCreSLIBError &
+  ModifyImportedClauseList(I) &
+  bmodr(CldfX.1,0) &
+  check_imported_list(N)(m)(I) &
+  check_imported_list_result(N)(m)
+ =>
+  c_ldf_3(N)(m)(LIBDEF m IMPORTS I END);
+
+  Writef(("\n  %: %.ldf does not parse\n",bsrv Error berv,m)) &
+  bshell("cat .Berr") &
+  c_ldf_0(N+1)(m)
+ =>
+  c_ldf_2(N)(m)(f);
+
+  bget(f,x) &
+  c_ldf_3(N)(m)(x)
+ =>
+  c_ldf_2(N)(m)(f);
+
+  bshell("$BKIT/BLIB/ClearBerr") &
+  c_ldf_2(N)(m)(bcatl("SRC/",m,".ldf"))
+ =>
+  c_ldf_1(N)(m);
+
+  ReadNumber(0) &
+  KillEdits &
+  RemFiles(m) &
+  InformCreateAborted
+ =>
+  c_ldf_1(N)(m);
+
+  FifoWrite_Store((BT_CRE_SLIB_INI_M,m,0),(GetNumberFromUserX.1)) &
+  c_ldf_1(N)(m)
+ =>
+  c_ldf_0(N)(m)
+
+END
+
+&
+
+THEORY CSLIBBdyMacrosX IS
+
+  (EITHER a THEN c END) == c;
+
+  (EITHER a OR b THEN c END) == (a;c);
+
+  (EITHER a ELSE c END) == (a;c);
+
+  (CASE a OF b END) == b;
+
+  (IF a THEN b END) == b;
+
+  (IF a THEN b ELSE c END) == (a;b);
+
+  (WHILE a DO b INVARIANT c VARIANT d END) == b;
+
+  (WHILE a DO b VARIANT c INVARIANT d END) == b;
+
+  (VAR x IN a END) == a;
+
+  (BEGIN a END) == a
+
+END
+
+&
+
+THEORY CSLIBBdyX IS
+
+#define CslibLdfBdy(x,y) \
+	bcall((CSLIBBdyMacrosX~;((MAP;MODR)~;CSLIBBdyX)~):chk(x)(y))
+
+
+  chk1(o);
+
+  InformNotImportedOp(?) &
+  SetCreSLIBError
+ =>
+  chk1(?);
+
+  bident(o) &
+  InformNotImportedOp(o) &
+  SetCreSLIBError
+ =>
+  chk1(o);
+
+  bident(o) &
+  InformNotImportedOp(o) &
+  SetCreSLIBError
+ =>
+  chk1(o(s));
+
+  bident(o) &
+  InformNotImportedOp(o) &
+  SetCreSLIBError
+ =>
+  chk1(r<--o);
+
+  bident(o) &
+  InformNotImportedOp(o) &
+  SetCreSLIBError
+ =>
+  chk1(r<--o(s));
+
+  bident(o) &
+  ReadINIIptOpNames(O) &
+  bsearch(o,O,P)
+ =>
+  chk1(o);
+
+  bident(o) &
+  ReadImportedOpNames(O) &
+  bsearch(o,O,P)
+ =>
+  chk1(o);
+
+  bident(o) &
+  ReadINIIptOpNames(O) &
+  bsearch(o,O,P)
+ =>
+  chk1(o(s));
+
+  bident(o) &
+  ReadImportedOpNames(O) &
+  bsearch(o,O,P)
+ =>
+  chk1(o(s));
+
+  bident(o) &
+  ReadINIIptOpNames(O) &
+  bsearch(o,O,P)
+ =>
+  chk1(r<--o);
+
+  bident(o) &
+  ReadImportedOpNames(O) &
+  bsearch(o,O,P)
+ =>
+  chk1(r<--o);
+
+  bident(o) &
+  ReadINIIptOpNames(O) &
+  bsearch(o,O,P)
+ =>
+  chk1(r<--o(s));
+
+  bident(o) &
+  ReadImportedOpNames(O) &
+  bsearch(o,O,P)
+ =>
+  chk1(r<--o(s));
+
+  chk1 bsmap s
+ =>
+  chk(N)(s)
+
+END
+
+&
+
+THEORY CSLIBX IS
+
+  ?;  /* 1. formal params */
+
+  ?;  /* 2. ops */
+
+  ?;  /* 3. edit proc nos */
+
+  ?;  /* 4. ipt flag */
+
+  ?;  /* 5. curr op name */
+
+  ?;  /* 6. op sigs */
+
+  ?;  /* 7. imported op names */
+
+  ?;  /* 8. changed op list: (?;(r<--o(s)= ...);...) */
+
+  ?;  /* 9. import list */
+
+  ?;  /* 10. 1=>.mch 0=>.nch */
+
+  ?;  /* 11. INI_ op names of imported machines (?,INI_mch1,INI_mch_2, ... ) */
+
+  ?;  /* 12. constant list */
+
+  ?;  /* 13. sets list */
+
+  ?;  /* 14. properties list */
+
+  ?;  /* 15. param def list ?,(f1=p1),(f2=p2), ... */
+
+  ?;  /* 16. ops from .H & .PLX files */
+
+  ?;  /* 17. ops flag */
+
+  ?;  /* 18. op names (from .anl file)  */
+
+  ?;  /* 19. not used */
+
+  ?;  /* 20. 0=>ANSIC 1=>non_ANSIC */
+
+  ?;  /* 21. sees list (r(s):t:(u,v,w)),... */
+
+  ?;  /* 22. sees error */
+
+  ?;  /* 23. C Compiler/Flags */
+
+  ?;  /* 24. Non-X Link Libraries */
+
+  ?;  /* 25. X Link Libraries */
+
+  ?;  /* 26. Interface - 0=>Motif 1=>Non-Motif */
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  KillEdits &
+  RemFiles(m) &
+  InformCreateAborted
+ =>
+  abort_cre(m);
+
+
+
+  brule(CSLIBX.16,O) &
+  bmodr(CSLIBX.16,(O,o))
+ =>
+  sto(o);
+
+  brule(CSLIBX.16,O) &
+  bsearch(o,O,P)
+ =>
+  sto(o);
+
+
+  Writef(("%\n\n",x))
+ =>
+  prt(x);
+
+  prt(?);
+
+  bstring(x) &
+  Writef(("%\n",bsrv o berv)) &
+  Writef((x)) &
+  sto(o)
+ =>
+  prt(o(x));
+
+
+
+
+  KillEdits &
+  RemGenFiles(m) & 
+  InformCreated(m)
+ =>
+  check_fin(m);
+  
+  brule(CSLIBX.17,1) &
+  abort_cre(m)
+ =>
+  check_fin(m);
+
+  Writef(("\n    % not found in %.H/PLX files\n",bsrv a berv,m)) &
+  check_fin(m)
+ =>
+  check_ops(m)(a);
+
+  brule(CSLIBX.16,O) &
+  bsearch(a,O,P) &
+  check_fin(m)
+ =>
+  check_ops(m)(a);
+
+  Writef(("\n    % not found in %.H/PLX files\n",bsrv a berv,m)) &
+  bmodr(CSLIBX.17,1) &
+  check_ops(m)(A)
+ =>
+  check_ops(m)(A,a);
+
+  brule(CSLIBX.16,O) &
+  bsearch(a,O,P) &
+  check_ops(m)(A)
+ =>
+  check_ops(m)(A,a);
+
+  ReadNumber(1) &
+  brule(CSLIBX.18,O) &
+  check_ops(m)(O,bnewv(INI_,m))
+ =>
+  cslib_chk_PLX_3(m);
+
+  ReadNumber(0) &
+  abort_cre(m)
+ =>
+  cslib_chk_PLX_3(m);
+
+  Writef(("\n\n")) &
+  prt bsmap x &
+  ClearMenuWin &
+  bwritem("\n  % Abandon\n\n  % Continue\n",bsrv 0 berv,bsrv 1 berv,m) &
+  Writef(("\n  The above permits a visual inspection of %.PLX:\n",m)) &
+  Writef(("\n  It should contain no comments,\n  although the (internal) syntax `?___?', `?___' etc is ok!\n")) &
+  GetNumberFromUser(2) &
+  ClearMenuWin &
+  cslib_chk_PLX_3(m)
+ =>
+  cslib_chk_PLX_2(m)(x);
+
+  InformCantConnect(f) &
+  abort_cre(m)
+ =>
+  cslib_chk_PLX_1(m)(f);
+
+  bget(f,x) &
+  cslib_chk_PLX_2(m)(x)
+ =>
+  cslib_chk_PLX_1(m)(f);
+
+
+
+
+  ReadNumber(0) &
+  abort_cre(m)
+ =>
+  cslib_chk_H_3(m);
+
+  ReadNumber(1) &
+  cslib_chk_PLX_1(m)(bcatl("$BKIT/BLIB/LIB/CDE/CICS/",m,".PLX"))
+ =>
+  cslib_chk_H_3(m);
+
+  Writef(("\n\n")) &
+  prt bsmap x &
+  ClearMenuWin &
+  bwritem("\n  % Abandon\n\n  % Continue\n",bsrv 0 berv,bsrv 1 berv,m) &
+  Writef(("  The above permits a visual inspection of %.H:\n",m)) &
+  Writef(("\n  It should contain no comments!\n")) &
+  GetNumberFromUser(2) &
+  ClearMenuWin &
+  cslib_chk_H_3(m)
+ =>
+  cslib_chk_H_2(m)(x);
+
+  InformCantConnect(f) &
+  abort_cre(m)
+ =>
+  cslib_chk_H_1(m)(f);
+
+  bget(f,x) &
+  cslib_chk_H_2(m)(x)
+ =>
+  cslib_chk_H_1(m)(f);
+
+
+
+
+  Writef(("\n  .inl file should be a list of op names (no repetitions):\n    %\n",x)) &
+  abort_cre(m)
+ =>
+  cslib_chk_inl_2(m)(x);
+
+  blident(x) &
+  cslib_chk_H_1(m)(bcatl("$BKIT/BLIB/LIB/CDE/CICS/",m,".H"))
+ =>
+  cslib_chk_inl_2(m)(x);
+
+  InformCantConnect(f) &
+  abort_cre(m)
+ =>
+  cslib_chk_inl_1(m)(f);
+
+  bget(f,x) &
+  cslib_chk_inl_2(m)(x)
+ =>
+  cslib_chk_inl_1(m)(f);
+
+  cslib_chk_inl_1(m)(bcatl("$BKIT/BLIB/LIB/CDE/CICS/",m,".inl"))
+ =>
+  cslib_18(m.mch)(0);
+
+
+
+  KillEdits &
+  RemFiles(m) &
+  InformCreateAborted
+ =>
+  cslib_18(m.mch)(1);
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_17(m.mch);
+
+  bget(".Bcom",x) &
+  cslib_18(m.mch)(x)
+ =>
+  cslib_17(m.mch);
+
+  ReadMchNch(t) &
+  bshell(bcatl("$BKIT/BLIB/CreSLIBCICS 12 ",m," ",t)) &
+  cslib_17(m.mch)
+ =>
+  cslib_16(m.mch);
+
+
+
+  bprintf(";\n%",x)
+ =>
+  cslib_cics_ldf_15(m,x);
+
+  bprintf(";\nINI_% = %",m,x)
+ =>
+  cslib_cics_ldf_15(m,(ini=x));
+
+  cslib_cics_ldf_15(m,?);
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_cics_ldf_14(m.mch)(f);
+
+  bconnect(f) &
+  ReadImportedClauseList(I) &
+  ReadChangedOpList(L) &
+  bprintf("(\n(%)\n|\n(?",I) &
+  cslib_cics_ldf_15(m) bsmap L &
+  bprintf(")\n)\n") &
+  bclose &
+  cslib_16(m.mch)
+ =>
+  cslib_cics_ldf_14(m.mch)(f);
+
+
+  ReadImportedClauseList(?) &
+  bconnect(f) &
+  bprintf("(\n(?)\n|\n(?)\n)\n") &
+  bclose &
+  cslib_16(m.mch)
+ =>
+  cslib_cics_ldf_14(m.mch)(f);
+
+
+
+  cslib_8(N+1)(m.mch)
+ =>
+  cslib_cics_ldf_13(N)(m.mch);
+
+  CreSLIBErrorNotFlagged &
+  cslib_cics_ldf_14(m.mch)(".BBcom")
+ =>
+  cslib_cics_ldf_13(N)(m.mch);
+
+
+
+  cslib_cics_ldf_bdy1(N,s);
+
+  CreSLIBErrorNotFlagged &
+  ReadCurrOpName(o) &
+  ReadChangedOpList(L) &
+  ModifyChangedOpList((L;(o=s)))
+ =>
+  cslib_cics_ldf_bdy1(N,s);
+
+  CslibLdfBdy(N,s) &
+  cslib_cics_ldf_bdy1(N,s)
+ =>
+  cslib_cics_ldf_bdy(N,s);
+
+  cslib_cics_ldf_bdy1(N,?)
+ =>
+  cslib_cics_ldf_bdy(N,skip);
+
+  InformOpNotRecognized(o) &
+  SetCreSLIBError
+ =>
+  cslib_cics_ldf_ops(N,(o=s));
+
+  ReadOpSigs(O) &
+  bsearch(o,O,P) &
+  ModifyCurrOpName(o) &
+  cslib_cics_ldf_bdy(N,s)
+ =>
+  cslib_cics_ldf_ops(N,(o=s));
+
+  cslib_cics_ldf_ops(N,?);
+
+
+
+  cslib_8(N+1)(m.mch)
+ =>
+  cslib_cics_ldf_12(N)(m.mch)(A)(O);
+
+  CreSLIBErrorNotFlagged &
+  ModifyCurrOpName(ini) &
+  cslib_cics_ldf_bdy(N,A) &
+  cslib_cics_ldf_ops(N,o) &
+  cslib_cics_ldf_13(N)(m.mch)
+ =>
+  cslib_cics_ldf_12(N)(m.mch)(A)(o);
+
+  CreSLIBErrorNotFlagged &
+  ModifyCurrOpName(ini) &
+  cslib_cics_ldf_bdy(N,A) &
+  cslib_cics_ldf_ops(N) bsmap (O;o) &
+  cslib_cics_ldf_13(N)(m.mch)
+ =>
+  cslib_cics_ldf_12(N)(m.mch)(A)(O;o);
+
+  cslib_cics_ldf_13(N)(m.mch)
+ =>
+  cslib_cics_ldf_12(N)(m.mch)(?)(?);
+
+
+
+
+
+
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  cslib_cics_ldf_ipt3(N,I)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ReadImportedOpNames(O) &
+  ModifyImportedOpNames(bflat(O,j))
+ =>
+  cslib_cics_ldf_ipt3(N,I)(Z);
+
+
+
+  InformSLIBNchNotExist(i) &
+  SetCreSLIBError
+ =>
+  cslib_cics_ldf_ipt5(N,i)(1);
+
+
+  cslib_cics_ldf_ipt3(N,i)(bcatl("$BKIT/BLIB/LIB/ANL/",i,".mch.anl"))
+ =>
+  cslib_cics_ldf_ipt5(N,i)(0);
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_cics_ldf_ipt4(N,i);
+
+  bget(".Bcom",x) &
+  cslib_cics_ldf_ipt5(N,i)(x)
+ =>
+  cslib_cics_ldf_ipt4(N,i);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",i,".mch ","$BKIT/BLIB/LIB/CFG")) &
+  cslib_cics_ldf_ipt4(N,i)
+ =>
+  cslib_cics_ldf_ipt2(N,i)(1);
+
+  cslib_cics_ldf_ipt3(N,i)(bcatl("$BKIT/BLIB/LIB/ANL/",i,".mch.anl"))
+ =>
+  cslib_cics_ldf_ipt2(N,i)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_cics_ldf_ipt1(N,i);
+
+  bget(".Bcom",x) &
+  cslib_cics_ldf_ipt2(N,i)(x)
+ =>
+  cslib_cics_ldf_ipt1(N,i);
+
+  InformLDFSyntaxError(i) &
+  SetCreSLIBError
+ =>
+  cslib_cics_ldf_ipt(N,i);
+
+  bident(i) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",i,".nch ","$BKIT/BLIB/LIB/CFG")) &
+  cslib_cics_ldf_ipt1(N,i)
+ =>
+  cslib_cics_ldf_ipt(N,i);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_empty_inl(m)(f);
+
+  bconnect(f) &
+  bprintf("/*\n  Operations of % not available for in-lining\n*/\n?\n",m)
+ =>
+  cslib_empty_inl(m)(f);
+
+  cslib_sto_INI_1(x);
+
+  bident(a) &
+  ReadINIIptOpNames(L) &
+  ModifyINIIptOpNames((L,bnewv(INI_,a)))
+ =>
+  cslib_sto_INI_1(a);
+
+  InformLDFSyntaxError(x) &
+  cslib_8(N+1)(m.mch)
+ =>
+  cslib_cics_ldf_11(N)(m.mch)(x);
+
+  ClearCreSLIBError &
+  ModifyImportedOpNames(?) &
+  ModifyChangedOpList(?) &
+  ModifyImportedClauseList(?) &
+  SetIsNch &
+  ModifyINIIptOpNames(?) &
+  cslib_cics_ldf_12(N)(m.mch)(?)(?)
+ =>
+  cslib_cics_ldf_11(N)(m.mch)(LIBDEF k COMMITTABLE FALSE END);
+
+  ClearCreSLIBError &
+  ModifyImportedOpNames(?) &
+  ModifyChangedOpList(?) &
+  ModifyImportedClauseList(?) &
+  SetIsMch &
+  ModifyINIIptOpNames(?) &
+  cslib_cics_ldf_12(N)(m.mch)(?)(?)
+ =>
+  cslib_cics_ldf_11(N)(m.mch)(LIBDEF k COMMITTABLE TRUE END);
+
+  ClearCreSLIBError &
+  ModifyImportedOpNames(?) &
+  ModifyChangedOpList(?) &
+  ModifyImportedClauseList(?) &
+  SetIsNch &
+  ModifyINIIptOpNames(?) &
+  cslib_empty_inl(m)(bcatl("SRC/",m,".inl")) &
+  cslib_cics_ldf_12(N)(m.mch)(A)(O)
+ =>
+  cslib_cics_ldf_11(N)(m.mch)(LIBDEF k COMMITTABLE FALSE INITIALISATION A OPERATIONS O END);
+
+  ClearCreSLIBError &
+  ModifyImportedOpNames(?) &
+  ModifyChangedOpList(?) &
+  ModifyImportedClauseList(?) &
+  SetIsMch &
+  ModifyINIIptOpNames(?) &
+  cslib_cics_ldf_12(N)(m.mch)(A)(O)
+ =>
+  cslib_cics_ldf_11(N)(m.mch)(LIBDEF k COMMITTABLE TRUE INITIALISATION A OPERATIONS O END);
+
+  ClearCreSLIBError &
+  ModifyImportedOpNames(?) &
+  ModifyChangedOpList(?) &
+  ModifyImportedClauseList(I) &
+  ModifyINIIptOpNames(?) &
+  cslib_sto_INI_1 bsmap I &
+  SetIsNch &
+  cslib_empty_inl(m)(bcatl("SRC/",m,".inl")) &
+  cslib_cics_ldf_ipt(N) bsmap I &
+  cslib_cics_ldf_12(N)(m.mch)(A)(O)
+ =>
+  cslib_cics_ldf_11(N)(m.mch)(LIBDEF k COMMITTABLE FALSE IMPORTS I INITIALISATION A OPERATIONS O END);
+
+  ClearCreSLIBError &
+  ModifyImportedOpNames(?) &
+  ModifyChangedOpList(?) &
+  ModifyImportedClauseList(I) &
+  ModifyINIIptOpNames(?) &
+  cslib_sto_INI_1 bsmap I &
+  SetIsMch &
+  cslib_cics_ldf_ipt(N) bsmap I &
+  cslib_cics_ldf_12(N)(m.mch)(A)(O)
+ =>
+  cslib_cics_ldf_11(N)(m.mch)(LIBDEF k COMMITTABLE TRUE IMPORTS I INITIALISATION A OPERATIONS O END);
+
+  InformLDFNotParse(f) &
+  bshell("cat .Berr") &
+  cslib_8(N+1)(m.mch)
+ =>
+  cslib_cics_ldf_10(N)(m.mch)(f);
+
+  bget(f,x) &
+  cslib_cics_ldf_11(N)(m.mch)(x)
+ =>
+  cslib_cics_ldf_10(N)(m.mch)(f);
+
+  cslib_cics_ldf_10(N)(m.mch)(bcatl("SRC/",m,".ldf"))
+ =>
+  cslib_11(N)(m.mch)(0);
+
+  InformgenplxUnsuccessful &
+  cslib_8(N+1)(m.mch)
+ =>
+  cslib_11(N)(m.mch)(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_10(N)(m.mch);
+
+  bget(".Bcom",x) &
+  cslib_11(N)(m.mch)(x)
+ =>
+  cslib_10(N)(m.mch);
+
+  ReadNumber(1) &
+  bshell(bcatl("$BKIT/BLIB/CreSLIBCICS 13 ",m)) &
+  cslib_10(N)(m.mch)
+ =>
+  cslib_9(N)(m.mch);
+
+  ReadNumber(0) &
+  KillEdits &
+  RemFiles(m) &
+  InformCreateAborted
+ =>
+  cslib_9(N)(m.mch);
+
+  ClearMenuWin &
+  bwritem("\n  % Abandon - files will be saved in SRC directory\n              and not overwritten during a subsequent Create\n\n  % Create % in SLIB\n      (after editing - and saving! - code/ldf modules)\n",bsrv 0 berv,bsrv 1 berv,m) &
+  GetNumberFromUser(2) &
+  ClearMenuWin &
+  cslib_9(N)(m.mch)
+ =>
+  cslib_8(N)(m.mch);
+
+
+
+
+
+
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_p_3(m.mch)(f)(1);
+
+  bconnect(f) &
+  ReadEnvEditorString(E) &
+  bprintf("/*\n") &
+  bprintf("  Do not edit above this comment\n") &
+  PrtParamDefsPV(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n\n") &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.p)
+ =>
+  cslib_p_3(m.mch)(f)(1);
+
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.p)
+ =>
+  cslib_p_3(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_p_2(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_p_3(m.mch)(f)(x)
+ =>
+  cslib_p_2(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_p_2(m.mch)(f)
+ =>
+  cslib_p_1(m.mch)(f);
+
+
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_d_3(m.mch)(f)(1);
+
+  bconnect(f) &
+  ReadEnvEditorString(E) &
+  bprintf("/*\n") &
+  bprintf("  Do not edit above this comment\n") &
+  PrtParamDefsPV(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n\n") &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.d)
+ =>
+  cslib_d_3(m.mch)(f)(1);
+
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.d)
+ =>
+  cslib_d_3(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_d_2(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_d_3(m.mch)(f)(x)
+ =>
+  cslib_d_2(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_d_2(m.mch)(f)
+ =>
+  cslib_d_1(m.mch)(f);
+
+
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_a_3(m.mch)(f)(1);
+
+  bconnect(f) &
+  ReadEnvEditorString(E) &
+  bprintf("/*\n") &
+  bprintf("  Do not edit above this comment\n") &
+  PrtParamDefsPV(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n\n") &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.a)
+ =>
+  cslib_a_3(m.mch)(f)(1);
+
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.a)
+ =>
+  cslib_a_3(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_a_2(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_a_3(m.mch)(f)(x)
+ =>
+  cslib_a_2(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_a_2(m.mch)(f)
+ =>
+  cslib_a_1(m.mch)(f);
+
+
+
+  ReadOpSigs(S) &
+  ModifyOpSigs((S;K))
+ =>
+  cslib_cics_ldf_2_4(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  cslib_cics_ldf_2_4(o)
+ =>
+  cslib_cics_ldf_2_2(o);
+
+  cslib_cics_ldf_2_4 bsmap (O,o)
+ =>
+  cslib_cics_ldf_2_2(O,o);
+
+  cslib_cics_ldf_2_2(?);
+
+
+
+  ReadOpSigs(S) &
+  ModifyOpSigs((S;K)) &
+  bprintf("  % = skip",K)
+ =>
+  cslib_cics_ldf_1_4(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  bprintf(";\n\n") &
+  cslib_cics_ldf_1_4(o)
+ =>
+  cslib_cics_ldf_1_3(o,m,n);
+
+  bprintf("\n\nOPERATIONS\n\n") &
+  cslib_cics_ldf_1_4(o)
+ =>
+  cslib_cics_ldf_1_3(o,1,n);
+
+  cslib_cics_ldf_1_3(o,1,1)
+ =>
+  cslib_cics_ldf_1_2(o);
+
+  cslib_cics_ldf_1_3 bnmap (O,o)
+ =>
+  cslib_cics_ldf_1_2(O,o);
+
+  cslib_cics_ldf_1_2(?);
+
+
+
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_cics_ldf_3(m.mch)(f)(1);
+
+  bconnect(f) &
+  ReadEnvEditorString(E) &
+  ReadOps(O) &
+  ModifyOps(?) &
+  ModifyOpSigs(?) &
+  bprintf("/*\n  If this machine is an SLIB-introducable machine:\n    edit COMMITTABLE clause to be TRUE\n  else (a lower-level SLIB construct):\n    edit COMMITTABLE clause to be FALSE\n\n") &
+  bprintf("  If this machine does not import other library machines:\n    remove the IMPORTS clause\n  else:\n    edit IMPORTS clause appropriately\n*/\n\n") &
+  bprintf("/*\n") &
+  bprintf("  Do not edit above this comment\n") &
+  PrtParamDefsPV(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n\n") &
+  bprintf("LIBDEF %\n\nCOMMITTABLE ?\n\nIMPORTS ?\n\nINITIALISATION\n\n  skip",m) &
+  cslib_cics_ldf_1_2(O) &
+  bprintf("\n\nEND\n") &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.ldf)
+ =>
+  cslib_cics_ldf_3(m.mch)(f)(1);
+
+  bconnect(f) &
+  ReadEnvEditorString(E) &
+  ReadOps(?) &  /* no ops */
+  ModifyOps(?) &
+  ModifyOpSigs(?) &
+  bprintf("/*\n  If this machine is an SLIB-introducable machine:\n    edit COMMITTABLE clause to be TRUE\n  else (a lower-level SLIB construct):\n    edit COMMITTABLE clause to be FALSE\n*/\n\n") &
+  bprintf("/*\n") &
+  bprintf("  Do not edit above this comment\n") &
+  PrtParamDefsPV(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n\n") &
+  bprintf("LIBDEF %\n\nCOMMITTABLE ?\n\nEND\n",m) &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.ldf)
+ =>
+  cslib_cics_ldf_3(m.mch)(f)(1);
+
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  ReadOps(O) &
+  ModifyOps(?) &
+  ModifyOpSigs(?) &
+  cslib_cics_ldf_2_2(O) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.ldf)
+ =>
+  cslib_cics_ldf_3(m.mch)(f)(0);
+
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  ReadOps(?) &  /* no ops */
+  ModifyOps(?) &
+  ModifyOpSigs(?) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.ldf)
+ =>
+  cslib_cics_ldf_3(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_cics_ldf_2(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_cics_ldf_3(m.mch)(f)(x)
+ =>
+  cslib_cics_ldf_2(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_cics_ldf_2(m.mch)(f)
+ =>
+  cslib_cics_ldf_1(m.mch)(f);
+
+
+
+
+  bprintf("\n%: proc(%,%);\n  ;\n  end proc %;\n",s,v,u,s)
+ =>
+  cslib_plx_14(s)(v)(u);
+
+  bprintf("\n%: proc(%);\n  ;\n  end proc %;\n",s,u,s)
+ =>
+  cslib_plx_14(s)(?)(u);
+
+  bprintf("\n%: proc(%);\n  ;\n  end proc %;\n",s,v,s)
+ =>
+  cslib_plx_14(s)(v)(?);
+
+  bprintf("\n%: proc;\n  ;\n  end proc %;\n",s,s)
+ =>
+  cslib_plx_14(s)(?)(?);
+
+  cslib_plx_14(s)(v)(u)
+ =>
+  cslib_plx_13(s;t;u;v;(w|x);(y|z));
+
+  cslib_plx_13(?);
+
+  cslib_plx_13(o)
+ =>
+  cslib_plx_12(o);
+
+  cslib_plx_13 bsmap (O,o)
+ =>
+  cslib_plx_12(O,o);
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_3(m.mch)(f)(1);
+
+  ReadEnvEditorString(E) &
+  bconnect(f) &
+  ReadOps(O) &
+  bprintf("/*\n") &
+  bprintf("  Do not edit above this comment\n") &
+  PrtParamDefsPV(m) &
+  bprintf("  Remove all comments that should not appear in SLIB modules\n") &
+  bprintf("*/\n\n") &
+  bprintf("INI_%: proc;\n  ;\n  end proc INI_%;\n",m) &
+  cslib_plx_12(O) &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m)
+ =>
+  cslib_3(m.mch)(f)(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_2(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_3(m.mch)(f)(x)
+ =>
+  cslib_2(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_2(m.mch)(f)
+ =>
+  cslib_1(m.mch)(f);
+
+
+
+/***** C *****/
+
+  ReadEnvEditorString(E) &
+  bprintf("  If this machine does not import other library machines:\n    remove the IMPORTS clause\n  else:\n    edit IMPORTS clause to be a list of non-COMMITTABLE SLIB\n    constructs with parameters set where appropriate;\n    note that each imported construct must begin with the `_' character\n") &
+  PrtParamDefsPV(m) &
+  bprintf("*/\n\nLIBDEF %\n\nIMPORTS ?\n\nEND\n",m) &
+  bclose &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.ldf)
+&Cldf(m)
+ =>
+  cslib_c_ldf_3_5(m.mch)(f);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  cslib_c_ldf_3_4(m.mch)(f)(1);
+
+  IsMch &
+  bconnect(f) &
+  bprintf("/*\n  This committable construct will be created in SLIB as `%'\n\n",m) &
+  cslib_c_ldf_3_5(m.mch)(f)
+ =>
+  cslib_c_ldf_3_4_2(m.mch)(f)(1);
+
+  IsNch &
+  bconnect(f) &
+  bprintf("/*\n  This non-committable construct will be created in SLIB as `_%'\n\n",m) &
+  cslib_c_ldf_3_5(m.mch)(f)
+ =>
+  cslib_c_ldf_3_4_2(m.mch)(f)(1);
+  
+  ReadEnvEditorString(E) &
+  Writef(("\n  ")) &
+  Writef((f)) &
+  Writef((" exists - not overwritten\n")) &
+  bshell(bcatl(E," ",f,"& echo $! > .Bed")) &
+/*  bshell(bcatl("$BKIT/BLIB/EditFile ",f)) & */
+  StoreEdt(m.ldf)
+&Cldf(m)
+ =>
+  cslib_c_ldf_3_4_2(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_c_ldf_3_4_1(m.mch)(f);
+  
+  bget(".Bcom",x) &
+  cslib_c_ldf_3_4_2(m.mch)(f)(x)
+ =>
+  cslib_c_ldf_3_4_1(m.mch)(f);
+  
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  cslib_c_ldf_3_4_1(m.mch)(f)
+ =>
+  cslib_c_ldf_3_4(m.mch)(f)(1);
+
+  IsMch &
+  InformSLIBAlreadyExists(m)
+ =>
+  cslib_c_ldf_3_4(m.mch)(f)(0);
+
+  IsNch &
+  InformSLIBnchAlreadyExists(m)
+ =>
+  cslib_c_ldf_3_4(m.mch)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_c_ldf_3_3(m.mch)(f);
+
+  bget(".Bcom",x) &
+  cslib_c_ldf_3_4(m.mch)(f)(x)
+ =>
+  cslib_c_ldf_3_3(m.mch)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",g," .")) &
+  cslib_c_ldf_3_3(m.mch)(f)
+ =>
+  cslib_c_ldf_3_2(m.mch)(f)(g);
+
+  ReadNumber(2) &
+  SetIsNch &
+  cslib_c_ldf_3_2(m.mch)(f)(bcatl("$BKIT/BLIB/LIB/CFG/_",m,".nch"))
+ =>
+  cslib_c_ldf_3_1(m.mch)(f);
+
+  ReadNumber(1) &
+  SetIsMch &
+  cslib_c_ldf_3_2(m.mch)(f)(bcatl("$BKIT/BLIB/LIB/CFG/",m,".mch"))
+ =>
+  cslib_c_ldf_3_1(m.mch)(f);
+
+  ReadNumber(0) &
+  RemFiles(m) &
+  InformCreateAborted
+ =>
+  cslib_c_ldf_3_1(m.mch)(f);
+
+  
+  cslib_c_ldf_3(m.mch)(f);
+
+  brule(CSLIBX.22,0) &
+  FifoWrite_Store((BT_CRE_SLIB_M,m,0),(GetNumberFromUserX.1)) &
+  cslib_c_ldf_3_1(m.mch)(f)
+ =>
+  cslib_c_ldf_3(m.mch)(f);
+
+  bshell(bcatl("cp ",f," SRC"))
+ =>
+  check_SEES5(m)(f)(1);
+
+  check_SEES5(m)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  check_SEES4(m)(f);
+
+  bget(".Bcom",x) &
+  check_SEES5(m)(f)(x)
+ =>
+  check_SEES4(m)(f);
+
+  Writef (("\n    Can't copy %.h from SLIB",m)) &
+  Writef (("\n    (non-renamable SLIB machines only may be seen)\n")) &
+  KillEdits &
+  RemFiles(m) &
+  InformCreateAborted &
+  bmodr(CSLIBX.22,1)
+ =>
+  check_SEES3(m)(f)(1);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",m,".h SRC")) &
+  check_SEES4(m)(f)
+ =>
+  check_SEES3(m)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  check_SEES2(m)(f);
+
+  bget(".Bcom",x) &
+  check_SEES3(m)(f)(x)
+ =>
+  check_SEES2(m)(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  check_SEES2(m)(f)
+ =>
+  check_SEES1(m)(f);
+
+  check_SEES1(m)(bcatl("$BKIT/BLIB/LIB/CDE/C/",m,".h"))
+ =>
+  check_SEES(m(s):t:U);
+
+  check_SEES(?);
+
+  KillEdits &
+  RemFiles(m) &
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  cslib_0(k.mch)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ModifySees(A) &
+  ModifyFormalParameters(l) &
+  ModifyOps(n) &
+  ModifyConstants(F) &
+  ModifySets(D) &
+  ModifyProperties((H&?)) &
+  bmodr(CSLIBX.22,0) &
+  check_SEES bsmap (A) &
+  cslib_c_ldf_3(k.mch)(bcatl("SRC/",k,".ldf"))
+ =>
+  cslib_0(k.mch)(Z);
+
+  cslib_0(m.mch)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  cslib_7(m.mch)(x);
+
+  InformCantWriteSLIB("CDE/C")
+ =>
+  cslib_7(m.mch)(4);
+
+  InformCantWriteSLIB("TYP")
+ =>
+  cslib_7(m.mch)(3);
+
+  InformCantWriteSLIB("ANL")
+ =>
+  cslib_7(m.mch)(2);
+
+  InformCantWriteSLIB("CFG")
+ =>
+  cslib_7(m.mch)(1);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_6(m.mch);
+
+  bget(".Bcom",x) &
+  cslib_7(m.mch)(x)
+ =>
+  cslib_6(m.mch);
+
+  bshell("$BKIT/BLIB/CreSLIBC 0") &
+  cslib_6(m.mch)
+ =>
+  cslib_5(m.mch)(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cslib_4(m.mch);
+
+  bget(".Bcom",x) &
+  cslib_5(m.mch)(x)
+ =>
+  cslib_4(m.mch);
+
+  Writef(("\n  Creating SLIB construct %\n",m)) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",m,".* ","$BKIT/BLIB/LIB/CFG")) &
+  cslib_4(m.mch)
+ =>
+  cslib_3(m.mch);
+
+  InformCantConnect(".Bplf") &
+  PFZ
+ =>
+  cslib_2(m.mch);
+
+  bget(".Bplf",(z;f;a;b;c)) &
+  bmodr(CSLIBX.26,z) &    /* Interface_Option     */
+  bmodr(CSLIBX.20,f) &    /* Prog_Language_Option */
+  bmodr(CSLIBX.23,a) &    /* cc_compiler_str_num  */
+  bmodr(CSLIBX.24,b) &    /* cc_link_lib_str_num  */
+  bmodr(CSLIBX.25,c) &    /* cc_Xlink_lib_str_num */
+  cslib_3(m.mch)
+ =>
+  cslib_2(m.mch)
+
+END

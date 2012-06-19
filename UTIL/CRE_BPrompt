@@ -1,0 +1,79 @@
+#! /bin/csh -f
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script installs BPrompt "
+echo "  in `pwd`/BKIT/BLIB "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+
+if ( ! -d $BKIT/BLIB ) then
+  mkdir $BKIT/BLIB
+endif
+
+cd ../MOTIF
+
+set motif_files = BPrompt
+
+################################
+# compile BPrompt
+################################
+
+echo ""
+echo "  ----------------------------------------------------------------------"
+echo "  Compiling BPrompt"
+echo ""
+echo ""
+
+foreach file ( $motif_files )
+
+  echo "  $CC \ "
+  echo "      $CC_opt_Motif \ "
+  echo "      $file.c \ "
+  echo "      -o $BKIT/BLIB/$file \ "
+  echo "      -Dbmotif \ "
+  echo "      $CC_X_incl_dir \ "
+  echo "      $ALL_FLAGS  \ "
+  echo "      $CC_X_link_dir \ "
+  echo "      $CC_X_link_lib \ "
+  echo "      $CC_non_X_link_lib "
+    $CC \
+       $CC_opt_Motif \
+       $file.c \
+       -o $BKIT/BLIB/$file \
+        -Dbmotif \
+       $CC_X_incl_dir   \
+       $ALL_FLAGS \
+       $CC_X_link_dir \
+       $CC_X_link_lib \
+       $CC_non_X_link_lib
+  if ( $status != 0 ) then
+    echo ""
+    echo ""
+    echo "                                 >>>>> $file NOT COMPILED <<<<<"
+    echo ""
+    echo ""
+  else
+    echo "  strip $BKIT/BLIB/$file >>SUPPRESSED<<"
+    #strip $BKIT/BLIB/$file
+    echo ""
+    echo "  Installed: $BKIT/BLIB/$file"
+    echo ""
+  endif
+
+end

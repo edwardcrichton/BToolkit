@@ -1,0 +1,58 @@
+# 1 "natural.src"
+THEORY exercises IS
+      
+      bunproved(0+y = y               | natX);
+      bunproved(x~+y = (x+y)~         | natX);
+      bunproved(y+(x+z) = y+x+z       | natX); 
+      bunproved(0*y = 0               | natX);      
+      bunproved(x+y = y+x             | comX);
+      bunproved(y+x+z = y+z+x         | comX);      
+      bunproved(x~*y = x*y+y          | natX);
+      bunproved(y*(x+z) = y*x+y*z     | natX);
+      bunproved((x+z)*y = x*y+z*y     | natX);
+      bunproved(y*(x*z) = y*x*z       | natX);      
+      bunproved(x*y = y*x             | comX);
+      bunproved(y*x*z = y*z*x         | comX);
+      bunproved(x^(y+z) = (x^y)*(x^z) | natX);
+      bunproved(x^z*y = x^z^y         | natX)
+
+TAC
+  
+  proverX
+  
+END
+
+&
+
+THEORY natX IS
+
+      x+0  ==  x;
+      x+y~ ==  (x+y)~;   
+      x*0  ==  0;
+      x*y~ ==  x*y+x;   
+      x^0  ==  0~;
+      x^y~ ==  (x^y)*x
+      
+END
+
+&
+
+THEORY inducX IS
+
+      bvrb(x,y,z) => ([y:=0]P &  !y.(P => [y:=y~]P))
+     =>
+      P
+  
+END
+
+&
+  
+THEORY proverX IS
+
+      bcall((inducX;DED;((GEN;SUB~;DED;HYP;natX)~;comX)~): (a=b)) &
+      bcall(RULE: bcrer(T,(a==b)))
+     => 
+      (a=b | T)
+  
+END
+

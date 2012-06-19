@@ -1,0 +1,275 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Scalar_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_cur_time , Rename_sto_time , Rename_exp_time)
+;
+(Rename_cur_time , Rename_sto_time , Rename_exp_time)
+;
+(Rename_cur_time : SCALAR & Rename_sto_time : SCALAR & Rename_exp_time : SCALAR)
+;
+(Rename_cur_time : SCALAR & Rename_sto_time : SCALAR & Rename_exp_time : SCALAR)
+;
+(?)
+;
+(Rename_cur_time :: SCALAR || Rename_sto_time := 0 || Rename_exp_time := 0)
+;
+(@Rename_cur_timex.(Rename_cur_timex : SCALAR ==> Rename_cur_time := Rename_cur_timex) || Rename_sto_time := 0 || Rename_exp_time := 0)
+;
+(Rename_GetCurTime,Rename_StoTime,Rename_GetStoTime,Rename_StartTimer,Rename_CheckTimer,Rename_GetCurYearMonthDay,Rename_IncYearMonthDay)
+;
+(Rename_GetCurTime , Rename_StoTime , Rename_GetStoTime , Rename_StartTimer , Rename_CheckTimer , Rename_GetCurYearMonthDay , Rename_IncYearMonthDay)
+;
+(Rename_Timer(?):(?):(?))
+;
+(
+(
+ (Rename_GetCurTime)
+;
+ (? , Val_Op , Det_Op , (time <-- Rename_GetCurTime))
+;
+ (?)
+;
+ (time)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ time := Rename_cur_time
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (time := Rename_cur_time)
+ )
+ )
+)
+,
+(
+ (Rename_StoTime)
+;
+ (? , Mod_Op , Det_Op , Rename_StoTime(time))
+;
+ (time)
+;
+ (?)
+;
+ (
+ (time : SCALAR)
+ |
+ (
+ (BEGIN
+ Rename_sto_time := time
+ END)
+ )
+ )
+;
+ (
+ (time : SCALAR)
+ |
+ (
+ (Rename_sto_time := time)
+ )
+ )
+)
+,
+(
+ (Rename_GetStoTime)
+;
+ (? , Val_Op , Det_Op , (time <-- Rename_GetStoTime))
+;
+ (?)
+;
+ (time)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ time := Rename_sto_time
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (time := Rename_sto_time)
+ )
+ )
+)
+,
+(
+ (Rename_StartTimer)
+;
+ (? , Mod_Op , Det_Op , (exp_time <-- Rename_StartTimer(interval)))
+;
+ (interval)
+;
+ (exp_time)
+;
+ (
+ (interval : SCALAR & Rename_cur_time+interval <= 2147483646)
+ |
+ (
+ (
+ (Rename_exp_time := Rename_cur_time+interval)
+ )
+ ||
+ (
+ (exp_time := Rename_cur_time+interval)
+ )
+ )
+ )
+;
+ (
+ (interval : SCALAR & Rename_cur_time+interval <= 2147483646)
+ |
+ (
+ (Rename_exp_time , exp_time := Rename_cur_time+interval , Rename_cur_time+interval)
+ )
+ )
+)
+,
+(
+ (Rename_CheckTimer)
+;
+ (? , Val_Op , Det_Op , (expired <-- Rename_CheckTimer))
+;
+ (?)
+;
+ (expired)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ expired := bool(Rename_exp_time <= Rename_cur_time)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (expired := bool(Rename_exp_time <= Rename_cur_time))
+ )
+ )
+)
+,
+(
+ (Rename_GetCurYearMonthDay)
+;
+ (? , Val_Op , NonDet_Op , (cur_ymd <-- Rename_GetCurYearMonthDay))
+;
+ (?)
+;
+ (cur_ymd)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ cur_ymd :: SCALAR
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(cur_ymdx).
+ (
+ (
+ (cur_ymdx : SCALAR)
+ )
+ ==>
+ (
+ (cur_ymd := cur_ymdx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_IncYearMonthDay)
+;
+ (? , Val_Op , NonDet_Op , (inc_ymd <-- Rename_IncYearMonthDay(ymd , days)))
+;
+ (ymd , days)
+;
+ (inc_ymd)
+;
+ (
+ (ymd : SCALAR & days : SCALAR & ymd+days : SCALAR)
+ |
+ (
+ (inc_ymd :: SCALAR)
+ )
+ )
+;
+ (
+ (ymd : SCALAR & days : SCALAR & ymd+days : SCALAR)
+ |
+ (
+ @(inc_ymdx).
+ (
+ (
+ (inc_ymdx : SCALAR)
+ )
+ ==>
+ (
+ (inc_ymd := inc_ymdx)
+ )
+ )
+ )
+ )
+)
+)

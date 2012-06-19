@@ -1,0 +1,317 @@
+----------------------------------------------------------
+
+!
+! Monchrome Resource file for Motif Interface to B-Toolkit (XBMotif)
+!
+
+!
+! default virtual bindings
+!
+*XBMotif*defaultVirtualBindings: osfBackSpace: <Key>Delete
+
+!
+! mnemonics
+!
+*XBMotif*Help.mnemonic: H
+*XBMotif*Cancel.mnemonic: C
+*XBMotif*Quit.mnemonic: Q
+*XBMotif*Palette.mnemonic: P
+*XBMotif*Interrupt.mnemonic: I
+*XBMotif*Environment.mnemonic: E
+*XBMotif*Options.mnemonic: O
+
+
+!
+! Initial position & height
+!
+*XBMotif.geometry: +1+1
+*XBMotif.height: 865
+
+
+!
+! enable tear-off menus (TEAR_OFF_DISABLED or TEAR_OFF_ENABLED)
+!
+*XBMotif*XmMenuShell*XmRowColumn*tearOffModel: TEAR_OFF_DISABLED
+
+
+!
+! globals
+!
+*XBMotif*dialogTitle: B-Toolkit
+*XBMotif*traversalOn: true
+*XBMotif*highlightThickness: 0
+*XBMotif*borderWidth: 0
+*XBMotif*marginWidth: 1
+*XBMotif*marginHeight: 1
+*XBMotif*spacing: 0
+*XBMotif*foreground: black
+!*XBMotif*background: white
+
+
+!
+! fonts 
+!
+*XBMotif*fontList: \
+  -*-courier-bold-r-*--12-*
+*XBMotif*XmList.fontList: \
+  -*-courier-medium-r-*--12-*
+*XBMotif*XmText.fontList: \
+  -*-courier-medium-r-*--12-*
+*XBMotif*XmLabel.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+*XBMotif*XmLabelGadget.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+*XBMotif*XmCascadeButton.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+*XBMotif*XmCascadeButtonGadget.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+*XBMotif*XmPushButton.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+*XBMotif*XmPushButtonGadget.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+*XBMotif*XmToggleButton.fontList: \
+  -*-new century schoolbook-medium-r-*--12-*
+*XBMotif*XmToggleButtonGadget.fontList: \
+  -*-new century schoolbook-medium-r-*--12-*
+
+!
+! Overview push button size
+!
+*XBMotif*Overview*XmPushButton.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+
+!
+! MainWin & MainWin Frame
+!
+*XBMotif*MainWin*background: gray90
+*XBMotif*MainWin*topShadowColor: gray95
+*XBMotif*MainWin*bottomShadowColor: gray30
+*XBMotif*MainWin*Frame*topShadowColor: white
+
+!
+! MainWin TopBar
+!
+*XBMotif*MainWin*TopBar*background: LightSteelBlue1
+*XBMotif*MainWin*TopBar*foreground: black
+*XBMotif*MainWin*TopBar*topShadowColor: white
+
+!
+! MainWin TopBar PullDown
+!
+*XBMotif*MainWin*TopBar*PullDown.spacing: 1
+*XBMotif*MainWin*TopBar*PullDown*background: LightCyan2
+*XBMotif*MainWin*TopBar.marginWidth: 20
+*XBMotif*MainWin*TopBar.spacing: 20
+
+!
+! MainWin TopBar Options
+!
+*XBMotif*MainWin*TopBar*PullDown*Options*background: LightCyan2
+*XBMotif*MainWin*TopBar*PullDown*Options*topShadowColor: white
+*XBMotif*MainWin*TopBar*PullDown*Options*Label.foreground: black
+*XBMotif*MainWin*TopBar*PullDown*Options*ButtonLabel.foreground: black
+
+!
+! MainWin TopBar Options OptionSet/OptionNotSet
+!
+*XBMotif*MainWin*TopBar*PullDown*Options*OptionSet*foreground: red
+*XBMotif*MainWin*TopBar*PullDown*Options*OptionNotSet*foreground: SteelBlue4
+
+!
+! MainWin TopBar Palette/File Difference Help
+!
+*XBMotif*HelpDialog*PalDialog*background: azure
+*XBMotif*HelpDialog*PalDialog*dialogTitle: B-Toolkit Palette
+*XBMotif*HelpDialog*PalDialog*fontList: \
+  -*-courier-medium-r-*--12-*
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+
+!
+! MainWin InformationPanel
+!
+*XBMotif*MainWin*InformationPanel*background: gray95
+*XBMotif*MainWin*InformationPanel*topShadowColor: white
+*XBMotif*MainWin*InformationPanel*Directory.foreground: black
+*XBMotif*MainWin*InformationPanel*Version.foreground: black
+
+!
+! MainWin ToolBar
+!
+*XBMotif*MainWin*ToolBar.background: gray95
+*XBMotif*MainWin*ToolBar*ToolBarBut.background: gray95
+*XBMotif*MainWin*ToolBar*ToolBarBut.foreground: black
+!
+! MainWin ToolBar Popups
+!
+*XBMotif*MainWin*ToolBar*background: LightSkyBlue1
+*XBMotif*MainWin*ToolBar*topShadowColor: gray98
+*XBMotif*MainWin*ToolBar*bottomShadowColor: LightBlue4
+
+!
+! MainWin Environment Label
+!
+*XBMotif*MainWin*EnvironmentLabel*foreground: black
+
+!
+! MainWin CommandBar
+!
+*XBMotif*MainWin*CommandBar*foreground: black
+
+!
+! MainWin ConstructsArea
+!
+*XBMotif*MainWin*Frame*ConstructsArea*background: LightSteelBlue1
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*background: gray95
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*topShadowColor: white
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*bottomShadowColor: gray30
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*LibraryBut*background: SteelBlue4
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*LibraryLab*foreground: SteelBlue4
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*GeneratedBut*background: SeaGreen
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*GeneratedLab*foreground: SeaGreen
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*UserBut*background: firebrick3
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*UserLab*foreground: firebrick3
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*InSensitiveBut*background: gray81
+
+!
+! MainWin DisplayArea
+!
+*XBMotif*MainWin*DisplayArea*background: LightSteelBlue1
+*XBMotif*MainWin*DisplayArea*Canvas*background:  Ivory1
+*XBMotif*MainWin*DisplayArea*Canvas*foreground: black
+*XBMotif*MainWin*DisplayArea*Canvas*topShadowColor: white
+*XBMotif*MainWin*DisplayArea*Canvas*bottomShadowColor: gray30
+*XBMotif*MainWin*DisplayArea*Canvas*fontList: -*-courier-bold-r-*--12-*
+
+!
+! InterProver
+!
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Ipr*background: gray85
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Ipr*foreground: SteelBlue4
+
+!
+! Animator
+!
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Anm*background: gray85
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Anm*foreground: SteelBlue4
+*XBMotif*AnmState.title: Animator State Display
+*XBMotif*AnmState.geometry: +527+1
+*XBMotif*AnmState*AnmWin.height: 400
+*XBMotif*AnmState*AnmWin.width: 400
+*XBMotif*AnmState*background: Ivory1
+*XBMotif*AnmState*foreground: SteelBlue4
+*XBMotif*AnmState*topShadowColor: gray95
+*XBMotif*AnmState*bottomShadowColor: gray35
+*XBMotif*AnmState*fontList: -*-courier-bold-r-*--12-*
+
+!
+! Overview
+!
+*XBMotif*Overview*background: gray90
+*XBMotif*Overview*topShadowColor: gray95
+*XBMotif*Overview*bottomShadowColor: gray30
+*XBMotif*Overview*Frame.background: LightSteelBlue1
+*XBMotif*Overview*Frame*Canvas*background: gray95
+*XBMotif*Overview*Frame*Canvas*topShadowColor: white
+*XBMotif*Overview*Frame*Canvas*bottomShadowColor: gray30
+*XBMotif*Overview*Frame*Canvas*Box*background: Ivory2
+*XBMotif*Overview*Frame*Canvas*MainBox*background: Ivory1
+
+!
+! Generated Interface
+!
+*XBMotif*Interface*background: gray90
+*XBMotif*Interface*Label.foreground: black
+*XBMotif*Interface*ButtonLabel.foreground: black
+*XBMotif*Interface*topShadowColor: gray95
+*XBMotif*Interface*bottomShadowColor: gray30
+*XBMotif*Interface*Frame.background: LightSteelBlue1
+*XBMotif*Interface*Frame*Canvas.background: Ivory1
+*XBMotif*Interface*Frame*Canvas.foreground: SteelBlue4
+*XBMotif*Interface*Canvas*fontList: -*-courier-bold-r-*--12-*
+
+!
+! Generated Interface Popups
+!
+*XBMotif*ItfDialog*background: LightSkyBlue1
+*XBMotif*ItfDialog*topShadowColor: gray98
+*XBMotif*ItfDialog*bottomShadowColor: LightBlue4
+*XBMotif*ItfDialog*Label.foreground: #5082ff
+*XBMotif*ItfDialog*ButtonLabel.foreground: black
+*XBMotif*ItfDialog*OpName.foreground: #5082ff
+*XBMotif*ItfDialog*InputText*background: #7fcdff
+*XBMotif*ItfDialog*InputText*bottomShadowColor: DeepSkyBlue4
+*XBMotif*ItfDialog*InputText*topShadowColor: gray95
+
+
+!
+! Library/Generated/User's construct buttons/labels
+!
+*XBMotif*LibraryBut.background: SteelBlue4
+*XBMotif*LibraryLab.foreground: SteelBlue4
+
+*XBMotif*GeneratedBut.background: SeaGreen
+*XBMotif*GeneratedLab.foreground: SeaGreen
+
+*XBMotif*UserBut.background: firebrick3
+*XBMotif*UserLab.foreground: firebrick3
+
+!
+! RadioBox/Selection Dialogs
+!
+*XBMotif*SelDialog*background: LightSkyBlue1
+*XBMotif*SelDialog*topShadowColor: gray98
+*XBMotif*SelDialog*bottomShadowColor: LightBlue4
+*XBMotif*SelDialog*Label.foreground: #5082ff
+*XBMotif*SelDialog*ButtonLabel.foreground: black
+
+!
+! Information Dialogs
+!
+*XBMotif*InfoDialog*background: LightSkyBlue1
+*XBMotif*InfoDialog*topShadowColor: gray98
+*XBMotif*InfoDialog*bottomShadowColor: LightBlue4
+*XBMotif*InfoDialog*foreground: black
+
+!
+! Question Dialogs
+!
+*XBMotif*QuestionDialog*background: LightSkyBlue1
+*XBMotif*QuestionDialog*topShadowColor: gray98
+*XBMotif*QuestionDialog*bottomShadowColor: LightBlue4
+*XBMotif*QuestionDialog*foreground: black
+
+!
+! Help Dialogs
+!
+*XBMotif*HelpDialog*background: LightCyan1
+*XBMotif*HelpDialog*topShadowColor: white
+*XBMotif*HelpDialog*dialogTitle: B-Toolkit Help
+*XBMotif*HelpDialog*fontList: \
+  -*-new century schoolbook-medium-r-*--12-*
+*XBMotif*HelpDialog*XmPushButtonGadget.fontList: \
+  -*-new century schoolbook-bold-r-*--12-*
+
+!
+! Warning Dialogs
+!
+*XBMotif*WarningDialog*background: gray70
+*XBMotif*WarningDialog*foreground: red
+*XBMotif*WarningDialog*dialogTitle: B-Toolkit Warning
+
+!
+! Quit Dialog
+!
+*XBMotif*QuitDialog*background: gray70
+*XBMotif*QuitDialog*foreground: red
+*XBMotif*QuitDialog*dialogTitle: B-Toolkit Quit?
+
+!
+!  unwise to change these ...
+!
+*XBMotif*MainWin*CommandBar*fontList: \
+        -*-courier-bold-r-*--12-*
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*fontList: \
+        -*-courier-bold-r-*--12-*
+
+

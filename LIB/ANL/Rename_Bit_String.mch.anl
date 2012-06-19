@@ -1,0 +1,221 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(Rename_BITS)
+;
+(Rename_BITS)
+;
+(bnd , bor , bxr)
+;
+(bnd , bor , bxr)
+;
+(Rename_BITS = 1..strsize --> BOOL & bnd = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> FALSE , TRUE |-> FALSE |-> FALSE , TRUE |-> TRUE |-> TRUE} & bor = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> TRUE , TRUE |-> FALSE |-> TRUE , TRUE |-> TRUE |-> TRUE} & bxr = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> TRUE , TRUE |-> FALSE |-> TRUE , TRUE |-> TRUE |-> FALSE} & card(Rename_BITS) : NAT1)
+;
+(Rename_BITS = 1..strsize --> BOOL & bnd = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> FALSE , TRUE |-> FALSE |-> FALSE , TRUE |-> TRUE |-> TRUE} & bor = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> TRUE , TRUE |-> FALSE |-> TRUE , TRUE |-> TRUE |-> TRUE} & bxr = {FALSE |-> FALSE |-> FALSE , FALSE |-> TRUE |-> TRUE , TRUE |-> FALSE |-> TRUE , TRUE |-> TRUE |-> FALSE} & card(Rename_BITS) : NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_NO_BITS,Rename_LND_BTS,Rename_LOR_BTS,Rename_LXR_BTS,Rename_VAL_BTS,Rename_STO_BTS)
+;
+(Rename_NO_BITS , Rename_LND_BTS , Rename_LOR_BTS , Rename_LXR_BTS , Rename_VAL_BTS , Rename_STO_BTS)
+;
+(Rename_Bit_String(strsize):(strsize <= 32 & strsize : NAT):(?))
+;
+(
+(
+ (Rename_NO_BITS)
+;
+ (? , Val_Op , Det_Op , (ss <-- Rename_NO_BITS))
+;
+ (?)
+;
+ (ss)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ ss := (1..strsize)*{FALSE}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (ss := (1..strsize)*{FALSE})
+ )
+ )
+)
+,
+(
+ (Rename_LND_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- Rename_LND_BTS(tt , uu)))
+;
+ (tt , uu)
+;
+ (ss)
+;
+ (
+ (tt : Rename_BITS & uu : Rename_BITS)
+ |
+ (
+ (ss := (tt >< uu;
+bnd))
+ )
+ )
+;
+ (
+ (tt : Rename_BITS & uu : Rename_BITS)
+ |
+ (
+ (ss := (tt >< uu;
+bnd))
+ )
+ )
+)
+,
+(
+ (Rename_LOR_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- Rename_LOR_BTS(tt , uu)))
+;
+ (tt , uu)
+;
+ (ss)
+;
+ (
+ (tt : Rename_BITS & uu : Rename_BITS)
+ |
+ (
+ (ss := (tt >< uu;
+bor))
+ )
+ )
+;
+ (
+ (tt : Rename_BITS & uu : Rename_BITS)
+ |
+ (
+ (ss := (tt >< uu;
+bor))
+ )
+ )
+)
+,
+(
+ (Rename_LXR_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- Rename_LXR_BTS(tt , uu)))
+;
+ (tt , uu)
+;
+ (ss)
+;
+ (
+ (tt : Rename_BITS & uu : Rename_BITS)
+ |
+ (
+ (ss := (tt >< uu;
+bxr))
+ )
+ )
+;
+ (
+ (tt : Rename_BITS & uu : Rename_BITS)
+ |
+ (
+ (ss := (tt >< uu;
+bxr))
+ )
+ )
+)
+,
+(
+ (Rename_VAL_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- Rename_VAL_BTS(bb , nn)))
+;
+ (bb , nn)
+;
+ (ss)
+;
+ (
+ (bb : Rename_BITS & nn : 1..strsize & bb(nn) : BOOL)
+ |
+ (
+ (ss := bb(nn))
+ )
+ )
+;
+ (
+ (bb : Rename_BITS & nn : 1..strsize & bb(nn) : BOOL)
+ |
+ (
+ (ss := bb(nn))
+ )
+ )
+)
+,
+(
+ (Rename_STO_BTS)
+;
+ (? , Val_Op , Det_Op , (ss <-- Rename_STO_BTS(bb , nn , vv)))
+;
+ (bb , nn , vv)
+;
+ (ss)
+;
+ (
+ (bb : Rename_BITS & nn : 1..strsize & vv : BOOL)
+ |
+ (
+ (ss := bb <+ {nn |-> vv})
+ )
+ )
+;
+ (
+ (bb : Rename_BITS & nn : 1..strsize & vv : BOOL)
+ |
+ (
+ (ss := bb <+ {nn |-> vv})
+ )
+ )
+)
+)

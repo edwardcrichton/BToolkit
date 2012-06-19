@@ -1,0 +1,23 @@
+#! /bin/csh -f
+
+../UTIL/_rem_copied_to_c
+
+cp ../BEESRC/itfmch.c.B-Core ../BEESRC/itfmch.c
+cp ../BEESRC/natmch.c.B-Core ../BEESRC/natmch.c
+cp ../BEESRC/filmch.c.B-Core ../BEESRC/filmch.c
+cp ../BEESRC/themch.c.B-Core ../BEESRC/themch.c
+cp ../BEESRC/prfmch.c.B-Core ../BEESRC/prfmch.c
+cp ../BEESRC/tolmch.c.B-Core ../BEESRC/tolmch.c
+cp ../BEESRC/symmch.c.B-Core ../BEESRC/symmch.c
+cp ../BEESRC/strmch.c.B-Core ../BEESRC/strmch.c
+cp ../BEESRC/lexmch.c.B-Core ../BEESRC/lexmch.c
+cp ../BEESRC/frmmch.c.B-Core ../BEESRC/frmmch.c
+cp ../BEESRC/errmch.c.B-Core ../BEESRC/errmch.c
+cp ../BEESRC/macmch.c.B-Core ../BEESRC/macmch.c
+cp ../BEESRC/rulmch.c.B-Core ../BEESRC/rulmch.c
+cp ../BEESRC/resmch.c.B-Core ../BEESRC/resmch.c
+cp ../BEESRC/hypmch.c.B-Core ../BEESRC/hypmch.c
+cp ../BEESRC/tacmch.c.B-Core ../BEESRC/tacmch.c
+cp ../BEESRC/nodmch.c.B-Core ../BEESRC/nodmch.c
+cp ../BEESRC/golmch.c.B-Core ../BEESRC/golmch.c
+cp ../BEESRC/seqmch.c.B-Core ../BEESRC/seqmch.c

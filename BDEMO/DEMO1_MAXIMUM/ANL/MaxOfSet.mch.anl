@@ -1,0 +1,107 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(max_val)
+;
+(max_val)
+;
+(max_val = 1000000)
+;
+(max_val = 1000000)
+;
+(?)
+;
+(?)
+;
+(numset)
+;
+(numset)
+;
+(numset <: NAT1)
+;
+(numset <: NAT1)
+;
+(?)
+;
+(numset := {})
+;
+(numset := {})
+;
+(enter,maximum)
+;
+(enter , maximum)
+;
+(MaxOfSet(?):(?):(?))
+;
+(
+(
+ (enter)
+;
+ (? , Mod_Op , Det_Op , enter(new))
+;
+ (new)
+;
+ (?)
+;
+ (
+ (new : NAT1 & new <= max_val)
+ |
+ (
+ (numset := numset \/ {new})
+ )
+ )
+;
+ (
+ (new : NAT1 & new <= max_val)
+ |
+ (
+ (numset := numset \/ {new})
+ )
+ )
+)
+,
+(
+ (maximum)
+;
+ (? , Val_Op , Det_Op , (mx <-- maximum))
+;
+ (?)
+;
+ (mx)
+;
+ (
+ (numset /= {})
+ |
+ (
+ (mx := max(numset))
+ )
+ )
+;
+ (
+ (not(numset = {}))
+ |
+ (
+ (mx := max(numset))
+ )
+ )
+)
+)

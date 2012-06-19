@@ -1,0 +1,149 @@
+%  modified April 1995 to work with LaTeX 2e
+
+\topmargin -7.5ex
+\footskip   7.5ex
+
+\ifcase \@ptsize
+    % mods for 10 pt
+    \textheight 53\baselineskip
+\or % mods for 11 pt
+    \textheight 46\baselineskip
+\or % mods for 12 pt
+    \textheight 42\baselineskip
+\fi
+\advance\textheight by \topskip
+
+\ifcase \@ptsize
+    % mods for 10 pt
+    \oddsidemargin  0.15 in     %   Left margin on odd-numbered pages.
+    \evensidemargin 0.35 in     %   Left margin on even-numbered pages.
+    \marginparwidth 1 in        %   Width of marginal notes.
+    \oddsidemargin 0.25 in      %   Note that \oddsidemargin = \evensidemargin
+    \evensidemargin 0.25 in
+    \marginparwidth 0.75 in
+    \textwidth 5.875 in % Width of text line.
+\or % mods for 11 pt
+    \oddsidemargin 0.1 in      %   Left margin on odd-numbered pages.
+    \evensidemargin 0.15 in    %   Left margin on even-numbered pages.
+    \marginparwidth 1 in       %   Width of marginal notes.
+    \oddsidemargin 0.125 in    %   Note that \oddsidemargin = \evensidemargin
+    \evensidemargin 0.125 in
+    \marginparwidth 0.75 in
+    \textwidth 6.125 in % Width of text line.
+\or % mods for 12 pt
+    \oddsidemargin -10 pt      %   Left margin on odd-numbered pages.
+    \evensidemargin 10 pt      %   Left margin on even-numbered pages.
+    \marginparwidth 1 in       %   Width of marginal notes.
+    \oddsidemargin 0 in        %   Note that \oddsidemargin = \evensidemargin
+    \evensidemargin 0 in
+    \marginparwidth 0.75 in
+    \textwidth 6.375 true in % Width of text line.
+\fi
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.5ex}
+
+\def\@setmcodes#1#2#3{{\count0=#1 \count1=#3
+        \loop \global\mathcode\count0=\count1 \ifnum \count0<#2
+        \advance\count0 by1 \advance\count1 by1 \repeat}}
+
+%\mathcode`\;="8000 % Makes ; active in math mode
+%{\catcode`\;=\active \gdef;{\semicolon\;}}
+%\mathchardef\semicolon="003B
+
+\edef\@scale{\ifcase\@ptsize \@m \or\magstephalf\or\magstep1\fi}
+
+% load new fonts for 2e
+\font\msx=msam10 scaled \@scale % Note: sometimes called euxm10
+\font\msy=msbm10 scaled \@scale % Note: sometimes called euym10
+
+\newfam\msxfam \textfont\msxfam=\msx
+\newfam\msyfam \textfont\msyfam=\msy
+
+\def\@famletter#1{\ifcase #1 0\or 1\or 2\or 3\or 4\or 5\or 6\or 7\or
+        8\or 9\or A\or B\or C\or D\or E\or F\fi}
+
+\edef\@fx{\@famletter\msxfam}
+\edef\@fy{\@famletter\msyfam}
+
+\def\bbold{\fam\msyfam \msy}
+\def\@myop#1{\mathop{\mathstrut{#1}}\nolimits}
+\let\xforall=\forall
+\let\xexists=\exists
+\def\p#1{\mathrel{\ooalign{\hfil$\mapstochar\mkern 5mu$\hfil\cr$#1$}}}
+\def\f#1{\mathrel{\ooalign{\hfil
+        $\mapstochar\mkern 3mu\mapstochar\mkern 5mu$\hfil\cr$#1$}}}
+\let\@mc=\mathchardef
+\def \defs      {\mathrel{\widehat=}}
+\def \power     {\@myop{\bbold P}}
+\def \powerone  {\@myop{\bbold P}_1}
+\def \forall    {\@myop{\xforall}}
+\def \exists    {\@myop{\xexists}}
+\def \emptyset  {\{\}}
+\let \rel       \leftrightarrow
+\@mc \dres      "2\@fx43
+\@mc \rres      "2\@fx42
+\def \ndres     {\mathbin{\rlap{$-$}{\dres}}}
+\def \nrres     {\mathbin{\rlap{$-$}{\rres}}}
+\def \pfun      {\p\fun}
+\let \fun       \rightarrow
+\def \pinj      {\p\inj}
+\@mc \inj       "3\@fx1A
+\def \psurj     {\p\surj}
+\def \surj      {\mathrel{\ooalign{$\fun$\hfil\cr$\mkern4mu\fun$}}}
+\def \bij       {\mathrel{\ooalign{$\inj$\hfil\cr$\mkern5mu\fun$}}}
+\def \nat       {{\bbold N}}
+\def \natone    {{\bbold N}_1}
+\def \num       {{\bbold Z}}
+\def \real      {{\bbold R}}
+\def \int       {{\bbold Z}}
+\def \rat       {{\bbold Q}}
+\def \upto      {\mathbin{\ldotp\ldotp}}
+\def \finset    {\@myop{\bbold F}}
+\def \finsetone {\@myop{\bbold F}_1}
+\def \finj      {\f\inj}
+\def \cat       {\mathbin{\raise 0.8ex\hbox{$\mathchar"2\@fx61$}}}
+
+
+\def\bquote#1{``#1''}
+\def\bopnquote#1{``#1}
+\def\bcloquote#1{#1''}
+\def\bsub#1{_#1\ }
+\def\bhsp{\hspace*{0.75em}}
+\def\bbhsp{\hspace*{1.5em}}
+\def\bnhsp{\hspace*{-.25em}}
+\def\bopname#1{{\bf #1}}
+\def\bbpageref#1{\pageref{#1}}
+\def\bbnl{\\[1.75ex]}
+\def\bnl{\\[.5ex]}
+\def\bOperationSemiColon{\put(1,-1)\ \ {\large\bf ;} \bhsp}
+\def\bStatementSemiColon{\put(1,-1)\ \ {\large\bf ;} }
+\def\bparallel{\put(1,-1)\ \ {$\ \parallel\ $} }
+\def\bOpnWord#1{{\small {\bf #1}} \bhsp}
+
+\def\bSetTabs{\ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \ \ \ \ \= \kill}
+
+\newlength{\bxrefindent}
+% \setlength{\bxrefindent}{2.0096em}
+\setlength{\bxrefindent}{1.39em}
+\newlength{\bxrefwidth}
+\setlength{\bxrefwidth}{\textwidth}
+\addtolength{\bxrefwidth}{-\bxrefindent}
+
+\def\bcomment#1#2{\vspace{-3ex}\rule{\textwidth}{.2ex}\\{\bf (~#1~)}\ :\ #2\\[-.75ex]\rule{\textwidth}{.2ex}\vspace{-1.5ex}}
+
+\def\bsetindent{\leftskip=\bxrefindent}
+\def\bresetindent{\leftskip=0pt}
+
+% \def\bxrefhead#1{\hspace*{\bxrefindent}{\bf #1}\\[.75ex]}
+% \def\bxrefline#1#2#3#4{\hspace*{\bxrefindent}\begin{tabular}{p{15em}p{15em}p{15em}p{5em}}#1&#2&#3&#4\end{tabular}\\}
+
+\def\bxrefhead#1{{\bf #1}\\[.75ex]}
+%\def\bxrefline#1#2#3#4{\begin{tabular}{p{15em}p{15em}p{15em}p{5em}}#1&#2&#3&#4\end{tabular}\\}
+\def\bxrefline#1#2#3#4{\begin{tabular}{p{12em}p{12em}p{9em}p{4em}}#1&#2&#3&#4\end{tabular}\\}
+
+\def\bproofline#1#2#3{\hspace*{-2em}\begin{tabular}{p{2em}p{35em}p{7em}}#1&#2&#3\end{tabular}\\[.65ex]}
+
+
+% spectrum definitions for documents 

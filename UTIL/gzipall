@@ -1,0 +1,4 @@
+#!/bin/sh
+cd ..
+tar --create --file=future.tar --exclude=*.gz --exclude=*.tar *
+gzip -9 future.tar

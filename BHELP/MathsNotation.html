@@ -1,0 +1,1025 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>Mathematical Notation</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Mathematical_Notation"></A>
+<H1>
+Mathematical Notation</H1>
+See the `B-Method Abstract Machine Notation Summary' for a full treatment
+of the mathematical notation.
+<H2>
+Contents</H2>
+
+<UL>
+<LI>
+<A HREF="MathsNotation.html#Predicates">Predicates</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Expressions">Expressions</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Sets">Sets</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Natural_Numbers">Natural_Numbers</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Relations">Relations</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Functions">Functions</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Sequences">Sequences</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Substitutions!Generalised">Generalised Substitutions</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Variables">Variables, Variable Lists and Identifiers</A></LI>
+
+<LI>
+<A HREF="MathsNotation.html#Operator_Priorities">Infix Operator Priorities</A></LI>
+</UL>
+<A NAME="Operator_Binding"></A>
+<H2>
+Notes on operator binding</H2>
+Compound formulae (e.g. <TT>A => B &amp; C</TT>) are given an unambiguous
+interpretation by the operator binding rules:
+<OL>
+<LI>
+All operators bind to the left (are left-associative) except ``<TT><A HREF="AMNotation.html#Renaming!INCLUDES">.</A></TT>''
+which binds to the right.</LI>
+
+<LI>
+Each symbol (e.g. <TT>&amp;</TT>) is given a priority, and the highest
+priorities bind strongest,</LI>
+
+<BR>e.g. <TT>A => B &amp; C</TT> is equivalent to <TT>A => (B &amp; C)</TT>.
+<LI>
+In case of equal priority the leftmost operator binds the strongest,</LI>
+
+<BR>e.g. <TT>A &amp; B &amp; C &lt;=> (A &amp; B) &amp; C</TT>.</OL>
+The priorities of infix operators are listed in the table below.
+<H2>
+<A NAME="Operator_Priorities"></A>Infix Operator Priorities</H2>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Priority&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Operator
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#Renaming!INCLUDES">.</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Remainder">mod</A>&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Product">*</A>&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Division">/
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Difference">-</A>&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Addition">+
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Interval">..
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><A HREF="MathsNotation.html#Sets!Intersection">/\</A></TT>&nbsp; <TT><A HREF="MathsNotation.html#Sets!Union">\/</A></TT>&nbsp; <A HREF="MathsNotation.html#Ordered_Pair">|->
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Relations!Domain_Restriction">&lt;|</A>&nbsp; <A HREF="MathsNotation.html#Relations!Anti_Domain_Restriction">&lt;&lt;|</A>&nbsp; <A HREF="MathsNotation.html#Relations!Range_Restriction">|></A>&nbsp; <A HREF="MathsNotation.html#Relations!Anti_Range_Restriction">|>></A>&nbsp; <A HREF="MathsNotation.html#Relations!Overriding">&lt;+</A>&nbsp; <A HREF="MathsNotation.html#Relations!Overriding">+></A>&nbsp; <A HREF="MathsNotation.html#Relations!Composition">>&lt;</A>&nbsp; <A HREF="MathsNotation.html#Relations!Composition">circ
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Sequences!Concatenation">^</A>&nbsp; <A HREF="MathsNotation.html#Sequences!Prepend">-></A>&nbsp; <A HREF="MathsNotation.html#Sequences!Append">&lt;-</A>&nbsp; <TT><A HREF="MathsNotation.html#Sequences!Projection">/|\</A></TT>&nbsp; <TT><A HREF="MathsNotation.html#Sequences!Projection">\|/
+</A></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Inequality">&lt;</A>&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Inequality">&lt;=</A>&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Inequality">></A>&nbsp; <A HREF="MathsNotation.html#Natural_Numbers!Inequality">>=</A>&nbsp; <A HREF="MathsNotation.html#Negation!Not_Equals">/=</A>&nbsp; <A HREF="MathsNotation.html#Negation!Not_Set_Member">/:
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Relations!Relation">&lt;-></A>&nbsp; <A HREF="MathsNotation.html#Functions!Total">--></A>&nbsp; <A HREF="MathsNotation.html#Functions!Partial">+->
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Injection!Total">>-></A>&nbsp; <A HREF="MathsNotation.html#Injection!Partial">>+></A>&nbsp; <A HREF="MathsNotation.html#Surjection!Partial">+->></A>&nbsp; <A HREF="MathsNotation.html#Functions!Bijection">>->></A>&nbsp; <A HREF="MathsNotation.html#Surjection!Total">-->>
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#AMN!Operations">&lt;--</A>&nbsp; <A HREF="MathsNotation.html#Comma_Separator">,
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A>&nbsp; <A HREF="MathsNotation.html#Sets!Inclusion">&lt;&lt;:</A>&nbsp; <A HREF="MathsNotation.html#Negation!Not_Set_Inclusion">/&lt;:</A>&nbsp; <A HREF="MathsNotation.html#Negation!Not_Strict_Set_Inclusion">/&lt;&lt;:
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Substitutions!Application">:=
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Equals">=</A>&nbsp; <A HREF="BPlatform.html#Inference_Rules!Rewrite">==</A>&nbsp; <A HREF="MathsNotation.html#Sets!Membership">:</A>&nbsp; <A HREF="MathsNotation.html#Equivalence">&lt;=></A>&nbsp; <A HREF="AMNotation.html#AMN!Postconditions">::
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><A HREF="MathsNotation.html#Conjunction">&amp;</A></TT>&nbsp; <A HREF="MathsNotation.html#Disjunction">or
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Implication">=></A>&nbsp; <A HREF="MathsNotation.html#Substitutions!Guarded">==>
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Substitutions!Sequencing">;</A>&nbsp; <A HREF="MathsNotation.html#Substitutions!Simultaneous">||</A>&nbsp; <A HREF="MathsNotation.html#Substitutions!Choice">[]
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Substitutions!Preconditioned">|</A></PRE>
+A full list of priorities is found in the B Toolkit Symbol Table, $BKIT/BLIB/AMNSYMBOL.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+<A NAME="Predicates"></A>Predicates</H2>
+Let <TT>z</TT> be a Variable List, <TT>x</TT> Variable, <TT>E</TT> and
+<TT>F</TT> be Expression Lists, <TT>P</TT> and <TT>Q</TT> be Predicates,
+and <TT>S</TT>, <TT>T</TT> be Sets. <TT>z\E</TT> means that there are no
+free occurrences in <TT>E</TT> of the variables in <TT>z</TT>.
+<H3>
+General Predicates</H3>
+
+<DL>
+<DT>
+<A NAME="Conjunction"></A><TT>P &amp; Q</TT></DT>
+
+<DD>
+Conjunction: ``<TT>P</TT> and <TT>Q</TT>''.</DD>
+
+<DT>
+<A NAME="Implication"></A><TT>P => Q</TT></DT>
+
+<DD>
+Implication: ``<TT>P</TT> implies <TT>Q</TT>'' or ``if <TT>P</TT> then
+<TT>Q</TT>''.</DD>
+
+<DT>
+<A NAME="Negation"></A><TT>not(P)</TT></DT>
+
+<DD>
+Negation: ``Not <TT>P</TT>''.</DD>
+
+<DT>
+<A NAME="Quantification!Universal"></A><TT>!z.(Q => P)</TT></DT>
+
+<DD>
+Universal quantification: ``For all z where Q, P''. The predicate Q must,
+for each variable x in the list z, contain a constraining predicate, i.e.
+<TT>x: S</TT>, <TT>x &lt;: S</TT>, <TT>x &lt;&lt;: S</TT> or <TT>x = E</TT>,
+where <TT>z\S, z\E</TT>.</DD>
+
+<DT>
+<A NAME="Disjunction"></A><TT>P or Q</TT></DT>
+
+<DD>
+Disjunction: ``<TT>P</TT> or <TT>Q</TT>''.</DD>
+
+<DT>
+<A NAME="Equivalence"></A><TT>P &lt;=> Q</TT></DT>
+
+<DD>
+Equivalence: ``<TT>P</TT> is equivalent to <TT>Q</TT>''. An abbreviation
+for <TT>(P => Q) &amp; (Q => P)</TT>.</DD>
+
+<DT>
+<A NAME="Quantification!Existential"></A><TT>#z.P</TT></DT>
+
+<DD>
+Existential quantification: ``For some <TT>z</TT>, <TT>P</TT> holds''.
+The predicate <TT>Q</TT> must, for each variable <TT>x</TT> in the list
+<TT>z</TT>, contain a constraining predicate, i.e. <TT>x: S</TT>, <TT>x
+&lt;: S</TT>, <TT>x &lt;&lt;: S</TT> or <TT>x = E</TT>, where <TT>z\S,
+z\E</TT>.</DD>
+</DL>
+
+<H3>
+Predicates on Expressions</H3>
+
+<DL>
+<DT>
+<A NAME="Equals"></A><TT>E = F</TT></DT>
+
+<DD>
+Equality: <TT>E</TT> equals <TT>F</TT>.</DD>
+
+<DT>
+<A NAME="Negation!Not_Equals"></A><TT>E /= F</TT></DT>
+
+<DD>
+Inequality: <TT>E</TT> is not equal to <TT>F</TT>.</DD>
+</DL>
+
+<HR WIDTH="60%">
+<H2>
+<A NAME="Expressions"></A>Expressions</H2>
+Let E and F be Expressions.
+<DL>
+<DT>
+<A NAME="Expression_List"></A><TT>E,F</TT></DT>
+
+<DD>
+Expression list.</DD>
+
+<DT>
+<A NAME="Ordered_Pair"></A><TT>E |-> F</TT></DT>
+
+<DD>
+Ordered pair (maplet).</DD>
+</DL>
+
+<HR WIDTH="60%">
+<H2>
+<A NAME="Sets"></A>Sets</H2>
+Let <TT>z</TT> be a Variable List, <TT>P</TT> be a Predicate, <TT>E</TT>
+and <TT>F</TT> be Expressions, and <TT>S</TT> and <TT>T</TT> be sets.
+<DL>
+<DT>
+<A NAME="Sets!Membership"></A><TT>E : S</TT></DT>
+
+<DD>
+Set membership: the predicate ``<TT>E</TT> belongs to <TT>S</TT>'' or ``<TT>E</TT>
+is an element of <TT>S</TT>''.</DD>
+
+<DT>
+<A NAME="Negation!Not_Set_Member"></A><TT>E /: S</TT></DT>
+
+<DD>
+Set non-membership: the predicate ``<TT>E</TT> does not belong to <TT>S</TT>'',
+i.e. <TT>not(E: S)</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Inclusion"></A><TT>S &lt;: T</TT></DT>
+
+<DD>
+Set inclusion: the predicate ``<TT>S</TT> is included in <TT>T</TT>'',
+i.e. ``every element of <TT>S</TT> is also an element of <TT>T</TT>''.</DD>
+
+<DT>
+<A NAME="Negation!Not_Set_Inclusion"></A><TT>S /&lt;: T</TT></DT>
+
+<DD>
+Set non-inclusion: the negation of the predicate <TT>S &lt;: T</TT>.</DD>
+
+<DT>
+<TT>S &lt;&lt;: T</TT></DT>
+
+<DD>
+Strict set inclusion: the predicate ``<TT>S</TT> is included in <TT>T</TT>,
+but is not equal to <TT>T</TT>''.</DD>
+
+<DT>
+<A NAME="Negation!Not_Strict_Set_Inclusion"></A><TT>S /&lt;&lt;: T</TT></DT>
+
+<DD>
+String set non-inclusion: the negation of the predicate <TT>S &lt;&lt;:
+T</TT>.</DD>
+</DL>
+
+<H3>
+Set Expressions</H3>
+
+<DL>
+<DT>
+<A NAME="Sets!Comprehension"></A><TT>{z | P}</TT></DT>
+
+<DD>
+Set comprehension: the subset such that <TT>P</TT>. The predicate <TT>P</TT>
+must, for each variable <TT>x</TT> in the list <TT>z</TT>, contain a constraining
+predicate, i.e. <TT>x: S</TT>, <TT>x &lt;: S</TT>, <TT>x &lt;&lt;: S</TT>
+or <TT>x = E</TT>, where <TT>z\S</TT>, <TT>z\E</TT>.</DD>
+
+<DT>
+<TT>{z | z: S &amp; P}</TT></DT>
+
+<DD>
+Set comprehension: the subset of <TT>S</TT> such that <TT>P</TT>.</DD>
+
+<BR>e.g. <TT>{x,y | x,y: S*T &amp; P}</TT>.
+<DT>
+<A NAME="Cartesian_Product"></A><TT>S * T</TT></DT>
+
+<DD>
+Cartesian product: the set of Ordered Pairs whose first component is from
+<TT>S</TT> and second component is from <TT>T</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Power"></A><TT>POW(S)</TT></DT>
+
+<DD>
+Power set: set of all subsets of <TT>S</TT>.</DD>
+
+<BR><TT>x: POW(S) &lt;=> x &lt;: S</TT>.
+<DT>
+<A NAME="Sets!Union"></A><TT>S \/ T</TT></DT>
+
+<DD>
+Set union: the set of elements which are elements of <TT>S</TT> or <TT>T</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Intersection"></A><TT>S /\ T</TT></DT>
+
+<DD>
+Set intersection: the set of elements which are elements of <TT>S</TT>
+and <TT>T</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Difference"></A><TT>S - T</TT></DT>
+
+<DD>
+Set difference: the set of elements which are elements of <TT>S</TT>, but
+not of <TT>T</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Empty"></A><TT>{}</TT></DT>
+
+<DD>
+Empty set: the set with no elements.</DD>
+
+<DT>
+<A NAME="Sets!Subsets!Non_empty"></A><TT>POW1(S)</TT></DT>
+
+<DD>
+Non-empty subset: Set of all non-empty subsets of <TT>S</TT>.</DD>
+
+<BR><TT>POW1(S) = POW(S) - {}</TT>.
+<DT>
+<A NAME="Sets!Subsets!Finite"></A><TT>FIN(S)</TT></DT>
+
+<DD>
+Finite subsets: Set of all finite subsets of <TT>S</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Subsets!Finite_Non_Empty"></A><TT>FIN1(S)</TT></DT>
+
+<DD>
+Non-empty finite subsets: Set of all non-empty finite subsets of <TT>S</TT>.</DD>
+
+<BR><TT>FIN1(S) = FIN(S) - {}</TT>.
+<DT>
+<A NAME="Sets!Singleton"></A><TT>{E}</TT></DT>
+
+<DD>
+Singleton set: Provided that <TT>E</TT> is not an Expression List, and
+<TT>E: S</TT>, <TT>{E}</TT> is a singleton set: <TT>{x | x: S &amp; x =
+E}</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Enumeration"></A><TT>{E,F}<A NAME="Comma_Separator"></A></TT></DT>
+
+<DD>
+Set enumeration: Provided that <TT>F</TT> is not an Expression List, this
+is the set with elements from <TT>{E}</TT> together with element <TT>F</TT>.
+<TT>{E,F} = {E} \/ {F}</TT>.</DD>
+
+<BR>Note that <TT>F</TT> is an element of <TT>{(E,F)}</TT>, while <TT>E
+|-> F</TT> is the single element of <TT>{E |-> F}</TT>.
+<DT>
+<A NAME="Sets!Union!Generalised"></A><TT>union(U)</TT></DT>
+
+<DD>
+Generalised union: the generalised union of a set <TT>U</TT> of subsets
+of <TT>S</TT> <TT>(U: POW(POW(S)))</TT>. <TT>union(U) = {x | x: S &amp;
+#s.(s: U &amp; x: s)}</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Intersection!Generalised"></A><TT>inter(U)</TT></DT>
+
+<DD>
+Generalised intersection: the generalised intersection of a set <TT>U</TT>
+of subsets of <TT>S</TT> <TT>(U: POW(POW(S)))</TT>. <TT>inter(U) = {x |
+x: S &amp; !s.(s: U => x: s)}</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Union!UGeneralised"></A><TT>UNION(z).(P | E)</TT></DT>
+
+<DD>
+Generalised union of the sets <TT>E</TT> where <TT>z</TT> satisfies <TT>P</TT>.
+For each variable <TT>x</TT> in the list <TT>z</TT>, <TT>P</TT> must contain
+a constraining predicate of the form <TT>x: S</TT>, <TT>x &lt;: S</TT>,
+<TT>x &lt;&lt;: S or x = F</TT> with <TT>z\s</TT>, <TT>z\F</TT>.</DD>
+
+<BR><TT>!z.(P => E &lt;: T) => UNION(z).(P | E) = {x | x: T &amp; !z.(P
+=> x: E)}</TT>.
+<DT>
+<A NAME="Sets!Intersection!UGeneralised"></A><TT>INTER(z).(P | E)</TT></DT>
+
+<DD>
+Generalised intersection of the sets <TT>E</TT> where <TT>z</TT> satisfies
+<TT>P</TT>. For each variable <TT>x</TT> in the list <TT>z</TT>, <TT>P</TT>
+must contain a constraining predicate of the form <TT>x: S</TT>, <TT>x
+&lt;: S</TT>, <TT>x &lt;&lt;: S or x = F</TT> with <TT>z\s</TT>, <TT>z\F</TT>.</DD>
+
+<BR><TT>!z.(P => E &lt;: T) => INTER(z).(P | E) = {x | x: T &amp; #z.(P
+&amp; x: E)}</TT>.</DL>
+
+<HR WIDTH="60%">
+<H2>
+<A NAME="Natural_Numbers"></A>Natural Numbers</H2>
+A Natural Number (i.e. a non-negative integer) is an Expression, and the
+Natural Numbers form an infinite set. Let <TT>m</TT> and <TT>n</TT> be
+Natural Numbers, <TT>E</TT> and <TT>F</TT> be Expressions, and <TT>P</TT>
+be a Predicate.
+<H3>
+Predicates on Natural Numbers</H3>
+
+<DL>
+<DT>
+<A NAME="Natural_Numbers!Inequality"></A><TT>m > n</TT></DT>
+
+<DD>
+Strict inequality: <TT>m</TT> is greater than <TT>n</TT>.</DD>
+
+<DT>
+<TT>m &lt; n</TT></DT>
+
+<DD>
+Strict inequality: <TT>m</TT> is less than <TT>n</TT>.</DD>
+
+<DT>
+<TT>m >= n</TT></DT>
+
+<DD>
+Inequality: <TT>m</TT> is greater than or equal to <TT>n</TT>.</DD>
+
+<DT>
+<TT>m &lt;= n</TT></DT>
+
+<DD>
+Inequality: <TT>m</TT> is less than or equal to <TT>n</TT>.</DD>
+</DL>
+
+<H3>
+Natural Number Expressions</H3>
+
+<DL>
+<DT>
+<TT>NAT</TT></DT>
+
+<DD>
+<A NAME="Natural_Numbers!Set_of"></A>The set of natural numbers.</DD>
+
+<DT>
+<TT>NAT1</TT></DT>
+
+<DD>
+<A NAME="Natural_Numbers!Set_of!Non_zero"></A>The set of non-zero natural
+numbers.</DD>
+
+<DT>
+<TT>min(S)</TT></DT>
+
+<DD>
+<A NAME="Natural_Numbers!Minimum"></A>Minimum of a non-empty subset, <TT>S</TT>,
+of <TT>NAT</TT>.</DD>
+
+<DT>
+<TT>max(S)</TT></DT>
+
+<DD>
+<A NAME="Natural_Numbers!Maximum"></A>Maximum of a non-empty finite subset,
+<TT>S</TT>, of <TT>NAT</TT>.</DD>
+
+<DT>
+<A NAME="Natural_Numbers!Addition"></A><TT>m+n</TT></DT>
+
+<DD>
+Addition: the sum of <TT>m</TT> and <TT>n</TT>.</DD>
+
+<DT>
+<A NAME="Natural_Numbers!Difference"></A><TT>m-n</TT></DT>
+
+<DD>
+Difference: the difference of <TT>m</TT> and <TT>n</TT> (defined for <TT>m
+>= n</TT>).</DD>
+
+<DT>
+<A NAME="Natural_Numbers!Product"></A><TT>m*n</TT></DT>
+
+<DD>
+Product: the product of <TT>m</TT> and <TT>n</TT>.</DD>
+
+<DT>
+<A NAME="Natural_Numbers!Division"></A><TT>m/n</TT></DT>
+
+<DD>
+Division: the integer division of <TT>m</TT> by <TT>n</TT>.</DD>
+
+<DT>
+<A NAME="Natural_Numbers!Remainder"></A><TT>m mod n</TT></DT>
+
+<DD>
+Remainder: the remainder of the integer division of <TT>m</TT> by <TT>n</TT>.</DD>
+
+<DT>
+<A NAME="Natural_Numbers!Interval"></A><TT>n .. m</TT></DT>
+
+<DD>
+Interval: the set of non-negative integers between <TT>n</TT> and <TT>m</TT>
+inclusive.</DD>
+
+<DT>
+<A NAME="Sets!Cardinality"></A><TT>card(S)</TT></DT>
+
+<DD>
+Cardinality: the cardinality of the finite set <TT>S</TT>: the number of
+elements in <TT>S</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Summation"></A><TT>SIGMA(z).(P | E)</TT></DT>
+
+<DD>
+Set summation: the sum of values of the natural number expression <TT>E</TT>,
+for <TT>z</TT> such that <TT>P</TT> holds. For each variable <TT>x</TT>
+in the list <TT>z</TT>, <TT>P</TT> must contain a constraining predicate
+of the form <TT>x: S</TT>, <TT>x &lt;: S</TT>, <TT>x &lt;&lt;: S</TT> or
+<TT>x= F</TT>, where <TT>z\S</TT>, <TT>z\F</TT>.</DD>
+
+<DT>
+<A NAME="Sets!Product"></A><TT>PI(z).(P | E)</TT></DT>
+
+<DD>
+Set product: the product of values of the natural number expression <TT>E</TT>,
+for <TT>z</TT> such that <TT>P</TT> holds. For each variable <TT>x</TT>
+in the list <TT>z</TT>, <TT>P</TT> must contain a constraining predicate
+of the form <TT>x: S</TT>, <TT>x &lt;: S</TT>, <TT>x &lt;&lt;: S</TT> or
+<TT>x= F</TT>, where <TT>z\S</TT>, <TT>z\F</TT>.</DD>
+</DL>
+
+<HR WIDTH="60%">
+<H2>
+<A NAME="Relations"></A>Relations</H2>
+A Relation is a set of Ordered Pairs. Therefore, any set operation may
+also be applied to Relations. Let <TT>S</TT>, <TT>T</TT>, <TT>U</TT> and
+<TT>V</TT> be sets, and <TT>r</TT>, <TT>r1</TT>, <TT>r2</TT> be relations
+from <TT>S</TT> to <TT>T</TT>, and let <TT>E</TT> and <TT>F</TT> be Expressions.
+Also let <TT>s &lt;: S</TT> and <TT>t &lt;: T</TT>.
+<H3>
+Relational Expressions</H3>
+
+<DL>
+<DT>
+<A NAME="Relations!Relation"></A><TT>S &lt;-> T</TT></DT>
+
+<DD>
+Relation: Set of relations from <TT>S</TT> to <TT>T</TT>. Equivalent to
+<TT>POW(S * T)</TT>.</DD>
+
+<DT>
+<A NAME="Relations!Domain"></A><TT>dom(r)</TT></DT>
+
+<DD>
+Domain of <TT>r</TT>:</DD>
+
+<BR>The set <TT>{x | x: S &amp; #y.(x,y: r)}</TT>.
+<DT>
+<A NAME="Relations!Codomain"></A><TT>ran(r)</TT></DT>
+
+<DD>
+Range of <TT>r</TT>:</DD>
+
+<BR>The set <TT>{y | y: T &amp; #x.(x,y: r)}</TT>.
+<DT>
+<A NAME="Relations!Composition"></A><TT>p;q</TT></DT>
+
+<DD>
+Relational composition: Composition of relations <TT>p</TT> and <TT>q</TT>,
+where <TT>p: S &lt;-> T</TT> and <TT>q: T &lt;-> U</TT>.</DD>
+
+<BR>The set <TT>{x,z | x,z: S * U &amp; #y.(y: T &amp; x,y: p &amp; y,z:
+q)}</TT>. Also denoted by <TT>q circ p</TT>.
+<DT>
+<TT>q circ p</TT></DT>
+
+<DD>
+Composition of relations <TT>q</TT> and <TT>p</TT>. The same as <TT>p;q</TT>.</DD>
+
+<DT>
+<A NAME="Relations!Identity"></A><TT>id(S)</TT></DT>
+
+<DD>
+Identity on <TT>S</TT>.</DD>
+
+<BR>The set <TT>{x,y | x,y: S * S &amp; x = y}</TT>.
+<DT>
+<A NAME="Relations!Domain_Restriction"></A><TT>s &lt;| r</TT></DT>
+
+<DD>
+Restriction of <TT>r</TT> by <TT>s</TT>. Also known as domain restriction.
+The relation formed from <TT>r</TT> by keeping only the pairs where the
+first element is in <TT>s</TT>.</DD>
+
+<BR>The set <TT>{x,y | x,y: r &amp; x: s}</TT>.
+<DT>
+<A NAME="Relations!Range_Restriction"></A><TT>r |> t</TT></DT>
+
+<DD>
+Co-restriction of <TT>r</TT> by <TT>t</TT>. Also known as range restriction.
+The relation formed from <TT>r</TT> by keeping only those pairs where the
+last element is in <TT>t</TT>.</DD>
+
+<BR>The set <TT>{x,y |x,y: r &amp; y: t}</TT>.
+<DT>
+<A NAME="Relations!Anti_Domain_Restriction"></A><TT>s &lt;&lt;| r</TT></DT>
+
+<DD>
+Anti-restriction of <TT>r</TT> by <TT>s</TT>. Also known as domain subtraction.
+The relation formed from <TT>r</TT> by keeping only those pairs where the
+first element is in the complement of <TT>s</TT>.</DD>
+
+<BR>The set <TT>{x,y | x,y: r &amp; x: S-s}</TT>.
+<DT>
+<A NAME="Relations!Anti_Range_Restriction"></A><TT>r |>> t</TT></DT>
+
+<DD>
+Anti-co-restriction of <TT>r</TT> by <TT>t</TT>. Also known as range subtraction.
+The relation formed from <TT>r</TT> by keeping only those pairs where the
+last element is in the complement of <TT>t</TT>.</DD>
+
+<BR>The set <TT>{x,y | x,y: r &amp; y: T-t}</TT>.
+<DT>
+<A NAME="Relations!Inverse"></A><TT>r~</TT></DT>
+
+<DD>
+Inverse of <TT>r</TT>. The relation formed from <TT>r</TT> by interchanging
+the elements of each pair.</DD>
+
+<BR>The set <TT>{y,x | y,x: T * S &amp; x,y: r}</TT>.
+<DT>
+<A NAME="Relations!Image"></A><TT>r[s]</TT></DT>
+
+<DD>
+Image of set <TT>s</TT> under relation <TT>r</TT>.</DD>
+
+<BR>The set consisting of all those elements related to some element in
+the set <TT>s</TT> through relation <TT>r</TT>.
+<BR>The set <TT>{y | y: T &amp; #x.(x: s &amp; x,y: r)}</TT>
+<DT>
+<A NAME="Relations!Overriding"></A><TT>r1 &lt;+ r2</TT></DT>
+
+<DD>
+Overriding of <TT>r1</TT> by <TT>r2</TT>.</DD>
+
+<BR>The set <TT>(dom(r2) &lt;&lt;| r1) \/ r2</TT>.
+<DT>
+<TT>r1 +> r2</TT></DT>
+
+<DD>
+Overriding of <TT>r2</TT> by <TT>r1</TT>.</DD>
+
+<BR>The set <TT>r2 &lt;+ r1</TT>.
+<DT>
+<A NAME="Relations!Product,_Direct"></A><TT>p >&lt; q</TT></DT>
+
+<DD>
+Direct product of <TT>p</TT> and <TT>q</TT>, where <TT>p</TT>: <TT>S &lt;->
+U</TT> and <TT>q: S &lt;-> V</TT>.</DD>
+
+<BR>The set <TT>{x,(y,z) | x,(y,z): S * (U * V) &amp; x,y: p &amp; x,z:
+q}</TT>.
+<DT>
+<A NAME="Relations!Product,_Parallel"></A><TT>p || q</TT></DT>
+
+<DD>
+Parallel product of <TT>p</TT> and <TT>q</TT>. where <TT>p: S &lt;-> T</TT>
+and <TT>q: V &lt;-> U</TT>.</DD>
+
+<BR>The set <TT>{(x,y),(m,n) | (x,y),(m,n): (S*T) * (V*U) &amp; (x,m: p
+&amp; y,n: q)}</TT>.
+<DT>
+<A NAME="Relations!Iteration"></A><TT>iterate(r,n)</TT></DT>
+
+<DD>
+The <TT>n</TT>th iterate of <TT>r</TT> (where <TT>n: NAT</TT>), i.e. <TT>r</TT>
+composed with itself <TT>n</TT> times (defined only for <TT>r: S &lt;->
+S</TT>).</DD>
+
+<BR><TT>iterate(r,0) = id(S)</TT> and <TT>iterate(r,n+1) = r;iterate(r,n)</TT>.
+<DT>
+<A NAME="Relations!Closure"></A><TT>closure(r)</TT></DT>
+
+<DD>
+The reflexive transitive closure of <TT>r</TT> (defined only for <TT>r:
+S &lt;-> S</TT>).</DD>
+
+<BR><TT>closure(r) = UNION(n).(n: NAT | iterate(r,n))</TT>.
+<DT>
+<A NAME="Relations!Projection"></A><TT>prj1(S,T)</TT></DT>
+
+<DD>
+Projection: <TT>prj1(S,T) = {(x,y),z | (x,y),z: (S*T)*S &amp; z = x}</TT>.</DD>
+
+<DT>
+<TT>prj2(S,T)</TT></DT>
+
+<DD>
+Projection: <TT>prj2(S,T) = {(x,y),z | (x,y),z: (S*T)*T &amp; z = y}</TT>.</DD>
+</DL>
+
+<HR WIDTH="60%">
+<H2>
+<A NAME="Functions"></A>Functions</H2>
+A Function is a Relation with the additional property that each element
+of the domain is related to a unique element in the range. Any operation
+applicable to Relations may also be applied to Functions. Let <TT>S</TT>
+and <TT>T</TT> be sets, <TT>z</TT> a Variable List, <TT>E</TT> be an Expression,
+and <TT>P</TT> be a predicate.
+<DL>
+<DT>
+<A NAME="Functions!Partial"></A><TT>S +-> T</TT></DT>
+
+<DD>
+Set of partial functions from <TT>S</TT> to <TT>T</TT> (also known as `many-to-one
+relations').</DD>
+
+<BR>The set <TT>{r | r : S &lt;-> T &amp; (r~;r) &lt;: id(T)}</TT>.
+<DT>
+<A NAME="Functions!Total"></A><TT>S --> T</TT></DT>
+
+<DD>
+Set of total functions from <TT>S</TT> to <TT>T</TT>.</DD>
+
+<BR>The set <TT>{f | f : S +-> T &amp; dom(f) = S}</TT>.
+<DT>
+<A NAME="Injection!Partial"></A><TT>S >+> T</TT></DT>
+
+<DD>
+Set of partial injections from <TT>S</TT> to <TT>T</TT> (also known as
+`one-to-one relations').</DD>
+
+<BR>The set <TT>{f | f : S +-> T &amp; f~ : T +-> S}</TT>.
+<DT>
+<A NAME="Injection!Total"></A><TT>S >-> T</TT></DT>
+
+<DD>
+Set of total injections from <TT>S</TT> to <TT>T</TT>.</DD>
+
+<BR>The set <TT>S >+> T /\ S --> T</TT>.
+<DT>
+<A NAME="Surjection!Partial"></A><TT>S +->> T</TT></DT>
+
+<DD>
+Set of partial surjections from <TT>S</TT> to <TT>T</TT>.</DD>
+
+<BR>The set <TT>{f | f: S +-> T &amp; ran(f)=T}</TT>.
+<DT>
+<A NAME="Surjection!Total"></A><TT>S -->> T</TT></DT>
+
+<DD>
+Set of total surjections from <TT>S</TT> to <TT>T</TT>.</DD>
+
+<BR>The set <TT>S +->> T /\ S --> T</TT>.
+<DT>
+<A NAME="Functions!Bijection"></A><TT>S >->> T</TT></DT>
+
+<DD>
+Set of bijections from <TT>S</TT> to <TT>T</TT>.</DD>
+
+<BR>The set <TT>S -->> T /\ S >-> T</TT>.
+<DT>
+<A NAME="Quantification!Lambda_Abstraction"></A><TT>%z.(z: S &amp; P |
+E)</TT></DT>
+
+<DD>
+Function construction. The function <TT>{x,y | z: S &amp; y=E &amp; P}</TT>
+where <TT>y\E</TT> and <TT>y\P</TT>, with domain <TT>{z | z: S &amp; P}</TT>.</DD>
+
+<DT>
+<TT>%z.(P | E)</TT></DT>
+
+<DD>
+Function construction. The predicate <TT>P</TT> must, for each variable
+<TT>x</TT> in the list <TT>z</TT>, contain a constraining predicate i.e.
+<TT>x: S</TT>, <TT>x &lt;: S</TT>, <TT>x &lt;&lt;: S</TT> or <TT>x = E</TT>,
+with <TT>z\S</TT>, <TT>z\E</TT>.</DD>
+
+<DT>
+<A NAME="Functions!Application"></A><TT>f(x)</TT></DT>
+
+<DD>
+For <TT>x: dom(f)</TT>, <TT>f(x)</TT> denotes the value of the function
+<TT>f</TT> at <TT>x</TT>, i.e. <TT>x |-> f(x): f</TT>.</DD>
+</DL>
+
+<HR WIDTH="60%">
+<H2>
+<A NAME="Sequences"></A>Sequences</H2>
+A sequence over a set <TT>S</TT> is a function from <TT>NAT</TT> to <TT>S</TT>
+whose domain is an interval <TT>1..n</TT> for some natural number <TT>n</TT>.
+Let <TT>s</TT>, <TT>t</TT> be sequences of elements from <TT>S</TT>, <TT>e</TT>
+be an element of <TT>S</TT>, and <TT>E</TT> and <TT>F</TT> be expressions.
+<DL>
+<DT>
+<A NAME="Sequences!Empty"></A><TT>&lt;></TT></DT>
+
+<DD>
+The empty sequence.</DD>
+
+<DT>
+<A NAME="Sequences!Finite"></A><TT>seq(S)</TT></DT>
+
+<DD>
+The set of finite sequences of elements from <TT>S</TT>.</DD>
+
+<DT>
+<TT>seq1(S)</TT></DT>
+
+<DD>
+The set of finite non-empty sequences of elements from <TT>S</TT>. <TT>seq1(s)
+= seq(s) - {&lt;>}</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Injective"></A><TT>iseq(S)</TT></DT>
+
+<DD>
+The set of injective sequences of elements from <TT>S</TT>. <TT>iseq(S)
+= seq(S) /\ (NAT1 >+> S)</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Bijective"></A><TT>perm(S)</TT></DT>
+
+<DD>
+The set of bijective sequences of elements from a finite set <TT>S</TT>.
+A sequence belonging to <TT>perm(S)</TT> is said to be a `permutation'
+of <TT>S</TT>. For finite <TT>S</TT>, <TT>perm(S) = 1..card(S) >->> S</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Concatenation"></A><TT>s^t</TT></DT>
+
+<DD>
+The concatenation of sequences <TT>s</TT> and <TT>t</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Prepend"></A><TT>e -> s</TT></DT>
+
+<DD>
+The sequence formed by prepending <TT>e</TT> to <TT>s</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Append"></A><TT>s &lt;- e</TT></DT>
+
+<DD>
+The sequence formed by appending <TT>e</TT> to <TT>s</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Singleton"></A><TT>[E]</TT></DT>
+
+<DD>
+Provided that <TT>E</TT> is not an Expression List, <TT>[E]</TT> is the
+singleton sequence with element <TT>E</TT>, i.e <TT>[E] = E -> &lt;></TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Enumeration"></A><TT>[E,F]</TT></DT>
+
+<DD>
+Provided <TT>F</TT> is not an Expression List, then this is <TT>[E]</TT>
+with <TT>F</TT> appended. Equivalent to <TT>[E] &lt;- F</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Size_of"></A><TT>size(s)</TT></DT>
+
+<DD>
+The size of the finite sequence <TT>s</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Reverse"></A><TT>rev(s)</TT></DT>
+
+<DD>
+The reverse of <TT>s</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Projection"></A><TT>s /|\ n</TT></DT>
+
+<DD>
+The sequence obtained from <TT>s</TT> by retaining only its first <TT>n</TT>
+elements, where <TT>n &lt;= size(s)</TT>.</DD>
+
+<DT>
+<TT>s \|/ n</TT></DT>
+
+<DD>
+The sequence obtained by removing the first <TT>n</TT> elements of <TT>s</TT>,
+where <TT>n &lt;= size(s)</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!First_Element"></A><TT>first(s)</TT></DT>
+
+<DD>
+The first element of the non-empty sequence <TT>s</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Last_Element"></A><TT>last(s)</TT></DT>
+
+<DD>
+The last element of the non-empty sequence <TT>s</TT>.</DD>
+
+<DT>
+<A NAME="Sequences!Tail"></A><TT>tail(s)</TT></DT>
+
+<DD>
+The sequence <TT>s</TT> with its first element removed (<TT>s</TT> must
+be non-empty).</DD>
+
+<DT>
+<A NAME="Sequences!Frint"></A><TT>front(s)</TT></DT>
+
+<DD>
+The sequence <TT>s</TT> with its last element removed (<TT>s</TT> must
+be non-empty).</DD>
+
+<DT>
+<A NAME="Concatenation!Generalised"></A><TT>conc(s)</TT></DT>
+
+<DD>
+The generalised concatenation of a sequence of sequences, <TT>s</TT>. For
+a sequence <TT>t</TT>, <TT>conc(&lt;>) = &lt;></TT> and <TT>conc(s &lt;-
+t) = conc(s)</TT>^<TT>t</TT>.</DD>
+</DL>
+
+<HR WIDTH="60%">
+<H2>
+<A NAME="Variables"></A>Variables, Variable Lists and Identifiers</H2>
+A&nbsp;<A NAME="Identifier!Variable"></A>Variable is an Identifier. An&nbsp;<A NAME="Identifier"></A>Identifier
+is a string of length 2 or more of alphanumeric characters ( a to z, A
+to Z, 0 to 9 ASCII codes) or underscore `_', with at least one letter.
+An&nbsp;<A NAME="Identifier!Upper_Case"></A>Upper Case Identifier is an
+Identifier made only from upper case letters and underscore. An Infix operator
+is either a string of non-alphanumeric characters (excluding `_' ``' `$'
+and `?') or an Identifier declared as an Infix Operator in the AMN Symbol
+Table, e.g. `mod'.
+
+<P>Let <TT>z</TT> be a&nbsp;<A NAME="Identifier!Variable_List"></A>Variable
+List and <TT>x</TT> be a Variable.
+<DL>
+<DT>
+<TT>z,x</TT></DT>
+
+<DD>
+<TT>((z,x))</TT> is a Variable List.</DD>
+</DL>
+
+<HR WIDTH="60%">
+<H2>
+<A NAME="Substitutions!Generalised"></A>Generalised Substitutions</H2>
+Let <TT>x</TT> be a Variable, <TT>z</TT> be a variable List, <TT>P</TT>
+and <TT>R</TT> be predicates, <TT>E</TT> and <TT>F</TT> be Expressions,
+and <TT>S</TT>, <TT>T</TT> be Generalised Substitutions.
+<DL>
+<DT>
+<A NAME="Substitutions!Application"></A><TT>[S]P</TT></DT>
+
+<DD>
+A predicate obtained by replacing the variables in <TT>P</TT> according
+to the rules below.</DD>
+
+<DT>
+<TT>[x:= E]F</TT></DT>
+
+<DD>
+An expression obtained by replacing all free occurrences of <TT>x</TT>
+in <TT>F</TT> by <TT>E</TT>.</DD>
+
+<DT>
+<A NAME="Freeness"></A><TT>z\A</TT></DT>
+
+<DD>
+Non-freeness: <TT>z</TT> is not free in <TT>E</TT>, i.e. there are no free
+occurrences of <TT>z</TT> in the Predicate or Expression <TT>A</TT>.</DD>
+
+<DT>
+<A NAME="Substitutions!Simple"></A><TT>x:= E</TT></DT>
+
+<DD>
+Simple substitution. Substitute <TT>E</TT> for <TT>x</TT> in a Predicate
+or Expression formula. (Note that the applicability of a simple substitution
+on a formula is limited by non-freeness conditions when the formula is
+a quantified expression or a set comprehension).</DD>
+
+<DT>
+<A NAME="Substitutions!Simultaneous"></A><TT>x,y:= E,F</TT></DT>
+
+<DD>
+Simultaneous substitution. Substitute several Expressions for several Variables.</DD>
+
+<DT>
+<TT>x:=E || y:=F</TT></DT>
+
+<DD>
+Simultaneous substitution. A form equivalent to the above simultaneous
+substitution.</DD>
+
+<DT>
+<A NAME="Substitutions!Preconditioned"></A><TT>P | S</TT></DT>
+
+<DD>
+Pre-conditioning of <TT>S</TT> by <TT>P</TT>. <TT>[P | S]R = P &amp; [S]R</TT>.</DD>
+
+<DT>
+<A NAME="Substitutions!Guarded"></A><TT>P ==> S</TT></DT>
+
+<DD>
+Guarding of <TT>S</TT> by <TT>P</TT>. <TT>[P ==> S]R = P => [S]R</TT>.</DD>
+
+<DT>
+<A NAME="Substitutions!Choice"></A><TT>S [] T</TT></DT>
+
+<DD>
+Choice between <TT>S</TT> and <TT>T</TT>. <TT>[S [] T]R = [S]R &amp; [T]R</TT>.</DD>
+
+<DT>
+<A NAME="Quantification!Unbounded_Choice"></A><TT>@z.S</TT></DT>
+
+<DD>
+Unbounded choice. <TT>[@z.S]R = !z.[S]R</TT></DD>
+
+<DT>
+<A NAME="Substitutions!Sequencing"></A><TT>S;T</TT></DT>
+
+<DD>
+Sequencing. <TT>[S;T]R = [S][T]R</TT>.</DD>
+
+<DT>
+<A NAME="Substitutions!skip"></A><TT>skip</TT></DT>
+
+<DD>
+No-op.</DD>
+</DL>
+
+<HR WIDTH="60%">
+<CENTER>&nbsp;</CENTER>
+
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

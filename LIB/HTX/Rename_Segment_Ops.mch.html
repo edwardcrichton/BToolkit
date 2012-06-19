@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+  <TITLE>The Rename_Segment_Ops machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre><A NAME="MACHINE">MACHINE</A>      Rename_Segment_Ops(WORD)
+
+<A NAME="OPERATIONS">OPERATIONS</A>
+
+   rr &lt;-- <A NAME="OPNAME!Rename_ASSIGN_ANY_SEG">Rename_ASSIGN_ANY_SEG</A> = 
+  BEGIN
+    rr :: WORD
+  END;
+
+  rr &lt;-- <A NAME="OPNAME!Rename_CPY_SEG">Rename_CPY_SEG</A>(ss) =  
+  PRE
+    ss : WORD 
+  THEN
+    rr:=ss 
+  END
+
+
+
+END
+
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

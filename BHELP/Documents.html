@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>Documents</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Documents"></A>
+<H1>
+Documents</H1>
+A DOCUMENT is an AMN <A HREF="BToolkit.html#Constructs!Area">construct</A>,
+having a <TT>.doc</TT> file extension, which enables the preparation of
+a single composite document incorporating other AMN <A HREF="BToolkit.html#Constructs!Area">constructs</A>,
+(possibly other documents) which may be submitted to the <A HREF="DocumentMarkUp.html#Document_Mark_Up">Document
+Mark Up tool</A>.
+
+<P>A document is displayed only in the <A HREF="BToolkit.html#Environments!Documents">Documents
+Environment</A>.
+
+<P>An option to i<A HREF="Introduce.html">ntroduce</A> a `<TT>Document</TT>'
+or `<TT>Document of configured constructs</TT>' is available under <A HREF="BToolkit.html#TopBar!Introduce">Top
+Bar Introduce->New</A>.
+
+<P>The general form of a DOCUMENT is given in a BNF-like syntax as follows:
+<BR>the syntax <TT>exp1 | exp2</TT> indicates <TT>exp1</TT> or <TT>exp2</TT>
+(choice), and
+<BR><TT>&lt;&lt; exp >></TT> indicates zero or more occurrences of <TT>exp</TT>
+(repetition).
+<PRE>&nbsp; document_description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; DOCUMENT
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; document_name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTENTS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; includes_verbatim_list
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
+
+&nbsp; document_name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier
+
+&nbsp; includes_verbatim_list&nbsp;&nbsp;&nbsp; ::=&nbsp; includes(construct) | verbatim(filename_string)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;&lt; , includes_verbatim_list&nbsp; >></PRE>
+
+<PRE>&nbsp; construct&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier.extension |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifier.extension(op_list)
+
+&nbsp; op_list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >>
+
+&nbsp; extension&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; mch | ref | imp | bse |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int | enm | doc | mch.number.prf |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ref.number.prf | imp.number.prf</PRE>
+Annotations may appear anywhere inside the CONTENTS clause.
+
+<P>The optional op_list argument dictates which operations are to be printed.
+If it is not present, all operations are printed, otherwise only those
+appearing in the list are printed. If none of the operations are to be
+printed, this may be achieved by including an op_list comprising a single
+name that is not one of the operations of that construct.
+
+<P>When a DOCUMENT is submitted for <A HREF="DocumentMarkUp.html#Document_Mark_Up">mark
+up</A>, all included constructs that have already been marked up are copied
+into the marked up document; thus the characteristics of that already marked
+up construct remain (for instance the presence or otherwise of cross referencing
+- see <A HREF="Options.html#Options!Document_Mark_Up">Options</A>). The
+current characteristics may be obtained by first removing all marked-up documents
+(available under the <A HREF="BToolkit.html#Construct">TopBar
+Constructs</A> pull-down).
+
+<P>Verbatim files are included in the document inside a \<TT>begin{verbatim}
+... \end{verbatim} </TT>clause.
+
+<P>Each included document that has not been marked up is first <A HREF="DocumentMarkUp.html#Document_Mark_Up">marked
+up</A>, if possible. For example, if `fifi.mch' is included, but is not
+yet <A HREF="Analyser.html#Analyser">analysed</A> (and thus not yet ready
+for mark up) a warning is issued, and fifi.mch would not be included in
+the marked up DOCUMENT.
+
+<P>An index can be automatically produced at the end of a DOCUMENT by setting
+the <A HREF="Options.html#Options!Document_Mark_Up">Document Index flag</A>.
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+
+<P>&nbsp;
+</BODY>
+</HTML>

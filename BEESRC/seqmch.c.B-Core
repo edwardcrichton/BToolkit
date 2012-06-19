@@ -1,0 +1,622 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+int last_malloc_attemp_failed = 0;
+
+int last_mad_max_mem;
+
+#define cmp_seq_arg_val 30
+int cmp_seq_arg = cmp_seq_arg_val;
+
+#define spare_mem_percent_seq ((max_mem-vad(vnbs+1))*100)/max_mem
+              
+/*  DECLARATIONS ){ SEQUENCE MACHINE  */
+                   
+
+/* int mmts[max_mem+1]; */
+/* int adts[max_seq+3]; */
+/* int tats[max_seq+3]; */
+/* int tmbs[max_seq+3]; */
+/* int coms[max_seq+3]; */
+
+extern int * mmts;
+extern int adts[];
+extern int tats[];
+extern int tmbs[];
+extern int coms[];
+extern int max_mem;
+extern int max_seq;
+int histo[62];
+int ttms;
+int vnbs;
+int stp;
+int stack[200+1];
+                    
+/*  PROGRAMS FOR SEQUENCE MACHINE  */
+
+#define mmm(i,v)   mmts[i]=v
+
+#define vmm(i)     mmts[i]
+
+#define mnb(v)     vnbs=v
+
+
+#define vtt(i)     tats[i]     /* len */
+
+#define mtt(i,v)   tats[i]=v
+
+
+#define vad(i)     adts[i]    /* seq offset */
+
+#define mad(i,v)   adts[i]=v
+
+
+#define ini_seq    vnbs=0;  adts[1]=0;  tats[1]=0;  adts[2]=max_mem;  ttms=0;  stp=1  
+
+#define val(s,i)   vmm(vad(s)+i)
+
+#define len(s)     vtt(s)
+
+#define lst(s)     val(s,len(s))
+
+#define fst(s)     val(s,1)
+
+#define snd(s)     val(s,2)
+
+#define res_seq(s) vad(s+1)-vad(s)-len(s)
+
+#define str(s,i,v) mmm(vad(s)+i,v)
+
+#define pop(s)     mtt(s,vtt(s)-1)
+
+#define clr(s)     mtt(s,0)
+
+#define adp(s,v)   mmm(vad(s)+vtt(s)+1,v);mtt(s,vtt(s)+1)
+evm(i,t)
+{register int j,k,v ;
+  v=vad(i);
+  if( i<=vnbs ){
+    itrn( j , 1 , len(i) , {
+      k=v+j;
+      mmm(k-t,vmm(k))
+   ;});
+  };
+  mad(i,v-t);
+}
+
+mve(i,t)
+{register int j,k,v ;
+  v=vad(i);
+  nitrn( j , len(i) , 1 , {
+    k=v+j;
+    mmm(k+t,vmm(k))
+ ;});
+  mad(i,v+t);
+}
+
+mov(s,r,t)
+{register int i ;
+  if( s<r ){
+    i=r;
+    while( i>s ){ 
+      mve(i,t);
+      i=i-1 ;
+    } ;
+  } else if( r<s ){
+    i=r+1;
+    while( i<=s ){ 
+      evm(i,t);
+      i=i+1 ;
+    };
+  };
+}
+
+cmp_seq(n)   /* n is ignored (unless -999)! - replaced by cmp_seq_arg_val */
+{register int s ;
+
+  static int previously_dismissed = 0;
+
+  register int last_spare_mem_percent_seq;
+  
+#ifdef MALLOC_VERBOSE
+
+  time_t ini_time, fini_time;
+  int secs;
+
+  ini_time = time ( NULL );
+
+#endif /* MALLOC_VERBOSE */
+
+  if ( n != -999 ) {
+
+    if ( spare_mem_percent_seq >= 25 ) {
+      if ( ! previously_dismissed ) {
+        previously_dismissed = 1;
+        return;
+      }
+    }
+
+    cmp_seq_arg = cmp_seq_arg_val;
+
+  }
+
+  else {
+
+    cmp_seq_arg = 0;
+
+  }
+
+  last_spare_mem_percent_seq = spare_mem_percent_seq;
+
+#ifdef MALLOC_VERBOSE
+
+printf ( "\n  :::::::::::::::::::::::::::::::::\n   cmp_seq(%d) %d%% -> ",
+                                                    cmp_seq_arg, spare_mem_percent_seq  );
+fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+  itrn( s , 1 , vnbs , {
+    coms[s]=res_seq(s)
+ ;});
+
+  itrn( s , 1 , vnbs , {
+    if( coms[s]>cmp_seq_arg ){
+      evm(s+1,res_seq(s)-cmp_seq_arg);
+} else {
+      evm(s+1,res_seq(s)-coms[s]);
+}
+ ;})
+
+#ifdef MALLOC_VERBOSE
+
+  fini_time = time ( NULL );
+  secs = ( int ) fini_time - ( int ) ini_time;
+
+printf ( "%d%% (%.2f Mb)\n     time taken: %2d mins %2d secs\n  :::::::::::::::::::::::::::::::::\n",
+           spare_mem_percent_seq, ( double ) max_mem / 1000000,
+           ( secs / 60 ), ( secs % 60 ) );
+fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+  if ( n != -999 ) {
+    if ( ( spare_mem_percent_seq <= 20 )                         ||
+         ( spare_mem_percent_seq == last_spare_mem_percent_seq ) ||
+         previously_dismissed                                       ) {
+      realloc_max_mem ();
+    }
+  }
+  
+  previously_dismissed = 0;
+
+}
+
+computeG(a,b,p,r)
+{register int k ;
+  if( b>2*p-a ){
+    if( r<=2*p-a ){
+      if( (r-a) % 2 == 0 ){
+        k=p - ((r+1-a) / 2);
+      } else {
+        k=p + ((r+1-a) / 2);
+      };
+    } else {
+      k=r;
+    };
+  } else {
+    if( r<=2*(b-p)+a-1 ){
+      if( (r-a) % 2 == 0 ){
+        k=p - ((r+1-a) / 2);
+      } else {
+        k=p + ((r+1-a) / 2);
+      };
+    } else {
+      k=b+a-r;
+    };
+  }
+; return k;
+}
+
+search(s,t)
+{register int y,k,r,search_res ;
+  r=2;
+  y=vnbs+2;
+  search_res=0;
+  while( y!=r ){
+    k=computeG(1,vnbs+1,s,r);
+    if( res_seq(k)>=t ){
+      y=r;
+      search_res=k;
+    }
+    else {
+      r=r+1;
+    }
+  }
+  return search_res;
+}
+
+sta0_seqfunc()
+#define sta0_seq sta0_seqfunc()
+{register int z,s,t,h,x ;  
+  z=0;
+  t=0;
+  x=0;
+  itrn( s , 1 , vnbs , {
+    h=res_seq(s);
+    z=z+h;
+    t=t+len(s);
+    if( h!=0 ){
+      x=x+1;
+    };
+});
+  fprintf ( bstdout,"      Max Number of Sequences:       ");
+  fprintf ( bstdout,"%8d\n",max_seq);
+  fprintf ( bstdout,"      Number of Used Sequences:      ");
+  fprintf ( bstdout,"%8d\n",vnbs);
+  
+  fprintf ( bstdout,"      Number of Dead Sequences:      ");
+  fprintf ( bstdout,"%8d\n",ttms);
+  fprintf ( bstdout,"      Number of Live Sequences:      ");
+  fprintf ( bstdout,"%8d\n",vnbs-ttms);
+  
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      Memory Size:                   ");
+  fprintf ( bstdout,"%8d words\n",max_mem);
+  
+  fprintf ( bstdout,"      Memory Used:                   ");
+  fprintf ( bstdout,"%8d words\n",vad(vnbs+1));
+  
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      SPARE MEMORY:                  ");
+  fprintf ( bstdout,"%8d words\n",max_mem-vad(vnbs+1));
+  
+  fprintf ( bstdout,"\n");
+    
+  fprintf ( bstdout,"      Sequences with no Free Space:  ");
+  fprintf ( bstdout,"%8d\n",vnbs-x);
+  
+  fprintf ( bstdout,"      Sequences with Free Space:     ");
+  fprintf ( bstdout,"%8d\n",x);
+  
+  
+  if( vnbs ){
+  fprintf ( bstdout,"      Average Sequence Size:         ");
+  fprintf ( bstdout,"%8d words\n",(t / (vnbs)));
+  }
+
+  if( x ){
+    fprintf ( bstdout,"      Average Free Space Size:       ");
+    fprintf ( bstdout,"%8d words\n",(z / x));
+  }
+
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      SIGMA OF FREE SPACES:          ");
+  fprintf ( bstdout,"%8d words\n",z);
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      SPARE MEMORY +                 ");
+  fprintf ( bstdout,"\n");
+  fprintf ( bstdout,"      SIGMA OF FREE SPACES:          ");
+  fprintf ( bstdout,"%8d words\n\n",z+max_mem-vad(vnbs+1));
+  fprintf ( bstdout,"\n");
+}
+
+sta_seqfunc()
+#define sta_seq sta_seqfunc()
+{
+  sta0_seq;
+  fprintf(stderr,"      Compacting free spaces? ");
+  if( yes_no==YES ){
+    fprintf(stderr,"      Maximum Size of Free space after each sequence: ");
+    cmp_seq(read_nat);
+    fprintf(stderr,"\n");
+    fprintf(stderr,"\n");
+    fprintf(stderr,"\n");
+    sta_seq;
+  };
+}
+
+realloc_max_mem ()
+{
+
+#ifdef MALLOC_VERBOSE
+
+  static time_t last_time = 0;
+  time_t now_time;
+  time_t ini_time, fini_time;
+  int secs, secs1;
+
+  if ( last_time == 0 ) last_time = time ( NULL );
+  now_time = time ( NULL );
+  secs = ( int ) now_time - ( int ) last_time;
+  last_time = now_time;
+  ini_time = time ( NULL );
+
+printf ( "\n    ---------------------------------------------------\n     realloc - max_mem: %.2f Mb (%2d%%) -> ",
+                   ( double ) max_mem / 1000000, spare_mem_percent_seq  );
+fflush ( stdout );
+
+#endif /* MALLOC_VERBOSE */
+
+  if ( max_mem == alloc_init ) max_mem = max_mem + init_alloc_topup;
+  else                         max_mem = max_mem + alloc_topup;
+  mmts = ( int * ) realloc ( mmts, ( ( max_mem + 5 ) * sizeof ( int ) ) );
+
+
+#ifdef MALLOC_VERBOSE
+
+fini_time = time ( NULL );
+secs1 = ( int ) fini_time - ( int ) ini_time;
+printf ( "%.2f Mb (%2d%%)", ( double ) max_mem / 1000000, spare_mem_percent_seq );
+fflush ( stdout );
+/*
+printf ( "\n       time taken: %2d mins %2d secs", ( secs1 / 60 ), ( secs1 % 60 ) );
+fflush ( stdout );
+*/
+if ( max_mem != alloc_init+ init_alloc_topup )
+  printf ( "\n        %2d mins %2d secs since last realloc", 
+                                                 ( secs / 60 ), ( secs % 60 ) );
+printf ( "\n    ---------------------------------------------------\n" );
+printf ( "       last_mad_max_mem+2=%d    vnbs+2=%d\n",
+                                                    last_mad_max_mem+2,vnbs+2 );
+  printf ( "\n    ---------------------------------------------------\n" );
+#endif /* MALLOC_VERBOSE */
+
+/*  mad ( last_mad_max_mem+2, max_mem ); */
+
+  mad ( vnbs+2, max_mem );
+
+
+/* #ifdef MALLOC_VERBOSE */
+
+
+
+/*
+printf ( "  adts[last_mad_max_mem+2]=%d adts[vnbs+2]=%d\n",
+                                           adts[last_mad_max_mem+2],adts[vnbs+2] );
+printf ( "    ---------------------------------------------------\n" );
+fflush ( stdout );
+*/
+
+
+
+/* #endif /? MALLOC_VERBOSE ?/ */
+
+
+  if ( mmts == NULL ) {
+    /***
+      realloc failed ...
+    ***/
+    printf ( "\n      Cannot perform realloc\n\n" );
+    sta0_seqfunc();
+    fprintf ( bstdout, "      b: Memory full (%.2f Mb)\n\n",
+                                                    ( double ) max_mem / 1000000 );
+    exit___(1);
+  }
+}
+
+aug(s,t)     
+{
+  register int loc_found,ls,k, curr_spare_mem_percent_seq;
+  static int last_spare_mem_percent_seq = 0;
+  if( res_seq(s) < t ){
+    ls=len(s);
+    if( ls<=10 ){
+      k=(ls+3) / 2;
+    } else {
+      k=(ls+16) / 4;
+    }
+    k=t+k;
+    loc_found = search(s,k);
+  
+    while( ! loc_found ) {
+      curr_spare_mem_percent_seq = spare_mem_percent_seq;
+      if ( max_mem  < compact_cut_off ) {
+        cmp_seq ( cmp_seq_arg_val );
+        curr_spare_mem_percent_seq = spare_mem_percent_seq;
+        if ( ( curr_spare_mem_percent_seq <= 20 )                         ||
+             ( curr_spare_mem_percent_seq == last_spare_mem_percent_seq )    )
+          realloc_max_mem ();
+      }
+      else {
+        realloc_max_mem ();
+      }
+      last_spare_mem_percent_seq = curr_spare_mem_percent_seq;
+      loc_found = search(s,k);
+    }
+
+    last_malloc_attemp_failed = 0;
+    mov(s,loc_found,k);
+  }
+}
+
+cre(n)
+{register int i ;
+  if( ttms!=0 ){
+    i=tmbs[ttms];
+    ttms=ttms-1;
+  }
+  else {
+    if( vnbs<max_seq ){
+      i=vnbs+1;
+      mad(i+2,max_mem);
+last_mad_max_mem = i;
+
+/***
+printf ( " --->>> cre(%d) - mad(%d+2,%d)\n", n, i, max_mem );
+printf ( "                 mad(%d+1,%d)\n", i, vad(i) );
+***/
+
+      mad(i+1,vad(i));
+      mtt(i+1,0);
+      mtt(i,0);
+      vnbs=vnbs+1;
+    } else {
+      sta0_seq;
+#ifdef BTOOL_FLAG
+      fprintf ( bstdout, "      TOO MANY SEQUENCES (Press CR to exit)\n");
+      {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+#else
+      fprintf ( bstdout, "      bplatform: Too many sequences\n\n");
+#endif /* BTOOL_FLAG */
+      exit___(1);
+    };
+  };
+  aug(i,n);
+  return i;
+}
+
+
+#define kil(n) clr(n); ttms=ttms+1; tmbs[ttms]=n
+ 
+/*
+#define kil(n) fprintf ( bstdout, "kil(%d)\n",n); clr(n); ttms=ttms+1; tmbs[ttms]=n
+*/
+
+#define psh(s,v)   aug(s,1);adp(s,v)
+
+#define itr(t,i,v,s)  itrn( i , 1 , len(t) , {  v=val(t,i); s  ;})
+
+#define nitr(t,i,v,s)  nitrn( i , len(t) , 1 , {  v=val(t,i); s  ;})
+
+#define xst(t,i,v,p,s1,s2)  i=len(t);  while( i>0 ){  v=val(t,i);  if( p ){  s1;  i=(-i)  ;} else {  i=i-1  ;};};  if( i==0 ){ s2 ;}
+
+#define nxst(t,i,v,p,s1,s2)  i=1;  while( i<=len(t) ){  v=val(t,i);  if( p ){  s1;  i=len(t)+2  ;} else {  i=i+1  ;};};  if( i==len(t)+1 ){ s2 ;}
+eql(s,t)
+{register int i,eql_res ;
+  if( len(s)!=len(t) ){
+    eql_res=FALSE;
+  } else {
+    eql_res=TRUE;
+    i=len(s);
+    while( i!=0 ){ 
+      if( val(s,i)!=val(t,i) ){
+        i=0;
+        eql_res=FALSE;
+      } else { 
+        i=i-1;
+      };
+    };
+  }
+; return eql_res;
+}
+
+pcop(a,m,n,b)
+{register int i,v,w ;
+  if( a!=b ){
+    clr(b);
+    aug(b,n-m+1);
+    mtt(b,n-m+1);
+    w=vad(b);
+    v=vad(a);
+    itrn( i , m , n , {
+      mmm(w+i-m+1,vmm(v+i))
+   ;});
+  };
+}
+
+cop(a,b)
+{register int i,v,w,n ;
+  if( a!=b ){
+    n=len(a);
+    clr(b);
+    aug(b,n);
+    mtt(b,n);
+    w=vad(b);
+    v=vad(a);
+    itrn( i , 1 , n , {
+      mmm(w+i,vmm(v+i))
+   ;});
+  };
+}
+
+cnc(a,b)
+{register int i,v,w,n ;
+  if( a!=b ){
+    n=len(b);
+    aug(a,n);
+    v=vad(a)+len(a);
+    mtt(a,len(a)+n);
+    w=vad(b);
+    itrn( i , 1 , n , {
+      mmm(v+i,vmm(w+i))
+   ;});
+  };
+}
+
+rcnc(a,b)
+{register int i,v,w,n ;
+  if( a!=b ){
+    n=len(b);
+    aug(a,n);
+    v=vad(a)+len(a);
+    mtt(a,len(a)+n);
+    w=vad(b);
+    itrn( i , 1 , n , {
+      mmm(v+i,vmm(w+n-i+1))
+   ;});
+  };
+}
+
+pcnc(a,b,m,n)
+{register int i,v,w,l ;
+  if( a!=b ){
+    l=n-m+1;
+    aug(a,l);
+    v=vad(a)+len(a)-m+1;
+    mtt(a,len(a)+l);
+    w=vad(b);
+    itrn( i , m , n , {
+      mmm(v+i,vmm(w+i))
+   ;});
+  };
+}
+
+idx(s,v)
+{register int i,w,idx_res ;
+  xst(s,i,w,w==v,idx_res=i,idx_res=0)
+; return idx_res;
+}
+
+#define mbr(s,v)  ((idx(s,v)!=0)!=0)
+rev(s) 
+{register int r,i,j ;
+  i=0; 
+  j=len(s);
+  while( i+1<j ){
+    i=i+1;
+    r=val(s,i);
+    str(s,i,val(s,j));
+    str(s,j,r);
+    j=j-1;
+  };
+}
+
+rem(s,i)
+{register int k ;
+  itrn( k , i+1 , len(s) , {
+    str(s,k-1,val(s,k));
+});
+  pop(s);
+}
+
+write_seq(s)
+{register int i ;
+  itrn(i,1,len(s),write_nat(val(s,i)));
+}
+

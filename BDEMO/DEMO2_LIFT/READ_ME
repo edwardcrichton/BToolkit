@@ -1,0 +1,169 @@
+
+                       LIFT DEMONSTRATION
+                       ------------------
+
+    The LIFT demonstration shows how specification animation can lead
+    to a greater understanding of a reactive system; the understanding
+    so-gained may, of course, necessitate changes in the specification
+    (which may be effected efficiently through the `B-MiniRemake cycle').
+    Animation is achieved through symbolic execution of the specification
+    with on-line calculation of preconditions and resolution of
+    non-determinism.
+
+    The Interactive Animation is saved as a `script' which is then
+    replayed.
+
+The State Variables
+
+    o in - a relation associating a floor
+with a direction, representing the outstanding requests (people who
+have pressed the up or down button on a floor, waiting to get in).
+
+    o out - a relation associating a lift with a floor,
+            representing the requests being processed (people inside the
+            lift having pressed a floor number button waiting to get out).
+
+    o mov - the subset of lifts which are currently moving.
+
+    o dir - a function associating each lift with a direction (the
+            direction in which each lift is currently moving, or is ready to move).
+
+    o flr - a function associating each lift with a floor (for a
+            moving lift, the floor that it is approaching, and for non-moving
+            lifts, the floor at which the lift is currently stationary).
+
+    o dor - a function associating each lift with sopn or clo (its doors
+            are open or closed).
+
+
+
+Demonstration Outline
+
+1.  Start the development
+
+    After entering the LIFT demonstration directory, run the B-Toolkit
+    to create a new development directory.
+
+2.  Introduce, Analyse & Start Animation
+
+    `Introduce' the Lift.mch `From SRC', analyse (anl) and
+    then animate (anm) the specification `Interactive'.
+
+3.  Set Machine Parameters
+
+    Set: LFT to       {L1 , L2 , L3}
+         topfloor to  6
+         botfloor to  1
+
+4.  Set Machine Constants
+
+    Set: opp to {up|->dn , dn|->up} (default)
+
+5.  Initialisation
+
+    Initialisation is performed and Operation menu is displayed:
+    Current State shows:
+      `in' : none of the lift request buttons on the floors are pressed
+      `out': none of the floor buttons in the lifts are pressed
+      `mov': no lifts are moving
+      `dir': all lifts ready to move up
+      `flr': all lifts currently at floor 1
+      `dor': all lift doors are closed
+
+    Now select the following Animator Operations:
+
+6.  Request_Lift: fl = 4 & dd = dn
+
+      a person on floor 4 wants to go down
+
+      `in' : person on floor 4 wants to go down
+      `mov': all lifts still stationary
+
+7.  Depart_And_Move_Up: ll = L1
+
+     a lift starts to move
+
+      `mov': L1 moving
+      `dir': L1 moving up
+      `flr': L1 approaching floor 2
+
+8.  Continue_Up: ll = L1
+
+      `flr': L1 approaching floor 3
+
+9.  Continue_Up: ll = L1
+
+      `flr': L1 approaching floor 4
+
+10.  Pickup_And_Change_Dir: ll = L1
+
+     L1 stops at floor 4 and opens its doors
+
+      `in' : no outstanding lift request buttons on the floors
+      `mov': L1 stationary
+      `dir': L1 ready to go down
+      `dor': L1's doors are open
+
+11.  Close_Door:
+
+    L1 stops at floor 4 and opens its doors
+
+      `dor': L1's doors now closed
+
+12. Request_Floor: ll = L1 & fl = 3
+
+    Person in L1 requests floor 3
+
+      `out': L1's button 3 pressed
+
+13. Depart_And_Move_Down: ll = L1
+
+    L1 starts to move down
+
+      `mov': L1 moving
+      `dir': L1 moving down
+      `flr': L1 approaching floor 3
+
+14. Stop: ll = L1
+
+      `out': no outstanding lift request buttons in the lifts
+      `mov': L1 stationary
+      `dor': L1's doors are open
+
+
+15. Saving the `scenario' just completed as a script: Select
+    Animator Utilities and 'Save as ANIMATE Script Executable'
+    as `script1'. Then Cancel and Quit the Animator.
+
+16. Now Animate the Lift specification again - this time
+    using `Execute Script' and the saved `script1'.
+
+
+17. The previous `scenario' is now replayed.
+
+
+18. At the end of the animation the full `trace' can be
+    saved on a file - and later inspected.
+
+    Exercise
+    --------
+
+19. Add the following to the Lift specification:
+
+    a) a parameter maxpers, indicating the
+       maximum number (>=2) of people that each lift may hold.
+
+    b) a variable num indicating the number of people in each lift.
+
+    In addition to the CONSTRAINTS, VARIABLES, INVARIANT and
+    INITIALISATION clauses, the following operation need changing:
+
+      o Request_Floor
+
+   The following operations will need adding:
+
+      o Enter_Lift
+
+      o Leave_Lift
+
+  Analyse and Animate the amended specification, setting maxpers to 2.

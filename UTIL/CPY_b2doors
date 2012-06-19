@@ -1,0 +1,57 @@
+#! /bin/csh -f
+
+#
+# Install in $BKIT/B2DOORS
+#
+
+set curdir = `pwd`
+cd ..
+set runwwwdir = `pwd`
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script copies all files in B2DOORS "
+echo "  to  `pwd`/BKIT/B2DOORS "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+if ( ! -d $BKIT/B2DOORS ) then
+  mkdir $BKIT/B2DOORS
+endif
+
+cd ../B2DOORS
+
+echo ""
+
+foreach file ( `ls`  )
+
+  if ( ! -r $file ) then
+    echo ""
+    echo "            ----->>>>> $file does not exist - NOT COPIED"
+    echo ""
+    echo "            Aborted"
+    echo ""
+    exit ( 1 )
+  else
+    rm -f  $BKIT/B2DOORS/$file
+    cp $file $BKIT/B2DOORS
+    echo ""
+    echo "    $file -> $BKIT/B2DOORS "
+  endif
+
+end
+
+echo ""
+echo "  Done "
+echo ""

@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+  <TITLE>The std_logic_PK machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre><A NAME="MACHINE">MACHINE</A>         std_logic_PK
+
+<A NAME="CONSTANTS">CONSTANTS</A>
+   
+    std_logic,
+
+/*" \{ {\em 0\/} , {\em 1\/} \} also recognized as {\em std\_logic} "*/
+
+    vand, vor, vxor, vnot
+
+PROPERTIES 
+
+    std_logic = {0,1}   &
+
+    vand : std_logic*std_logic --&gt; std_logic &
+    vor  : std_logic*std_logic --&gt; std_logic &
+    vxor : std_logic*std_logic --&gt; std_logic &
+    vnot : std_logic     --&gt; std_logic & 
+
+    vand(1,1) = 1 &  
+    vand(0,1) = 0 &
+    vand(1,0) = 0 &
+    vand(0,0) = 0 &
+
+    vor(1,1) = 1 &
+    vor(0,1) = 1 &
+    vor(1,0) = 1 &
+    vor(0,0) = 0 &
+
+    vxor(1,1) = 0 & 
+    vxor(0,1) = 1 &
+    vxor(1,0) = 1 &
+    vxor(0,0) = 0 &
+   
+
+    vnot(0) = 1 &
+    vnot(1) = 0
+
+
+END
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.1/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

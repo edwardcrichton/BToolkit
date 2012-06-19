@@ -1,0 +1,147 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Scalar_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_time , Rename_expire)
+;
+(Rename_time , Rename_expire)
+;
+(Rename_time : SCALAR & Rename_expire : SCALAR)
+;
+(Rename_time : SCALAR & Rename_expire : SCALAR)
+;
+(?)
+;
+(Rename_time :: SCALAR || Rename_expire := 0)
+;
+(@Rename_timex.(Rename_timex : SCALAR ==> Rename_time := Rename_timex) || Rename_expire := 0)
+;
+(Rename_GetTime,Rename_StartTimer,Rename_CheckTimer)
+;
+(Rename_GetTime , Rename_StartTimer , Rename_CheckTimer)
+;
+(Rename_Time(?):(?):(?))
+;
+(
+(
+ (Rename_GetTime)
+;
+ (? , Val_Op , Det_Op , (time <-- Rename_GetTime))
+;
+ (?)
+;
+ (time)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ time := Rename_time
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (time := Rename_time)
+ )
+ )
+)
+,
+(
+ (Rename_StartTimer)
+;
+ (? , Mod_Op , Det_Op , (start_time <-- Rename_StartTimer(interval)))
+;
+ (interval)
+;
+ (start_time)
+;
+ (
+ (interval : SCALAR & Rename_time+interval <= 2147483646)
+ |
+ (
+ (
+ (Rename_expire := Rename_time+interval)
+ )
+ ||
+ (
+ (start_time := Rename_time)
+ )
+ )
+ )
+;
+ (
+ (interval : SCALAR & Rename_time+interval <= 2147483646)
+ |
+ (
+ (Rename_expire , start_time := Rename_time+interval , Rename_time)
+ )
+ )
+)
+,
+(
+ (Rename_CheckTimer)
+;
+ (? , Val_Op , Det_Op , (expired <-- Rename_CheckTimer))
+;
+ (?)
+;
+ (expired)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ expired := bool(Rename_expire <= Rename_time)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (expired := bool(Rename_expire <= Rename_time))
+ )
+ )
+)
+)

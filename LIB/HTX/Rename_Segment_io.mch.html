@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+  <TITLE>The Rename_Segment_io machine</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFE0">
+
+<pre><A NAME="MACHINE">MACHINE</A>     Rename_Segment_io(SEGMENT)
+
+SEES       <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>
+
+<A NAME="OPERATIONS">OPERATIONS</A>
+
+   rr &lt;-- <A NAME="OPNAME!Rename_GET_SEG">Rename_GET_SEG</A> = 
+  BEGIN 
+     rr:: SEGMENT      /* multiple words */
+  END;
+  
+  rr &lt;-- <A NAME="OPNAME!Rename_GET_PROMPT_SEG">Rename_GET_PROMPT_SEG</A>(ss) = 
+  PRE 
+     ss : <A HREF="String_TYPE.mch.html#SETS">STRING</A>
+  THEN
+     rr:: SEGMENT     /* multiple words */
+  END;
+
+  <A NAME="OPNAME!Rename_PUT_SEG">Rename_PUT_SEG</A>(dd) = 
+  PRE 
+     dd:SEGMENT
+  THEN 
+     skip
+  END
+
+
+END
+</pre>
+<P><HR>
+<P>
+<H3>Analysed Constructs</H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3>On-line Help</H3>
+
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+</BODY>
+</HTML>

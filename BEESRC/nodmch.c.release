@@ -1,0 +1,219 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+extern int info[];
+extern int fath[];
+extern int cptr[];
+extern int sons[];
+extern int snbr[];
+extern int ntmb[];
+extern int max_nod;
+int nod;
+int nttm;
+                  
+/*  PROGRAMS FOR NODE MACHINE  */
+                
+                  
+
+#define ini_nod nod=0; nttm=0
+
+#define info_nod(n)  info[n]
+
+#define fath_nod(n)  fath[n]
+
+#define cptr_nod(n)  cptr[n]
+
+#define sons_nod(n)  sons[n]
+
+#define snbr_nod(n)  snbr[n]
+mak_nodfunc()
+#define mak_nod mak_nodfunc()
+{register int n ;
+  if( nttm!=0 ){
+    n=ntmb[nttm];
+    nttm=nttm-1;
+  } else if( nod<max_nod ){
+    nod=nod+1;
+    n=nod;
+  } else {
+#ifdef BTOOL_FLAG
+    fprintf ( bstdout, "      TOO MANY NODES (Press CR to exit)\n");
+    {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+#else
+    fprintf ( bstdout, "      bplatform: Too many nodes\n\n");
+#endif /* BTOOL_FLAG */
+    exit___(1);
+  }
+; return n;
+}
+
+sup_nod(n)
+{
+  nttm=nttm+1;
+  ntmb[nttm]=n;
+}
+
+cre_nod(i,f)
+{register int n,s ;
+  n=mak_nod;
+  s=sons_nod(f);
+  info_nod(n)=i;
+  fath_nod(n)=f;
+  cptr_nod(n)=0;
+  sons_nod(n)=cre(4);
+  psh(s,n);
+  snbr_nod(n)=len(s);
+}
+
+cre_root_nod(i)
+{register int n ;
+  n=mak_nod;
+  info_nod(n)=i;
+  fath_nod(n)=0;
+  cptr_nod(n)=0;
+  sons_nod(n)=cre(4);
+  snbr_nod(n)=0
+; return n;
+}
+
+kil_nod(n)
+{register int s,i,v ;
+  s=sons_nod(n);
+  itr(s,i,v,kil_nod(v));
+  kil(s);
+  sup_nod(n);
+}
+
+#define itr_nod(n,i,v,s1,s2,s3) i=n; while( i!=fath_nod(n) ){ v=info_nod(i); if( cptr_nod(i)==0 ){ s1 ;}; if( cptr_nod(i)==len(sons_nod(i)) ){ cptr_nod(i)=0; s3; i=fath_nod(i) ;} else if( cptr_nod(i)==0 ){ cptr_nod(i)=1; i=fst(sons_nod(i)) ;} else { cptr_nod(i)=cptr_nod(i)+1; s2; i=val(sons_nod(i),cptr_nod(i)) ;}  ;}
+up_nod(p,n)    
+/*  remove recursion  */
+{register int f,s,m,up_nod_res ;
+  f=fath_nod(n);
+  if( f==fath_nod(p) ){
+    up_nod_res=0;
+  } else {
+    s=sons_nod(f);
+    m=snbr_nod(n);
+    if( m==len(s) ){
+      up_nod_res=up_nod(p,f);
+    } else {
+      up_nod_res=val(s,m+1);
+    };
+  }
+; return up_nod_res;
+}
+
+next_nod(p,n)
+{register int s,next_nod_res ;
+  s=sons_nod(n);
+  if( len(s)!=0 ){
+    next_nod_res=fst(s);
+  } else {
+    next_nod_res=up_nod(p,n);
+  }
+; return next_nod_res;
+}
+
+upp_nod(p,n)    
+/*  remove recursion  */
+{register int f,s,m,upp_nod_res ;
+  f=fath_nod(n);
+  if( f==fath_nod(p) ){
+    upp_nod_res=0;
+  } else {
+    s=sons_nod(f);
+    m=snbr_nod(n);
+    if( m==len(s) ){
+      upp_nod_res=upp_nod(p,f);
+    } else {
+      upp_nod_res=val(s,m+1);
+    };
+  }
+; return upp_nod_res;
+}
+
+nextp_nod(p,n)
+{register int s,nextp_nod_res ;
+  s=sons_nod(n);
+  if( len(s)!=0 ){
+    nextp_nod_res=fst(s);
+  } else {
+    nextp_nod_res=upp_nod(p,n);
+  }
+; return nextp_nod_res;
+}
+
+down_nod(n)
+{register int k,s ;
+  k=n;
+  s=sons_nod(k);
+  while( len(s)!=0 ){
+    k=lst(s);
+    s=sons_nod(k);
+}
+; return k;
+}
+
+prev_nod(p,n)
+{register int m,f,s,prev_nod_res ;
+  if( n==p ){
+    prev_nod_res=p;
+  } else {
+    m=snbr_nod(n);
+    if( m>1 ){
+      f=fath_nod(n);
+      s=sons_nod(f);
+      prev_nod_res=down_nod(val(s,m-1));
+    } else {
+      prev_nod_res=fath_nod(n);
+    };
+  }
+; return prev_nod_res;
+}
+
+#define itr_asc_nod(p,n,m,g,S) m=n; while( m!=fath_nod(p) ){ g=info_nod(m); S; m=fath_nod(m) ;}
+
+#define xst_asc_nod(p,n,m,g,P,S1,S2) stp=stp+1; stack[stp-1]=FALSE; m=n; while( m!=fath_nod(p) ){ g=info_nod(m); if( P ){ S1; stack[stp-1]=TRUE; m=fath_nod(p) ;} else { m=fath_nod(m) ;}  ;}; if( stack[stp-1]==FALSE ){ S2  ;}; stp=stp-1
+
+#define itr_next_nod(p,n,m,g,S) m=n; while( m!=0 ){ g=info_nod(m); S; m=next_nod(p,m) ;}
+sta_nodfunc()
+#define sta_nod sta_nodfunc()
+{
+  fprintf(bstdout,"      Max Number of Nodes:           ");
+  fprintf(bstdout,"%8d\n",max_nod);
+  fprintf(bstdout,"      Number of Used Nodes:          ");
+  fprintf(bstdout,"%8d\n",nod);
+  fprintf(bstdout,"      Number of Dead Nodes:          ");
+  fprintf(bstdout,"%8d\n",nttm);
+  fprintf(bstdout,"      Number of Live Nodes:          ");
+  fprintf(bstdout,"%8d\n\n",nod-nttm);
+}
+
+hello1(i,j)
+  unsigned int *i;
+  int j;
+{
+  return (*i%j);
+}
+
+hello2(i,j)
+  unsigned int *i;
+  int j;
+{
+  return (*i/j);
+}

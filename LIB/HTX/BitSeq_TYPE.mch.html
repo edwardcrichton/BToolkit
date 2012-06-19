@@ -1,0 +1,202 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.32">
+  <META NAME="Description" CONTENT="Hypertext version of BitSeq_TYPE">
+  <TITLE>The BitSeq_TYPE machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+V1.0
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+***/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>            BitSeq_TYPE
+
+/*"
+The operational interface to this machine provides bit positions
+{\em 0\/} to {\em 7\/}, with position {\em 0\/} being the least
+significant bit. Thus the number {\em 1\/} would have its {\em 0\/}th
+bit set to {\em 1\/}, and all other bits set to {\em 0\/}.
+
+The low-nibble occupies bit positions {\em 0\/} to {\em 3\/}, and the
+high-nibble positions {\em 4\/} to {\em 7\/}.
+
+The operations comprise six bit manipulation functions {\em BSAND,
+BSOR, BSXOR, BSNOT, BXSTR\/} and {\em BSSET \/} and the two operations
+for manipulating bytes in a bit-sequence {\em BSBYTE\_FROM\_BITSEQ\/}
+and {\em BSBYTE\_IN\_BITSEQ\/}.
+"*/
+
+<A NAME="SEES"><B>SEES</B></A>               <A HREF="Byt_BS_TYPE.mch.html#MACHINE">Byt_BS_TYPE</A>, <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>
+
+<A NAME="SETS"><B>SETS</B></A>               BITSEQ
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>          BITSEQ0, /* bit_and, bit_or, bit_xor, bit_comp, */ power, n2bs, bs2n
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+/*"
+{\em BITSEQ\/} is a sequence of {\em 0\/}s and {\em 1\/}s of length 8:
+"*/
+
+       BITSEQ = 1..8 --&gt; {0,1} &
+
+/*"
+We define the zero {\em BITSEQ\/}:
+"*/
+
+       BITSEQ0 = [0,0,0,0,0,0,0,0] &
+
+/*"
+We need a `to the power' function:
+"*/
+
+  power : NAT * NAT --&gt; NAT &
+
+/*"
+For convenience, we include the conversion functions between {\em BITSEQ\/}
+and {\em NAT\/}, defined in terms of those between {\em BITSEQ\/}
+and {\em BYTE\/}, and {\em BYTE\/} and {\em NAT\/}
+"*/
+  n2bs : 0..255 &gt;-&gt;&gt; BITSEQ &
+  bs2n : BITSEQ &gt;-&gt;&gt; 0..255 &
+  !byt.(byt:<A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A> =&gt; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bs2b</A>(<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2bs</A>(byt)) = byt) &
+  !bts.(bts:BITSEQ =&gt; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2bs</A>(<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bs2b</A>(bts)) = bts)
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+The first four operations return the bitwise-and, -or, -xor and
+-complement of their input parameters.\\[2ex]
+
+{\bf BSAND}\\[.5ex]
+Translated as: {\tt rr := BAND(aa,bb)}
+"*/
+  rr <-- <A NAME="OPNAME!BSAND">BSAND</A> (aa : BITSEQ & bb : BITSEQ) =
+    <B>BEGIN</B> rr := ((aa &gt;< bb) ; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bnd</A>) <B>END</B>;
+
+/*"
+{\bf BSOR}\\[.5ex]
+Translated as: {\tt rr := BOR(aa,bb)}
+"*/
+  rr <-- <A NAME="OPNAME!BSOR">BSOR</A> (aa : BITSEQ & bb : BITSEQ) =
+    <B>BEGIN</B> rr := ((aa &gt;< bb) ; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bor</A>) <B>END</B>;
+
+/*"
+{\bf BSXOR}\\[.5ex]
+Translated as: {\tt rr := BXOR(aa,bb)}
+"*/
+  rr <-- <A NAME="OPNAME!BSXOR">BSXOR</A> (aa : BITSEQ & bb : BITSEQ) =
+    <B>BEGIN</B> rr := ((aa &gt;< bb) ; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bxr</A>) <B>END</B>;
+
+/*"
+\newpage
+{\bf BSNOT}\\[.5ex]
+Translated as: {\tt rr := BNOT(aa)}
+"*/
+  rr <-- <A NAME="OPNAME!BSNOT">BSNOT</A> (aa : BITSEQ) =
+    <B>BEGIN</B> rr := (aa ; <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bcp</A>) <B>END</B>;
+
+/*"
+{\bf BSXTR}\\[.5ex]
+Returns the {\em BYTE\/} value of the {\em ii\/}th bit of {\em aa\/}:\\
+"*/
+  rr <-- <A NAME="OPNAME!BSXTR">BSXTR</A> (aa : BITSEQ & ii : <A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii) : 0..7 <B>THEN</B> rr := <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">n2b</A>(aa(<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii)+1)) <B>END</B>;
+
+/*"
+{\bf BSSET}\\[.5ex]
+Returns the {\em BYTE\/} whose corresponding {\em BITSEQ\/} is the same
+as {\em aa\/} except that the {\em ii\/}th bit has been set to {\em vv\/}:\\
+"*/
+  rr <-- <A NAME="OPNAME!BSSET">BSSET</A> (aa : BITSEQ & ii : <A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii) :  0..7 & <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(vv) : {0,1} <B>THEN</B>
+      rr := <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bs2b</A>(aa<+{<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii)+1|-&gt;b2n(vv)})
+    <B>END</B>;
+
+/*"
+\newpage
+{\bf BFBS}\\[.5ex]
+Returns the {\em BYTE\/} whose corresponding {\em BITSEQ\/} bit
+positions from {\em 0\/} up to {\em jj-ii\/} agree with bit positions
+of {\em aa\/} from {\em ii\/} to {\em jj\/}, with the remaining
+positions set to {\em 0\/}:\\
+"*/
+  rr <-- <A NAME="OPNAME!BFBS">BFBS</A>(aa : BITSEQ & ii : <A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A> & jj : <A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii) :  0..7 & <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(jj) :  0..7 & ii <= jj <B>THEN</B>
+      rr := <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">bs2b</A> ( (
+                     (aa \|/ <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii)) /|\ (<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(jj)-<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii)+1)
+                   ) ^
+                   (
+                     (BITSEQ0 /|\ (7-<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(jj)+<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii)))
+                   )
+                 )
+    <B>END</B>;
+
+/*"
+{\bf BIBS}\\[.5ex]
+Returns the {\em BITSEQ\/} whose bit positions from {\em 0\/} up to
+{\em ii-1\/} and from {\em jj+1\/} up to {\em 7\/} are unchanged, and
+whose bit positions from {\em ii\/} to {\em jj\/} agree with the {\em
+BITSEQ\/} representation of {\em bb\/} from bit positions {\em 0\/} to
+{\em jj-ii\/}; {\em bb\/}'s remaining bits are {\em 0\/}, and the
+precondition ensures that {\em jj-ii+1\/} is large enough for {\em
+bb\/}'s {\em BITSEQ\/} representation:\\
+"*/
+  rr <-- <A NAME="OPNAME!BIBS">BIBS</A>(aa : BITSEQ &bb : <A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A> & ii : <A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A> & jj : <A HREF="Byt_BS_TYPE.mch.html#SETS">BYTE</A>)
+  =
+    <B>PRE</B>
+      <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii) :  0..7 & <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(jj) :  0..7 & ii &lt;= jj &
+      <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(bb) < power(2,<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(jj-ii))
+    <B>THEN</B>
+      rr := ( 
+              aa /|\ <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii)
+            ) ^
+            (
+              <A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2bs</A>(bb) /|\ (<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(jj)-<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(ii)+1)
+            ) ^
+            (
+              aa /|\ (7-<A HREF="Byt_BS_TYPE.mch.html#CONSTANTS">b2n</A>(jj))
+            )
+    <B>END</B>;
+
+/*"
+We provide two operations providing i/o for the purposes of
+prototyping in C; the operations have no PASP equivalents.\\[1ex]
+
+{\bf BSGET}\\[.5ex]
+"*/
+  rr <-- <A NAME="OPNAME!BSGET">BSGET</A>(ss : <A HREF="String_TYPE.mch.html#SETS">STRING</A>) =
+    <B>BEGIN</B> rr :: BITSEQ <B>END</B>;
+
+  <A NAME="OPNAME!BSPUT">BSPUT</A>(ss : BITSEQ) = <B>BEGIN</B> <B>skip</B> <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Mon Feb 15 09:46:42 1999
+<BR>
+<IMG SRC="/apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Beta 4.32</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

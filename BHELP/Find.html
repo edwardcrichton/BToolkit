@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Finder</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Find"></A>
+<H1>
+Find</H1>
+<TT>Find </TT>is invoked from the <A HREF="BToolkit.html#Utilities">TopBar
+Utils</A> menu, and is a facility which interrogates the files in the <A HREF="BToolkit.html#Development_Environment">TYP</A>
+directory to enable the origin and type of a variable, set, constant or
+operation name, together with a list of referencing constructs. It results
+in the prompt:
+<PRE>&nbsp; Identifier(s) to find:</PRE>
+A response of `some_op', for example, might result in the following display
+in the Text Window:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp; some_op:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPERATION in fifi
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Input&nbsp; - inp_var : NAT
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Output - out1_var : NAT
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out2_var : NAT
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Referenced:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mimi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gigi</PRE>
+indicating that the operation `some_op' is an operation name declared in
+the construct `fifi' having a single input parameter `inp_var' of type
+NAT, and two output variables `out1_var' and `out2_var' both having type
+NAT; `some_op' is referenced in the two constructs `mimi' and `gigi'.
+
+<P>Note that Find is applicable only to <A HREF="BToolkit.html#Constructs!Area">constructs</A>
+which are currently <A HREF="Analyser.html#Analyser">analysed</A>.
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+
+<P>&nbsp;
+</BODY>
+</HTML>

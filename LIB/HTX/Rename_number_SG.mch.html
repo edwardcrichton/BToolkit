@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_number_SG">
+  <TITLE>The Rename_number_SG machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>           /*** VHDL Variable Rename_number_SG ***/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Rename_number_SG(maxnum)
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="VHDL_PK.mch.html#MACHINE">VHDL_PK</A>
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>         Rename_Ran 
+
+/*" {\em 0 .. maxnum\/} also recognized as {\em Rename\_Ran} "*/
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>        Rename_Ran = 0..maxnum 
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>         Rename_num
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>         Rename_num : Rename_Ran
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>    Rename_num :: Rename_Ran
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/* need all other ops from Scalar_type */
+
+  <A NAME="OPNAME!Rename_EXP">Rename_EXP</A>(num:0..maxnum & p1:0..maxnum) =
+  <B>PRE</B>
+    num ** p1 : 0..maxnum
+  <B>THEN</B>
+    Rename_num := num ** p1
+  <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:11:31 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

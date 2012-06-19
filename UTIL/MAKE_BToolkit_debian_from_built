@@ -1,0 +1,25 @@
+#! /bin/csh -f
+
+#  MAKE_BToolkit_debian_from_built
+
+#
+#  After the remote system has been built and
+#  tested, this script creates the debian package file
+#
+#    `release_version'.deb
+#
+
+set HERE=`pwd`
+
+source ./set_debian_variables
+
+cd $release/..
+
+fakeroot dpkg-deb --build $filename
+
+# clean up
+
+echo "rm -rf $filename"
+#rm -rf $filename
+
+ls -l

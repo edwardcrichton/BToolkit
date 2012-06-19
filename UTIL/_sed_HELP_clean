@@ -1,0 +1,15 @@
+#! /bin/csh -f
+
+
+cd ../BHELP
+set files = `ls *.html`
+
+foreach file ( $files )
+
+  rm $file.save
+
+end
+
+echo ""
+echo "  _sed_HELP_clean done"
+echo ""

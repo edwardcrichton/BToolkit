@@ -1,0 +1,161 @@
+END         clo      keyt
+]           clo      nrml
+}           clo      nrml
+
+evl         bin      void     11   
+spe         bin      void     10  right
+ghost?      atm      void      0
+error?      atm      nrml      0
+=>          bin      blba     -6
+DED         atm      nrml      0
+GEN         atm      nrml      0
+HYP         atm      nrml      0
+ARI         atm      nrml      0
+bootX       atm      nrml      0
+THEORY      opn      keyw      11  END
+IS          bin      keyl     -9
+TAC         bin      keyl     -9
+bwrite      unr      nrml     11
+bproved     unr      nrml     11
+bread       unr      nrml     11
+<=          bin      blba      0
+>=          bin      blba      0
+/=          bin      blba      0
+blemma      unr      nrml     11
+bfalse      atm      nrml      0
+<=>         bin      blba     -4
+FTAC        bin      keyl     -9
+bconnect    unr      nrml     11
+bunproved   unr      nrml     11
+"/dev/tty"  atm      nrml      0
+:=          bin      blba     -2
+==          bin      blba     -4
+bmark       unr      nrml     11
+bcall       unr      nrml     11
+bmap        bin      blba      0
+JOK1        unr      nrml     11
+JOK2        bin      blba      0
+bcat        unr      nrml     11
+bredo       atm      nrml      0
+blank2      bin      blba      0
+blank0?     atm      nrml      0
+bnew        unr      nrml     11
+blmap       bin      blba      0
+brule       unr      nrml     11
+brev        unr      nrml     11
+bflat       unr      nrml     11
+bhalt       atm      nrml      0
+REV         atm      nrml      0
+FLAT        atm      nrml      0
+bsmap       bin      blba      0
+bslmap      bin      blba      0
+MAP         atm      nrml      0
+LMAP        atm      nrml      0
+FEQL        atm      nrml      0
+bget        unr      nrml     11
+bmodr       unr      nrml     11
+berv        clo      nrml
+bsrv        opn      nrml     11   berv
+bshell      unr      nrml     11
+MODR        atm      nrml      0
+SHELL       atm      nrml      0
+bnmap       bin      blba      0
+bnlmap      bin      blba      0
+blog2       unr      nrml     11
+bnrm2       unr      nrml     11
+blen        unr      nrml     11
+blow        unr      nrml     11
+bstring     unr      nrml     11
+bwritef     unr      nrml     11
+bprintf     unr      nrml     11
+WRITE       atm      nrml      0
+breadf      unr      nrml     11
+bident      unr      nrml     11
+bnum        unr      nrml     11
+bvrb        unr      nrml     11
+binhyp      unr      nrml     11
+bcrer       unr      nrml     11
+bcrel       unr      nrml     11
+RULE        atm      nrml      0
+btac        unr      nrml     11
+bftac       unr      nrml     11
+TACTIC      atm      nrml      0
+FEQLS       atm      nrml      0
+bcatl       unr      nrml     11
+CATL        atm      nrml      0
+bnewv       unr      nrml     11
+NEWV        atm      nrml      0
+bclean      unr      nrml     11
+bUpident    unr      nrml     11
+blident     unr      nrml     11
+bcrelr      unr      nrml     11
+SUB         atm      nrml      0
+breade      unr      nrml     11
+bwritem     unr      nrml     11
+bappend     unr      nrml     11
+bclose      atm      nrml      0
+berv2       clo      nrml
+bsrv2       opn      nrml     11   berv2
+btest       unr      nrml     11
+bpop        unr      nrml     11
+bgethyp     unr      nrml     11
+bgetallhyp  unr      nrml     11
+blent       unr      nrml     11
+bsuspend    atm      nrml      0
+bfiforead   unr      nrml     11
+bfifowrite  unr      nrml     11
+bbitstring  unr      nrml     11
+bliteral    unr      nrml     11
+bsingleton  unr      nrml     11
+bconstant   unr      nrml     11
+blconstant  unr      nrml     11
+binfo       unr      nrml     11
+bint        unr      nrml     11
+bfwdprf     unr      nrml     11
+bgoals      atm      nrml      0
+bsearch     unr      nrml     11
+bsparemem   unr      nrml     11
+bstatistics atm      nrml      0
+brecompact  atm      nrml      0
+
+&           bin      bbat     -5
+;           bin      term     -7
+$           bin      nrml      11
+.           bin      nrml      10  right
+/           bin      nrml      3
+*           bin      nrml      3
+,           bin      blba     -1
+:           bin      blba     -4
+|           bin      blba     -8
+^           bin      blba      0
+-           bin      nrml      2
++           bin      nrml      2
+=           bin      blba     -4
+\           bin      blba      0
+<           bin      blba      0
+>           bin      blba      0
+
+[           opn      nrml     11   ]
+{           opn      nrml     11   }
+
+!           unr      nrml     11
+@           unr      nrml     11
+#           unr      nrml     11
+%           unr      nrml     11
+
+~           pst      nrml     11
+'           atm      nrml      0
+?           atm      nrml      0
+
+||          bin      bbat      -7
+TRUE        atm      nrml       0
+FALSE       atm      nrml       0
+or          bin      blba      -5
+not         unr      nrml      11
+[]          bin      blba      -7
+<--         bin      blba      -1
+==>         bin      blba      -6
+::          bin      blba      -2
+
+<>          atm      nrml       0
+{}          atm      nrml       0

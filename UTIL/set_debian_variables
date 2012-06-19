@@ -1,0 +1,282 @@
+#! /bin/csh -f
+
+#  set_debian_variables
+
+#
+#  After the remote system has been built and
+#  tested, this script creates the debian package directory
+#  ready to be packaged - either by dpkg-deb or by tar ball
+
+set HERE=`pwd`
+
+source ./set_basic_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+switch ( $VERSION )
+
+  case LINUX_VERSION
+    set plat=Linux
+    breaksw
+  default:
+    echo ""
+    echo "  $PLATFORM does not support .deb packages"
+    echo "  Aborted"
+    echo ""
+    exit
+    breaksw
+
+endsw
+
+#echo ""
+#echo "  Which binding?"
+#echo ""
+#echo "  -- 1 $plat dynamically bound"
+#echo "  -- 2 $plat statically  bound"
+#echo ""
+#echo -n "  ** Number? "
+#set answer=$<
+#echo ""
+#if ($answer != "1" && $answer != "2" ) then
+#  echo "  Aborted"
+#  echo ""
+#  exit
+#endif
+#if ($answer == "1" ) then
+#  set binding=""
+#else
+#  set binding="m"
+#endif
+
+set binding=""
+
+set arch=`uname -m`
+
+if ( `echo $arch | grep "i.86"` != "" ) then
+      set arch="i386"
+endif
+
+
+# the package name
+set pkg=btoolkit
+set pkgvernodash=${BT_MAJOR_VERSION}"."${BT_MINOR_VERSION}${BT_PATCH_VERSION}
+set pkgver=${pkgvernodash}"-1"
+
+set filename=${pkg}${binding}"_"${pkgver}"_"${arch}
+
+ #echo $pkg
+ #echo $pkgvernodash
+ #echo $pkgver
+ #echo $filename
+ #exit
+
+cd ..
+
+# debian docs says that "if you must" you can put the installation in /usr/local
+# so let's do that
+# (there are various places where documents and shared stuff goes
+# but the toolkit was not designed like that). These could be set up as symbolic links at some point.
+
+
+# where they will be installed
+set share="usr/share"
+set documents="$share/doc/$pkg"
+set unpackdestpkg="usr/local/$pkg"
+set unpackdest="$unpackdestpkg/$pkgvernodash"
+
+
+# local directory structure to be packaged
+set release="../RELEASE/$filename"
+
+set destinationpkg="$release/$unpackdestpkg"
+set destination="$release/$unpackdest"
+set destBKIT="$destination/BKIT"
+set DEBIAN="$release/DEBIAN"
+set control="$DEBIAN/control"
+set registry="$release/$share/application-registry"
+set applications="$release/$share/applications"
+set mimeInfo="$release/$share/mime-info"
+set menu="$release/$share/menu"
+set images="$release/$share/$pkg/$pkgver/images"
+set pixmaps="$release/$share/pixmaps"
+set doc="$release/$documents"
+set copyright="$doc/copyright"
+set changelog="$doc/changelog.Debian"
+set scripts="$HERE/deb_install_scripts"
+
+# executables to be symbolically linked to the /usr/bin
+
+set executables="btool btoolkit bunlock"
+
+# clean
+
+if ( -d $release ) then
+  echo "cleaning $filename"
+
+  set CL = ( \
+	$doc \
+	$share \
+        $DEBIAN \
+        $destBKIT \
+	$destination \
+	$destinationpkg \
+        )
+
+  foreach file ( $CL )
+
+    if ( -e $file ) then
+      #echo "rm -Rf $file"
+      rm -Rf $file
+    endif
+  end
+
+endif
+
+
+# make these directories
+set MK = ( \
+          ../RELEASE \
+          $release \
+          $release/usr \
+          $release/usr/local \
+          $release/usr/local/$pkg \
+          $destination \
+          $destBKIT \
+          $release/usr/share \
+          $release/usr/share/doc \
+	  $share \
+	  $registry \
+	  $applications \
+	  $mimeInfo \
+	  $menu \
+	  $images \
+	  $pixmaps \
+          $doc \
+          $release/DEBIAN \
+       )
+
+foreach file ( $MK )
+
+  if ( ! -d $file ) then
+    mkdir -p $file
+  endif
+
+end
+
+find $release -type d | xargs chmod 755   # this is necessary on Debian Woody
+
+echo "Writing $control"
+set maintainer="BToolkit Maintainer. Search for BToolkit at github.com"
+
+# write the control file
+
+echo "Package: $pkg" > $control
+echo "Version: $pkgvernodash" >> $control
+echo "Section: devel" >> $control
+echo "Priority: optional" >> $control
+echo "Architecture: "$arch >> $control
+echo "Depends: flex, cpp, coreutils, lesstif2, xterm, texlive-latex-base, gcc, build-essential" >> $control
+echo "Recommends: firefox, nedit" >> $control
+echo "Maintainer: $maintainer" >> $control
+echo "Description: Toolkit for the B Method of software development" >> $control
+echo " A set of tools for developing correct programs from" >> $control
+echo " set theoretical specifications." >> $control
+
+echo "Writing $copyright"
+# write copyright file
+echo "$pkg" > $copyright
+echo "BSD open source license" >> $copyright
+echo "Search for BToolkit at:" >> $copyright
+echo "http://github.com/" >> $copyright
+
+# change log
+
+echo "Writing $changelog"
+echo "$pkg ($pkgvernodash) stable; urgency=low" > $changelog
+echo "  * maintenance, fixes and usability issues" >> $changelog
+echo " -- $maintainer  `date -R || 822-date`" >> $changelog
+
+gzip -9 $changelog
+
+# create the version header for the scripts
+
+echo '#\!/bin/sh' > "$scripts/header"
+echo "set -e"  >> "$scripts/header"
+echo 'BT_VERSION_NUM="'$pkgvernodash'" ' >> "$scripts/header"
+echo 'BT_EXECUTABLES="'$executables'" ' >> "$scripts/header"
+
+# concat the version number header onto the scripts
+# first then copy them
+
+echo "Writing install/remove scripts"
+
+set TOCAT="preinst postinst prerm postrm"
+
+foreach c ( $TOCAT )
+cp "$scripts/header" "$scripts/$c"
+cat "$scripts/${c}_script" >> "$scripts/$c"
+chmod 755 "$scripts/$c"
+cp "$scripts/$c" $DEBIAN/.
+end
+
+# copy the files and directories
+
+echo "Writing desktop and menu configuration"
+
+# use replace VERSION with $pkgver, PACKAGE with $pkg and create the files
+
+sed "s/PACKAGE/$pkg/g" $scripts/application-registry/applications_stub > "$scripts/application-registry/${pkg}.applications"
+sed "s/VERSION/$pkgvernodash/g" $scripts/applications/desktop_stub > "$scripts/applications/${pkg}.desktop"
+sed "s/VERSION/$pkgvernodash/g" $scripts/menu/btoolkit_stub > $scripts/menu/btoolkit
+
+
+cp "$scripts/application-registry/${pkg}.applications" $registry
+cp "$scripts/applications/${pkg}.desktop" $applications
+cp $scripts/menu/btoolkit $menu
+
+# copy the B.xpm as the application image
+
+cp BKIT/BHELP/B1.xpm $images/B.xpm
+cp BKIT/BHELP/B1.xpm $pixmaps/B.xpm
+
+# plug in the mime types/file extensions
+
+cp $scripts/mime-info/btoolkit.keys $mimeInfo/.
+cp $scripts/mime-info/btoolkit.mime $mimeInfo/.
+
+echo "Copying files to be installed"
+
+
+# note : should use symbol=`nm -u $binary` to test whether a binary should be stripped
+
+  cp -rf BKIT/BDEMO $destBKIT
+  cp -rf BKIT/BHELP $destBKIT
+  cp -rf BKIT/BTool_Tutorial $destBKIT
+  cp -rf BKIT/BLIB $destBKIT
+  cp -rf BKIT/BPLAT $destBKIT
+  cp -rf BKIT/BPALETTE $destBKIT
+
+# copy the binaries
+# 'public' Launcher program
+  cp -f BKIT/Blauncher $destBKIT/../.
+# 'private' parts oo-er
+  cp -f BKIT/BProcessInfo $destBKIT
+  cp -f BKIT/BTool $destBKIT
+  cp -f BKIT/BToolkit $destBKIT
+  cp -f BKIT/BUnlock $destBKIT
+
+# copy the configuration files
+  cp -f BKIT/ErrorCodes $destBKIT
+  cp -f BKIT/XBMotif $destBKIT
+  cp -f BKIT/XBMotif.mono $destBKIT
+
+
+# calculate the installed size and append it to the control file
+
+set INSTALLEDSIZE=`du -ks ${release} | awk '{ print $1 }'`
+
+echo "Installed-Size: $INSTALLEDSIZE" >> $control
+
+

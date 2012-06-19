@@ -1,0 +1,668 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define ReadCodeName(x) brule(ProcessVHDLCodeModuleX.1,x)
+
+#define ReadOpList(x) brule(ProcessVHDLCodeModuleX.2,x)
+
+THEORY CreVHDLSLIBTemplateX IS
+
+#define CreVHDLSLIBTemplate(x) \
+    bcall(((WRITE;CATL;MAP)~;CreVHDLSLIBTemplateX)~:ct0(x))
+
+  bprintf("% ==\n  variable var1: var1_type;\n  variable var2: var2_type;\nop code;\n\n",K)
+ =>
+  ct2(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  ct2(?);
+
+  ct2 bsmap (N,n)
+ =>
+  ct2(N,n);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ct1(Z);
+  
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  ct2(n)
+ =>
+  ct1(Z);
+  
+  Connect(bcatl("TMP/",a,".vhd")) &
+  bprintf("signal sig1: sig1_type;\n") &
+  bprintf("signal sig2: sig2_type;\n") &
+  bprintf("\n------------------------------------------------------------\n\n") &
+  ct1(bcatl("ANL/",a,".mch.anl")) &
+  bclose
+ =>
+  ct(a);
+
+  bget("TMP/.BBcom",(r;PK)) &
+  Connect(bcatl("TMP/",a,".vhd")) &
+  bprintf("\n") &
+  ct1(bcatl("ANL/",a,".mch.anl")) &
+  bclose
+ =>
+  ct(a);
+
+
+  Connect("TMP/.Bcom") &
+  bprintf("%\n",a) &
+  bclose &
+  Bshell("sed -e s+'_'+';'+g < TMP/.Bcom > TMP/.BBcom") &
+  ct(a)
+ =>
+  ct0(a)
+
+END
+
+&
+
+THEORY PrintLiteralsX IS
+
+/***
+  COPY FROM TransVHDL.src
+***/
+
+#define PrintLiterals(x,y) bcall(((ARI;CATL;WRITE)~;PrintLiteralsX)~:pl(x)(y))
+
+
+  pl_1(f)(bcatl(S,"1"))(N)(n-1)
+ =>
+  pl_1(f)(S)(N)(n);
+
+  bprintf("Literal_Ones_%,%\n",f,S)
+ =>
+  pl_1(f)(S)(N)(0);
+
+
+  pl_0(f)(bcatl(S,"0"))(N)(n-1)
+ =>
+  pl_0(f)(S)(N)(n);
+
+  bprintf("Literal_Zeros_%,%\n",f,S) &
+  pl_1(f)("")(N)(N)
+ =>
+  pl_0(f)(S)(N)(0);
+
+
+  pl(f)(n);
+
+  bnum(n) &
+  btest(n<100) &
+  bprintf("Literal_Num_%,%\n",f,n+1) &
+  pl_0(f)("")(n)(n)
+ =>
+  pl(f)(n);
+
+  pl(f)(0)
+
+END
+
+&
+
+THEORY WriteRenameListX IS
+
+#define WriteRenameList(x) \
+    bcall(((MAP;WRITE)~;WriteRenameListX)~:wrl(x))
+
+  wrl1(?);
+
+  bprintf("%<--,%<--\n",f,a) &
+  PrintLiterals(f,a) &
+  bprintf("%,%\n",f,a)
+ =>
+  wrl1(f,a);
+
+  Connect("TMP/.Bcom") &
+  wrl1 bsmap L &
+  bclose
+ =>
+  wrl(L);
+
+  Connect("TMP/.Bcom") &
+  bprintf("%<--,%<--\n",f,a) &
+  PrintLiterals(f,a) &
+  bprintf("%,%\n",f,a) &
+  bclose
+ =>
+  wrl(f,a)
+
+END
+
+&
+
+THEORY CreActOpParamX IS
+
+#define CreActOpParam(x) \
+    bcall(((MAP;ARI;WRITE;MODR)~;CreActOpParamX)~: (caop_id bsmap x))
+
+  ?;
+#define ReadActOpParam(x)    brule(CreActOpParamX.1,x)
+#define ModifyActOpParam(x)  bmodr(CreActOpParamX.1,x)
+
+  1;  /* 2. OUT SET id num */
+
+  1;  /* 3. IN SET id num */
+
+  1;  /* 4. IN NUM id num */
+
+  ?;  /* 5. 1=>out 2=>in */
+
+  ?;
+#define ReadPrecondition(x)    brule(CreActOpParamX.6,x)
+#define ModifyPrecondition(x)  bmodr(CreActOpParamX.6,x)
+
+
+  InformCantConnect("TMP/.BBcom") &
+  PFZ
+ =>
+  caop_id2(f);
+
+  bget("TMP/.BBcom",a) &
+  ReadActOpParam(P) &
+  ModifyActOpParam((P;f,a))
+ =>
+  caop_id2(f);
+
+  brule(CreActOpParamX.3,n) &   /* so it's an input parameter */
+  bmodr(CreActOpParamX.3,(n+1)) &
+  Connect("TMP/.BBcom") &
+  bprintf("%_IN",f) &
+  bclose &
+  caop_id2(f)
+ =>
+  caop_id(f);
+
+/*
+  ReadPrecondition(A) &       /? so it's an input parameter ?/
+  bsearch((f<=c),A,B) &
+  bnum(c) &
+  brule(CreActOpParamX.4,n) &
+  bmodr(CreActOpParamX.4,(n+4)) &
+  ReadActOpParam(P) &
+  ModifyActOpParam((P;f,n))
+ =>
+  caop_id(f);
+
+  ReadPrecondition(A) &       /? so it's an input parameter ?/
+  bsearch((f<c),A,B) &
+  bnum(c) &
+  brule(CreActOpParamX.4,n) &
+  bmodr(CreActOpParamX.4,(n+4)) &
+  ReadActOpParam(P) &
+  ModifyActOpParam((P;f,n))
+ =>
+  caop_id(f);
+
+  ReadPrecondition(A) &       /? so it's an input parameter ?/
+  bsearch((f:a..b),A,B) &
+  brule(CreActOpParamX.4,n) &
+  bmodr(CreActOpParamX.4,(n+4)) &
+  ReadActOpParam(P) &
+  ModifyActOpParam((P;f,n))
+ =>
+  caop_id(f);
+
+  ReadPrecondition(A) &       /? so it's an input parameter ?/
+  bsearch((f:SCALAR),A,B) &
+  brule(CreActOpParamX.4,n) &
+  bmodr(CreActOpParamX.4,(n+4)) &
+  ReadActOpParam(P) &
+  ModifyActOpParam((P;f,n))
+ =>
+  caop_id(f);
+
+  ReadPrecondition(A) &       /? so it's an input parameter ?/
+  bsearch((f:NAT1),A,B) &
+  brule(CreActOpParamX.4,n) &
+  bmodr(CreActOpParamX.4,(n+4)) &
+  ReadActOpParam(P) &
+  ModifyActOpParam((P;f,n))
+ =>
+  caop_id(f);
+
+  ReadPrecondition(A) &       /? so it's an input parameter ?/
+  bsearch((f:NAT),A,B) &
+  brule(CreActOpParamX.4,n) &
+  bmodr(CreActOpParamX.4,(n+4)) &
+  ReadActOpParam(P) &
+  ModifyActOpParam((P;f,n))
+ =>
+  caop_id(f);
+*/
+
+  brule(CreActOpParamX.5,1) &  /* so it's an output parameter */
+  brule(CreActOpParamX.2,n) &
+  bmodr(CreActOpParamX.2,(n+1)) &
+  Connect("TMP/.BBcom") &
+  bprintf("%_OUT",f) &
+  bclose &
+  caop_id2(f)
+ =>
+  caop_id(f)
+
+END
+
+&
+
+THEORY CreActMchParamX IS
+
+#define CreActMchParam(x,y) \
+    bcall(((ARI;WRITE;MODR)~;CreActMchParamX)~:camp(x)(y))
+
+  ?;
+#define ReadActMchParam(x)    brule(CreActMchParamX.1,x)
+#define ModifyActMchParam(x)  bmodr(CreActMchParamX.1,x)
+
+  1;  /* 2. SET id num */
+
+  8;  /* 3. NUM id num */
+
+  ?;
+#define ReadConstraints(x)    brule(CreActMchParamX.4,x)
+#define ModifyConstraints(x)  bmodr(CreActMchParamX.4,x)
+
+  InformCantConnect("TMP/.BBcom") &
+  PFZ
+ =>
+  camp_id2(f);
+
+  bget("TMP/.BBcom",a) &
+  ReadActMchParam(P) &
+  ModifyActMchParam((P;f,a))
+ =>
+  camp_id2(f);
+
+  Connect("TMP/.BBcom") &
+  bprintf("%_VAL",f) &
+  bclose &
+  camp_id2(f)
+ =>
+  camp_id(f);
+
+/*
+  brule(CreActMchParamX.2,n) &
+  bmodr(CreActMchParamX.2,(n+1)) &
+  Connect("TMP/.BBcom") &
+  bprintf("\"setParam%\"",n) &
+  bclose &
+  camp_id2(f)
+ =>
+  camp_id(f);
+
+  ReadConstraints(C) &
+  bsearch((f:NAT1),C,D) &
+  brule(CreActMchParamX.3,n) &
+  bmodr(CreActMchParamX.3,(n+4)) &
+  ReadActMchParam(P) &
+  ModifyActMchParam((P;f,n))
+ =>
+  camp_id(f);
+
+  ReadConstraints(C) &
+  bsearch((f:NAT),C,D) &
+  brule(CreActMchParamX.3,n) &
+  bmodr(CreActMchParamX.3,(n+4)) &
+  ReadActMchParam(P) &
+  ModifyActMchParam((P;f,n))
+ =>
+  camp_id(f);
+*/
+
+  camp_id(f)
+ =>
+  camp(f)(C);
+
+  camp(F)(C) &
+  camp(f)(C)
+ =>
+  camp(F,f)(C);
+
+  ModifyActMchParam((aaa,aaa))
+ =>
+  camp(?)(?)
+
+END
+
+&
+
+THEORY ProcessVHDLCodeModuleX IS
+
+#define ProcessVHDLCodeModule(x) \
+    bcall(((SUB;ARI;MAP;REV~;WRITE;CATL;SHELL;MODR;RULE)~;ProcessVHDLCodeModuleX)~: \
+      pcm(x))
+
+  ?; /* name (no ext) */
+
+  ?; /* op list (j) */
+
+  ?; /* op list (j) */
+
+  bshell(x);
+
+
+
+  bprintf(", ")
+ =>
+  prt_cm;
+
+  brule(ProcessVHDLCodeModuleX.3,0) &
+  bmodr(ProcessVHDLCodeModuleX.3,1)
+ =>
+  prt_cm;
+
+
+
+
+
+  /*** get and write ops ***/
+
+  /*** TMP/.Bcom created from TMP/.op ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 4 ",n," 999",n)) &
+  /*** TMP/.Bcom appended to master vhd file ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 5 2 TMP/.Bvhd_out 999"  ))
+ =>
+  pcm_ops9(n);
+
+  /*** TMP/.op.var appended to master vhd file ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 6 2 ",n," TMP/.Bvhd_out 999"  ))
+ =>
+  pcm_ops8(n);
+
+  prt_cm &
+  bprintf("%",v)
+ =>
+  pcm_ops7(v:t);
+
+  pcm_ops7(?);
+
+  Append("TMP/.Bvhd_out") &
+/*
+  bprintf("--  variables present: ") &
+  bmodr(ProcessVHDLCodeModuleX.3,0) &
+  pcm_ops7 bsmap V &
+  bprintf("\n\n") &
+*/
+  bprintf("--  variables:\n\n") &
+  bclose &
+  pcm_ops8(n) &
+  Append("TMP/.Bvhd_out") &
+  bprintf("\n--  body:\n\n") &
+  bclose &
+  pcm_ops9(n)
+ =>
+  pcm_ops6(n)(V);
+
+  Append("TMP/.Bvhd_out") &
+  bprintf("--  no variables\n\n--  body\n\n") &
+  bclose &
+  pcm_ops9(n)
+ =>
+  pcm_ops6(n)(?);
+
+  Writef(("\n\n  Problem processing variables from var file TMP/.%.var\n",n)) &
+  Writef(("\n  The following does not parse:\n\n    ")) &
+  bshell("cat TMP/.BBcom") &
+  Writef(("  ."))
+ =>
+  pcm_ops5(n);
+
+  bget("TMP/.BBcom",x) &
+  pcm_ops6(n)(x)
+ =>
+  pcm_ops5(n);
+
+  bprintf(a)
+ =>
+  [?:=?]bprintf(a);
+
+  Append("TMP/.Bvhd_out") &
+  bprintf("\n------------------- % -----------------\n\n",n) &
+  bprintf("-- header:\n\n") &
+  [F:=A]bprintf("    %\n\n",o) &
+  bclose &
+  /*** variable declarations -> TMP/.BBcom ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 8 TMP/.",n,".var 999"  )) &
+  pcm_ops5(n)
+ =>
+  pcm_ops4(o)(n)(X)(F)(A);
+
+  bsearch(?,F,G) &
+  bsearch(?,A,B) &
+  pcm_ops4(o)(n)(?)(G)(B)
+ =>
+  pcm_ops4(o)(n)(?)(F)(A);
+
+  pcm_ops4(o)(n)(L)(F,f)(A,a)
+ =>
+  pcm_ops4(o)(n)(L;f,a)(F)(A);
+
+  ReadActOpParam(L) &
+  WriteRenameList(L) &
+  pcm_ops4(o)(n)(L)(?)(?)
+ =>
+  pcm_ops3(o)(n);
+
+  ModifyActOpParam((aaa,aaa)) &
+  pcm_ops3(n)(n)
+ =>
+  pcm_ops2(n);
+
+  bmodr(CreActOpParamX.5,2) &
+  CreActOpParam(p) &
+  pcm_ops3(n(p))(n)
+ =>
+  pcm_ops2(n(p));
+
+  bmodr(CreActOpParamX.5,1) &
+  CreActOpParam(r) &
+  pcm_ops3(r<--n)(n)
+ =>
+  pcm_ops2(r<--n);
+
+  bmodr(CreActOpParamX.5,1) &
+  CreActOpParam(r) &
+  bmodr(CreActOpParamX.5,2) &
+  CreActOpParam(p) &
+  pcm_ops3(r<--n(p))(n)
+ =>
+  pcm_ops2(r<--n(p));
+
+  ModifyActOpParam(?) &
+  bmodr(CreActOpParamX.2,1) &
+  bmodr(CreActOpParamX.3,1) &
+  bmodr(CreActOpParamX.4,16) &
+  ModifyPrecondition((y&?)) &
+  pcm_ops2(K)
+ =>
+  pcm_ops1(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  pcm_ops1(?);
+
+  pcm_ops1 bsmap (N,n)
+ =>
+  pcm_ops1(N,n);
+
+  ReadOpList(n) &
+  pcm_ops1(n)
+ =>
+  pcm_ops;
+
+
+
+  /*** get and write signal ***/
+
+  pcm_sig3(N);
+
+  brule(SIGNALX.N,(s:S)) &
+  bprintf("  ") &
+  bprintf(S) &
+  bprintf("\n") &
+  pcm_sig3(N+1)
+ =>
+  pcm_sig3(N);
+
+  brule(SIGNALX.1,(s:S)) &
+  bprintf("\n\n  ") &
+  bprintf(S) &
+  bprintf("\n") &
+  pcm_sig3(2)
+ =>
+  pcm_sig2(N);
+
+  brule(SIGNALX.N,(s:S)) &
+  bprintf(", %",s) &
+  pcm_sig2(N+1)
+ =>
+  pcm_sig2(N);
+
+  bprintf("--  no signals\n")
+ =>
+  pcm_sig2(1);
+
+  brule(SIGNALX.1,(s:S)) &
+/*
+  bprintf("--  signals present: %",s) &
+  pcm_sig2(2)
+*/
+  bprintf("--  signals:\n\n") &
+  pcm_sig3(1)
+ =>
+  pcm_sig2(1);
+
+  bcrer(SIGNALX,(s:S))
+ =>
+  pcm_sig1(S,s);
+
+  pcm_sig1(?);
+
+  Writef(("\n\n  Problem processing signals\n")) &
+  Writef(("\n  The following does not parse:\n\n    ")) &
+  bshell("cat TMP/.Bcom") &
+  Writef(("  ."))
+ =>
+  pcm_sig(k);
+
+  Writef(("\n\n  Problem analysing code module\n")) &
+  Writef(("\n  The following does not parse:\n\n    ")) &
+  bshell("cat TMP/.Bcom") &
+  Writef(("  ."))
+ =>
+  pcm_sig;
+
+  bget("TMP/.Bcom",x) &
+  pcm_sig1 bsmap x &
+  Append("TMP/.Bvhd_out") &
+  pcm_sig2(1) &
+  bprintf("\n-------------------------------------------------------------------\n") &
+  bclose
+ =>
+  pcm_sig;
+
+
+
+  /*** get and write mch parameters ***/
+
+  bsearch(?,F,G) &
+  bsearch(?,A,B) &
+/*
+  bprintf("-- module parameters:\n\n  % -> %\n\n",brev(G),brev(B))
+*/
+  bprintf("-- module parameters:\n\n  %\n\n",brev(G))
+ =>
+  pcm_mch_param1(?)(F)(A);
+
+  pcm_mch_param1(L)(F,f)(A,a)
+ =>
+  pcm_mch_param1(L;f,a)(F)(A);
+
+  bprintf("-- no module parameters\n\n" )
+ =>
+  pcm_mch_param1(aaa,aaa)(?)(?);
+
+  ReadActMchParam(P) &
+  Connect("TMP/.Bvhd_out") &
+  bprintf("-- Analysis of %.vhd.\n\n",a) &
+  bprintf("-- The aim of this analysis is to help in establishing that, when this SLIB\n") &
+  bprintf("-- code module is imported, it will be correctly treated by the translators.\n\n") &
+  bprintf("-- In particular, ensure that module parameters and signals are correctly\n-- identified and check that for each operation, it's header, variables and\n-- body are successfully determined.\n\n") &
+  bprintf("-- Note that generic assignments ( <-- ) are not processed during SLIB creation.\n-- They will be translated to either:\n--        <= ... after 1 ns    (signal assignment)\n--        :=                            (variable assignment)\n") &
+  bprintf("-- during the translation of the importing module, since the assignments\n--  are usually dependent on the type of the actual input parameters\n\n") &
+  bprintf("-- Note also that module/operation parameters will be instantiated during\n-- the translation process - here they are shown in single quotes.\n\n",a) &
+  bprintf("-------------------------------------------------------------------\n\n") &
+  pcm_mch_param1(P)(?)(?) &
+  bprintf("-------------------------------------------------------------------\n\n") &
+  bclose
+ =>
+  pcm_mch_param(a);
+
+
+
+  ReadActMchParam(L) &
+  WriteRenameList(L) &
+  /*** TMP/.op created for each op (VARIABLE discarded) ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 2 TMP/.Bvhc ",i," 999")) &
+  /*** TMP/.op.var created for each op (VARIABLES) ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 3 TMP/.Bvhc ",i," 999")) &
+  /*** variable declarations -> TMP/.BBcom ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 8 TMP/.",i,".var 999"))
+ =>
+  pcm2(i);
+
+  pcm2(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  pcm1(Z);
+  
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  ModifyConstraints((m&?)) &
+  CreActMchParam(l,m) &
+  bmodr(ProcessVHDLCodeModuleX.2,n) &
+  pcm2 bsmap j
+ =>
+  pcm1(Z);
+  
+  Writef(("\n  Analysing %.vhd code module\n",a))&
+  bmodr(ProcessVHDLCodeModuleX.1,a) &
+  bshell(bcatl("cp TMP/",a,".vhd TMP/.Bvhc")) &
+/***
+bshell(("cat TMP/.Bvhc"))&
+***/
+  /*** bin_ops processed ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 0 TMP/.Bvhc 999")) &
+/***
+bshell(("cat TMP/.Bcom"))&
+***/
+  pcm1(bcatl("ANL/",a,".mch.anl")) &
+  /*** signals names -> TMP/.Bcom ***/
+  bshell(bcatl("$BKIT/BLIB/VHDLProcessCode 7 TMP/.Bvhc 999")) &
+  pcm_mch_param(a) &
+  pcm_sig &
+  pcm_ops &
+  Append("TMP/.Bvhd_out") &
+  bprintf("\n-------------------------------------------------------------------\n\n") &
+  bclose  
+ =>
+  pcm(a)
+
+END

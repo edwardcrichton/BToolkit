@@ -1,0 +1,19 @@
+/*
+  This committable construct will be created in SLIB as `Rename_Client'
+
+  If this machine does not import other library machines:
+    remove the IMPORTS clause
+  else:
+    edit IMPORTS clause to be a list of non-COMMITTABLE SLIB
+    constructs with parameters set where appropriate;
+    note that each imported construct must begin with the `_' character
+
+  The Rename_Client formal parameter `TOK' should be written `Rename_ClientPV1'
+  The Rename_Client formal parameter `in_bufsize' should be written `Rename_ClientPV2'
+  The Rename_Client formal parameter `out_bufsize' should be written `Rename_ClientPV3'
+
+*/
+
+LIBDEF Rename_Client
+
+END

@@ -1,0 +1,315 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_ffnc_obj">
+  <TITLE>The Rename_ffnc_obj machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>      Rename_ffnc_obj(VALUE,rcdsiz,maxobj)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>  maxobj&gt;0
+
+<A NAME="SEES"><B>SEES</B></A>         <A HREF="file_dump.mch.html#MACHINE">file_dump</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>, <A HREF="Rename_ffnc_ctx.mch.html#MACHINE">Rename_ffnc_ctx</A>
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>    Rename_UnPack, Rename_CHARperWORD
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+  Rename_UnPack : (NAT +-&gt; VALUE) --&gt; <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+
+  Rename_CHARperWORD = 4 
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>    Rename_fnctok, Rename_fncstruct,Rename_locate
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_fnctok <: <A HREF="Rename_ffnc_ctx.mch.html#SETS">Rename_FNCOBJ</A> &
+  Rename_fncstruct: Rename_fnctok --&gt; (1..rcdsiz +-&gt; VALUE) &
+  Rename_locate : 1..card(Rename_fnctok) &gt;-&gt;&gt; Rename_fnctok
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_fnctok, Rename_fncstruct, Rename_locate:= {},{},{} 
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/***************** General query functions ********************/
+
+  bb <-- <A NAME="OPNAME!Rename_FUL_FNC_OBJ">Rename_FUL_FNC_OBJ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(card(Rename_fnctok) = maxobj)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_TST_FLD_FNC_OBJ">Rename_TST_FLD_FNC_OBJ</A>(ii) =
+  <B>PRE</B>
+    ii: NAT
+  <B>THEN</B>
+    bb:=<B>bool</B>(ii: 1..rcdsiz)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_ANY_FNC_OBJ">Rename_ANY_FNC_OBJ</A> =
+  <B>BEGIN</B>
+    vv::<A HREF="Rename_ffnc_ctx.mch.html#SETS">Rename_FNCOBJ</A>
+  <B>END</B>;
+
+/*********** Creating, killing and testing for existence ********/
+
+  bb,pp <-- <A NAME="OPNAME!Rename_CRE_FNC_OBJ">Rename_CRE_FNC_OBJ</A> =
+  <B>IF</B> card(Rename_fnctok) < maxobj <B>THEN</B> 
+    <B>ANY</B> qq,ll <B>WHERE</B>
+      qq: <A HREF="Rename_ffnc_ctx.mch.html#SETS">Rename_FNCOBJ</A> - Rename_fnctok &
+      ll : 1..card(Rename_fnctok)+1 &gt;-&gt;&gt; (Rename_fnctok \/ {qq})
+    <B>THEN</B>
+      Rename_fncstruct(qq):={} ||
+      Rename_fnctok := Rename_fnctok \/ {qq} ||
+      Rename_locate := ll ||
+      pp:=qq ||
+      bb:= TRUE
+    <B>END</B>
+  <B>ELSE</B>
+    bb:= FALSE || pp :: <A HREF="Rename_ffnc_ctx.mch.html#SETS">Rename_FNCOBJ</A>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_KIL_FNC_OBJ">Rename_KIL_FNC_OBJ</A>(ff) =
+  <B>PRE</B>
+    ff: Rename_fnctok 
+  <B>THEN</B>
+    Rename_fncstruct := {ff} &lt;<| Rename_fncstruct ||
+    Rename_fnctok := Rename_fnctok - {ff} ||
+    Rename_locate :: (
+     1..card(Rename_fnctok)-1 &gt;-&gt;&gt; (Rename_fnctok-{ff})
+    )
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_INI_FNC_OBJ">Rename_INI_FNC_OBJ</A> =
+  <B>BEGIN</B>
+    Rename_fncstruct := {} ||
+    Rename_fnctok := {} ||
+    Rename_locate := {} 
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_FNC_OBJ">Rename_XST_FNC_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: <A HREF="Rename_ffnc_ctx.mch.html#SETS">Rename_FNCOBJ</A>
+  <B>THEN</B>
+    bb:=<B>bool</B>(pp:Rename_fnctok)
+  <B>END</B>;
+
+/********** Query functions for individual functions **************/
+
+  
+  bb <-- <A NAME="OPNAME!Rename_DEF_FNC_OBJ">Rename_DEF_FNC_OBJ</A>(ff,ii) =
+  <B>PRE</B>
+    ff: Rename_fnctok &
+    ii: 1..rcdsiz
+  <B>THEN</B>
+    bb := <B>bool</B>(ii: dom(Rename_fncstruct(ff)))
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_FNC_OBJ">Rename_VAL_FNC_OBJ</A>(ff,ii) =
+  <B>PRE</B>
+    ff: Rename_fnctok &
+    ii: dom(Rename_fncstruct(ff))
+  <B>THEN</B>
+    vv := Rename_fncstruct(ff)(ii)
+  <B>END</B>;
+
+/****** Operations for manipulating individual functions *********/
+
+  <A NAME="OPNAME!Rename_STO_FNC_OBJ">Rename_STO_FNC_OBJ</A>(ff,ii,vv) =
+  <B>PRE</B>
+    ff: Rename_fnctok &
+    ii: 1..rcdsiz &
+    vv: VALUE
+  <B>THEN</B>
+    Rename_fncstruct(ff)(ii) := vv
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RMV_FNC_OBJ">Rename_RMV_FNC_OBJ</A>(ff,ii) =
+  <B>PRE</B>
+    ff: Rename_fnctok &
+    ii: 1..rcdsiz 
+  <B>THEN</B>
+    Rename_fncstruct(ff) := {ii} &lt;<| Rename_fncstruct(ff)
+  <B>END</B>;
+
+/************* Persistent data facilities ************************/  
+
+/***********  save/restore host byte order ***********/
+
+  <A NAME="OPNAME!Rename_SAV_FNC_OBJ">Rename_SAV_FNC_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RST_FNC_OBJ">Rename_RST_FNC_OBJ</A> =
+  <B>ANY</B>
+    sfncn,sfnco,sfncl
+  <B>WHERE</B>
+    sfncn <: <A HREF="Rename_ffnc_ctx.mch.html#SETS">Rename_FNCOBJ</A> &
+    sfnco: sfncn --&gt; (1..rcdsiz +-&gt; VALUE)  &
+    sfncl : 1..card(sfncn) &gt;-&gt;&gt; sfncn
+  <B>THEN</B>
+    Rename_fncstruct := sfnco ||
+    Rename_fnctok := sfncn ||
+    Rename_locate := sfncl
+  <B>END</B>;
+
+/***********  save/restore network byte order ***********/
+
+  <A NAME="OPNAME!Rename_SAVN_FNC_OBJ">Rename_SAVN_FNC_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RSTN_FNC_OBJ">Rename_RSTN_FNC_OBJ</A> =
+  <B>ANY</B>
+    sfncn,sfnco,sfncl
+  <B>WHERE</B>
+    sfncn <: <A HREF="Rename_ffnc_ctx.mch.html#SETS">Rename_FNCOBJ</A> &
+    sfnco: sfncn --&gt; (1..rcdsiz +-&gt; VALUE)  &
+    sfncl : 1..card(sfncn) &gt;-&gt;&gt; sfncn
+  <B>THEN</B>
+    Rename_fncstruct := sfnco ||
+    Rename_fnctok := sfncn ||
+    Rename_locate := sfncl
+  <B>END</B>;
+
+/********************* Browsing facilities ************************/
+
+
+  nn,pp <-- <A NAME="OPNAME!Rename_FIRST_FNC_OBJ">Rename_FIRST_FNC_OBJ</A> =   
+  <B>IF</B> not(Rename_fnctok = {}) <B>THEN</B>
+     pp := Rename_locate(card(Rename_fnctok)) || 
+     nn := card(Rename_fnctok) 
+  <B>ELSE</B>
+     pp :: <A HREF="Rename_ffnc_ctx.mch.html#SETS">Rename_FNCOBJ</A> ||
+     nn := 0
+  <B>END</B>;
+
+  nn,qq <-- <A NAME="OPNAME!Rename_NEXT_FNC_OBJ">Rename_NEXT_FNC_OBJ</A>(mm,pp) =  
+  <B>PRE</B>
+    pp : Rename_fnctok &
+    mm : 1..card(Rename_fnctok)
+  <B>THEN</B>
+    nn:= mm-1 ||
+    <B>IF</B> mm /=1 <B>THEN</B>
+       qq := Rename_locate(mm-1) 
+    <B>ELSE</B>
+       qq :: Rename_fnctok
+    <B>END</B>
+  <B>END</B>;
+   
+
+/********************* Additional FFNC facilities ************************/
+
+
+ <A NAME="OPNAME!Rename_MOV_FFNC_OBJ">Rename_MOV_FFNC_OBJ</A>(ff,gg,ii,jj,ll) =
+    <B>PRE</B>
+      ff: Rename_fnctok &
+      gg: Rename_fnctok &
+      ii: 1..rcdsiz &
+      jj: 1..rcdsiz &
+      ll: 1..rcdsiz &
+      ii..(ii+ll-1) /\ jj..(jj+ll-1) = {} &
+      ii..(ii+ll-1) &lt;: dom(Rename_fncstruct(ff)) &
+      jj..(jj+ll-1) &lt;: 1..rcdsiz 
+    <B>THEN</B>
+       <B>ANY</B> newsegment <B>WHERE</B>
+          newsegment : jj..(jj+ll-1) --&gt; VALUE &
+          newsegment = %xx.(xx:jj..(jj+ll-1)|Rename_fncstruct(ff)(ii+(xx-jj)))
+       <B>THEN</B>
+         Rename_fncstruct(gg) := Rename_fncstruct(gg) &lt;+ newsegment
+       <B>END</B>
+    <B>END</B>;
+
+  <A NAME="OPNAME!Rename_OVR_FFNC_OBJ">Rename_OVR_FFNC_OBJ</A>(ff,ii,ll,aa) =
+    <B>PRE</B>
+      ff: Rename_fnctok &
+      ii: 1..rcdsiz &
+      ll: 1..rcdsiz &
+      ii..(ii+ll-1) &lt;: 1..rcdsiz &
+      ll * Rename_CHARperWORD &gt; size(aa) &
+      aa: <A HREF="String_TYPE.mch.html#SETS">STRING</A> 
+    <B>THEN</B>
+       <B>ANY</B> newsegment <B>WHERE</B>
+          newsegment : (ii..(ii+ll-1)) --&gt; VALUE &
+          Rename_UnPack(newsegment) = aa
+       <B>THEN</B>
+         Rename_fncstruct(ff) := Rename_fncstruct(ff) &lt;+ newsegment
+       <B>END</B>
+    <B>END</B>;
+
+    <A NAME="OPNAME!Rename_OVR_LIT_FFNC_OBJ">Rename_OVR_LIT_FFNC_OBJ</A>(ff,ii,ll,aa) =
+    <B>PRE</B>
+      ff: Rename_fnctok &
+      ii: 1..rcdsiz &
+      ll: 1..rcdsiz &
+      ii..(ii+ll-1) &lt;: 1..rcdsiz &
+      ll * Rename_CHARperWORD &gt; size(aa) &
+      aa: <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+      size(aa) &lt; 1000 
+    <B>THEN</B>
+       <B>ANY</B> newsegment <B>WHERE</B>
+          newsegment : (ii..(ii+ll-1)) --&gt; VALUE &
+          Rename_UnPack(newsegment) = aa
+       <B>THEN</B>
+         Rename_fncstruct(ff) := Rename_fncstruct(ff) &lt;+ newsegment
+       <B>END</B>
+    <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_XTR_FFNC_OBJ">Rename_XTR_FFNC_OBJ</A>(ff,ii,ll) =
+    <B>PRE</B>
+      ff: Rename_fnctok &
+      ii: 1..rcdsiz  &
+      ll: 1..rcdsiz  &
+      ii..(ii+ll-1) &lt;: dom(Rename_fncstruct(ff)) 
+    <B>THEN</B>
+      <B>ANY</B> str <B>WHERE</B>
+          str = Rename_UnPack( (ii..(ii+ll-1))&lt;<|Rename_fncstruct(ff) ) 
+      <B>THEN</B>
+          vv := str 
+      <B>END</B>
+    <B>END</B>;
+
+ 
+  bb <-- <A NAME="OPNAME!Rename_EQL_FFNC_OBJ">Rename_EQL_FFNC_OBJ</A>(ff,ii,ll,vv) =
+    <B>PRE</B>
+      ff: Rename_fnctok &
+      ii: 1..rcdsiz &
+      ll: 1..rcdsiz &
+      ii..(ii+ll-1) &lt;: dom(Rename_fncstruct(ff)) &
+      vv: <A HREF="String_TYPE.mch.html#SETS">STRING</A> 
+    <B>THEN</B>
+         bb := <B>bool</B>(
+        Rename_UnPack( (ii..(ii+ll-1))&lt;<|Rename_fncstruct(ff) ) = vv
+      )
+    <B>END</B>
+
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:37 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,6 @@
+#! /bin/sh
+
+cd CDE/C
+$1  -title "BExecute: $2" -e ./$2&
+
+exit 0

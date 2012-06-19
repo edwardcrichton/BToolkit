@@ -1,0 +1,192 @@
+#! /bin/sh
+
+btoolkitdir=`pwd`
+
+echo ""
+echo "                 --------------------------------"
+echo ""
+echo "               Script for installation of B-Toolkit "
+echo ""
+echo "                 --------------------------------"
+echo ""
+
+echo "                 Installing B-Toolkit in: "
+echo "                     $btoolkitdir/BKIT"
+echo ""
+
+if [ -r bkit_aa ]
+  then
+  echo "                 concatenating ..."
+  cat bkit_a* > bkit.tar.gz
+  if [ $? != 0 ]
+  then
+    echo ""
+    echo "  Problem with 'cat bkit_a* > bkit.tar' - installation aborted"
+    echo ""
+    exit
+  fi
+  rm bkit_a*
+fi
+
+if [ -r bkit.tar.gz ]
+then
+  gunzip bkit.tar.gz
+  echo "                 gunzipping ..."
+  sta=$?
+  if [ $sta != 0 ]
+  then
+    echo ""
+    echo "  Problem with 'gunzip bkit.tar.gz' - installation aborted"
+    echo ""
+    exit
+  fi
+fi
+
+if [ -r bkit.tgz ]
+then
+  gunzip bkit.tgz
+  echo "                 gunzipping ..."
+  sta=$?
+  if [ $sta != 0 ]
+  then
+    echo ""
+    echo "  Problem with 'gunzip bkit.tgz' - installation aborted"
+    echo ""
+    exit
+  fi
+fi
+
+if [ -r bkit.tar ]
+then
+  echo "                 extracting (this may take a while) ..."
+  echo ""
+  echo "" > BToolkit.log
+  echo "                          ---------------" >> BToolkit.log
+  echo "" >> BToolkit.log
+  echo "                      B-Toolkit installation log" >> BToolkit.log
+  echo "" >> BToolkit.log
+  echo "                          ---------------" >> BToolkit.log
+  echo "" >> BToolkit.log
+  echo "" >> BToolkit.log
+  tar xvf bkit.tar >> BToolkit.log
+  if [ $? != 0 ]
+  then
+    echo ""
+    echo "  Problem with 'tar xvf bkit.tar' - installation aborted"
+    echo ""
+    exit
+  fi
+  rm bkit.tar
+else
+  if [ ! -d BKIT ]
+  then
+    echo "        bkit.tar not found - installation aborted"
+    echo ""
+    exit
+  fi
+fi
+
+cd BKIT
+mkdir BHW_LICENCES
+if [ -r XBMotif ]
+then
+  cp XBMotif $btoolkitdir
+fi
+if [ -r XBMotif.mono ]
+then
+  cp XBMotif.mono $btoolkitdir
+fi
+cd $btoolkitdir
+
+echo "" >> BToolkit.log
+echo "                          ---------------" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "                             B-Toolkit" >> BToolkit.log
+echo "                            Information" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "                          ---------------" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "" >> BToolkit.log
+echo '  All B-Toolkit users should set the BKIT environment variable: ' >> BToolkit.log
+echo "" >> BToolkit.log
+echo "       setenv BKIT $btoolkitdir/BKIT" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "  If necessary, LD_LIBRARY_PATH should include X/Motif libraries, e.g.:" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "      setenv LD_LIBRARY_PATH /usr/lib:/usr/openwin/lib:/usr/dt/lib" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "                          ---------------" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "  The BToolkit licence daemon must be started before the B-Toolkit " >> BToolkit.log
+echo "  will run: " >> BToolkit.log
+echo "" >> BToolkit.log
+echo "     $btoolkitdir/BKIT/BToolkitd \ " >> BToolkit.log
+echo "         $btoolkitdir/BKIT " >> BToolkit.log
+echo "" >> BToolkit.log
+echo "  However the licence file \"B.licence\" should first be copied into " >> BToolkit.log
+echo "  the BKIT directory (without it the daemon will not start): " >> BToolkit.log
+echo "" >> BToolkit.log
+echo "      cp B.licence $btoolkitdir/BKIT " >> BToolkit.log
+echo "" >> BToolkit.log
+echo "  The licence file is usually despatched separately - see the" >> BToolkit.log
+echo "  installation documentation." >> BToolkit.log
+echo "" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "                          ---------------" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "  Before starting the B-Toolkit, you should consult the on-line help;" >> BToolkit.log
+echo "  it may be viewed outside the B-Toolkit through an appropriate browser: " >> BToolkit.log
+echo "" >> BToolkit.log
+echo "      netscape \ " >> BToolkit.log
+echo "          $btoolkitdir/BKIT/BHELP/GettingStarted.html& " >> BToolkit.log
+echo "" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "  Full details of the licence daemon, evaluation licences and details of how to" >> BToolkit.log
+echo "  obtain and install a hardware licence are contained in:" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "      $btoolkitdir/BKIT/BHELP/BToolkitd.html " >> BToolkit.log
+echo "" >> BToolkit.log
+echo "" >> BToolkit.log
+echo "                          ---------------" >> BToolkit.log
+echo "" >> BToolkit.log
+if [ ! -d /usr/lib/X11/app-defaults ]
+then
+  echo "  Note: " >> BToolkit.log
+  echo "  Directory /usr/lib/X11/app-defaults does not exist" >> BToolkit.log
+  echo "  Can't install XBMotif resource file" >> BToolkit.log
+  echo "  Left XBMotif in $btoolkitdir" >> BToolkit.log
+  echo "" >> BToolkit.log
+  echo "  Copy the resource file XBMotif into your top-level directory. " >> BToolkit.log
+  echo "" >> BToolkit.log
+else
+  cp XBMotif /usr/lib/X11/app-defaults/XBMotif 2> /dev/null
+  if [ $? = 0 ]
+  then
+    chmod 644 /usr/lib/X11/app-defaults/XBMotif
+  else
+    echo "  Note: " >> BToolkit.log
+    echo "  Couldn't copy the XBMotif resource file into /usr/lib/X11/app-defaults; " >> BToolkit.log
+    echo "  alternatively, it may be copied into your top-level directory (it has " >> BToolkit.log
+    echo "  been left in $btoolkitdir). " >> BToolkit.log
+    echo "" >> BToolkit.log
+  fi
+fi
+echo "" >> BToolkit.log
+echo "                          ---------------" >> BToolkit.log
+echo "" >> BToolkit.log
+
+chmod 755 BKIT BDEMO
+
+echo ""
+echo "                       Installation complete."
+echo ""
+echo ""
+cat BToolkit.log
+echo ""
+echo "  The above information is contained in the file:"
+echo "  $btoolkitdir/BToolkit.log"
+echo ""
+echo ""

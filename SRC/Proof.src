@@ -1,0 +1,3380 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define ModRuleWithARI(a,b) bcall((ARI;MODR): bmodr(a,b))
+
+
+
+
+#define simpinitTac     ((LMAP;MAP;WRITE;simpinitX)~;MODR)~
+
+#define simpinit         bcall(simpinitTac: si_0000)
+
+/***
+
+  removed final Switchs & DEDS if present (replacing with a
+    final single DED)
+  if no final Switchs or DEDS, and final step is 'h=>..',
+  `  h=>' is removed
+
+***/
+
+
+
+
+
+#define pchksimpTac     ((MAP;MODR;WRITE)~;pchksimpX)~
+
+#define pchksimp(x)     bcall(pchksimpTac: psch_0(x))
+
+#define pchksimp_renTac ((MAP;SUB;MODR;WRITE)~;pchksimpX)~
+
+#define pchksimp_ren    bcall(pchksimp_renTac: psch_rename_0)
+
+/***
+
+  removes duplicate goals
+
+***/
+
+
+
+
+THEORY AriX IS
+
+#define Ari(x)      bcall((ARI~;MODR) : bmodr(AriX.1,x))
+
+#define AriRes(x)   brule(AriX.1,x)
+
+  ?
+
+END
+
+&
+
+THEORY pchksimp_rewX END &
+
+THEORY simpinitX IS
+
+  ?;   /* final goal */
+
+  ?;   /* 1=> DED removed */
+
+
+
+  minone(x) == (x);
+
+  bnum(a)
+ =>
+  minone(a) == (a-1);
+
+
+
+
+
+  bcrer(pchksimp_rewX,?) &
+  cre_loc_pchksimp_rew(n-1)
+ =>
+  cre_loc_pchksimp_rew(n);
+
+  cre_loc_pchksimp_rew(0);
+
+
+
+
+  brecompact &
+  pchksimp(X)
+ =>
+  si_5(X);
+
+/*** add final DED ***/
+  AriRes(r) &
+  si_5(X,(m[t] | G | j),((r)[1] | P | DED))
+ =>
+  si_5_Ari(X,(m[t] | G | j),((m+1)[1] | P | DED));
+
+  Ari(m+1) &
+  si_5_Ari(X,(m[t] | G | j),((m+1)[1] | QED | DED))
+ =>
+  si_4(X,(m[t] | G | j));
+
+
+
+  AriRes(r) &
+  si_5(X,((R)[S] | G | r))
+ =>
+  si_2_Ari(X)((R)[S] | G | j);
+
+  Ari(j) &
+  si_2_Ari(X)((R)[r] | G | j)
+ =>
+  si_2_Ari_Ari(X)((R)[t+1] | G | j);
+
+  AriRes(r) &
+  Ari(t+1) &
+  si_2_Ari_Ari(X)((r)[t+1] | G | j)
+ =>
+  si_2_Ari_Ari_Ari(X)((m-1)[t+1] | G | j);
+
+
+
+
+/*** all final Switchs & DEDS removed - add final DED, if DED was removed ***/
+  si_5(X)
+ =>
+  si_3(X);
+
+  brule(simpinitX.2,1) &
+  si_4(X)
+ =>
+  si_3(X);
+
+
+
+/*** no final Switchs , DEDS or => ***/
+  si_5(X)
+ =>
+  si_2(X);
+
+
+
+/*** if no final Switchs or DEDS, remove `h =>' (if present) from final goal ***/
+  Ari(m-1) &
+  si_2_Ari_Ari_Ari(Z)(X)((m-1)[t+1] | G | minone bslmap j)
+ =>
+  si_2(Z)(X,(m[t] | h=>G | j));
+
+
+
+/*** drop final DEDS ***/
+  bmodr(simpinitX.2,1) &
+  si_3(X)
+ =>
+  si_3(X,(m[t] | G | DED));
+
+  bmodr(simpinitX.2,1) &
+  si_3(X)
+ =>
+  si_2(X,(m[t] | G | DED));
+
+
+
+
+/*** drop final SwitchXs ***/
+  si_3(X)
+ =>
+  si_3(X,(m[t] | G | SwitchX.j));
+
+  si_3(X)
+ =>
+  si_2(X,(m[t] | G | SwitchX.j));
+
+
+  si_3(X)
+ =>
+  si_3(X,(m[t] | G | n,SwitchX.j));      /* `pre =>' rule in SwitchX */
+
+  si_3(X)
+ =>
+  si_2(X,(m[t] | G | n,SwitchX.j));      /* `pre =>' rule in SwitchX */
+
+
+
+/*** store last goal (for title) ***/
+  bmodr(simpinitX.1,G) &
+  si_2(m[t] | G | j)
+ =>
+  si_1(m[t] | G | j);
+
+  bmodr(simpinitX.1,G) &
+  si_2(X,(m[t] | G | j))
+ =>
+  si_1(X,(m[t] | G | j));
+
+
+
+  bcall(RULE:bcrer(BToolLemmas,l)) &
+  brule(simpinitX.3,N) &
+  bcall((ARI;MODR):bmodr(simpinitX.3,N+1))
+ =>
+  si_00_TMP_Bbtl_1(l);
+
+  bcall(RULE:bcrer(BToolLemmas,l)) &
+  brule(simpinitX.3,N) &
+  bcall((ARI;MODR):bmodr(simpinitX.3,N+1))
+ =>
+  si_00_TMP_Bbtl_1(bproved(l));
+
+  si_00_TMP_Bbtl;
+
+  bget("TMP/.Bbtl",x) &
+  si_00_TMP_Bbtl_1 bsmap x
+ =>
+  si_00_TMP_Bbtl;
+
+
+  bcall(MODR:bmodr(simpinitX.3,0)) &
+  si_00_TMP_Bbtl &
+  bcall((RULE;ARI;simpinitX)~: cre_loc_pchksimp_rew(n)) &
+  si_1(n[t] | L | j)
+ =>
+  si_000((n[t] | L | j),?);
+
+  bcall(MODR:bmodr(simpinitX.3,0)) &
+  si_00_TMP_Bbtl &
+  bcall((RULE;ARI;simpinitX)~: cre_loc_pchksimp_rew(n)) &
+  si_1(x,(n[t] | L | j))
+ =>
+  si_000(x,(n[t] | L | j),?);
+
+  InformCantConnect(".Bprf") &
+  ClearJobs &
+  Writef("\n  (or is empty/does not conform to what is expected)\n") &
+  LoadToolkit(1)
+ =>
+  si_0000;
+
+/***
+THIS IS THE RAW PROOF!!!
+***/
+  bget(".Bprf",x) &
+/***
+HERE((x)) &
+***/
+  si_000(x)
+ =>
+  si_0000
+
+/*
+  InformCantConnect(".Bprf") &
+  ClearJobs &
+  Writef("\n  (or is empty/does not conform to what is expected)\n") &
+  LoadToolkit(1)
+ =>
+  si_00;
+
+/???
+THIS IS THE RAW PROOF!!!
+???/
+  bget(".Bprf",(x,(n[t] | L | j),?)) &
+/???/
+HERE(((x,(n[t] | L | j),?))) &
+/???/
+  bcall(MODR:bmodr(simpinitX.3,0)) &
+  si_00_TMP_Bbtl &
+  bcall((RULE;ARI;simpinitX)~: cre_loc_pchksimp_rew(n)) &
+  si_1(x,(n[t] | L | j))
+ =>
+  si_00
+*/
+
+END
+
+& 
+
+THEORY pchksimpX IS
+
+  ?;?;?;?;?;
+
+  0;  /* .6 0 => last justif.didn't end in AND, else contains justif. */
+
+  bmodr(pchksimpX.1,X)
+ =>
+  psch_rename_5(X);
+
+  bget(".Bcom",(X,?)) &
+  brule(pchksimpX.4,(S:=T)) &
+  bmodr(pchksimpX.2,?) &
+  bmodr(pchksimpX.3,?) &
+  bmodr(pchksimpX.4,?) &
+  bmodr(pchksimpX.5,?) &
+  brecompact &
+  psch_rename_5([S:=T]X)
+ =>
+  psch_rename_3;
+
+  brule(pchksimpX.3,n) &
+  brule(pchksimpX.4,(S:=T)) &
+  bcall((ARI;MODR):bmodr(pchksimpX.3,(n+1))) &
+  bmodr(pchksimpX.4,(S,v:=T,n))
+ =>
+  psch_rename_2(v[t] | L | j);
+
+  psch_rename_2(?);
+
+  bmodr(pchksimpX.3,1) &
+  bmodr(pchksimpX.4,(aaa:=aaa)) &
+  psch_rename_2 bsmap X &
+  psch_rename_3
+ =>
+  psch_rename_1(X);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  psch_rename_0;
+
+  bget(".Bcom",(x,?)) &
+  psch_rename_1(x)
+ =>
+  psch_rename_0;
+
+
+
+
+  bprintf("?\n") &
+  bclose &
+  bmodr(pchksimpX.5,?) &
+  bcall(RULE:bclean(pchksimp_rewX))
+ =>
+  psch_6;
+
+  brule(pchksimpX.2,(m[t] | L)) &
+  brule(pchksimpX.1,X) &
+  bcall((REV;WRITE):bprintf("(%),\n",(m[t] | L | brev(J))))
+ =>
+  psch_5(J);
+  
+  bsearch(?,J,K) &    /* poss >1 ? */
+  psch_5(K)
+ =>
+  psch_5(J);
+  
+  psch_5(X,j)
+ =>
+  psch_4(j)(X);
+
+  psch_5(X,j)
+ =>
+  psch_4(HYP.j)(X);
+
+  brule(pchksimp_rewX.j,m) &
+  psch_5(X,m)
+ =>
+  psch_4(j)(X);
+
+  brule(pchksimp_rewX.j,m) &
+  psch_5(X,m)
+ =>
+  psch_4(HYP.j)(X);
+
+  psch_4(J)(X,j)
+ =>
+  psch_4(J,j)(X);
+
+  psch_4(J)(X,j)
+ =>
+  psch_4(J,HYP.j)(X);
+
+  brule(pchksimp_rewX.j,m) &
+  psch_4(J)(X,m)
+ =>
+  psch_4(J,j)(X);
+
+  brule(pchksimp_rewX.j,m) &
+  psch_4(J)(X,m)
+ =>
+  psch_4(J,HYP.j)(X);
+
+  (a,(b,c)) == (a,b,c);
+
+  AriRes(j) &
+  psch_4(j,CONTRA)(?)
+ =>
+  psch_4_Ari(n-1,CONTRA)(?);
+
+  psch_2(?);
+
+  brule(pchksimpX.6,k) &          /* prev AND justif. */
+  bmodr(pchksimpX.6,0) &
+  brule(pchksimpX.5,G) &
+  bmodr(pchksimpX.5,(G,L(n)(t))) &
+  bmodr(pchksimp_rewX.n,O0___0O$n) &
+  bmodr(pchksimpX.2,(O0___0O$n[t] | L)) &
+  psch_4(k,j)(?)
+ =>
+  psch_2(n[t] | L | j);
+
+  brule(pchksimpX.6,0) &          /* last justif. wasn't AND */
+  brule(pchksimpX.5,G) &
+  bmodr(pchksimpX.5,(G,L(n)(t))) &
+  bmodr(pchksimp_rewX.n,O0___0O$n) &
+  bmodr(pchksimpX.2,(O0___0O$n[t] | L)) &
+  psch_4(j)(?)
+ =>
+  psch_2(n[t] | L | j);
+
+  brule(pchksimpX.6,0) &          /* last justif. wasn't AND */
+  brule(pchksimpX.5,G) &
+  bmodr(pchksimpX.5,(G,L(n)(t))) &
+  bmodr(pchksimp_rewX.n,O0___0O$n) &
+  bmodr(pchksimpX.2,(O0___0O$n[t] | L)) &
+  Ari(n-1) &
+  psch_4_Ari(n-1,CONTRA)(?)
+ =>
+  psch_2(n[t] | L | CONTRA);
+
+  brule(pchksimpX.6,0) &          /* last justif. wasn't AND */
+  bmodr(pchksimpX.6,j)            /* this one is */
+ =>
+  psch_2(n[t] | L | j,AND);
+
+  brule(pchksimpX.5,G) &
+  bsearch(L(m)(t),G,H) &          /* dup goal AT SAME LEVEL */
+  bmodr(pchksimpX.6,0) &          /* in case of AND */
+  brule(pchksimp_rewX.m,x) &
+  bmodr(pchksimp_rewX.n,x)
+ =>
+  psch_2(n[t] | L | j);
+
+  brule(pchksimpX.5,G) &
+  bsearch(L(m)(u),G,H) &          /* INHYP doesn't need to be AT SAME LEVEL */
+  brule(pchksimp_rewX.m,x) &
+  bmodr(pchksimpX.6,0) &          /* in case of AND */
+  bmodr(pchksimp_rewX.n,x)
+ =>
+  psch_2(n[t] | L | INHYP);
+
+  ([s]r) == (({[{s}]})(r));
+
+
+/*
+  not needed (DupSwitchX now removed
+
+  psch_2(n[t] | (Z | Z | L) | QueryUserX.2);
+
+  psch_2(n[t] | Z | Z | L | QueryUserX.2);
+*/
+
+
+  psch_2(n[t] | (Z <- L) | QueryUserX.1);
+
+  psch_2(n[t] | Z <- L | QueryUserX.1);
+
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  psch_1;
+
+  bconnect(".Bcom")
+ =>
+  psch_1;
+
+  psch_1 &
+  psch_2 bsmap (X) &
+  psch_6 &
+  pchksimp_ren
+ =>
+  psch_0(X)
+
+END
+
+&
+
+THEORY ppfX IS
+
+  0;  /* 1. */
+
+  ?;  /* 2. prevent 2 nl */
+
+  ?;  /* 3. */
+
+  ?;  /* 4. Lem count */
+
+  bcall((ARI;MODR) : bmodr(ppfX.1,n))
+ =>
+  setppf(n); 
+
+/*** nl ***/
+
+  bcall(MODR:bmodr(ppfX.2,0)) &
+  bprintf(x)
+ =>
+  pr(x);
+
+  brule(ppfX.2,0) &
+  bprintf(x)
+ =>
+  pr(x);
+
+  brule(ppfX.2,0) &
+  bcall(MODR:bmodr(ppfX.2,1)) &
+  bprintf("\n")
+ =>
+  pr("\n");
+
+  brule(ppfX.2,1)
+ =>
+  pr("\n");
+
+
+  pr_sp(0);
+
+  pr("  ")
+ =>
+  pr_sp(1);
+
+  btest(n>=2) &
+  pr("    ") &
+  pr_sp(n-2)
+ =>
+  pr_sp(n);
+
+  btest(n>=4) &
+  pr("        ") &
+  pr_sp(n-4)
+ =>
+  pr_sp(n);
+
+  btest(n>=8) &
+  pr("                ") &
+  pr_sp(n-8)
+ =>
+  pr_sp(n);
+
+
+  pr("      %",b)
+ =>
+  pr_quant_pred(b);
+
+  pr("      (%)",(a=>b))
+ =>
+  pr_quant_pred(a=>b);
+
+
+
+  pr_quant_pred(B)
+ =>
+  pr_quant_pred_and(B);
+
+  pr("      (") &
+  pr("%",(B or b)) &
+  pr(")")
+ =>
+  pr_quant_pred_and(B or b);
+
+  pr_quant_pred_and(B) &
+  pr(" & \n") &
+  pr_quant_pred_and(b)
+ =>
+  pr_quant_pred_and(B & b);
+
+
+
+  pr("      (") &
+  pr("%",(B&b)) &
+  pr(")")
+ =>
+  pr_quant_pred_or(B & b);
+
+  pr_quant_pred_or(B) &
+  pr(" or \n") &
+  pr_quant_pred_or(b)
+ =>
+  pr_quant_pred_or(B or b);
+
+
+  pr_quant_pred_or(B or b)
+ =>
+  pr_quant_pred(B or b);
+
+  pr_quant_pred_and(B&b)
+ =>
+  pr_quant_pred(B&b);
+
+
+
+  pr("%",x)
+ =>
+  pr_po_2(x);
+
+
+  pr("(not(!(%).(%)))",a,b)
+ =>
+  pr_po_2(not(!a.b));
+
+  pr("  (not(!(%).(\n",a) &
+  pr_quant_pred(B&b) &
+  pr(")\n    ))")
+ =>
+  pr_po_2(not(!a.(B&b)));
+
+  pr("  (not(!(%).(\n",(A,a)) &
+  pr_quant_pred(B&b) &
+  pr(")\n    ))")
+ =>
+  pr_po_2(not(!(A,a).(B&b)));
+
+
+  pr("(!(%).(%))",a,b)
+ =>
+  pr_po_2(!a.b);
+
+  pr("  (!(%).(\n",a) &
+  pr_quant_pred(B&b) &
+  pr(")\n    )")
+ =>
+  pr_po_2(!a.(B&b));
+
+  pr("  (!(%).(\n",(A,a)) &
+  pr_quant_pred(B&b) &
+  pr(")\n    )")
+ =>
+  pr_po_2(!(A,a).(B&b));
+
+
+
+  pr("(#(%).(%))",a,b)
+ =>
+  pr_po_2(#a.b);
+
+  pr("  (#(%).(\n",a) &
+  pr_quant_pred(B&b) &
+  pr(" )\n    )")
+ =>
+  pr_po_2(#a.(B&b));
+
+  pr("  (#(%).(\n",(A,a)) &
+  pr_quant_pred(B&b) &
+  pr(" )\n    )")
+ =>
+  pr_po_2(#(A,a).(B&b));
+
+  pr("(%)",(a=>b))
+ =>
+  pr_po_2(a=>b);
+
+  brule(ppfX.1,n) &
+  bcall(((ARI;WRITE)~;ppfX)~:pr_sp(n)) &
+  pr_po_2(x)
+ =>
+  pr_po_1(x);
+
+  pr_po(a=>b or c)
+ =>
+  pr_po_1(a=>b or c);
+
+/*** sym ***/
+
+  brule(ppfX.1,n) &
+  bcall(((ARI;WRITE)~;ppfX)~:pr_sp(n)) &
+  pr(b)
+ =>
+  pr_po_sym(b);
+
+/*** top hyp ***/
+
+  pr_po(x)
+ =>
+  pr_top_hyp_po(x);
+
+  brule(ppfX.1,n) &
+  bcall(((ARI;WRITE)~;ppfX)~:pr_sp(n)) &
+  pr("cst(%) & ctx(%)",m,m)
+ =>
+  pr_top_hyp_po(cst(m)&ctx(m));
+
+  brule(ppfX.1,n) &
+  bcall(((ARI;WRITE)~;ppfX)~:pr_sp(n)) &
+  pr("cst(%) & ctx(%) &\n",m,m) &
+  bcall(((ARI;WRITE)~;ppfX)~:pr_sp(n)) &
+  pr("inv(%)",m)
+ =>
+  pr_top_hyp_po(cst(m)&ctx(m)&inv(m));
+
+  brule(ppfX.1,n) &
+  bcall(((ARI;WRITE)~;ppfX)~:pr_sp(n)) &
+  pr("cst(%) & ctx(%) &\n",m,m) &
+  bcall(((ARI;WRITE)~;ppfX)~:pr_sp(n)) &
+  pr("inv(%) & asn(%) &\n",m,m) &
+  bcall(((ARI;WRITE)~;ppfX)~:pr_sp(n)) &
+  pr("pre(%)",o)
+ =>
+  pr_top_hyp_po(cst(m)&ctx(m)&inv(m)&asn(m)&pre(o));
+
+/*** the rest ***/
+
+  pr_po_1(x)
+ =>
+  pr_po(x);
+
+/*** & ***/
+
+  pr_po(b)
+ =>
+  pr_po_amp(b);
+
+  brule(ppfX.1,n) &
+  setppf(n+1) &   
+  pr_po_sym("(") &
+  pr("\n") & 
+  setppf(n+2) &
+  pr_po(b or c) &
+  setppf(n-1) &   
+  pr(")") &   
+  setppf(n-1)
+ =>
+  pr_po_amp(b or c);
+
+  pr_po_amp(a) &
+  pr(" &") &
+  pr("\n") &
+  pr_po_amp(b)
+ =>
+  pr_po_amp(a & b);
+
+  pr_po_amp(a & b)
+ =>
+  pr_po(a & b);
+
+
+
+/*** a or b ***/
+
+  brule(ppfX.1,n) &
+  pr("\n") &
+  pr_po_sym(")") &
+  pr("\n") &
+  setppf(n-1) &   
+  pr_po_sym("or") &
+  pr("\n") &
+  setppf(n) &   
+  pr_po_sym("(") &
+  pr("\n")
+ =>
+  pr_po_or_;
+
+  pr_po(a)
+ =>
+  pr_po_or(a);
+
+  brule(ppfX.1,n) &
+  setppf(n+1) &   
+  pr_po_sym("(") &
+  pr("\n") & 
+  setppf(n+2) &
+  pr_po(b & c) &
+  setppf(n-1) &   
+  pr(")") &   
+  setppf(n-1)
+ =>
+  pr_po_or(b & c);
+
+  pr_po_or(a) &
+  pr_po_or_ &
+  pr_po_or(b)
+ =>
+  pr_po_or(a or b);
+
+  brule(ppfX.1,n) &
+  setppf(n+1) &   
+  pr_po_sym("(") &
+  pr("\n") & 
+  setppf(n+2) &   
+  pr_po_sym("(") &
+  pr("\n") & 
+  pr_po_or(a or b) &
+  pr("\n") &
+  setppf(n+1) &   
+  pr_po_sym(")") &
+  pr("\n") &
+  setppf(n) &   
+  pr_po_sym(")")
+ =>
+  pr_po(a or b);
+
+/*** => ***/
+
+  pr_po_1(a => b)
+ =>
+  pr_po(a => b);
+
+  brule(ppfX.1,1) &  /* goal is an implication */
+  pr_po_sym("(") &
+  pr("\n") & 
+  setppf(2) & 
+  pr_po(a) &
+  pr("\n") &
+  setppf(1) & 
+  pr_po_sym(" =>") &
+  pr("\n") &
+  setppf(2) & 
+  pr_po(b) &
+  setppf(1) & 
+  pr("\n") & 
+  pr_po_sym(")")
+ =>
+  pr_po(a => b);
+
+  brule(ppfX.1,0) &  /* a is cst(... i.e. top-level */
+  setppf(1) & 
+  pr_top_hyp_po(a) &
+  pr("\n") &
+  setppf(0) & 
+  pr_po_sym(" =>") &
+  pr("\n") &
+  setppf(1) & 
+  pr_po(b)
+ =>
+  pr_po(a => b)
+
+END
+
+&
+
+THEORY pfX IS
+
+#define p_lws(x) bcall(((CATL;WRITE;MAP;MODR;FLAT)~;pfX)~: pl_00(x))
+
+  ?;1;?;?;?;?;?;?;?;?;
+
+  ?;  /* users theory names */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  InformCantConnect(".Blws") &
+  PFZ
+ =>	
+  plws;
+
+  bconnect(".Blws") &
+  brule(pfX.6,L) &
+  bprintf("%\n",L)
+ =>
+  plws;
+
+
+
+
+  bprintf("  (%)",b) 
+ =>
+  pl_5(b);
+
+/***
+  bprintf("(  % IS % WITH %)",Y,Z,X)
+ =>
+  pl_5(bsearch(X,Y,Z));
+***/
+
+  pl_5(a) &
+  bprintf("\n    or\n") &
+  pl_5(b)
+ =>
+  pl_5(a or b);
+
+  bprintf("  %",b)
+ =>
+  pl_3(b);
+
+/***
+  bprintf("(  % IS % WITH %)",Y,Z,X)
+ =>
+  pl_3(bsearch(X,Y,Z));
+***/
+
+  bprintf("  (%)",(a=>b))
+ =>
+  pl_3(a=>b);
+
+  pl_3(a) &
+  bprintf(" &\n") &
+  pl_3(b)
+ =>
+  pl_3(a&b);
+
+  pl_3(b)
+ =>
+  pl_3(brule(PROOFMETHODTacticX.1,(B,F))&b);
+
+
+  bprintf("  (%)",(#a.b))
+ =>
+  pl_3(#a.b);
+
+
+
+
+
+  bprintf("%)",a)
+ =>
+  pl_4(t:a);
+
+  bprintf("(%))",(a JOK2 b))
+ =>
+  pl_4(t:(a JOK2 b));
+
+  pl_4(A) &
+  bprintf(" or %",a)
+ =>
+  pl_4(A|t:a);
+
+  pl_4(A) &
+  bprintf(" or (%)",(a JOK2 b))
+ =>
+  pl_4(A|t:(a JOK2 b));
+
+  pl_3(a)
+ =>
+  pl_3(bcall(t:a));
+
+  bprintf("  (") &
+  pl_4(a|b)
+ =>
+  pl_3(bcall(a|b));
+
+
+
+
+  pl_5(a or b)
+ =>
+  pl_3(a or b);
+
+
+
+
+
+
+  pl_3(s : seq(0..255))
+ =>
+  pl_3(bstring(s));
+
+/*
+  pl_3(b <=> (c & a))
+ =>
+  pl_3(bsearch(a,b,c));
+*/
+
+  pl_3(b : 0..2147483647)
+ =>
+  pl_3(bnum(b));
+
+  pl_3(b)
+ =>
+  pl_3(btest(b));
+
+  pl_3(b)
+ =>
+  pl_3(binhyp(b));
+
+
+
+/***
+HERE((66:A:B:"AutoProver")) &
+***/
+  pl_3(A)
+ =>
+  pl_3(bcall(t: A | QueryUserX: ((t: A) <- C)));
+
+/***
+HERE((66:A:B:"BToolProver")) &
+***/
+  pl_3(A)
+ =>
+  pl_3(A or C or ((SwitchX:A) <- C));
+
+
+/***
+HERE((65:A:B:"AutoProver")) &
+***/
+  pl_3(A)
+ =>
+  pl_3(bcall(t: A | SwitchX:C | QueryUserX: ((t: A) <- C)));
+
+/***
+HERE((65:A:B:"BToolProver")) &
+***/
+  pl_3(A)
+ =>
+  pl_3(A or C or ((SwitchX:A) <- C));
+
+
+/***
+HERE(("SwitchX1"))=>
+***/
+  SwitchX~ == SwitchX;
+
+/***
+HERE(("SwitchX2"))=>
+***/
+  (a;SwitchX~) == SwitchX;
+
+/***
+HERE(("SwitchX3"))=>
+***/
+  (a;SwitchX) == SwitchX;
+
+
+
+  bprintf("  %",x)
+ =>
+  pl_2(x);
+
+/***
+  bprintf("(  % IS % WITH %)",Y,Z,X)
+ =>
+  pl_2(bsearch(X,Y,Z));
+***/
+
+  pl_3(a) &
+  bprintf("\n =>\n") &
+  pl_3(b)
+ =>
+  pl_2(a=>b);
+
+  pl_2(bflat(ctx(m)&a)=>b)
+ =>
+  pl_2(a&ctx(m)=>b);
+
+
+
+  pl_2(h&bcall(x) => G)
+ =>
+  pl_2(h&Bcall(x) => G);
+
+  pl_2(bcall(x) => G)
+ =>
+  pl_2(Bcall(x) => G);
+
+
+
+  /***
+  Should agree with processing in MakeSetORules_BTool.src
+     BUT
+  the processing is from MakeSetORules.src !!!!!
+  ***/
+
+  IfBToolProver &
+/***
+HERE((4))&
+***/
+  pl_2(a=>g)
+ =>
+  pl_2(a or (t:a|g)=>g);
+
+
+
+/*
+/???
+HERE((3))&
+???/
+  pl_2(a or b =>g)
+ =>
+  pl_2(a or (t:a|g) or b or (u:b|g)=>g);
+
+/???
+HERE((2))&
+???/
+  pl_2(a or b or c =>g)
+ =>
+  pl_2(a or (t:a|g) or b or (u:b|g) or c or (v:c|g)=>g);
+
+/???
+HERE((1))&
+???/
+  pl_2(a or b or c or d=>g)
+ =>
+  pl_2(a or (t:a|g) or b or (u:b|g) or c or (v:c|g) or d or (w:d|g)=>g);
+*/
+
+
+
+
+  IfBToolProver &
+  pl_2(g => G)
+ =>
+  pl_2(bcall(t:G | u:g) => G);
+
+
+  IfBToolProver &
+  pl_2(h & g => G)
+ =>
+  pl_2(h & bcall(t:G | u:g) => G);
+
+
+  IfBToolProver &
+  pl_2(R => r)
+ =>
+  pl_2(bcall(t:R) => r);
+
+  IfBToolProver &
+  pl_2(bflat(h & R) => r)
+ =>
+  pl_2(h & bcall(t:R) => r);
+
+
+
+  IfBToolProver &
+  pl_2((R or Q) => r)
+ =>
+  pl_2(bcall(t:R|s:Q) => r);
+
+  IfBToolProver &
+  pl_2(h & (R or Q) => r)
+ =>
+  pl_2(h & bcall(t:R|s:Q) => r);
+
+
+  IfBToolProver &
+  pl_2((R or Q or P) => r)
+ =>
+  pl_2(bcall(t:R|s:Q|u:P) => r);
+
+  IfBToolProver &
+  pl_2(h & (R or Q or P) => r)
+ =>
+  pl_2(h & bcall(t:R|s:Q|u:P) => r);
+
+  IfBToolProver &
+  pl_2(true)
+ =>
+  pl_2(h&Bcall(t:g) => g);
+  
+  IfBToolProver &
+  pl_2(true)
+ =>
+  pl_2(Bcall(t:g) => g);
+  
+
+  IfBToolProver &
+  pl_2(true)
+ =>
+  pl_2(h&bcall(t:g) => g);
+  
+  IfBToolProver &
+  pl_2(true)
+ =>
+  pl_2(bcall(t:g) => g);
+  
+
+/*
+  bprintf("  %\n =>\n  % or %",((not(b)=>a)|(not(a)=>b)),a,b)
+ =>
+  pl_2(bcall(t: (not(b)=>a) | u: (not(a)=>b)) => (a or b));
+*/
+
+
+  pl_1(x);
+
+  brule(t.n,r) &
+  bprintf("\n(;\n%:\n",l.m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(t.n|l.m);
+
+  brule(pfX.7,?) &
+  bmodr(pfX.7,1) &
+  brule(t.n,r) &
+  bprintf("\n(\n%:\n",l.m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(t.n|l.m);
+
+
+
+  bprintf("\n);\n")   /*** ) ***/
+ =>
+  pl_sc;
+
+  brule(pfX.7,?) &
+  bmodr(pfX.7,1) &
+  bprintf("\n")
+ =>
+  pl_sc;
+
+
+
+  brule(t.n,r) &
+  pl_sc &
+  bprintf("%",l) &
+  bprintf(".%(%):\n(\n",m,(t.n)) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(l,(t.n|l.m));
+
+
+
+  brule(t.n,r) &
+  brule(pfX.11,T) &         /* ?,Users Theory names - done in  pl_11 */
+  bsearch(t,T,U)
+ =>
+  pl_1(l,(t.n|l.m));
+
+
+
+  brule(t.n,r) &
+  pl_sc &
+  bprintf("Props") &
+  bprintf(".%:\n(\n",m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(PropertiesX,(t.n|PropertiesX.m));
+
+  pl_11(x);
+
+  brule(t.n,r) &
+  pl_sc &
+  bprintf("%",u) &
+  bprintf(".%:\n(\n",m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_11(u,(t.n|u.m));
+
+
+  brule(t.n,r) &
+  pl_sc &
+  bprintf("HypExp") &
+  bprintf(".%:\n(\n",m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(ExpandHypX,(t.n|ExpandHypX.m));
+
+  brule(t.n,r) &
+  pl_sc &
+  bprintf("SetEnum") &
+  bprintf(".%:\n(\n",m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(EnumerateX,(t.n|EnumerateX.m));
+
+  brule(t.n,r) &
+  pl_sc &
+  bprintf("Context") &
+  bprintf(".%:\n(\n",m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(ContextX,(t.n|ContextX.m));
+
+  brule(t.n,r) &
+  pl_sc &
+  bprintf("Assertion") &
+  bprintf(".%:\n(\n",m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(AssertionsX,(t.n|AssertionsX.m));
+
+  brule(t.n,r) &
+  pl_sc &
+  bprintf("Constraint") &
+  bprintf(".%:\n(\n",m) &   /*** ( ***/
+  pl_2(r)
+ =>
+  pl_1(ConstraintsX,(t.n|ConstraintsX.m));
+
+
+  pl_1(T,(t.n|U.m))
+ =>
+  pl_1(T,(ari(t.n)|U.m));              /* remove ARI flag */
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  pl_0(f);
+
+
+
+  pl_0_1(?|R);
+
+  pl_11(t) bsmap R &
+  pl_0_1(T|R)
+ =>
+  pl_0_1(T,t|R);
+
+  bappend(f) &
+  bprintf(";\nLAWS\n(") &
+  bmodr(pfX.9,1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.7,?) &
+  brule(pfX.11,T) &         /* ?,Users Theory names */
+  pl_1(PropertiesX) bsmap R &
+  pl_1(ExpandHypX) bsmap R &
+  pl_1(EnumerateX) bsmap R &
+  pl_1(NotEqualX) bsmap R &
+  pl_1(RewriteToFalseOrTrueX) bsmap R &
+  pl_1(FwdContra0X) bsmap R &
+  pl_1(FwdEqual1X) bsmap R &
+  pl_1(ContextX) bsmap R &
+  pl_1(AssertionsX) bsmap R &
+  pl_1(ConstraintsX) bsmap R &
+  pl_0_1(T|R) &
+  pl_1(Law) bsmap R &
+  pl_1(Lem) bsmap R &
+  bprintf("\n)\n)\n")
+ =>
+  pl_0(f);
+
+  brule(pfX.6,?)
+ =>
+  pl_0(f);
+
+  AriRes(N) &
+  pl_0(bcatl("POB/",a,".",b,".prf.",N))
+ =>
+  pl_00_ari(a.b);
+
+  Ari(N-1) &
+  pl_00_ari(a.b)
+ =>
+  pl_00(a.b.N);
+
+  pl_0(bcatl("POB/",a,".",b,".prf"))
+ =>
+  pl_00(a.b.0);
+
+
+
+
+
+
+  brule(pfX.6,R) &
+  bprintf("%",x)
+ =>
+  pt_1(x);
+
+  brule(x,r) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(x|Law.N))) &
+  bprintf("Law.%",N)
+ =>
+  pt_1(x);
+
+  brule(BToolLemmas.J,r) &
+  brule(pfX.4,N) &
+  ModRuleWithARI(pfX.4,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(BToolLemmas.J|Lem.J))) &
+  bprintf("Lem.%",J)
+ =>
+  pt_1(BToolLemmas.J);
+
+  brule(x,(bsearch((a:L..H),b,c)&btest(L<=H)&([a:=L]c)=>(#a.b))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bsearch((a:L..H),b,c)&btest(L<=H)&([a:=H]c)=>(#a.b))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bsearch((a:L..H),b,c)&btest(L<=H)&([a:=L]c)=>(#a.b))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bsearch((a:L..H),b,c)&btest(L<=H)&([a:=H]c)=>(#a.b))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(b<=c) =>(#a.(a:b..c)))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(b>=c) => (a+b-c) == (a+(b-c)))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a>=c) => (a+b-c) == (b+(a-c)))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(b>=c) => (a-b+c) == (a-(b-c)))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(c>=b) => (a-b+c) == (a+(c-b)))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a>=b) => (a-(b-c)) == ((a-b)+c))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(p<=q) => {q+1} \/ p..q == p..q+1)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(p<=q) => p..q \/ {q+1} == p..q+1)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bnum(x) & bnum(a) & btest(x/=a) & bcall((InSetX;SwitchX) : (a:dom(f)) ) => a:dom(f<+{x|->y}))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bnum(a) & bnum(b) & btest(a/=b) => not(a:{b}))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(binhyp(a : s \/ {b}) & bnum(a) & bnum(b) & btest(a/=b) => a : s)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bnum(a) & bnum(c) & btest(a/=c) => ({a} * p)[{b, c}] == ({a} * p)[{b}])) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bnum(a) & bnum(b) & btest(a/=b) => ({a} * p)[{b}] == {})) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bnum(a) & bnum(d) & btest(a/=d) => ({a |-> b})[{c, d}]     == ({a |-> b})[{c}])) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bnum(a) & bnum(c) & btest(a/=c) => ({a |-> b})[{c}] == {})) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bnum(x) & bnum(z) & btest(x/=z) => (f <+ {x |-> y})(z) == f(z))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(bnum(x) & bnum(a) & btest(x/=a) => ({a} <<| f)(x) == f(x))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(binhyp(c<=b) & btest(a<c) => a<b)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(binhyp(c<b) & btest(a<=c) => a<b)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(binhyp(c<=b) & btest(a<=c) => a<=b)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(binhyp(a<=c) & btest(c<=b) => a<=b)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(m<=n) => n: m..n)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(m<=n) => m: m..n)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(m<=n) => card(m..n) == (n-m)+1)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(n<m) => m..n == {})) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a<b) => not(a=b))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a>b) => not(a=b))) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a>=b) & btest(a<=b) => a=b)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a<b) => a=b == false)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a>b) => a=b == false)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a<=b) => a<=b == true)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a<b) => a<b == true)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a<b) => not(a = b) == true)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a>b) => not(a = b) == true)) &
+  brule(pfX.2,N) &
+  ModRuleWithARI(pfX.2,N+1) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ari(x)|Law.N))) &             /* flag ARI */
+  bprintf("Law.%,ARI",N)
+ =>
+  pt_1(x);
+
+  brule(pfX.6,R) &
+  bsearch((x|Law.m),R,S) &
+  bprintf("Law.%",m)
+ =>
+  pt_1(x);
+
+  brule(pfX.6,R) &
+  bsearch((ari(x)|Law.m),R,S) &                 /* ARI flagged */
+  bprintf("Law.%,ARI",m)
+ =>
+  pt_1(x);
+
+
+
+  brule(x,(btest(a<=b) => a<=b)) &              /* don't print */
+  bprintf("ARI")
+ =>
+  pt_1(x);
+
+  brule(x,(btest(a<b) => a<b)) &                /* don't print */
+  bprintf("ARI")
+ =>
+  pt_1(x);
+
+
+
+  brule(pfX.11,U) &         /* (?,Users) - Users Theory names */
+  bsearch(u,U,V) &
+  brule(u.N,r) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(u.N|u.N))) &
+  bprintf("%.%",u,N)
+ =>
+  pt_1(u.N);
+
+  brule(pfX.11,U) &         /* (?,Users) - Users Theory names */
+  bsearch(u,U,V) &
+  brule(u.N,r) &
+  brule(pfX.6,R) &
+  bsearch((u.N|u.N),R,S) &
+  bprintf("%.%",u,N)
+ =>
+  pt_1(u.N);
+
+
+
+  brule(PropertiesX.N,r) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(PropertiesX.N|PropertiesX.N))) &
+  bprintf("Props.%",N)
+ =>
+  pt_1(PropertiesX.N);
+
+  brule(pfX.6,R) &
+  bsearch((PropertiesX.N|PropertiesX.N),R,S) &
+  bprintf("Props.%",N)
+ =>
+  pt_1(PropertiesX.N);
+
+  brule(ExpandHypX.N,r) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ExpandHypX.N|ExpandHypX.N))) &
+  bprintf("HypExp.%",N)
+ =>
+  pt_1(ExpandHypX.N);
+
+  brule(pfX.6,R) &
+  bsearch((ExpandHypX.N|ExpandHypX.N),R,S) &
+  bprintf("HypExp.%",N)
+ =>
+  pt_1(ExpandHypX.N);
+
+  brule(EnumerateX.N,r) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(EnumerateX.N|EnumerateX.N))) &
+  bprintf("SetEnum.%",N)
+ =>
+  pt_1(EnumerateX.N);
+
+  brule(pfX.6,R) &
+  bsearch((EnumerateX.N|EnumerateX.N),R,S) &
+  bprintf("SetEnum.%",N)
+ =>
+  pt_1(EnumerateX.N);
+
+  brule(ContextX.N,r) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ContextX.N|ContextX.N))) &
+  bprintf("Context.%",N)
+ =>
+  pt_1(Context.N);
+
+  brule(pfX.6,R) &
+  bsearch((ContextX.N|ContextX.N),R,S) &
+  bprintf("Context.%",N)
+ =>
+  pt_1(Context.N);
+
+  brule(AssertionsX.N,r) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(AssertionsX.N|AssertionsX.N))) &
+  bprintf("Assertion.%",N)
+ =>
+  pt_1(Assertions.N);
+
+  brule(pfX.6,R) &
+  bsearch((AssertionsX.N|AssertionsX.N),R,S) &
+  bprintf("Assertion.%",N)
+ =>
+  pt_1(Assertions.N);
+
+  brule(ConstraintsX.N,r) &
+  brule(pfX.6,R) &
+  bmodr(pfX.6,(R;(ConstraintsX.N|ConstraintsX.N))) &
+  bprintf("Constraint.%",N)
+ =>
+  pt_1(Constraints.N);
+
+  brule(pfX.6,R) &
+  bsearch((ConstraintsX.N|ConstraintsX.N),R,S) &
+  bprintf("Constraint.%",N)
+ =>
+  pt_1(Constraints.N);
+
+  bprintf(",") &
+  pt_1(x)
+ =>
+  pt_0(x,m,n);
+
+  pt_1(x)
+ =>
+  pt_0(x,1,n);
+
+
+
+  
+  bprintf(";\n(")
+ =>
+  psc;
+
+  brule(pfX.7,1) &
+  bprintf("(")
+ =>
+  psc;
+
+
+  bmodr(pfX.3,L) &
+  bprintf("(% | (%) | ",t,L) &
+  pt_0 bnmap R &
+  bprintf(")",t,L,R)           /* no newline */
+ =>
+  pf_2a(t | L | R);            /* for final step */
+
+  bmodr(pfX.3,L) &
+  bprintf("(% | (%) | ",t,L) &
+  pt_0 bnmap R &
+  bprintf("),\n",t,L,R)
+ =>
+  pf_2(t | L | R);             /* for non-final step */
+
+
+ (({[{s}]})(r))  == ([s]r);
+
+
+  brule(simpinitX.1,L) &       /* 1 step */
+  brule(pchksimpX.1,(W)) &
+  bmodr(pchksimpX.1,?) &
+  brule(pfX.1,a.b.N) &
+  brule(pfX.8,o) &
+  bmodr(pfX.3,?) &
+  psc &
+  bprintf("\n%.%(%):%:\n\n",a,b,N,o) &
+/*
+  bcall((WRITE;ppfX)~:  ( setppf(0) & pr_po(L) )) &
+*/
+  bcall((WRITE;ppfX)~:  setppf(0)) &
+  pf_2a(W) &
+  bprintf("\n)\n")
+ =>
+  pf_0;
+
+
+
+  brule(simpinitX.1,L) &       /* >1 steps */
+  brule(pchksimpX.1,(x,W)) &
+  bmodr(pchksimpX.1,?) &
+  brule(pfX.1,a.b.N) &
+  brule(pfX.8,o) &
+  bmodr(pfX.3,?) &
+  psc &
+  bprintf("\n%.%(%):%:\n\n",a,b,N,o) &
+/*
+  bcall((WRITE;ppfX)~:  ( setppf(0) & pr_po(L) )) &
+  bprintf("\n,\n") &
+*/
+  bcall((WRITE;ppfX)~:  setppf(0)) &
+  pf_2 bsmap x &
+  pf_2a(W) &
+  bprintf("\n)\n")
+ =>
+  pf_0;
+
+
+
+  brule(pfX.10,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  pf_0_1;
+
+  brule(pfX.10,f) &
+  bappend(f)
+ =>
+  pf_0_1;
+
+
+  InformCantConnect(".Bprf") &
+  PFZ
+ =>
+  pf_00(a.b.N);
+
+  brecompact &
+  simpinit &  /* control passed to pchksimp */
+  brecompact &
+  pf_0_1 &
+  pf_0
+ =>
+  pf_00(a.b.N);
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  pf_file1(f)(x);
+
+  bconnect(f) &
+  bmodr(pfX.10,f) &
+  bmodr(pfX.7,1)
+ =>
+  pf_file1(f)(1);
+
+  bappend(f) &
+  bmodr(pfX.10,f)
+ =>
+  pf_file1(f)(0);
+
+  bget(".Bcom",x) &
+  pf_file1(f)(x)
+ =>
+  pf_file(f);
+
+
+
+  mod_num(X)
+ =>
+  mod_num(X;(a.m|l.n));
+
+  mod_num(X)
+ =>
+  mod_num(X;(ari(a.m)|l.n));
+
+  ModRuleWithARI(pfX.4,(n+1))
+ =>
+  mod_num(X;(a.m|Lem.n));
+
+  ModRuleWithARI(pfX.2,(n+1))
+ =>
+  mod_num(X;(a.m|Law.n));
+
+  ModRuleWithARI(pfX.2,(n+1))
+ =>
+  mod_num(X;(ari(a.m)|Law.n));
+
+  ModRuleWithARI(pfX.2,1) &
+  ModRuleWithARI(pfX.4,1)
+ =>
+  mod_num(?);
+
+
+  pf_srcpo1(x);
+
+  bcrelr(EnumerateX,b)
+ =>
+  pf_srcpo1(THEORY EnumerateX IS b END);
+
+  bcrelr(NotEqualX,b)
+ =>
+  pf_srcpo1(THEORY NotEqualX IS b END);
+
+  bcrelr(RewriteToFalseOrTrueX,b)
+ =>
+  pf_srcpo1(THEORY RewriteToFalseOrTrueX IS b END);
+
+  bcrelr(FwdContra0X,b)
+ =>
+  pf_srcpo1(THEORY FwdContra0X IS b END);
+
+  bcrelr(FwdEqual1X,b)
+ =>
+  pf_srcpo1(THEORY FwdEqual1X IS b END);
+
+  bcrelr(ExpandHypX,b)
+ =>
+  pf_srcpo1(THEORY ExpandHypX IS b END);
+
+  bcrelr(PropertiesX,b)
+ =>
+  pf_srcpo1(THEORY PropertiesX IS b END);
+
+  InformCantConnect(".Bspo") &
+  PFZ
+ =>
+  pf_srcpo;
+
+  bget(".Bspo",x) &
+  pf_srcpo1 bsmap x
+ =>
+  pf_srcpo;
+
+
+
+
+  pf_Bthy1(x);
+
+  bcrelr(t,b) &
+  brule(pfX.11,T) &
+  bmodr(pfX.11,(T,t))
+ =>
+  pf_Bthy1(THEORY t IS b END);
+
+  bcrelr(t,b) &
+  brule(pfX.11,T) &
+  bsearch(t,T,U)
+ =>
+  pf_Bthy1(THEORY t IS b END);
+
+  pf_Bthy1(THEORY t IS ? END);
+
+  pf_Bthy1(THEORY ParseX IS b END);
+
+  InformCantConnect(".Bthy") &
+  PFZ
+ =>
+  pf_Bthy;
+
+  bget(".Bthy",x) &
+  pf_Bthy1 bsmap x
+ =>
+  pf_Bthy;
+
+
+
+  InformCantConnect(".Bopn") &
+  PFZ
+ =>
+  pf_Bopn;
+
+  bget(".Bopn",x) &
+  bmodr(pfX.8,x)
+ =>
+  pf_Bopn;
+
+
+  InformCantConnect(".Blws") &
+  PFZ
+ =>
+  pf_000(a.b.N);
+
+  AriRes(N) &
+  bget(".Blws",x) &
+  bmodr(pfX.6,x) &
+  pf_Bopn &
+  pf_Bthy &
+  pf_srcpo &
+  mod_num(x) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",b,".prf.",N," POB")) &
+  pf_file(bcatl("POB/",a,".",b,".prf.",N))
+ =>
+  pf_000_ari(a.b);
+
+  bmodr(pfX.1,a.b.N) &
+  Ari(N-1) &
+  pf_000_ari(a.b) &
+  pf_00(a.b.N) &
+  plws
+ =>
+  pf_000(a.b.N);
+
+  bget(".Blws",x) &
+  bmodr(pfX.1,a.b.0) &
+  bmodr(pfX.6,x) &
+  pf_Bopn &
+  pf_Bthy &
+  pf_srcpo &
+  mod_num(x) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",b,".prf POB")) &
+  pf_file(bcatl("POB/",a,".",b,".prf")) &
+  pf_00(a.b.0) &
+  plws
+ =>
+  pf_000(a.b.0)
+
+END
+
+&
+
+THEORY crelwsX IS
+
+  InformCantConnect(".Blws") &
+  PFZ
+ =>
+  clX_0;
+
+  bconnect(".Blws") &
+  bprintf("?\n")
+ =>
+  clX_0
+
+END
+
+&
+
+THEORY loadbcomX IS
+
+  InformCantConnect(".Bver") &
+  PFZ
+ =>
+  ptbs1;
+
+  bconnect(".Bver") &
+  bprintf("%\n",4.9)
+ =>
+  ptbs1;
+
+  InformCantConnect(".Bses") &
+  PFZ
+ =>
+  lbcom(n);
+
+  bconnect(".Bses") &
+  bprintf("%\n",n) &
+  ptbs1
+ =>
+  lbcom(n)
+
+END
+
+&
+
+THEORY gnxtpX IS
+
+  ?;
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((a.b:BT_PFP:n)))
+ =>
+  update_mgrs(a.b.n);
+
+
+  InformCantConnect(".Bopn") &
+  PFZ
+ =>
+  gnxtp_3(t.n);
+
+  bconnect(".Bopn") &
+  bprintf("%\n",t.n) &
+  bcall(MODR:bmodr(gnxtpX.1,(t.n)))
+ =>
+  gnxtp_3(t.n);
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  bshell(bcatl("mv .Bpob.",t,".",n," .Bpob")) &
+  gnxtp_3(t.n)
+ =>
+  gnxtp_2(t.n);
+
+  InformCantConnect(".Bplt") &
+  PFZ
+ =>
+  upd(x);
+
+  bconnect(".Bplt") &
+  bprintf("(%)\n",x) &
+  bclose
+ =>
+  upd(x);
+
+  upd(a.b.N|?) &
+  gnxtp_2(r)
+ =>
+  gnxtp_1(a.b.N|r);    /* r is last proof */
+
+  GetJobs(X) &
+  bsearch((a.b:BT_PNP_BTL:n),X,Y) &
+  bshell("rm -f .BBcom .B.bin .Blws .Bnum .Bplt .Bpob .Bopn .Bpof .Bprf .Bspo .Btac .Btad .Bthy") &
+  ModifyJobs(Y) &
+  p_lws(a.b.N) &
+  Writef((".\n\n  Proof construction complete\n")) &
+  update_mgrs(a.b.n) &
+  bshell("rm -fr .Btot") &
+  LoadToolkit(1)
+ =>
+  gnxtp_1(a.b.N|?);    /* finished */
+
+   GetJobs(X) &
+  bsearch((a.b:BT_PNP:n),X,Y) &
+  bshell("rm -f .BBcom .B.bin .Blws .Bnum .Bplt .Bpob .Bopn .Bpof .Bprf .Bspo .Btac .Btad .Bthy") &
+  ModifyJobs(Y) &
+  p_lws(a.b.N) &
+  Writef((".\n\n  Proof construction complete\n")) &
+  update_mgrs(a.b.n) &
+  bshell("rm -fr .Btot") &
+  LoadToolkit(1)
+ =>
+  gnxtp_1(a.b.N|?);    /* finished */
+
+  upd(a.b.N|R) &       /* r not last proof */
+  gnxtp_2(r)
+ =>
+  gnxtp_1(a.b.N|R,r);
+
+  bget(".Bplt",x) &    /* Person3.mch.1 | Constraints.1,Context.3 */
+  gnxtp_1(x)           /* list still to be proved                 */
+ =>
+  gnxtp_0
+
+END
+
+&
+
+THEORY PROOFMETHODTacticX IS ? END &
+
+THEORY ___pmd__Macros__X END &
+
+THEORY gplX IS
+
+  ?;?;?;?;?;?;?;
+
+  ?;  /* 8. users raw fwd tactic */
+
+  ?;  /* 9. building up users fwd theory */
+
+  ?;  /* 10. 0=>`NotProcessingInclusionProof' 1=>`ProcessingInclusionProof' */
+#define SetProcessingInclusionProof     bmodr(gplX.10,1)
+#define SetNotProcessingInclusionProof  bmodr(gplX.10,0)
+#define ProcessingInclusionProof        brule(gplX.10,1)
+#define NotProcessingInclusionProof     brule(gplX.10,0)
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((a.b:BT_PFP:n)))
+ =>
+  Update_ppf(a.b.n);
+
+
+
+  clean(t);
+
+  brule(t.1,x) &
+  bclean(t)
+ =>
+  clean(t);
+
+  InformCantConnect(".Bthy") &
+  PFZ
+ =>
+  gpl_8;
+
+  bconnect(".Bthy") &
+  brule(gplX.4,T) &
+  brule(ParseX.4,N) &
+/*** To print out processed pmd rules ***/
+/***
+bcall((___pmd__Macros__X~;WRITE;gplX):bwritef("%\n",T))&
+***/
+  bcall((___pmd__Macros__X~;WRITE;gplX):bprintf("%&\n%\n",T,(THEORY ParseX IS ?;?;?;N END)))  
+ =>
+  gpl_8;
+
+  ProcessingInclusionProof
+ =>
+  gpl_8;
+
+
+
+  InformCantConnect(".Btad") &
+  PFZ
+ =>
+  gpl_sto_tac_first_3(t);
+
+  bconnect(".Btad") &
+  bprintf("%\n",t)
+ =>
+  gpl_sto_tac_first_3(t);
+
+  InformCantConnect(".Btac") &
+  PFZ
+ =>
+  gpl_sto_tac_first_2(B,F);
+
+  bconnect(".Btac") &
+  bprintf("%\n",(B,F))
+ =>
+  gpl_sto_tac_first_2(B,F);
+
+
+  /* default */
+  gpl_sto_tac_first_2((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_2_Tac~) &
+  gpl_sto_tac_first_3((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_2_Tac~) &
+  bmodr(gplX.8,?)
+ =>
+  gpl_sto_tac_first_1(B);
+
+  /* default */
+  gpl_sto_tac_first_2((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_2_Tac)~) &
+  gpl_sto_tac_first_3((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_2_Tac)~) &
+  bmodr(gplX.8,F)
+ =>
+  gpl_sto_tac_first_1(B,F);
+
+
+  Read_REASONING_DEPTH(2) &
+  gpl_sto_tac_first_2((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_2_Tac~) &
+  gpl_sto_tac_first_3((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_2_Tac~) &
+  bmodr(gplX.8,?)
+ =>
+  gpl_sto_tac_first_1(B);
+
+  Read_REASONING_DEPTH(2) &
+  gpl_sto_tac_first_2((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_2_Tac)~) &
+  gpl_sto_tac_first_3((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_2_Tac)~) &
+  bmodr(gplX.8,F)
+ =>
+  gpl_sto_tac_first_1(B,F);
+
+
+  Read_REASONING_DEPTH(1) &
+  gpl_sto_tac_first_2((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_1_Tac~) &
+  gpl_sto_tac_first_3((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_1_Tac~) &
+  bmodr(gplX.8,?)
+ =>
+  gpl_sto_tac_first_1(B);
+
+  Read_REASONING_DEPTH(1) &
+  gpl_sto_tac_first_2((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_1_Tac)~) &
+  gpl_sto_tac_first_3((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_1_Tac)~) &
+  bmodr(gplX.8,F)
+ =>
+  gpl_sto_tac_first_1(B,F);
+
+
+  Read_REASONING_DEPTH(0) &
+  gpl_sto_tac_first_2((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_0_Tac~) &
+  gpl_sto_tac_first_3((B;StandardizeX~;SwitchX)~,REASONING_DEPTH_0_Tac~) &
+  bmodr(gplX.8,?)
+ =>
+  gpl_sto_tac_first_1(B);
+
+  Read_REASONING_DEPTH(0) &
+  gpl_sto_tac_first_2((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_0_Tac)~) &
+  gpl_sto_tac_first_3((B;StandardizeX~;SwitchX)~,bflat(F;REASONING_DEPTH_0_Tac)~) &
+  bmodr(gplX.8,F)
+ =>
+  gpl_sto_tac_first_1(B,F);
+
+  Set_REASONING_DEPTH(N) &
+  gpl_sto_tac_first_1(t)
+ =>
+  gpl_sto_tac_first_1(t REASONING_DEPTH N);
+
+
+
+  gpl_sto_tac_first_1(x)
+ =>
+  gpl_sto_tac_first(USETAC x END);
+
+  gpl_sto_tac_first(USETAC x END)
+ =>
+  gpl_sto_tac_first(USETAC x ON z END);
+
+  gpl_sto_tac_first(USETAC x REASONING_DEPTH N ON z END)
+ =>
+  gpl_sto_tac_first(USETAC x ON z REASONING_DEPTH N END);
+
+  gpl_sto_tac_first(USETAC x END)
+ =>
+  gpl_sto_tac_first(USETAC x|y END);
+
+  gpl_sto_tac_first(THEORY t END);
+
+
+
+  gpl_7(x);  /* tacic processing now done before inclusions */
+
+
+
+
+  brule(gplX.4,T) &
+  bmodr(gplX.4,(T&t))
+ =>
+  add_thy(t);
+
+  brule(gplX.4,?) &
+  bmodr(gplX.4,(t))
+ =>
+  add_thy(t);
+
+  brule(gplX.9,t(G)) &
+/***
+HERE((666:t:G)) &
+***/
+  add_thy(THEORY t IS G END)
+ =>
+  fini_fwd_thy;
+
+  brule(gplX.9,t(G)) &
+  bmodr(gplX.9,t(G;g))
+ =>
+  add_fwd_thy_1(g);
+
+  brule(gplX.9,t(?)) &
+  bmodr(gplX.9,t(g))
+ =>
+  add_fwd_thy_1(g);
+
+  add_fwd_thy_1(x)
+ =>
+  add_fwd_thy_0(x);
+
+  add_fwd_thy_1(a&b=>g) &
+  add_fwd_thy_1(b&a=>g)
+ =>
+  add_fwd_thy_0(a&b=>g);
+
+  add_fwd_thy_1(a&b&c=>g) &
+  add_fwd_thy_1(a&c&b=>g) &
+  add_fwd_thy_1(b&c&a=>g) &
+  add_fwd_thy_1(b&a&c=>g) &
+  add_fwd_thy_1(c&a&b=>g) &
+  add_fwd_thy_1(c&b&a=>g)
+ =>
+  add_fwd_thy_0(a&b&c=>g);
+
+  add_fwd_thy_1(a&b&c&d=>g) &
+  add_fwd_thy_1(a&b&d&c=>g) &
+  add_fwd_thy_1(a&c&b&d=>g) &
+  add_fwd_thy_1(a&c&d&b=>g) &
+  add_fwd_thy_1(a&d&b&c=>g) &
+  add_fwd_thy_1(a&d&c&b=>g) &
+  add_fwd_thy_1(b&c&a&d=>g) &
+  add_fwd_thy_1(b&c&d&a=>g) &
+  add_fwd_thy_1(b&d&a&c=>g) &
+  add_fwd_thy_1(b&d&c&a=>g) &
+  add_fwd_thy_1(b&a&c&d=>g) &
+  add_fwd_thy_1(b&a&d&c=>g) &
+  add_fwd_thy_1(c&a&b&d=>g) &
+  add_fwd_thy_1(c&a&d&b=>g) &
+  add_fwd_thy_1(c&b&a&d=>g) &
+  add_fwd_thy_1(c&b&d&a=>g) &
+  add_fwd_thy_1(c&d&a&b=>g) &
+  add_fwd_thy_1(c&d&b&a=>g) &
+  add_fwd_thy_1(d&a&b&c=>g) &
+  add_fwd_thy_1(d&a&c&b=>g) &
+  add_fwd_thy_1(d&b&a&c=>g) &
+  add_fwd_thy_1(d&b&c&a=>g) &
+  add_fwd_thy_1(d&c&a&b=>g) &
+  add_fwd_thy_1(d&c&b&a=>g)
+ =>
+  add_fwd_thy_0(a&b&c&d=>g);
+
+  add_fwd_thy_1(a&b&c&d&e=>g)
+ =>
+  add_fwd_thy_0(a&b&c&d&e=>g);  /* perm <=4 only */
+
+  gpl_7(THEORY t END);
+
+  bmodr(gplX.9,t(?)) &
+  add_fwd_thy_0 bsmap x &
+  fini_fwd_thy
+ =>
+  gpl_7(THEORY t IS x END);     /* a fwd theory */
+
+  brule(gplX.8,T) &
+  t\T &
+  t\(REASONING_DEPTH_2_Tac) &
+/***
+HERE((T:REASONING_DEPTH_2_Tac:"not a fwd theory":t)) &
+***/
+  add_thy(THEORY t IS x END)    /* not a fwd theory */
+ =>
+  gpl_7(THEORY t IS x END);
+
+  gpl_7(THEORY t IS ? END);
+
+
+  Set_REASONING_DEPTH(2) &      /* default */
+  gpl_7 bsmap b &
+  gpl_8
+ =>
+  gpl_6(PROOFMETHOD a IS b END);
+
+
+  gpl_defn(x);
+
+  bcrer(___pmd__Macros__X,(a==b))
+ =>
+  gpl_defn(a==b);
+
+  bcrer(___pmd__Macros__X,(h=>(a==b)))
+ =>
+  gpl_defn(h=>(a==b));
+
+  gpl_defn bsmap D &
+  gpl_6(X)
+ =>
+  gpl_6(X DEFINITIONS D);
+
+
+
+  gpl_incl(x);
+
+  bstring(s) &
+  bget(s,X) &
+  bcall(gplNoARITac:gpl_6(X))
+ =>
+  gpl_incl(s);
+
+  /***
+  from an inclusion
+  ***/
+  gpl_incl bsmap D &
+/***
+HERE((gpl_6("INCLUSIONS": D))) &
+***/
+  gpl_6(X)
+ =>
+  gpl_6(X INCLUSIONS D);
+
+
+
+  /***
+  the main .pmd/.btl
+  ***/
+  SetNotProcessingInclusionProof &
+  Set_REASONING_DEPTH(2) &      /* default */
+  gpl_7 bsmap b &
+  gpl_8
+ =>
+  gpl_66(PROOFMETHOD a IS b END);
+
+
+  gpl_defn bsmap D &
+  gpl_66(X)
+ =>
+  gpl_66(X DEFINITIONS D);
+
+  gpl_incl bsmap D &
+/***
+HERE((gpl_66("INCLUSIONS": D)))&  /? the main .pmd/.btl ?/
+***/
+  gpl_66(X)
+ =>
+  gpl_66(X INCLUSIONS D);
+
+
+
+
+  /***
+  this will first be a.b.n.pmd, and then a.b.n.btl.pmd,
+  but the latter plays no part ...
+  ***/
+
+  gpl_sto_tac_first bsmap b
+ =>
+  gpl_sto_tac_first_0(PROOFMETHOD a IS b END);
+
+  gpl_sto_tac_first_0(X)
+ =>
+  gpl_sto_tac_first_0(X DEFINITIONS D);
+
+  gpl_sto_tac_first_0(X)
+ =>
+  gpl_sto_tac_first_0(X INCLUSIONS D);
+
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gpl_5(f);
+
+  bget(f,X) &
+  SetProcessingInclusionProof &
+/***
+HERE(("gpl_sto_tac_first":f)) &
+***/
+  bcall(gplNoARITac:gpl_sto_tac_first_0(X)) &
+  bcall(gplNoARITac:gpl_66(X))
+ =>
+  gpl_5(f);
+
+
+
+  bcrer(t,r)
+ =>
+  gplprev_2(t,r);
+
+  brule(gplX.6,T) &
+  bmodr(gplX.6,(T,t(?)))
+ =>
+  gplprev_1_upd_gplX_6(t);
+
+  brule(gplX.6,T) &
+  bsearch(t(?),T,S)
+ =>
+  gplprev_1_upd_gplX_6(t);
+
+  brule(gplX.5,T) &
+  bmodr(gplX.5,(T,t(?)))
+ =>
+  gplprev_1_upd_gplX_5(t);
+
+  brule(gplX.5,T) &
+  bsearch(t(?),T,S)
+ =>
+  gplprev_1_upd_gplX_5(t);
+
+  gplprev_1(x);
+
+  gplprev_1_upd_gplX_5(t) &
+  gplprev_1_upd_gplX_6(t) &
+  gplprev_2(t) bsmap X
+ =>
+  gplprev_1(THEORY t IS X END);
+
+  gplprev_1(THEORY EnumerateX END);
+
+  gplprev_1(THEORY EnumerateX IS X END);
+
+  gplprev_1(THEORY NotEqualX END);
+
+  gplprev_1(THEORY NotEqualX IS X END);
+
+  gplprev_1(THEORY RewriteToFalseOrTrueX END);
+
+  gplprev_1(THEORY RewriteToFalseOrTrueX IS X END);
+
+  gplprev_1(THEORY FwdContra0X END);
+
+  gplprev_1(THEORY FwdContra0X IS X END);
+
+  gplprev_1(THEORY FwdEqual1X END);
+
+  gplprev_1(THEORY FwdEqual1X IS X END);
+
+  gplprev_1(THEORY ExpandHypX END);
+
+  gplprev_1(THEORY ExpandHypX IS X END);
+
+  gplprev_1(THEORY PropertiesX END);
+
+  gplprev_1(THEORY PropertiesX IS X END);
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gplprev_0(f);
+
+  bget(f,X) &
+  bmodr(gplX.5,?) &
+  gplprev_1 bsmap (X) &
+  gplprev_1_upd_gplX_5(BToolLemmas) &
+  gplprev_1_upd_gplX_6(BToolLemmas)
+ =>
+  gplprev_0(f);
+
+
+
+
+
+  InformCantConnect(".Bplt") &
+  PFZ
+ =>
+  gplprooflist;
+
+  bconnect(".Bplt") &
+  brule(gplX.1,(a.b.n)) &
+  brule(gplX.3,(L)) &
+  bprintf("(%|%)\n",a.b.n,brev(L))
+ =>
+  gplprooflist;
+
+
+
+  brule(gplX.3,L) &
+  brule(gplX.2,t) &
+  bmodr(gplX.3,(L,t.n))
+ =>
+  add_rule(n);
+
+  brule(gplX.3,?) &
+  brule(gplX.2,t) &
+  bmodr(gplX.3,(t.n))
+ =>
+  add_rule(n);
+
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gpl_4(f)(x);
+
+  bconnect(f) &
+  bprintf("%\n",x)
+ =>
+  gpl_4(f)(x);
+
+
+/*
+  gpl_4(f)(bflat(a&b)=>c)
+ =>
+  gpl_4(f)(a=>(b=>c));
+*/
+
+
+/***
+HERE((gpl_3(x)))=>
+***/
+  gpl_3(x);
+
+  brule(t.n,x) &
+  add_rule(n) &
+/***
+HERE((gpl_4(t:x)))&
+***/
+  gpl_4(bcatl(".Bpob.",t,".",n))(x)
+ =>  
+  gpl_3(t,n);
+
+  brule(BToolLemmas_TMP.n,x) &
+  add_rule(n) &
+/***
+HERE((gpl_4(BToolLemmas:x)))&
+***/
+  gpl_4(bcatl(".Bpob.",BToolLemmas,".",n))(x)
+ =>  
+  gpl_3(BToolLemmas,n);
+
+  brule(gplX.5,T) &
+  bsearch(t(x),T,U) &
+  bmodr(gplX.2,t) &
+/***
+HERE(("This is the list of all Theories/proofs to be done":t:x))&
+***/
+  gpl_3(t) bsmap x
+ =>
+  gpl_2(t(?));
+
+  gpl_2(?);
+
+  brule(gplX.6,T) &
+  gpl_2 bsmap T
+ =>
+  gpl_1;
+
+
+  gplcurr_TMP_Bbtl(x);
+
+/***
+HERENOARI((L))&
+***/
+  Connect("TMP/.Bbtl") &
+  bprintf("%",L) &
+  bclose
+ =>
+  gplcurr_TMP_Bbtl(THEORY BToolLemmas IS L END);
+
+
+
+  clean(t)
+ =>
+  clean_if_not_BToolLemmas(t);
+
+  clean_if_not_BToolLemmas(BToolLemmas);
+
+
+
+  gplcurr_2(x);
+
+
+  /***
+  level > 0
+  ***/
+
+/***
+HERE(("BToolLemmas".m."NOT already proved")) &
+***/
+  brule(gplX.5,L) &
+  bsearch(t(X),L,M) &
+  bmodr(gplX.5,(M,t(X,m)))
+ =>
+  gplcurr_2(t,bproved(l),m,n);    /* proved BToolLemmas */
+
+  brule(t.m,bproved(l))            /* prev level also proved */
+/***
+&HERE(("BToolLemmas".m."already proved"))
+***/
+ =>
+  gplcurr_2(t,bproved(l),m,n);    /* proved BToolLemmas */
+
+  brule(t.m,1) &                  /* prev (level > 0) not proved */
+  brule(gplX.5,L) &
+  bsearch(t(X),L,M) &
+  bmodr(gplX.5,(M,t(X,m)))
+ =>
+  gplcurr_2(t,0,m,n);             /* curr level proved */
+
+  /***
+  level 0
+  ***/
+
+  brule(gplX.1,a.b.1) &           /* prev (level 0) - so not proved */
+  brule(gplX.5,L) &
+  bsearch(t(X),L,M) &
+  bmodr(gplX.5,(M,t(X,m)))
+ =>
+  gplcurr_2(t,bproved(l),m,n);    /* proved BToolLemmas */
+
+  brule(gplX.1,a.b.1) &           /* prev (level 0) - so not proved */
+  brule(gplX.5,L) &
+  bsearch(t(X),L,M) &
+  bmodr(gplX.5,(M,t(X,m)))
+ =>
+  gplcurr_2(t,0,m,n);           /* curr level proved */
+
+
+
+  bcrer(BToolLemmas_TMP,l)
+ =>
+  gplcurr_BToolLemmas1(l);
+
+  bcrer(BToolLemmas_TMP,l)
+ =>
+  gplcurr_BToolLemmas1(bproved(l));
+
+  gplcurr_BToolLemmas(x);
+
+  gplcurr_BToolLemmas1 bsmap X
+ =>
+  gplcurr_BToolLemmas(THEORY BToolLemmas IS X END);
+
+
+  gplcurr_1(x);
+
+  gplcurr_2(t) bnmap X &
+  clean_if_not_BToolLemmas(t)
+ =>
+  gplcurr_1(THEORY t IS X END);
+
+  gplcurr_1(THEORY EnumerateX END);
+
+  gplcurr_1(THEORY EnumerateX IS X END);
+
+  gplcurr_1(THEORY NotEqualX END);
+
+  gplcurr_1(THEORY NotEqualX IS X END);
+
+  gplcurr_1(THEORY RewriteToFalseOrTrueX END);
+
+  gplcurr_1(THEORY RewriteToFalseOrTrueX IS X END);
+
+  gplcurr_1(THEORY FwdContra0X END);
+
+  gplcurr_1(THEORY FwdContra0X IS X END);
+
+  gplcurr_1(THEORY FwdEqual1X END);
+
+  gplcurr_1(THEORY FwdEqual1X IS X END);
+
+  gplcurr_1(THEORY ExpandHypX END);
+
+  gplcurr_1(THEORY ExpandHypX IS X END);
+
+  gplcurr_1(THEORY PropertiesX END);
+
+  gplcurr_1(THEORY PropertiesX IS X END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gplcurr_0(f);
+
+  bget(f,X) &
+  bcall(gplNoARITac:(gplcurr_BToolLemmas bsmap (X))) &
+  bcall(gplNoARITac:(gplcurr_1 bsmap (X))) &
+  bcall(gplNoARITac:(gplcurr_TMP_Bbtl bsmap (X)))
+ =>
+  gplcurr_0(f);
+
+
+
+
+
+  gplzero_1(x);
+
+  bcrelr(t,X)
+ =>
+  gplzero_1(THEORY t IS X END);
+
+  gplzero_1(THEORY EnumerateX END);
+
+  gplzero_1(THEORY EnumerateX IS X END);
+
+  gplzero_1(THEORY NotEqualX END);
+
+  gplzero_1(THEORY NotEqualX IS X END);
+
+  gplzero_1(THEORY RewriteToFalseOrTrueX END);
+
+  gplzero_1(THEORY RewriteToFalseOrTrueX IS X END);
+
+  gplzero_1(THEORY FwdContra0X END);
+
+  gplzero_1(THEORY FwdContra0X IS X END);
+
+  gplzero_1(THEORY FwdEqual1X END);
+
+  gplzero_1(THEORY FwdEqual1X IS X END);
+
+  gplzero_1(THEORY ExpandHypX END);
+
+  gplzero_1(THEORY ExpandHypX IS X END);
+
+  gplzero_1(THEORY PropertiesX END);
+
+  gplzero_1(THEORY PropertiesX IS X END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gplzero_0(f);
+
+  bget(f,X) &
+  gplzero_1 bsmap (X) &
+  bplsrcpo_1 bsmap (X) &
+  gplbinpo_1 bsmap (X)
+ =>
+  gplzero_0(f);
+
+
+
+
+  gplbinpo_1(X);
+
+  bprintf("&\n%\n",THEORY EnumerateX END)
+ =>
+  gplbinpo_1(THEORY EnumerateX END);
+
+  bprintf("&\n%\n",THEORY EnumerateX IS T END)
+ =>
+  gplbinpo_1(THEORY EnumerateX IS T END);
+
+  bprintf("&\n%\n",THEORY NotEqualX END)
+ =>
+  gplbinpo_1(THEORY NotEqualX END);
+
+  bprintf("&\n%\n",THEORY NotEqualX IS T END)
+ =>
+  gplbinpo_1(THEORY NotEqualX IS T END);
+
+  bprintf("&\n%\n",THEORY RewriteToFalseOrTrueX END)
+ =>
+  gplbinpo_1(THEORY RewriteToFalseOrTrueX END);
+
+  bprintf("&\n%\n",THEORY RewriteToFalseOrTrueX IS T END)
+ =>
+  gplbinpo_1(THEORY RewriteToFalseOrTrueX IS T END);
+
+  bprintf("&\n%\n",THEORY FwdContra0X END)
+ =>
+  gplbinpo_1(THEORY FwdContra0X END);
+
+  bprintf("&\n%\n",THEORY FwdContra0X IS T END)
+ =>
+  gplbinpo_1(THEORY FwdContra0X IS T END);
+
+  bprintf("&\n%\n",THEORY FwdEqual1X END)
+ =>
+  gplbinpo_1(THEORY FwdEqual1X END);
+
+  bprintf("&\n%\n",THEORY FwdEqual1X IS T END)
+ =>
+  gplbinpo_1(THEORY FwdEqual1X IS T END);
+
+  bprintf("&\n%\n",THEORY ExpandHypX END)
+ =>
+  gplbinpo_1(THEORY ExpandHypX END);
+
+  bprintf("&\n%\n",THEORY ExpandHypX IS T END)
+ =>
+  gplbinpo_1(THEORY ExpandHypX IS T END);
+
+  InformCantConnect(".Bpof") &
+  PFZ
+ =>
+  gplbinpo_1(THEORY PropertiesX END);
+
+  bconnect(".Bpof") &
+  bprintf("%\n",THEORY PropertiesX END)
+ =>
+  gplbinpo_1(THEORY PropertiesX END);
+
+  InformCantConnect(".Bpof") &
+  PFZ
+ =>
+  gplbinpo_1(THEORY PropertiesX IS T END);
+
+  bconnect(".Bpof") &
+  bprintf("%\n",THEORY PropertiesX IS T END)
+ =>
+  gplbinpo_1(THEORY PropertiesX IS T END);
+
+
+
+
+
+  bplsrcpo_1(X);
+
+  bprintf("&\n%\n",THEORY EnumerateX END)
+ =>
+  bplsrcpo_1(THEORY EnumerateX END);
+
+  bprintf("&\n%\n",THEORY EnumerateX IS T END)
+ =>
+  bplsrcpo_1(THEORY EnumerateX IS T END);
+
+  bprintf("&\n%\n",THEORY NotEqualX END)
+ =>
+  bplsrcpo_1(THEORY NotEqualX END);
+
+  bprintf("&\n%\n",THEORY NotEqualX IS T END)
+ =>
+  bplsrcpo_1(THEORY NotEqualX IS T END);
+
+  bprintf("&\n%\n",THEORY RewriteToFalseOrTrueX END)
+ =>
+  bplsrcpo_1(THEORY RewriteToFalseOrTrueX END);
+
+  bprintf("&\n%\n",THEORY RewriteToFalseOrTrueX IS T END)
+ =>
+  bplsrcpo_1(THEORY RewriteToFalseOrTrueX IS T END);
+
+  bprintf("&\n%\n",THEORY FwdContra0X END)
+ =>
+  bplsrcpo_1(THEORY FwdContra0X END);
+
+  bprintf("&\n%\n",THEORY FwdContra0X IS T END)
+ =>
+  bplsrcpo_1(THEORY FwdContra0X IS T END);
+
+  bprintf("&\n%\n",THEORY FwdEqual1X END)
+ =>
+  bplsrcpo_1(THEORY FwdEqual1X END);
+
+  bprintf("&\n%\n",THEORY FwdEqual1X IS T END)
+ =>
+  bplsrcpo_1(THEORY FwdEqual1X IS T END);
+
+  bprintf("&\n%\n",THEORY ExpandHypX END)
+ =>
+  bplsrcpo_1(THEORY ExpandHypX END);
+
+  bprintf("&\n%\n",THEORY ExpandHypX IS T END)
+ =>
+  bplsrcpo_1(THEORY ExpandHypX IS T END);
+
+  InformCantConnect(".Bspo") &
+  PFZ
+ =>
+  bplsrcpo_1(THEORY PropertiesX END);
+
+  bconnect(".Bspo") &
+  bprintf("%\n",THEORY PropertiesX END)
+ =>
+  bplsrcpo_1(THEORY PropertiesX END);
+
+  InformCantConnect(".Bspo") &
+  PFZ
+ =>
+  bplsrcpo_1(THEORY PropertiesX IS T END);
+
+  bconnect(".Bspo") &
+  bprintf("%\n",THEORY PropertiesX IS T END)
+ =>
+  bplsrcpo_1(THEORY PropertiesX IS T END);
+
+
+
+
+  pobcm3(n)(m);
+
+  Writef(("\n\n      "))
+ =>
+  pobcm3(n)(n);
+
+  pobcm2(n)(m);
+
+  Writef(("\n      "))
+ =>
+  pobcm2(n)(n);
+
+  pobcm1(n)(m);
+
+  Writef((" "))
+ =>
+  pobcm1(n)(n);
+
+  brule(gplX.7,n) &
+  bmodr(gplX.7,(n+1)) &
+  Writef((".")) &
+  bprintf(";\n") &
+  pobcm1(n)((n/5)*5) &
+  pobcm2(n)((n/25)*25) &
+  pobcm3(n)((n/100)*100)
+ =>
+  pobcm;
+
+  brule(gplX.7,?) &
+  bmodr(gplX.7,2) &
+  Writef(("."))
+ =>
+  pobcm;
+
+  pobcm &
+  brule(gplX.1,(a.b.N)) &
+  bprintf("(\n%.%(0):%.%:\n\n",a,b,t,m) &
+  bcall(MODR:bmodr(ppfX.2,0)) &  /* Law count */
+  bcall(MODR:bmodr(ppfX.4,0)) &  /* Lem count */
+  bcall((WRITE;ppfX)~:  ( setppf(0) & pr_po(g) )) &
+  bcall((WRITE;ppfX)~:  ( pr("\n") )) &
+  bprintf(")\n")
+ =>
+  gplpob_3(t,g,m,n);
+
+
+  gplpob_2(x);
+
+  gplpob_3(t) bnmap X
+ =>
+  gplpob_2(THEORY t IS X END);
+
+  gplpob_2(THEORY EnumerateX END);
+
+  gplpob_2(THEORY EnumerateX IS X END);
+
+  gplpob_2(THEORY NotEqualX END);
+
+  gplpob_2(THEORY NotEqualX IS X END);
+
+  gplpob_2(THEORY RewriteToFalseOrTrueX END);
+
+  gplpob_2(THEORY RewriteToFalseOrTrueX IS X END);
+
+  gplpob_2(THEORY FwdContra0X END);
+
+  gplpob_2(THEORY FwdContra0X IS X END);
+
+  gplpob_2(THEORY FwdEqual1X END);
+
+  gplpob_2(THEORY FwdEqual1X IS X END);
+
+  gplpob_2(THEORY ExpandHypX END);
+
+  gplpob_2(THEORY ExpandHypX IS X END);
+
+  gplpob_2(THEORY PropertiesX END);
+
+  gplpob_2(THEORY PropertiesX IS X END);
+
+  InformCantConnect(g) &
+  PFZ
+ =>
+  gplpob_1(g);
+
+  bconnect(g)
+ =>
+  gplpob_1(g);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  gplpob_0(f);
+
+  bget(f,X) &
+  gplpob_1(g) &
+  gplpob_2 bsmap (X)
+ =>
+  gplpob_0(f)(g);
+
+
+
+  Writef(("\n  Constructing % proofs for % Level %\n\n     ",M,a.b,N-1)) &
+  bshell(bcatl("echo ",M," > .Btot")) &       /* used in Proof.c */
+  bmodr(gplX.1,(a.b.N)) &
+  bshell(bcatl("rm -f .Blws")) &
+  bshell(bcatl("rm -f POB/",a,".",b,".prf.",N-1)) &
+  bshell(bcatl("rm -f TEX/",a,".",b,".prf.",N-1,".*")) &
+  gplprev_0(bcatl("POB/",a,".",b,".",(N-1),".po")) &
+  gplcurr_0(bcatl("POB/",a,".",b,".",N,".po")) &
+/***
+bcall((CATL;SHELL):bshell(bcatl("cat ","POB/",a,".",b,".",N,".po"))) &
+PrintTHEORY(BToolLemmas_TMP)&
+***/
+  gplzero_0(bcatl("POB/",a,".",b,".",0,".po")) &
+  gpl_1 &
+  gplprooflist &
+  gpl_5(bcatl("PMD/",a,".",b,".",N-1,".pmd")) &
+  gpl_5(bcatl("PMD/",a,".",b,".",N-1,".btl.pmd"))
+ =>
+  gpl_0(a.b|N|M);
+
+  Writef(("\n  Constructing % proof for % Level %\n\n     ",1,a.b,N-1)) &
+  bshell(bcatl("echo ",1," > .Btot")) &       /* used in Proof.c */
+  bmodr(gplX.1,(a.b.N)) &
+  bshell(bcatl("rm -f POB/",a,".",b,".prf.",N-1)) &
+  bshell(bcatl("rm -f TEX/",a,".",b,".prf.",N-1,".*")) &
+  gplprev_0(bcatl("POB/",a,".",b,".",(N-1),".po")) &
+  gplcurr_0(bcatl("POB/",a,".",b,".",N,".po")) &
+  gplzero_0(bcatl("POB/",a,".",b,".",0,".po")) &
+  gpl_1 &
+  gplprooflist &
+  gpl_5(bcatl("PMD/",a,".",b,".",N-1,".pmd")) &
+  gpl_5(bcatl("PMD/",a,".",b,".",N-1,".btl.pmd"))
+ =>
+  gpl_0(a.b|N|1);
+
+  GetJobs(X) &
+  bsearch((a.b:BT_PNP:n),X,Y) &
+  ModifyJobs(Y) &
+  Writef(("\n  Printing % proof obligations for %\n\n      ",M,a.b)) &
+  bmodr(gplX.1,(a.b.0)) &
+  bshell(bcatl("rm -f POB/",a,".",b,".prf")) &
+  bshell(bcatl("rm -f TEX/",a,".",b,".prf.*")) &
+  gplpob_0(bcatl("POB/",a,".",b,".",0,".po"))(bcatl("POB/",a,".",b,".prf")) &
+  Writef(("\n\n  Done\n")) &
+  Update_ppf(a.b.n) &
+  LoadToolkit(1)
+ =>
+  gpl_0(a.b|0|M);
+
+  GetJobs(X) &
+  bsearch((a.b:BT_PNP:n),X,Y) &
+  ModifyJobs(Y) &
+  Writef(("\n  Printing % proof obligation for %\n\n      ",1,a.b)) &
+  bmodr(gplX.1,(a.b.0)) &
+  bshell(bcatl("rm -f POB/",a,".",b,".prf")) &
+  bshell(bcatl("rm -f TEX/",a,".",b,".prf.*")) &
+  gplpob_0(bcatl("POB/",a,".",b,".",0,".po"))(bcatl("POB/",a,".",b,".prf")) &
+  Writef(("\n\n  Done\n")) &
+  Update_ppf(a.b.0) &
+  LoadToolkit(1)
+ =>
+  gpl_0(a.b|0|1)
+
+END
+
+&
+
+THEORY PrintUnprovedX IS
+
+#define pupTac ((CATL;MAP;MODR;WRITE)~;PrintUnprovedX)~
+
+#define PrintUnproved(x)  bcall(pupTac: pu_0(x))
+
+  ?;
+
+  brule(PrintUnprovedX.1,M) &
+  bsearch(?,M,N) &
+  bmodr(PrintUnprovedX.1,?) &
+  Writef(("\n      %:\n        %",r,N))
+ =>
+  pu_6(r);
+
+  brule(PrintUnprovedX.1,?)
+ =>
+  pu_6(r);
+
+  brule(PrintUnprovedX.1,M) &
+  bmodr(PrintUnprovedX.1,(M,m))
+ =>
+  pu_4(x,m,n);
+
+  pu_4(bproved(L),m,n);
+
+  pu_4(0,m,n);
+
+
+  pu_3(x);
+
+  bmodr(PrintUnprovedX.1,?) &
+  pu_4 bnmap r &
+  pu_6(t)
+ =>
+  pu_3(THEORY t IS r END);
+
+  pu_3(THEORY ExpandHypX END);
+
+  pu_3(THEORY ExpandHypX IS r END);
+
+  pu_3(THEORY EnumerateX END);
+
+  pu_3(THEORY EnumerateX IS r END);
+
+  pu_3(THEORY NotEqualX END);
+
+  pu_3(THEORY NotEqualX IS r END);
+
+  pu_3(THEORY RewriteToFalseOrTrueX END);
+
+  pu_3(THEORY RewriteToFalseOrTrueX IS r END);
+
+  pu_3(THEORY FwdContra0X END);
+
+  pu_3(THEORY FwdContra0X IS r END);
+
+  pu_3(THEORY FwdEqual1X END);
+
+  pu_3(THEORY FwdEqual1X IS r END);
+
+  pu_3(THEORY PropertiesX END);
+
+  pu_3(THEORY PropertiesX IS r END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  pu_2(a.b)(f);
+  
+  bget(f,X) &
+  pu_3 bsmap X 
+ =>
+  pu_2(a.b)(f);
+  
+  pu_2(a.b)(bcatl("POB/",a,".",b,".",N,".po")) &
+  Writef(("\n"))
+ =>
+  pu_0(a.b.N)
+
+END

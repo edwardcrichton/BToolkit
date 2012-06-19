@@ -1,0 +1,12 @@
+#! /bin/csh -f
+
+setenv BDOORSDEV `pwd`
+echo " setting Doors directory to"
+echo $BDOORSDEV
+if ( ! -d $BDOORSDEV/doorsdata ) then
+	mkdir $BDOORSDEV/doorsdata
+endif
+setenv DOORSDATA $BDOORSDEV/doorsdata
+xterm -title DOORS -name DOORS -e $DOORSHOME/bin/doors4
+
+

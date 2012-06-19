@@ -1,0 +1,35 @@
+#! /bin/sh
+
+BROWSERS="firefox netscape"
+
+if [ ! -r $1 ];
+then
+  printf "\n  Bbrowser:\n\n   %s\n\n  does not exist\n\n" $1
+  exit 1
+fi
+
+for browser in $BROWSERS
+do
+  if [ `which $browser` = "" ];
+  then
+    continue;
+  fi
+
+  if [ $browser = "netscape" ];
+  then
+    if [ ! "`ls $HOME/.netscape|grep lock`" = "" ];
+    then      
+      $browser -remote "openFile($1)"
+    else
+      $browser $1
+    fi
+    exit 0
+  fi
+
+  if [ $browser = "firefox" ];
+  then
+    $browser "file://$1"
+    exit 0
+  fi
+done
+

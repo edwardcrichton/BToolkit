@@ -1,0 +1,55 @@
+#! /bin/csh -f
+
+#
+# Install in $BKIT
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  ------------------------------------------"
+echo "  This script copies ErrorCodes "
+echo "  to `pwd`/BKIT "
+echo "  ------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+cd ../INSTALL_SCRIPTS
+
+if ( $?TOOLKIT_VERSION && $TOOLKIT_VERSION == "WWW_VERSION" ) then
+  set error_code_file = ErrorCodes.www
+else
+  set error_code_file = ErrorCodes
+endif
+
+foreach file ( $error_code_file  )
+
+  if ( ! -r $file ) then
+    echo ""
+    echo "            ----->>>>> $file does not exist - NOT COPIED"
+    echo ""
+    exit ( 1 )
+  else
+    rm $BKIT/ErrorCodes
+    cp $file $BKIT/ErrorCodes
+    chmod 644 $BKIT/ErrorCodes
+    echo "    $file -> $BKIT/ErrorCodes "
+  endif
+
+end
+
+
+echo ""
+echo "  Done "
+echo ""

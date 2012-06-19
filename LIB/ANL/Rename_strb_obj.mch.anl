@@ -1,0 +1,875 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(String_TYPE(?):(?):((?),(?),(?)))
+,
+(Rename_str_ctx(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_strtok , Rename_strstruct , Rename_strmem)
+;
+(Rename_strtok , Rename_strstruct , Rename_strmem)
+;
+(Rename_strtok <: Rename_STROBJ & Rename_strstruct : Rename_strtok --> STRING & Rename_strmem : NAT)
+;
+(Rename_strtok <: Rename_STROBJ & Rename_strstruct : Rename_strtok --> STRING & Rename_strmem : NAT)
+;
+(?)
+;
+(Rename_strtok , Rename_strstruct , Rename_strmem := {} , {} , 0)
+;
+(Rename_strtok , Rename_strstruct , Rename_strmem := {} , {} , 0)
+;
+(Rename_STS_STR_OBJ,Rename_MEM_FUL_STR_OBJ,Rename_OBJ_FUL_STR_OBJ,Rename_ANY_STR_OBJ,Rename_CRE_STR_OBJ,Rename_NEW_STR_OBJ,Rename_KIL_STR_OBJ,Rename_VAL_STR_OBJ,Rename_EMP_STR_OBJ,Rename_LEN_STR_OBJ,Rename_EQL_LIT_STR_OBJ,Rename_XTR_STR_OBJ,Rename_CLR_STR_OBJ,Rename_PSH_STR_OBJ,Rename_KEP_STR_OBJ,Rename_POP_STR_OBJ,Rename_STO_STR_OBJ,Rename_APP_STR_OBJ,Rename_SAV_STR_OBJ,Rename_RST_STR_OBJ,Rename_SAVN_STR_OBJ,Rename_RSTN_STR_OBJ)
+;
+(Rename_STS_STR_OBJ , Rename_MEM_FUL_STR_OBJ , Rename_OBJ_FUL_STR_OBJ , Rename_ANY_STR_OBJ , Rename_CRE_STR_OBJ , Rename_NEW_STR_OBJ , Rename_KIL_STR_OBJ , Rename_VAL_STR_OBJ , Rename_EMP_STR_OBJ , Rename_LEN_STR_OBJ , Rename_EQL_LIT_STR_OBJ , Rename_XTR_STR_OBJ , Rename_CLR_STR_OBJ , Rename_PSH_STR_OBJ , Rename_KEP_STR_OBJ , Rename_POP_STR_OBJ , Rename_STO_STR_OBJ , Rename_APP_STR_OBJ , Rename_SAV_STR_OBJ , Rename_RST_STR_OBJ , Rename_SAVN_STR_OBJ , Rename_RSTN_STR_OBJ)
+;
+(Rename_strb_obj(maxobj , maxmem):(maxobj > 0 & maxmem : NAT & maxobj : NAT):(?))
+;
+(
+(
+ (Rename_STS_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , (mm , nn , pp , qq <-- Rename_STS_STR_OBJ))
+;
+ (?)
+;
+ (mm , nn , pp , qq)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ mm , nn , pp , qq := Rename_strmem , maxmem , card(Rename_strtok) , maxobj
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (mm , nn , pp , qq := Rename_strmem , maxmem , card(Rename_strtok) , maxobj)
+ )
+ )
+)
+,
+(
+ (Rename_MEM_FUL_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_MEM_FUL_STR_OBJ))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(Rename_strmem = maxmem)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(Rename_strmem = maxmem))
+ )
+ )
+)
+,
+(
+ (Rename_OBJ_FUL_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_OBJ_FUL_STR_OBJ))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(card(Rename_strtok) = maxobj)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(card(Rename_strtok) = maxobj))
+ )
+ )
+)
+,
+(
+ (Rename_ANY_STR_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (pp <-- Rename_ANY_STR_OBJ))
+;
+ (?)
+;
+ (pp)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ pp :: Rename_STROBJ
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_STROBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_CRE_STR_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , (bb , pp <-- Rename_CRE_STR_OBJ))
+;
+ (?)
+;
+ (bb , pp)
+;
+ (
+ (true)
+ |
+ (
+ (IF card(Rename_strtok) < maxobj THEN
+ ANY qq WHERE
+ qq : Rename_STROBJ-Rename_strtok
+ THEN
+ Rename_strstruct(qq) := <> ||
+ Rename_strtok := Rename_strtok \/ {qq} ||
+ pp := qq ||
+ bb := TRUE
+ END
+ ELSE
+ bb := FALSE ||
+ pp :: Rename_STROBJ
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (card(Rename_strtok) < maxobj)
+ )
+ ==>
+ (
+ @(qq).
+ (
+ (
+ (qq : Rename_STROBJ-Rename_strtok)
+ )
+ ==>
+ (
+ (Rename_strstruct , Rename_strtok , pp , bb := Rename_strstruct <+ {qq |-> <>} , Rename_strtok \/ {qq} , qq , TRUE)
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ (maxobj <= card(Rename_strtok))
+ )
+ ==>
+ (
+ (
+ (bb := FALSE)
+ )
+ ||
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_STROBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_NEW_STR_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , (bb , pp <-- Rename_NEW_STR_OBJ(nn)))
+;
+ (nn)
+;
+ (bb , pp)
+;
+ (
+ (card(Rename_strtok) < maxobj & nn : STRING)
+ |
+ (
+ (IF Rename_strmem+size(nn) <= maxmem THEN
+ ANY qq WHERE
+ qq : Rename_STROBJ-Rename_strtok
+ THEN
+ Rename_strstruct(qq) := nn ||
+ Rename_strtok := Rename_strtok \/ {qq} ||
+ Rename_strmem := Rename_strmem+size(nn) ||
+ pp := qq ||
+ bb := TRUE
+ END
+ ELSE
+ bb := FALSE ||
+ pp :: Rename_STROBJ
+ END)
+ )
+ )
+;
+ (
+ (card(Rename_strtok) < maxobj & nn : STRING)
+ |
+ (
+ (
+ (
+ (Rename_strmem+size(nn) <= maxmem)
+ )
+ ==>
+ (
+ @(qq).
+ (
+ (
+ (qq : Rename_STROBJ-Rename_strtok)
+ )
+ ==>
+ (
+ (Rename_strstruct , Rename_strtok , Rename_strmem , pp , bb := Rename_strstruct <+ {qq |-> nn} , Rename_strtok \/ {qq} , Rename_strmem+size(nn) , qq , TRUE)
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ (maxmem < Rename_strmem+size(nn))
+ )
+ ==>
+ (
+ (
+ (bb := FALSE)
+ )
+ ||
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_STROBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_KIL_STR_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_KIL_STR_OBJ(pp))
+;
+ (pp)
+;
+ (?)
+;
+ (
+ (pp : Rename_strtok & Rename_strmem >= size(Rename_strstruct(pp)))
+ |
+ (
+ (
+ (
+ (Rename_strstruct := {pp} <<| Rename_strstruct)
+ )
+ ||
+ (
+ (Rename_strtok := Rename_strtok-{pp})
+ )
+ )
+ ||
+ (
+ (Rename_strmem := Rename_strmem-size(Rename_strstruct(pp)))
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_strtok & size(Rename_strstruct(pp)) <= Rename_strmem)
+ |
+ (
+ (Rename_strstruct , Rename_strtok , Rename_strmem := {pp} <<| Rename_strstruct , Rename_strtok-{pp} , Rename_strmem-size(Rename_strstruct(pp)))
+ )
+ )
+)
+,
+(
+ (Rename_VAL_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_STR_OBJ(pp , ii)))
+;
+ (pp , ii)
+;
+ (vv)
+;
+ (
+ (pp : Rename_strtok & ii : dom(Rename_strstruct(pp)))
+ |
+ (
+ (vv := Rename_strstruct(pp)(ii))
+ )
+ )
+;
+ (
+ (pp : Rename_strtok & ii : dom(Rename_strstruct(pp)))
+ |
+ (
+ (vv := Rename_strstruct(pp)(ii))
+ )
+ )
+)
+,
+(
+ (Rename_EMP_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EMP_STR_OBJ(pp)))
+;
+ (pp)
+;
+ (bb)
+;
+ (
+ (pp : Rename_strtok)
+ |
+ (
+ (bb := bool(Rename_strstruct(pp) = <>))
+ )
+ )
+;
+ (
+ (pp : Rename_strtok)
+ |
+ (
+ (bb := bool(Rename_strstruct(pp) = <>))
+ )
+ )
+)
+,
+(
+ (Rename_LEN_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , (nn <-- Rename_LEN_STR_OBJ(pp)))
+;
+ (pp)
+;
+ (nn)
+;
+ (
+ (pp : Rename_strtok)
+ |
+ (
+ (nn := size(Rename_strstruct(pp)))
+ )
+ )
+;
+ (
+ (pp : Rename_strtok)
+ |
+ (
+ (nn := size(Rename_strstruct(pp)))
+ )
+ )
+)
+,
+(
+ (Rename_EQL_LIT_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL_LIT_STR_OBJ(tt , nn)))
+;
+ (tt , nn)
+;
+ (bb)
+;
+ (
+ (tt : Rename_strtok & nn : STRING)
+ |
+ (
+ (bb := bool(Rename_strstruct(tt) = nn))
+ )
+ )
+;
+ (
+ (tt : Rename_strtok & nn : STRING)
+ |
+ (
+ (bb := bool(Rename_strstruct(tt) = nn))
+ )
+ )
+)
+,
+(
+ (Rename_XTR_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , (ss <-- Rename_XTR_STR_OBJ(pp)))
+;
+ (pp)
+;
+ (ss)
+;
+ (
+ (pp : Rename_strtok)
+ |
+ (
+ (ss := Rename_strstruct(pp))
+ )
+ )
+;
+ (
+ (pp : Rename_strtok)
+ |
+ (
+ (ss := Rename_strstruct(pp))
+ )
+ )
+)
+,
+(
+ (Rename_CLR_STR_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_CLR_STR_OBJ(pp))
+;
+ (pp)
+;
+ (?)
+;
+ (
+ (pp : Rename_strtok & Rename_strmem >= size(Rename_strstruct(pp)))
+ |
+ (
+ (
+ (Rename_strstruct(pp) := <>)
+ )
+ ||
+ (
+ (Rename_strmem := Rename_strmem-size(Rename_strstruct(pp)))
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_strtok & size(Rename_strstruct(pp)) <= Rename_strmem)
+ |
+ (
+ (Rename_strstruct , Rename_strmem := Rename_strstruct <+ {pp |-> <>} , Rename_strmem-size(Rename_strstruct(pp)))
+ )
+ )
+)
+,
+(
+ (Rename_PSH_STR_OBJ)
+;
+ (? , Mod_Op , Det_Op , (bb <-- Rename_PSH_STR_OBJ(pp , vv)))
+;
+ (pp , vv)
+;
+ (bb)
+;
+ (
+ (pp : Rename_strtok & vv : CHAR)
+ |
+ (
+ (IF Rename_strmem < maxmem THEN
+ Rename_strstruct(pp) := Rename_strstruct(pp) <- vv ||
+ Rename_strmem := Rename_strmem+1 ||
+ bb := TRUE
+ ELSE
+ bb := FALSE
+ END)
+ )
+ )
+;
+ (
+ (pp : Rename_strtok & vv : CHAR)
+ |
+ (
+ (
+ (
+ (Rename_strmem < maxmem)
+ )
+ ==>
+ (
+ (Rename_strstruct , Rename_strmem , bb := Rename_strstruct <+ {pp |-> (Rename_strstruct(pp) <- vv)} , Rename_strmem+1 , TRUE)
+ )
+ )
+ []
+ (
+ (
+ (maxmem <= Rename_strmem)
+ )
+ ==>
+ (
+ (bb := FALSE)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_KEP_STR_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_KEP_STR_OBJ(pp , ii))
+;
+ (pp , ii)
+;
+ (?)
+;
+ (
+ (pp : Rename_strtok & ii : 0..size(Rename_strstruct(pp)) & Rename_strmem >= size(Rename_strstruct(pp))+ii)
+ |
+ (
+ (
+ (Rename_strstruct(pp) := Rename_strstruct(pp) /|\ ii)
+ )
+ ||
+ (
+ (Rename_strmem := Rename_strmem-size(Rename_strstruct(pp))+ii)
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_strtok & ii : 0..size(Rename_strstruct(pp)) & size(Rename_strstruct(pp))+ii <= Rename_strmem)
+ |
+ (
+ (Rename_strstruct , Rename_strmem := Rename_strstruct <+ {pp |-> (Rename_strstruct(pp) /|\ ii)} , Rename_strmem-size(Rename_strstruct(pp))+ii)
+ )
+ )
+)
+,
+(
+ (Rename_POP_STR_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_POP_STR_OBJ(pp))
+;
+ (pp)
+;
+ (?)
+;
+ (
+ (pp : Rename_strtok & size(Rename_strstruct(pp)) /= 0)
+ |
+ (
+ (
+ (Rename_strstruct(pp) := front(Rename_strstruct(pp)))
+ )
+ ||
+ (
+ (Rename_strmem := Rename_strmem-1)
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_strtok & not(size(Rename_strstruct(pp)) = 0))
+ |
+ (
+ (Rename_strstruct , Rename_strmem := Rename_strstruct <+ {pp |-> front(Rename_strstruct(pp))} , Rename_strmem-1)
+ )
+ )
+)
+,
+(
+ (Rename_STO_STR_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_STR_OBJ(pp , ii , vv))
+;
+ (pp , ii , vv)
+;
+ (?)
+;
+ (
+ (pp : Rename_strtok & vv : CHAR & ii : dom(Rename_strstruct(pp)))
+ |
+ (
+ (Rename_strstruct(pp)(ii) := vv)
+ )
+ )
+;
+ (
+ (pp : Rename_strtok & vv : CHAR & ii : dom(Rename_strstruct(pp)))
+ |
+ (
+ (Rename_strstruct := Rename_strstruct <+ {pp |-> (Rename_strstruct(pp) <+ {ii |-> vv})})
+ )
+ )
+)
+,
+(
+ (Rename_APP_STR_OBJ)
+;
+ (? , Mod_Op , Det_Op , (bb <-- Rename_APP_STR_OBJ(pp , qq)))
+;
+ (pp , qq)
+;
+ (bb)
+;
+ (
+ (pp : Rename_strtok & qq : Rename_strtok)
+ |
+ (
+ (IF Rename_strmem+size(Rename_strstruct(qq)) <= maxmem THEN
+ Rename_strstruct(pp) := Rename_strstruct(pp) ^ Rename_strstruct(qq) ||
+ Rename_strmem := Rename_strmem+size(Rename_strstruct(qq)) ||
+ bb := TRUE
+ ELSE
+ bb := FALSE
+ END)
+ )
+ )
+;
+ (
+ (pp : Rename_strtok & qq : Rename_strtok)
+ |
+ (
+ (
+ (
+ (Rename_strmem+size(Rename_strstruct(qq)) <= maxmem)
+ )
+ ==>
+ (
+ (Rename_strstruct , Rename_strmem , bb := Rename_strstruct <+ {pp |-> (Rename_strstruct(pp) ^ Rename_strstruct(qq))} , Rename_strmem+size(Rename_strstruct(qq)) , TRUE)
+ )
+ )
+ []
+ (
+ (
+ (maxmem < Rename_strmem+size(Rename_strstruct(qq)))
+ )
+ ==>
+ (
+ (bb := FALSE)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAV_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_STR_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_STR_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_STR_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY sstrn , sstro , stotstr WHERE
+ sstrn <: Rename_STROBJ &
+ sstro : sstrn --> STRING &
+ stotstr : NAT
+ THEN
+ Rename_strstruct := sstro ||
+ Rename_strtok := sstrn ||
+ Rename_strmem := stotstr
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(sstrn , sstro , stotstr).
+ (
+ (
+ (sstrn <: Rename_STROBJ & sstro : sstrn --> STRING & stotstr : NAT)
+ )
+ ==>
+ (
+ (Rename_strstruct , Rename_strtok , Rename_strmem := sstro , sstrn , stotstr)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_STR_OBJ)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_STR_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_STR_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_STR_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY sstrn , sstro , stotstr WHERE
+ sstrn <: Rename_STROBJ &
+ sstro : sstrn --> STRING &
+ stotstr : NAT
+ THEN
+ Rename_strstruct := sstro ||
+ Rename_strtok := sstrn ||
+ Rename_strmem := stotstr
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(sstrn , sstro , stotstr).
+ (
+ (
+ (sstrn <: Rename_STROBJ & sstro : sstrn --> STRING & stotstr : NAT)
+ )
+ ==>
+ (
+ (Rename_strstruct , Rename_strtok , Rename_strmem := sstro , sstrn , stotstr)
+ )
+ )
+ )
+ )
+)
+)

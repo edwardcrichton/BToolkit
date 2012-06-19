@@ -1,0 +1,48 @@
+#! /bin/csh -f
+
+#
+# Install $BKIT/BDEMO
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  ---------------------------------------------------"
+echo "  This script copies recursively from BTool_Tutorial "
+echo "  to `pwd`/BKIT/BTool_Tutorial "
+echo "  ---------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+echo ""
+
+if ( $?TOOLKIT_VERSION && $TOOLKIT_VERSION == "WWW_VERSION" ) then
+
+  echo "  BTool_Tutorial not copied (WWW_VERSION)
+
+else
+
+  if ( ! -d $BKIT/BTool_Tutorial ) then
+    mkdir $BKIT/BTool_Tutorial
+  endif
+
+  cd ..
+  echo "  cp -r BEESRC/BTool_Tutorial/*.src $BKIT/BTool_Tutorial"
+  cp -r BEESRC/BTool_Tutorial/*.src $BKIT/BTool_Tutorial
+
+endif
+
+echo ""
+echo "  Done "
+echo ""

@@ -1,0 +1,5525 @@
+/* Copyright (c) 1988-96, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define ReadRenameStore(x)    brule(GetSCX.1,x)
+#define ModifyRenameStore(x)  bmodr(GetSCX.1,x)
+
+#define ReadMchParamStore(x)   brule(GetMachineParametersX.1,x)
+#define ModifyMchParamStore(x) bmodr(GetMachineParametersX.1,x)
+
+#define ReadEnumsetsStore(x)   brule(GetEnumeratedSetsX.1,x)
+#define ModifyEnumsetsStore(x) bmodr(GetEnumeratedSetsX.1,x)
+
+#define ReadCurrValStateVars(x)   brule(StateX.1,x)
+#define ModifyCurrValStateVars(x) bmodr(StateX.1,x)
+
+#define ReadStateVarNames(x)   brule(StateX.2,x)
+#define ModifyStateVarNames(x) bmodr(StateX.2,x)
+
+#define ReadCurrValOutVars(x)   brule(StateX.3,x)
+#define ModifyCurrValOutVars(x) bmodr(StateX.3,x)
+
+#define ReadOutVarNames(x)   brule(StateX.4,x)
+#define ModifyOutVarNames(x) bmodr(StateX.4,x)
+
+#define ReadStateHistory(x)   brule(StateX.5,x)
+#define ModifyStateHistory(x) bmodr(StateX.5,x)
+
+#define ReadCurrentPrecondition(x)   brule(GetInputParametersX.1,x)
+#define ModifyCurrentPrecondition(x) bmodr(GetInputParametersX.1,x)
+
+#define ReadInputParameterHighlight(x)   brule(GetInputParametersX.2,x)
+#define ModifyInputParameterHighlight(x) bmodr(GetInputParametersX.2,x)
+
+#define ReadInputParameterPrompt(x)   brule(GetInputParametersX.3,x)
+#define ModifyInputParameterPrompt(x) bmodr(GetInputParametersX.3,x)
+
+
+#define ReadFAOpParams(y)   brule(GetInputParametersX.4,(y))
+#define ModifyFAOpParams(y) bmodr(GetInputParametersX.4,(y))
+
+
+
+
+#define motif_CHOICE_store_ops_flag_set \
+     brule(StoreOperationNamesX.2,1)
+#define set_motif_CHOICE_store_ops_flag \
+     bcall(MODR:bmodr(StoreOperationNamesX.2,1))
+#define clear_motif_CHOICE_store_ops_flag\
+    bcall(MODR:bmodr(StoreOperationNamesX.2,0))
+
+#define animfuTac (((WRITE;CATL;MODR;SHELL;RULE;MAP)~;AnimatorFromUserX)~)
+
+#define AnimatorDirect(x) bcall(animfuTac:anim_check_edit_0(x))
+
+
+
+#define eatTac ((CATL;SHELL;WRITE;ARI)~;EditAnimatorThyX)~
+
+#define EditAnimatorThyDirect(x) bcall(eatTac:eat(x))
+
+
+
+#define ClearAnimatorHaltFlag   bmodr(AnimatorHaltX.1,0)
+
+#define SetAnimatorHaltFlag     bmodr(AnimatorHaltX.1,1)
+
+
+
+#define ModifyAnimatorRule(a,b,c) bcall(((SUB~;ARI;CATL)~;MODR):bmodr(a.b,c))
+
+
+#define Constant____(v,x)    brule(SimplifyX.4,v) & v\(x)
+
+#define ReadBoundVars(x)   brule(SimplifyX.4,x)
+
+#define ModifyDeferred(x)   bmodr(SimplifyX.7,x)
+#define ReadDeferred(y)     brule(SimplifyX.7,y)
+#define ResetBoundVars      bcall(((FLAT;MODR)~;SimplifyX)~:rbv)
+
+
+#define anim_line "========================================================\n"
+
+#define DrawLine Writef_sub((anim_line))
+
+
+#define berr bsrv ERROR berv
+
+#define bwarn bsrv Warning berv
+
+
+#define OutFile "TMP/anm.out"
+
+#define KeyFile "TMP/anm.key"
+
+#define ModifyLastOpNotFromUtilities  bcall(MODR:bmodr(SelectOpX.2,0))
+#define ModifyLastOpFromUtilities     bcall(MODR:bmodr(SelectOpX.2,1))
+#define LastOpFromUtilities           brule(SelectOpX.2,1)
+
+
+THEORY OutputFileX IS
+
+#define ClearOutFile           Connect(OutFile) & bclose
+#define AppendOutFile          Append(OutFile)
+
+#define ClearKeyFile           Connect(KeyFile) & bclose
+#define AppendKeyFile          Append(KeyFile)
+
+#define AppendFileToOutFile(x) bcall(((CATL;SHELL;WRITE)~;OutputFileX)~:aoff(x))
+
+#define DrawLineOutFile        AppendOutFile & \
+                               bcall(WRITE:bprintf(anim_line)) & \
+                               bclose
+
+#define AppendToOutFile(x)     bcall(((WRITE)~;OutputFileX)~:aof(x))
+
+#define AppendToKeyFile(x)     bcall(((WRITE)~;OutputFileX)~:akf(x))
+
+  InformCantExecute(f)
+ =>
+  bshell(f);
+
+  AppendKeyFile &
+  bprintf(s) &
+  bclose
+ =>
+  akf(s);
+
+  AppendOutFile &
+  bprintf(s) &
+  bclose
+ =>
+  aof(s);
+
+  bshell(bcatl("cat ",f," >> ",OutFile )) &
+  AppendOutFile &
+  bprintf("\n\n") &
+  bprintf(anim_line) &
+  bclose
+ =>
+  aoff(f)
+
+END
+
+&
+
+/*
+#define InformProblem(x,y) Writef(("\n  No rule for:\n\n      %\n\n  (in theory: %)\n",y,x))
+*/
+
+#define InformProblem(x,y) \
+     Writef(("\n  Cannot simplify substitution:\n\n      %\n\n",bsrv y berv)) & \
+     AppendToOutFile(("\n  Cannot simplify substitution:\n\n      %\n\n",y))
+
+/*
+#define InformGuardProblem(x,y) Writef(("\n  Cannot simplify guard:\n\n      %\n\n      (problem with: %)\n\n  Treated as `false'\n\n",bsrv y berv, x)) & \
+   AppendToOutFile(("\n  Cannot simplify guard:\n\n      %\n\n      (problem with: %)\n\n  Treated as `false'\n\n",y, x))
+*/
+
+#define InformGuardProblem(x,y) Writef(("\n  Cannot simplify guard:\n\n      %\n\n  Expression contains deferred constant/uninitialised variable\n\n",bsrv y berv, x)) & \
+   AppendToOutFile(("\n  Cannot simplify guard:\n\n      %\n\n      (problem with: %)\n\n  Treated as `false'\n\n",y, x))
+
+#define InformCheckingContext Writef(("\n  Checking context\n"))
+
+/*
+#define InformInitialising \
+  Writef(("\n  Initialising\n")) & \
+  AppendToOutFile(("\n  Initialising\n")) & \
+  AppendToKeyFile(("init"))
+*/
+
+#define InformInitialisingFromFile(X) \
+  Writef(("\n  Initialising from file %\n",X)) & \
+  AppendToOutFile(("\n  Initialising from file %\n",X)) & \
+  AppendToKeyFile(("init(%)",X))
+
+#define InformLoading(m) Writef(("\n  Animating %.mch\n",m))
+
+#define InformNoOpToUndo bcall(WRITE:(ClearMenuWin & bwritem("\n  No operation to undo ...\n")))
+
+#define CleanAnimatorTemp bcall(RULE:bclean(AnimatorTempX))
+
+
+
+#define Writef_sub_simp(x) \
+    bcall((Set2SeqX~;WriteSimpInternalFormX;SUB)~:wss(x))
+
+#define Writef_simp(x) \
+    bcall((Set2SeqX~;WriteSimpInternalFormX;SUB)~:ws(x))
+
+#define Printf_simp(x) \
+    bcall(((Set2SeqX~;WriteSimpInternalFormX;SUB)~;WRITE)~:ps(x))
+
+
+#define SaveOpParameterValues(x)  bmodr(ReportOpJustPerformedX.1,x)
+#define ReadOpParameterValues(x)  brule(ReportOpJustPerformedX.1,x)
+#define ClearOpParameterValues    bmodr(ReportOpJustPerformedX.1,?)
+
+
+THEORY BranchLocalVarListX IS
+
+#define ClearBranchLocalVarList bcall(MODR:bmodr(BranchLocalVarListX.1,?))
+
+#define AddBranchToList(x) \
+  bcall(((MODR)~;BranchLocalVarListX)~:abl(x))
+
+#define AddLocalVarToList(x,y) \
+  bcall(((MODR)~;BranchLocalVarListX)~:alvl(x,y))
+
+  ?;
+#define ReadBranchLocalVarList(x)  brule(BranchLocalVarListX.1,x)
+#define ModrBranchLocalVarList(z)  bmodr(BranchLocalVarListX.1,z)
+#define BranchLocalVarListIsEmpty  brule(BranchLocalVarListX.1,?)
+
+  ReadBranchLocalVarList(L) &
+  ModrBranchLocalVarList((L,(v=n)))
+ =>
+  alvl(v,n);
+
+  ReadBranchLocalVarList(L) &
+  ModrBranchLocalVarList((L,n))
+ =>
+  abl(n)
+
+END
+
+&
+
+THEORY CheckCalculatedPreconditionX IS
+
+#define CheckCalculatedPrecondition \
+  bcall(((SUB~;MODR)~;CheckCalculatedPreconditionX)~:ccp)
+
+#define CheckCalculatedPreconditionResult \
+  bcall(((SUB~;MODR)~;CheckCalculatedPreconditionX)~:ccpr)
+
+  ?;
+#define ModifyCalculatedPrecondition(K) \
+  bcall(MODR:bmodr(CheckCalculatedPreconditionX.1,K))
+#define ReadCalculatedPrecondition(K) \
+  brule(CheckCalculatedPreconditionX.1,K)
+
+  ?;
+
+  ?;
+#define CalculatedPreconditionIsFalse brule(CheckCalculatedPreconditionX.3,1)
+
+#define DisplayFalseCalculatedPrecondition \
+  bcall(((MAP)~;CheckCalculatedPreconditionX)~:dfcp)
+
+#define SimplifyCalculatedPrecondition(N) \
+  bcall(sfsTac:ss0$(N)(CheckCalculatedPreconditionX,2))
+
+
+
+  Writef_sub_simp(("    %\n",p))  
+ =>
+  dfcp1(p);
+
+  brule(CheckCalculatedPreconditionX.1,p) &
+  brule(CheckCalculatedPreconditionX.2,q) &
+  Writef_sub(("  % %\n\n",bsrv Calculated berv,bsrv Precondition berv)) &
+  Writef_sub(("  >>> Calculated Precondition is false! <<<\n\n")) &
+  AppendToOutFile(("  >>> Calculated Precondition is false! <<<\n\n")) &
+  AppendToOutFile(("  Calculated Precondition\n\n")) &
+  dfcp1 bsmap p &
+  Writef_sub(("\n  % % %\n\n",bsrv Calculated berv,bsrv Precondition berv,bsrv Simplification berv)) &
+  AppendToOutFile(("\n  Calculated Precondition Simplification\n\n")) &
+  dfcp1 bsmap q &
+  Writef_sub(("\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"    Calculated Precondition is false!   ",0))
+ =>
+  dfcp;
+
+
+
+  ccpr;
+
+  CalculatedPreconditionIsFalse &
+  bmodr(CheckCalculatedPreconditionX.3,0) &
+  DisplayFalseCalculatedPrecondition
+ =>
+  ccpr;
+
+
+
+  bmodr(CheckCalculatedPreconditionX.3,0)
+ =>
+  ccp2;
+
+  brule(CheckCalculatedPreconditionX.1,p) &
+  brule(CheckCalculatedPreconditionX.2,q) &
+  bsearch(false,(q&?),r) &
+  bmodr(CheckCalculatedPreconditionX.3,1)
+ =>
+  ccp2;
+
+  brule(CheckCalculatedPreconditionX.1,p) &
+  brule(CheckCalculatedPreconditionX.2,q) &
+  bsearch(false,(q,?),r) &
+  bmodr(CheckCalculatedPreconditionX.3,1)
+ =>
+  ccp2;
+
+
+  bmodr(CheckCalculatedPreconditionX.2,p) &
+  SimplifyCalculatedPrecondition(0) &
+  ccp2
+ =>
+  ccp1(p);
+
+  ccp1(true);
+
+  ccp1(?);
+
+  ccp1(p)
+ =>
+  [?](ccp1(p));
+
+  [A][a:=m](ccp1(p))
+ =>
+  [A;a:=m](ccp1(p));
+
+  [?:=?]p == p;
+
+  ReadCalculatedPrecondition(p) &
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  ReadCurrValStateVars(v) &
+  ReadStateVarNames(s) &
+  ReadOpParameterValues(V) &
+  [V](ccp1([y:=z][Y:=Z][w:=x][s:=v]p))
+ =>
+  ccp
+
+END
+
+&
+
+THEORY DisplayInvariantX IS
+
+#define DisplayInvariant(N) \
+          bcall(((SUB~;MAP;FLAT;MODR)~;DisplayInvariantX)~:di$N)
+
+  0; /* init value */
+#define SetDisplayInvariant     bcall(MODR:bmodr(DisplayInvariantX.1,1))
+#define SetDontDisplayInvariant bcall(MODR:bmodr(DisplayInvariantX.1,0))
+#define DisplayInvariantSet     brule(DisplayInvariantX.1,1)
+#define DontDisplayInvariantSet brule(DisplayInvariantX.1,0)
+
+  ?; /* invariant */
+#define StoreInvariant(x) bcall(MODR:bmodr(DisplayInvariantX.2,x))
+#define ReadInvariant(x)  brule(DisplayInvariantX.2,x)
+
+  ?; /* 3. for SimplifyInv */
+#define SimplifyInv(N) bcall(sfsTac:ss0$(N)(DisplayInvariantX,3))
+
+  ?;
+#define ModrInvariantTrue  bmodr(DisplayInvariantX.4,0)
+#define ModrInvariantFalse bmodr(DisplayInvariantX.4,1)
+#define InvariantIsFalse   brule(DisplayInvariantX.4,1)
+  
+
+  di6$N;
+
+  InvariantIsFalse &
+  Writef_sub(("\n  >>> Invariant is false! <<<\n\n")) &
+  AppendToOutFile(("\n  >>> Invariant is false! <<<\n\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"   Invariant is false!   ",0))
+ =>
+  di6$N;
+
+  Writef_sub_simp(("    %\n",j))  
+ =>
+  di5$N(j);
+
+  ModrInvariantFalse &
+  Writef_sub_simp(("    %\n",false))
+ =>
+  di5$N(false);
+
+  brule(DisplayInvariantX.3,j) &
+  di5$N(j)
+ =>
+  di4$N(i);
+
+  brule(DisplayInvariantX.3,j) &
+  ReadBoundVars(W) &
+  bsearch(a,W,V) &
+  ModifyBoundVars(V) &
+  di5$N(j)
+ =>
+  di4$N(@a.i);
+
+  bmodr(ResolveNDX.3,(aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  bmodr(DisplayInvariantX.3,i) &
+  SimplifyInv(N) &
+  di4$N(i)
+ =>
+  di3$N(i);
+
+  ReadBoundVars(W) &
+  ModifyBoundVars((bflat(W,a))) &
+  bmodr(ResolveNDX.3,(aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  bmodr(DisplayInvariantX.3,(@a.i)) &
+  SimplifyInv(N) &
+  di4$N(@a.i)
+ =>
+  di3$N(@a.i);
+
+  di3$N bsmap I
+ =>
+  di2$N(I);
+
+  Writef_sub_simp(("    %\n",i))  
+ =>
+  di1a$N(i);
+
+  di1a$N bsmap I
+ =>
+  di1$N(I);
+
+  DisplayInvariantSet &
+  ReadInvariant(I) &
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  ReadCurrValStateVars(v) &
+  ReadStateVarNames(s) &
+  Writef_sub(("  %\n\n",bsrv Invariant berv)) &
+  AppendToOutFile(("\n  Invariant\n\n")) &
+  di1$N([y:=z][Y:=Z][w:=x][s:=v]I) &
+  Writef(("\n")) &
+  bmodr(SimplifyX.3,Bool) &
+  Writef_sub(("  % %\n\n",bsrv Invariant berv,bsrv Simplification berv)) &
+  AppendToOutFile(("\n  Invariant Simplification\n\n")) &
+  ModrInvariantTrue &
+  di2$N([y:=z][Y:=Z][w:=x][s:=v]I) &
+  di6$N
+ =>
+  di$N;
+
+  DontDisplayInvariantSet
+ =>
+  di$N;
+
+  ReadStateVarNames(?)          /* stateless machine */
+ =>
+  di$N
+
+END
+
+&
+
+THEORY ReportOpJustPerformedX IS
+
+#define ReportOpJustPerformed \
+  bcall(((MAP;MODR;WRITE)~;ReportOpJustPerformedX)~:(rojp_0&rblvl_0))
+
+/*
+above
+#define SaveOpParameterValues(x)  bmodr(ReportOpJustPerformedX.1,x)
+#define ReadOpParameterValues(x)  brule(ReportOpJustPerformedX.1,x)
+#define ClearOpParameterValues    bmodr(ReportOpJustPerformedX.1,?)
+*/
+  ?;
+
+  AppendToKeyFile((";%",b))
+ =>
+  rblvl_2(b,m,n);
+
+  AppendToKeyFile((";(%=%)",v,a))
+ =>
+  rblvl_2((v=a),m,n);
+
+  AppendToKeyFile(("%",b))
+ =>
+  rblvl_2(b,2,n);
+
+  AppendToKeyFile(("(%=%)",v,a))
+ =>
+  rblvl_2((v=a),2,n);
+
+  rblvl_2(?,1,n);
+
+  Writef(("\n    Branch % selected\n",b)) &
+  AppendToOutFile(("\n    Branch % selected\n",b))
+ =>
+  rblvl_1(b);
+
+  Writef(("\n    Local Variable % set to %\n",v,a)) &
+  AppendToOutFile(("\n    Local Variable % set to %\n",v,a))
+ =>
+  rblvl_1(v=a);
+
+  rblvl_1(?);
+
+  ReadBranchLocalVarList(L) &
+  rblvl_1 bsmap L &
+  AppendToKeyFile(("[")) &
+  rblvl_2 bnmap L &
+  AppendToKeyFile(("]"))
+ =>
+  rblvl_0;
+
+  BranchLocalVarListIsEmpty
+ =>
+  rblvl_0;
+
+
+
+  rojp_1(x);
+
+  Writef((" %=%",a,b)) &
+  AppendToOutFile((" %=%",a,b)) &
+  AppendToKeyFile((",%",b))
+ =>
+  rojp_1((a:=b),m,n);
+
+  Writef((" %=%",a,b)) &
+  AppendToOutFile((" %=%",a,b)) &
+  AppendToKeyFile(("%",b))
+ =>
+  rojp_1((a:=b),2,n);
+
+  rojp_0;
+
+  brule(SelectOpX.1,et)
+ =>
+  rojp_0;
+
+  brule(SelectOpX.1,ra) &
+  Writef(("  Animation restarted\n")) &
+  AppendToOutFile(("  Animation restarted\n")) &
+  AppendToKeyFile((";\nanim_restarted"))
+ =>
+  rojp_0;
+
+  brule(SelectOpX.1,ri) &
+  Writef(("  Initial state restored\n")) &
+  AppendToOutFile(("  Initial state restored\n")) &
+  AppendToKeyFile((";\ninit_restored"))
+ =>
+  rojp_0;
+
+  AppendToKeyFile((",%",o))
+ =>
+  rojp_out_key1(o,m,n);
+
+  AppendToKeyFile(("%",o))
+ =>
+  rojp_out_key1(o,1,n);
+
+  ReadCurrValOutVars(O) &
+  AppendToKeyFile(("<")) &
+  rojp_out_key1 bnmap O &
+  AppendToKeyFile(("> <-- "))
+ =>
+  rojp_out_key;
+
+  ReadCurrValOutVars(?)
+ =>
+  rojp_out_key;
+
+  brule(SelectOpX.1,(s:a)) &
+  ReadOpParameterValues(b) &
+  ClearOpParameterValues &
+  Writef(("  %(",s)) &
+  AppendToOutFile(("  %(",s)) &
+  AppendToKeyFile((";\n")) &
+  rojp_out_key &
+  AppendToKeyFile(("%(",s)) &
+  rojp_1 bnmap b &
+  Writef((" )\n")) &
+  AppendToOutFile((" )\n")) &
+  AppendToKeyFile((")"))
+ =>
+  rojp_0;
+
+  brule(SelectOpX.1,(s:a)) &
+  ReadOpParameterValues(?) &
+  Writef(("  %\n",s)) &
+  AppendToOutFile(("  %\n",s)) &
+  AppendToKeyFile((";\n")) &
+  rojp_out_key &
+  AppendToKeyFile(("%",s))
+ =>
+  rojp_0;
+
+  brule(SelectOpX.1,(Initialisation:a)) &
+  ReadOpParameterValues(?) &
+  Writef(("  %\n",Initialisation)) &
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  AppendToOutFile(("  %\n",Initialisation)) &
+  AppendToKeyFile(("init((%:%),(%:%),(%:%))",w,x,y,z,Y,Z))
+ =>
+  rojp_0
+
+END
+
+&
+
+THEORY PrologueBitStringX IS
+
+  ?;  /* result of BT_BITSTR2SET_M */
+
+  IsVHDL &
+  bbitstring(s) &
+  FifoWrite_Store((BT_BITSTR2SET_M,s,0),(PrologueBitStringX.1)) &
+  cre_BITSTR2SET(s)
+ =>
+  s == BITSTR2SET(s);
+  
+  brule(PrologueBitStringX.1,t) &
+  bcrer(PrologueBitStringX,(BITSTR2SET(s) == t))
+ =>
+  cre_BITSTR2SET(s)
+
+END
+
+&
+
+THEORY EpilogueBitStringX IS
+
+#define EpilogueBitString(x) \
+    bcall(((ARI~;CATL~;RULE~;FLAT;MODR)~;EpilogueBitStringX)~:x)
+
+  ?;  /* (possibly) processed result */
+
+
+  bmodr(EpilogueBitStringX.1,x)
+ =>
+  x;
+
+
+  IsVHDL &
+  bsearch((0|->'0'),A,B)
+ =>
+  {A} == _interim(0|->'0')({B})("0")(1)(2);         /* start */
+
+  IsVHDL &
+  bsearch((0|->'1'),A,B)
+ =>
+  {A} == _interim(0|->'1')({B})("1")(1)(2);         /* start */
+
+
+
+  _interim(X)({A})(s)(N)(M) == ({bflat(A,X)});      /* failure */
+
+
+
+  bsearch((N|->'0'),A,B)
+ =>
+  _interim(X)({A})(s)(N)(M) == _interim(X,N|->'0')({B})(bcatl(0,s))(N+1)(M+1);
+
+  bsearch((N|->'1'),A,B)
+ =>
+  _interim(X)({A})(s)(N)(M) == _interim(X,N|->'1')({B})(bcatl(1,s))(N+1)(M+1);
+
+
+
+  bsearch((N|->'0'),A,(M|->'0'))
+ =>
+  _interim(X)({A})(s)(N)(M) == bcatl(0,0,s);
+
+  bsearch((N|->'0'),A,(M|->'1'))
+ =>
+  _interim(X)({A})(s)(N)(M) == bcatl(1,0,s);
+
+  bsearch((N|->'1'),A,(M|->'0'))
+ =>
+  _interim(X)({A})(s)(N)(M) == bcatl(0,1,s);
+
+  bsearch((N|->'1'),A,(M|->'1'))
+ =>
+  _interim(X)({A})(s)(N)(M) == bcatl(1,1,s);
+
+
+
+  IsVHDL
+ =>
+  {1|->'0',0|->'0'} == "00";
+
+  IsVHDL
+ =>
+  {0|->'0',1|->'0'} == "00";
+
+  IsVHDL
+ =>
+  {1|->'1',0|->'0'} == "10";
+
+  IsVHDL
+ =>
+  {0|->'0',1|->'1'} == "10";
+
+  IsVHDL
+ =>
+  {1|->'0',0|->'1'} == "01";
+
+  IsVHDL
+ =>
+  {0|->'1',1|->'0'} == "01";
+
+  IsVHDL
+ =>
+  {1|->'1',0|->'1'} == "11";
+
+  IsVHDL
+ =>
+  {0|->'1',1|->'1'} == "11";
+
+
+  IsVHDL
+ =>
+  {0|->'0'} == "0";
+
+  IsVHDL
+ =>
+  {0|->'1'} == "1"
+
+END
+
+&
+
+THEORY EpilogueX IS
+
+#define Epilogue(x) bcall(EpilogueX~:ep(x))
+
+  brule(EpilogueBitStringX.1,x) &
+  Writef((x)) &
+  AppendOutFile &
+  bcall(WRITE:bprintf(x)) &
+  bclose
+ =>
+  ep1;
+
+  EpilogueBitString(x) &
+  ep1
+ =>
+  ep(x) 
+
+END
+
+&
+
+THEORY WriteSimpInternalFormX IS
+
+  bwritem(x)
+ =>
+  wms(x);
+
+  bprintf(x)
+ =>
+  ps(x);
+
+  Epilogue(x)
+ =>
+  ws(x);
+
+  Epilogue(x)
+ =>
+  wss(x);
+
+  seq2set(n)(b) == (n|->b);
+
+  seq2set(n)(a,b) == (seq2set(n+1)(a),n|->b);
+
+  (d >>>+-+<<< (x.e))                == (%(x).(x:d|e));
+
+  (s >>+-+<< (p))                    == {xx|(xx:s)&p}; /* ?? */
+
+  (s >>+-+<< (x|p))                  == {x|(x:s)&p};
+
+  (POW({l}) \/ addpow(POW({l}),x))   == (POW({l,x}));
+
+  addpow({{}},x)                     == {{x}};
+
+  (PI__(x).({y|p}|q))                ==  (PI(x).([y:=x]p|q));
+
+  (PI__(x).({x|p}|q))                ==  (PI(x).(p|q));
+
+  (SIGMA__(x).({y|p}|q))             ==  (SIGMA(x).([y:=x]p|q));
+
+  (SIGMA__(x).({x|p}|q))             ==  (SIGMA(x).(p|q));
+
+  (Exist__((x).(p);w))               ==  (#(x).(p));
+
+  (All__((x).(p);w))                 ==  (!(x).(p));
+
+  (Set__(x|p;q))                     ==  {x|p};
+
+  (Set__(x).(p;q))                   ==  {x|p};
+
+  (Lam__O((x).(p|v);q))              ==  (%(x).(p|v));
+
+  (Set__Comp(x|p))                   ==  {x|p}
+
+END
+
+&
+
+THEORY ModifyBoundVarsX IS 
+
+#define ModifyBoundVars(x) \
+	bcall((((FLAT;REV;ModifyBoundVarsX)~;MODR);CrashX) : mbv(x))
+
+  bmodr(SimplifyX.4,(X,v))
+ =>
+  mbv_1(v)(X);
+
+  bsearch(v,X,Y) &
+  bmodr(SimplifyX.4,X)
+ =>
+  mbv_1(v)(X);
+
+  bmodr(SimplifyX.4,X)
+ =>
+  mbv_1(oO00OoI__K_P_o81RZxX99uUoO00OoiI1lLiL1I____________)(X);
+
+  mbv_1(V)(X,v)
+ =>
+  mbv_1(V,v)(X);
+
+  bsearch(v,X,Y) &
+  mbv_1(V)(X)
+ =>
+  mbv_1(V,v)(X);
+
+  mbv_1(V)(X)
+ =>
+  mbv_1(V,oO00OoI__K_P_o81RZxX99uUoO00OoiI1lLiL1I____________)(X);
+
+  mbv_1(brev(V))(oO00OoI__K_P_o81RZxX99uUoO00OoiI1lLiL1I____________)
+ =>
+  mbv(V)
+
+END
+
+&
+
+THEORY AnimatorHaltX IS ? END &
+
+THEORY UserLibX END &
+
+THEORY CleanAnimatorX IS
+
+#define CleanAnimator   bcall(((MAP;MODR;RULE)~;CleanAnimatorX)~:ca)
+
+  bclean(t);
+
+  bclean(t)
+ =>
+  ca1(t);
+
+  ClearOutFile &
+  ClearKeyFile &
+  ca1 bsmap (OpNameX,OpX,UserLibX,UserLibMacrosX) &
+  ModifyEnumsetsStore(?) &
+  ModifyMchParamStore(?) &
+  bmodr(GetMachineParametersX.2,?) &
+  bmodr(GetMachineParametersX.4,?) &
+  ModifyRenameStore(?) &
+  bmodr(GetSCX.2,?) &
+  bmodr(GetSCX.3,?) &
+  bmodr(GetSCX.4,?) &
+  bmodr(GetSCX.5,?) &
+  bmodr(GetSCX.6,?) &
+  bmodr(GetSCX.7,?) &
+  bmodr(GetSCX.8,?) &
+  bmodr(GetSCX.9,?) &
+  bmodr(GetSCX.10,?) &
+  ClearAnimatorHaltFlag &
+  ModifyCurrValStateVars(?) &
+  ModifyStateVarNames(?) &
+  ModifyCurrValOutVars(?) &
+  ModifyOutVarNames(?) &
+  ModifyStateHistory(?) &
+  bmodr(DisplayStateX.1,?)
+ =>
+  ca
+
+END
+
+&
+
+THEORY OfferAnimatorOptionsX IS
+
+#define OfferAnimatorSuccessOptions \
+       bcall(((WRITE~;FLAT;MODR;OfferAnimatorOptionsX)~):oaso0)
+
+#define OfferAnimatorFailureOptions \
+       bcall(((WRITE~;FLAT;MODR;OfferAnimatorOptionsX)~):oaso0)
+
+
+  brule(AnimatorFromUserX.2,a.b) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_FINI:0)) &
+  LoadToolkit(1)
+ =>
+  oaso0
+
+END
+
+&
+
+THEORY AnimatorTempX END &
+
+THEORY StateX IS 
+
+  ?;   /* current values of the state variables */
+
+  ?;   /* the state variables */
+
+  ?;   /* the value of the output variables */
+
+  ?;   /* the output variables */
+
+  ?    /* the history of the state variables  */
+
+END
+
+&
+
+THEORY PrintOpInMenuX IS
+
+#define  PrintOpInMenu(N,s,x) \
+	bcall(((WRITE~;PrintOpInMenuX)~):poim$N(s)(x))
+
+#define  WriteStatelessMachine \
+	bcall(((WRITE~;PrintOpInMenuX)~): write_stateless_mch)
+
+
+  brule(AnimatorFromUserX.2,a) &
+  Writef_sub(("\n  Animating stateless machine\n\n",a)) &
+  AppendToOutFile(("\n  Animating stateless machine\n\n",a)) &
+  DrawLine &
+  DrawLineOutFile
+ =>
+  write_stateless_mch;
+
+  Connect(".Bsb1") &
+  Printf_simp(("% =\n  %",s,(BEGIN x END))) &
+  bclose &
+  FifoWrite_NoStore((BT_ANM_DISP_OP_M,0,0))
+ =>
+  poim$n(s)(x);
+
+  Connect(".Bsb1") &
+  Printf_simp(("% =\n  %",s,(PRE p THEN x END))) &
+  bclose &
+  FifoWrite_NoStore((BT_ANM_DISP_OP_M,0,0))
+ =>
+  poim$n(s)(p|x);
+
+  Connect(".Bsb1") &
+  Printf_simp(("% =\n  %",s,(BEGIN x END))) &
+  bclose &
+  FifoWrite_NoStore((BT_ANM_DISP_OP_M,0,0))
+ =>
+  poim$n(s)(?|x);
+
+  poim$n(s)(et);
+
+  poim$n(s)(ra);
+
+  poim$n(s)(ri);
+
+  poim$n(s)(un);
+
+  poim$n(s)(sv)
+
+END
+
+&
+
+THEORY SelectOpX IS
+
+#define sloTac ((WRITE;ARI;SelectOpX)~)
+
+#define SelectOp(N) bcall(sloTac:slo0$N)
+
+  ?;  /* for result (substitution) */
+
+  0;
+/*
+#define ModifyLastOpNotFromUtilities  bcall(MODR:bmodr(SelectOpX.2,0))
+#define ModifyLastOpFromUtilities     bcall(MODR:bmodr(SelectOpX.2,1))
+#define LastOpFromUtilities           brule(SelectOpX.2,1)
+*/
+
+  Writef("\n  Invalid input\n") &
+  slo$(N+1)
+ =>
+  slo1$N(m);
+
+  OfferAnimatorSuccessOptions
+ =>
+  slo1$N(0);
+
+  brule(OpX.m,(s;(X,t);u;v;(w|x);(y|z))) &
+/***
+HERE((79:y))&
+***/
+  ModifyAnimatorRule(SelectOpX,1,(s:(u|v|w|z|x))) &
+  ModifyCalculatedPrecondition(y) &
+/* (input|output|pre|subst|raw) */
+  PrintOpInMenu(N,t,(w|x))
+ =>
+  slo1$N(m);
+
+  ModifyAnimatorRule(SelectOpX,1,et)
+ =>
+  slo1$N(et);
+
+  ModifyAnimatorRule(SelectOpX,1,ra)
+ =>
+  slo1$N(ra);
+
+  ModifyAnimatorRule(SelectOpX,1,un) &
+  PrintOpInMenu(N,s,un)
+ =>
+  slo1$N(un);
+
+  ModifyAnimatorRule(SelectOpX,1,ri) &
+  PrintOpInMenu(N,s,ri)
+ =>
+  slo1$N(ri);
+
+  ModifyAnimatorRule(SelectOpX,1,sv) &
+  PrintOpInMenu(N,s,sv)
+ =>
+  slo1$N(sv);
+
+  ReadData(m) &
+  slo1$N(m)
+ =>
+  sloa$N;
+
+  PromptForData(("\nOperation? ",m)) &
+  sloa$N
+ =>
+  slo$N;
+
+  ReadData(s) &
+  Writef((">>Read Data: %<<\n",s))
+ =>
+  sloa_m$N;
+
+  ReadData(s.t.anm.n) &
+  ModifyAnimatorRule(SelectOpX,1,s.t.anm.n)
+ =>
+  sloa_m$n;
+
+  ReadData(s.1) &
+  SetDisplayInvariant &
+  brule(OpX.m,(s;(X,t);u;v;(w|x);(y|z))) &
+/***
+HERE((78:y))&
+***/
+  ModifyAnimatorRule(SelectOpX,1,(s:(u|v|w|z|x))) &
+  ModifyCalculatedPrecondition(y) &
+/* (input|output|pre|subst|raw) */
+  PrintOpInMenu(N,t,(w|x))
+ =>
+  sloa_m$N;
+
+  ReadData(s) &
+  SetDontDisplayInvariant &
+  brule(OpX.m,(s;(X,t);u;v;(w|x);(y|z))) &
+/***
+HERE((77:y))&
+***/
+  ModifyAnimatorRule(SelectOpX,1,(s:(u|v|w|z|x))) &
+  ModifyCalculatedPrecondition(y) &
+/* (input|output|pre|subst|raw) */
+  PrintOpInMenu(N,t,(w|x))
+ =>
+  sloa_m$N;
+
+  ReadData(101) &
+  ModifyLastOpFromUtilities &
+  SetDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,sv) &
+  PrintOpInMenu(N,s,sv)
+ =>
+  sloa_m$N;
+
+  ReadData(1) &
+  ModifyLastOpFromUtilities &
+  SetDontDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,sv) &
+  PrintOpInMenu(N,s,sv)
+ =>
+  sloa_m$N;
+
+  ReadData(102) &
+  SetDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,un) &
+  PrintOpInMenu(N,s,un)
+ =>
+  sloa_m$N;
+
+  ReadData(2) &
+  SetDontDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,un) &
+  PrintOpInMenu(N,s,un)
+ =>
+  sloa_m$N;
+
+  ReadData(103) &
+  SetDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,ri) &
+  PrintOpInMenu(N,s,ri)
+ =>
+  sloa_m$N;
+
+  ReadData(3) &
+  SetDontDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,ri) &
+  PrintOpInMenu(N,s,ri)
+ =>
+  sloa_m$N;
+
+  ReadData(104) &
+  SetDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,ra)
+ =>
+  sloa_m$N;
+
+  ReadData(4) &
+  SetDontDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,ra)
+ =>
+  sloa_m$N;
+
+  ReadData(105) &
+  ModifyLastOpFromUtilities &
+  SetDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,et)
+ =>
+  sloa_m$N;
+
+  ReadData(5) &
+  ModifyLastOpFromUtilities &
+  SetDontDisplayInvariant &
+  ModifyAnimatorRule(SelectOpX,1,et)
+ =>
+  sloa_m$N;
+
+  ReadData(0) &
+  slo1$N(0)
+ =>
+  sloa_m$N;
+
+  FifoWrite_Store((BT_ANM_GET_OP_M,0,0),(PromptUserX.1)) &
+  sloa_m$N
+ =>
+  slo$N;
+
+  LastOpFromUtilities &
+  ModifyLastOpNotFromUtilities &
+  FifoWrite_Store((BT_ANM_UTILS_M,0,0),(PromptUserX.1)) &
+  sloa_m$N
+ =>
+  slo$N;
+
+  ClearBranchLocalVarList &
+  slo$N
+ =>
+  slo0$N
+
+END
+
+&
+
+THEORY DisplayStateX IS
+
+#define dsTac ((WRITE;DisplayStateX)~)
+
+#define DisplayState(N) bcall(dsTac:ds$N)
+
+  ?;
+
+#define not_first_state_display brule(DisplayStateX.1,1)
+#define mod_first_state_display bcall(MODR:bmodr(DisplayStateX.1,1))
+
+  Writef_sub_simp(("    %  %\n\n",b,d))
+ =>
+  ds1$n(b)(d);
+  
+  Writef_sub_simp(("    %  %\n",b,d)) &
+  ds1$n(a)(c)
+ =>
+  ds1$n(a,b)(c,d);
+
+  brule(AnimatorFromUserX.2,a) &
+  mod_first_state_display &
+  DrawLine &
+  ds$(n+1) &
+  DisplayInvariant(n+1) &
+  DrawLine &
+  DrawLineOutFile
+ =>
+  ds$n;
+  
+  ReadCurrValStateVars(?) &         /* stateless machine */
+  ReadStateVarNames(?) &
+  mod_first_state_display
+ =>
+  ds$n;
+  
+  not_first_state_display &
+  ReadCurrValStateVars(s) &
+  ReadStateVarNames(v) &
+/***
+ HERE((548:(v|s)))& 
+***/
+  ReportOpJustPerformed &
+  Writef_sub(("\n  % %\n\n",bsrv Current berv,bsrv State berv)) &
+  AppendToOutFile(("\n  Current State\n\n")) &
+  ds1$1(v)(s)
+ =>
+  ds$n;
+
+  not_first_state_display &
+  ReadCurrValStateVars(?) &        /* stateless machine */
+  ReadStateVarNames(?) &
+  ReportOpJustPerformed &
+  Writef_sub("\n") &
+  AppendToOutFile(("\n"))
+ =>
+  ds$n;
+
+  not_first_state_display &
+  ReadCurrValStateVars([A][B]?) &        /* stateless machine */
+  ReadStateVarNames(?) &
+  ReportOpJustPerformed &
+  Writef_sub("\n") &
+  AppendToOutFile(("\n"))
+ =>
+  ds$n;
+
+  not_first_state_display &
+  ReadStateHistory((a,s)) &    /* no state change */
+  ReadCurrValStateVars(s) &
+  ReportOpJustPerformed &
+  Writef_sub(("\n  % %\n\n    Unchanged\n\n",bsrv Current berv,bsrv State berv)) &
+  AppendToOutFile(("\n  % %\n\n    Unchanged\n\n",bsrv Current berv,bsrv State berv))
+ =>
+  ds$n;
+
+  not_first_state_display &
+  brule(SelectOpX.1,un) &     /* undo op */
+  ReadCurrValStateVars(s) &
+  ReadStateVarNames(v) &
+  Writef(("  Undone last operation\n")) &
+  Writef_sub(("\n  % %\n\n",bsrv Current berv,bsrv State berv)) &
+  AppendToOutFile(("  Undone last operation\n")) &
+  AppendToOutFile(("\n  Current State\n\n")) &
+  AppendToKeyFile((";\nundo")) &
+  ds1$1(v)(s)
+ =>
+  ds$n;
+
+  not_first_state_display &
+  brule(SelectOpX.1,un) &     /* undo op - stateless machine */
+  ReadCurrValStateVars(?) &
+  ReadStateVarNames(?) &
+  Writef(("  Undone last operation\n")) &
+  AppendToOutFile(("  Undone last operation\n"))
+ =>
+  ds$n;
+
+  not_first_state_display &
+  ReadStateHistory((a,?)) &    /* stateless machine */
+  ReadCurrValStateVars(?) &
+  ReportOpJustPerformed &
+  Writef_sub("\n") &
+  AppendToOutFile(("\n"))
+ =>
+  ds$n;
+
+  not_first_state_display &
+  ReadStateHistory((a,[A][B]?)) &    /* stateless machine */
+  ReadCurrValStateVars(?) &
+  ReportOpJustPerformed &
+  Writef_sub("\n\n") &
+  AppendToOutFile(("\n\n"))
+ =>
+  ds$n;
+
+  brule(AnimatorHaltX.1,1)    /* animator halted */
+ =>
+  ds$n
+
+END
+
+&
+
+THEORY DisplayOutputX IS
+
+#define doTac ((SUB;WRITE;DisplayOutputX)~)
+
+#define DisplayOutput(N) bcall(doTac:do$N)
+
+  Writef_sub_simp(("    %  %\n",b,d))
+ =>
+  do1$n(b)(d);
+  
+  do1$n(a)(c) &
+  Writef_sub_simp(("    %  %\n",b,d))
+ =>
+  do1$n(a,b)(c,d);
+
+  [?:=?] == [aaa__aikJJuuHYT________:=aaa__aikJJuuHYT________];
+  
+  Writef_sub_simp(("  %\n\n",bsrv Output berv)) &
+  ReadCurrValOutVars(s) &
+  ReadOutVarNames(z) &
+  do1$n(z)(s) &
+  Writef_sub_simp(("\n"))
+ =>
+  do$n;
+
+  ReadOutVarNames(?)          /* no output */
+ =>
+  do$n;
+
+  brule(AnimatorHaltX.1,1)    /* animator halted */
+ =>
+  do$n
+
+END
+
+&
+
+THEORY ResolveNDX IS
+
+/*
+  invocation ResolveNDX(n,a,b,c)
+    n a NAT
+    a the bound variables
+    b the guard
+    c the substitution
+      ie @a.b==>c
+*/    
+
+
+#define rndTac (((Prologue_tac~;SUB~;MAP;MODR;WRITE;REV~;FLAT)~;ResolveNDX)~)
+
+#define ResolveND(N,a,b,c) bcall(rndTac:rnd0$N(c)(a,b))
+
+#define SimplifyGuard(N) bcall(sfsTac:ss0$(N)(ResolveNDX,2))
+
+
+  ?;          /* for result */
+
+  ?;          /* for simplified guard */
+
+  ?;          /* for highlighting */
+
+  ?;          /* for default prompt */
+
+  ?;          /* 5. local vars */
+
+#define ReadLocalVars(y)   brule(ResolveNDX.5,(y))
+#define ModifyLocalVars(y) bmodr(ResolveNDX.5,(y))
+
+  [t:=x]bmodr(ResolveNDX.2,C); /* sub didn't go through */
+
+  InformCantConnect(".Bsb3") &
+  PFZ
+ =>
+  connectBsb3;
+
+  bconnect(".Bsb3")
+ =>
+  connectBsb3;
+
+
+ 
+  [?:=?] == [aaa__aikJJuuHYT________:=aaa__aikJJuuHYT________];     /* for stateless machines */
+
+
+
+
+  Printf_simp(("  %",b))
+ =>
+  displayguard1(b);
+
+  Printf_simp(("  % &\n",b)) &
+  displayguard1(a)
+ =>
+  displayguard1(a,b);
+
+  Printf_simp(("  % &\n",b)) &
+  displayguard1(a)
+ =>
+  displayguard1(a&b);
+
+  (a===b) == (a=b);
+
+
+  brule(ResolveNDX.2,a) &
+  brule(ResolveNDX.3,R) &
+  connectBsb3 &
+  bprintf("Guard Simplification:\n \n") &
+  [R]displayguard1(a) &
+  bclose
+ =>
+  displayguard;
+
+
+  disp_m(?);
+
+  disp_m(X) &
+  Printf_simp(("  % = %\n",a,b))
+ =>
+  disp_m(X;a:=b);
+
+  brule(ResolveNDX.2,a) &
+  brule(ResolveNDX.3,R) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(?) &
+  connectBsb3 &
+  bprintf("Local Variables:\n \n") &
+  disp_m(X) &
+  bprintf(" \nGuard Simplification:\n \n") &
+  [R]displayguard1(a) &
+  bclose
+ =>
+  displayguard_final_m;
+
+  brule(ResolveNDX.2,a) &
+  bsearch(false,(a&?),b) &
+  brule(ResolveNDX.3,R) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(?) &
+  connectBsb3 &
+  bprintf("Local Variables:\n \n") &
+  disp_m(X) &
+  bprintf(" \nGuard Simplification:\n \n") &
+  [R]displayguard1(a) &
+  bclose &
+  Writef_sub(("  >>> Guard is false! <<<\n\n")) &
+  AppendToOutFile(("  >>> Guard is false! <<<\n\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"    Guard is false!   ",0))
+ =>
+  displayguard_final_m;
+
+  brule(ResolveNDX.2,a) &
+  bsearch(false,(a,?),b) &
+  brule(ResolveNDX.3,R) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(?) &
+  connectBsb3 &
+  bprintf("Local Variables:\n \n") &
+  disp_m(X) &
+  bprintf(" \nGuard Simplification:\n \n") &
+  [R]displayguard1(a) &
+  bclose &
+  Writef_sub(("  >>> Guard is false! <<<\n\n")) &
+  AppendToOutFile(("  >>> Guard is false! <<<\n\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"    Guard is false!   ",0))
+ =>
+  displayguard_final_m;
+
+
+
+
+
+  bsearch(?,a,b) &
+  ModifyAnimatorRule(ResolveNDX,1,[p:=b]c)
+ =>  
+  rnd5$n(c)(a)(p);
+
+
+
+/*** added ***/
+  ReadData(x) &
+  brule(ResolveNDX.2,C) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(X;t:=x) &
+  AddLocalVarToList(t,x) &
+  [t:=x]bmodr(ResolveNDX.2,C) &
+  SimplifyGuard(N) &
+  rnd5$N(c)(a,x)(p)
+ =>
+  rnd4b$N(t)(c)(a)(p);
+
+  ReadData(x) &
+  brule(ResolveNDX.2,C) &
+  ReadBoundVars(W) &
+  bsearch(t,W,U) &
+  ModifyBoundVars(U) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(X;t:=x) &
+  AddLocalVarToList(t,x) &
+  [t:=x]bmodr(ResolveNDX.2,C) &
+  SimplifyGuard(N) &
+  rnd5$N(c)(a,x)(p)
+ =>
+  rnd4b$N(t)(c)(a)(p);
+
+/*** added ***/
+  ReadData(CR) &
+  brule(ResolveNDX.4,T) &
+  bmodr(ResolveNDX.4,?) &
+  brule(ResolveNDX.2,C) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(X;t:=T) &
+  AddLocalVarToList(t,T) &
+  [t:=T]bmodr(ResolveNDX.2,C) &
+  SimplifyGuard(N) &
+  rnd5$N(c)(a,T)(p)
+ =>
+  rnd4b$N(t)(c)(a)(p);
+
+  ReadData(CR) &
+  brule(ResolveNDX.4,T) &
+  bmodr(ResolveNDX.4,?) &
+  brule(ResolveNDX.2,C) &
+  ReadBoundVars(W) &
+  bsearch(t,W,U) &
+  ModifyBoundVars(U) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(X;t:=T) &
+  AddLocalVarToList(t,T) &
+  [t:=T]bmodr(ResolveNDX.2,C) &
+  SimplifyGuard(N) &
+  rnd5$N(c)(a,T)(p)
+ =>
+  rnd4b$N(t)(c)(a)(p);
+
+
+
+
+
+  bmodr(ResolveNDX.3,(t := bsrv t berv)) &
+  displayguard &
+  FifoWrite_Store((BT_ANM_NOND_M,bcatl("  Value for local variable ",t,"?  "),bcatl("Value should instantiate the|local variable ",t)),(PromptUserX.1)) &
+  rnd4b$n(t)(c)(a)(p)
+ =>
+  rnd4_2$n(c)(a)(t)(p)(?);
+
+  rnd4_2$n(c)(a)(t)(p)(K)
+ =>
+  rnd4_2$n(c)(a)(t)(p)(K,k);
+
+
+  Constant____(v,T) &
+  bmodr(ResolveNDX.3,(t := bsrv t berv)) &
+  displayguard &
+  bmodr(ResolveNDX.4,T) &
+  FifoWrite_Store((BT_ANM_NOND_M,bcatl("  Value for local variable ",t,"?  "),bcatl("Value should instantiate the|local variable ",t),T),(PromptUserX.1)) &
+  rnd4b$n(t)(c)(a)(p)
+ =>
+  rnd4_2$n(c)(a)(t)(p)(K,(t:{T}));
+
+
+  rnd4_2$n(c)(a)(t)(p)(K)
+ =>
+  rnd4_2$n(c)(a)(t)(p)(K,(t:{T,U}));
+
+
+  ReadBoundVars(v) &
+  v\T &
+  bmodr(ResolveNDX.3,(t := bsrv t berv)) &
+  displayguard &
+  bmodr(ResolveNDX.4,T) &
+  FifoWrite_Store((BT_ANM_NOND_M,bcatl("  Value for local variable ",t,"?  "),bcatl("Value should instantiate the|local variable ",t),T),(PromptUserX.1)) &
+  rnd4b$n(t)(c)(a)(p)
+ =>
+  rnd4_2$n(c)(a)(t)(p)(K,(T===t));
+
+
+
+  Constant____(v,T) &
+  bmodr(ResolveNDX.3,(t := bsrv t berv)) &
+  displayguard &
+  bmodr(ResolveNDX.4,T) &
+  FifoWrite_Store((BT_ANM_NOND_M,bcatl("  Value for local variable ",t,"?  "),bcatl("Value should instantiate the|local variable ",t),T),(PromptUserX.1)) &
+  rnd4b$n(t)(c)(a)(p)
+ =>
+  rnd4_2$n(c)(a)(t)(p)(K,(t===T));
+
+
+
+  rnd4_2$n(c)(a)(t)(p)(?)
+ =>
+  rnd4$n(c)(a)(t)(p);
+
+  brule(ResolveNDX.2,(t:{T})) &
+  rnd4_2$n(c)(a)(t)(p)(?,(t:{T}))
+ =>
+  rnd4$n(c)(a)(t)(p);
+
+  brule(ResolveNDX.2,(T===t)) &
+  rnd4_2$n(c)(a)(t)(p)(?,(T===t))
+ =>
+  rnd4$n(c)(a)(t)(p);
+
+  brule(ResolveNDX.2,(t===T)) &
+  rnd4_2$n(c)(a)(t)(p)(?,(t===T))
+ =>
+  rnd4$n(c)(a)(t)(p);
+
+  brule(ResolveNDX.2,K) &
+  bsearch((t:{T}),K,L) &
+  rnd4_2$n(c)(a)(t)(p)(bflat(?,K))
+ =>
+  rnd4$n(c)(a)(t)(p);
+
+  brule(ResolveNDX.2,K) &
+  bsearch((T===t),K,L) &
+  rnd4_2$n(c)(a)(t)(p)(bflat(?,K))
+ =>
+  rnd4$n(c)(a)(t)(p);
+
+  brule(ResolveNDX.2,K) &
+  bsearch((t===T),K,L) &
+  rnd4_2$n(c)(a)(t)(p)(bflat(?,K))
+ =>  
+  rnd4$n(c)(a)(t)(p);
+
+
+
+
+
+/*** added ***/
+  ReadData(x) &
+  brule(ResolveNDX.2,C) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(X;t:=x) &
+  AddLocalVarToList(t,x) &
+  [t:=x]bmodr(ResolveNDX.2,C) &
+  SimplifyGuard(N) &
+  rnd4$N(c)(a,x)(s)(p)
+ =>
+  rnd4a$N(t)(c)(a)(s)(p);
+
+  ReadData(x) &
+  brule(ResolveNDX.2,C) &
+  ReadBoundVars(v) &
+  bsearch(t,v,S) &
+  ModifyBoundVars(S) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(X;t:=x) &
+  AddLocalVarToList(t,x) &
+  [t:=x]bmodr(ResolveNDX.2,C) &
+  SimplifyGuard(N) &
+  rnd4$N(c)(a,x)(s)(p)
+ =>
+  rnd4a$N(t)(c)(a)(s)(p);
+
+/*** added ***/
+  ReadData(CR) &
+  brule(ResolveNDX.4,T) &
+  bmodr(ResolveNDX.4,?) &
+  brule(ResolveNDX.2,C) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(X;t:=T) &
+  AddLocalVarToList(t,T) &
+  [t:=T]bmodr(ResolveNDX.2,C) &
+  SimplifyGuard(N) &
+  rnd4$N(c)(a,T)(s)(p)
+ =>
+  rnd4a$N(t)(c)(a)(s)(p);
+
+  ReadData(CR) &
+  brule(ResolveNDX.4,T) &
+  bmodr(ResolveNDX.4,?) &
+  brule(ResolveNDX.2,C) &
+  ReadBoundVars(v) &
+  bsearch(t,v,S) &
+  ModifyBoundVars(S) &
+  ReadLocalVars(X) &
+  ModifyLocalVars(X;t:=T) &
+  AddLocalVarToList(t,T) &
+  [t:=T]bmodr(ResolveNDX.2,C) &
+  SimplifyGuard(N) &
+  rnd4$N(c)(a,T)(s)(p)
+ =>
+  rnd4a$N(t)(c)(a)(s)(p);
+
+
+
+  bmodr(ResolveNDX.3,(t := bsrv t berv)) &
+  displayguard &
+  FifoWrite_Store((BT_ANM_NOND_M,bcatl("  Value for local variable ",t,"?  "),bcatl("Value should instantiate the|local variable ",t)),(PromptUserX.1)) &
+  rnd4a$n(t)(c)(a)(s)(p)
+ =>
+  rnd4_1$n(c)(a)(s,t)(p)(?);
+
+
+  rnd4_1$n(c)(a)(s,t)(p)(K)
+ =>
+  rnd4_1$n(c)(a)(s,t)(p)(K,k);
+
+
+
+  Constant____(v,T) &
+  bmodr(ResolveNDX.3,(t := bsrv t berv)) &
+  displayguard &
+  bmodr(ResolveNDX.4,T) &
+  FifoWrite_Store((BT_ANM_NOND_M,bcatl("  Value for local variable ",t,"?  "),bcatl("Value should instantiate the|local variable ",t),T),(PromptUserX.1)) &
+  rnd4a$n(t)(c)(a)(s)(p)
+ =>
+  rnd4_1$n(c)(a)(s,t)(p)(K,(t:{T}));
+
+
+  rnd4_1$n(c)(a)(s,t)(p)(K)
+ =>
+  rnd4_1$n(c)(a)(s,t)(p)(K,(t:{T,U}));
+
+
+
+  Constant____(v,T) &
+  bmodr(ResolveNDX.3,(t := bsrv t berv)) &
+  displayguard &
+  bmodr(ResolveNDX.4,T) &
+  FifoWrite_Store((BT_ANM_NOND_M,bcatl("  Value for local variable ",t,"?  "),bcatl("Value should instantiate the|local variable ",t),T),(PromptUserX.1)) &
+  rnd4a$n(t)(c)(a)(s)(p)
+ =>
+  rnd4_1$n(c)(a)(s,t)(p)(K,(T===t));
+
+
+
+  Constant____(v,T) &
+  bmodr(ResolveNDX.3,(t := bsrv t berv)) &
+  displayguard &
+  bmodr(ResolveNDX.4,T) &
+  FifoWrite_Store((BT_ANM_NOND_M,bcatl("  Value for local variable ",t,"?  "),bcatl("Value should instantiate the|local variable ",t),T),(PromptUserX.1)) &
+  rnd4a$n(t)(c)(a)(s)(p)
+ =>
+  rnd4_1$n(c)(a)(s,t)(p)(K,(t===T));
+
+
+  rnd4_1$n(c)(a)(s,t)(p)(?)
+ =>
+  rnd4$n(c)(a)(s,t)(p);
+
+  brule(ResolveNDX.2,(t:{T})) &
+  rnd4_1$n(c)(a)(s,t)(p)(?,(t:{T}))
+ =>
+  rnd4$n(c)(a)(s,t)(p);
+
+  brule(ResolveNDX.2,(T===t)) &
+  rnd4_1$n(c)(a)(s,t)(p)(?,(T===t))
+ =>
+  rnd4$n(c)(a)(s,t)(p);
+
+  brule(ResolveNDX.2,(t===T)) &
+  rnd4_1$n(c)(a)(s,t)(p)(?,(t===T))
+ =>
+  rnd4$n(c)(a)(s,t)(p);
+
+  brule(ResolveNDX.2,K) &
+  bsearch((t:{T}),K,L) &
+  rnd4_1$n(c)(a)(s,t)(p)(bflat(?,K))
+ =>
+  rnd4$n(c)(a)(s,t)(p);
+
+  brule(ResolveNDX.2,K) &
+  bsearch((T===t),K,L) &
+  rnd4_1$n(c)(a)(s,t)(p)(bflat(?,K))
+ =>
+  rnd4$n(c)(a)(s,t)(p);
+
+  brule(ResolveNDX.2,K) &
+  bsearch((t===T),K,L) &
+  rnd4_1$n(c)(a)(s,t)(p)(bflat(?,K))
+ =>
+  rnd4$n(c)(a)(s,t)(p);
+
+  brule(SelectOpX.1,(y:i)) &
+  rnd4$n(c)(?)(a)(brev(a))
+ =>
+  rnd2$n(c)(a,b);
+
+/*********************************************************/
+
+  bmodr(ResolveNDX.2,r) &           /* the raw guard */
+  SimplifyGuard(N) &
+  rnd2$N(c)(a,b)
+ =>
+  rnd1$N(c)(a,b)(r);
+
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  ReadCurrValStateVars(v) &
+  ReadStateVarNames(s) &
+  bmodr(SimplifyX.3,Bool) &
+  ReadBoundVars(W) &
+  ModifyBoundVars((bflat(W,a))) &
+  bmodr(ResolveNDX.3,(aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  rnd1$n(c)(brev(a),b)([y:=z][Y:=Z][w:=x][s:=v]brev(b)) &
+  displayguard_final_m &
+  FifoWrite_NoStore((BT_ANM_NOND_FINI_M,0,0)) &
+  bmodr(SimplifyX.3,noBool)
+ =>
+  rnd0$n(c)(a,b);
+
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  ReadCurrValStateVars(?) &
+  ReadStateVarNames(?) &
+  bmodr(SimplifyX.3,Bool) &
+  ReadBoundVars(W) &
+  ModifyBoundVars((bflat(W,a))) &
+  bmodr(ResolveNDX.3,(aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  rnd1$n(c)(brev(a),b)([y:=z][Y:=Z][w:=x]brev(b)) &
+  displayguard_final_m &
+  FifoWrite_NoStore((BT_ANM_NOND_FINI_M,0,0)) &
+  bmodr(SimplifyX.3,noBool)
+ =>
+  rnd0$n(c)(a,b)
+
+END
+
+&
+
+THEORY GetMachineParametersX IS
+
+/*
+  invocation GetMachineParameters(a,b)
+    a formal parameters
+    b constraints
+*/    
+
+
+#define gpTac (((ARI;FLAT~;SUB~;MODR;WRITE;MAP;REV)~;GetMachineParametersX)~)
+
+#define GetMachineParameters(a,b) bcall(gpTac:gp0$0(a)(b))
+
+#define SimplifyConstraints(N) bcall(sfsTac:ss0$(N)(GetMachineParametersX,4))
+
+/***
+#define sicTac (((FLAT~;SUB~;MAP)~;GetMachineParametersX)~)
+
+#define StoreImplicitConstraints(b) bcall(sicTac:(sic bsmap b))
+***/
+
+
+  ?;   /* GetMachineParametersX.1: for rename */
+
+
+  ?;   /* GetMachineParametersX.2: temp storage */
+
+
+  (aaa__aikJJuuHYT________:=aaa__aikJJuuHYT________);   /* for highlighting */
+
+
+  ?;   /* 4. for cumulative constant values */
+
+  ?;   /* 5. raw constraints (motif) */
+#define ReadRawConstraints(x)   brule(GetMachineParametersX.5,(x))
+#define ModifyRawConstraints(x) bmodr(GetMachineParametersX.5,(x))
+
+  ?;   /* 6. formal params (motif) */
+#define ReadFAMchParams(y)   brule(GetMachineParametersX.6,(y))
+#define ModifyFAMchParams(y) bmodr(GetMachineParametersX.6,(y))
+
+  ?;  /* default */
+
+  ?;
+#define ReadDefaultCstrValues(x) brule(GetMachineParametersX.8,x)
+#define ModrDefaultCstrValues(x) bcall(MODR:bmodr(GetMachineParametersX.8,x))
+
+  ?;  /* 9. Fifi store */
+
+  ?;
+#define ResetCstrSUBError bmodr(GetMachineParametersX.10,0)
+#define SetCstrSUBError   bmodr(GetMachineParametersX.10,1)
+#define CstrSUBError      brule(GetMachineParametersX.10,1)
+
+
+  bsearch(?,A,X) &
+  bsearch(?,B,Y) &
+  ModifyMchParamStore((X:Y))
+ =>
+  gp99(?)(A:B);
+
+  ModifyMchParamStore((aaa__aikJJuuHYT________ : aaa__aikJJuuHYT________))
+ =>
+  gp99(?)(?:?);
+
+  gp99(x)(A,a:B,b)
+ =>
+  gp99(x,(a=b))(A:B);
+
+  ReadDefaultCstrValues(L) &
+  gp99(bflat(?,L))(?:?)
+ =>
+  gp98;
+
+
+  Printf_simp(("  %",b))
+ =>
+  displayconst1(b);
+
+  Printf_simp(("  % &\n",b) )&
+  displayconst1(a)
+ =>
+  displayconst1(a,b);
+
+  Printf_simp(("  % &\n",b)) &
+  displayconst1(a)
+ =>
+  displayconst1(a&b);
+
+  disp_m(?);
+
+  disp_m(X) &
+  Printf_simp(("  % = %\n",a,b))
+ =>
+  disp_m(X;a:=b);
+
+  bident(a) &
+  disp_m(X) &
+  Printf_simp(("  % is deferred\n",a))
+ =>
+  disp_m(X;a:=a);
+
+  Printf_simp(("  % &\n",c))
+ =>
+  disp_const_m(c,m,n);
+
+  Printf_simp(("  %",c))
+ =>
+  disp_const_m(c,n,n);
+
+  disp_const_m bnmap C
+ =>
+  disp_const_m0(C);
+
+  brule(GetMachineParametersX.4,a) &
+  brule(GetMachineParametersX.3,R) &
+  ReadRawConstraints(C) &
+  ReadFAMchParams(X) &
+  ModifyFAMchParams(?) &
+  Connect(".Bsb1") &
+  bprintf("Machine Parameter Values:\n \n") &
+  disp_m(X) &
+  bprintf(" \nMachine Constraints:\n \n") &
+  disp_const_m0(brev(C)) &
+  bprintf(" \n\nConstraints Simplification:\n \n") &
+  [R]displayconst1(a) &
+  bclose &
+  AppendFileToOutFile(".Bsb1")
+ =>
+  displayconst_final_m;
+
+
+  ReadData(CR)
+ =>
+  gwom0$n;
+
+
+  FifoWrite_Store((BT_ANM_PRCD_M,"  Machine parameter input input complete  ",0),(PromptUserX.1))
+ =>
+  chk_false_cst(b);
+
+  bsearch(false,(b,?),c) &
+  FifoWrite_Store((BT_ANM_PRCD_FALSE_M,"  Machine parameter input input complete  ","Constraints are false!"),(PromptUserX.1))
+ =>
+  chk_false_cst(b);
+
+  bsearch(false,(b&?),c) &
+  FifoWrite_Store((BT_ANM_PRCD_FALSE_M,"  Machine parameter input complete  ","Constraints are false!"),(PromptUserX.1))
+ =>
+  chk_false_cst(b);
+
+  brule(GetMachineParametersX.4,b) &
+  brule(GetMachineParametersX.3,R) &
+  chk_false_cst([R]b)
+ =>
+  chk_false_cst_0;
+
+
+  Printf_simp(("  %",b))
+ =>
+  displayconst1(b);
+
+  Printf_simp(("  % &\n",b) )&
+  displayconst1(a)
+ =>
+  displayconst1(a,b);
+
+  Printf_simp(("  % &\n",b)) &
+  displayconst1(a)
+ =>
+  displayconst1(a&b);
+
+  (a===b) == (a=b);
+
+
+
+  SimplifyConstraints(N) &
+  displayconst_final_m &
+  chk_false_cst_0 &
+  gwom0$0 &
+  gp98 &
+  bmodr(SimplifyX.3,noBool)
+ =>
+  new3_chk_subs_result$N;
+
+  brule(GetMachineParametersX.4,P) &
+/***
+HERE(("Machine Parameters":(t=x)))&
+***/
+  ReadBoundVars(v) &
+  bsearch(t,v,S) &
+  ModifyBoundVars(S) &
+  ReadFAMchParams(X) &
+  ModifyFAMchParams(X;t:=x) &
+  [t:=x]bmodr(GetMachineParametersX.4,P)
+ =>
+  new2_proc_subs1$N(t=x);
+
+/*
+  brule(GetMachineParametersX.4,P) &
+  ReadDeferred(D) &
+  ModifyDeferred((D,t)) &
+  ReadFAMchParams(X) &
+  ModifyFAMchParams(X;t:=t) &
+  [t:=t]bmodr(GetMachineParametersX.4,P)
+ =>
+  new2_proc_subs1$N(t=t);
+*/
+
+  ReadDefaultCstrValues(L) &
+  new2_proc_subs1$N bsmap L &
+  new3_chk_subs_result$N
+ =>
+  new2_chk_subs_result$N;
+
+  CstrSUBError &
+  new_gp0$(N+1)
+ =>
+  new2_chk_subs_result$N;
+
+  new2_chk_subs2$N(1);
+
+  Writef(("\n  Invalid input for % - %\n",a,bsrv v berv)) &
+  SetCstrSUBError
+ =>
+  new2_chk_subs2$N([a:=v](1));
+
+  new2_chk_subs2$N([a:=v](1))
+ =>
+  new2_chk_subs1$N(a=v);
+
+  ReadDefaultCstrValues(L) &
+  new2_chk_subs1$N bsmap L
+ =>
+  new2_chk_subs$N;
+
+
+
+  brule(GetMachineParametersX.9,L) &
+  ModrDefaultCstrValues((L))
+ =>
+  new2_gp0$N;
+
+
+  bprintf("\n6\n%\n%",a,v) /* multi_input_fld_unknwn */
+  =>
+  new1_gp0$N(a=v);
+
+
+  brule(AnimatorFromUserX.2,b.c) &
+  brule(GetMachineParametersX.4,B) &
+  bmodr(SimplifyX.3,Bool) &
+  ReadDefaultCstrValues(L) &
+  ReadBoundVars(W) &
+  Connect(".Bsb1") &
+  bprintf(" % Constraints:\n \n",b) &
+  displayconst1(B) &
+  bclose  &
+  Connect("TMP/.Bcom") &
+  bprintf("Parameters for %",b) &
+  new1_gp0$N bsmap L &
+  bprintf("\n") &
+  bclose &
+  FifoWrite_Store((BT_ANM_CTX_INP_M,0,0),(GetMachineParametersX.9)) &
+  new2_gp0$N &
+  ResetCstrSUBError &
+  new2_chk_subs$N &
+  new2_chk_subs_result$N
+ =>
+  new_gp0$N;
+
+
+
+  bsearch(?,L,M) &
+  ModrDefaultCstrValues((M))
+ =>
+  new_init$N(?)(p)(L);
+
+  new_init$N(A)(p)(L,(a=a))
+ =>
+  new_init$N(A,a)(p)(L);
+
+  bsearch((v=a),p,q) &
+  new_init$N(A)(p)(L,(a=v))
+ =>
+  new_init$N(A,a)(p)(L);
+
+  bsearch((a=v),p,q) &
+  new_init$N(A)(p)(L,(a=v))
+ =>
+  new_init$N(A,a)(p)(L);
+
+
+
+
+  bmodr(SimplifyX.3,Bool) &
+  ReadBoundVars(W) &
+  ModifyBoundVars((bflat(W,a))) &
+  bmodr(GetMachineParametersX.4,b) &
+  new_init$N(brev(a,?))(p)(?) &
+  new_gp0$N
+ =>
+  gp0$N(a)(b);    /* a is params (no ?), b constraints (no ?) - b/=? */
+
+  ModifyAnimatorRule(GetMachineParametersX,1,(xxx:xxx))
+ =>
+  gp0$N(?)(b)     /* no parameters: store dummy rename */
+
+END
+
+&
+
+THEORY GetSCX IS
+
+#define gscTac (((Prologue_tac~;ARI;FLAT~;SUB~;MODR;WRITE;MAP;REV)~;GetSCX)~)
+
+#define GetSC(a,b,c) bcall(gscTac:gsc0000(brev(b),brev(a))(c))
+
+#define SimplifyProperties(N) bcall(sfsTac:ss0$(N)(GetSCX,4))
+
+
+  ?;   /* GetSCX.1: for rename */
+
+
+  ?;   /* GetSCX.2: temp storage */
+
+
+  (aaa__aikJJuuHYT________:=aaa__aikJJuuHYT________);   /* for highlighting */
+
+
+  ?;   /* 4. for cumulative constant values */
+
+  ?;   /* 5. raw properties (motif) */
+#define ReadRawProperties(x)   brule(GetSCX.5,(x))
+#define ModifyRawProperties(x) bmodr(GetSCX.5,(x))
+
+  ?;   /* 6. sets/consts var/val (motif) */
+#define ReadSCVarsVals(y)   brule(GetSCX.6,(y))
+#define ModifySCVarsVals(y) bmodr(GetSCX.6,(y))
+
+  ?;  /* 7. default suggestion */
+
+  ?;  /* 8. seen sets/sonstants */
+#define ModifySeenSetsConstants(x)   bcall((FLAT;MODR):bmodr(GetSCX.8,(x)))
+#define ReadSeenSetsConstants(x)     brule(GetSCX.8,(x))
+
+  ?;  /* 9. seen properties */
+#define ModifySeenProperties(x)   bcall((FLAT;MODR):bmodr(GetSCX.9,(x)))
+#define ReadSeenProperties(x)     brule(GetSCX.9,(x))
+
+  ?;  /* 10. instantiate flag */
+#define ModifyInstantiateFlag(x)   bcall((FLAT;MODR):bmodr(GetSCX.10,(x)))
+#define InstantiateFlagSet         brule(GetSCX.10,(yes))
+#define InstantiateFlagNotSet      brule(GetSCX.10,(no))
+
+  0;  /* 11. prompt/no prompt flag for (Set__Comp_Query):
+           1 => no_prompt
+           0 => prompt
+      */
+#define set_no_prompt   bcall(MODR:bmodr(GetSCX.11,1))
+#define reset_no_prompt bcall(MODR:bmodr(GetSCX.11,0))
+#define if_prompt       brule(GetSCX.11,0)
+
+
+  ?;
+#define ReadDefaultCtxValues(x) brule(GetSCX.12,x)
+#define ModrDefaultCtxValues(x) bcall(MODR:bmodr(GetSCX.12,x))
+
+  ?;  /* 13. Fifi store */
+
+  ?;
+#define ResetPropsSUBError bmodr(GetSCX.14,0)
+#define SetPropsSUBError   bmodr(GetSCX.14,1)
+#define PropsSUBError      brule(GetSCX.14,1)
+
+
+  bsearch(?,A,X) &
+  bsearch(?,B,Y) &
+  ModifyRenameStore((X:Y))
+ =>
+  gsc99(?)(A:B);
+
+  ModifyRenameStore((aaa__aikJJuuHYT________ : aaa__aikJJuuHYT________))
+ =>
+  gsc99(?)(?:?);
+
+  gsc99(x)(A,a:B,b)
+ =>
+  gsc99(x;a:=b)(A:B);
+
+  brule(GetSCX.6,x) &
+  gsc99(x)(?:?)
+ =>
+  gsc98;
+
+
+  ReadData(CR)
+ =>
+  gwom0$n;
+
+
+  Printf_simp(("  % &\n",c))
+ =>
+  disp_const_m(c,m,n);
+
+  Printf_simp(("  %",c))
+ =>
+  disp_const_m(c,n,n);
+
+
+  disp_m(?);
+
+  disp_m(X) &
+  Printf_simp(("  % = %\n",a,b))
+ =>
+  disp_m(X;a:=b);
+
+  bident(a) &
+  disp_m(X) &
+  Printf_simp(("  % is deferred\n",a))
+ =>
+  disp_m(X;a:=a);
+
+
+
+  Writef("\n")
+ =>
+  chk_nl;
+
+  InstantiateFlagSet
+ =>
+  chk_nl;
+
+
+
+  [y:=z](disp_const_m bnmap P)
+ =>
+  displayprops_final_m1[y,z](P);
+
+  bsearch(?,P,Q) &
+  displayprops_final_m1[y,z](Q)
+ =>
+  displayprops_final_m1[y,z](P);
+
+
+
+  Printf_simp(("  %",b))
+ =>
+  displayprops1(b);
+
+  Printf_simp(("  % &\n",b)) &
+  displayprops1(a)
+ =>
+  displayprops1(a,b);
+
+  Printf_simp(("  % &\n",b)) &
+  displayprops1(a)
+ =>
+  displayprops1(a&b);
+
+
+
+  FifoWrite_Store((BT_ANM_PRCD_M,"  Sets/Constants input complete  ",0),(PromptUserX.1))
+ =>
+  chk_false_prp(b);
+
+  bsearch(false,(b,?),c) &
+  FifoWrite_Store((BT_ANM_PRCD_FALSE_M,"  Sets/Constants input complete  ","Properies are false!"),(PromptUserX.1))
+ =>
+  chk_false_prp(b);
+
+  bsearch(false,(b&?),c) &
+  FifoWrite_Store((BT_ANM_PRCD_FALSE_M,"  Sets/Constants input complete  ","Properies are false!"),(PromptUserX.1))
+ =>
+  chk_false_prp(b);
+
+  brule(GetSCX.4,b) &
+  brule(GetSCX.3,R)&
+  chk_false_prp([R]b)
+ =>
+  chk_false_prp0;
+
+
+
+  (a===b) == (a=b);
+
+  brule(GetSCX.4,b) &
+  brule(GetSCX.3,R) &
+  ReadRawProperties(C) &
+  ReadMchParamStore((y:z)) &
+  ReadSCVarsVals(X) &
+  Connect(".Bsb1") &
+  bprintf("Sets/Constants Values:\n \n") &
+  disp_m(X) &
+  bprintf(" \nProperties:\n \n") &
+  ReadSeenProperties(P) &
+  displayprops_final_m1[y,z](bflat(P&C)) &
+  bprintf(" \n\nProperties Simplification:\n \n") &
+  [R]displayprops1(brev(b)) &
+  bclose  &
+  AppendFileToOutFile(".Bsb1")
+ =>
+  displayprops_final_m;
+
+  SimplifyProperties(N) &
+  displayprops_final_m &
+  chk_nl &
+  chk_false_prp0 &
+  gwom0$N &
+  gsc98 &
+  bmodr(SimplifyX.3,noBool)
+ =>
+  new3_chk_subs_result$N;
+
+  Writef(("\n  Warning: the set/constant % is deferred\n  and predicates containing it might not evaluate\n",t))
+ =>
+   new2_proc_subs1_warn$N(t);
+
+   new2_proc_subs1_warn$N(SCALAR);
+
+   new2_proc_subs1_warn$N(STRING);
+
+  brule(GetSCX.4,P) &
+/***
+HERE(("Sets/Constants":(t=x)))&
+***/
+  ReadBoundVars(v) &
+  bsearch(t,v,S) &
+  ModifyBoundVars(S) &
+  ReadSCVarsVals(X) &
+  ModifySCVarsVals(X;t:=x) &
+  new2_proc_subs1_warn$N(t) &
+  [t:=x]bmodr(GetSCX.4,P)
+ =>
+  new2_proc_subs1$N(t=x);
+
+/*
+  brule(GetSCX.4,P) &
+  ReadDeferred(D) &
+  ModifyDeferred((D,t)) &
+  ReadSCVarsVals(X) &
+  ModifySCVarsVals(X;t:=t) &
+  [t:=t]bmodr(GetSCX.4,P)
+ =>
+  new2_proc_subs1$N(t=t);
+*/
+
+  ReadDefaultCtxValues(L) &
+  new2_proc_subs1$N bsmap L &
+  new3_chk_subs_result$N
+ =>
+  new2_chk_subs_result$N;
+
+  PropsSUBError &
+  new_gsc0$(N+1)
+ =>
+  new2_chk_subs_result$N;
+
+  new2_chk_subs2$N(1);
+
+  Writef(("\n  Invalid input for % - %\n",a,bsrv v berv)) &
+  SetPropsSUBError
+ =>
+  new2_chk_subs2$N([a:=v](1));
+
+  new2_chk_subs2$N([a:=v](1))
+ =>
+  new2_chk_subs1$N(a=v);
+
+  ReadDefaultCtxValues(L) &
+  new2_chk_subs1$N bsmap L
+ =>
+  new2_chk_subs$N;
+
+  brule(GetSCX.13,L) &
+  ModrDefaultCtxValues((L))
+ =>
+  new2_gsc0$N;
+
+
+  bprintf("\n6\n%\n%",a,v) /* multi_input_fld_unknwn */
+  =>
+  new1_gsc0$N(a=v);
+
+
+  brule(AnimatorFromUserX.2,b.c) &
+  brule(GetSCX.4,B) &
+  bmodr(SimplifyX.3,Bool) &
+  ReadDefaultCtxValues(L) &
+  ReadBoundVars(W) &
+  Connect(".Bsb1") &
+  bprintf(" % Properties:\n \n",b) &
+  displayprops1(brev(B)) &
+  bclose  &
+  Connect("TMP/.Bcom") &
+  bprintf("Context for %",b) &
+  new1_gsc0$N bsmap L &
+  bprintf("\n") &
+  bclose &
+  FifoWrite_Store((BT_ANM_CTX_INP_M,0,0),(GetSCX.13)) &
+  new2_gsc0$N &
+  ResetPropsSUBError &
+  new2_chk_subs$N &
+  new2_chk_subs_result$N
+ =>
+  new_gsc0$N;
+
+
+
+
+  bsearch(?,L,M) &
+  ModrDefaultCtxValues((M))
+ =>
+  new_init$N(?)(p)(L);
+
+  new_init$N(A)(p)(L,(a=a))
+ =>
+  new_init$N(A,a)(p)(L);
+
+  bsearch((v=a),p,q) &
+  new_init$N(A)(p)(L,(a=v))
+ =>
+  new_init$N(A,a)(p)(L);
+
+  bsearch((a=v),p,q) &
+  new_init$N(A)(p)(L,(a=v))
+ =>
+  new_init$N(A,a)(p)(L);
+
+  bsearch((STRING={s}),p,q) &
+  new_init$N(A)(p)(L,(STRING=STRING))
+ =>
+  new_init$N(A,STRING)(p)(L);
+
+
+  bmodr(GetSCX.4,P)
+ =>
+  new_sto_all_props$N(P);
+
+  bsearch(?,P,Q) &
+  new_sto_all_props$N(Q)
+ =>
+  new_sto_all_props$N(P);
+
+
+  ReadSeenProperties(P) &
+  ReadRawProperties(C) &
+  ModifyBoundVars((a)) &
+  bmodr(GetSCX.3,(aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  new_sto_all_props$N(bflat(P&C)) &
+  new_init$N(brev(a,?))(p&?)(?) &
+  new_gsc0$N
+ =>
+  gsc0$N(a)(p);      /* sets/constants */
+
+/************************^^^^^^ new ^^^^^^*****************************/
+
+  ModifyRenameStore((aaa: aaa))
+ =>
+  gsc0$N(?)(p);      /* no sets/constants */
+
+  ModifyRenameStore((aaa: aaa))
+ =>
+  gsc0$N(s(e))(p);   /* no sets/constants */
+
+  bsearch(s(e),a,b) &
+  gsc0$N(b)(p)
+ =>
+  gsc0$N(a)(p);
+
+  bsearch(?,a,b) &
+  gsc0$N(b)(p)
+ =>
+  gsc0$N(a)(p);
+
+  ReadMchParamStore((y:z)) &
+  [y:=z]gsc0$0(a)(p)
+ =>
+  gsc00(a)(p);
+
+  bsearch(?,p,q) &
+  gsc00(a)(q)
+ =>
+  gsc00(a)(p);
+
+  bsearch(?,a,b) &
+  gsc00(b)(p)
+ =>
+  gsc00(a)(p);
+
+
+
+  InstantiateFlagNotSet &
+  Writef("\n  Using Abstract Sets/Constants\n") &
+  ModifyRenameStore((aaa__aikJJuuHYT________ : aaa__aikJJuuHYT________))
+ =>
+  gsc00(a)(p);
+
+
+
+  ReadConfirm(w) &
+  ModifyInstantiateFlag(w) &
+  gsc00(a)(p) &
+  reset_no_prompt
+ =>
+  gsc000(a)(p);
+
+  PromptConfirm(("Instantiate deferred sets/constants?","Deferred sets/constants may be instantiated to|concrete values, or left in their abstract form|(the latter, of course, preventing simplification)")) &
+  gsc000(a)(p)
+ =>
+  gsc0001(a)(p);
+
+  ModifyRenameStore((aaa: aaa))
+ =>
+  gsc0001(?)(p);
+
+  bsearch(?,p,q) &
+  gsc0001(c)(q)
+ =>
+  gsc0001(c)(p);
+
+  bsearch(?,c,d) &
+  gsc0001(d)(p)
+ =>
+  gsc0001(c)(p);
+
+  bsearch(s(e),c,d) &  /* enum sets */
+  bident(s) &
+  blident(e) &
+  gsc0001(d)(p)
+ =>
+  gsc0001(c)(p);
+
+  ReadSeenSetsConstants(b) &
+  ReadSeenProperties(q) &
+  gsc0001(bflat(b,a))(bflat(q&p))
+ =>
+  gsc0000(a)(p)
+
+END
+
+&
+
+THEORY GetInputParametersX IS
+
+/*
+  invocation GetInputParameters(N,p,q)
+    n a NAT
+    p input variable list
+    q precondition
+*/    
+
+#define SimplifyPrecondition(N) bcall(sfsTac:ss0$(N)(GetInputParametersX,1))
+
+#define giTac \
+    (((Prologue_tac~;ARI;SUB~;MODR;MAP;WRITE;REV~;FLAT)~;GetInputParametersX)~)
+
+#define GetInputParameters(N,p,q) bcall(giTac:gi1$N(p,q))
+
+
+  ?;  /* for simplified precondition */
+
+  ?;  /* for highlighting */
+
+  ?;  /* for default prompt */
+
+  ?;  /* 4. formal params (motif) */
+
+  Writef_simp(("\n  Can't perform substitution:\n\n    %\n\n",bsrv x berv))
+ =>
+  inform_cant_perform(x);
+
+
+  InformCantConnect(".Bsb2") &
+  PFZ
+ =>
+  connectBsb2;
+
+  bconnect(".Bsb2")
+ =>
+  connectBsb2;
+
+
+  undo_FA_sto(t:=x);
+
+  ReadFAOpParams(X;t:=x) &
+  ModifyFAOpParams(X)
+ =>
+  undo_FA_sto(t:=b);
+
+
+
+  [?:=?] == [aaa__aikJJuuHYT________:=aaa__aikJJuuHYT________];     /* for stateless machines */
+
+  Printf_simp(("  %",b))
+ =>
+  displayprecond1(b);
+
+  Printf_simp(("  % &\n",b)) &
+  displayprecond1(a)
+ =>
+  displayprecond1(a,b);
+
+  Printf_simp(("  % &\n",b)) &
+  displayprecond1(a)
+ =>
+  displayprecond1(a&b);
+
+  (a===b) == (a=b);
+
+  ReadCurrentPrecondition(a) &
+  ReadInputParameterHighlight(R) &
+  connectBsb2 &
+  bprintf("Precondition Simplification:\n \n") &
+  [R]displayprecond1(a) &
+  bclose
+ =>
+  displayprecond;
+
+  ReadCurrentPrecondition(a) &
+  ReadInputParameterHighlight(R) &
+  connectBsb2 &
+  bprintf("Precondition Simplification:\n \n") &
+  [R]displayprecond1(a) &
+  bclose &
+  CheckCalculatedPrecondition
+ =>
+  displayprecond_no_inp_param;
+
+  ReadCurrentPrecondition(a) &
+  bsearch(false,(a&?),b) &
+  ReadInputParameterHighlight(R) &
+  connectBsb2 &
+  bprintf("Precondition Simplification:\n \n") &
+  [R]displayprecond1(a) &
+  bclose &
+  Writef_sub(("  >>> Precondition is false! <<<\n\n")) &
+  AppendToOutFile(("  >>> Precondition is false! <<<\n\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"    Precondition is false!    ",0))
+ =>
+  displayprecond_no_inp_param;
+
+  ReadCurrentPrecondition(a) &
+  bsearch(false,(a,?),b) &
+  ReadInputParameterHighlight(R) &
+  connectBsb2 &
+  bprintf("Precondition Simplification:\n \n") &
+  [R]displayprecond1(a) &
+  bclose &
+  Writef_sub(("  >>> Precondition is false! <<<\n\n")) &
+  AppendToOutFile(("  >>> Precondition is false! <<<\n\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"    Precondition is false!    ",0))
+ =>
+  displayprecond_no_inp_param;
+
+  disp_m(?);
+
+  disp_m(X) &
+  Printf_simp(("  % = %\n",a,b))
+ =>
+  disp_m(X;a:=b);
+
+
+  ReadCurrentPrecondition(a) &
+  ReadInputParameterHighlight(R) &
+  ReadFAOpParams(X) &
+  SaveOpParameterValues(X) &
+  ModifyFAOpParams(?) &
+  connectBsb2 &
+  bprintf("Input Parameters:\n \n") &
+  disp_m(X) &
+  bprintf(" \nPrecondition Simplification:\n \n") &
+  [R]displayprecond1(a) &
+  bclose &
+  CheckCalculatedPrecondition
+ =>
+  displayprecond_final_m;
+
+  ReadCurrentPrecondition(a) &
+  bsearch(false,(a&?),b) &
+  ReadInputParameterHighlight(R) &
+  ReadFAOpParams(X) &
+  SaveOpParameterValues(X) &
+  ModifyFAOpParams(?) &
+  connectBsb2 &
+  bprintf("Input Parameters:\n \n") &
+  disp_m(X) &
+  bprintf(" \nPrecondition Simplification:\n \n") &
+  [R]displayprecond1(a) &
+  bclose &
+  Writef_sub(("  >>> Precondition is false! <<<\n\n")) &
+  AppendToOutFile(("  >>> Precondition is false! <<<\n\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"    Precondition is false!    ",0))
+ =>
+  displayprecond_final_m;
+
+  ReadCurrentPrecondition(a) &
+  bsearch(false,(a,?),b) &
+  ReadInputParameterHighlight(R) &
+  ReadFAOpParams(X) &
+  SaveOpParameterValues(X) &
+  ModifyFAOpParams(?) &
+  connectBsb2 &
+  bprintf("Input Parameters:\n \n") &
+  disp_m(X) &
+  bprintf(" \nPrecondition Simplification:\n \n") &
+  [R]displayprecond1(a) &
+  bclose &
+  Writef_sub(("  >>> Precondition is false! <<<\n\n")) &
+  AppendToOutFile(("  >>> Precondition is false! <<<\n\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"    Precondition is false!    ",0))
+ =>
+  displayprecond_final_m;
+
+
+
+  bsearch(?,a,b) &
+  ModifyAnimatorRule(MakeSubstitutionX,1,(p:=b))
+ =>  
+  gi5$n(a)(p);
+
+
+
+/*** added ***/
+  ReadCurrentPrecondition(C) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=x) &
+  [t:=x]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(0) &
+  gi5$n(a,x)(p)
+ =>
+  gi4c$n(p,q)(t)(a)(p)(x)(skip);          /* substitution ok */
+
+  ReadCurrentPrecondition(C) &
+  ReadBoundVars(W) &
+  bsearch(t,W,U) &
+  ModifyBoundVars(U) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=x) &
+  [t:=x]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(0) &
+  gi5$n(a,x)(p)
+ =>
+  gi4c$n(p,q)(t)(a)(p)(x)(skip);          /* substitution ok */
+
+  bident(t) &                             /* deferred */
+  ReadCurrentPrecondition(C) &
+  ReadDeferred(D) &
+/***
+HERE((5:"ModifyingDeferred":t)) &
+***/
+  ModifyDeferred((D,t)) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=t) &
+  [t:=t]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(0) &
+  gi5$n(a,t)(p)
+ =>
+  gi4c$n(p,q)(t)(a)(p)(t)(skip);          /* substitution ok */
+
+
+  inform_cant_perform((t:=x)) &
+  undo_FA_sto(t:=x) &
+  gi1$(n+1)(p,q)
+ =>
+  gi4c$n(p,q)(t)(a)(p)(x)([t:=x](skip));    /* substitution not ok */
+
+
+
+
+  ReadData(x) &
+  gi4c$n(p,q)(t)(a)(p)(x)([t:=x](skip))
+ =>
+  gi4b$n(p,q)(t)(a)(p);
+
+  ReadData(CR) &
+  ReadInputParameterPrompt(T) &
+  ModifyInputParameterPrompt(?) &
+  gi4c$n(p,q)(t)(a)(p)(T)([t:=T](skip))
+ =>
+  gi4b$n(p,q)(t)(a)(p);
+
+
+
+
+  ModifyInputParameterHighlight((t := bsrv t berv)) &
+  displayprecond &
+  FifoWrite_Store((BT_ANM_PRE_M,bcatl("  Value for input parameter ",t,"?  "),bcatl("Value should instantiate the|operation parameter ",t)),(PromptUserX.1)) &
+  gi4b$n(p,q)(t)(a)(p)
+ =>
+  gi4_2$n(p,q)(a)(t)(p)(?);
+
+
+
+  gi4_2$n(p,q)(a)(t)(p)(K)
+ =>
+  gi4_2$n(p,q)(a)(t)(p)(K,k);
+
+
+  Constant____(v,T) &
+  ModifyInputParameterHighlight((t := bsrv t berv)) &
+  displayprecond &
+  ModifyInputParameterPrompt(T) &
+  FifoWrite_Store((BT_ANM_PRE_M,bcatl("  Value for input parameter ",t,"?  "),bcatl("Value should instantiate the|operation parameter ",t),T),(PromptUserX.1)) &
+  gi4b$n(p,q)(t)(a)(p)
+ =>
+  gi4_2$n(p,q)(a)(t)(p)(K,(t:{T}));
+
+
+/*
+  bnum(N) &
+  gi4_2$n(p,q)(a)(t)(p)(K)
+ =>
+  gi4_2$n(p,q)(a)(t)(p)(K,(t:{[N]}));
+*/
+
+
+  gi4_2$n(p,q)(a)(t)(p)(K)
+ =>
+  gi4_2$n(p,q)(a)(t)(p)(K,(t:{T,U}));
+
+
+
+  Constant____(v,T) &
+  ModifyInputParameterHighlight((t := bsrv t berv)) &
+  displayprecond &
+  ModifyInputParameterPrompt(T) &
+  FifoWrite_Store((BT_ANM_PRE_M,bcatl("  Value for input parameter ",t,"?  "),bcatl("Value should instantiate the|operation parameter ",t),T),(PromptUserX.1)) &
+  gi4b$n(p,q)(t)(a)(p)
+ =>
+  gi4_2$n(p,q)(a)(t)(p)(K,(t===T));
+
+
+  gi4_2$n(p,q)(a)(t)(p)(?)
+ =>
+  gi4$n(p,q)(a)(t)(p);
+
+  ReadCurrentPrecondition((t:{T})) & 
+  gi4_2$n(p,q)(a)(t)(p)(?,(t:{T}))
+ =>
+  gi4$n(p,q)(a)(t)(p);
+
+  ReadCurrentPrecondition((T===t)) & 
+  gi4_2$n(p,q)(a)(t)(p)(?,(T===t))
+ =>
+  gi4$n(p,q)(a)(t)(p);
+
+  ReadCurrentPrecondition((t===T)) & 
+  gi4_2$n(p,q)(a)(t)(p)(?,(t===T))
+ =>
+  gi4$n(p,q)(a)(t)(p);
+
+  ReadCurrentPrecondition(K) & 
+  bsearch((t:{T}),K,L) &
+  gi4_2$n(p,q)(a)(t)(p)(bflat(?,K))
+ =>
+  gi4$n(p,q)(a)(t)(p);
+
+  ReadCurrentPrecondition(K) & 
+  bsearch((T===t),K,L) &
+  gi4_2$n(p,q)(a)(t)(p)(bflat(?,K))
+ =>
+  gi4$n(p,q)(a)(t)(p);
+
+  ReadCurrentPrecondition(K) & 
+  bsearch((t===T),K,L) &
+  gi4_2$n(p,q)(a)(t)(p)(bflat(?,K))
+ =>
+  gi4$n(p,q)(a)(t)(p);
+
+
+
+
+
+
+
+/*** added ***/
+  ReadData(x) &
+  ReadCurrentPrecondition(C) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=x) &
+  [t:=x]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(N) &
+  gi4$N(p,q)(a,x)(s)(p)
+ =>
+  gi4a$N(p,q)(t)(a)(s)(p);
+
+  ReadData(x) &
+  ReadCurrentPrecondition(C) &
+  ReadBoundVars(v) &
+  bsearch(t,v,S) &
+  ModifyBoundVars(S) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=x) &
+  [t:=x]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(N) &
+  gi4$N(p,q)(a,x)(s)(p)
+ =>
+  gi4a$N(p,q)(t)(a)(s)(p);
+
+  ReadData(t) &
+  bident(t) &                             /* deferred */
+  ReadDeferred(D) &
+/***
+HERE((6:"ModifyingDeferred":t)) &
+***/
+  ModifyDeferred((D,t)) &
+  ReadCurrentPrecondition(C) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=t) &
+  [t:=t]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(N) &
+  gi4$N(p,q)(a,t)(s)(p)
+ =>
+  gi4a$N(p,q)(t)(a)(s)(p);
+
+
+/*** added ***/
+  ReadData(CR) &
+  ReadInputParameterPrompt(T) &
+  ModifyInputParameterPrompt(?) &
+  ReadCurrentPrecondition(C) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=T) &
+  [t:=T]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(N) &
+  gi4$N(p,q)(a,T)(s)(p)
+ =>
+  gi4a$N(p,q)(t)(a)(s)(p);
+
+  ReadData(CR) &
+  ReadInputParameterPrompt(T) &
+  ModifyInputParameterPrompt(?) &
+  ReadCurrentPrecondition(C) &
+  ReadBoundVars(v) &
+  bsearch(t,v,S) &
+  ModifyBoundVars(S) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=T) &
+  [t:=T]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(N) &
+  gi4$N(p,q)(a,T)(s)(p)
+ =>
+  gi4a$N(p,q)(t)(a)(s)(p);
+
+  ReadData(CR) &
+  bident(t) &                             /* deferred */
+  ReadDeferred(D) &
+/***
+HERE((7:"ModifyingDeferred":t)) &
+***/
+  ModifyDeferred((D,t)) &
+  ReadInputParameterPrompt(t) &
+  ModifyInputParameterPrompt(?) &
+  ReadCurrentPrecondition(C) &
+  ReadFAOpParams(X) &
+  ModifyFAOpParams(X;t:=t) &
+  [t:=t]ModifyCurrentPrecondition(C) &
+  SimplifyPrecondition(N) &
+  gi4$N(p,q)(a,t)(s)(p)
+ =>
+  gi4a$N(p,q)(t)(a)(s)(p);
+
+
+
+
+  ModifyInputParameterHighlight((t := bsrv t berv)) &
+  displayprecond &
+  FifoWrite_Store((BT_ANM_PRE_M,bcatl("  Value for input parameter ",t,"?  "),bcatl("Value should instantiate the|operation parameter ",t)),(PromptUserX.1)) &
+  gi4a$n(p,q)(t)(a)(s)(p)
+ =>
+  gi4_1$n(p,q)(a)(s,t)(p)(?);
+
+
+
+  gi4_1$n(p,q)(a)(s,t)(p)(K)
+ =>
+  gi4_1$n(p,q)(a)(s,t)(p)(K,k);
+
+
+  Constant____(v,T) &
+  ModifyInputParameterHighlight((t := bsrv t berv)) &
+  displayprecond &
+  ModifyInputParameterPrompt(T) &
+  FifoWrite_Store((BT_ANM_PRE_M,bcatl("  Value for input parameter ",t,"?  "),bcatl("Value should instantiate the|operation parameter ",t),T),(PromptUserX.1)) &
+  gi4a$n(p,q)(t)(a)(s)(p)
+ =>
+  gi4_1$n(p,q)(a)(s,t)(p)(K,(t:{T}));
+
+
+/*
+  bnum(N) &
+  gi4_1$n(p,q)(a)(s,t)(p)(K)
+ =>
+  gi4_1$n(p,q)(a)(s,t)(p)(K,(t:{[N]}));
+*/
+
+  gi4_1$n(p,q)(a)(s,t)(p)(K)
+ =>
+  gi4_1$n(p,q)(a)(s,t)(p)(K,(t:{T,U}));
+
+
+
+  Constant____(v,T) &
+  ModifyInputParameterHighlight((t := bsrv t berv)) &
+  displayprecond &
+  ModifyInputParameterPrompt(T) &
+  FifoWrite_Store((BT_ANM_PRE_M,bcatl("  Value for input parameter ",t,"?  "),bcatl("Value should instantiate the|operation parameter ",t),T),(PromptUserX.1)) &
+  gi4a$n(p,q)(t)(a)(s)(p)
+ =>
+  gi4_1$n(p,q)(a)(s,t)(p)(K,(t===T));
+
+
+
+  gi4_1$n(p,q)(a)(s,t)(p)(?)
+ =>
+  gi4$n(p,q)(a)(s,t)(p);
+
+  ReadCurrentPrecondition((t:{T})) & 
+  gi4_1$n(p,q)(a)(s,t)(p)(?,(t:{T}))
+ =>
+  gi4$n(p,q)(a)(s,t)(p);
+
+  ReadCurrentPrecondition((T===t)) & 
+  gi4_1$n(p,q)(a)(s,t)(p)(?,(T===t))
+ =>
+  gi4$n(p,q)(a)(s,t)(p);
+
+  ReadCurrentPrecondition((t===T)) & 
+  gi4_1$n(p,q)(a)(s,t)(p)(?,(t===T))
+ =>
+  gi4$n(p,q)(a)(s,t)(p);
+
+  ReadCurrentPrecondition(K) & 
+  bsearch((t:{T}),K,L) &
+  gi4_1$n(p,q)(a)(s,t)(p)(bflat(?,K))
+ =>
+  gi4$n(p,q)(a)(s,t)(p);
+
+  ReadCurrentPrecondition(K) & 
+  bsearch((T===t),K,L) &
+  gi4_1$n(p,q)(a)(s,t)(p)(bflat(?,K))
+ =>
+  gi4$n(p,q)(a)(s,t)(p);
+
+  ReadCurrentPrecondition(K) & 
+  bsearch((t===T),K,L) &
+  gi4_1$n(p,q)(a)(s,t)(p)(bflat(?,K))
+ =>
+  gi4$n(p,q)(a)(s,t)(p);
+
+
+
+
+  brule(SelectOpX.1,(y:i)) &
+  gi4$n(p,q)(?)(brev(p))(p)
+ =>
+  gi2$n(p,q);
+
+
+  ModifyCurrentPrecondition(r) &
+  SimplifyPrecondition(N) &
+  gi2$N(p,q)
+ =>
+  gi1$N(p,q)(r);
+
+  ModifyCurrentPrecondition(r) &
+  SimplifyPrecondition(N)
+ =>
+  gi1$N(?,q)(r);
+
+
+  /***
+  input parameters, state
+  ***/
+  bmodr(SimplifyX.3,Bool) &
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  ReadCurrValStateVars(v) &
+  ReadStateVarNames(s) &
+  ReadBoundVars(W) &
+  ModifyBoundVars((bflat(W,p))) &
+  ModifyInputParameterHighlight((aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  gi1$n(p,q)([y:=z][Y:=Z][w:=x][s:=v]brev(q)) &
+  displayprecond_final_m &
+  FifoWrite_NoStore((BT_ANM_PRE_FINI_M,0,0)) &
+  bmodr(SimplifyX.3,noBool)
+ =>
+  gi1$n(p,q);
+
+  /***
+  input parameters, no state
+  ***/
+  bmodr(SimplifyX.3,Bool) &
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  ReadCurrValStateVars(?) &
+  ReadStateVarNames(?) &
+  ReadBoundVars(W) &
+  ModifyBoundVars((bflat(W,p))) &
+  ModifyInputParameterHighlight((aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  gi1$n(p,q)([y:=z][Y:=Z][w:=x]brev(q)) &
+  displayprecond_final_m &
+  FifoWrite_NoStore((BT_ANM_PRE_FINI_M,0,0)) &
+  bmodr(SimplifyX.3,noBool)
+ =>
+  gi1$n(p,q);
+
+  /***
+  no input parameters, state
+  ***/
+  bmodr(SimplifyX.3,Bool) &
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  ReadCurrValStateVars(v) &
+  ReadStateVarNames(s) &
+  ModifyInputParameterHighlight((aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  gi1$n(?,q)([y:=z][Y:=Z][w:=x][s:=v]brev(q)) &
+  displayprecond_no_inp_param &
+  FifoWrite_NoStore((BT_ANM_PRE_FINI_M,0,0)) &
+  bmodr(SimplifyX.3,noBool)
+ =>
+  gi1$n(?,q);
+
+  /***
+  no input parameters, no state
+  ***/
+  bmodr(SimplifyX.3,Bool) &
+  ReadEnumsetsStore((w:x)) &
+  ReadMchParamStore((y:z)) &
+  ReadRenameStore((Y:Z)) &
+  ReadCurrValStateVars(?) &
+  ReadStateVarNames(?) &
+  ModifyInputParameterHighlight((aaa__aikJJuuHYT________ := aaa__aikJJuuHYT________)) &
+  gi1$n(?,q)([y:=z][Y:=Z][w:=x]brev(q)) &
+  displayprecond &
+  FifoWrite_NoStore((BT_ANM_PRE_FINI_M,0,0)) &
+  bmodr(SimplifyX.3,noBool)
+ =>
+  gi1$n(?,q)
+
+
+END
+
+&
+
+THEORY SugarX IS
+
+#define WriteSugaredMenu(x)  \
+  brule(GetChoiceX.3,N) & \
+  bcall((ARI~;MODR): bmodr(GetChoiceX.3,(N+1))) & \
+  bcall((((SugarX;SUB~)~;ARI~;WRITE)~;CrashX): writem("  %: %\n\n",bsrv N berv,x))
+
+#define SimplifySubstGuard(N) bcall(sfsTac:ss0$(N)(EnableSubstitutionX,3))
+
+
+  bprintf("\E") &
+  Printf_simp(x)
+ =>
+  writem(x);
+
+  brule(GetChoiceX.3,2) & /* 1st branch */
+  Printf_simp(x)
+ =>
+  writem(x);
+
+
+  comtoamp(a) == (a);
+
+  comtoamp(a,b) == (comtoamp(a)&b);
+
+  comtoamp(true,b) == (b);
+
+  comtoamp(a,true) == (comtoamp(a));
+
+  bsearch(false,a,b)
+ =>
+  comtoamp(a) == false;
+
+
+
+  (a[]b) == (CHOICE choic(a[]b) END);
+
+  choic(a) == (a);
+
+  choic(a[]b) == (choic(a) OR b);
+
+  brule(EnableSubstitutionX.3,g) &
+  ReadBoundVars(W) &
+  ModifyBoundVars((bflat(W,v)))
+ =>
+  (ANY a WHERE ? THEN c END)(v) == (ANY a WHERE comtoamp(g) THEN c END);
+
+  ReadCurrValStateVars(S) &
+  ReadStateVarNames(V) &
+  ReadBoundVars(v) &
+  ModifyBoundVars((bflat(v,a))) &
+  [V:=S]ModifyAnimatorRule(EnableSubstitutionX,3,b) &
+  SimplifySubstGuard(n)  
+ =>
+  (@a.(b==>c)) == (ANY a WHERE ? THEN c END)(v);
+
+
+
+  brule(EnableSubstitutionX.3,g)
+ =>
+  (IF ? THEN b END) == (IF comtoamp(g) THEN b END);
+
+  brule(EnableSubstitutionX.3,g)
+ =>
+  (IF ? THEN b ELSE c END) == (IF comtoamp(g) THEN b ELSE c END);
+
+  ReadCurrValStateVars(S) &
+  ReadStateVarNames(V) &
+  [V:=S]ModifyAnimatorRule(EnableSubstitutionX,3,a) &
+  SimplifySubstGuard(n)  
+ =>
+  (a==>b [] not(a)==>c) == (IF ? THEN b ELSE c END);
+
+  ReadCurrValStateVars(S) &
+  ReadStateVarNames(V) &
+  [V:=S]ModifyAnimatorRule(EnableSubstitutionX,3,a) &
+  SimplifySubstGuard(n)  
+ =>
+  (a==>b [] not(a)==>skip) == (IF ? THEN b END);
+
+  (a====>b) == (a==>b)
+
+END
+
+&
+
+THEORY GetChoiceX IS
+
+#define GetChoice(x) bcall(((ARI~;WRITE;MODR~)~;GetChoiceX)~:gc0(x))
+
+  ?;   /* user-selection */
+
+  ?;   /* a [] b ... */
+
+  ?;   /* next number */
+
+  InformCantConnect(".Bsel") &
+  PFZ
+ =>
+  connectBsel;
+
+  bconnect(".Bsel")
+ =>
+  connectBsel;
+
+
+  get_num2(a)(N)(n-1)
+ =>
+  get_num2(a [] b)(N)(n);
+
+  get_num2(a)(N)(n-1)
+ =>
+  get_num2(a [] b)(N)(n);
+
+  bmodr(GetChoiceX.1,b)
+ =>
+  get_num2(a [] b)(N)(1);
+
+  bmodr(GetChoiceX.1,b)
+ =>
+  get_num2(b)(1)(1);
+
+  brule(GetChoiceX.2,x) &
+  brule(GetChoiceX.3,N) &
+  brule(GetNonZeroNumberFromUserX.1,n) &
+  get_num2(x)(n)(N-n)
+ =>
+  get_num1;
+
+  brule(GetChoiceX.2,x) &
+  brule(GetChoiceX.3,N) &
+  brule(GetNonZeroNumberFromUserX.1,n.M) & /* anm_invariant_flag */
+  AddBranchToList(n) &
+  get_num2(x)(n)(N-n)
+ =>
+  get_num1;
+
+  brule(GetChoiceX.3,N) &
+  GetNonZeroNumberFromUser(N) &
+  get_num1
+ =>
+  get_num;
+
+
+
+
+  brule(GetChoiceX.3,N) &
+  bmodr(GetChoiceX.3,(N+1)) &
+  WriteSugaredMenu(x)
+ =>
+  gc_write_1(x);
+
+  gc_write_1(a)
+ =>
+  gc_write(a);
+
+  gc_write(a) &
+  gc_write_1(b)
+ =>
+  gc_write(a [] b);
+
+  gc_write_1(x[]y==>z) &
+  gc_write_1(b)
+ =>
+  gc_write((x[]y==>z) [] b);
+
+  bmodr(GetChoiceX.2,x) &
+  bmodr(GetChoiceX.3,1) &
+  connectBsel &
+  gc_write(x) &
+  bclose &
+  FifoWrite_Store((BT_GET_CHOICE_M,0,0),(GetNonZeroNumberFromUserX.1)) &
+  get_num1 &
+  set_motif_CHOICE_store_ops_flag &
+  bmodr(GetChoiceX.2,?)
+ =>
+  gc0(x)
+
+
+END
+
+&
+
+THEORY EnableSubstitutionX IS
+
+/*
+  invocation: EnableSubstitution(N,i,v,z)
+
+  input:
+    n a NAT
+    i substitution
+    v variable list
+    z output list
+*/    
+
+
+#define esTac ((EnableSubstitutionMacrosX~;(ARI;FLAT~;SUB~;MODR;WRITE)~;EnableSubstitutionX)~)
+
+#define EnableSubstitution(N,i,v,z) bcall(esTac:(ModifyAnimatorRule(SimplifyX,3,Bool) & es$N(v|z)(?)(i)(?) & ModifyAnimatorRule(SimplifyX,3,noBool)))
+
+  ?;   /* for result of state substitution (v)  */
+
+  ?;   /* for result of output substitution (z) */
+
+  ?;   /* for evaluation of the guard */
+
+  [?:=?] == [aaa__aikJJuuHYT________:=aaa__aikJJuuHYT________];     /* for stateless machines */
+
+  bconnect(".Bcom") &
+  bcall(WRITE:bprintf("%",a)) &
+  bcall(SHELL:bshell("mail daven < '.Bcom'"))
+ =>
+  MailDave(a);
+
+  DrawLine &
+  DrawLineOutFile &
+  InformProblem(EnableSubstitutionX,a) &
+  DrawLine &
+  DrawLineOutFile &
+  es$fini$n(v|z)
+ =>
+  es$n(v|z)(x)(a)(c);
+
+
+  DrawLine &
+  DrawLineOutFile &
+  InformProblem(EnableSubstitutionX,(X)) &
+  DrawLine &
+  DrawLineOutFile &
+  es$fini$n(v|z)
+ =>
+  es$fini$n([X](v|z));
+
+
+  bsearch(aaa__aikJJuuHYT________,X,S) &
+  bsearch(aaa__aikJJuuHYT________,S,T) &
+  bsearch(aaa__aikJJuuHYT________,Y,U) &
+  bsearch(aaa__aikJJuuHYT________,U,V) &
+  es$fini$n([S:=U](v|z))
+ =>
+  es$fini$n([X:=Y](v|z));
+
+
+  DrawLine &
+  DrawLineOutFile &
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(X)) &
+  DrawLine &
+  DrawLineOutFile &
+  es$fini$n(v|z)
+ =>
+  es$fini$n([X==>c](v|z));
+
+  DrawLine &
+  DrawLineOutFile &
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(X)) &
+  DrawLine &
+  DrawLineOutFile &
+  es$fini$n(v|z)
+ =>
+  es$finiguard$n([X==>c](v|z));
+
+  DrawLine &
+  DrawLineOutFile &
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(X)) &
+  DrawLine &
+  DrawLineOutFile &
+  es$fini$n(v|z)
+ =>
+  es$fini$n([a [] X==>c](v|z));
+
+  DrawLine &
+  DrawLineOutFile &
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(X)) &
+  DrawLine &
+  DrawLineOutFile &
+  es$fini$n(v|z)
+ =>
+  es$finiguard$n([a [] X==>c](v|z));
+
+
+
+  ModifyAnimatorRule(EnableSubstitutionX,1,v) &
+  ModifyAnimatorRule(EnableSubstitutionX,2,z)
+ =>
+  es$fini$n(v|z);
+
+  brule(EnableSubstitutionX.3,guard(g)) &
+  es$fini_remaining_guard$n([cannot_simplify(g)==>c](v|z))
+ =>
+  get_remaining_guard$n([?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(g)) &
+  es$finiguard$n([cannot_simplify(g)==>c](v|z))
+ =>
+  getguard$n([?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(false)) &
+  es$fini_remaining_guard$n([false==>c](v|z))
+ =>
+  get_remaining_guard$n([?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(false)) &
+  es$finiguard$n([false==>c](v|z))
+ =>
+  getguard$n([?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(true)) &
+  es$fini_remaining_guard$n([true==>c](v|z))
+ =>
+  get_remaining_guard$n([?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(true)) &
+  es$finiguard$n([true==>c](v|z))
+ =>
+  getguard$n([?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(g)) &
+  es$fini_remaining_guard$n([a [] cannot_simplify(g)==>c](v|z))
+ =>
+  get_remaining_guard$n([a [] ?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(g)) &
+  es$finiguard$n([a [] cannot_simplify(g)==>c](v|z))
+ =>
+  getguard$n([a [] ?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(false)) &
+  es$fini_remaining_guard$n([a [] false==>c](v|z))
+ =>
+  get_remaining_guard$n([a [] ?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(false)) &
+  es$finiguard$n([a [] false==>c](v|z))
+ =>
+  getguard$n([a [] ?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(true)) &
+  es$fini_remaining_guard$n([a [] true==>c](v|z))
+ =>
+  get_remaining_guard$n([a [] ?==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(true)) &
+  es$finiguard$n([a [] true==>c](v|z))
+ =>
+  getguard$n([a [] ?==>c](v|z));
+
+
+  ReadCurrValStateVars(s) &
+  brule(GetChoiceX.1,i) &
+  bmodr(GetChoiceX.1,?) &           /* clean */
+  bcall(((ARI;SUB~;MakeSubstitutionX)~):ms0$(N+1)(i)(v)(z)(s)) &
+                                   /* MakeSubstitution */
+  bcall(((SUB~;MakeSubstitutionX)~):ms_complete_subs$N(i)(v)(z)(s))   /* ib */
+                                   /* CompleteSubstitution */
+ =>
+  getchoice$(N)([?](v|z));
+
+  GetChoice((a [] b)) &
+  getchoice$(N)([?](v|z))
+ =>
+  es$fini$N([a [] b](v|z));
+
+
+
+  ReadCurrValStateVars(s) &
+  ReadStateVarNames(v) &
+  [v:=s]ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(N) &
+  get_remaining_guard$(N)([?==>c](v|z))
+ =>
+  es$fini_remaining_guard$N([b==>c](v|z));
+
+  ReadCurrValStateVars(s) &
+  ReadStateVarNames(v) &
+  [v:=s]ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(N) &
+  get_remaining_guard$(N)([?==>c](v|z))
+ =>
+  es$fini_remaining_$N([b==>c](v|z));
+
+
+
+
+
+  ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(N) &
+  getguard$(N)([?==>c](v|z))
+ =>
+  es$fini$N([b==>c](v|z));
+
+
+  ReadCurrValStateVars(s) &
+  ReadStateVarNames(v) &
+  [v:=s]ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(N) &
+  getguard$(N)([?==>c](v|z))
+ =>
+  es$fini$N([b==>c](v|z));
+
+
+  ReadCurrValStateVars(s) &
+  ReadStateVarNames(v) &
+  [v:=s]ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(N) &
+  get_remaining_guard$(N)([a [] ?==>c](v|z)) 
+ =>
+  es$fini_remaining_guard$N([a [] b==>c](v|z));
+
+  ReadCurrValStateVars(s) &
+  ReadStateVarNames(v) &
+  [v:=s]ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(N) &
+  get_remaining_guard$(N)([a [] ?==>c](v|z)) 
+ =>
+  es$fini_remaining_$N([a [] b==>c](v|z));
+
+  ReadCurrValStateVars(s) &
+  ReadStateVarNames(v) &
+  [v:=s]ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(N) &
+  getguard$(N)([a [] ?==>c](v|z)) 
+ =>
+  es$fini$N([a [] b==>c](v|z));
+
+
+
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(x))
+ =>
+  es$fini_remaining_guard$n([cannot_simplify(x)==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(x)) &
+  Writef_simp(("\n  %\n\n    No guard evaluates to `true'\n\n",bsrv Warning berv))
+ =>
+  es$finiguard$n([cannot_simplify(x)==>c](v|z));
+
+
+  es$fini_remaining_guard$n([false==>c](v|z));
+
+  Writef_simp(("\n  %\n\n    No guard evaluates to `true'\n\n",bsrv Warning berv))
+ =>
+  es$finiguard$n([false==>c](v|z));
+
+
+  es$fini_remaining_guard$n([true==>c](v|z));
+
+  es$fini$n([c](v|z))
+ =>
+  es$finiguard$n([true==>c](v|z));
+
+
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(x)) &
+  es$fini_remaining_$n([a](v|z))
+ =>
+  es$fini_remaining_guard$n([a [] cannot_simplify(x)==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(x)) &
+  es$fini$n([a](v|z))
+ =>
+  es$finiguard$n([a [] cannot_simplify(x)==>c](v|z));
+
+
+
+  es$fini_remaining_$n([a](v|z))
+ =>
+  es$fini_remaining_guard$n([a [] false==>c](v|z));
+
+  es$fini$n([a](v|z))
+ =>
+  es$finiguard$n([a [] false==>c](v|z));
+
+
+  es$fini_remaining_$n([a](v|z))
+ =>
+  es$fini_remaining_guard$n([a [] true==>c](v|z));
+
+  es$fini_remaining_guard$n([a](v|z)) &
+  es$fini$n([c](v|z))
+ =>
+  es$finiguard$n([a [] true==>c](v|z));
+
+
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(x)) &
+  Writef(("\n  %\n\n    No guard evaluates to `true'\n\n",bsrv Warning berv))
+ =>
+  es$fini$n([cannot_simplify(x)==>c](v|z));
+
+  Writef(("\n  %\n\n    No guard evaluates to `true'\n\n",bsrv Warning berv))
+ =>
+  es$fini$n([false==>c](v|z));
+
+
+  es$fini_remaining_$n([true==>c](v|z));
+
+  es$fini$n([c](v|z))
+ =>
+  es$fini$n([true==>c](v|z));
+
+
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(x)) &
+  es$fini_remaining_$n([a](v|z))
+ =>
+  es$fini_remaining_$n([a [] cannot_simplify(x)==>c](v|z));
+
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(x)) &
+  es$fini$n([a](v|z))
+ =>
+  es$fini$n([a [] cannot_simplify(x)==>c](v|z));
+
+
+  es$fini_remaining_$n([a](v|z))
+ =>
+  es$fini_remaining_$n([a [] false==>c](v|z));
+
+  es$fini$n([a](v|z))
+ =>
+  es$fini$n([a [] false==>c](v|z));
+
+
+  es$fini_remaining_$n([a](v|z))
+ =>
+  es$fini_remaining_$n([a [] true==>c](v|z));
+
+  es$fini_remaining_$n([a](v|z)) &
+  es$fini$n([c](v|z))
+ =>
+  es$fini$n([a [] true==>c](v|z));
+
+
+
+  es$n(v|z)(x)(aaa__aikJJuuHYT________:=aaa__aikJJuuHYT________)(a)
+ =>
+  es$n(v|z)(x)(skip)(a);
+
+  es$n(v|z)(x)(b)(a) 
+ =>
+  es$n(v|z)(x)(?)(a;b);
+
+  es$fini$n([x](v|z))
+ =>
+  es$n(v|z)(?;fini(x))(?)(?);
+
+  es$n(v|z)(x;(a==>?))(b)(c)
+ =>
+  es$n(v|z)(x)(a==>b)(c);
+
+  es$n(v|z)(x;(?[]?))(b)(c;a==>d)
+ =>
+  es$n(v|z)(x)(a==>d[]b)(c);
+
+
+
+/****************************************************************/
+
+
+  brule(EnableSubstitutionX.1,v) &
+  brule(EnableSubstitutionX.2,z) &
+  es$(n+1)(v|z)(x;fini(b))(e)(f)
+ =>
+  es_parallel$n(x;fini(b))(e)(f);
+
+  es$n(v|z)(x;fini(a))(e)(f) &
+  es_parallel$n(x;fini(b))(e)(f)
+ =>
+  es$n(v|z)(x;(?||?);fini(a);fini(b))(e)(f);
+
+  es$n(v|z)(x;fini(bflat(a,b):=bflat(A,B)))(e)(f)
+ =>
+  es$n(v|z)(x;(?||?);fini(a:=A);fini(b:=B))(e)(f);
+
+  es$n(v|z)(x;(?||?))(a)(c;b)
+ =>
+  es$n(v|z)(x)(a||b)(c);
+
+/****************************************************************/
+
+  es$n(v|z)(x;fini(a[]b))(e)(f)
+ =>
+  es$n(v|z)(x;(?[]?);fini(a);fini(b))(e)(f);
+
+  es$n(v|z)(x;fini(a==>b))(e)(f)
+ =>
+  es$n(v|z)(x;(a==>?);fini(b))(e)(f);
+
+  es$n(v|z)(x;fini(bflat(a,c):=bflat(b,d)))(e)(f)
+ =>
+  es$n(v|z)(x;(?:=?);fini(a:=b);fini(c:=d))(e)(f);
+
+  bvrb(a) &
+  es$n(v|z)(x;fini(a:=b))(?)(c)
+ =>
+  es$n(v|z)(x)(a:=b)(c);
+
+
+/****************************************************************/
+
+  brule(GetChoiceX.1,C) &
+  bmodr(GetChoiceX.1,?) &           /* clean */
+  es$n(v|z)(x)(C)(c)
+ =>
+  es_get_choice$n(v|z)(x)(a[]b)(c);
+
+  GetChoice((a[]b)) &
+  es_get_choice$n(v|z)(x)(a[]b)(c)  
+ =>
+  es$n(v|z)(x)(a[]b)(c);
+
+/****************************************************************/
+
+  DrawLine &
+  DrawLineOutFile &
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(g)) &
+  DrawLine &
+  DrawLineOutFile &
+  es$fini$n(v|z)
+ =>
+  es_get_guard$n(v|z)(x)(g==>s)(c);
+
+  DrawLine &
+  DrawLineOutFile &
+  Writef(("\n  %\n\n    No guard evaluates to `true'\n\n",bsrv Warning berv)) &
+  AppendToOutFile(("\n  %\n\n    No guard evaluates to `true'\n\n",Warning)) &
+  DrawLineOutFile &
+  DrawLine &
+  es$fini$n(v|z)
+ =>
+  es_get_guard$n(v|z)(x)(g==>s)(c);
+
+  brule(EnableSubstitutionX.3,guard(true)) &
+  es$n(v|z)(x)(s)(c)
+ =>
+  es_get_guard$n(v|z)(x)(g==>s)(c);
+
+  ReadCurrValStateVars(S) &
+  ReadStateVarNames(V) &
+  [V:=S]ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(n) &
+  es_get_guard$n(v|z)(x)(b==>s)(c)
+ =>
+  es$n(v|z)(x)(b==>s)(c);
+
+
+
+  DrawLine &
+  DrawLineOutFile &
+  brule(EnableSubstitutionX.3,guard(p)) &
+  InformGuardProblem(p,(g)) &
+  DrawLine &
+  DrawLineOutFile &
+  es$fini$n(v|z)
+ =>
+  es_get_guard$n(v|z)(x)(a[]g==>s)(c);
+
+  brule(EnableSubstitutionX.3,guard(false)) &
+  es$n(v|z)(x)(a)(c)
+ =>
+  es_get_guard$n(v|z)(x)(a[]g==>s)(c);
+
+  brule(EnableSubstitutionX.3,guard(true)) &
+  es$n(v|z)(x)(s)(c)
+ =>
+  es_get_guard$n(v|z)(x)(a[]g==>s)(c);
+
+  ReadCurrValStateVars(S) &
+  ReadStateVarNames(V) &
+  [V:=S]ModifyAnimatorRule(EnableSubstitutionX,3,guard(b)) &
+  SimplifySubstGuard(n) &
+  es_get_guard$n(v|z)(x)(a[]b==>s)(c)
+ =>
+  es$n(v|z)(x)(a[]b==>s)(c);
+
+/****************************************************************/
+
+  brule(ResolveNDX.1,s) &
+  es$n(v|z)(x)(s)(d)
+ =>
+  es$resolveND$n(v|z)(x)(?)(d);
+
+  ResolveND((N+1),a,b,c) &
+  es$resolveND$(N+1)(v|z)(x)(?)(d)
+ =>
+  es$N(v|z)(x)(@a.(b====>c))(d);
+
+/****************************************************************/
+
+
+
+  es$n(v|z)(x)(b)(c)
+ =>
+  es$n(v|z)(x)(a|b)(c)
+
+END
+
+&
+
+THEORY EnableSubstitutionMacrosX IS
+
+
+  (a || (c==>d)) == (c==>(a || d));
+
+  (a || (b [] c==>d)) == ((a || b) [] c==>(a || d));
+
+
+  ((c==>d) || a) == (c==>(d || a));
+
+  ((b [] c==>d) || a) == ((b || a) [] c==>(d || a));
+
+
+/*
+  (a==>(b==>c)) == (a&b==>c);
+
+  (a==>(b [] c==>d)) == (a==>b [] a&c==>d);
+*/
+
+  @a.(b==>c) == @a.(b====>c)
+
+END
+
+&
+
+/* ihs 96:11:16  and added to  msTac */
+
+THEORY SubX IS  [x:=y][l](e) == [[x:=y]l]([x:=y](e)) END 
+
+&
+
+THEORY MakeSubstitutionX IS
+
+/*
+  invocation: MakeSubstitution(N,v,z,i,s)
+
+  input:
+    n a NAT
+    v variable list
+    z output list
+    i substitution
+    s state
+    MakeSubstitutionX.1 contains input in form p:=q
+      p formal parameters
+      q actual parameters
+*/    
+
+
+/* #define msTac ((SUB~;MakeSubstitutionX)~)  */
+
+#define msTac (( (SUB~; SubX)~ ; MakeSubstitutionX)~)
+
+#define MakeSubstitution(N,v,z,i,s)  bcall(msTac:ms0$N(i)(v)(z)(s))
+
+#define CompleteSubstitution(N,v,z,i,s) \
+                     bcall(msTac:ms_complete_subs$N(i)(v)(z)(s))
+
+
+  ?;  /* for input: of form variablelist:=expressionlist */
+
+  ModifyAnimatorRule(StateX,1,s)               /* update state values */
+ =>
+  ms4$n(s);
+
+  ModifyAnimatorRule(StateX,1,s)               /* update state values */
+ =>
+  ms4$n([b:=d]s);
+
+  ms4$n([b:=d]s)
+ =>
+  ms3$n(b)(s)(d);
+
+  ms3$n(a)([b:=d]s)(c)
+ =>
+  ms3$n(a,b)(s)(c,d);
+
+  brule(EnableSubstitutionX.1,o) &     /* o new state */
+  ms3$n(v)(o)(s)
+ =>
+  ms2$n(v)(s);
+
+
+  ModifyAnimatorRule(StateX,3,o)               /* store output values */
+ =>
+  ms6$n(o);
+
+  ReadStateHistory(?) &                  /* no old state values */
+  ReadStateVarNames(s) &                  /* s state variables  */
+  brule(EnableSubstitutionX.2,o) &     /* o output values */
+  ms6$n([s:=?]o)
+ =>
+  ms5$n;
+
+  ReadStateHistory((h,t)) &              /* t old state values */
+  ReadStateVarNames(s) &                  /* s state variables  */
+  brule(EnableSubstitutionX.2,o) &     /* o output values */
+  ms6$n([s:=t]o)
+ =>
+  ms5$n;
+
+
+/************************************************************************/
+
+  ms2$N(v)(s) &
+  ms5$N
+ =>
+  ms_complete_subs$N(i)(v)(z)(s);
+
+  EnableSubstitution(N,i,v,z)
+ =>
+  ms1$N(i)(v)(z)(s);
+
+/************************************************************************/
+
+
+    
+  ReadEnumsetsStore((a:b)) &
+  ReadMchParamStore((c:d)) &
+  ReadRenameStore((Y:Z)) &
+  brule(MakeSubstitutionX.1,(p:=q)) &
+  [c:=d][Y:=Z][a:=b]ms1$n([p:=q]i)(v)([p:=q]z)(s)
+ =>
+  ms0$n(i)(v)(z)(s)
+
+END
+
+&
+
+THEORY PopStateHistoryX IS
+
+#define PopStateHistory(a) bcall(PopStateHistoryX:pop$a)
+
+  ReadStateHistory((?,s)) &
+  ModifyAnimatorRule(StateX,1,s) &
+  ModifyAnimatorRule(StateX,5,?) &
+  ModifyAnimatorRule(StateX,4,?) &        /* output */
+  Writef("\n  No operation to undo!\n"  )
+ =>
+  pop$n;
+
+  ReadStateHistory((h,s,t)) &
+  ModifyAnimatorRule(StateX,1,s) &
+  ModifyAnimatorRule(StateX,5,h) &
+  ModifyAnimatorRule(StateX,4,?)          /* output */
+ =>
+  pop$n
+
+END
+
+&
+
+THEORY SaveStateX IS
+
+#define sstTac (((REV;CATL;WRITE;SHELL;MODR)~;SaveStateX)~)
+
+#define SaveState(N) bcall(sstTac:(bmodr(SaveStateX.1,0) & sst_00$N))
+
+
+  ?;
+
+  ?;  /* 2 - selected file */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  ReadStateHistory((h,t)) &
+  ModifyAnimatorRule(StateX,1,t) &
+  ModifyAnimatorRule(StateX,4,?)          /* output */
+ =>
+  sst_6$n;
+
+  bstring(f) &
+  ReadStateHistory((h,t)) &
+  bwritem("\n  Can't connect to %\n",bsrv f berv)
+ =>
+  sst_5$n(v)(s)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("(%):(%):(%):(%):(%):(%):(%):(%)",P,Q,Y,Z,w,y,v,s) &
+  bclose &
+  Writef(("\n  Saved state to %\n",f)) &
+  AppendToOutFile(("\n  Saved state to %\n",f)) &
+  AppendToKeyFile((";\nsave_state(%)",f)) &
+  sst_6$n
+ =>
+  sst_5$n(P:Q)(Y:Z)(w:y)(v)(s)(f);
+
+  ReadStateHistory((x,s)) &
+  ReadStateVarNames(v) &
+  ReadMchParamStore((P:Q)) &
+  ReadRenameStore((Y:Z)) &
+  ReadEnumsetsStore((w:y)) &
+  sst_5$n(P:Q)(Y:Z)(w:y)(v)(s)(f) &
+  bshell("cp TMP/.Bsel .Bsel")
+ =>
+  sst_4$N(f)(1);
+
+  Writef(bcatl("\n  \"",f,"\" already exists\n")) &
+  sst_0$(N+1)
+ =>
+  sst_4$N(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  sst_3$N(f);
+
+  bget(".Bcom",x) &
+  sst_4$N(f)(x)
+ =>
+  sst_3$N(f);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  sst_3$N(f)
+ =>
+  sst_2$N(f);
+
+  brule(SaveStateX.2,f) &   /* the selected file */
+  sst_4$N(f)(1)
+ =>
+  sst_2$N(f);
+
+  Writef(bcatl("\n  File name should be an identifier\n")) &
+  sst_0$(N+1)
+ =>
+  sst_1$N;
+
+  ReadData(f) &
+  bident(f) &
+  brule(ANIX.1,m) &
+  sst_2$N(bcatl("SRC/",m,".",f,".anm"))
+ =>
+  sst_1$N;
+
+  ReadData(0) &
+  ReadStateHistory((h,t)) &
+  ModifyAnimatorRule(StateX,1,t) &
+  ModifyAnimatorRule(StateX,4,?) &         /* output */
+  bmodr(SaveStateX.1,1) &
+  Writef(("\n  Save state aborted\n")) &
+  bshell("cp TMP/.Bsel .Bsel")
+ =>
+  sst_1$N;
+
+  ReadSelection(?) &
+  ReadStateHistory((h,t)) &
+  ModifyAnimatorRule(StateX,1,t) &
+  ModifyAnimatorRule(StateX,4,?) &         /* output */
+  bmodr(SaveStateX.1,1) &
+  Writef(("\n  Save state aborted\n")) &
+  bshell("cp TMP/.Bsel .Bsel")
+ =>
+  sst_02$N;
+
+  ReadSelection(x.y.anm.X) & /* anm_invariant_flag */
+  bmodr(SaveStateX.2,bcatl("SRC/",x,".",y,".anm")) &
+  sst_2$N(bcatl("SRC/",x,".",y,".anm"))
+ =>
+  sst_02$N;
+
+  ReadSelection(1) & /* "New save file" */
+  PromptForData((BT_GET_STRING_M,"File name to save state in","6")) &
+  sst_1$N
+ =>
+  sst_02$N;
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  sst_01$N;
+
+  GetSelectionFromList_Prompt(X,"Select Save File") &
+  sst_02$N
+ =>
+  sst_011$N(X);
+
+  bget(".Bcom",X) &      /* .anm files */
+  sst_011$N(brev(X;"New state file"))
+ =>
+  sst_01$N;
+
+  bget(".Bcom",?) &      /* no .anm files */
+  PromptForData((BT_GET_STRING_M,"File name to save state in","6")) &
+  sst_1$N
+ =>
+  sst_01$N;
+
+  brule(AnimatorFromUserX.2,a.b) &
+  bmodr(SaveStateX.2,?) &
+  bshell(bcatl("$BKIT/BLIB/CreateCom anm ",a)) &
+  sst_01$N
+ =>
+  sst_0$N;
+
+  bshell("cp .Bsel TMP/.Bsel") &
+  sst_0$N
+ =>
+  sst_00$N
+
+END
+
+&
+
+THEORY UpdateStateX IS
+
+#define usTac (UpdateStateX;((SUB~;WRITE;RULE)~;UpdateStateX)~)
+
+#define UpdateState(N) bcall(usTac:us$N)
+
+  InformCantConnect(".Bsb1") &
+  PFZ
+ =>
+  connectBsb1;
+
+  bconnect(".Bsb1")
+ =>
+  connectBsb1;
+
+
+  ModifyAnimatorRule(StateX,1,a)
+ =>
+  us_ri$N(?,a);
+
+  us_ri$N(a,b)
+ =>
+  us_ri$N(a,b,c);
+
+  clean(t);
+
+  bclean(t)
+ =>
+  clean(t);
+
+
+  GetInputParameters(N,p,r) &
+  ModifyAnimatorRule(StateX,4,z) &    /* save output */
+  MakeSubstitution(N,v,z,i,s) &
+  CompleteSubstitution(N,v,z,i,s)
+ =>
+  us1$N(p|z|r|i|x)(v)(s);       /* input(p), precondition(r) */
+
+  GetInputParameters(N,?,r) &
+  ModifyAnimatorRule(StateX,4,z) &    /* save output */
+  MakeSubstitution(N,v,z,i,s) &
+  CompleteSubstitution(N,v,z,i,s) /* &
+  CheckCalculatedPrecondition */
+ =>
+  us1$N(?|z|r|i|x)(v)(s);       /* no input, but precondition(r) */
+
+  ModifyAnimatorRule(StateX,4,z) &    /* save output */
+  MakeSubstitution(N,v,z,i,s) &
+  CompleteSubstitution(N,v,z,i,s) &
+  CheckCalculatedPrecondition
+ =>
+  us1$N(?|z|true|i|x)(v)(s);    /* no input, no precondition (true) */
+
+
+  brule(SelectOpX.1,(s.t.anm.n))  /* saved state restored */
+ =>
+  us$N;
+
+  brule(SelectOpX.1,(x:i)) &
+  ReadCurrValStateVars(s) &                           /* values */
+  ReadStateVarNames(v) &                           /* variables */
+  ModifyAnimatorRule(MakeSubstitutionX,1,(xxx:=xxx)) &  /* initialise (dummy) input */
+  us1$N(i)(v)(s)
+ =>
+  us$N;
+
+  brule(SelectOpX.1,sv) &       /* save */
+  ModifyAnimatorRule(StateX,1,?) &      /* for Simplify State */
+  SaveState(N)
+  =>
+  us$N;
+
+  brule(SelectOpX.1,et) &        /* edit theory file */
+  brule(AnimatorFromUserX.2,a.b) &
+  clean(UserLibX) &
+  FifoWrite_NoStore((BT_EDT_ANM_THY_M,0,0)) &
+  bcall(animfuTac:loaduserlib(a.b))
+ =>
+  us$N;
+
+  brule(SelectOpX.1,ra) &        /* restart */
+/*  brule(ANIX.1,m) &
+  brule(AnimatorFromUserX.2,a.b) &
+  FifoWrite_NoStore((BT_ANM_OUT_FILE_M,a,0))
+*/
+  CleanAnimator &
+  bredo
+ =>
+  us$N;
+
+  brule(SelectOpX.1,ri) &       /* re-init */
+  ReadStateHistory(S) &
+  us_ri$N(S) &
+  connectBsb1 &
+  bprintf("  Restore initial state  ") &
+  bclose &
+  FifoWrite_NoStore((BT_ANM_DISP_OP_M,0,0))
+ =>
+  us$N;
+
+  brule(SelectOpX.1,sv) &       /* save */
+  ModifyAnimatorRule(StateX,1,?) &      /* for Simplify State */
+  SaveState(N) &
+  connectBsb1 &
+  bprintf("  Save state  ") &
+  bclose &
+  FifoWrite_NoStore((BT_ANM_DISP_OP_M,0,0))
+ =>
+  us$N;
+
+  brule(SelectOpX.1,sv) &       /* save */
+  brule(SaveStateX.1,0) &
+  ModifyAnimatorRule(StateX,1,?) &      /* for Simplify State */
+  SaveState(N) &
+  connectBsb1 &
+  bprintf("  Save state  ") &
+  bclose &
+  FifoWrite_NoStore((BT_ANM_DISP_OP_M,0,0))
+ =>
+  us$N;
+
+  brule(SelectOpX.1,un) &     /* undo */
+  ModifyAnimatorRule(StateX,1,?) &    /* for Simplify State */
+  PopStateHistory(n) &
+  connectBsb1 &
+  bprintf("  Undo last operation  ") &
+  bclose &
+  FifoWrite_NoStore((BT_ANM_DISP_OP_M,0,0))
+ =>
+  us$n;
+
+  brule(AnimatorHaltX.1,1)    /* animator halted */
+ =>
+  us$n
+
+END
+
+&
+
+THEORY PreInitialiseStateX IS
+
+#define ssTac ((PreInitialiseStateX;MAP;(FLAT;PreInitialiseStateX)~);CrashX)
+
+#define PreInitialiseState(N) bcall(ssTac:ss(N))
+
+  ReadEnumsetsStore((a:b)) &
+  ReadMchParamStore((c:d)) &
+  ReadRenameStore((Y:Z)) &
+  ModifyAnimatorRule(StateX,1,[c:=d][Y:=Z][a:=b]x)
+ =>
+  ss3(x,?);
+
+  ReadCurrValStateVars(x) &
+  ss3(bflat(x))
+ =>
+  ss2;
+
+  ReadCurrValStateVars(x) &
+  ModifyAnimatorRule(StateX,1,(?,x))
+ =>
+  ss1(a);
+
+  ModifyAnimatorRule(StateX,1,?) &
+  ModifyAnimatorRule(StateX,2,a) &
+  ss1 bsmap a &
+  ss2
+ =>
+  ss(a)
+
+END
+
+&
+
+THEORY OpNameX END & 
+
+THEORY OpX END & 
+
+THEORY StoreOperationNamesX IS
+
+#define sonTac ((REV;MAP;CATL;ARI;FLAT;RULE;WRITE)~;StoreOperationNamesX)~
+
+#define StoreOperationNames(a) bcall(sonTac:son0(brev(a)))
+
+#define CheckStoreOperationNames(x) bcall(sonTac:con0$x)
+
+  ?;  /* op names - for motif after CHOICE */
+
+  ?;  /* op names flag - for motif after CHOICE */
+
+
+
+/*
+  InformCantConnect(".Bsel") &
+  PFZ
+ =>
+  connectBsel;
+
+  bconnect(".Bsel")
+ =>
+  connectBel;
+
+  bcrer(OpNameX,bflat(x,y))
+ =>
+  son2(x)(y);
+
+  son2(bcatl(x,"  %   ",a,"\n\n  %  Undo last operation\n\n  %  Restore initial state\n\n  %  Save state\n\n  %  Restart animation\n\n  %  Edit theory file\n"))(y,bsrv n berv,bsrv un berv,bsrv ri berv,bsrv sv berv,bsrv ra berv,bsrv et berv)
+ =>
+  son1(n)(a)(x)(y);
+
+  btest(n>9) &
+  son2(bcatl(x,"  %  ",a,"\n\n  %  Undo last operation\n\n  %  Restore initial state\n\n  %  Save state\n\n  %  Restart animation\n\n  %  Edit theory file\n"))(y,bsrv n berv,bsrv un berv,bsrv ri berv,bsrv sv berv,bsrv ra berv,bsrv et berv)
+ =>
+  son1(n)(a)(x)(y);
+
+  btest(n>99) &
+  son2(bcatl(x,"  % ",a,"\n\n  %  Undo last operation\n\n  %  Restore initial state\n\n  %  Save state\n\n  %  Restart animation\n\n  %  Edit theory file\n"))(y,bsrv n berv,bsrv un berv,bsrv ri berv,bsrv sv berv,bsrv ra berv,bsrv et berv)
+ =>
+  son1(n)(a)(x)(y);
+
+  son1(n+1)(a)(bcatl(x,"  %   ",b,"\n"))(y,bsrv n berv)
+ =>
+  son1(n)(a,b)(x)(y);
+
+  btest(n>9) &
+  son1(n+1)(a)(bcatl(x,"  %  ",b,"\n"))(y,bsrv n berv)
+ =>
+  son1(n)(a,b)(x)(y);
+
+  btest(n>99) &
+  son1(n+1)(a)(bcatl(x,"  % ",b,"\n"))(y,bsrv n berv)
+ =>
+  son1(n)(a,b)(x)(y);
+
+  son1(1)(a)("\n  %   Finish animation\n\n")(bsrv 0 berv)
+ =>
+  son0(a);
+*/
+
+  bprintf("\E") &
+  bprintf("%",o)
+ =>
+  sonm(o,m,n);
+
+  bprintf("%",o)
+ =>
+  sonm(o,1,n);
+
+/*
+  Connect(".Bsel") &
+  bcall(MODR:bmodr(StoreOperationNamesX.1,a)) &
+  sonm bnmap brev(a) &
+  bprintf("\E") &
+  bprintf("Undo last operation") &
+  bprintf("\E") &
+  bprintf("Restore initial state") &
+  bprintf("\E") &
+  bprintf("Save state") &
+  bprintf("\E") &
+  bprintf("Restart animation") &
+  bprintf("\E") &
+  bprintf("Edit theory file") &
+  bclose
+ =>
+  son0(a);
+*/
+
+  Connect(".Bsel") &
+  bcall(MODR:bmodr(StoreOperationNamesX.1,a)) &
+  sonm bnmap brev(a) &
+  bprintf("\E") &
+  bprintf("Undo last operation") &
+  bprintf("\E") &
+  bprintf("Animator Utilities") &
+  bclose
+ =>
+  son0(a);
+
+
+  con0$N;
+
+/*
+  motif_CHOICE_store_ops_flag_set &
+  clear_motif_CHOICE_store_ops_flag &
+  brule(StoreOperationNamesX.1,a) &
+  Connect(".Bsel") &
+  sonm bnmap brev(a) &
+  bprintf("\E") &
+  bprintf("Undo last operation") &
+  bprintf("\E") &
+  bprintf("Restore initial state") &
+  bprintf("\E") &
+  bprintf("Save state") &
+  bprintf("\E") &
+  bprintf("Restart animation") &
+  bprintf("\E") &
+  bprintf("Edit theory file") &
+  bclose
+ =>
+  con0$N;
+*/
+
+  motif_CHOICE_store_ops_flag_set &
+  clear_motif_CHOICE_store_ops_flag &
+  brule(StoreOperationNamesX.1,a) &
+  Connect(".Bsel") &
+  sonm bnmap brev(a) &
+  bprintf("\E") &
+  bprintf("Undo last operation") &
+  bprintf("\E") &
+  bprintf("Animator Utilities") &
+  bclose
+ =>
+  con0$N
+
+END
+
+&
+
+THEORY WriteOpMenuX IS
+
+#define  WriteOpMenu(N) bcall((((WRITE;WriteOpMenuX)~);CrashX):wom0$N)
+
+  brule(OpNameX.1,x) &
+  ClearMenuWin &
+  bwritem(x)
+ =>
+  wom1$n;
+
+  wom0$(n+1)
+ =>
+  wom00$n;
+ 
+  wom0$(n+1)
+ =>
+  wom00$n;
+
+  ReadData(CR) &
+  wom1$n
+ =>
+  wom00$n;
+
+  wom0$n;
+
+  brule(AnimatorHaltX.1,1)    /* animator halted */
+ =>
+  wom0$n
+
+END
+
+&
+
+THEORY StoreOperationsX IS
+
+#define soTac (((StoreOperationsX;MAP;StoreOperationsX~));CrashX)
+
+#define StoreOperations(a) bcall(soTac:so(a))
+
+
+  AddRule(OpX,a)
+ =>
+  so1(a);
+
+  so1 bsmap a
+ =>
+  so(a);
+
+  AddRule(OpX,(s;t;u;v;(w|x);(y|z)))    /* single op */
+ =>
+  so(s;t;u;v;(w|x);(y|z))
+
+END
+
+&
+
+THEORY GetEnumeratedSetsX IS
+
+#define gesTac (((MAP;CATL;MODR;GetEnumeratedSetsX)~);CrashX)
+
+#define GetEnumeratedSets(D)      bcall(gesTac: (ges2 bsmap D))
+
+#define FinaliseEnumeratedSets    bcall(gesTac: ges3)
+
+
+  ?;   /* for rename */
+
+  ges3;
+
+  ReadEnumsetsStore(?) &
+  ModifyEnumsetsStore((aa:aa))                 /* store dummy */
+ =>
+  ges3;
+
+  ges2(a);                                     /* not an enum set */
+
+  ReadEnumsetsStore(?) &
+  ModifyAnimatorRule(GetEnumeratedSetsX,1,(a:{b}))
+ =>
+  ges2(a(b));                                  /* an enum set */
+
+  ReadEnumsetsStore((s:t)) &
+  ModifyAnimatorRule(GetEnumeratedSetsX,1,(s,a:t,{b}))
+ =>
+  ges2(a(b));                                  /* an enum set */
+
+  bnum(N)
+ =>
+  ges2(a[N])                                   /* not an enum set */
+
+END
+
+&
+
+THEORY UpdateStateHistoryX IS
+
+#define UpdateStateHistory(N) bcall((UpdateStateHistoryX~):ush$N)
+
+  ReadCurrValStateVars(s) &
+  ReadStateHistory(h) &
+  ModifyAnimatorRule(StateX,5,(h,s))
+ =>
+  ush$n;
+
+  brule(AnimatorHaltX.1,1)    /* animator halted */
+ =>
+  ush$n
+
+END
+
+&
+
+THEORY StoSeenSetsConstantsPropsX IS
+
+#define StoSeenSetsConstantsProps(x,y,z) \
+  bcall(((FLAT)~;StoSeenSetsConstantsPropsX)~:ssscp_0(bflat(x,y))(z))
+
+  ReadSeenProperties(P) &
+  ModifySeenProperties(P&p)
+ =>
+  sssp_0(p);
+
+  sssp_0(?);
+
+  ReadSeenSetsConstants(A) &
+  ModifySeenSetsConstants(bflat(A,a))
+ =>
+  sssc_0(a);
+
+  bsearch(?,a,b) &
+  sssc_0(b)
+ =>
+  sssc_0(a);
+
+  sssc_0(?);
+
+  sssc_0(a) &
+  sssp_0(p)
+ =>
+  ssscp_0(a)(p)
+
+END
+
+&
+
+THEORY ANIX IS
+
+#define SimplifyState(N) bcall(sfsTac:ss0$(N)(StateX,1))
+
+#define SimplifyOutput(N) bcall(sfsTac:ss0$(N)(StateX,3))
+
+
+  ?;          /* machine name */
+
+  ?;
+#define ModifySeesUsedList(x) bcall(MODR:bmodr(ANIX.2,x))
+#define ReadSeesUsedList(x)   brule(ANIX.2,x)
+
+  InformCantConnect(".Bsb1") &
+  PFZ
+ =>
+  connectBsb1;
+
+  bconnect(".Bsb1")
+ =>
+  connectBsb1;
+
+
+
+  DrawLine &
+  DrawLineOutFile
+ =>
+  drawlineifnothalted;
+
+  brule(AnimatorHaltX.1,1)    /* animator halted */
+ =>
+  drawlineifnothalted;
+
+  /***
+  d /= ?, machine with state
+  ***/
+  ModifyAnimatorRule(ANIX,1,k) &
+/*  InformCheckingContext & */
+  GetEnumeratedSets(D) &
+  FinaliseEnumeratedSets &
+  ModifyRawConstraints(m) &
+  GetMachineParameters(l,m) &
+  ModifyRawProperties(H) &
+  GetSC(D,F,H) &
+/*  InformInitialising & */
+  StoreInvariant(f) &
+  StoreOperations(n) &
+  PreInitialiseState(d) &
+  ModifyAnimatorRule(SelectOpX,1,(Initialisation:(?|?|true|i|h))) &
+  ModifyCalculatedPrecondition(true) &
+  PrintOpInMenu(0,Initialisation,i) &
+  UpdateState(0) &
+  SimplifyState(0) &
+  DisplayState(0) &
+  StoreOperationNames(j) &
+  UpdateStateHistory(0) &
+  WriteOpMenu(0) &
+  runforever(N+1)
+ =>
+  run100$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  /***
+  d = ?, stateless machine
+  ***/
+  ModifyAnimatorRule(ANIX,1,k) &
+/*  InformCheckingContext & */
+  GetEnumeratedSets(D) &
+  FinaliseEnumeratedSets &
+  ModifyRawConstraints(m) &
+  GetMachineParameters(l,m) &
+  ModifyRawProperties(H) &
+  GetSC(D,F,H) &
+  StoreInvariant(f) &
+  StoreOperations(n) &
+  PreInitialiseState(?) &
+  ModifyAnimatorRule(SelectOpX,1,(Initialisation:(?|?|true|i|h))) &
+  ModifyCalculatedPrecondition(true) &
+  WriteStatelessMachine &
+  StoreOperationNames(j) &
+  UpdateStateHistory(0) &
+  WriteOpMenu(0) &
+  runforever(N+1)
+ =>
+  run100$N(J;A;B;C;D;E;F;G;H;b;c;Q;?;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+
+  Writef(("\n  State of machine has changed|  ... using INITIALISATION\n")) &
+  run2$N(no)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(?)
+ =>
+  [S,T]run4$N(X:Y)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(V);
+
+
+
+  run4_m$4(J);
+
+  bstring(J) &
+  connectBsb1 &
+  bprintf("State initialised from %",J) &
+  bclose &
+/*
+  Writef_sub(("State initialised from %",J)) &
+  AppendToOutFile(("State initialised from %",J)) &
+*/
+  FifoWrite_NoStore((BT_ANM_DISP_OP_M,0,0))
+ =>
+  run4_m$4(J);
+
+  ModifyAnimatorRule(ANIX,1,k) &
+/*   InformCheckingContext & */
+  InformInitialisingFromFile(V) & 
+  StoreInvariant(f) &
+  StoreOperations(n) &
+  ModifyCurrValStateVars(Y) &
+  ModifyStateVarNames(d) &
+  DisplayState(0) &
+  StoreOperationNames(j) &
+  UpdateStateHistory(0) &
+  WriteOpMenu(0) &
+  run4_m$4(V) &
+  runforever(N+1)
+ =>
+  run4$N(d:Y)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(V);
+
+  ModifyAnimatorRule(ANIX,1,k) &
+/*   InformCheckingContext & */
+  InformInitialisingFromFile(V) & 
+  StoreInvariant(f) &
+  StoreOperations(n) &
+  ModifyCurrValStateVars(?) &
+  ModifyStateVarNames(?) &
+  DisplayState(0) &
+  StoreOperationNames(j) &
+  UpdateStateHistory(0) &
+  WriteOpMenu(0) &
+  run4_m$4(V) &
+  WriteStatelessMachine &
+  runforever(N+1)
+ =>
+  run4$N(?:?)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(V);
+
+  [S:=T][K:=L][M:=P]run4$N(d:Y)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(V)
+ =>
+  [S,T][K,L][M,P]run4$N(d:Y)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(V);
+
+
+
+  Writef(("\n  State has changed:\n    %\n    %\n\n  ... using INITIALISATION\n",d,X)) &
+  run2$(N+1)(no)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(?)
+ =>
+  run3_1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(V)(S:T:K:L:M:P:X:Y);
+  
+
+  ModifyMchParamStore((S:T)) &
+  ModifyRenameStore((K:L)) &
+  ModifyEnumsetsStore((M:P)) &
+  [S,T][K,L][M,P]run4$N(d:Y)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(V)
+ =>
+  run3_1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(V)(S:T:K:L:M:P:d:Y);
+
+
+  bstring(J) &
+  Writef(bcatl("\n  Can't connect to \"",J,"\"|  ... using INITIALISATION\n")) &
+  run2$(N+1)(no)(z)(?)
+ =>
+  run3$N(z)(J);
+
+  bstring(J) &
+  bget(J,(M:P:X:Y)) &
+  run3_1$N(z)(J)(S:T:K:L:M:P:X:Y)
+ =>
+  run3$N(z)(J);
+
+  bstring(J) &
+  bget(J,(S:T:K:L:M:P:X:Y)) &
+  run3_1$N(z)(J)(S:T:K:L:M:P:X:Y)
+ =>
+  run3$N(z)(J);
+
+
+
+  ReadEnumsetsStore(?) &
+  ModifyAnimatorRule(GetEnumeratedSetsX,1,(?;(a:b)))
+ =>
+  load_seen_sto(a,b);
+
+  ReadEnumsetsStore((?;(s:t))) &
+  ModifyAnimatorRule(GetEnumeratedSetsX,1,(?;(s,a:t,b))) 
+ =>
+  load_seen_sto(a,b);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  load_seen_1(a.mch)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  StoSeenSetsConstantsProps(D,F,H) &
+  GetEnumeratedSets(D)
+ =>
+  load_seen_1(a.mch)(Z);
+
+  load_seen_0(x);
+
+  load_seen_1(a.mch)(bcatl("ANL/",a,".mch.anl"))
+ =>
+  load_seen_0(a.mch);
+
+
+  Writef(("\nInvalid response - (yes/no)[yes] ")) & 
+  run1$(N+1)(y)(z)
+ =>
+  run2$N(x)(y)(z);
+
+  ReadSeesUsedList(L) &
+  load_seen_0 bsmap L &
+  run100$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+ =>
+  run2$N(no)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(X);
+
+  run2$N(no)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(?)
+ =>
+  run2_1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  ReadSelection(x.y.anm) &
+  run3$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(bcatl("SRC/",x,".",y,".anm"))
+ =>
+  run2_1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  ReadSelection(x.y.anm.X) & /* anm_invariant_flag */
+  run3$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(bcatl("SRC/",x,".",y,".anm"))
+ =>
+  run2_1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  GetSelectionFromList_Prompt(X,"Select file from which to initialise") &
+  run2_1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+ =>
+  run2$N(yes)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(X);
+
+  GetSelectionFromList_Prompt(X,"Select file from which to initialise") &
+  run2_1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+ =>
+  run2$N(CR)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(X);
+
+  ReadConfirm(x) &
+  run2$N(x)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(X)
+ =>
+  run1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(X);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  run0$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  bget(".Bcom",X) &      /* .anm files */
+  PromptConfirm(("  Initialise state from file?  ","The initilialisation may be effected from a file that has|been previously saved using the `Save State' operation")) &
+  run1$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(X)
+ =>
+  run0$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  bget(".Bcom",?) &      /* no .anm files */
+  run2$N(no)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)(?)
+ =>
+  run0$N(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+
+/***
+print_anm_database(N);
+
+
+PrintTHEORY(OpNameX)&
+PrintTHEORY(OpX)
+=>
+print_anm_database(1);
+***/
+
+/* ReadBoundVars(L)&HERE((0:L)) & */
+/* ModifyBoundVars(oO00OoI__K_P_o81RZxX99uUoO00OoiI1lLiL1I____________) & */
+  ResetBoundVars &
+  SelectOp(N) &
+  UpdateState(N) &
+  SimplifyState(N) &
+  SimplifyOutput(N) &
+  DisplayState(N) &
+  CheckCalculatedPreconditionResult &
+  DisplayOutput(N) &
+  DisplayInvariant(N) &
+  drawlineifnothalted &
+  UpdateStateHistory(N) &
+  CheckStoreOperationNames(N) &
+  WriteOpMenu(N) &
+/***
+print_anm_database(N)&
+***/
+  runforever(N+1)
+ =>
+  runforever(N);
+
+  brule(AnimatorHaltX.1,1)    /* animator halted */
+ =>
+  runforever(N)
+
+END
+
+&
+
+THEORY SimplifyAnimatorTempX IS
+
+#define stboolTac \
+    ( \
+      SimplifyAnimatorTempX; \
+      ( \
+        (AnimLibraryX;LibraryBoolX;CATL)~; \
+         SimplifyAnimatorTempX \
+      )~ \
+    )~
+
+#define stnoboolTac \
+    ( \
+      SimplifyAnimatorTempX; \
+      ( \
+        AnimLibraryX~; \
+        SimplifyAnimatorTempX \
+      )~ \
+    )~
+
+#define SimplifyTempBool(N)   bcall(stboolTac:st0$N)
+
+#define SimplifyTempNoBool(N) bcall(stnoboolTac:st0$N)
+
+
+
+  ?;                  /* rule of AnimatorTempX being proved */
+
+  brule(SimplifyAnimatorTempX.1,t) &
+  ModifyAnimatorRule(AnimatorTempX,t,x)
+ =>
+  IB$n$x;
+
+  brule(SimplifyAnimatorTempX.1,t) &
+  ModifyAnimatorRule(AnimatorTempX,t,[x] evl (n))
+ =>
+  x$x$x$x$n;      /* to get around old goal problem ... */
+
+  st$n(N);        /* to get around old goal problem ... */
+
+
+
+
+  brule(AnimatorTempX.t,x) &
+  ModifyAnimatorRule(SimplifyAnimatorTempX,1,t) &
+  IB$(n+1)$x &
+  st$(n+1)(t-1)                    /* prev AnimatorTempX rule */
+ =>
+  st$n(t);
+
+  st$n(0);                         /* finished */
+
+  brule(AnimatorTempX.t,x) &
+  st$(n+1)(t)                      /* t is length of AnimatorTempX */
+ =>
+  st0$n
+
+END
+
+&
+
+THEORY SimplifyX IS
+
+  ?;  /* 1. source - a.b: comma list of predicates to be simplified */
+
+  ?;  /* 2. number of predicates in a.b */
+
+  ?;  /* 3. Bool/noBool flag */
+ 
+  oO00OoI__K_P_o81RZxX99uUoO00OoiI1lLiL1I____________;
+      /*
+         4. bound variables - 
+           oO00OoI__K_P_o81RZxX99uUoO00OoiI1lLiL1I____________ 
+         if none
+       */
+ 
+  ?;  /* 5. quantified variables - ? if none */
+ 
+  ?;  /* 6. save for SimplifyX.4 */
+ 
+  ?;  /* 7. deferred sets/constants */
+
+
+/*** HERE((1:X))& ***/
+  ModifyBoundVars(X)
+ =>
+  rbv1(X);
+
+  bsearch(?,X,Y) &
+  rbv1(Y)
+ =>
+  rbv1(X);
+
+  ReadDeferred(D) &
+
+/*** HERE(("Deferred":D))& ***/
+  rbv1(bflat(oO00OoI__K_P_o81RZxX99uUoO00OoiI1lLiL1I____________,D))
+ =>
+  rbv;
+
+
+  brule(SimplifyX.6,v) &
+  ModifyBoundVars(v)
+ =>
+  restore_simplifyX4;
+
+  ReadBoundVars(v) &
+  bcall(MODR:bmodr(SimplifyX.6,v))
+ =>
+  save_simplifyX4;
+
+
+  brule(AnimatorTempX.t,y) &
+  ss4$n(a.b)(x,y)(t+1)(u)
+ =>
+  ss4$n(a.b)(x)(t)(u);    
+
+  brule(AnimatorTempX.t,y) &
+  ModifyAnimatorRule(a,b,(x,y))
+ =>
+  ss4$n(a.b)(x)(t)(t);    
+
+  brule(SimplifyX.1,(a.b)) &
+  brule(SimplifyX.2,t) &         /* > 1 predicate */
+  brule(AnimatorTempX.1,x) &
+/***
+HERE((121:(a.b):t:x))&
+***/
+  ss4$n(a.b)(x)(2)(t)
+   =>
+  ss3$n;
+
+  brule(SimplifyX.1,(a.b)) &
+  brule(SimplifyX.2,1) &         /* only 1 predicate */
+  brule(AnimatorTempX.1,x) &
+/***
+HERE((120:(a.b):1:x))&
+***/
+  ModifyAnimatorRule(a,b,x)
+   =>
+  ss3$n;
+
+
+
+  AddRule(AnimatorTempX,x)
+ =>
+  ss2$n(x,p,q);
+
+  brule(SimplifyX.3,noBool) &
+  AddRule(AnimatorTempX,x) &
+  ModifyAnimatorRule(SimplifyX,2,p) &
+  SimplifyTempNoBool(N) &
+  ss3$N
+ =>
+  ss2$N(x,p,p);
+
+  brule(SimplifyX.3,Bool) &
+  AddRule(AnimatorTempX,x) &
+  ModifyAnimatorRule(SimplifyX,2,p) &
+  SimplifyTempBool(N) &
+  ss3$N
+ =>
+  ss2$N(x,p,p);
+
+
+
+  brule(a.b,x) &
+  ModifyAnimatorRule(SimplifyX,1,(a.b)) &
+  (ss2$n bnmap x)
+ =>
+  ss1$n(a,b);
+
+  /* save_simplifyX4 & */
+  CleanAnimatorTemp &
+  ss1$n(a,b) 
+  /* restore_simplifyX4 */
+ =>
+  ss0$n(a,b);
+
+  (a=b) == (a===b);
+
+  brule(AnimatorHaltX.1,1)    /* animator halted */
+ =>
+  ss0$n(x)
+
+END
+
+&
+
+THEORY UserLibMacrosX
+
+/*
+  (AnmTrace(x) == Writef(("\n    AnmTrace >>> % <<<\n\n",x)));
+
+  (AnmConstant(x) == (brule(SimplifyX.4,v) & v\(x)))
+*/
+
+END
+
+&
+
+/*
+THEORY PaspTheoryX IS
+
+  MinUns == 0;
+  MaxUns == 65535;
+
+  MinByt == n2b(0);
+  MaxByt == n2b(255);
+
+  u2n(n2u(a)) == a;
+  n2u(u2n(a)) == a;
+
+  b2n(n2b(a)) == a;
+  n2b(b2n(a)) == a;
+
+  n2u~(a) == u2n(a);
+
+  n2b~(a) == b2n(a);
+
+  b2u(a) == n2u(b2n(a));
+  u2b(a) == n2b(u2n(a));
+
+  btest(a<=255) =>   a: BYTE == true;
+  btest(a<=65535) => a: UNSIGNED == true;
+
+  btest(a<=255) =>   n2b(a) == a;
+  btest(a<=65535) => n2u(a) == a;
+
+  btest(a<=255) =>   b2n(a) == a;
+  btest(a<=65535) => u2n(a) == a
+
+END
+
+&
+*/
+
+THEORY AnimatorFromUserX IS
+
+/*
+  presents a list of base file names (obtained from source path)
+  on screen and gets selection from user
+
+  invocation:
+    AnimatorFromUserX
+  result:
+    to follow ...
+*/
+
+  ?;   /* flag for olduserlib */
+
+  ?;   /* a.mch */
+
+  ?;   /* 0 => no load error */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  bstring(f) &
+  bget(f,x) &
+  bmodr(AnimatorFromUserX.3,0) &
+  loaduserlib2(f)(x) &
+  loaduserlib2_3(f)
+ =>
+  loaduserlib7(f)(d)(F);
+
+  brule(AnimatorFromUserX.2,b.c) &
+  bprintf("\nEND\n\n\n\nDEFINITIONS\n\n  Trace__(x) == bcall(WRITE: bwritef(\"\\n    >>> \% <<<\\n\\n\",x));\n\n  Constant__(x) == (brule(SimplifyX.4,v) & v\(x))\n\nINCLUSIONS\n\n  ?\n") &
+  bclose &
+  loaduserlib7(bcatl("SRC/",b,".",c,".thy"))("SRC")(bcatl(b,".",c,".thy"))
+ =>
+  loaduserlib6;
+
+  bprintf("  ?\n") &
+  loaduserlib6
+ =>
+  loaduserlib5;
+
+
+  Writef(("\n  No file % - creating template\n",f))
+ =>
+  loaduserlib4_1(f);
+
+  loaduserlib4_1(f) &
+  Connect(f) &
+  bprintf("/") &
+  bprintf("*\nTwo macros are available for use as antecedents in rules of UserLibX:\n\n     Trace__(x)    causes the formula `x' to be printed out\n                    when the rule is applied\n\n  Constant__(x)    prohibits the rule from being applied\n                    when `x' is not a constant\n\nMore may be added to DEFINITIONS below.\n\nOther theory files may be included through the INCLUSIONS clause\n\nFor more information see Top Bar Help\n*") &
+  bprintf("/\n\n\nTHEORY UserLibX IS\n\n") &
+  loaduserlib5
+ =>
+  loaduserlib4(f)(1);                    /* file does not exist */
+
+  Writef(("\n  % does not parse - not loaded:\n",f)) &
+  AppendToOutFile(("\n  % does not parse - not loaded:\n\n",f)) &
+  DrawLineOutFile
+ =>
+  loaduserlib4(f)(0);                    /* file exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  loaduserlib3(f);
+
+  bget(".Bcom",x) &
+  loaduserlib4(f)(x)
+ =>
+  loaduserlib3(f);
+
+  loaduserlib2_3(f);
+
+  brule(AnimatorFromUserX.3,0) &
+  Writef(("\n  Loaded %\n",f)) &
+  AppendToOutFile(("\n  Loaded %\n\n",f)) &
+  DrawLineOutFile
+ =>
+  loaduserlib2_3(f);
+
+
+
+  Writef(("\n  %: syntax error\n\n    %\n\n  Each DEFINITIONS rule should be a rewrite rule\n",f,x)) &
+  loadlib_err_msg("Each DEFINITIONS rule should be a rewrite rule") &
+  bmodr(AnimatorFromUserX.3,1) 
+ =>
+  loaduserlib_defn(f,x);
+
+  bcrer(UserLibMacrosX,(a==b))
+ =>
+  loaduserlib_defn(f,(a==b));
+
+  bcrer(UserLibMacrosX,(h=>(a==b)))
+ =>
+  loaduserlib_defn(f,(h=>(a==b)));
+
+
+  
+  FifoWrite_NoStore((BT_MINOR_ERR_M,f,0))
+ =>
+  loadlib_err_msg(f);
+
+
+
+  ReadBfifoSto(x)&junk(f,s,x) =>
+  load_incl_new3(f,s);
+
+  ReadBfifoSto(0) &                /* file doesn't parse */
+  bmodr(AnimatorFromUserX.3,1) &
+  Writef(("\n  INCLUSION % does not parse - not loaded\n",s)) &
+  AppendToOutFile(("\n  INCLUSION % does not parse - not loaded\n\n",s)) &
+  DrawLineOutFile  
+ =>
+  load_incl_new3(f,s);
+
+  ReadBfifoSto(1) &                /* file parses */
+  bmodr(AnimatorFromUserX.3,0) &
+  bget(s,J) &
+  loaduserlib2(f)(J)
+ =>
+  load_incl_new3(f,s);
+
+  Writef(("\n  INCLUSIONS file % does not exist\n",s)) &
+  AppendToOutFile(("\n  INCLUSIONS file % does not exist\n",s)) &
+  DrawLineOutFile &
+  loadlib_err_msg(bcatl("INCLUSIONS file ",s," does not exist")) &
+  bmodr(AnimatorFromUserX.3,1)  
+ =>
+  load_incl_new2(f,s)(1);                    /* file does not exist */
+
+  FifoWrite_NoStore((BT_FILE_PARSE_NEW_M,s,0)) &
+  load_incl_new3(f,s)
+ =>
+  load_incl_new2(f,s)(0);                    /* file exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  load_incl_new1(f,s);
+
+  bget(".Bcom",x) &
+  load_incl_new2(f,s)(x)
+ =>
+  load_incl_new1(f,s);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",s," .")) &
+  load_incl_new1(f,s)
+ =>
+  load_incl_new(f,s);
+
+  Writef(("%: each INCLUSIONS entry should be a file name (string)\n",s)) &
+  AppendToOutFile(("%: each INCLUSIONS entry should be a file name (string)\n",s)) &
+  DrawLineOutFile &
+  loadlib_err_msg(bcatl(s,": each INCLUSIONS entry should be a file name (string)")) &
+  bmodr(AnimatorFromUserX.3,1)  
+ =>
+  loaduserlib_incl(f,s);
+
+  bstring(s) &
+  load_incl_new(f,s)
+ =>
+  loaduserlib_incl(f,s);
+
+  loaduserlib_incl(f,?);
+
+
+
+
+
+
+  Writef(("\n  %: syntax error\n\n    %\n\n  Should comprise single a THEORY named UserLibX \n  followed by optional DEFINITIONS/INCLUSIONS clauses\n",f,x)) &
+  loadlib_err_msg("Animator theory file syntax error") &
+  bmodr(AnimatorFromUserX.3,1)  
+ =>
+  loaduserlib2(f)(x);
+
+  bcall((UserLibMacrosX~;RULE):bcrelr(UserLibX,a))
+ =>
+  loaduserlib2(f)(THEORY UserLibX IS a END);
+
+  loaduserlib_defn(f) bsmap D &
+  loaduserlib2(f)(X)
+ =>
+  loaduserlib2(f)(X DEFINITIONS D);
+
+  loaduserlib_incl(f) bsmap I  & 
+  loaduserlib2(f)(X)
+ =>
+  loaduserlib2(f)(X INCLUSIONS I);
+
+
+
+  ReadBfifoSto(0) &                /* file doesn't parse */
+  bmodr(AnimatorFromUserX.3,1) &
+  Writef(("\n  % does not parse - not loaded\n",f)) &
+  AppendToOutFile(("\n  % does not parse - not loaded\n\n",f)) &
+  DrawLineOutFile  
+ =>
+  load_new3(f);
+
+  ReadBfifoSto(1) &                /* file parses */
+  bmodr(AnimatorFromUserX.3,0) &
+  bget(f,x) &
+  loaduserlib2(f)(x) &
+  loaduserlib2_3(f)
+ =>
+  load_new3(f);
+
+  loaduserlib4_1(f) &
+  Connect(f) &
+  bprintf("/") &
+  bprintf("*\nTwo macros are available for use as antecedents in rules of UserLibX:\n\n     Trace__(x)    causes the formula `x' to be printed out\n                    when the rule is applied\n\n  Constant__(x)    prohibits the rule from being applied\n                    when `x' is not a constant\n\nMore may be added to DEFINITIONS below.\n\nOther theory files may be included through the INCLUSIONS clause\n\nFor more information see Top Bar Help\n*") &
+  bprintf("/\n\n\nTHEORY UserLibX IS\n\n") &
+  loaduserlib5
+ =>
+  load_new2(f)(1);                    /* file does not exist */
+
+  FifoWrite_NoStore((BT_FILE_PARSE_NEW_M,f,0)) &
+  load_new3(f)
+ =>
+  load_new2(f)(0);                    /* file exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  load_new1(f);
+
+  bget(".Bcom",x) &
+  load_new2(f)(x)
+ =>
+  load_new1(f);
+
+  bstring(f) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  load_new1(f)
+ =>
+  load_new(f);
+
+  load_new(bcatl("SRC/",b,".",c,".thy"))
+ =>
+  loaduserlib(b.c);
+
+
+
+
+
+
+  chkolduserlib(n);
+
+  brule(UserLibX.n,x) &
+  bmodr(AnimatorFromUserX.1,1)
+ =>
+  chkolduserlib(n);
+
+  brule(UserLibX.n,x) &
+  Trace__\x &
+  Constant__\x &
+  chkolduserlib(n+1)
+ =>
+  chkolduserlib(n);
+
+  brule(AnimatorFromUserX.1,1)
+ =>
+  chkolduserlib(n);
+
+
+  printmessgifreqd;
+
+  brule(AnimatorFromUserX.1,1) &
+  Writef(("\n\n  WARNING: You are using old theory file syntax\n           Check the manual!\n\n")) &
+  FifoWrite_NoStore((BT_MINOR_ERR_M,"   Old theory file syntax!   ",0))
+ =>
+  printmessgifreqd;
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  afu7$N(b)(f);
+
+  bstring(f) &                 /* force bcatl */
+  bget(f,r) &
+  InformLoading(b) &
+  AppendToOutFile(("\n  Animating %\n",b)) &
+  loaduserlib(b.c) &
+  bmodr(AnimatorFromUserX.1,0) &
+  bcall((((ARI;WRITE;CATL;MODR;SHELL;RULE;MAP)~;AnimatorFromUserX)~):chkolduserlib(1)) &
+  printmessgifreqd &
+/***
+PrintTHEORY(UserLibX)&
+PrintTHEORY(UserLibMacrosX)&
+***/
+  bshell(bcatl("$BKIT/BLIB/CreateCom anm ",b)) &
+  bcall((Prologue_tac~;(((CATL;WRITE;ARI~;SUB~;MODR~;MAP)~;ANIX)~)):run0$N(r))
+ =>
+  afu7$N(b.c.anl)(f);
+
+  ClearMenuWin &
+  CleanAnimator &
+  bmodr(AnimatorFromUserX.2,b.c) &
+  afu7$N(b.c.anl)(bcatl("ANL/",b,".",c,".anl"))
+ =>
+  afu6$N(b.c.anl);
+
+  afu6$0(b.c.anl)
+ =>
+  anim_check_edit_0(b.c);
+
+  CleanAnimator &
+  ModifySeesUsedList(S) &
+  afu6$0(b.c.anl)
+ =>
+  anim_check_edit_0(b.c|S|f)
+
+END

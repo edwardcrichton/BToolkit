@@ -1,0 +1,623 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Varr)
+;
+(Rename_Varr)
+;
+(Rename_Varr : 1..maxidx --> VALUE)
+;
+(Rename_Varr : 1..maxidx --> VALUE)
+;
+(?)
+;
+(Rename_Varr :: 1..maxidx --> VALUE)
+;
+(@Rename_Varrx.(Rename_Varrx : 1..maxidx --> VALUE ==> Rename_Varr := Rename_Varrx))
+;
+(Rename_TST_IDX_ARR,Rename_VAL_ARR,Rename_STO_ARR,Rename_EQL_ARR,Rename_NEQ_ARR,Rename_SCH_LO_EQL_ARR,Rename_SCH_LO_NEQ_ARR,Rename_SCH_HI_EQL_ARR,Rename_SCH_HI_NEQ_ARR,Rename_REV_ARR,Rename_RHT_ARR,Rename_LFT_ARR,Rename_SWP_ARR,Rename_SAV_ARR,Rename_RST_ARR,Rename_SAVN_ARR,Rename_RSTN_ARR)
+;
+(Rename_TST_IDX_ARR , Rename_VAL_ARR , Rename_STO_ARR , Rename_EQL_ARR , Rename_NEQ_ARR , Rename_SCH_LO_EQL_ARR , Rename_SCH_LO_NEQ_ARR , Rename_SCH_HI_EQL_ARR , Rename_SCH_HI_NEQ_ARR , Rename_REV_ARR , Rename_RHT_ARR , Rename_LFT_ARR , Rename_SWP_ARR , Rename_SAV_ARR , Rename_RST_ARR , Rename_SAVN_ARR , Rename_RSTN_ARR)
+;
+(Rename_Varr(VALUE , maxidx):(maxidx > 0 & maxidx : NAT & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_TST_IDX_ARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_TST_IDX_ARR(ii)))
+;
+ (ii)
+;
+ (bb)
+;
+ (
+ (ii : NAT)
+ |
+ (
+ (bb := bool(ii : 1..maxidx))
+ )
+ )
+;
+ (
+ (ii : NAT)
+ |
+ (
+ (bb := bool(ii : 1..maxidx))
+ )
+ )
+)
+,
+(
+ (Rename_VAL_ARR)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_ARR(ii)))
+;
+ (ii)
+;
+ (vv)
+;
+ (
+ (ii : 1..maxidx)
+ |
+ (
+ (vv := Rename_Varr(ii))
+ )
+ )
+;
+ (
+ (ii : 1..maxidx)
+ |
+ (
+ (vv := Rename_Varr(ii))
+ )
+ )
+)
+,
+(
+ (Rename_STO_ARR)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_ARR(ii , vv))
+;
+ (ii , vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE & ii : 1..maxidx)
+ |
+ (
+ (Rename_Varr(ii) := vv)
+ )
+ )
+;
+ (
+ (vv : VALUE & ii : 1..maxidx)
+ |
+ (
+ (Rename_Varr := Rename_Varr <+ {ii |-> vv})
+ )
+ )
+)
+,
+(
+ (Rename_EQL_ARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL_ARR(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Varr(ii) = vv))
+ )
+ )
+;
+ (
+ (vv : VALUE & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Varr(ii) = vv))
+ )
+ )
+)
+,
+(
+ (Rename_NEQ_ARR)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_NEQ_ARR(ii , vv)))
+;
+ (ii , vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(Rename_Varr(ii) /= vv))
+ )
+ )
+;
+ (
+ (vv : VALUE & ii : 1..maxidx)
+ |
+ (
+ (bb := bool(not(Rename_Varr(ii) = vv)))
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_EQL_ARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_EQL_ARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : VALUE & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Varr~[{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxidx})
+ END)
+ )
+ )
+;
+ (
+ (vv : VALUE & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Varr~[{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxidx}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_LO_NEQ_ARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_LO_NEQ_ARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : VALUE & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Varr~[VALUE-{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := min(ss \/ {maxidx})
+ END)
+ )
+ )
+;
+ (
+ (vv : VALUE & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Varr~[VALUE-{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , min(ss \/ {maxidx}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_EQL_ARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_EQL_ARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : VALUE & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Varr~[{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : VALUE & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Varr~[{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SCH_HI_NEQ_ARR)
+;
+ (? , Val_Op , NonDet_Op , (bb , ii <-- Rename_SCH_HI_NEQ_ARR(jj , kk , vv)))
+;
+ (jj , kk , vv)
+;
+ (bb , ii)
+;
+ (
+ (vv : VALUE & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ (LET ss BE
+ ss = jj..kk /\ Rename_Varr~[VALUE-{vv}]
+ IN
+ bb := bool(ss /= {}) ||
+ ii := max(ss \/ {1})
+ END)
+ )
+ )
+;
+ (
+ (vv : VALUE & jj : 1..maxidx & kk : 1..maxidx)
+ |
+ (
+ @(ss).
+ (
+ (
+ (ss = jj..kk /\ Rename_Varr~[VALUE-{vv}])
+ )
+ ==>
+ (
+ (bb , ii := bool(not(ss = {})) , max(ss \/ {1}))
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_REV_ARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_REV_ARR(ii , jj))
+;
+ (ii , jj)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii < jj)
+ |
+ (
+ (LET Same , Rev BE
+ Same = 1..ii-1 \/ jj+1..maxidx <| Rename_Varr &
+ Rev = %kk.(kk : ii..jj | Rename_Varr(jj+ii-kk))
+ IN
+ Rename_Varr := Same \/ Rev
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & ii < jj)
+ |
+ (
+ @(Same , Rev).
+ (
+ (
+ (Same = 1..ii-1 \/ jj+1..maxidx <| Rename_Varr & Rev = %kk.(kk : ii..jj | Rename_Varr(jj+ii-kk)))
+ )
+ ==>
+ (
+ (Rename_Varr := Same \/ Rev)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_RHT_ARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RHT_ARR(ii , jj , nn))
+;
+ (ii , jj , nn)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & nn : 1..maxidx & ii <= jj)
+ |
+ (
+ (LET Same , RShift BE
+ Same = 1..ii+nn-1 \/ jj+nn+1..maxidx <| Rename_Varr &
+ RShift = %kk.(kk : ii+nn..min({maxidx , jj+nn}) | Rename_Varr(kk-nn))
+ IN
+ Rename_Varr := Same \/ RShift
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & nn : 1..maxidx & ii <= jj)
+ |
+ (
+ @(Same , RShift).
+ (
+ (
+ (Same = 1..ii+nn-1 \/ jj+nn+1..maxidx <| Rename_Varr & RShift = %kk.(kk : ii+nn..min({maxidx , jj+nn}) | Rename_Varr(kk-nn)))
+ )
+ ==>
+ (
+ (Rename_Varr := Same \/ RShift)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_LFT_ARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_LFT_ARR(ii , jj , nn))
+;
+ (ii , jj , nn)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & nn : 1..maxidx & ii <= jj)
+ |
+ (
+ (LET Same , LShift BE
+ Same = 1..ii-nn-1 \/ jj-nn+1..maxidx <| Rename_Varr &
+ LShift = %kk.(kk : max({1 , ii-nn})..jj-nn | Rename_Varr(kk+nn))
+ IN
+ Rename_Varr := Same \/ LShift
+ END)
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx & nn : 1..maxidx & ii <= jj)
+ |
+ (
+ @(Same , LShift).
+ (
+ (
+ (Same = 1..ii-nn-1 \/ jj-nn+1..maxidx <| Rename_Varr & LShift = %kk.(kk : max({1 , ii-nn})..jj-nn | Rename_Varr(kk+nn)))
+ )
+ ==>
+ (
+ (Rename_Varr := Same \/ LShift)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SWP_ARR)
+;
+ (? , Mod_Op , Det_Op , Rename_SWP_ARR(ii , jj))
+;
+ (ii , jj)
+;
+ (?)
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx)
+ |
+ (
+ (Rename_Varr := Rename_Varr <+ {ii |-> Rename_Varr(jj) , jj |-> Rename_Varr(ii)})
+ )
+ )
+;
+ (
+ (ii : 1..maxidx & jj : 1..maxidx)
+ |
+ (
+ (Rename_Varr := Rename_Varr <+ {ii |-> Rename_Varr(jj) , jj |-> Rename_Varr(ii)})
+ )
+ )
+)
+,
+(
+ (Rename_SAV_ARR)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_ARR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_ARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_ARR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Varr :: 1..maxidx --> VALUE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Varrx).
+ (
+ (
+ (Rename_Varrx : 1..maxidx --> VALUE)
+ )
+ ==>
+ (
+ (Rename_Varr := Rename_Varrx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_ARR)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_ARR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_ARR)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_ARR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Varr :: 1..maxidx --> VALUE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Varrx).
+ (
+ (
+ (Rename_Varrx : 1..maxidx --> VALUE)
+ )
+ ==>
+ (
+ (Rename_Varr := Rename_Varrx)
+ )
+ )
+ )
+ )
+)
+)

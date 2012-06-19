@@ -1,0 +1,320 @@
+#! /bin/csh -f
+
+#
+#  After the ftp-able BT_tarfile BT_`platform'.`release-Version'.tgz
+#  has been created, this script creates the xfiles and then
+#  writes the installation floppies from that tarfile:
+#
+#    DISK0 - READ_ME binstall
+#    DISK1 - xaa
+#    DISK2 - xab
+#    DISK3 - xac
+#    DISK4 - xad
+#    .....
+#
+
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+echo ""
+echo "         ------------------------------"
+echo ""
+
+echo ""
+echo "  Make release floppies for platform:"
+echo ""
+echo "      1 ... SunOS"
+echo "      2 ... Solaris"
+echo "      3 ... Aix"
+echo "      4 ... DecAlpha"
+echo "      5 ... Linux"
+echo "      6 ... Indy"
+echo "      7 ... HP"
+echo ""
+
+echo -n "  Number: "
+set answer=$<
+echo ""
+
+if ( $answer != "1" && $answer != "2" && $answer != "3" && $answer != "4" && $answer != "5" && $answer != "6" && $answer != "7") then
+  echo "  Bad input - aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $answer == "1" ) set plat=SunOS
+if ( $answer == "2" ) set plat=Solaris
+if ( $answer == "3" ) set plat=Aix
+if ( $answer == "4" ) set plat=DecAlpha
+if ( $answer == "5" ) set plat=Linux
+if ( $answer == "6" ) set plat=Indy
+if ( $answer == "7" ) set plat=HP
+
+set has_volcheck=`which volcheck`
+if ( "$has_volcheck:t" == "volcheck" ) then
+  set has_volcheck=1
+else
+  set has_volcheck=0
+endif
+
+echo ""
+echo "  Which binding?"
+echo ""
+echo "  -- 1 $plat dynamically bound"
+echo "  -- 2 $plat statically  bound"
+echo ""
+echo -n "  ** Number? "
+set answer=$<
+echo ""
+if ($answer != "1" && $answer != "2" ) then
+  echo "  Aborted"
+  echo ""
+  exit
+endif
+if ($answer == "1" ) then
+  set plat=$plat.dyn
+else
+  set plat=$plat.stat
+endif
+
+cd ..
+
+if ( ! -r BT_$plat.$BT_VERSION.tgz ) then
+  echo "    `pwd`/BT_$plat.$BT_VERSION.tgz does not exist "
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+echo ""
+echo "  gunzip -c BT_$plat.$BT_VERSION.tgz | tar xvf - "
+echo ""
+gunzip -c BT_$plat.$BT_VERSION.tgz | tar xvf -
+
+cd BT_$plat.$BT_VERSION
+
+     ls -l
+
+echo ""
+echo ""
+echo "  gzip -9 bkit.tar "
+echo ""
+gzip -9 bkit.tar
+
+     ls -l
+
+set default = 1440000
+
+echo ""
+echo ""
+echo "  Enter (gnu)split factor ( CR for default of $default )"
+echo ""
+
+echo -n "  Spilt factor? "
+set answer=$<
+
+if ( $answer == "" ) then
+  set split_fact = $default
+else
+  set split_fact = $answer
+endif
+
+echo ""
+echo "  Using (gnu)split factor of $split_fact "
+echo ""
+
+split -b $split_fact bkit.tar.gz bkit_ 
+
+     ls -l
+
+rm bkit.tar.gz
+ls -l
+
+echo ""
+echo "-- 1  Continue"
+echo "-- 2  Abort"
+
+echo ""
+echo -n "** Number? "
+set answer=$<
+
+if ($answer != "1") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  cd ..
+  rm -fr BT_$plat.$BT_VERSION
+  exit ( 1 )
+endif
+
+
+
+if ( -r bkit_aa ) then
+ set disks="0"
+ set last_disk="bkit_aa"
+endif
+
+if ( -r bkit_ab ) then
+ set disks="0 1"
+ set last_disk="bkit_ab"
+endif
+
+if ( -r bkit_ac ) then
+ set disks="0 1 2"
+ set last_disk="bkit_ac"
+endif
+
+if ( -r bkit_ad ) then
+ set disks="0 1 2 3"
+ set last_disk="bkit_ad"
+endif
+
+if ( -r bkit_ae ) then
+ set disks="0 1 2 3 4"
+ set last_disk="bkit_ae"
+endif
+
+if ( -r bkit_af ) then
+ set disks="0 1 2 3 4 5"
+ set last_disk="bkit_af"
+endif
+
+if ( -r bkit_ag ) then
+ set disks="0 1 2 3 4 5 6"
+ set last_disk="bkit_ag"
+endif
+
+if ( -r bkit_ah ) then
+ set disks="0 1 2 3 4 5 6 7"
+ set last_disk="bkit_ah"
+endif
+
+echo "  Ready to create release floppies $disks "
+echo ""
+
+foreach disk ($disks)
+
+  set done=0
+  while ($done == 0)
+
+    echo "  Insert DISK$disk - hit <CR> when ready"
+    echo ""
+    echo -n "***** ? "
+    set answer=$<
+    echo ""
+
+    if ($disk == 0) set files="READ_ME BToolkit.install gunzip.READ_ME gunzip $last_disk"
+    if ($disk == 1) set files="bkit_aa"
+    if ($disk == 2) set files="bkit_ab"
+    if ($disk == 3) set files="bkit_ac"
+    if ($disk == 4) set files="bkit_ad"
+    if ($disk == 5) set files="bkit_ae"
+    if ($disk == 6) set files="bkit_af"
+    if ($disk == 7) set files="bkit_ag"
+
+    echo "    Writing"
+    echo ""
+
+    if ( has_volcheck == 1 ) then
+      volcheck
+      cp $files /floppy/floppy0
+      set sta=$status
+    else
+      tar cvf /dev/fd0 $files
+      set sta=$status
+    endif
+
+    if ($sta == 0) then
+
+      echo ""
+      eject
+      echo "    Eject and reinsert before checking - hit <CR> when ready"
+      set answer=$<
+      echo ""
+      echo "    Checking"
+
+      if ( has_volcheck == 1 ) then
+        volcheck
+        ls /floppy/floppy0/*
+        set sta=$status
+      else
+        tar tvf /dev/fd0 $files
+        set sta=$status
+      endif
+
+      if ($sta == 0) then
+
+        echo ""
+        echo "    OK"
+        echo ""
+        eject
+        set done=1
+
+      endif
+
+    endif
+
+    if ($done == 0) then
+
+      eject
+      echo ""
+      echo "-- DISK$disk failed"
+      echo ""
+
+      set y_n=0
+      while ($y_n == 0)
+
+        echo -n "***** Retry (y/n)? "
+        set answer=$<
+        echo ""
+
+        if ($answer == "y") then
+
+          set y_n=1
+          set first_attempt=0
+
+        else
+
+          if ($answer == "n") then
+
+
+            echo "                ----------------"
+            echo ""
+            echo "                     ABORTED"
+            echo ""
+            echo "                ----------------"
+            echo ""
+            cd ..
+            rm -fr BT_$plat.$BT_VERSION
+            exit(1)
+
+          else
+
+            echo "-- Bad input"
+            echo ""
+
+          endif
+
+        endif
+
+      end
+
+    endif
+
+  end
+
+end
+
+cd ..
+rm -fr BT_$plat.$BT_VERSION
+
+echo ""
+echo "  BToolkit release floppies for $plat.$BT_VERSION complete"
+echo ""
+echo ""

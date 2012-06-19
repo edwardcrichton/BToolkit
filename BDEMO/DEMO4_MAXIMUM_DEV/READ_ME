@@ -1,0 +1,127 @@
+
+                      MAXIMUM_DEV DEMONSTRATION
+                      -------------------------
+
+    This d demonstration illustrates the construction of
+    object-oriented specification and layered implementation techniques,
+    using the B-Library and the B-Generators, together with translation 
+    into C.
+
+    The Specifications of Re-Usable Modules together with their correct
+    implementations reside in the system's Library (SLIB). These
+    specification and code pairs can be extracted from the Library and
+    used in the construction of new specifications as well as in their
+    implementations.
+
+    Furthermore `reusable' ideas of how to specify and implement certain
+    classes of problems are supported by a set of Specification/Code
+    Generators. The B-InterfaceGenerator generates the specification and
+    the implementation of a collection of i/o facilities for 
+    communications between the system and the end user.
+
+
+The Demonstration
+
+1.  Start the development
+
+    Enter the MAXIMUM_DEV directory and run the B-Toolkit to create a new
+    development directory.
+
+2.  Introduce from SRC
+
+    Introduce from SRC the constructs: `MaxOfSet.mch' and `MaxSoFar_1.ref'.
+
+3.  Analyse
+
+    Submit `MaxSoFar_1.ref' for analysis (anl):
+        both `MaxOfSet.mch' and `MaxSoFar_1.ref' analysed.
+
+4.  Introduce Implementation from SRC
+
+    Introduce `MaxSoFar_2.imp' from SRC; open for inspection:
+        `MAX_Nvar' is a renamed SLIB machine. This is an instance of
+        `Rename_Nvar' which is a SLIB machine encapsulating the
+         implementation of a single variable.
+        `Bool_TYPE' is a shared SLIB machine.
+
+5.  Introduce from SLIB
+
+    Introduce `Rename_Nvar' (renamed to `MAX_Nvar') from SLIB; `Bool_TYPE'
+    gets introduced too - as `Rename_Nvar' depends on `Bool_TYPE'.
+    The specification is pre-implemented and comes with code which is assumed
+    to be correct; specification and code are under control of the
+    configuration and dependency managers (and so will participate in
+    any B-Remake).
+
+6.  Analyse Implementation
+
+    Submit `MaxSoFar_2.imp' for analysis (anl):
+    We are now ready for translation into C.
+
+7.  Translate
+
+    Enter the Translators environment and submit `MaxSoFar_2.imp' for 
+    translation (trl): we now have code for the specification
+    `MaxOfSet.mch'; in order to run the code we construct an interface.
+
+8.  Introduce New Interface
+
+    Go to the Generator environment and `Introduce New': Interface 
+    of implemented machine (`MaxOfSet').
+    Edit the parameter to, say, 1000, and use your editor function
+    to save; commit the edit (cmt).
+
+9.  Set Interface Option
+
+    Check Options and set Interface Option to `Non-Motif'
+
+10. Generate Non-Motif Interface
+
+    Submit `MaxOfSet.itf' for Interface Generation (itf):
+        `MaxOfSetIO' and `MaxOfSetITF' machines generated
+        `MaxOfSetIO' and `MaxOfSetITF' machines analysed
+        `MaxOfSetIO' and `MaxOfSetITF' machines translated
+        `MaxOfSetIO', `MaxOfSetITF' and `MaxOfSet' machines linked
+        `MaxOfSetITF' runs
+
+11. Execute Non-Motif Interface
+
+    Execute (exe) the implementation of the interface (from the Translators 
+    Environment) to validate the code (the code resides in CDE/C).
+
+12. Browse Design
+
+   Examine the `design' structure using Browse -> Overview -> Design.
+    Dismiss.
+
+13. Browse C-code
+
+    Examine the generated C-code through Browse -> Hypertext.
+    Dismiss.
+
+14. Change Interface Option
+
+    Use Options to set Interface Option to `Motif'.
+    Use Options -> Remake to include Translation, Linking and
+    ITFGeneration.
+
+15. Generate Motif Interface & Execute
+
+    Remake all construct and Execute again, now with a Motif interface.
+
+
+
+
+Exercise
+
+    Change the {\em MaxOfSet\/} specification so that:
+
+        o the set may include the number $0$.
+
+        o an operation to return the {\em second highest\/} number
+          of the set is provided.
+
+Then change the refinement and implementation in line with the
+specification, Analyse, Translate and re-gererate an interface
+to test the code.
+

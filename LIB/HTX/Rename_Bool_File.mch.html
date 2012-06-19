@@ -1,0 +1,162 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Bool_File">
+  <TITLE>The Rename_Bool_File machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.02
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             24/01/01
+***/
+
+/*
+Description: Renamable Library variable machine
+             encapsulating a single NVRAM Boolean
+
+History :
+030698 v0.01 : Created as Rename_Bool
+
+240101 v0.01 : Renamed to Rename_Bool_File for DecCo8
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Rename_Bool_File
+
+/*"
+A renamable encapsulation of a single NVRAM {\em BOOLEAN\/}
+variable, providing the seven operations {\em VAL, STO, EQL, NOT, AND,
+OR\/} and {\em XOR\/}.  The operations are, where necessary, specified
+in terms of the {\em Bool\_TYPE\/} operations.
+
+The specification variable has the name {\em Rename\_bool\/} and has a
+nondeterministic initialisation (`$:\in$ {\em BOOLEAN\/}' means `takes
+{\em any BOOLEAN\/} value') in line with the current practice of the
+programmer explicitly initialising all variables.
+
+So, for example, importing {\em prefix\_Bool\/} means that the bool variable
+will appear in the translated code as\ \ {\tt prefix\_bool}\ \ and results
+in the global data declaration:\\[1ex]
+\hspace*{3em}{\tt VAR prefix\_bool : BOOLEAN;}\\[1ex]
+Thus the initialisation requires no translation since the above
+declaration achieves the nondeterminism specified.
+"*/
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>         Rename_bool
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>         Rename_bool : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>    Rename_bool :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf Rename\_VAL}\\[1ex]
+Returns the value of the variable without precondition; translated as:\\\ \ \  {\tt vv := prefix\_bool}.
+"*/
+  vv <-- <A NAME="OPNAME!Rename_VAL">Rename_VAL</A> = <B>BEGIN</B> vv := Rename_bool <B>END</B>;
+
+/*"
+{\bf Rename\_STO}\\[1ex]
+Stores a new value in the variable with precondition that the
+parameter should be a {\em BOOL\/}; translated as:\\\ \ \  {\tt prefix\_bool := vv}.
+"*/
+  <A NAME="OPNAME!Rename_STO">Rename_STO</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) = <B>BEGIN</B> Rename_bool:=vv <B>END</B>;
+
+/*"
+{\bf Rename\_SET}\\[1ex]
+Stores {\em TRUE\/} in the variable; translated as:\\\ \ \  {\tt prefix\_bool := TRUE}.
+"*/
+  <A NAME="OPNAME!Rename_SET">Rename_SET</A> = <B>BEGIN</B> Rename_bool:=TRUE <B>END</B>;
+
+/*"
+{\bf Rename\_RESET}\\[1ex]
+Stores {\em FALSE\/} in the variable; translated as:\\\ \ \  {\tt prefix\_bool := FALSE}.
+"*/
+  <A NAME="OPNAME!Rename_RESET">Rename_RESET</A> = <B>BEGIN</B> Rename_bool:=FALSE <B>END</B>;
+
+/*"
+{\bf Rename\_EQL}\\[1ex]
+Returns a boolean indicating whether or not the value stored has the same
+value as the input parameter, with precondition that the
+parameter should be a {\em BOOL\/};
+translated as:\\\ \ \  {\tt vv := prefix\_bool}.
+"*/
+  bb <-- <A NAME="OPNAME!Rename_EQL">Rename_EQL</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) =
+    <B>BEGIN</B>
+      bb := <B>bool</B>( (vv=TRUE & Rename_bool=TRUE ) or (vv=FALSE & Rename_bool=FALSE ) )
+    <B>END</B>;
+
+/*"
+{\bf Rename\_NOT}\\[1ex]
+Performs a logical {\tt NOT} of the variable, storing the result;
+translated as:\\\ \ \  {\tt prefix\_bool := NOT(prefix\_bool)}.
+"*/
+  <A NAME="OPNAME!Rename_NOT">Rename_NOT</A> = <B>BEGIN</B> Rename_bool := <B>bool</B>(Rename_bool=FALSE) <B>END</B>;
+
+/*"
+{\bf Rename\_AND}\\[1ex]
+Changes the variable to be the `logical and' of itself and its input
+parameter, with precondition that the parameter has type {\em BOOL\/};
+translated as:\\\ \ \  {\tt prefix\_bool := (prefix\_bool AND vv)}.
+"*/
+  <A NAME="OPNAME!Rename_AND">Rename_AND</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) = 
+    <B>BEGIN</B> Rename_bool := <B>bool</B>((Rename_bool=TRUE) & (vv=TRUE)) <B>END</B>;
+
+/*"
+{\bf Rename\_OR}\\[1ex]
+Changes the variable to be the `logical or' of itself and its input
+parameter, with precondition that the parameter has type {\em BOOL\/};
+translated as:\\\ \ \  {\tt prefix\_bool := (prefix\_bool OR vv)}.
+"*/
+  <A NAME="OPNAME!Rename_OR">Rename_OR</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) =
+    <B>BEGIN</B> Rename_bool := <B>bool</B>((Rename_bool=TRUE) or (vv=TRUE)) <B>END</B>;
+
+/*"
+{\bf Rename\_XOR}\\[1ex]
+Changes the variable to be the `logical xor' of itself and its input
+parameter, with precondition that the parameter has type {\em BOOL\/};
+translated as:\\\ \ \  {\tt prefix\_bool := (prefix\_bool XOR vv)}.
+"*/
+  <A NAME="OPNAME!Rename_XOR">Rename_XOR</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) =
+    <B>BEGIN</B>
+      Rename_bool := <B>bool</B> ( (
+                      ((Rename_bool=TRUE) & (vv=FALSE)) or
+                      ((Rename_bool=FALSE) & (vv=TRUE))
+                             )
+                    )
+     <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:07:26 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

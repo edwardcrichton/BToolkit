@@ -1,0 +1,76 @@
+#! /bin/sh
+
+rm -f .Bler
+if [ "$2" = "0" ]
+then
+  list=`cat .Bcom`
+  cd CDE/C
+  rm -f $1
+  cp $1.g C.c
+
+  if [ "$7" = "0" ]
+  then
+    cc_string="$3 -D_BT_Motif"
+  else
+    cc_string="$3"
+  fi
+  if [ "$6" = "0" ]
+  then
+    cc_string="$cc_string -D_BT_ANSIC"
+  fi
+  $cc_string -o $1 $list $4 2> .Bler
+  if [ $? = 0 ]
+  then
+    echo 0 > ../../.Bcom
+    rm -f C.c
+  else
+    echo 1 > ../../.Bcom
+    rm -f C.c $1
+    echo ""  
+    echo ""
+    if [ -s .Bler ]
+    then
+      cat .Bler
+    fi
+    rm -f .Bler
+    exit
+  fi
+
+elif [ "$2" = "1" ]
+then
+  list=`cat .Bcom`
+  cd CDE/C
+  rm -f $1
+  if [ "$7" = "1" ]
+  then
+    cc_string="$3"
+  else
+    cc_string="$3 -D_BT_Motif"
+  fi
+  if [ "$6" = "0" ]
+  then
+    cc_string="$cc_string -D_BT_ANSIC"
+  fi
+  $cc_string -o $1 $list $4 $5 2> .Bler
+  if [ $? = 0 ]
+  then
+    echo 0 > ../../.Bcom
+    rm -f C.c
+  else
+    echo 1 > ../../.Bcom
+    rm -f C.c $1
+    echo ""  
+    echo ""
+    if [ -s .Bler ]
+    then
+      cat .Bler
+    fi
+    rm -f .Bler
+    exit
+  fi 
+fi
+if [ -s .Bler ]
+then
+  cat .Bler
+fi
+rm -f .Bler

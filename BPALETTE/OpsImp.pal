@@ -1,0 +1,95 @@
+   **************
+   IMPLEMENTATION
+     OPERATIONS
+   **************
+
+------ NO-OP -------
+
+ skip
+
+
+----- PARALLEL -----
+
+ Not allowed
+
+
+---- ASSIGNMENTS ---
+
+ xx := E1
+
+--- PRECONDITION ---
+
+  Not allowed
+
+-------- IF --------
+
+ IF P THEN
+     S 
+ ELSE
+     T
+ END
+
+ IF P THEN
+    S
+ END
+
+ IF P THEN
+     S
+ ELSIF Q THEN
+     T
+ ELSE
+     U 
+ END
+
+ IF P THEN 
+     S
+ ELSIF Q THEN
+     T
+ END
+
+
+---- LOCAL VARS ----
+
+ VAR xx IN
+     S
+ END
+
+------- CASE -------
+
+ CASE E OF
+     EITHER l THEN
+         S
+     OR m THEN
+         T   ...
+     OR n THEN
+         U
+     ELSE
+         V
+     END
+ END
+
+
+ CASE E OF
+     EITHER l THEN
+         S
+     OR m THEN
+         T
+     ...
+     OR n THEN
+         U
+     END
+ END
+
+--- CONTROL FLOW ---
+
+ S;T
+
+ S;WHILE P DO
+         T
+     VARIANT
+         Q
+     INVARIANT
+         R
+   END
+
+--------------------

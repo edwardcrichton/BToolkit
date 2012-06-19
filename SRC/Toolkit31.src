@@ -1,0 +1,127 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+
+#include "GlobalDefs.src"
+
+
+#define InformNothingConfigured Writef(("\n  % %\n",bsrv Nothing berv,bsrv configured berv,bwarn))
+
+#define InformNoLemmasToProve(a) Writef(("\n    %\n\n      % has no unproved lemmas\n",bwarn,a))
+
+#define ModifyEditorString(x) bcall(MODR:bmodr(InterProverFromUserX.14,x))
+#define ReadEditorString(x)   brule(InterProverFromUserX.14,x)
+
+#define ModifyHypEditorString(x) bcall(MODR:bmodr(InterProverFromUserX.15,x))
+#define ReadHypEditorString(x)   brule(InterProverFromUserX.15,x)
+
+
+THEORY BTOOLKITINIT END   /* Theory # 2 */
+
+&
+
+#include "Utils.src"
+
+&
+
+#include "LoadUnloadProofMethod.src"
+
+&
+
+#include "CreatePmdTemplate.src"
+
+&
+
+#include "Standardize.src"
+
+&
+
+#include "CommonTheory.src"
+
+&
+
+#include "SetOfRules_IP.made"
+
+&
+
+#include "PrettyPrint.src"
+
+&
+
+#define J_to_be_instantiated abcA____uNkkJ____kkJJJJJJvvEEssWWWAAAQ_______xXx
+
+#include "QueryUser.src"
+
+&
+
+#include "InterProver.src"
+
+&
+
+#include "Toolkit_core.src"
+
+&
+
+THEORY ParseInitX IS
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformUnknownEnvironment(x) &
+  PFZ
+ =>  
+  pi$x;
+
+
+  InterProverDirect(a.b.n.po)
+ => 
+  run_ip(a.b.n);
+
+  ModifyEditorString(a) &
+  ModifyHypEditorString(b)
+ =>
+  run_ed(a;b);
+
+  GetJobs(X) &
+  bsearch((x:BT_INP:y),X,Y) &
+  ModifyJobs(Y) &
+  run_ed(y) &
+  run_ip(x) &
+  LoadToolkit(1)
+ => 
+  run;
+
+  bnum(x) &
+  btest(1<=x) &
+  btest(5>=x) &
+  run
+ =>  
+  pi$x;
+
+  bnum(n) &
+  bmodr(ParseEnvX.2,n) &
+  LoadJobs &
+  pi$n
+ =>
+  n$toolkit$n$n
+
+END

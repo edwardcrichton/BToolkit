@@ -1,0 +1,38 @@
+/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.02
+  VERSION:          B-Toolkit Beta 4.23
+  DATE:             05/08/98
+added `#define Rename_ARROBJ _Rename_UiArrO_Rename_ARROBJ'
+      `extern char * _Rename_UiArrO_Rename_ARROBJ [];'
+***/
+
+#define Rename_ARROBJ _Rename_UiArrO_Rename_ARROBJ
+extern char * _Rename_UiArrO_Rename_ARROBJ [];
+
+extern int Rename_UiArrOP1;
+extern int Rename_UiArrOP2;
+
+#define Rename_lb 1
+
+
+#include "Rename_C_UiArr.h"
+#include "Rename_M_Byt.h"
+#include "Rename_O_BiArr.h"
+
+void INI_Rename_UiArrO();
+void Rename_UiAO_OBJ_FUL();
+void Rename_UiAO_XST();
+void Rename_UiAO_INI();
+void Rename_UiAO_CRE();
+void Rename_UiAO_VAL();
+void Rename_UiAO_NXT();
+void Rename_UiAO_EQL();
+void Rename_UiAO_STO();
+void Rename_UiAO_STO_NXT();
+void Rename_UiAO_CPY();
+void Rename_UiAO_FILL();

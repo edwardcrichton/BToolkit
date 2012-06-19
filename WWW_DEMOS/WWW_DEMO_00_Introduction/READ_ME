@@ -1,0 +1,199 @@
+Introduction - the `MaxOfSet' development
+
+
+This demonstration illustrates (on a very, very simple example) some
+of the basic aspects of B and the B-Toolkit.
+
+You are strongly encouraged to utilise the on-line help facilities
+at each stage of this demonstration.
+
+
+
+A specification (MACHINE) `MaxOfSet' describes a state comprising a
+set of numbers, together with two operations which allow us to add a
+number to that set and to request the maximum number stored in the set.
+
+In order to satisfy ourselves that our specification captures
+accurately the informal requirements, we animate the specification.
+
+We verify that this specification is consistent by generating the
+proof obligations and then discharging them; we can inspect the
+proofs to see the way in which they were constructed.
+
+We implement this specification by building it on the system
+library; since B employs an object-orientated approach, all data
+must be encapsulated (at the implementation level), and we use the
+`Nvar' library machine in our design.
+
+We then show that this design correctly implements the specification
+by generating the proof obligations for the implementation, and then
+discharging them; again the proofs may be inspected.
+
+As we build the system, each analysed specification, refinement and
+implementation (including library and generated constructs) is given a
+hypertext counterpart, enabling us to navigate through the development
+using a hypertext browser.
+
+In addition, as specification construction and implementation design progress,
+both may be viewed in picture form picture form, enabling the user to
+navigate through a development through another push-button interface.
+
+Having constructed the implementation, we can translate and compile
+into a code module (all such implementations are separately compilable).
+
+In order to test our code module, we generate an interface, which builds
+an i/o layer around the implementation allowing us to execute it.
+
+We next look at the documentation; each construct may be separately
+marked-up, or combined into a single document
+
+We next look at the automatic mark-up facilities of the B-Toolkit;
+each construct may be individually marked-up, or we may present all
+constructs, including proof obligations and proofs, in a single document.
+
+Finally we look at the way in which the dependency and configuration
+managers cooperate in the automatic rebuild of a system when one of the
+source files has been changed. 
+
+
+
+Thus the B-Toolkit configuration and dependency managers are
+illustrated, together with the following tools:
+
+        B-Edit (opn- quit-editor) 
+        B-Analyser (anl)
+        B-Animator (anm)
+        B-POGenerator (pog)
+        B-ProofPrinter (ppf)
+        B-AutoProver (apr)
+        B-Status (sts)
+        B-Hypertext (ToolBar)
+        B-Overview (ToolBar)
+        B-InterfaceGenerator (itf)
+        B-Documentor (dmu)
+        B-Remake (ToolBar)
+
+
+
+
+1.  Open `MaxOfSet.mch' ( click `MaxOfSet.mch' under `opn- quit-editor' );
+    note that the mathematical content is separated from the informal
+    commentary through "annotations":
+    /*" This is an informal annotation ... "*/
+
+2.  Analyse (anl); static analysis of the construct is performed,
+    including parsing, syntax- and type-checking.
+
+3.  Animate (anm) - the  theory file `SRC/MaxOfSet.mch.thy' is
+    automatically loaded (this contains simplification rewrite rules
+    relating to `max'); since the specification is parameterised, you
+    are first invited to provide a value for `max_val'.
+
+4.  Submit `MaxOfSet.mch' for Proof Obligation Generation (pog); 3 proof
+    obligations are generated.
+
+5.  Enter the Provers Environment (TopBar Environment button) and
+    print the proof obligations (ppf); `MaxOfSet.mch.0.prf' is created,
+    and this may be opened for inspection. (Note that all such generated
+    proof obligation/proof files may be automatically marked up - see
+     step 22).
+
+6.  Now submit `MaxOfSet.mch' for AutoProof (apr); the proof is conducted
+    at depth 0, and 2 of the 3 are discharged.
+
+7.  The proofs may be inspected by again printing the proof obligations (ppf);
+    this time `MaxOfSet.mch.1.prf' is created, and may be opened for
+    inspection.
+
+8.  Submit for a second level of AutoProof (apr); the remaining proof
+    requires depth 2 (this is already set in the PROOFMETHOD).
+
+9.  This proof may be inspected by printing the proof obligations (ppf)
+    one more time when `MaxOfSet.mch.2.prf' is created.
+
+10. To view the current status of `MaxOfSet.mch' return to the Main
+    Environment and press its status (sts) button; notice that full
+    lists of dependent and subordinate constructs are provided.
+
+11. Before proceeding with the implementation we may mark-up the
+    specification; enter the Documents environment and submit `MaxOfSet.mch'
+    for document mark-up (dmu). Provided you have correctly set the
+    Documents Options for the Dvi Screen Viewer you may view the file
+    (shw), and if the Dvi Print Script has been set the file may be
+    sent to a printer (prt).
+
+12. Now return to the Main Environment and open the implementation
+    `MaxOfSetI.imp' for inspection.
+
+13. Submit `MaxOfSetI.imp' for analysis (anl); notice how `MAX_Nvar'
+    and `Bool_TYPE' are automatically introduced from the system library
+    (if they are not already present - it is also possible to
+    introduce them manually though the ToolBar Introduce option
+    `Introduce construct from SLIB' when rename prefixes are prompted
+    for, where required).
+
+14. We may now see the way in which hypertext versions of AMN constructs
+    have been automatically created as we have been constructing the
+    development by clicking on the ToolBar Hypertext button and selecting
+    the `Summary Page' (check that the Hypertext Viewer in the
+    Editors/Viewers of the TopBar Options is appropriately set first);
+    it is now possible to navigate through the entire development.
+
+15. We may also view our design in picture form -  click on the ToolBar
+    Overview button and select `Design Overview' when the (very, very
+    simple!) design will be displayed. Clicking on, for example, `MaxOfSetI'
+    will give a more detailed view of that construct.
+
+16. Generate the proof obligations for `MaxOfSetI.imp' (pog) - 6 are
+    generated.
+
+17. Enter the Provers Environment and conduct 3 levels of AutoProof (apr);
+    3 are discharged at level 0, 1 at level 1 and the remaining 2 at level
+    2. The last level requires user-provided theory (Demonstration 2
+    illustrates the way in which this theory may be developed); this is
+    reflected when the proofs are printed (ppf).
+
+18. We may now check that our design can be translated by entering the
+    Translators Environment and translating (trl), when a code module
+    will be created.
+
+19. To execute this code, we now enter the Generators Environment and
+    first open the interface `MaxOfSet.itf'; this file is automatically
+    introduced from the ToolBar Introduce option `Introduce new construct'
+    and `Interface of implemented machine' selected; all we have done is
+    to provide the parameter value of 1000000!
+
+20. Next check the setting for the interface (TopBar Options - Interface);
+    if you have Motif installed you should use the setting `Motif' when a
+    push-button interface is created, otherwise set it to `Non-Motif'
+    when a teletype interface will be built on the system library. Now
+    generate the interface (itf). If the Motif interface does not compile
+    properly, it may be necessary to change the `X Link Libraries' setting
+    of the Translators/Compilers Options; it may also be necessary to
+    use the `-I' flag (add directory for include files) in the 
+    `C Compiler/Flags' setting. See the on-line help for Options
+    for a full description.
+
+21. When complete, enter the Translators Environment again and run the
+    generated interface (run).
+
+22. We may now enter the Documents Environment to create a document of
+    the entire development. Fist check (and, if required, alter) the settings
+    in the TopBar Options for Documents, and then submit `Report.doc'
+    for mark-up (dmu) - all constructs contained in the document are
+    marked-up first if necessary. The document may then be viewed on screen
+    or sent to a printer provided the appropriate variables are set
+    (see above).
+
+23. Although this release does not allow edits to be committed, we can
+    simulate the effect of, for example, specification change by returning
+    to the Main Environment and resetting `MaxOfSet.mch' (rst); confirmation
+    is requested since there are (many!) dependent constructs (if the
+    machine had been edited, and the edits committed, confirmation would
+    have been required in exactly the same way). Confirm `Yes'.
+
+24. In order to rebuild the system, we can use the automatic remake facility,
+    but first check the settings in the ToolBar Options - Remake and edit
+    if required. Now request a remake trough the ToolBar Remake - select
+    `Remake all constructs' and de-select any jobs not required ... and
+    sit back and watch!

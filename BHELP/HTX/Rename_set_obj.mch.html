@@ -1,0 +1,383 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_set_obj">
+  <TITLE>The Rename_set_obj machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>           Rename_set_obj(VALUE,maxobj,maxmem)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>       maxobj&gt;0
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Rename_set_ctx.mch.html#MACHINE">Rename_set_ctx</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>         Rename_settok, Rename_setstruct, Rename_setord
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_settok <: <A HREF="Rename_set_ctx.mch.html#SETS">Rename_SETOBJ</A> &
+  Rename_setstruct: Rename_settok --&gt; FIN(VALUE) &
+  Rename_setord: Rename_settok --&gt; seq(VALUE) &
+  !rx.(
+    rx:Rename_settok =&gt; Rename_setord(rx) : perm(Rename_setstruct(rx))
+    )
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_settok, Rename_setstruct, Rename_setord := {},{},{}
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/**************** General Query functions ***********************/
+
+  bb <-- <A NAME="OPNAME!Rename_MEM_FUL_SET_OBJ">Rename_MEM_FUL_SET_OBJ</A> =
+  <B>BEGIN</B>
+    bb::<A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+  <B>END</B>;
+
+  
+
+bb <-- <A NAME="OPNAME!Rename_OBJ_FUL_SET_OBJ">Rename_OBJ_FUL_SET_OBJ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(card(Rename_settok) = maxobj)
+  <B>END</B>;
+
+  pp <-- <A NAME="OPNAME!Rename_ANY_SET_OBJ">Rename_ANY_SET_OBJ</A> =
+  <B>BEGIN</B>
+    pp :: <A HREF="Rename_set_ctx.mch.html#SETS">Rename_SETOBJ</A>
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_XST_SET_OBJ">Rename_XST_SET_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: <A HREF="Rename_set_ctx.mch.html#SETS">Rename_SETOBJ</A>
+  <B>THEN</B>
+    bb:=<B>bool</B>(pp:Rename_settok)
+  <B>END</B>;
+
+
+/************ Operations for introducing and deleting sets **********/
+
+
+  <A NAME="OPNAME!Rename_INI_SET_OBJ">Rename_INI_SET_OBJ</A> =
+  <B>BEGIN</B>
+    Rename_settok, Rename_setstruct, Rename_setord := {},{},{}
+  <B>END</B>;
+
+  bb,pp <-- <A NAME="OPNAME!Rename_CRE_SET_OBJ">Rename_CRE_SET_OBJ</A> =
+  <B>IF</B> card(Rename_settok) < maxobj <B>THEN</B>
+      <B>ANY</B> qq <B>WHERE</B>
+        qq: <A HREF="Rename_set_ctx.mch.html#SETS">Rename_SETOBJ</A> - Rename_settok
+      <B>THEN</B>
+        Rename_setstruct(qq):={} ||
+        Rename_setord(qq):=<> ||
+        Rename_settok := Rename_settok \/ {qq} ||
+        pp:=qq ||
+        bb := TRUE
+      <B>END</B>
+  <B>ELSE</B>
+      bb:= FALSE || pp :: <A HREF="Rename_set_ctx.mch.html#SETS">Rename_SETOBJ</A>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_KIL_SET_OBJ">Rename_KIL_SET_OBJ</A>(qq) =
+  <B>PRE</B>
+    qq: Rename_settok
+  <B>THEN</B>
+    Rename_setstruct := {qq} &lt;<| Rename_setstruct ||
+    Rename_setord := {qq} &lt;<| Rename_setord ||
+    Rename_settok := Rename_settok - {qq}
+  <B>END</B>;
+
+
+
+/************ Accessing a set using ordinal number *****************/
+
+
+  bb <-- <A NAME="OPNAME!Rename_XST_ORD_SET_OBJ">Rename_XST_ORD_SET_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp: Rename_settok &
+    ii: NAT
+  <B>THEN</B>
+    bb:=<B>bool</B>(ii:1.. card(Rename_setstruct(pp)))
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_SET_OBJ">Rename_VAL_SET_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp: Rename_settok &
+    ii: 1.. card(Rename_setstruct(pp))
+  <B>THEN</B>
+    vv:=Rename_setord(pp)(ii)
+  <B>END</B>;
+
+
+
+
+/************* Operations for individual sets *********************/
+
+
+
+  <A NAME="OPNAME!Rename_CLR_SET_OBJ">Rename_CLR_SET_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_settok
+  <B>THEN</B>
+    Rename_setstruct(pp):={}||
+    Rename_setord(pp):=<>
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_UNION_SET_OBJ">Rename_UNION_SET_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+    ss: Rename_settok &
+    tt: Rename_settok
+  <B>THEN</B>
+    <B>CHOICE</B>
+      Rename_setstruct(ss) := Rename_setstruct(ss) \/ Rename_setstruct(tt) ||
+      <B>ANY</B> xx <B>WHERE</B>
+        xx : seq(VALUE) &
+        xx:perm(Rename_setstruct(ss) \/ Rename_setstruct(tt))
+      <B>THEN</B>      
+        Rename_setord(ss) := xx
+      <B>END</B>  ||
+      bb:=TRUE
+    <B>OR</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_DIFF_SET_OBJ">Rename_DIFF_SET_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+    ss: Rename_settok &
+    tt: Rename_settok
+  <B>THEN</B>
+    Rename_setstruct(ss) := Rename_setstruct(ss) - Rename_setstruct(tt) ||
+    <B>ANY</B> xx <B>WHERE</B>
+        xx : seq(VALUE) &
+      xx:perm(Rename_setstruct(ss) - Rename_setstruct(tt))
+    <B>THEN</B>      
+      Rename_setord(ss) := xx
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_INTER_SET_OBJ">Rename_INTER_SET_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+    ss: Rename_settok &
+    tt: Rename_settok
+  <B>THEN</B>
+    Rename_setstruct(ss) := Rename_setstruct(ss) /\ Rename_setstruct(tt) ||
+    <B>ANY</B> xx <B>WHERE</B>
+        xx : seq(VALUE) &
+      xx:perm(Rename_setstruct(ss) /\ Rename_setstruct(tt))
+    <B>THEN</B>      
+      Rename_setord(ss) := xx
+    <B>END</B>
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_ENT_SET_OBJ">Rename_ENT_SET_OBJ</A>(ss,vv) =
+  <B>PRE</B>
+    ss: Rename_settok &
+    vv: VALUE
+  <B>THEN</B>
+    <B>CHOICE</B>
+      Rename_setstruct(ss) := Rename_setstruct(ss) \/ {vv} ||
+      <B>ANY</B> xx <B>WHERE</B>
+        xx : seq(VALUE) &
+        xx:perm(Rename_setstruct(ss) \/ {vv})
+        <B>THEN</B>      
+      Rename_setord(ss) := xx
+      <B>END</B> ||
+      bb:=TRUE
+    <B>OR</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RMV_SET_OBJ">Rename_RMV_SET_OBJ</A>(ss,vv) =
+  <B>PRE</B>
+    ss: Rename_settok &
+    vv: VALUE
+  <B>THEN</B>
+    Rename_setstruct(ss) := Rename_setstruct(ss) - {vv} ||
+    <B>ANY</B> xx <B>WHERE</B>
+      xx : seq(VALUE) &
+      xx:perm(Rename_setstruct(ss) -{vv})
+    <B>THEN</B>      
+      Rename_setord(ss) := xx
+    <B>END</B>
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_CPY_SET_OBJ">Rename_CPY_SET_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_settok &
+    qq:Rename_settok
+  <B>THEN</B>
+    <B>CHOICE</B>
+      Rename_setstruct(qq):=Rename_setstruct(pp) ||
+      Rename_setord(qq):=Rename_setord(pp) ||
+      bb:=TRUE
+    <B>OR</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+
+
+/**************** Query functions for individual sets **************/
+
+
+  bb <-- <A NAME="OPNAME!Rename_EMP_SET_OBJ">Rename_EMP_SET_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_settok
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_setstruct(pp)={})
+  <B>END</B>;
+
+
+  nn <-- <A NAME="OPNAME!Rename_CRD_SET_OBJ">Rename_CRD_SET_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_settok
+  <B>THEN</B>
+    nn:=card(Rename_setstruct(pp))
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_INCL_SET_OBJ">Rename_INCL_SET_OBJ</A>(tt,ss) =
+  <B>PRE</B>
+    ss: Rename_settok &
+    tt: Rename_settok
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_setstruct(tt) &lt;: Rename_setstruct(ss))
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_MBR_SET_OBJ">Rename_MBR_SET_OBJ</A>(ss,vv) =
+  <B>PRE</B>
+    ss: Rename_settok &
+    vv: VALUE
+  <B>THEN</B>
+    bb:=<B>bool</B>(vv: Rename_setstruct(ss))
+  <B>END</B>;
+
+
+/************** Persistent data facilities *************************/
+
+/***********  save/restore host byte order ***********/
+
+ <A NAME="OPNAME!Rename_SAV_SET_OBJ">Rename_SAV_SET_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RST_SET_OBJ">Rename_RST_SET_OBJ</A> =
+  <B>ANY</B>
+    ssetn,sseto,ssetord
+  <B>WHERE</B>
+    ssetn <: <A HREF="Rename_set_ctx.mch.html#SETS">Rename_SETOBJ</A> &
+    sseto: ssetn --&gt; FIN(VALUE) &
+    ssetord: ssetn --&gt; seq(VALUE) &
+    !pp.(pp:ssetn =&gt; ssetord(pp) : perm(sseto(pp)))
+  <B>THEN</B>
+    Rename_setstruct := sseto ||
+    Rename_settok := ssetn ||
+    Rename_setord := ssetord
+  <B>END</B>;
+
+/***********  save/restore network byte order ***********/
+
+ <A NAME="OPNAME!Rename_SAVN_SET_OBJ">Rename_SAVN_SET_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RSTN_SET_OBJ">Rename_RSTN_SET_OBJ</A> =
+  <B>ANY</B>
+    ssetn,sseto,ssetord
+  <B>WHERE</B>
+    ssetn <: <A HREF="Rename_set_ctx.mch.html#SETS">Rename_SETOBJ</A> &
+    sseto: ssetn --&gt; FIN(VALUE) &
+    ssetord: ssetn --&gt; seq(VALUE) &
+    !pp.(pp:ssetn =&gt; ssetord(pp) : perm(sseto(pp)))
+  <B>THEN</B>
+    Rename_setstruct := sseto ||
+    Rename_settok := ssetn ||
+    Rename_setord := ssetord
+  <B>END</B>;
+
+/********************** Browsing facilities ************************/
+
+
+  nn,pp <-- <A NAME="OPNAME!Rename_FIRST_SET_OBJ">Rename_FIRST_SET_OBJ</A> =  
+  <B>IF</B> not(Rename_settok = {}) <B>THEN</B>
+     pp :: Rename_settok || 
+     nn := card(Rename_settok) 
+  <B>ELSE</B>
+     pp :: <A HREF="Rename_set_ctx.mch.html#SETS">Rename_SETOBJ</A> ||
+     nn := 0
+  <B>END</B>;
+
+  nn,qq <-- <A NAME="OPNAME!Rename_NEXT_SET_OBJ">Rename_NEXT_SET_OBJ</A>(mm,pp) = 
+  <B>PRE</B>
+    pp : Rename_settok &
+    mm : NAT1
+  <B>THEN</B>
+    nn := mm-1 ||
+    qq :: Rename_settok
+  <B>END</B>;
+
+/********************** Input Output facilities ************************/
+
+
+  <A NAME="OPNAME!Rename_OUTPUT_SET_OBJ">Rename_OUTPUT_SET_OBJ</A>(SS,pp) =  
+  <B>PRE</B>
+    SS &lt;: VALUE &
+    pp: Rename_settok
+  <B>THEN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_INPUT_SET_OBJ">Rename_INPUT_SET_OBJ</A>(SS,pp,ll) = 
+  <B>PRE</B>
+    SS &lt;: VALUE &
+    pp: Rename_settok &
+    ll: 1..250
+  <B>THEN</B>
+    <B>CHOICE</B>
+      <B>ANY</B> ss,pss <B>WHERE</B>
+        ss &lt;: VALUE &
+        pss : seq(VALUE) &
+        pss : perm(ss \/ Rename_setstruct(pp)) 
+      <B>THEN</B>      
+        Rename_setstruct(pp) := ss \/ Rename_setstruct(pp) ||
+        Rename_setord(pp) := pss ||
+        bb := TRUE
+      <B>END</B> 
+    <B>OR</B>
+      bb := FALSE
+    <B>END</B>
+  <B>END</B>
+
+<B>END</B>
+
+/*" \newpage "*/
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:59 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

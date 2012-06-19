@@ -1,0 +1,64 @@
+IMPLEMENTATION
+
+  RRRManI
+
+REFINES
+
+  RRRMan
+
+IMPORTS
+
+  RRMan(MYRESOURCE, 100),
+  Bool_TYPE
+
+PROPERTIES
+
+  MYRESOURCE = 1..100
+
+INITIALISATION
+
+  VAR nn IN
+    nn := 0;
+    WHILE  nn < 100 DO
+      nn := nn + 1;
+      rec_free(nn)
+    INVARIANT
+      rfree = 1..nn & nn : NAT & nn <= 100
+    VARIANT
+      100 - nn
+    END;
+    rec_backup
+  END
+
+OPERATIONS
+
+ rr,resp <-- allocate =
+   VAR ans IN
+     ans <-- is_any_free;
+     IF ans = TRUE
+     THEN
+       resp := success;
+       rr <-- rec_alloc
+     ELSE
+       resp := nomorefree;
+       rr := 1
+     END
+   END;
+
+ resp <-- deallocate(rr)  =
+   VAR ans IN
+     ans <-- is_free(rr);
+     IF ans = FALSE
+     THEN
+       rec_free(rr);
+       resp := success
+     ELSE
+       resp := alreadyfree
+     END
+   END;
+
+ backup  = rec_backup;
+
+ restore  = rec_restore
+
+END

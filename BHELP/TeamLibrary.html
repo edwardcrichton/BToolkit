@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<TITLE>The Team Library</TITLE>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
+<A NAME=Team_Library><HR></A>
+<H1>The Team Library (TLIB)</H1>
+
+This facility parallels that of the 
+<A HREF="SystemLibrary.html#System_Library">System Library (SLIB</A>) 
+and enables
+members of a team to create a library into which they may export a
+(sub) development, and from which they may 
+<A HREF="Structuring.html#IMPORTS_Clause!Using">import</A> 
+a development.
+<P>
+
+<H2>Making a New Project Team Library</H2>
+<OL>
+  <LI> Create an empty directory (with appropriate name)
+     (e.g. some-path/BTeamLib); all team members must have
+     read/write permission to the directory.
+
+ <LI> Make the directory into a B development directory by
+     invoking the B-Toolkit from within the new directory.
+     Leave the development empty.
+
+ <LI> The team member who will be working on sub-developments
+     within the team must set the 
+     <A HREF="Options.html#Options!Teamlib">Teamlib</A>
+     value of the <A HREF="Options.html#Options">Options</A>, e.g.  
+</OL>
+The team library is now ready for use.
+
+<P>
+<H2>Exporting Developments to the Team Library:</H2>
+
+This facility is available under Utilities, enabling a user to export
+a completed (sub) development from their directory to that of the
+current team library;
+<A HREF="Options.html#Options!Teamlib">Teamlib</A>
+must be set.
+<P>
+A completed development is a single 
+<A HREF="AMNotation.html#MACHINE">MACHINE</A> 
+for which an
+<A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A> 
+is written and a binary code module exists (see 
+<A HREF="Translator.html#Translator">Translator</A> 
+for getting binary code modules from IMPLEMENTATIONS).
+<P>
+A warning will be given if the MACHINE 
+<A HREF="Structuring.html#SEES_Clause!Using">SEES</A> 
+other MACHINES. This can
+be ignored unless the intention is that the seen machine should be a
+non-sharable module private to the exported sub-development, in which
+case the seen module should be 
+<A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTED</A> 
+into the sub-development that
+is being exported.
+<P>
+Exported developments appear as library machines within the team
+library. The library machines can be used directly within the team
+library or can be committed into other B developments within the same
+team.
+<P>
+<H2>Committing Developments from the Team Library:</H2>
+
+TLIB constructs may be introduced to a development through
+<A HREF="Introduce.html#Introduce">Introduce</A>. If a TLIB construct
+<A HREF="Structuring.html#SEES_Clause!Using">SEES</A> 
+other MACHINES, a warning will be issued that these constructs should
+subsequently be introduced into the importing environment.
+
+<P>
+Each committed TLIB
+MACHINE is, of course,
+<A HREF="Animator.html">animatable</A>.
+
+<P>
+<HR WIDTH="60%">
+<P>
+<P><CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25  ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

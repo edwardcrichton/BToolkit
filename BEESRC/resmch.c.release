@@ -1,0 +1,302 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+int level_res,key_res,col_ctr_res,pre_res,
+max_col_res,writing_res,skip_res,short_res,
+rev_vid_res,MAX_COL_RES,old_MAX_COL_RES;
+/* 
+int level_ext_res,key_ext_res,col_ctr_ext_res,pre_ext_res,
+max_col_ext_res,writing_ext_res,skip_ext_res,short_ext_res,
+rev_vid_ext_res;
+ */
+/*  define MAX_COL_RES    50  */
+
+#define mod_MAX_COL_RES(n)      MAX_COL_RES=n
+
+#define save_MAX_COL_RES        old_MAX_COL_RES=MAX_COL_RES
+
+#define restore_MAX_COL_RES     MAX_COL_RES=old_MAX_COL_RES
+
+#define ini_res                 MAX_COL_RES=60
+  reset_res(l)
+  {register int k ;
+    skip_res=FALSE;
+    short_res=FALSE;
+    itrn( k , 1 , l , {
+      fprintf ( bstdout, " ")
+   ;});
+    pre_res=l;
+    col_ctr_res=pre_res+1;
+  }
+
+  newl_res(l)
+  {register int k ;
+    if( rev_vid_res==TRUE ){
+      write_erv_res;
+    };
+    if( short_res==TRUE ){
+      fprintf ( bstdout, " ...");
+      skip_res=TRUE;
+    } else {
+      fprintf ( bstdout, "\n");
+      itrn( k , 1 , pre_res , {
+        fprintf ( bstdout, " ")
+     ;});
+      itrn( k , 1 , l , {
+        fprintf ( bstdout, " ")
+     ;});
+      col_ctr_res=pre_res+l+1;
+    };
+    if( rev_vid_res==TRUE ){
+      write_srv_res;
+    };
+  }
+
+  writeln_resfunc()
+#define writeln_res writeln_resfunc()
+  {
+    newl_res(0);
+  }
+
+  write_blk_res(l)
+  {register int i ;
+    if( skip_res==FALSE ){
+      itrn( i , 1 , l , {
+        fprintf ( bstdout, " ")
+     ;});
+      col_ctr_res=col_ctr_res+l;
+    };
+  }
+
+  write_tab_resfunc()
+#define write_tab_res write_tab_resfunc()
+  {
+    write_blk_res(MAX_COL_RES-col_ctr_res+1);
+}
+
+  len_stri_res(s)
+  {register int len_stri_res_res ;
+    if( s<0 ){
+      len_stri_res_res=len_nat(0-s);
+    } else if( s<=127 ){
+      len_stri_res_res=1;
+    } else {
+      len_stri_res_res=len_str(stri_sym(s));
+    }
+  ; return len_stri_res_res;
+  }
+
+  write_num_res(n)
+  {register int l ;
+    if( skip_res==FALSE ){
+      l=len_nat(n);
+      if( l+col_ctr_res>MAX_COL_RES ){
+        newl_res(level_res);
+      };
+      if( skip_res==FALSE ){
+        col_ctr_res=col_ctr_res+l;
+        write_nat(n)                         ;
+      };
+    };
+  }
+
+  write_chr_res(s)
+  {
+    if( skip_res==FALSE ){
+      if( 1+col_ctr_res>MAX_COL_RES ){
+        newl_res(level_res);
+      };
+      if( skip_res==FALSE ){
+        col_ctr_res=col_ctr_res+1;
+        putc(s, bstdout);
+      };
+    };
+  }
+
+  write_stri_res(s)
+  {register int l ;
+    if( skip_res==FALSE ){
+      l=len_stri_res(s);
+      if( l+col_ctr_res>MAX_COL_RES ){
+        newl_res(level_res);
+      };
+      if( skip_res==FALSE ){
+        col_ctr_res=col_ctr_res+l;
+        if( s<=0 ){
+          write_nat(0-s);
+        } else if( s<=127 ){
+          putc(s, bstdout);
+        } else {
+           write_str(stri_sym(s))         ;
+        };
+      };
+    };
+  }
+
+  write_res(s)
+  {register int c,k ;
+    c=lexi_sym(s);
+    k=edit_sym(s);
+    if( k==keyt ){
+      level_res=level_res-2;
+      newl_res(level_res)        ;
+    } else if( (k==keyw) || (k==keyl) ){
+      if( c==bin ){
+        if( key_res==TRUE ){
+          write_blk_res(1);
+        } else {
+          newl_res(level_res-2);
+        };
+      } else if( c==opn ){
+        if( level_res==0 ){
+          if( col_ctr_res+30 > MAX_COL_RES ){
+            newl_res(0);
+          };
+          pre_res=col_ctr_res-1;
+        };
+      };
+    } else if( (k==blkb) || (k==blba) || (k==blbt) || (k==bbat) || (s==SRV_sym) || (s==ERV_sym) ){
+      write_blk_res(1);
+    }
+
+    if( s==SRV2_sym ){
+      write_srv_res;
+      rev_vid_res=TRUE;
+    } else if( s==ERV2_sym ){
+      write_erv_res;
+      rev_vid_res=FALSE;
+    } else if( k!=voyd ){  
+      write_stri_res(s);
+    }
+
+    if( k==keyw ){
+      if( c==opn ){
+        level_res=level_res+2;
+      };
+      key_res=TRUE;
+      write_blk_res(1);
+    } else if( k==keyl ){
+      if( c==opn ){
+        level_res=level_res+2;
+      };
+      key_res=FALSE;
+      newl_res(level_res);
+    } else if( (k==term) || (k==blbt) || (k==blat) || (k==bbat) ){
+      if( (level_res==0) || (key_res==TRUE) ){
+        if( ((k==blat) || (k==bbat)) ){
+          write_blk_res(1);
+        };
+      } else {
+        newl_res(level_res);
+      };
+    } else if( (k==blba) || (k==blka) || (s==SRV_sym) || (s==ERV_sym)){
+      write_blk_res(1);
+    }
+  ;
+}
+
+   
+  unp0_res(v)
+  {
+    write_res(v);
+  }
+
+  unp1_res(v,t,i)
+  {register int w ;
+    w=val_tree(t,left_node_tree(t,i));
+    if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
+      if( prio_sym(v) > prio_sym(w) ){
+        write_res(ord('('));
+      };
+    };
+  }
+
+  unp2_res(v,t,i)
+  {register int w ;
+    w=val_tree(t,left_node_tree(t,i));
+    if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
+      if( prio_sym(v) > prio_sym(w) ){
+        write_res(ord(')'));
+      };
+    };
+    write_res(v);
+    w=val_tree(t,right_node_tree(t,i));
+    if( (v==EVL_sym) && (w==ord('[')) ){
+      {};
+    } else if( ((v==EVL_sym) || ((lexi_sym(v)==unr) && (v>127))) && (lexi_sym(w)==atm) ){
+      write_res(ord('('));
+    } else if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
+      if( prio_sym(v)>=prio_sym(w)+righ_sym(w) ){
+        write_res(ord('('));
+      };
+    };
+  }
+
+unp3_res(v,t,i)
+{register int w ;
+  if( lexi_sym(v)==opn ){
+    write_res(clos_sym(v));
+  } else {
+    w=val_tree(t,right_node_tree(t,i));
+    if( (v==EVL_sym) && (w==ord('[')) ){
+      {};
+    } else if( ((v==EVL_sym) || ((lexi_sym(v)==unr) && (v>127))) && (lexi_sym(w)==atm) ){
+      write_res(ord(')'));
+    } else if( ari_sym(w)==2 ){
+      if( prio_sym(v)>=prio_sym(w)+righ_sym(w) ){
+        write_res(ord(')'));
+      };
+    };
+  };
+}
+
+  unparse_res(t,n)
+  {register int i,v ;
+    itr_tree(t,n,i,v,if( skip_res==FALSE ){ unp0_res(v) ;},
+                     if( skip_res==FALSE ){ unp1_res(v,t,i) ;},
+                     if( skip_res==FALSE ){ unp2_res(v,t,i) ;},
+                     if( skip_res==FALSE ){ unp3_res(v,t,i);});
+  }
+
+  write_tree_res(t,n,v,r)
+  {
+    rev_vid_res=r;
+    skip_res=FALSE;
+    short_res=FALSE;
+    pre_res=v;
+    level_res=0;
+    key_res=FALSE;
+    unparse_res(t,n);
+  }
+
+  write_short_tree_res(t,n,v,r)
+  {
+    rev_vid_res=r;
+    skip_res=FALSE;
+    short_res=TRUE;
+    pre_res=v;
+    level_res=0;
+    key_res=FALSE;
+    unparse_res(t,n);
+  }
+
+  
+
+#define write_frm_res(f,n) write_tree_res(f,root_tree(f),n,FALSE)
+
+#define write_short_frm_res(f,n) write_short_tree_res(f,root_tree(f),n,FALSE)

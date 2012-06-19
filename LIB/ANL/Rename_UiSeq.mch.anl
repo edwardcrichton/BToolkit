@@ -1,0 +1,544 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Uns_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_seq)
+;
+(Rename_seq)
+;
+(Rename_seq : seq(VALUE) & size(Rename_seq) <= maxlen)
+;
+(Rename_seq : seq(VALUE) & size(Rename_seq) <= maxlen)
+;
+(?)
+;
+(Rename_seq := <>)
+;
+(Rename_seq := <>)
+;
+(Rename_UiSeq_FULL,Rename_UiSeq_IDX,Rename_UiSeq_LEN,Rename_UiSeq_FRST,Rename_UiSeq_LAST,Rename_UiSeq_VAL,Rename_UiSeq_CLR,Rename_UiSeq_FILL,Rename_UiSeq_STO,Rename_UiSeq_INS,Rename_UiSeq_SWP,Rename_UiSeq_PUSH,Rename_UiSeq_APP,Rename_UiSeq_POP,Rename_UiSeq_FRONT,Rename_UiSeq_DEL,Rename_UiSeq_RTN,Rename_UiSeq_RMV)
+;
+(Rename_UiSeq_FULL , Rename_UiSeq_IDX , Rename_UiSeq_LEN , Rename_UiSeq_FRST , Rename_UiSeq_LAST , Rename_UiSeq_VAL , Rename_UiSeq_CLR , Rename_UiSeq_FILL , Rename_UiSeq_STO , Rename_UiSeq_INS , Rename_UiSeq_SWP , Rename_UiSeq_PUSH , Rename_UiSeq_APP , Rename_UiSeq_POP , Rename_UiSeq_FRONT , Rename_UiSeq_DEL , Rename_UiSeq_RTN , Rename_UiSeq_RMV)
+;
+(Rename_UiSeq(VALUE , maxlen):(maxlen > 0 & maxlen < 32768 & maxlen : NAT & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_UiSeq_FULL)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_UiSeq_FULL))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(size(Rename_seq) = maxlen)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(size(Rename_seq) = maxlen))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_IDX)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_UiSeq_IDX(idx)))
+;
+ (idx)
+;
+ (bb)
+;
+ (
+ (idx : UNSIGNED)
+ |
+ (
+ (BEGIN
+ bb := bool(u2n(idx) : 1..size(Rename_seq))
+ END)
+ )
+ )
+;
+ (
+ (idx : UNSIGNED)
+ |
+ (
+ (bb := bool(u2n(idx) : 1..size(Rename_seq)))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_LEN)
+;
+ (? , Val_Op , Det_Op , (ll <-- Rename_UiSeq_LEN))
+;
+ (?)
+;
+ (ll)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ ll := n2u(size(Rename_seq))
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (ll := n2u(size(Rename_seq)))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_FRST)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_UiSeq_FRST))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (size(Rename_seq) > 0)
+ |
+ (
+ (vv := Rename_seq(1))
+ )
+ )
+;
+ (
+ (0 < size(Rename_seq))
+ |
+ (
+ (vv := Rename_seq(1))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_LAST)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_UiSeq_LAST))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (size(Rename_seq) > 0)
+ |
+ (
+ (vv := Rename_seq(size(Rename_seq)))
+ )
+ )
+;
+ (
+ (0 < size(Rename_seq))
+ |
+ (
+ (vv := Rename_seq(size(Rename_seq)))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_UiSeq_VAL(idx)))
+;
+ (idx)
+;
+ (vv)
+;
+ (
+ (idx : UNSIGNED & u2n(idx) : 1..size(Rename_seq))
+ |
+ (
+ (vv := Rename_seq(u2n(idx)))
+ )
+ )
+;
+ (
+ (idx : UNSIGNED & u2n(idx) : 1..size(Rename_seq))
+ |
+ (
+ (vv := Rename_seq(u2n(idx)))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_CLR)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_CLR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_seq := <>
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_seq := <>)
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_FILL)
+;
+ (? , Val_Op , NonDet_Op , Rename_UiSeq_FILL(len , vv))
+;
+ (len , vv)
+;
+ (?)
+;
+ (
+ (len : UNSIGNED & vv : VALUE & Rename_seq = <> & u2n(len) : 1..32767)
+ |
+ (
+ (Rename_seq : (Rename_seq : seq(VALUE) & card(Rename_seq) = u2n(len) & ran(Rename_seq) = {vv}))
+ )
+ )
+;
+ (
+ (len : UNSIGNED & vv : VALUE & Rename_seq = <> & u2n(len) : 1..32767)
+ |
+ (
+ @(Rename_seqx).
+ (
+ (
+ (Rename_seqx : seq(VALUE) & card(Rename_seqx) = u2n(len) & ran(Rename_seqx) = {vv})
+ )
+ ==>
+ (
+ (Rename_seq := Rename_seqx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_STO(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : UNSIGNED & vv : VALUE & u2n(idx) : 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq(u2n(idx)) := vv)
+ )
+ )
+;
+ (
+ (idx : UNSIGNED & vv : VALUE & u2n(idx) : 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq <+ {u2n(idx) |-> vv})
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_INS)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_INS(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : UNSIGNED & vv : VALUE & size(Rename_seq) < maxlen & u2n(idx) : 2..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq /|\ u2n(idx)-1 ^ [vv] ^ Rename_seq \|/ u2n(idx)-1)
+ )
+ )
+;
+ (
+ (idx : UNSIGNED & vv : VALUE & size(Rename_seq) < maxlen & u2n(idx) : 2..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq /|\ u2n(idx)-1 ^ [vv] ^ Rename_seq \|/ u2n(idx)-1)
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_SWP)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_SWP(idx1 , idx2))
+;
+ (idx1 , idx2)
+;
+ (?)
+;
+ (
+ (idx1 : UNSIGNED & idx2 : UNSIGNED & u2n(idx1) : 1..size(Rename_seq) & u2n(idx2) : 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq <+ {u2n(idx1) |-> Rename_seq(u2n(idx2)) , u2n(idx2) |-> Rename_seq(u2n(idx1))})
+ )
+ )
+;
+ (
+ (idx1 : UNSIGNED & idx2 : UNSIGNED & u2n(idx1) : 1..size(Rename_seq) & u2n(idx2) : 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq <+ {u2n(idx1) |-> Rename_seq(u2n(idx2)) , u2n(idx2) |-> Rename_seq(u2n(idx1))})
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_PUSH)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_PUSH(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE & size(Rename_seq) < maxlen)
+ |
+ (
+ (Rename_seq := vv -> Rename_seq)
+ )
+ )
+;
+ (
+ (vv : VALUE & size(Rename_seq) < maxlen)
+ |
+ (
+ (Rename_seq := vv -> Rename_seq)
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_APP)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_APP(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : VALUE & size(Rename_seq) < maxlen)
+ |
+ (
+ (Rename_seq := Rename_seq <- vv)
+ )
+ )
+;
+ (
+ (vv : VALUE & size(Rename_seq) < maxlen)
+ |
+ (
+ (Rename_seq := Rename_seq <- vv)
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_POP)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_POP)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (size(Rename_seq) > 0)
+ |
+ (
+ (Rename_seq := tail(Rename_seq))
+ )
+ )
+;
+ (
+ (0 < size(Rename_seq))
+ |
+ (
+ (Rename_seq := tail(Rename_seq))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_FRONT)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_FRONT)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (size(Rename_seq) > 0)
+ |
+ (
+ (Rename_seq := front(Rename_seq))
+ )
+ )
+;
+ (
+ (0 < size(Rename_seq))
+ |
+ (
+ (Rename_seq := front(Rename_seq))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_DEL)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_DEL(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx : UNSIGNED & size(Rename_seq) > 0 & u2n(idx) : 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq /|\ u2n(idx)-1 ^ Rename_seq \|/ u2n(idx))
+ )
+ )
+;
+ (
+ (idx : UNSIGNED & 0 < size(Rename_seq) & u2n(idx) : 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq /|\ u2n(idx)-1 ^ Rename_seq \|/ u2n(idx))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_RTN)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_RTN(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx : UNSIGNED & u2n(idx) : 0..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq /|\ u2n(idx))
+ )
+ )
+;
+ (
+ (idx : UNSIGNED & u2n(idx) : 0..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq /|\ u2n(idx))
+ )
+ )
+)
+,
+(
+ (Rename_UiSeq_RMV)
+;
+ (? , Mod_Op , Det_Op , Rename_UiSeq_RMV(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx : UNSIGNED & u2n(idx) : 0..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq \|/ u2n(idx))
+ )
+ )
+;
+ (
+ (idx : UNSIGNED & u2n(idx) : 0..size(Rename_seq))
+ |
+ (
+ (Rename_seq := Rename_seq \|/ u2n(idx))
+ )
+ )
+)
+)

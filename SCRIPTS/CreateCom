@@ -1,0 +1,56 @@
+#! /bin/sh
+
+if [ "$1" = "sort" ]
+then
+  sort -o .BBcom .Bcom
+  mv -f .BBcom .Bcom
+  echo "?" >> .Bcom
+  exit
+fi
+
+curdir=`pwd`
+
+case $1 in
+  editSRC)
+    cd SRC
+    list=`ls *.mch *.ref *.imp *.bse *.enm *.itf *.doc 2> /dev/null`
+    ;;
+  anm)
+    cd SRC
+    list=`ls $2.*.anm 2> /dev/null`
+    ;;
+  editLIB)
+    cd $BKIT/BLIB/LIB/CFG
+    list=`ls *.mch 2> /dev/null`
+    ;;
+  editTLIB)
+    cd $BTEAMLIB/CFG
+    list=`ls *.mch 2> /dev/null`
+    ;;
+  help)
+    cd $BKIT/BHELP
+    list=`ls *.hlp 2> /dev/null`
+    ;;
+  palette)
+    cd $BKIT/BPALETTE
+    list=`ls *.pal 2> /dev/null`
+    ;;
+esac
+
+cd $curdir
+echo $list > .Bcom
+Bcomcts=`cat .Bcom`
+if [ "$Bcomcts" = "" ]
+then
+  echo "?" > .Bcom
+else
+sed s/" "/";"/g .Bcom > .BBcom
+mv -f .BBcom .Bcom
+fi
+
+
+if [ "$1" = "editLIB" ]
+then
+ sed s/"Rename_"/"Rename$"/g .Bcom > .BBcom
+mv -f .BBcom .Bcom
+fi

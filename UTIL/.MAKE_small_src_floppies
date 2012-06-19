@@ -1,0 +1,128 @@
+#! /bin/csh -f
+
+#
+#  Creates a floppy/floppies containing all
+#  src code and utilities for building a
+#  complete installation on a remote site
+#  but excluding DEMO's and HELP
+#
+#  Also permits build of WWW on remote site
+#
+
+source ../UTIL/set_compile_variables
+
+
+if ( $status != 0 ) then
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+echo "  Looking for core files ... "
+echo ""
+find .. -name core -print
+echo ""
+echo "  1  Continue"
+echo "  2  Abort"
+
+echo ""
+echo -n "** Number? "
+set answer=$<
+
+if ($answer == "2") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+cd ..
+
+if ( ! -d REMOTE_SITE_SRC_FLOPPIES ) then
+  mkdir REMOTE_SITE_SRC_FLOPPIES
+endif
+
+echo ""
+echo "  This script creates bkitsrc_small_$BT_VERSION "
+echo ""
+echo "  in: "
+echo ""
+echo "      `pwd`/REMOTE_SITE_SRC_FLOPPIES"
+echo ""
+
+echo ""
+echo "  1  Continue"
+echo "  2  Abort"
+
+echo ""
+echo -n "** Number? "
+set answer=$<
+
+if ($answer == "2") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+tar cvf REMOTE_SITE_SRC_FLOPPIES/bkitsrc_small_$BT_VERSION.tar \
+SRC/*.src SRC/*.thy SRC/AMNSYMBOL* SRC/SetOfRules SRC/Makefile \
+UTIL SCRIPTS LIB \
+LEX/*.lex \
+C/*.c C/*.h \
+C/BToolkitd_ClientServer/CDE/C/*.c \
+C/BToolkitd_ClientServer/CDE/C/*.g \
+C/BToolkitd_ClientServer/CDE/C/*.h \
+BPALETTE INSTALL_SCRIPTS \
+BEESRC/*.c  BEESRC/*.h \
+BEESRC/BTL_PRF/CDE/C/*.c \
+BEESRC/BTL_PRF/CDE/C/*.g \
+BEESRC/BTL_PRF/CDE/C/*.h \
+BEESRC/BTL_PRF/BTL_PRF_SAVE \
+BEESRC/*.B-Core BEESRC/*.motif BEESRC/*.release \
+BEESRC/SYMBOL BEESRC/BTool_Tutorial \
+MOTIF/*.c MOTIF/*.h  MOTIF/Makefile \
+MOTIF/BMotif.resources MOTIF/BMotif.resources.mono \
+MOTIF/CFG_DEP_BASE/CDE/C/*.c \
+MOTIF/CFG_DEP_BASE/CDE/C/*.g \
+MOTIF/CFG_DEP_BASE/CDE/C/*.h \
+MOTIF/CFG_DEP_BASE/CFG_DEP_BASE_SAVE \
+INFO/*.info \
+ERROR_LOG
+
+if ( $status != 0 ) then
+  echo ""
+  echo "  Make aborted (tar problem - see above)"
+  echo ""
+  ls -l
+  echo ""
+  exit ( 1 )
+endif
+
+cd REMOTE_SITE_SRC_FLOPPIES
+
+rm -f bkitsrc_small_$BT_VERSION*.gz
+rm -f bkitsrc_small_$BT_VERSION"_"*
+
+echo ""
+ls -l
+echo ""
+echo "  gzip -9 bkitsrc_small_$BT_VERSION.tar ... "
+echo ""
+gzip -9 bkitsrc_small_$BT_VERSION.tar
+if ( $status != 0 ) then
+  echo ""
+  echo "  Make aborted (gzip problem)"
+  echo ""
+  ls -l
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+ls -l
+
+echo ""
+echo "  Done"
+echo ""
+exit ( 0 )

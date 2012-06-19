@@ -1,0 +1,357 @@
+IMPLEMENTATION    DummyOpsI
+
+REFINES           DummyOps
+
+OPERATIONS
+
+
+  print_Globals_CfgDepBase = skip;
+
+  print_BaseObj_Construct = skip;
+
+  print_BaseObj_Abs2Conc = skip;
+
+  print_BaseObj_MRIState = skip;
+
+  print_BaseObj_GENState = skip;
+
+  print_BaseObj_Seqstr = skip;
+
+  print_BaseObj_String = skip;
+
+  
+
+  save_CfgDepBase = skip;
+
+  restore_CfgDepBase = skip;
+
+  save_n_CfgDepBase = skip;
+
+  restore_n_CfgDepBase = skip;
+
+  val_gset1 = skip;
+
+  card_gset1 = skip;
+
+  clear_gset1 = skip;
+
+  add_gset1 = skip;
+
+  del_gset1 = skip;
+
+  member_gset1 = skip;
+
+  union_gset1 = skip;
+
+  valOrd_gset1 = skip;
+
+  mod_gset1 = skip;
+
+  val_gset2 = skip;
+
+  card_gset2 = skip;
+
+  clear_gset2 = skip;
+
+  add_gset2 = skip;
+
+  del_gset2 = skip;
+
+  member_gset2 = skip;
+
+  union_gset2 = skip;
+
+  valOrd_gset2 = skip;
+
+  val_gset3 = skip;
+
+  card_gset3 = skip;
+
+  clear_gset3 = skip;
+
+  add_gset3 = skip;
+
+  del_gset3 = skip;
+
+  member_gset3 = skip;
+
+  mod_gset3 = skip;
+
+  valOrd_gset3 = skip;
+
+  union_gset3 = skip;
+
+  card_gset4 = skip;
+
+  clear_gset4 = skip;
+
+  add_gset4 = skip;
+
+  del_gset4 = skip;
+
+  member_gset4 = skip;
+
+  valOrd_gset4 = skip;
+
+  union_gset4 = skip;
+
+  inter_gset4 = skip;
+
+  card_gset5 = skip;
+
+  clear_gset5 = skip;
+
+  add_gset5 = skip;
+
+  del_gset5 = skip;
+
+  member_gset5 = skip;
+
+  valOrd_gset5 = skip;
+
+  length_gseq = skip;
+
+  clear_gseq = skip;
+
+  valIth_gseq = skip;
+
+  delIth_gseq = skip;
+
+  push_gseq = skip;
+
+  within_gseq = skip;
+
+  clear_flags = skip;
+
+  valIth_flags = skip;
+
+  modIth_flags = skip;
+
+  push_flags = skip;
+
+  make_Construct = skip;
+
+  kill_Construct = skip;
+
+  first_Construct = skip;
+
+  next_Construct = skip;
+
+  vld_Construct = skip;
+
+  nbr_Construct = skip;
+
+  xtr_name = skip;
+
+  mod_name = skip;
+
+  val_ext = skip;
+
+  val_type = skip;
+
+  cre_sees_uses = skip;
+
+  rem_sees_uses = skip;
+
+  def_sees_uses = skip;
+
+  val_sees_uses = skip;
+
+  card_sees_uses = skip;
+
+  member_sees_uses = skip;
+
+  mod_sees_uses = skip;
+
+  valOrd_sees_uses = skip;
+
+  cre_inc_ipt = skip;
+
+  rem_inc_ipt = skip;
+
+  def_inc_ipt = skip;
+
+  val_inc_ipt = skip;
+
+  card_inc_ipt = skip;
+
+  member_inc_ipt = skip;
+
+  mod_inc_ipt = skip;
+
+  valOrd_inc_ipt = skip;
+
+  cre_abs2conc = skip;
+
+  rem_abs2conc = skip;
+
+  def_abs2conc = skip;
+
+  val_abs2conc = skip;
+
+  cre_gen_by = skip;
+
+  def_gen_by = skip;
+
+  val_gen_by = skip;
+
+  eql_gen_by = skip;
+
+  cre_prf_level = skip;
+
+  def_prf_level = skip;
+
+  val_prf_level = skip;
+
+  cre_curMRIState = skip;
+
+  def_curMRIState = skip;
+
+  val_curMRIState = skip;
+
+  cre_cptMRIState = skip;
+
+  def_cptMRIState = skip;
+
+  val_cptMRIState = skip;
+
+  first_MRIState = skip;
+
+  next_MRIState = skip;
+
+  cre_curGENState = skip;
+
+  def_curGENState = skip;
+
+  val_curGENState = skip;
+
+  cre_cptGENState = skip;
+
+  def_cptGENState = skip;
+
+  val_cptGENState = skip;
+
+  first_GENState = skip;
+
+  next_GENState = skip;
+
+  make_Abs2Conc = skip;
+
+  kill_Abs2Conc = skip;
+
+  first_Abs2Conc = skip;
+
+  next_Abs2Conc = skip;
+
+  vld_Abs2Conc = skip;
+
+  length_a2c = skip;
+
+  last_a2c = skip;
+
+  valIth_a2c = skip;
+
+  pop_a2c = skip;
+
+  push_a2c = skip;
+
+  make_MRIState = skip;
+
+  kill_MRIState = skip;
+
+  val_anl = skip;
+
+  mod_anl = skip;
+
+  val_dmu = skip;
+
+  mod_dmu = skip;
+
+  val_trl = skip;
+
+  mod_trl = skip;
+
+  val_lnk = skip;
+
+  mod_lnk = skip;
+
+  length_pob = skip;
+
+  clear_pob = skip;
+
+  last_pob = skip;
+
+  valIth_pob = skip;
+
+  modIth_pob = skip;
+
+  pop_pob = skip;
+
+  push_pob = skip;
+
+  card_ppf = skip;
+
+  clear_ppf = skip;
+
+  add_ppf = skip;
+
+  del_ppf = skip;
+
+  member_ppf = skip;
+
+  valOrd_ppf = skip;
+
+  card_ppf_dmu = skip;
+
+  clear_ppf_dmu = skip;
+
+  add_ppf_dmu = skip;
+
+  del_ppf_dmu = skip;
+
+  member_ppf_dmu = skip;
+
+  valOrd_ppf_dmu = skip;
+
+  make_GENState = skip;
+
+  kill_GENState = skip;
+
+  val_gen1 = skip;
+
+  mod_gen1 = skip;
+
+  val_gen2 = skip;
+
+  mod_gen2 = skip;
+
+  val_gen_dmu = skip;
+
+  mod_gen_dmu = skip;
+
+  make_Seqstr = skip;
+
+  clear_seqstr = skip;
+
+  valIth_seqstr = skip;
+
+  push_seqstr = skip;
+
+  make_String = skip;
+
+  nbr_String = skip;
+
+  first_String = skip;
+
+  next_String = skip;
+
+  xtr_string = skip;
+
+  mod_string = skip;
+
+  first_Seqstr = skip;
+
+  next_Seqstr = skip
+
+
+END

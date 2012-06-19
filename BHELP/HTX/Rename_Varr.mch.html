@@ -1,0 +1,214 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Varr">
+  <TITLE>The Rename_Varr machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>         Rename_Varr(VALUE,maxidx)
+
+<A NAME="SEES"><B>SEES</B></A>            <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>     maxidx&gt;0
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>       Rename_Varr
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>       Rename_Varr: 1..maxidx --&gt; VALUE
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>  Rename_Varr:: 1..maxidx --&gt; VALUE
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  bb <-- <A NAME="OPNAME!Rename_TST_IDX_ARR">Rename_TST_IDX_ARR</A>(ii) =
+  <B>PRE</B>
+    ii: NAT
+  <B>THEN</B>
+    bb := <B>bool</B>(ii:1..maxidx)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_ARR">Rename_VAL_ARR</A>(ii) =
+  <B>PRE</B>
+    ii:1..maxidx
+  <B>THEN</B> 
+    vv:=Rename_Varr(ii)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_STO_ARR">Rename_STO_ARR</A>(ii,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    ii:1..maxidx
+  <B>THEN</B> 
+    Rename_Varr(ii):=vv
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_ARR">Rename_EQL_ARR</A>(ii,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    ii:1..maxidx
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Varr(ii)=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_NEQ_ARR">Rename_NEQ_ARR</A>(ii,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    ii:1..maxidx
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Varr(ii)/=vv)
+  <B>END</B>;
+
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_EQL_ARR">Rename_SCH_LO_EQL_ARR</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    jj:1..maxidx &
+    kk:1..maxidx
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Varr~[{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= min(ss \/ {maxidx})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_LO_NEQ_ARR">Rename_SCH_LO_NEQ_ARR</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    jj:1..maxidx &
+    kk:1..maxidx
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Varr~[(VALUE)-{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= min(ss \/ {maxidx})
+    <B>END</B>
+  <B>END</B>;
+
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_EQL_ARR">Rename_SCH_HI_EQL_ARR</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    jj:1..maxidx &
+    kk:1..maxidx
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Varr~[{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+  bb,ii <-- <A NAME="OPNAME!Rename_SCH_HI_NEQ_ARR">Rename_SCH_HI_NEQ_ARR</A>(jj,kk,vv) =
+  <B>PRE</B>
+    vv:VALUE &
+    jj:1..maxidx &
+    kk:1..maxidx
+  <B>THEN</B>
+    <B>LET</B> ss <B>BE</B>
+      ss = (jj..kk) /\ Rename_Varr~[(VALUE)-{vv}]
+    <B>IN</B>
+      bb:=<B>bool</B>(ss/={}) ||
+      ii:= max(ss \/ {1})
+    <B>END</B>
+  <B>END</B>;
+
+
+
+  <A NAME="OPNAME!Rename_REV_ARR">Rename_REV_ARR</A>(ii,jj) =
+  <B>PRE</B>
+    ii:1..maxidx &
+    jj:1..maxidx &
+    ii &lt; jj
+  <B>THEN</B>
+    <B>LET</B> Same,Rev <B>BE</B>
+      Same = (1..ii-1\/jj+1..maxidx) &lt;| Rename_Varr &
+      Rev = %kk.(kk:ii..jj | Rename_Varr(jj+ii-kk)) 
+    <B>IN</B> 
+      Rename_Varr := Same \/ Rev
+    <B>END</B> 
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RHT_ARR">Rename_RHT_ARR</A>(ii,jj,nn) =
+  <B>PRE</B>
+    ii:1..maxidx &
+    jj:1..maxidx &
+    nn:1..maxidx &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>LET</B> Same, RShift <B>BE</B>
+      Same = ((1..ii+nn-1)\/(jj+nn+1..maxidx)) &lt;| Rename_Varr &
+      RShift = %kk.(kk:ii+nn..min({maxidx,jj+nn}) | Rename_Varr(kk-nn)) 
+    <B>IN</B>
+      Rename_Varr := Same \/ RShift
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_LFT_ARR">Rename_LFT_ARR</A>(ii,jj,nn) =
+  <B>PRE</B>
+    ii:1..maxidx &
+    jj:1..maxidx &
+    nn:1..maxidx &
+    ii &lt;= jj
+  <B>THEN</B>
+    <B>LET</B> Same, LShift <B>BE</B>
+      Same = ((1..ii-nn-1)\/(jj-nn+1..maxidx)) &lt;| Rename_Varr &
+      LShift = %kk.(kk:max({1,ii-nn})..jj-nn | Rename_Varr(kk+nn))    <B>IN</B>
+      Rename_Varr := Same \/ LShift
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SWP_ARR">Rename_SWP_ARR</A>(ii,jj) =
+  <B>PRE</B>
+    ii: 1..maxidx &
+    jj: 1..maxidx
+  <B>THEN</B>
+    Rename_Varr:=
+    Rename_Varr<+{ii |-> Rename_Varr(jj), jj |-&gt; Rename_Varr(ii)}
+  <B>END</B>;
+
+
+/**************  save/restore host byte order **************/
+
+ <A NAME="OPNAME!Rename_SAV_ARR">Rename_SAV_ARR</A> = <B>BEGIN</B> <B>skip</B> <B>END</B>;
+
+ <A NAME="OPNAME!Rename_RST_ARR">Rename_RST_ARR</A> =
+ <B>BEGIN</B>  Rename_Varr :: 1..maxidx --&gt; VALUE <B>END</B>;
+
+/**************  save/restore network byte order **************/
+
+ <A NAME="OPNAME!Rename_SAVN_ARR">Rename_SAVN_ARR</A> = <B>BEGIN</B> <B>skip</B> <B>END</B>;
+
+ <A NAME="OPNAME!Rename_RSTN_ARR">Rename_RSTN_ARR</A> =
+ <B>BEGIN</B>  Rename_Varr :: 1..maxidx --&gt; VALUE <B>END</B>
+
+
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:18 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,605 @@
+/* Copyright (c) 1985-96, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define LinkPASPDirectTac ((WRITE;CATL;FLAT;MODR;MAP;SHELL)~;LinkPX)~
+
+#define LinkPASPDirect(x)  bcall(LinkPASPDirectTac:lpasp_0(x))
+
+
+#define SatPASPDirectTac ((WRITE;CATL;FLAT;MODR;REV;MAP)~;SatPX)~
+
+#define SatPASPDirect(x)  bcall(SatPASPDirectTac:rpasp_0(x))
+
+
+#define LinkRenamePtac (((MAP;RULE;MODR;CATL;WRITE;SHELL)~;LinkRenamePX)~)
+
+#define LinkRenameP     bcall(LinkRenamePtac: lr)
+
+
+#define FinPASPDirectTac ((WRITE;CATL;FLAT;MODR;REV;MAP)~;FinPX)~
+
+#define FinPASPDirect(x)  bcall(FinPASPDirectTac:fpasp_0(x))
+
+
+
+
+#define TransPASPDirectTac \
+    ((WRITE;CATL~;SHELL;MODR;REV;FLAT;NEWV;MAP)~;TransPX)~
+
+#define TransPASPDirect(x) bcall(TransPASPDirectTac:tpasp_0(x))
+
+
+#define TransPtac (((MAP;RULE;MODR;CATL;WRITE)~;TransP_parse_impX)~)
+
+#define TransP(a) bcall(TransPtac: transpasp_store(a))
+
+
+#define ReadDotFilesFormalParams(x)    brule(LinkRenamePX.1,x)
+#define ModifyDotFilesFormalParams(x)  bmodr(LinkRenamePX.1,x)
+
+#define ReadDotFiles(x)    brule(LinkRenamePX.2,x)
+#define ModifyDotFiles(x)  bmodr(LinkRenamePX.2,x)
+
+#define ReadSetParams(x)        brule(StoreSetParamsX.1,x)
+#define ModifySetParams(x)      bmodr(StoreSetParamsX.1,x)
+
+#define ReadImportedUsrMch(x)        brule(LinkRenamePX.3,x)
+#define ModifyImportedUsrMch(x)      bmodr(LinkRenamePX.3,x)
+
+#define InformErrorMAIN \
+        Writef(("\n\n    Error - MAIN should comprise a single\n            unparameterised % operation! ...",bsrv MAIN berv))
+
+#define InformLinkErrorParemeterised(x) \
+        Writef(("\n\n    Error - MAIN is parameterised:\n\n    %\n",bsrv x berv))
+
+#define InformAbsSetNotFullyLinkSet(x,y,z) \
+        Writef(("\n\n    Error - Abstract set\n\n      % of %\n\n    has non-Pasp TYPE %\n",bsrv y berv,bsrv x berv,bsrv z berv))
+
+#define InformAbsSetNotLinkSet(x,y) \
+        Writef(("\n\n    Error - Abstract set\n\n      % of %\n\n    has not been set\n",bsrv y berv,bsrv x berv))
+
+#define InformCantDetermineSetType(x,y,z) \
+        Writef(("\n\n    Error - Can't determine PASP type for\n\n      % of %\n\n    (set to %)\n",bsrv x berv,bsrv y berv,bsrv z berv))
+
+#define InformCantDetermineConstantType(x,y,z) \
+        Writef(("\n\n    Error - Can't determine PASP type for\n\n      % of %\n\n    (set to %)\n",bsrv x berv,bsrv y berv,bsrv z berv))
+
+#define InformCantDetermineNumType(x,y,z) \
+        Writef(("\n\n    Error - Can't determine PASP type for actual parameter\n\n      % of %\n\n    (formal parameter %)\n",bsrv z berv,bsrv y berv,bsrv x berv))
+
+
+#define InformNotTranslated(x) \
+	Writef(("\n    % is not translated\n",x))
+
+#define InformNoAnalysedImplementation(x) \
+	Writef(("\n    % has no (analysed) implementation\n",x))
+
+#define InformSeesMchNotImported(x,y,z) \
+	Writef(("\n    % is SEEN (by %) but not IMPORTED\n\n  Can't link %\n",bsrv x berv,y,z))
+
+#define InformImportedTwice(x,y,z) \
+	Writef(("\n    Duplicate IMPORT of % (by %)\n\n  Can't compile %\n",bsrv x berv,y,z))
+
+#define InformSeesMchNotImportedError(x,z) \
+	Writef(("\n    % is SEEN but not IMPORTED\n\n  Can't link %\n",bsrv x berv,y,z))
+
+
+
+#define InformImplementationRecursion(a,b,c) \
+  Writef(("\n    IMPORTS/SEES recursion: % and %\n\n  Can't compile/compile %\n",bsrv a berv,bsrv b berv,c))
+
+#define InformImortsSeesRecursion(x,y) \
+  Writef(("\n    IMPORTS/SEES recursion: %/%\n\n  Can't translate/compile %\n",bsrv x berv,bsrv y berv))
+
+
+#define ReadOpTypeInfo(x)   brule(LoadOwnTypeInfoX.1,x)
+#define ModifyOpTypeInfo(x) bmodr(LoadOwnTypeInfoX.1,x)
+
+#define ReadImpNameDotImp(x)     brule(LoadOwnTypeInfoX.2,x)
+#define ModifyImpNameDotImp(x)   bmodr(LoadOwnTypeInfoX.2,x)
+
+#define ReadGivenSetsTypeInfo(x)     brule(LoadOwnTypeInfoX.3,x)
+#define ModifyGivenSetsTypeInfo(x)   bmodr(LoadOwnTypeInfoX.3,x)
+
+
+
+#define ReadFunctionNames(x)       brule(LoadOwnTypeInfoX.7,x)
+#define ModifyFunctionNames(x)     bmodr(LoadOwnTypeInfoX.7,x)
+
+#define ReadCurrentFunctionName(x)       brule(LoadOwnTypeInfoX.8,x)
+#define ModifyCurrentFunctionName(x)     bmodr(LoadOwnTypeInfoX.8,x)
+
+#define ReadSubordinateFunctionNames(x)       brule(LoadOwnTypeInfoX.9,x)
+#define ModifySubordinateFunctionNames(x)     bmodr(LoadOwnTypeInfoX.9,x)
+
+#define ReadInLineOps(x)       brule(LoadOwnTypeInfoX.10,x)
+#define ModifyInLineOps(x)     bmodr(LoadOwnTypeInfoX.10,x)
+
+#define ReadStrippedStateMachineNames(x)       brule(LoadOwnTypeInfoX.11,x)
+
+#define ReadDummyParamNames(x)       brule(LoadOwnTypeInfoX.12,x)
+#define ModifyDummyParamNames(x)     bmodr(LoadOwnTypeInfoX.12,x)
+
+#define ReadRawConstantsSettings(x)       brule(LoadOwnTypeInfoX.13,x)
+#define ModifyRawConstantsSettings(x)     bmodr(LoadOwnTypeInfoX.13,x)
+
+#define ReadFinalConstantsSettings(x)   brule(LoadOwnTypeInfoX.14,x)
+#define ModifyFinalConstantsSettings(x) bmodr(LoadOwnTypeInfoX.14,x)
+
+#define ReadOwnConstants(x)       brule(LoadOwnTypeInfoX.15,x)
+#define ModifyOwnConstants(x)     bmodr(LoadOwnTypeInfoX.15,x)
+
+#define ReadNonOwnConstants(x)       brule(LoadOwnTypeInfoX.16,x)
+#define ModifyNonOwnConstants(x)     bmodr(LoadOwnTypeInfoX.16,x)
+
+#define ReadOwnSets(x)       brule(LoadOwnTypeInfoX.17,x)
+#define ModifyOwnSets(x)     bmodr(LoadOwnTypeInfoX.17,x)
+
+#define ReadNonOwnSets(x)       brule(LoadOwnTypeInfoX.18,x)
+#define ModifyNonOwnSets(x)     bmodr(LoadOwnTypeInfoX.18,x)
+
+#define ReadCalculateInLineStateMachineNames(x)    brule(LoadOwnTypeInfoX.19,x)
+#define ModifyCalculateInLineStateMachineNames(x)  bmodr(LoadOwnTypeInfoX.19,x)
+
+#define ReadCalculateInLineOpNames(x)    brule(LoadOwnTypeInfoX.20,x)
+#define ModifyCalculateInLineOpNames(x)  bmodr(LoadOwnTypeInfoX.20,x)
+
+
+#define ReadMachineParameters(x)    brule(TransP_parse_impX.1,x)
+#define ModifyMachineParameters(x)  bmodr(TransP_parse_impX.1,x)
+
+#define ReadMachineNATParameters(x)    brule(TransP_parse_impX.4,x)
+#define ModifyMachineNATParameters(x)  bmodr(TransP_parse_impX.4,x)
+
+#define ReadCurrentOpName(O)   brule(PrintOpHdrX.1,O)
+#define ModifyCurrentOpName(O) bmodr(PrintOpHdrX.1,O)
+
+#define ReadLastOpName(O)   brule(PrintOpHdrX.2,O)
+#define ModifyLastOpName(O) bmodr(PrintOpHdrX.2,O)
+
+
+#define ReadIptSeesOpColonMch(x)   brule(ProcessImportsSeesX.1,x)
+#define ModifyIptSeesOpColonMch(x) bmodr(ProcessImportsSeesX.1,x)
+
+#define ReadActualImportParameters(x)    brule(ProcessImportsSeesX.2,x)
+#define ModifyActualImportParameters(x)  bmodr(ProcessImportsSeesX.2,x)
+
+#define ReadImportedMchWithParam(x)    brule(ProcessImportsSeesX.3,x)
+#define ModifyImportedMchWithParam(x)  bmodr(ProcessImportsSeesX.3,x)
+
+
+#define ReadProgLangFlag(x)       brule(TransP_parse_impX.2,x)
+#define ModifyProgLangFlag(x)     bmodr(TransP_parse_impX.2,x)
+#define ReadCCompilerFlags(x)     brule(TransP_parse_impX.5,x)
+#define ModifyCCompilerFlags(x)   bmodr(TransP_parse_impX.5,x)
+#define ReadNonXLinkLibs(x)       brule(TransP_parse_impX.6,x)
+#define ModifyNonXLinkLibs(x)     bmodr(TransP_parse_impX.6,x)
+#define ReadXLinkLibs(x)          brule(TransP_parse_impX.7,x)
+#define ModifyXLinkLibs(x)        bmodr(TransP_parse_impX.7,x)
+#define ReadInterfaceFlag(x)      brule(TransP_parse_impX.8,x)
+#define ModifyInterfaceFlag(x)    bmodr(TransP_parse_impX.8,x)
+
+#define ModifyCodeModuleFilename(x) \
+      bcall((CATL;MODR):bmodr(TransP_parse_impX.3,x))
+#define ReadCodeModuleFilename(x)     brule(TransP_parse_impX.3,x)
+
+#define SetMAIN      bmodr(StoreOpsX.1,1)
+#define SetNotMAIN   bmodr(StoreOpsX.1,0)
+#define IsMAIN       brule(StoreOpsX.1,1)
+
+#define ReadPaspLibList(x)     brule(CreGlobalVarFromImportsX.1,x)
+#define ModifyPaspLibList(x)   bmodr(CreGlobalVarFromImportsX.1,x)
+
+#define ReadFormalParameterTypes(x)     brule(ProcessParamsX.1,x)
+#define ModifyFormalParameterTypes(x)   bmodr(ProcessParamsX.1,x)
+
+#define ReadRawSetsSettings(x)     brule(StoreRawSetsSettingsX.1,x)
+#define ModifyRawSetsSettings(x)   bmodr(StoreRawSetsSettingsX.1,x)
+
+#define ReadConstantsTypes(x)     brule(StoreConstantsTypesX.1,x)
+#define ModifyConstantsTypes(x)   bmodr(StoreConstantsTypesX.1,x)
+
+#define ReadEnumerationTypes(x)     brule(StoreEnumerationTypesX.1,x)
+#define ModifyEnumerationTypes(x)   bmodr(StoreEnumerationTypesX.1,x)
+
+#define ReadDotIni(x)     brule(LoadDotFileX.1,x)
+#define ModifyDotIni(x)   bmodr(LoadDotFileX.1,x)
+
+
+#define ReadSatImpName(x)     brule(SatPX.1,x)
+#define ModifySatImpName(x)   bmodr(SatPX.1,x)
+
+#define ReadSatMchName(x)     brule(SatPX.2,x)
+#define ModifySatMchName(x)   bmodr(SatPX.2,x)
+
+#define ReadSatDotFiles(x)     brule(LoadSatDotMapFilesX.1,x)
+#define ModifySatDotFiles(x)   bmodr(LoadSatDotMapFilesX.1,x)
+
+#define ReadMapFile(x)     brule(LoadSatDotMapFilesX.2,x)
+#define ModifyMapFile(x)   bmodr(LoadSatDotMapFilesX.2,x)
+
+
+
+
+THEORY SatErrorX IS 0 END &
+
+#define ClearSatError bcall(MODR:bmodr(SatErrorX.1,0))
+
+#define SetSatError   bcall(MODR:bmodr(SatErrorX.1,1))
+
+#define SatErrorSet   brule(SatErrorX.1,1)
+
+THEORY LNKErrorX IS 0 END &
+
+#define ClearLNKError bcall(MODR:bmodr(LNKErrorX.1,0))
+
+#define SetLNKError   bcall(MODR:bmodr(LNKErrorX.1,1))
+
+#define LNKErrorSet   brule(LNKErrorX.1,1)
+
+
+THEORY LinkPX IS
+
+  ?;
+#define ReadLnkImp(x)    brule(LinkPX.1,x)
+#define ModifyLnkImp(x)  bmodr(LinkPX.1,x)
+
+  ?;
+#define ReadLnkAbs(x)    brule(LinkPX.2,x)
+#define ModifyLnkAbs(x)  bmodr(LinkPX.2,x)
+
+  ?;
+#define ReadLnkIpt(x)    brule(LinkPX.3,x)
+#define ModifyLnkIpt(x)  bmodr(LinkPX.3,x)
+
+  ?;
+#define ReadIptFileList(x)     brule(LinkPX.4,x)
+#define ModifyIptFileList(x)   bmodr(LinkPX.4,x)
+
+  ?;
+#define ReadLinkList(x) brule(LinkPX.5,x)
+#define ModrLinkList(x) bmodr(LinkPX.5x)
+
+  ?;
+#define ReadLnkIptImp(x)    brule(LinkPX.6,x)
+#define ModifyLnkIptImp(x)  bmodr(LinkPX.6,x)
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  ReadLnkImp(a.imp) &
+  ReadLnkAbs(b.mch) &
+  ReadLnkIptImp(I) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((a.imp:BT_LNK:?);(b.map:BT_CMT_OPEN_CSTR:I))) &
+  AddLnk(a.imp) &
+  Writef(("\n  Parameter instantiation complete\n"))
+ =>
+  check_lnk_err;
+
+
+  LNKErrorSet &
+  ReadLnkAbs(b.mch) &
+  bshell(bcatl("rm -f CDE/PASP/",b,".noatt")) &
+  Writef(("\n  PASP Parameter Instantiation aborted\n"))
+ =>
+  check_lnk_err;
+
+  ReadLnkImp(s.imp) &
+  InformErrorMAIN &
+  Writef(("\n")) &
+  SetLNKError
+ =>
+  lpasp3(W);
+
+  LinkRenameP
+ =>
+  lpasp3(MAIN);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  lpasp2(Z);
+
+  bstring(Z) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  WriteDot &
+  lpasp3(W)
+ =>
+  lpasp2(Z);
+
+  lpasp2(bcatl("ANL/",b,".mch.anl"))
+ =>
+  lpasp1(b.mch);
+
+  Writef(("\n  PASP Parameter Instantiating % .",b)) &
+  WriteDot &
+  ModifyLnkImp(a.imp) &
+  ModifyLnkAbs(b.mch) &
+  ModifyLnkIpt(c) &
+  lpasp1(b.mch) &
+  check_lnk_err
+ =>
+  lpasp_0(a.imp|b.mch|c)
+
+END
+
+&
+
+
+
+
+
+THEORY TRLErrorX IS 0;0 END &
+
+
+#define ClearTRLError     bcall(MODR:bmodr(TRLErrorX.1,0))
+
+#define SetTRLError       bcall(MODR:bmodr(TRLErrorX.1,1))
+
+#define TRLErrorSet       brule(TRLErrorX.1,1)
+
+
+#define ClearTRLPaspTypeError     bcall(MODR:bmodr(TRLErrorX.2,0))
+
+#define SetTRLPaspTypeError       bcall(MODR:bmodr(TRLErrorX.2,1))
+
+#define TRLPaspTypeErrorSet       brule(TRLErrorX.2,1)
+
+
+THEORY TransPX IS
+
+  ?;
+#define ReadTrlImp(x)    brule(TransPX.1,x)
+#define ModifyTrlImp(x)  bmodr(TransPX.1,x)
+
+  ?;
+#define ReadTrlAbs(x)    brule(TransPX.2,x)
+#define ModifyTrlAbs(x)  bmodr(TransPX.2,x)
+
+  ?;
+#define ReadTrlIpt(x)    brule(TransPX.3,x)
+#define ModifyTrlIpt(x)  bmodr(TransPX.3,x)
+
+  ?;
+#define ReadTrlSees(x)   brule(TransPX.4,x)
+#define ModifyTrlSees(x) bmodr(TransPX.4,x)
+
+  ?;
+#define ReadNonPromotedOps(x)    brule(TransPX.5,x)
+#define ModifyNonPromotedOps(x)  bmodr(TransPX.5,x)
+
+  ?;
+#define ReadIniName(x)    brule(TransPX.6,x)
+#define ModifyIniName(x)  bmodr(TransPX.6,x)
+
+
+  Writef(("\n")) &
+  InformCantExecute(x) &
+  PFZ
+ =>
+  bshell(x);
+
+
+  Writef(("      %\n",p))
+ =>
+  tpasp_check_err2(p);
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_TRL:?)) &
+  AddTrl(a.imp) &
+  Writef(("\n\n    Parameterised over: %\n")) &
+  tpasp_check_err2 bsmap P &
+  Writef(("\n  Translation complete\n",P))
+ =>
+  tpasp_check_err1(a.imp)(P);
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_TRL:?)) &
+  AddTrl(a.imp) &
+  Writef(("\n\n    Not parameterised\n\n  Translation complete\n",P))
+ =>
+  tpasp_check_err1(a.imp)(?);
+
+
+  bsearch(?,P,Q) &
+  tpasp_check_err1(a.imp)(Q)
+ =>
+  tpasp_check_err1(a.imp)(P);
+
+  tpasp_check_err1(a.imp)(P)
+ =>
+  tpasp_check_err(a.imp)(P);
+
+
+
+  ModifyJobs((X))
+ =>
+  tpasp_rem_all_trl_jobs(X);
+
+  bsearch((x:BT_LNK:0),X,Y) &
+  tpasp_rem_all_trl_jobs(Y)
+ =>
+  tpasp_rem_all_trl_jobs(X);
+
+  bsearch((x:BT_LNK_WITH_IPT_SEES:0),X,Y) &
+  tpasp_rem_all_trl_jobs(Y)
+ =>
+  tpasp_rem_all_trl_jobs(X);
+
+  bsearch((x:BT_TRL:0),X,Y) &
+  tpasp_rem_all_trl_jobs(Y)
+ =>
+  tpasp_rem_all_trl_jobs(X);
+
+  bsearch((x:BT_TRL_WITH_IPT_SEES:0),X,Y) &
+  tpasp_rem_all_trl_jobs(Y)
+ =>
+  tpasp_rem_all_trl_jobs(X);
+
+
+  TRLErrorSet &
+  ModifyTrlAbs(b.mch) &
+  GetJobs(X) &
+  bshell(bcatl("rm -f CDE/PASP/",b,".param")) &
+  Writef("\n\n  PASP Translation aborted\n  (Programming Language Flag: PASP)\n") &
+  tpasp_rem_all_trl_jobs(X)
+ =>
+  tpasp_check_err(a.imp)(l);
+
+
+
+  ReadNonPromotedOps(O) &
+  TransP((h,O,G,C,A,B,b,k(l)(m)))
+ =>
+  tpasp_3(h,G,C,A,B,b,k(l)(m));
+
+
+
+  tpasp_sto_non_promoted_ops1(x);
+
+  ReadNonPromotedOps(O) &
+  ModifyNonPromotedOps((O,(K|w|x)))
+ =>
+  tpasp_sto_non_promoted_ops1(P,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+  bsearch(s,P,Q)         /* promoted */
+ =>
+  tpasp_sto_non_promoted_ops1(P,(s;(?,I,J,K);u;v;(w|x);(y|z)));
+
+
+  tpasp_sto_non_promoted_ops1((c,?),n)
+ =>
+  tpasp_sto_non_promoted_ops(c)(n);
+
+  tpasp_sto_non_promoted_ops1(c,?) bsmap (N,n)
+ =>
+  tpasp_sto_non_promoted_ops(c)(N,n);
+
+
+
+  ModifyMachineParameters(l) &
+  ModifyNonPromotedOps(?) &
+  tpasp_sto_non_promoted_ops(c)(n) &
+  tpasp_3(h,G,C,A,B,b,k(l)(m)) &
+  tpasp_check_err(a.imp)(l)
+ =>
+  tpasp_2(a.imp)(M.R)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  Writef(("\n")) &
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  tpasp_1(a.imp)(m.b)(Z);
+
+  bstring(Z) &
+  bget(Z,X) &
+  ModifyImpNameDotImp(a.imp) &
+  tpasp_2(a.imp)(m.b)(X)
+ =>
+  tpasp_1(a.imp)(m.b)(Z);
+
+  Writef(("\n  PASP Translating IMPLEMENTATION %\n\n    %.param ",a,b)) &
+  ModifyTrlImp(a.imp) &
+  ModifyTrlAbs(b.mch) &
+  ModifyTrlIpt(c) &
+  ModifyTrlSees(d) &
+  tpasp_1(a.imp)(b.mch)(bcatl("ANL/",a,".imp.anl"))
+ =>
+  tpasp_0(a.imp|b.mch|c|d)
+
+END
+
+#define PrintPTrans_database \
+  Writef(("\n\n"))& \
+HERE(("FormalParameterTypes"))& \
+  PrintRule(ProcessParamsX.1) & \
+ \
+  PrintRule(LoadOwnTypeInfoX.2) & \
+HERE(("FunctionNames"))& \
+  PrintRule(LoadOwnTypeInfoX.7) & \
+HERE(("CurrentFunctionName"))& \
+  PrintRule(LoadOwnTypeInfoX.8) & \
+HERE(("SubordinateFunctionNames"))& \
+  PrintRule(LoadOwnTypeInfoX.9) & \
+HERE(("InLineOps"))& \
+  PrintRule(LoadOwnTypeInfoX.10) & \
+HERE(("StrippedStateMachineNames"))& \
+  PrintRule(LoadOwnTypeInfoX.11) & \
+HERE(("DummyParamNames"))& \
+  PrintRule(LoadOwnTypeInfoX.12) & \
+ \
+  PrintTHEORY(Imports_storeX) & \
+  PrintTHEORY(Seess_storeX) & \
+  PrintTHEORY(Ipt_PASP_VARX) & \
+HERE(("IptSeesOpColonMch")) & \
+  PrintRule(ProcessImportsSeesX.1) & \
+ \
+HERE(("ImportedMchWithParam")) & \
+  PrintRule(ProcessImportsSeesX.3) & \
+ \
+HERE(("OpTypeInfo"))& \
+  PrintRule(LoadOwnTypeInfoX.1) & \
+ \
+HERE(("Global vars from imports"))& \
+  PrintTHEORY(Global_var_storeX) & \
+ \
+HERE(("Global vars from sees"))& \
+  PrintTHEORY(GlobalSeen_var_storeX) & \
+ \
+HERE(("Local vars"))& \
+  PrintTHEORY(Local_var_storeX) & \
+ \
+  PrintTHEORY(Operations_storeX) &\
+ \
+HERE(("EnumerationTypes")) & \
+  PrintRule(StoreEnumerationTypesX.1) & \
+ \
+HERE(("OwnConstants"))& \
+  PrintRule(LoadOwnTypeInfoX.15) & \
+HERE(("NonOwnConstants"))& \
+  PrintRule(LoadOwnTypeInfoX.16) & \
+HERE(("ConstantsTypes")) & \
+  PrintRule(StoreConstantsTypesX.1) & \
+HERE(("RawConstantsSettings")) & \
+  PrintRule(LoadOwnTypeInfoX.13) & \
+HERE(("FinalConstantsSettings")) & \
+  PrintRule(LoadOwnTypeInfoX.14) & \
+ \
+HERE(("OwnSets"))& \
+  PrintRule(LoadOwnTypeInfoX.17) & \
+HERE(("NonOwnSets"))& \
+  PrintRule(LoadOwnTypeInfoX.18) & \
+HERE(("GivenSetsTypeInfo")) & \
+  PrintRule(LoadOwnTypeInfoX.3) & \
+HERE(("RawSetsSettings")) & \
+  PrintRule(StoreRawSetsSettingsX.1) & \
+HERE(("FinalSetsSettings")) & \
+  PrintTHEORY(Final_sets_setting_storeX) & \
+  PrintTHEORYUpTo(VBLStackX,3) & \
+  PrintRule(LoadDotFileX.1) & \
+HERE(("NonOwnMchNameColonConst")) & \
+  PrintRule(StoreNonOwnConstantsX.2) & \
+HERE(("SetParams")) & \
+  PrintRule(StoreSetParamsX.1) & \
+  PrintTHEORY(TransLocalVARX)
+
+

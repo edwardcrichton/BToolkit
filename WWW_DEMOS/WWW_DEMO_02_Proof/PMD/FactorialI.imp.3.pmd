@@ -1,0 +1,27 @@
+PROOFMETHOD FactorialI.imp.3.pmd IS
+
+  USETAC           (UsersTheory~),(FwdUsersTheory~ /* ; FEQL~ */ )
+
+  ON               comp_fac.(13,19)
+
+  REASONING_DEPTH  2
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    ?
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END

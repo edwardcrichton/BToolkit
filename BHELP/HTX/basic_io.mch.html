@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of basic_io">
+  <TITLE>The basic_io machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>            basic_io
+
+<A NAME="SEES"><B>SEES</B></A>               <A HREF="Scalar_TYPE.mch.html#MACHINE">Scalar_TYPE</A>, <A HREF="Int_TYPE.mch.html#MACHINE">Int_TYPE</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>, <A HREF="Bit_TYPE.mch.html#MACHINE">Bit_TYPE</A>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+
+/* Output */
+
+  <A NAME="OPNAME!NWL">NWL</A>(nn:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;                  /* prints nn newlines */
+
+  <A NAME="OPNAME!BLK">BLK</A>(nn:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;                  /* prints nn spaces */
+
+  <A NAME="OPNAME!PUT_NBR">PUT_NBR</A>(nn:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;              /* writes a number */
+
+  <A NAME="OPNAME!PUT_NAT">PUT_NAT</A>(nn:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;              /* writes a number */
+
+  <A NAME="OPNAME!PUT_INT">PUT_INT</A>(nn:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) = <B>BEGIN</B> <B>skip</B> <B>END</B>;              /* writes an integer as +nnn/-nnn */
+
+  <A NAME="OPNAME!PUT_STR">PUT_STR</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A>) = <B>BEGIN</B> <B>skip</B> <B>END</B>;           /* writes a string */
+
+  <A NAME="OPNAME!PUT_CHR">PUT_CHR</A>(cc:<A HREF="String_TYPE.mch.html#SETS">CHAR</A>) = <B>BEGIN</B> <B>skip</B> <B>END</B>;             /* writes a character */
+
+  <A NAME="OPNAME!PUT_BOOL">PUT_BOOL</A>(bb:<A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) = <B>BEGIN</B> <B>skip</B> <B>END</B>;            /* writes a boolean */
+
+  <A NAME="OPNAME!PUT_BTS">PUT_BTS</A>(bs:<A HREF="Bit_TYPE.mch.html#SETS">BITS</A>) = <B>BEGIN</B> <B>skip</B> <B>END</B>;             /* writes a binary */
+
+  <A NAME="OPNAME!FLSH">FLSH</A> = <B>skip</B>;                                   /* flushes output */
+
+
+/* Output padded with blanks up to pd */
+
+  <A NAME="OPNAME!PUT_NBR_PAD">PUT_NBR_PAD</A>(nn:NAT & pd:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;     /* writes a number */
+
+  <A NAME="OPNAME!PUT_NAT_PAD">PUT_NAT_PAD</A>(nn:NAT & pd:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;     /* writes a number */
+
+  <A NAME="OPNAME!PUT_INT_PAD">PUT_INT_PAD</A>(nn:<A HREF="Int_TYPE.mch.html#SETS">INT</A> & pd:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;     /* writes an integer as +nnn/-nnn */
+
+  <A NAME="OPNAME!PUT_STR_PAD">PUT_STR_PAD</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A> & pd:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;  /* writes a string */
+
+  <A NAME="OPNAME!PUT_BOOL_PAD">PUT_BOOL_PAD</A>(bb:<A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> & pd:NAT) = <B>BEGIN</B> <B>skip</B> <B>END</B>;   /* writes a boolean */
+
+
+/* Input */
+
+  mm <-- <A NAME="OPNAME!GET_NBR">GET_NBR</A>(nn:NAT) = <B>BEGIN</B> mm :: 0..nn <B>END</B>;   /* reads a number 0..nn */
+
+  (rr:<A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A>) <-- <A NAME="OPNAME!GET_NAT">GET_NAT</A>;                          /* reads a number */
+  
+  (rr:<A HREF="Int_TYPE.mch.html#SETS">INT</A>) <-- <A NAME="OPNAME!GET_INT">GET_INT</A>;                             /* reads an integer as +nnn/-nnn */
+  
+  (ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A>) <-- <A NAME="OPNAME!GET_STR">GET_STR</A>;                          /* reads a string */
+
+  (cc:<A HREF="String_TYPE.mch.html#SETS">CHAR</A>) <-- <A NAME="OPNAME!GET_CHR">GET_CHR</A>;                            /* reads a character */
+
+  (bb:<A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) <-- <A NAME="OPNAME!GET_BOOL">GET_BOOL</A>;                           /* reads a boolean */
+  
+  (bs:<A HREF="Bit_TYPE.mch.html#SETS">BITS</A>) <-- <A NAME="OPNAME!GET_BTS">GET_BTS</A>;                            /* reads a binary */
+
+
+/* Prompted Input */
+
+ mm <-- <A NAME="OPNAME!GET_PROMPT_NBR">GET_PROMPT_NBR</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A> & nn:NAT) =
+    <B>BEGIN</B> mm :: 0..nn <B>END</B>;                    /* prompts for a number 0..nn */
+
+  rr <-- <A NAME="OPNAME!GET_PROMPT_NAT">GET_PROMPT_NAT</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A>) =
+    <B>BEGIN</B> rr :: <A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A> <B>END</B>;                   /* prompts for a number */
+
+  rr <-- <A NAME="OPNAME!GET_PROMPT_INT">GET_PROMPT_INT</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A>) =
+    <B>BEGIN</B> rr :: <A HREF="Int_TYPE.mch.html#SETS">INT</A> <B>END</B>;                      /* prompts for an integer as +nnn/-nnn */
+
+  tt <-- <A NAME="OPNAME!GET_PROMPT_STR">GET_PROMPT_STR</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A> ) =
+    <B>BEGIN</B> tt :: <A HREF="String_TYPE.mch.html#SETS">STRING</A> <B>END</B>;                   /* prompts for a string */
+
+  nn <-- <A NAME="OPNAME!GET_PROMPT_CHR">GET_PROMPT_CHR</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A>) =
+    <B>BEGIN</B> nn :: <A HREF="String_TYPE.mch.html#SETS">CHAR</A> <B>END</B>;                     /* prompts for a character */
+
+  rr <-- <A NAME="OPNAME!GET_PROMPT_BOOL">GET_PROMPT_BOOL</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A>) =
+    <B>BEGIN</B> rr :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> <B>END</B>;                     /* prompts for a boolean */
+
+  bs <-- <A NAME="OPNAME!GET_PROMPT_BTS">GET_PROMPT_BTS</A>(ss:<A HREF="String_TYPE.mch.html#SETS">STRING</A>) =
+    <B>BEGIN</B> bs :: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A> <B>END</B>                      /* prompts for a binary */
+
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:37:17 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

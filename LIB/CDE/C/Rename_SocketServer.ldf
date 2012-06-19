@@ -1,0 +1,19 @@
+/*
+  This committable construct will be created in SLIB as `Rename_SocketServer'
+
+  If this machine does not import other library machines:
+    remove the IMPORTS clause
+  else:
+    edit IMPORTS clause to be a list of non-COMMITTABLE SLIB
+    constructs with parameters set where appropriate;
+    note that each imported construct must begin with the `_' character
+
+  The Rename_SocketServer formal parameter `TOK' should be written `Rename_SocketServerPV1'
+  The Rename_SocketServer formal parameter `inbufsize' should be written `Rename_SocketServerPV2'
+  The Rename_SocketServer formal parameter `outbufsize' should be written `Rename_SocketServerPV3'
+
+*/
+
+LIBDEF Rename_SocketServer
+
+END

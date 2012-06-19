@@ -1,0 +1,10 @@
+PROOFMETHOD CMA.mch.1.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~)
+
+  REASONING_DEPTH 1
+
+  END
+  
+END

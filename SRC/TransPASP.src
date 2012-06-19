@@ -1,0 +1,9518 @@
+/* Copyright (c) 1985-96, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define InformActualParamsNotLessThan(v,w,x,y,z) \
+	Writef(("\n\n    Operation % - error in actual parameters:\n\n      actual parameter for % and %\n\n    invalidate precondition (values % and %) ...",bsrv v berv,bsrv w berv,bsrv y berv,x,z))
+
+#define InformActualParamNotBit(w,x,y,z) \
+	Writef(("\n\n    Operation % - error in actual parameters:\n\n      actual parameter for % of %\n\n    is not a number/constant in the range 0..1 (%) ...",bsrv w berv,bsrv y berv,bsrv x berv,z))
+
+#define InformActualParamNotNumber(w,x,y,z) \
+	Writef(("\n\n    Operation % - error in actual parameters:\n\n      actual parameter for % of %\n\n    is not a number/constant in the range 0..7 (%) ...",bsrv w berv,bsrv y berv,bsrv x berv,z))
+
+
+#define InformActualParamNotSimplePASPType(x,y,z) \
+	Writef(("\n\n    Operation % - parameter type error:\n\n      % : %\n\n    is not a simple PASP type ...",bsrv x berv,bsrv y berv,z))
+
+#define InformActualParamNotSimpleSubExpression(x,y,z) \
+	Writef(("\n\n    Operation % - error in actual parameters:\n\n      % in %\n\n    is not a simple expression ...",bsrv x berv,bsrv y berv,z))
+
+#define InformGuardNotSimpleSubExpression(x,y,z) \
+	Writef(("\n\n    Operation % - error in guard:\n\n      % in %\n\n    is not a simple expression ...",bsrv x berv,bsrv y berv,z))
+
+#define InformRHSNotSimpleSubExpression(x,y,z) \
+	Writef(("\n\n    Operation % - error in RHS of substitution:\n\n      % in %\n\n    is not a simple expression ...",bsrv x berv,bsrv y berv,z))
+
+#define InformActualParamNotSimpleExpression(x,y) \
+	Writef(("\n\n    Operation % - error in actual parameters:\n\n      %\n\n    is not a simple expression ...",bsrv x berv,bsrv y berv))
+
+#define InformGuardNotSimpleExpression(x,y) \
+	Writef(("\n\n    Operation % - error in guard in substitution:\n\n      %\n\n    is not a simple expression ...",bsrv x berv,bsrv y berv))
+
+#define InformRHSNotSimpleExpression(x,y) \
+	Writef(("\n\n    Operation % - error in RHS of substitution:\n\n      %\n\n    is not a simple expression ...",bsrv x berv,bsrv y berv))
+
+#define WarningLocalVarNotUsed(x,y) \
+	Writef(("\n\n    Warning: local variable:\n      %\n     of operation:\n      %\n    is not used, so discarding ...",y,x))
+
+#define CantFindImp(x) \
+	Writef(("\n\n    Error: can't find implementation for % ...",bsrv x berv))
+
+#define Warningskip(x) \
+	Writef(("\n\n    Warning: skip appears in % ...",x))
+
+#define Warningskipinit \
+	Writef(("\n\n    Warning: skip appears in INITIALISATION ..."))
+
+#define InformConstantNotSet(x) \
+        Writef(("\n\n    Error: constant % is not set ...",bsrv x berv))
+
+#define InformConstantNotDefAsNum(x,y) \
+        Writef(("\n\n    Error - constant\n\n      %\n\n    not set to a Pasp type:\n\n      % ...",bsrv x berv,bsrv y berv))
+
+#define InformSetNotSet(x) \
+        Writef(("\n\n    Error: abstract set % is unresolved ...",bsrv x berv))
+
+#define InformSetNotSetAsPaspType(x,y) \
+        Writef(("\n\n    Error - abstract set\n\n      %\n\n    has not been given a Pasp type:\n\n      % ...",bsrv x berv,bsrv y berv))
+
+#define InformNotPASPType(x,y) \
+	Writef(("\n\n    Operation % - error:\n\n      %\n\n     does not have a type ...",bsrv x berv,bsrv y berv))
+
+#define InformParamNotPASPType(x,y) \
+	Writef(("\n\n    Operation % - error:\n\n      parameter %\n\n     does not have a type ...",bsrv x berv,bsrv y berv))
+
+#define InformCantDummy(x,y) \
+        Writef(("\n\n    Can't convert operation % to a function:\n      %\n    Local variable dummy used ...",bsrv x berv,bsrv y berv))
+
+#define InformCantFindBuiltInFunction(x) \
+        ReadCurrentOpName(y) & \
+        WritefNoARI(("\n\n    Operation % - error:\n\n      Can't find built-in function for:\n\n      % ...",bsrv y berv,bsrv x berv))
+
+#define InformCantType(x,y) \
+        Writef(("\n\n    Operation % - error:\n\n      Cant determine type for %\n\n    ...",bsrv x berv,bsrv y berv))
+
+#define InformLocalVarNotPaspType(x,y,z) \
+        Writef(("\n\n    Operation % - error:\n\n      Local var % has non-Pasp type %\n\n    ...",bsrv x berv,bsrv y berv,bsrv z berv))
+
+#define InformLocalGlobalVarClash(x,y) \
+        Writef(("\n\n    Operation % - error:\n\n      Local var % clashes with global var\n\n    ...",bsrv x berv,bsrv y berv))
+
+#define InformCantDetermineTypeLocalVar(x,y) \
+        Writef(("\n\n    Operation % - error:\n\n      Can't determine type of local var % ...",bsrv x berv,bsrv y berv))
+
+#define ProcessExprConversionWarn(a,f) \
+  ReadCurrentOpName(o) & \
+  WritefNoARI(("\n\n    Operation % - Binary operator conversion\n      % to % ...",o,a,f))
+
+#define CASE2IFWarn \
+  ReadCurrentOpName(o) & \
+  WritefNoARI(("\n\n    Operation % - Converting CASE to IF ...",o))
+
+#define CASE2IF_ELSEWarn \
+  ReadCurrentOpName(o) & \
+  WritefNoARI(("\n\n    Operation % - Converting CASE to IF\n\n    Warning: ELSE clause of CASE ranges over BYTE ...",o))
+
+#define InformNoPASPEquivalent(x) \
+  ReadCurrentOpName(o) & \
+  Writef(("\n\n    Operation % - % has no PASP equivalent ...",o,bsrv x berv))
+
+
+
+#define ReadIptMchList_ldf(x)     brule(CreDotHtmlPASPCodeSLIBFileX.2,x)
+#define ModifyIptMchList_ldf(x)   bmodr(CreDotHtmlPASPCodeSLIBFileX.2,x)
+
+
+#define FirstRunProcessOp          brule(ProcessOpsX.2,0)
+#define SetFirstRunProcessOp       bmodr(ProcessOpsX.2,0)
+#define SetNotFirstRunProcessOp    bmodr(ProcessOpsX.2,1)
+
+
+#define IsFileMch(x) \
+  bsearch(x,(Bool_File,Byt_File,Byt_BS_File,Uns_File,Uns_BS_File, \
+             BiArr_File,BiBArr_File,UiArr_File,UiArrO1_File),z)
+
+#define IsNonFileArr(x) \
+  bsearch(x,(BiArr,BiBArr,UiArr,UiArrO1),z)
+
+#define IsPASPSLIBMch(x) \
+  bsearch(x,(Byt_BS_TYPE,Byt_SEMANTICS,Byt_TYPE,PASP_BS_TYPE,PASP_BS_TYPE_Ops,PASP_SEMANTICS,PASP_TYPE,PASP_TYPE_Ops,BiArr,BiArr_File,BiBArr,BiBArr_File,Bool,Bool_File,Byt,Byt_File,Byt_BS,Byt_BS_File,UiArr,UiArr_File,UiArrO1,Uns,Uns_File,Uns_BS,Uns_BS_File,Uns_BS_TYPE,Uns_SEMANTICS,Uns_TYPE,Read_Byt,Write_Byt),z)
+
+THEORY OfferTransPASPFailureOptionsX IS
+
+#define OfferTransPASP_trl_FailureOptions \
+          bcall(((FLAT;MODR;OfferTransPASPFailureOptionsX)~):o_trl_0)
+
+  ReadTrlImp(a.imp) &
+  ModifyCurrentJob((a.imp:BT_NML_TRL:0)) &
+  GetJobs(X) &
+  ModifyJobs((X;(a.imp:BT_MINI_RMK_M:0)))
+ =>
+  o_trl_0
+
+END
+
+&
+
+
+
+THEORY Global_var_storeX END &
+
+THEORY GlobalSeen_var_storeX END &
+
+THEORY Local_var_storeX END &
+
+
+THEORY Final_sets_setting_storeX IS (BOOL==BOOLEAN) END &
+
+
+THEORY Imports_storeX END &
+
+THEORY Sees_storeX END &
+
+THEORY Operations_storeX END &
+
+THEORY Ipt_PASP_VARX END &
+
+
+
+THEORY PRSPX IS
+
+#define PrintSpaces(x)       bcall(((ARI~;WRITE)~;PRSPX)~:ps(x))
+
+#define SetMaxLength(x)      bcall(((MAP;ARI~;MODR)~;PRSPX)~:(sml bsmap (x)))
+
+#define SetMaxLengthNoMap(x) bcall(((ARI~;MODR)~;PRSPX)~:smlnm0(x))
+
+#define ModifyMaxLength(x)   bcall((ARI~;MODR):bmodr(PRSPX.1,x))
+
+#define ReadMaxLength(x)     brule(PRSPX.1,x)
+
+#define IncMaxLength(x)      bcall(PRSPX:iml(x))
+
+#define Indent(x)            bcall(((ARI~;WRITE;MODR)~;PRSPX)~: ind(4*x))
+
+#define PrintSpacesToMaxLength(x)      bcall(((ARI~;WRITE)~;PRSPX)~:ps0(x))
+
+#define PrintSpacesToMaxLengthNoMap(x) bcall(((ARI~;WRITE)~;PRSPX)~:psnm0(x))
+
+  ?; /* MaxLength */
+
+  0;
+#define SetInCASE    bmodr(PRSPX.2,1)
+#define ResetInCASE  bmodr(PRSPX.2,0)
+#define InCASE       brule(PRSPX.2,1)
+
+  0;
+#define SetCASEcolon       bmodr(PRSPX.3,1)
+#define ResetCASEcolon     bmodr(PRSPX.3,0)
+#define CASEcolon          brule(PRSPX.3,1)
+
+  0;
+#define case_indent_tac        (((ARI~;MODR)~;PRSPX)~)
+#define ReadCASEIndent(x)      brule(PRSPX.4,(X,x))
+#define ModifyCASEIndent(x)    bcall(case_indent_tac: mci(x))
+#define ResetCASEIndent        bcall(case_indent_tac: rci)
+
+  0;
+#define PushCASEMax(x)      brule(PRSPX.5,X) & bmodr(PRSPX.5,(X,x))
+#define PopCASEMax(x)       brule(PRSPX.5,(X,x)) & bmodr(PRSPX.5,X)
+
+
+  bnum(n)
+ =>
+  blen(n) == 9;
+
+  bnum(n) &
+  btest(n<100000000)
+ =>
+  blen(n) == 8;
+
+  bnum(n) &
+  btest(n<10000000)
+ =>
+  blen(n) == 7;
+
+  bnum(n) &
+  btest(n<1000000)
+ =>
+  blen(n) == 6;
+
+  bnum(n) &
+  btest(n<100000)
+ =>
+  blen(n) == 5;
+
+  bnum(n) &
+  btest(n<10000)
+ =>
+  blen(n) == 4;
+
+  bnum(n) &
+  btest(n<1000)
+ =>
+  blen(n) == 3;
+
+  bnum(n) &
+  btest(n<100)
+ =>
+  blen(n) == 2;
+
+  bnum(n) &
+  btest(n<10)
+ =>
+  blen(n) == 1;
+
+
+
+  brule(PRSPX.4,(I,i)) &
+  bmodr(PRSPX.4,I)
+ =>
+  rci;
+
+  brule(PRSPX.4,(I)) &
+  bmodr(PRSPX.4,(I,i))
+ =>
+  mci_InCASE(i);
+
+  brule(PRSPX.4,(I)) &
+  bmodr(PRSPX.4,(I,i))
+ =>
+  mci(i);
+
+  InCASE &
+  brule(PRSPX.5,(M,N,P)) &
+/*  ReadMaxLength(N) & */
+  mci_InCASE(((N+1)/4)+1+i)
+ =>
+  mci(i);
+
+
+  ps(n)
+ =>
+  ind(n);
+
+  InCASE &
+  ReadCASEIndent(i) &
+  PrintSpacesToMaxLength(0) &
+  ps(n+1+4*i)
+ =>
+  ind(n);
+
+  CASEcolon &
+  ResetCASEcolon &
+  ps(n)
+ =>
+  ind(n);
+
+
+
+  smlnm1(n);
+
+  bnum(n) &
+  ReadMaxLength(N) &
+  btest(n>N) &
+  ModifyMaxLength(n)
+ =>
+  smlnm1(n);
+
+  smlnm1(n+blen(b))
+ =>
+  smlnm(b)(n);
+
+  smlnm(a)(n+blen(b)+1)
+ =>
+  smlnm(a,b)(n);
+
+  smlnm(x)(0)
+ =>
+  smlnm0(x);
+
+
+
+  ReadMaxLength(N) &
+  ModifyMaxLength(N+n)
+ =>
+  iml(n);
+
+
+  sml(blen(p))
+ =>
+  sml(p);
+
+  bnum(n)
+ => 
+  sml(n);
+
+  bnum(n) &
+  ReadMaxLength(N) &
+  btest(n>N) &
+  ModifyMaxLength(n)
+ => 
+  sml(n);
+
+  sml(?);
+
+
+  ps(0);
+
+  bprintf(" ")
+ =>
+  ps(1);
+
+  btest(n>=2) &
+  bprintf("  ") &
+  ps(n-2)
+ =>
+  ps(n);
+
+  btest(n>=4) &
+  bprintf("    ") &
+  ps(n-4)
+ =>
+  ps(n);
+
+  btest(n>=8) &
+  bprintf("        ") &
+  ps(n-8)
+ =>
+  ps(n);
+
+  btest(n>=16) &
+  bprintf("                ") &
+  ps(n-16)
+ =>
+  ps(n);
+
+  ReadMaxLength(N) &
+  ps(N-(n+blen(b)))
+ =>
+  psnm(b)(n);
+
+  psnm(a)(n+blen(b)+1)
+ =>
+  psnm(a,b)(n);
+
+  psnm(x)(0)
+ =>
+  psnm0(x);
+
+  psnm(x)(0)
+ =>
+  psnm0(b2n(x));
+
+  psnm(x)(0)
+ =>
+  psnm0(u2n(x));
+
+  psnm(x)(0)
+ =>
+  psnm0(n2b(x));
+
+  psnm(x)(1)
+ =>
+  psnm0(n2u(x));
+
+  psnm(x)(1)
+ =>
+  psnm0(n2ps(x));
+
+  psnm(x)(1)
+ =>
+  psnm0(n2ns(x));
+
+
+  ReadMaxLength(N) &
+  ps(N-n)
+ =>
+  ps0(n)
+
+END
+
+&
+
+THEORY PrintSemiColonX IS
+
+#define PrintSemiColonIfReqd  bcall(((WRITE;MODR)~;PrintSemiColonX)~: pr_sc)
+
+  ?;
+#define SetSemiColonNotRequired  bmodr(PrintSemiColonX.1,0)
+#define SetSemiColonRequired     bmodr(PrintSemiColonX.1,1)
+#define SemiColonNotRequired     brule(PrintSemiColonX.1,0)
+
+  bprintf("; ")
+ =>
+  pr_sc;
+
+  SemiColonNotRequired &
+  SetSemiColonRequired
+ =>
+  pr_sc  
+
+END
+
+&
+
+THEORY CreLocalVarStoreX IS
+
+#define cre_loc_var_sto_tac   (((MAP;RULE)~;CreLocalVarStoreX)~)
+
+#define CreLocalVarStore      bcall(cre_loc_var_sto_tac: clvs)
+
+  clvs2(o,?);
+
+  bcrelr(Local_var_storeX,(o(v:t)))
+ =>
+  clvs2(o,v(t));
+
+  clvs1(?);
+
+  clvs2(o) bsmap v
+ =>
+  clvs1(o(?|VBL(v)));
+
+  brule(VBLStackX.3,V) &
+  clvs1 bsmap V
+ =>
+  clvs
+
+END
+
+&
+
+THEORY StoreSetParamsX IS
+
+#define StoreSetParams(x,y) bcall(((MAP;MODR)~;StoreSetParamsX)~:ssp(x)(y))
+
+ ?;  /* "SetParams" */
+
+  ssp1(C,p);
+
+  bsearch((card(p):NAT1),(C&?),D) &
+  ReadSetParams(P) &
+  ModifySetParams((P,p))
+ =>
+  ssp1(C,p);
+
+  ssp1(y) bsmap x
+ =>
+  ssp(x)(y)
+
+END
+
+&
+
+THEORY DetermineTypeExpressionX IS
+
+#define det_type_expr_tac (((MODR)~;DetermineTypeExpressionX)~)
+
+#define DetermineTypeExpression(x) bcall(det_type_expr_tac: dte(x))
+
+  ?;
+#define ReadTypeExpr(x)    brule(DetermineTypeExpressionX.1,x)
+#define ModifyTypeExpr(x)  bmodr(DetermineTypeExpressionX.1,x)
+
+  ?;
+#define ModifyTypeExprNotFound  bmodr(DetermineTypeExpressionX.2,0)
+#define ModifyTypeExprFound     bmodr(DetermineTypeExpressionX.2,1)
+#define TypeExprFound           brule(DetermineTypeExpressionX.2,1)
+
+  (
+    (BYTE     :  BLE  : (?<=?)),
+    (BYTE     :  BGE  : (?>=?)),
+    (BYTE     :  BLT  : (?<?)),
+    (BYTE     :  BGT  : (?>?)),
+    (BYTE     :  BEQ  : (?=?)),
+    (BYTE     :  BNE  : (?/=?)),
+    (BYTE     :  BADD : (?+?)),
+    (BYTE     :  BSUB : (?-?)),
+    (BYTE     :  BMUL : (?*?)),
+    (BYTE     :  BDIV : (?/?)),
+    (BYTE     :  BMOD : (? mod ?)),
+
+    (BYTE     :  BAND : (?,?)),
+    (BYTE     :  BOR  : (?,?)),
+    (BYTE     :  BXOR : (?,?)),
+    (BYTE     :  BNOT : (?,?)),
+
+    (BYTE     :  BOOL2B : (?...__...__...?)), /* dummy operator */
+    (BOOLEAN  :  B2BOOL : (?...__...__...?)), /* dummy operator */
+
+    (BYTE     :  HI     : (?...__...__...?)), /* dummy operator */
+    (BYTE     :  LO     : (?...__...__...?)), /* dummy operator */
+
+    (UNSIGNED :  JOIN : (?,?)),
+
+    (UNSIGNED :  ULE  : (?<=?)),
+    (UNSIGNED :  UGE  : (?>=?)),
+    (UNSIGNED :  ULT  : (?<?)),
+    (UNSIGNED :  UGT  : (?>?)),
+    (UNSIGNED :  UEQ  : (?=?)),
+    (UNSIGNED :  UNE  : (?/=?)),
+    (UNSIGNED :  UADD : (?+?)),
+    (UNSIGNED :  USUB : (?-?)),
+    (UNSIGNED :  UMUL : (?*?)),
+    (UNSIGNED :  UDIV : (?/?)),
+    (UNSIGNED :  UMOD : (? mod ?)),
+
+    (UNSIGNED     :  UAND : (?,?)),
+    (UNSIGNED     :  UOR  : (?,?)),
+    (UNSIGNED     :  UXOR : (?,?)),
+    (UNSIGNED     :  UNOT : (?,?)),
+
+    (UNSIGNED     :  JOIN   : (?...__...__...?)) /* dummy operator */
+
+  );
+#define ReadSLIBBuiltInFunctions(x)   brule(DetermineTypeExpressionX.3,x)
+
+  (
+    (not(BEQ)  :  BNE),
+    (not(BNE)  :  BEQ),
+    (not(BLE)  :  BGT),
+    (not(BGE)  :  BLT),
+    (not(BLT)  :  BGE),
+    (not(BGT)  :  BLE),
+
+    (not(UEQ)  :  UNE),
+    (not(UNE)  :  UEQ),
+    (not(ULE)  :  UGT),
+    (not(UGE)  :  ULT),
+    (not(ULT)  :  UGE),
+    (not(UGT)  :  ULE)
+
+  );
+#define ReadNegSLIBBuiltInFunctions(x)   brule(DetermineTypeExpressionX.4,x)
+
+  ((?<=?),(?>=?),(?<?),(?>?),(?=?),(?/=?),(?+?),(?-?),(?*?),(?/?),(? mod ?));
+#define ReadBuiltInJOK2s(x)         brule(DetermineTypeExpressionX.5,x)
+
+  (BITSEQ,BYTE,UNSIGNED,SIGNED,BOOLEAN,BOOL);
+#define ReadValidPaspTypes(x)      brule(DetermineTypeExpressionX.6,x)
+
+  (
+   (n2b:BYTE),
+   (n2u:UNSIGNED),
+   (u2b:BYTE),
+   (b2u:UNSIGNED),
+   (ps2u:UNSIGNED),
+   (ns2u:UNSIGNED),
+   (bs2u:UNSIGNED),
+   (b2bs:BYTE),          /* treat BITSEQ as BYTE */
+   (u2bs:BYTE),          /* treat BITSEQ as BYTE */
+   (bs2b:BYTE),
+   (n2bs:BYTE),          /* treat BITSEQ as BYTE */
+   (b2bl:BOOL),
+   (bl2b:BYTE),
+   (lo:BYTE),
+   (hi:BYTE)
+  );
+#define ReadConversionFunctions(x)  brule(DetermineTypeExpressionX.7,x)
+
+  (b2n,u2n,bs2n,ps2n,us2n,bl2n);
+#define ReadNatConversionFunctions(x)  brule(DetermineTypeExpressionX.8,x)
+
+  (
+   (MinByt:BYTE),
+   (MaxByt:BYTE),
+   (MinUns:UNSIGNED),
+   (MaxUns:UNSIGNED),
+   (MinSgn:SIGNED),
+   (MaxSgn:SIGNED)
+  );
+#define ReadBuiltInMinMaxConstants(x)  brule(DetermineTypeExpressionX.9,x)
+
+  (
+   ?,
+   BOOL
+  );
+#define ReadNonBYTEenum(x)  brule(DetermineTypeExpressionX.10,x)
+
+  (
+   BSPUT,
+   BSGET
+  );
+#define ReadNonTranslatedOps(x)  brule(DetermineTypeExpressionX.11,x)
+
+  (
+   ( BINC : BADD : n2b(1) ),
+   ( BDEC : BSUB : n2b(1) ),
+   ( UINC : UADD : n2u(1) ),
+   ( UDEC : USUB : n2u(1) ),
+   ( SINC : SADD : n2ps(1) ),
+   ( SDEC : SSUB : n2ps(1) )
+  );
+#define ReadIncDecOps(x)  brule(DetermineTypeExpressionX.12,x)
+
+  dte(a);
+
+
+
+  bcall((Final_sets_setting_storeX~;MODR): ModifyTypeExpr(t))
+ =>
+  mod_type_expr(t);
+  
+  ReadEnumerationTypes(T) &
+  bsearch((a:t),T,U) &
+  bcall((Final_sets_setting_storeX~;MODR): ModifyTypeExpr(BYTE))
+ =>
+  mod_type_expr(t);
+
+  ReadNonBYTEenum(E) &
+  bsearch(t,E,F) &
+  bcall((Final_sets_setting_storeX~;MODR): ModifyTypeExpr(t))
+ =>
+  mod_type_expr(t);
+
+
+
+  ReadEnumerationTypes(T) &
+  bsearch((a:t),T,U) &
+  mod_type_expr(t) &
+  ModifyTypeExprFound
+ =>
+  dte(a);
+
+  ReadConstantsTypes(T) &
+  bsearch((a:t),T,U) &
+  mod_type_expr(t) &
+  ModifyTypeExprFound
+ =>
+  dte(a);
+
+  ReadCurrentOpName(o) &
+  ReadOpTypeInfo(T) &
+  bsearch((o(q)==t),T,U) &
+  bsearch((a:x),(t&?),u) &
+  mod_type_expr(x) &
+  ModifyTypeExprFound
+ =>
+  dte(a);
+
+  ReadCurrentOpName(o) &
+  brule(Local_var_storeX.N,(o(a:t))) &
+  mod_type_expr(t) &
+  ModifyTypeExprFound
+ =>
+  dte(a);
+
+  brule(GlobalSeen_var_storeX.N,(a:t)) &
+  mod_type_expr(t) &
+  ModifyTypeExprFound
+ =>
+  dte(a);
+
+  brule(Global_var_storeX.N,(a:t:M)) &
+  mod_type_expr(t) &
+  ModifyTypeExprFound
+ =>
+  dte(a);
+
+
+  dte(a) &
+  dte(b)
+ =>
+  dte(a mod b);
+
+  dte(a) &
+  dte(b)
+ =>
+  dte(a / b);
+
+  dte(a) &
+  dte(b)
+ =>
+  dte(a * b);
+
+  dte(a) &
+  dte(b)
+ =>
+  dte(a - b);
+
+  dte(a) &
+  dte(b)
+ =>
+  dte(a + b);
+
+  ModifyTypeExpr(BYTE) &
+  ModifyTypeExprFound
+ =>
+  dte(u2b(a));
+
+  ModifyTypeExpr(BYTE) &
+  ModifyTypeExprFound
+ =>
+  dte(n2b(a));
+
+  ModifyTypeExpr(UNSIGNED) &
+  ModifyTypeExprFound
+ =>
+  dte(ps2u(a));
+
+  ModifyTypeExpr(UNSIGNED) &
+  ModifyTypeExprFound
+ =>
+  dte(ns2u(a));
+
+  ModifyTypeExpr(UNSIGNED) &
+  ModifyTypeExprFound
+ =>
+  dte(b2u(a));
+
+  ModifyTypeExpr(UNSIGNED) &
+  ModifyTypeExprFound
+ =>
+  dte(n2u(a));
+
+  ModifyTypeExpr(SIGNED) &
+  ModifyTypeExprFound
+ =>
+  dte(u2ns(a));
+
+  ModifyTypeExpr(SIGNED) &
+  ModifyTypeExprFound
+ =>
+  dte(u2ps(a));
+
+  ModifyTypeExpr(SIGNED) &
+  ModifyTypeExprFound
+ =>
+  dte(n2ps(a));
+
+  ModifyTypeExpr(SIGNED) &
+  ModifyTypeExprFound
+ =>
+  dte(n2ns(a));
+
+  TypeExprFound
+ =>
+  x
+
+END
+
+&
+
+THEORY ProcessExprX IS
+
+  ?;
+#define ReadUnprocessedExpr(v)     brule(ProcessExprX.1,v)
+#define ModifyUnprocessedExpr(v)   bmodr(ProcessExprX.1,v)
+
+  ?;
+#define ReadProcessedExpr(x,y) \
+ \
+     brule(ProcessExprX.2,W) & \
+     bsearch((x|y),W,U) & \
+     bcall(MODR:bmodr(ProcessExprX.2,U))
+     
+#define ModifyProcessedExpr(z) \
+ \
+     brule(ProcessExprX.2,X) & \
+     ReadUnprocessedExpr(y) & \
+     bmodr(ProcessExprX.2,(X;(y|z)))
+
+
+#define proc_pasp_expr_tac (((FLAT;MAP;MODR)~;ProcessExprX)~)
+
+#define ProcessExpr(J) bcall(proc_pasp_expr_tac: \
+                         (bmodr(ProcessExprX.1,J) & strip(?|?;J)))
+
+
+  Writef(("\n\n  Can't translate % (%)\n",s,t)) &
+  SetTRLError
+ =>
+  rbld(Z | Y;s;t);
+
+/***
+HERE((Z))&
+***/
+  ModifyProcessedExpr(Z)
+ =>
+  rbld( ? | ?;Z );
+
+/***
+HERE((rbld( X | Y;a )))&
+***/
+  rbld( X | Y;a )
+ =>
+  rbld( X;a | Y );
+
+/***
+HERE((rbld( X | Y;f(a) )))&
+***/
+  rbld( X | Y;f(a) )
+ =>
+  rbld( X;f(?) | Y;a );
+
+/***
+HERE((rbld( X | Y;JOK1(a) )))&
+***/
+  rbld( X | Y;JOK1(a) )
+ =>
+  rbld( X;JOK1(?) | Y;a );
+
+  ReadNegSLIBBuiltInFunctions(N) &
+  bsearch((not(f):g),N,M) &
+  ProcessExprConversionWarn(not(f),g) &
+/***
+HERE((rbld( X | Y;g(a))))&
+***/
+  rbld( X | Y;g(a))
+ =>
+  rbld( X;not(?) | Y;f(a) );
+
+  ReadNegSLIBBuiltInFunctions(N) &
+  bsearch((not(f):g),N,M) &
+  TRLErrorSet &
+/***
+HERE((rbld( X | Y;g(a))))&
+***/
+  rbld( X | Y;g(a))
+ =>
+  rbld( X;not(?) | Y;f(a) );
+
+/***
+HERE((rbld( X | Y;(a JOK2 b) )))&
+***/
+  rbld( X | Y;(a JOK2 b) )
+ =>
+  rbld( X;(? JOK2 ?) | Y;a;b );
+
+/***
+HERE((rbld( X | Y;a )))&
+***/
+  rbld( X | Y;a )
+ =>
+  rbld( X | Y;not(not(a)) );
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((u:f:(? JOK2 ?)),F,G) &
+  ProcessExprConversionWarn((s JOK2 t),f) &
+/***
+HERE((rbld( X | Y;(f(a,b)) )))&
+***/
+  rbld( X | Y;(f(a,b)) )
+ =>
+  rbld( X;u;(s JOK2 t) | Y;a;b );
+
+/***
+HERE((rbld( X | Y;(f(a,b)) )))&
+***/
+  InCASE &
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((u:f:(? = ?)),F,G) &
+  rbld( X | Y;(f(a,b)) )
+ =>
+  rbld( X;u;(s = t) | Y;a;b );
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((u:f:(? JOK2 ?)),F,G) &
+  TRLErrorSet &
+/***
+HERE((rbld( X | Y;(f(a,b)) )))&
+***/
+  rbld( X | Y;(f(a,b)) )
+ =>
+  rbld( X;u;(s JOK2 t) | Y;a;b );
+
+/***
+HERE((rbld( X | ? )))&
+***/
+  rbld( X | ? )
+ =>
+  strip( X | ? );
+
+/***
+HERE(( strip( X;a | Z )))&
+***/
+  strip( X;a | Z )
+ =>
+  strip( X | Z;a );
+
+/***
+HERE((strip( X;f(?) | Z;a )))&
+***/
+  strip( X;f(?) | Z;a )
+ =>
+  strip( X | Z;(f(a)) );
+
+/***
+HERE((strip( X;JOK1(?) | Z;a )))&
+***/
+  strip( X;JOK1(?) | Z;a )
+ =>
+  strip( X | Z;(JOK1(a)) );
+
+/***
+HERE((strip( X;(? JOK2 ?) | Z;a;c )))&
+***/
+  strip( X;(? JOK2 ?) | Z;a;c )
+ =>
+  strip( X | Z;(a JOK2 c) );
+
+
+
+  ReadBuiltInJOK2s(B) &
+  bsearch((? JOK2 ?),B,C) &
+  InformCantFindBuiltInFunction(a JOK2 c) &
+  SetTRLError
+ =>
+  strip_built_in( X;(? JOK2 ?) | Z;a;c );
+
+
+
+
+
+  ReadTypeExpr(BOOLEAN) &
+  strip( X | Z;((a=TRUE&c=TRUE)or(a=FALSE&c=FALSE)))
+ =>
+  strip_built_in( X;(? = ?) | Z;a;c );
+
+
+
+
+
+  ReadBuiltInJOK2s(B) &
+  bsearch((? JOK2 ?),B,C) &
+  TRLErrorSet
+ =>
+  strip_built_in( X;(? JOK2 ?) | Z;a;c );
+
+/*
+  ReadTypeExpr(t) &
+  ReadValidPaspTypes(T) &
+  bsearch(t,T,U) &
+/???
+HERE((strip( X;t;(a JOK2 c) | Z;a;c )))&
+???/
+  strip( X;t;(a JOK2 c) | Z;a;c )
+ =>
+  strip_built_in( X;(? JOK2 ?) | Z;a;c );
+*/
+
+  ReadTypeExpr(t) &
+  ReadValidPaspTypes(T) &
+  bsearch(BOOLEAN,T,U) &
+  bsearch(t,U,W) &
+/***
+HERE((strip( X;t;(a JOK2 c) | Z;a;c )))&
+***/
+  strip( X;t;(a JOK2 c) | Z;a;c )
+ =>
+  strip_built_in( X;(? JOK2 ?) | Z;a;c );
+
+  ReadTypeExpr(?) &
+  ReadCurrentOpName(o) &
+  InformCantType(o,(a JOK2 c)) &
+  SetTRLError
+ =>
+  strip_built_in( X;(? JOK2 ?) | Z;a;c );
+
+  ReadTypeExpr(?) &
+  TRLErrorSet
+ =>
+  strip_built_in( X;(? JOK2 ?) | Z;a;c );
+
+  ReadBuiltInJOK2s(B) &
+  bsearch((? JOK2 ?),B,C) &
+  ModifyTypeExprNotFound &
+  ModifyTypeExpr(?) &
+  DetermineTypeExpression(a) &
+  DetermineTypeExpression(c) &
+/***
+HERE((strip_built_in( X;(? JOK2 ?) | Z;a;c )))&
+***/
+  strip_built_in( X;(? JOK2 ?) | Z;a;c )
+ =>
+  strip( X | Z;(a JOK2 c) );
+
+
+
+
+/***
+HERE((strip( X | Z;n2b(1))))&
+***/
+  strip( X | Z;n2b(1))
+ =>
+  strip( X | Z;bl2b(TRUE) );
+
+/***
+HERE((strip( X | Z;n2b(0))))&
+***/
+  strip( X | Z;n2b(0))
+ =>
+  strip( X | Z;bl2b(FALSE) );
+
+
+/***
+HERE((strip( X | Z;TRUE)))&
+***/
+  bnum(n) &
+  strip( X | Z;TRUE)
+ =>
+  strip( X | Z;b2bl(n2b(n)) );
+
+/***
+HERE((strip( X | Z;FALSE)))&
+***/
+  strip( X | Z;FALSE)
+ =>
+  strip( X | Z;b2bl(n2b(0)) );
+
+
+
+
+/***
+HERE((strip( X | Z;not(a))))&
+***/
+  strip( X | Z;not(a))
+ =>
+  strip( X | Z;(FALSE = a) );
+
+/***
+HERE((strip( X | Z;not(a))))&
+***/
+  strip( X | Z;not(a))
+ =>
+  strip( X | Z;(a = FALSE) );
+
+/***
+HERE((strip( X | Z;a)))&
+***/
+  strip( X | Z;a)
+ =>
+  strip( X | Z;(TRUE = a) );
+
+/***
+HERE((strip( X | Z;a)))&
+***/
+  strip( X | Z;a)
+ =>
+  strip( X | Z;(a = TRUE) );
+
+
+
+/***
+HERE((strip( X | Z;a)))&
+***/
+  strip( X | Z;a)
+ =>
+  strip( X | Z;(bool(a)) );
+
+/***
+HERE((strip( X | Z;not(a = c) )))&
+***/
+  strip( X | Z;not(a = c) )
+ =>
+  strip( X | Z;(a /= c) );
+
+
+  TRLErrorSet
+ =>
+  x
+
+END
+
+&
+
+THEORY CheckSimpleExpressionX IS
+
+#define chk_simp_expr_tac (((FLAT;MAP;MODR)~;CheckSimpleExpressionX)~)
+
+#define CheckSimpleExpression(J) bcall(chk_simp_expr_tac: cse_0(J))
+
+  0;
+#define SetProcessingExprGuard         bmodr(CheckSimpleExpressionX.1,1)
+#define ProcessingExprGuard            brule(CheckSimpleExpressionX.1,1)
+#define SetProcessingExprActualParam   bmodr(CheckSimpleExpressionX.1,2)
+#define ProcessingExprActualParam      brule(CheckSimpleExpressionX.1,2)
+#define SetProcessingExprRHS           bmodr(CheckSimpleExpressionX.1,3)
+#define ProcessingExprRHS              brule(CheckSimpleExpressionX.1,3)
+#define ResetProcessingExpr            bmodr(CheckSimpleExpressionX.1,0)
+
+
+  ProcessingExprActualParam &
+  ReadUnprocessedExpr(e) &
+  ReadCurrentOpName(o) &
+  InformActualParamNotSimpleSubExpression(o,a,e) &
+  SetTRLError
+ =>
+  cse1(a);
+
+  ProcessingExprActualParam &
+  ReadUnprocessedExpr(a) &
+  ReadCurrentOpName(o) &
+  InformActualParamNotSimpleExpression(o,a) &
+  SetTRLError
+ =>
+  cse1(a);
+
+  ProcessingExprGuard &
+  ReadUnprocessedExpr(e) &
+  ReadCurrentOpName(o) &
+  InformGuardNotSimpleSubExpression(o,a,e) &
+  SetTRLError
+ =>
+  cse1(a);
+
+  ProcessingExprGuard &
+  ReadUnprocessedExpr((BAND(a,b)=n2b(c))) &      /* From ISBITSET */
+  cse1(a) &
+  cse1(b) &
+  cse1(c)
+ =>
+  cse1(BAND(a,b));
+
+  ProcessingExprGuard &
+  ReadUnprocessedExpr(a) &
+  ReadCurrentOpName(o) &
+  InformGuardNotSimpleExpression(o,a) &
+  SetTRLError
+ =>
+  cse1(a);
+
+  ProcessingExprRHS &
+  ReadUnprocessedExpr(e) &
+  ReadCurrentOpName(o) &
+  InformRHSNotSimpleSubExpression(o,a,e) &
+  SetTRLError
+ =>
+  cse1(a);
+
+  ProcessingExprRHS &
+  ReadUnprocessedExpr(a) &
+  ReadCurrentOpName(o) &
+  InformRHSNotSimpleExpression(o,a) &
+  SetTRLError
+ =>
+  cse1(a);
+
+  ReadNatConversionFunctions(F) &
+  bsearch(f,F,G) &
+  cse1(a)
+ =>
+  cse1(f(a));
+
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  cse1(a)
+ =>
+  cse1(f(a));
+
+  bident(a)
+ =>
+  cse1(a);
+
+  bnum(a)
+ =>
+  cse1(a);
+
+  cse1(TRUE);
+
+  cse1(FALSE);
+
+
+/*
+  ProcessingExprRHS &
+  bnum(a) &
+  bnum(b)
+ =>
+  cse1(join(n2b(a),n2b(b)));
+*/
+
+
+
+  cse1(a)
+ =>
+  cse(a);
+
+  ProcessingExprActualParam &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a + b);
+
+  ProcessingExprActualParam &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a - b);
+
+  ProcessingExprActualParam &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a * b);
+
+  ProcessingExprActualParam &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a / b);
+
+  ProcessingExprActualParam &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a mod b);
+
+
+
+  ProcessingExprGuard &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a <= b);
+
+  ProcessingExprGuard &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a >= b);
+
+  ProcessingExprGuard &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a < b);
+
+  ProcessingExprGuard &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a > b);
+
+  ProcessingExprGuard &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a = b);
+
+  ProcessingExprGuard &
+  cse1(a) &
+  cse1(b)
+ =>
+  cse(a /= b);
+
+  ProcessingExprGuard &
+  cse(a)
+ =>
+  cse(not(a));
+
+  ProcessingExprGuard &
+  cse(a) &
+  cse(b)
+ =>
+  cse(a or b);
+
+  ProcessingExprGuard &
+  cse(a) &
+  cse(b)
+ =>
+  cse(a & b);
+
+  ProcessingExprGuard &
+  blident(a)
+ =>
+  cse(a);
+
+
+
+
+  ProcessingExprRHS &
+  cse(bool(a)) &
+  cse(bool(b))
+ =>
+  cse(bool(a or b));
+
+  ProcessingExprRHS &
+  cse(bool(a)) &
+  cse(bool(b))
+ =>
+  cse(bool(a & b));
+
+
+
+
+
+  ProcessingExprRHS &
+  cse(a) &
+  cse(b)
+ =>
+  cse(bool(a <= b));
+
+  ProcessingExprRHS &
+  cse(bool(a)) &
+  cse(bool(b))
+ =>
+  cse(bool(a) or bool(b));
+
+  ProcessingExprRHS &
+  cse(bool(a)) &
+  cse(bool(b))
+ =>
+  cse(bool(a)&bool(b));
+
+  ProcessingExprRHS &
+  cse(a) &
+  cse(b)
+ =>
+  cse(bool(a >= b));
+
+  ProcessingExprRHS &
+  cse(a) &
+  cse(b)
+ =>
+  cse(bool(a < b));
+
+  ProcessingExprRHS &
+  cse(a) &
+  cse(b)
+ =>
+  cse(bool(a > b));
+
+  ProcessingExprRHS &
+  cse(a) &
+  cse(b)
+ =>
+  cse(bool(a /= b));
+
+  ProcessingExprRHS &
+  cse(a) &
+  cse(b)
+ =>
+  cse(bool(a = b));
+
+  ProcessingExprRHS &
+  cse(a)
+ =>
+  cse(not(a));
+
+  ProcessingExprRHS &
+  cse(a) &
+  cse(b)
+ =>
+  cse(a or b);
+
+  ProcessingExprRHS &
+  cse(a) &
+  cse(b)
+ =>
+  cse(a & b);
+
+  ProcessingExprRHS &
+  ReadOpTypeInfo(T) &
+  bsearch((n(q)==t),T,U) &
+  cse bsmap p
+ =>
+  cse(n(p));
+
+
+
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:f:x),F,G) &
+  cse bsmap a
+ =>
+  cse(f(a));
+
+  brule(GlobalSeen_var_storeX.B,(f:?)) &
+  ReadCurrentOpName(o) &
+  InformNotPASPType(o,f) &
+  SetTRLError
+ =>
+  cse(f(a));
+
+  brule(GlobalSeen_var_storeX.B,(f:x..y+->z)) &
+  cse(a)
+ =>
+  cse(f(a));
+
+  brule(Global_var_storeX.B,(f:(x..y+->z):M)) &
+  cse(a)
+ =>
+  cse(f(a));
+
+
+
+  cse_0(a);
+
+  FirstRunProcessOp &
+  ProcessingExprActualParam &
+  ModifyUnprocessedExpr(a) &
+  cse(a)
+ =>
+  cse_0(a);
+
+  FirstRunProcessOp &
+  ProcessingExprActualParam &
+  cse_0 bsmap (a,b)
+ =>
+  cse_0(a,b);
+
+  FirstRunProcessOp &
+  ProcessingExprRHS &
+  ModifyUnprocessedExpr(a) &
+  cse(a)
+ =>
+  cse_0(a);
+
+  FirstRunProcessOp &
+  ProcessingExprGuard &
+  ModifyUnprocessedExpr(a) &
+  cse(a)
+ =>
+  cse_0(a)
+
+END
+
+&
+
+THEORY PrintExprX IS
+
+  ?;
+#define Read_prt_expr_type(x)    brule(PrintExprX.1,x)
+#define Modify_prt_expr_type(x)  bmodr(PrintExprX.1,x)
+
+  "\n\n  not yet set ...";
+#define ReadExprErrMessg(x)    brule(PrintExprX.2,x)
+#define ModifyExprErrMessg(x)  bmodr(PrintExprX.2,x)
+
+  0;
+#define PrintExpr_err_printed              brule(PrintExprX.3,1)
+#define ModifyPrintExpr_err_printed        bmodr(PrintExprX.3,1)
+#define ModifyPrintExpr_err_not_printed    bmodr(PrintExprX.3,0)
+
+  0;
+#define PrintExprErrIsFatal              brule(PrintExprX.4,1)
+#define ModifyPrintExprErrFatal          bmodr(PrintExprX.4,1)
+#define ModifyPrintExprErrNotFatal       bmodr(PrintExprX.4,0)
+
+
+#define pr_expr_tac (((MODR;WRITE)~;PrintExprX)~)
+
+#define PrintExpr(x)    bcall(pr_expr_tac: prt_expr00(x))
+
+
+  prt_expr_err_check_fatal;
+
+  PrintExprErrIsFatal &
+  SetTRLError
+ =>
+  prt_expr_err_check_fatal;
+
+  ModifyPrintExpr_err_printed &
+  ReadExprErrMessg(m) &
+  WritefNoARI((m)) &
+  prt_expr_err_check_fatal
+ =>
+  prt_expr_err;
+
+  PrintExpr_err_printed
+ =>
+  prt_expr_err;
+
+
+
+  bprintf("%",a) &
+  prt_expr_err
+ =>
+  prt_expr(a);
+
+  bident(a) &
+  bprintf("%",a)
+ =>
+  prt_expr(a);
+
+
+  bprintf("(+32767)")
+ =>
+  prt_expr(MaxSgn);
+
+  bprintf("FALSE")
+ =>
+  prt_expr(false);
+
+  bprintf("TRUE")
+ =>
+  prt_expr(true);
+
+  bprintf("(-32768)")
+ =>
+  prt_expr(MinSgn);
+
+  bprintf("065535")
+ =>
+  prt_expr(MaxUns);
+
+  bprintf("00")
+ =>
+  prt_expr(MinUns);
+
+  bprintf("255")
+ =>
+  prt_expr(MaxByt);
+
+  bprintf("0")
+ =>
+  prt_expr(MinByt);
+
+  bident(a) &
+  ReadMachineNATParameters(P) &
+  bsearch(a,(P,?),Q) &
+  Read_prt_expr_type(BYTE) &
+  bprintf("%",a)
+ =>
+  prt_expr(a);
+
+  bident(a) &
+  ReadMachineNATParameters(P) &
+  bsearch(a,(P,?),Q) &
+  Read_prt_expr_type(UNSIGNED) &
+  bprintf("0%",a)
+ =>
+  prt_expr(a);
+
+  bident(a) &
+  ReadDummyParamNames(N) &
+  bsearch((a:d),N,M) &
+  bprintf("%",a(0))
+ =>
+  prt_expr(a);
+
+  bnum(a) &
+  bprintf("%",a)
+ =>
+  prt_expr(a);
+
+  bnum(a) &
+  Read_prt_expr_type(UNSIGNED) &
+  bprintf("0%",a)
+ =>
+  prt_expr(a);
+
+  bnum(a) &
+  Read_prt_expr_type(SIGNED) &
+  bprintf("(+%)",a)
+ =>
+  prt_expr(a);
+
+  bnum(a) &
+  Read_prt_expr_type(SIGNED_U) &
+  bprintf("(-%)",a)
+ =>
+  prt_expr(a);
+
+
+
+  prt_expr(a) &
+  bprintf(",") &
+  prt_expr(b)
+ =>
+  prt_expr(a,b);
+
+
+
+  brule(GlobalSeen_var_storeX.N,(f:(a..b+->c))) &
+  bprintf("%[",f) &
+  prt_expr(g) &
+  bprintf("]")
+ =>
+  prt_expr(f(g));
+
+  brule(Global_var_storeX.N,(f:(a..b+->c):M)) &
+  bprintf("%[",f) &
+  prt_expr(g) &
+  bprintf("]")
+ =>
+  prt_expr(f(g));
+
+  ReadSubordinateFunctionNames(F) &
+  bsearch(f(a)(b),F,G) &
+  bprintf("%(",f) &
+  prt_expr(g) &
+  bprintf(")")
+ =>
+  prt_expr(f(g));
+
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((u:f:(? JOK2 ?)),F,G) &
+  bprintf("%(",f) &
+  prt_expr(g) &
+  bprintf(")")
+ =>
+  prt_expr(f(g));
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((SIGNED:f:(J)),F,G) &
+  prt_expr(g) &
+  bprintf(" % ",J) &
+  prt_expr(h)
+ =>
+  prt_expr(f(g,h));
+
+  bprintf(" % ",blank0? JOK2 blank0?)
+ =>
+  prt_expr_JOK2(? JOK2 ?);
+
+  bprintf(" = ")
+ =>
+  prt_expr_JOK2(?=?);
+
+  bprintf(" MOD ")
+ =>
+  prt_expr_JOK2(? mod ?);
+
+  bprintf(" DIV ")
+ =>
+  prt_expr_JOK2(?/?);
+
+  bprintf(" <> ")
+ =>
+  prt_expr_JOK2(? /= ?);
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((SIGNED:f:(? JOK2 ?)),F,G) &
+  bprintf("(") &
+  prt_expr(g) &
+  prt_expr_JOK2(? JOK2 ?) &
+  prt_expr(h) &
+  bprintf(")")
+ =>
+  prt_expr(f(g,h));
+
+
+  ReadIncDecOps(F) &
+  bsearch((f:g:b),F,G) &
+  prt_expr(g(a,b))
+ =>
+  prt_expr(f(a));
+
+
+
+  bprintf("NOT(") &
+  prt_expr(g) &
+  bprintf(")")
+ =>
+  prt_expr(not(g));
+
+
+
+  ReadNatConversionFunctions(F) &
+  bsearch(f,F,G) &
+  Modify_prt_expr_type(t) &
+  prt_expr(g)
+ =>
+  prt_expr(f(g));
+
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  Modify_prt_expr_type(t) &
+  prt_expr(g)
+ =>
+  prt_expr(f(g));
+
+
+/*
+  bprintf(">>(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(BRIGHT(a));
+
+  bprintf("<<(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(BLEFT(a));
+*/
+
+
+
+  bprintf("USGN(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(ns2u(a));
+
+  bprintf("INT(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(u2ns(a));
+
+  bprintf("USGN(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(ps2u(a));
+
+  bprintf("INT(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(u2ps(a));
+
+  bprintf("B2U(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(b2u(a));
+
+  bprintf("U2B(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(u2b(a));
+
+
+  bprintf("USGN(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(ps2u(a));
+
+  bprintf("INT(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(u2ps(a));
+
+
+  bprintf("USGN(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(ns2u(a));
+
+  bprintf("INT(") &
+  prt_expr(a) &
+  bprintf(")")
+ =>
+  prt_expr(u2ns(a));
+
+
+
+
+  bprintf("((") &
+  prt_expr(p) &
+  bprintf(") AND (") &
+  prt_expr(q) &
+  bprintf("))")
+ =>
+  prt_expr(p & q);
+
+  bprintf("((") &
+  prt_expr(p) &
+  bprintf(") OR (") &
+  prt_expr(q) &
+  bprintf("))")
+ =>
+  prt_expr(p or q);
+
+
+
+  Modify_prt_expr_type(?) &
+  prt_expr(x)
+ =>
+  prt_expr0(x);
+
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  Modify_prt_expr_type(t) &
+  prt_expr(x)
+ =>
+  prt_expr0(x);
+
+  ModifyPrintExpr_err_not_printed &
+  prt_expr0(x)
+ =>
+  prt_expr00(x)
+
+END
+
+&
+
+THEORY StoreSubordinateFunctionsX IS
+
+#define sto_sub_func_tac (((MAP;MODR;NEWV)~;StoreSubordinateFunctionsX)~)
+
+#define StoreSubordinateFunctions(x)  bcall(sto_sub_func_tac: ssf(x))
+
+  ssf_dummy(n)(s)(bnewv(d,x))
+ =>
+  ssf_dummy(n)(s)(d);
+
+  d\s &
+  ReadDummyParamNames(N) &
+  ModifyDummyParamNames((N,(n:d)))
+ =>
+  ssf_dummy(n)(s)(d);
+
+  ReadSubordinateFunctionNames(F) &
+  ModifySubordinateFunctionNames((F,o(r)(f)))
+ =>
+  ssf1(r,o,f);
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:o:x),F,G)
+ =>
+  ssf1(r,o,f);
+
+  ssf(x);
+
+  bident(r) &
+  ssf1(r,o,r) &
+  ssf_dummy(o)(x)(dummy)
+ =>
+  ssf(s;(?,I,J,(r<--o));u;v;(w|x);Y);
+
+  bident(r) &
+  ssf1(r,o,r)
+ =>
+  ssf(s;(?,I,J,(r<--o(q)));u;v;W;Y);
+
+  ssf bsmap (N,n)
+ =>
+  ssf(N,n)
+
+END
+
+&
+
+THEORY UnderScoreToSemiColonX IS
+
+#define und2sc_tac (((CATL;SHELL;MODR;WRITE)~;UnderScoreToSemiColonX)~)
+
+#define UnderScoreToSemiColon(x)  bcall(und2sc_tac:u2sc(x))
+
+  ?;
+#define ReadUnderScoreToSemiColon(x)    brule(UnderScoreToSemiColonX.1,x)
+#define ModifyUnderScoreToSemiColon(x)  bmodr(UnderScoreToSemiColonX.1,x)
+
+  InformCantExecute(x) &
+  PFZ
+ =>
+  bshell(x);
+
+  InformCantConnect(".BBBcom") &
+  PFZ
+ =>
+  u2sc2(m);
+
+  bget(".BBBcom",x) &
+  bshell("rm .BBBcom") &
+/***
+HERE((91:x))&
+***/
+  ModifyUnderScoreToSemiColon(x)
+ =>
+  u2sc2(m);
+
+/***
+HERE((90:a))&
+***/
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .BBBcom ; rm -f .BBcom")) &
+  u2sc2(a)  
+ =>
+  u2sc(a)
+
+END
+
+&
+
+THEORY StoreInLineOpsX IS
+
+#define sto_inline_ops_tac (((NEWV;MAP;MODR)~;StoreInLineOpsX)~)
+
+#define StoreInLineOps(x)  bcall(sto_inline_ops_tac: silo(x))
+
+  ?; /* for result of FifoWrite (prefix_;Rename_OP) */
+
+
+
+  ReadInLineOps(Q) &
+  ModifyInLineOps((Q,(x=(a:=BNOT(b)))))
+ =>
+  chk_calculated_op3(x=BEGIN a:=bool(a=FALSE) END)(Rename_NOT)(p); /* Rename_Bool */
+
+  ReadInLineOps(Q) &
+  ModifyInLineOps((Q,(x=(a:=(b or c)))))
+ =>
+  chk_calculated_op3(x=BEGIN a:=bool(a=TRUE or b=TRUE) END)(Rename_OR)(p); /* Rename_Bool */
+
+  ReadInLineOps(Q) &
+  ModifyInLineOps((Q,(x=(a:=(b & c)))))
+ =>
+  chk_calculated_op3(x=BEGIN a:=bool(a=TRUE&b=TRUE) END)(Rename_AND)(p); /* Rename_Bool */
+
+
+
+/*
+  /???
+  Rename_Byt_BS
+  ???/
+
+  ReadInLineOps(Q) &
+  ModifyInLineOps((Q,(x=(a:=BXOR(b,c)))))
+ =>
+  chk_calculated_op3(x=BEGIN a<--f(b,c) END)(Rename_XOR)(p);
+
+  ReadInLineOps(Q) &
+  ModifyInLineOps((Q,(x=(a:=BOR(b,c)))))
+ =>
+  chk_calculated_op3(x=BEGIN a<--f(b,c) END)(Rename_OR)(p);
+
+  ReadInLineOps(Q) &
+  ModifyInLineOps((Q,(x=(a:=BNOT(b)))))
+ =>
+  chk_calculated_op3(x=BEGIN a<--f(b) END)(Rename_NOT)(p);
+
+  ReadInLineOps(Q) &
+  ModifyInLineOps((Q,(x=(a:=BAND(b,c)))))
+ =>
+  chk_calculated_op3(x=BEGIN a<--f(b,c) END)(Rename_AND)(p);
+*/
+
+
+
+  chk_calculated_op2(o)(p);
+
+  ReadInLineOps((Q,q)) &
+  ModifyInLineOps(Q) &
+  chk_calculated_op3(q)(o)(p)
+ =>
+  chk_calculated_op2(o)(p);
+
+  chk_calculated_op1(o);
+
+  brule(StoreInLineOpsX.1,(p;o)) &
+  ReadCalculateInLineOpNames(O) &
+  bsearch(o,O,P) &
+  chk_calculated_op2(o)(p)
+ =>
+  chk_calculated_op1(a);
+
+  FifoWrite_Store((BT_PASP_APP_UNDERSC_M,o,0),(StoreInLineOpsX.1)) &
+  chk_calculated_op1(o)
+ =>
+  chk_calculated_op(o);
+
+  ReadIptSeesOpColonMch(L) &
+  bsearch((o:m),L,M) &
+  IsUsr(m)
+ =>
+  chk_calculated_op(o);
+
+  chk_calculated_op(o); /*** <<< ***/
+
+
+
+  ReadInLineOps(O) &
+  ModifyInLineOps((O,(o(?|?)=x))) &
+  chk_calculated_op(o)
+ =>
+  silo(s;(?,I,J,(o));u;v;(w|x);(y|z));
+
+  ReadInLineOps(O) &
+  ModifyInLineOps((O,(o(?|?)=skip))) &
+  chk_calculated_op(o)
+ =>
+  silo(s;(?,I,J,(o));u;v;(w|?);(y|z));
+
+  ReadInLineOps(O) &
+  ModifyInLineOps((O,(o(?|q)=x))) &
+  chk_calculated_op(o)
+ =>
+  silo(s;(?,I,J,(o(q)));u;v;(w|x);(y|z));
+
+  ReadInLineOps(O) &
+  ModifyInLineOps((O,(o(r|?)=x))) &
+  chk_calculated_op(o)
+ =>
+  silo(s;(?,I,J,(r<--o));u;v;(w|x);(y|z));
+
+  /* Rename_READ from Rename_Read_Byt */
+
+  ReadInLineOps(O) &
+  ModifyInLineOps((O,(o(vv|?)=(vv := r)))) &
+  chk_calculated_op(o)
+ =>
+  silo(o;?,Mod_Op,NonDet_Op,(vv<--o);?;vv;(true|BEGIN vv:=r||r::BYTE END);(true|vv:=r||@s.(s:BYTE==>v:=s)));
+
+
+  ReadInLineOps(O) &
+  ModifyInLineOps((O,(o(r|?)=x))) &
+HERE((55:((O,(o(r|?)=x)))))&
+  chk_calculated_op(o)
+ =>
+  silo(s;(?,I,J,(vvv<--o));u;v;(w|x);(y|z));
+
+  ReadInLineOps(O) &
+  ModifyInLineOps((O,(o(r|q)=x))) &
+  chk_calculated_op(o)
+ =>
+  silo(s;(?,I,J,(r<--o(q)));u;v;(w|x);(y|z));
+
+  silo bsmap (N,n)
+ =>
+  silo(N,n)
+
+END
+
+&
+
+THEORY StoreEnumerationTypesX IS
+
+#define sto_enum_tac   (((MAP;MODR)~;StoreEnumerationTypesX)~)
+
+#define StoreEnumerationTypes(x)   bcall(sto_enum_tac: (set bsmap x))
+
+  ?;
+
+  ReadEnumerationTypes(T) &
+  ModifyEnumerationTypes((T&(e:s)))
+ =>
+  set1(s,e);
+
+  set(x);
+
+  set1(s) bsmap e
+ =>
+  set(s(e))
+
+END
+
+&
+
+THEORY StoreConstantsTypesX IS
+
+#define sto_cst_typ_tac (((MAP;MODR)~;StoreConstantsTypesX)~)
+
+#define StoreConstantsTypes(x)   bcall(sto_cst_typ_tac: sct bsmap x)
+
+  ?;  /* ConstantsTypes */
+
+  sct(x);
+
+  ReadNonOwnConstants(C) &
+  bsearch(c,C,D) &
+  ReadConstantsTypes(T) &
+  ModifyConstantsTypes((T&(c:t)))  
+ =>
+  sct(c:t);
+
+  ReadOwnConstants(C) &
+  bsearch(c,C,D) &
+  ReadConstantsTypes(T) &
+  ModifyConstantsTypes((T&(c:t)))  
+ =>
+  sct(c:t);
+
+  ReadConstantsTypes(T) &
+  bsearch((c:u),T,U)
+ =>
+  sct(c:t)
+
+END
+
+&
+
+THEORY StoreRawSetsSettingsX IS
+
+#define sto_prop_eql_tac (((MAP;MODR)~;StoreRawSetsSettingsX)~)
+
+#define StoreRawSetsSettings(x)   bcall(sto_prop_eql_tac: (srss bsmap x))
+
+  ?;  /* RawSetsSettings */
+
+  srss(x);
+
+  ReadRawSetsSettings(R) &
+  ModifyRawSetsSettings((R,(NAT=a)))
+ =>
+  srss(a=NAT);
+
+  ReadRawSetsSettings(R) &
+  ModifyRawSetsSettings((R,(NAT=a)))
+ =>
+  srss(NAT=a);
+
+  ReadNonOwnSets(S) &
+  bsearch(a,S,T) &
+  ReadRawSetsSettings(R) &
+  ModifyRawSetsSettings((R,(a=b)))
+ =>
+  srss(b=a);
+
+  ReadNonOwnSets(S) &
+  bsearch(a,S,T) &
+  ReadRawSetsSettings(R) &
+  ModifyRawSetsSettings((R,(a=b)))
+ =>
+  srss(a=b);
+
+  ReadOwnSets(S) &
+  bsearch(a,S,T) &
+  ReadRawSetsSettings(R) &
+  ModifyRawSetsSettings((R,(a=b)))
+ =>
+  srss(b=a);
+
+  ReadOwnSets(S) &
+  bsearch(a,S,T) &
+  ReadRawSetsSettings(R) &
+  ModifyRawSetsSettings((R,(a=b)))
+ =>
+  srss(a=b);
+
+  ReadRawSetsSettings(E) &
+  bsearch((a=b),E,F)
+ =>
+  srss(b=a);
+
+  ReadRawSetsSettings(E) &
+  bsearch((a=b),E,F)
+ =>
+  srss(a=b)
+
+END
+
+&
+
+THEORY ProcessParamsX IS
+
+#define proc_param_tac    (((MAP;MODR)~;ProcessParamsX)~)
+
+#define ProcessParams(x,y) \
+       bcall(proc_param_tac: ((pp bsmap x) & (pp1 bsmap y)))
+
+  ?;  /* FormalParameterTypes */
+
+  pp1(p);
+
+  bident(p) &
+  ReadMachineNATParameters(P) &
+  ModifyMachineNATParameters((P,p))
+ =>
+  pp1(p:a..b);
+
+  bident(p) &
+  ReadMachineNATParameters(P) &
+  ModifyMachineNATParameters((P,p))
+ =>
+  pp1(p:NAT);
+
+  pp(x);
+
+  bUpident(t) &
+  ReadFormalParameterTypes(T) &
+  ModifyFormalParameterTypes((T,t))
+ =>
+  pp(t)
+
+END
+
+&
+
+THEORY AddUnderScoreX IS
+
+#define add_und_tac (((MODR;WRITE)~;AddUnderScoreX)~)
+
+#define AddUnderScore(x)  bcall(add_und_tac: au(x))
+
+  ?;
+#define ReadAddUnderScore(x)    brule(AddUnderScoreX.1,x)
+#define ModifyAddUnderScore(x)  bmodr(AddUnderScoreX.1,x)
+
+  ReadCodeModuleFilename(f) &
+  Append(f)
+ =>
+  au2(a);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  au1(a);
+
+  bget(".Bcom",x) &
+  ModifyAddUnderScore(x) &
+  au2(a)
+ =>
+  au1(a);
+
+  Connect(".Bcom") &
+  bprintf("%_\n",a) &
+  au1(a)
+ =>
+  au(a)
+
+END
+
+&
+
+THEORY CreGlobalVarFromImportsX IS
+
+
+#define store_imports_tac \
+        (((MAP;ARI;NEWV~;RULE;FLAT;MODR)~;CreGlobalVarFromImportsX)~)
+
+#define CreGlobalVarFromImports bcall(store_imports_tac: cgvfi(1))
+
+  ?;  /* PaspLibList */
+
+  ReadPaspLibList(M) &
+  ModifyPaspLibList((M,m))
+ =>
+  cgvfi5(m);
+
+  bcrelr(Global_var_storeX,(v : t : M))
+ =>
+  cgvfi4(v)(t)(M);
+
+  bcrelr(Global_var_storeX,(v : (b..c +-> a) : M))
+ =>
+  cgvfi4(v)(a,b,c)(M);
+
+  bcrelr(Global_var_storeX,(v : (b..c +-> a) : (R;UiArr)))
+ =>
+  cgvfi4(v)(a,b,c,d)(R;UiArr); /* d is init elem (retrieved from ReadImportedMchWithParam) */
+
+  bcrelr(Global_var_storeX,(v : (b..c +-> a) : (R;BiArr)))
+ =>
+  cgvfi4(v)(a,b,c,d)(R;BiArr); /* d is init elem (retrieved from ReadImportedMchWithParam) */
+
+  ReadAddUnderScore(p) &
+  cgvfi4(bnewv(p,v))(t)(M)
+ =>
+  cgvfi3(v)(t)(M);
+
+  ReadAddUnderScore(p) &
+  cgvfi4(bnewv(bnewv(p,bo),ol))(t)(M)
+ =>
+  cgvfi3(bol)(t)(M);
+
+  cgvfi2(m)(?|x);
+
+  cgvfi2(m)(x|y)
+ =>
+  cgvfi2(m)(x|y|z);
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;BiArr_File))) &
+  cgvfi5(m) &
+  cgvfi4(R)(p)(R;BiArr_File)
+ =>
+  cgvfi2(m(p))(x|(R;BiArr_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;BiArr))) &
+  cgvfi5(m) &
+  cgvfi4(R)(p)(R;BiArr)
+ =>
+  cgvfi2(m(p))(x|(R;BiArr));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;UiArr_File))) &
+  cgvfi5(m) &
+  cgvfi4(R)(p)(R;UiArr_File)
+ =>
+  cgvfi2(m(p))(x|(R;UiArr_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;UiArr))) &
+  cgvfi5(m) &
+  cgvfi4(R)(p)(R;UiArr)
+ =>
+  cgvfi2(m(p))(x|(R;UiArr));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Byt_File))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(byt)(BYTE)(R;Byt_File)
+ =>
+  cgvfi2(m(p))(x|(R;Byt_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Byt))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(byt)(BYTE)(R;Byt)
+ =>
+  cgvfi2(m(p))(x|(R;Byt));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Byt_BS_File))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(byt)(BYTE)(R;Byt_BS_File)
+ =>
+  cgvfi2(m(p))(x|(R;Byt_BS_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Byt_BS))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(byt)(BYTE)(R;Byt_BS)
+ =>
+  cgvfi2(m(p))(x|(R;Byt_BS));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Uns))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(uns)(UNSIGNED)(R;Uns)
+ =>
+  cgvfi2(m(p))(x|(R;Uns));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Uns_File))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(uns)(UNSIGNED)(R;Uns_File)
+ =>
+  cgvfi2(m(p))(x|(R;Uns_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Uns_BS_File))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(uns)(UNSIGNED)(R;Uns_BS_File)
+ =>
+  cgvfi2(m(p))(x|(R;Uns_BS_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Uns_BS))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(uns)(UNSIGNED)(R;Uns_BS)
+ =>
+  cgvfi2(m(p))(x|(R;Uns_BS));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Bool_File))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(bol)(BOOLEAN)(R;Bool_File)
+ =>
+  cgvfi2(m(p))(x|(R;Bool_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Bool))) &
+/***
+HERE((2 -- cgsvfs3(bol)(BOOLEAN)(R;Bool)))&
+***/
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(bol)(BOOLEAN)(R;Bool)
+ =>
+  cgvfi2(m(p))(x|(R;Bool));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Write_Byt))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(byt_wo)(BYTE)(R;Write_Byt)
+ =>
+  cgvfi2(m(p))(x|(R;Write_Byt));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Read_Byt))) &
+  cgvfi5(m) &
+  AddUnderScore(R) &
+  cgvfi3(byt_ro)(BYTE)(R;Read_Byt)
+ =>
+  cgvfi2(m(p))(x|(R;Read_Byt));
+
+
+
+  ReadUnderScoreToSemiColon(a) &
+  cgvfi2(m(p))(a)
+ =>
+  cgvfi1(m(p));
+
+
+  cgvfi(N);
+
+  brule(Imports_storeX.N,m) &
+  UnderScoreToSemiColon(m) &
+  cgvfi1(m(?)) &
+  cgvfi(N+1)
+ =>
+  cgvfi(N);
+
+  brule(Imports_storeX.N,m(p)) &
+  UnderScoreToSemiColon(m) &
+  cgvfi1(m(p)) &
+  cgvfi(N+1)
+ =>
+  cgvfi(N)
+
+END
+
+&
+
+THEORY CreGlobalSeenVarFromSeesX IS
+
+
+#define store_sees_tac \
+        (((MAP;ARI;NEWV~;RULE;FLAT;MODR)~;CreGlobalSeenVarFromSeesX)~)
+
+#define CreGlobalSeenVarFromSees bcall(store_sees_tac: cgsvfs(1))
+
+  ReadPaspLibList(M) &
+  ModifyPaspLibList((M,m))
+ =>
+  cgsvfs5(m);
+
+  bcrelr(GlobalSeen_var_storeX,(v : t : M))
+ =>
+  cgsvfs4(v)(t)(M);
+
+  bcrelr(GlobalSeen_var_storeX,(v: (b..c +-> a) : M))
+ =>
+  cgsvfs4(v)(a,b,c)(M);
+
+  ReadAddUnderScore(p) &
+  cgsvfs4(bnewv(p,v))(t)(M)
+ =>
+  cgsvfs3(v)(t)(M);
+
+  ReadAddUnderScore(p) &
+  cgsvfs4(bnewv(bnewv(p,bo),ol))(t)(M)
+ =>
+  cgsvfs3(bol)(t)(M);
+
+  cgsvfs2(m)(?|x);
+
+  cgsvfs2(m)(x|y)
+ =>
+  cgsvfs2(m)(x|y|z);
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;BiArr_File))) &
+  cgsvfs5(m) &
+  cgsvfs4(R)(p)(R;BiArr_File)
+ =>
+  cgsvfs2(m(p))(x|(R;BiArr_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;BiArr))) &
+  cgsvfs5(m) &
+  cgsvfs4(R)(p)(R;BiArr)
+ =>
+  cgsvfs2(m(p))(x|(R;BiArr));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;UiArr_File))) &
+  cgsvfs5(m) &
+  cgsvfs4(R)(p)(R;UiArr_File)
+ =>
+  cgsvfs2(m(p))(x|(R;UiArr_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;UiArr))) &
+  cgsvfs5(m) &
+  cgsvfs4(R)(p)(R;UiArr)
+ =>
+  cgsvfs2(m(p))(x|(R;UiArr));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Byt_File))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(byt)(BYTE)(R;Byt_File)
+ =>
+  cgsvfs2(m(p))(x|(R;Byt_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Byt))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(byt)(BYTE)(R;Byt)
+ =>
+  cgsvfs2(m(p))(x|(R;Byt));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Byt_BS_File))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(byt)(BYTE)(R;Byt_BS_File)
+ =>
+  cgsvfs2(m(p))(x|(R;Byt_BS_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Byt_BS))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(byt)(BYTE)(R;Byt_BS)
+ =>
+  cgsvfs2(m(p))(x|(R;Byt_BS));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Uns_File))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(uns)(UNSIGNED)(R;Uns_File)
+ =>
+  cgsvfs2(m(p))(x|(R;Uns_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Uns))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(uns)(UNSIGNED)(R;Uns)
+ =>
+  cgsvfs2(m(p))(x|(R;Uns));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Uns_BS_File))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(uns)(UNSIGNED)(R;Uns_BS_File)
+ =>
+  cgsvfs2(m(p))(x|(R;Uns_BS_File));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Uns_BS))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(uns)(UNSIGNED)(R;Uns_BS)
+ =>
+  cgsvfs2(m(p))(x|(R;Uns_BS));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Bool_File))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(bol)(BOOLEAN)(R;Bool_File)
+ =>
+  cgsvfs2(m(p))(x|(R;Bool_File));
+
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Bool))) &
+/***
+HERE((1 -- cgsvfs3(bol)(BOOLEAN)(R;Bool)))&
+***/
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(bol)(BOOLEAN)(R;Bool)
+ =>
+  cgsvfs2(m(p))(x|(R;Bool));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Write_Byt))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(byt_wo)(BYTE)(R;Write_Byt)
+ =>
+  cgsvfs2(m(p))(x|(R;Write_Byt));
+
+  bcrelr(Ipt_PASP_VARX,(m|(R;Read_Byt))) &
+  cgsvfs5(m) &
+  AddUnderScore(R) &
+  cgsvfs3(byt_ro)(BYTE)(R;Read_Byt)
+ =>
+  cgsvfs2(m(p))(x|(R;Read_Byt));
+
+
+
+  ReadUnderScoreToSemiColon(a) &
+  cgsvfs2(m(p))(a)
+ =>
+  cgsvfs1(m(p));
+
+
+  cgsvfs(N);
+
+  brule(Sees_storeX.N,m) &
+  UnderScoreToSemiColon(m) &
+  cgsvfs1(m(?)) &
+  cgsvfs(N+1)
+ =>
+  cgsvfs(N);
+
+  brule(Sees_storeX.N,m(p)) &
+  UnderScoreToSemiColon(m) &
+  cgsvfs1(m(p)) &
+  cgsvfs(N+1)
+ =>
+  cgsvfs(N)
+
+END
+
+&
+
+THEORY VBLStackX IS
+
+/*
+#define VBLStack(x) bcall(((MODR;WRITE)~;VBLStackX)~: vs_0(x))
+*/
+
+#define GetNextVRB     bcall(((MODR;WRITE)~;VBLStackX)~: gnvs)
+
+#define RestoreVRB     bcall(((MODR;WRITE)~;VBLStackX)~: rvs)
+
+#define LoadOpVRB(x)   bcall(((MODR;WRITE)~;VBLStackX)~: lov(x))
+
+/*
+#define RmOutLevelVRB  bcall(((MODR;WRITE)~;VBLStackX)~: rm_out)
+*/
+
+/* opname =
+      VAR aa,bb IN
+        aa:=TRUE;
+        bb:=TRUE;
+        VAR cc IN
+          cc:=TRUE
+        END;
+        VAR ff,gg IN
+          ff:=TRUE;
+          gg:=TRUE
+        END
+      END;
+      VAR ii IN
+        ii:=TRUE
+      END
+
+?;
+imp_name(? | VBL(?));
+opname(? | VBL(?,VBL(?,VBL(?,cc(5)),VBL(?,gg(5),ff(5)),bb(5),aa(5)),VBL(?,ii(5)))))
+*/
+
+  ?;?;?;
+
+/*
+  brule(VBLStackX.1,(X|(?,VBL(Y)))) &
+  bmodr(VBLStackX.1,(X|(Y)))
+ =>
+  rm_out;
+*/
+
+  brule(VBLStackX.2,X) &
+  bsearch(o((?|T)),X,Y) &
+  bmodr(VBLStackX.1,(?|?,T))
+ =>
+  lov(o);
+
+  lov(o)
+ =>
+  lov(r<--o);
+
+  lov(o)
+ =>
+  lov(o(s));
+
+  lov(o)
+ =>
+  lov(r<--o(s));
+
+
+
+  brule(VBLStackX.1,(X|Y)) &
+  bsearch(VBL(A),Y,Z) &
+  bmodr(VBLStackX.1,(X|Z|A))
+ =>
+  gnvs;
+
+
+  
+  brule(VBLStackX.3,x) &
+  bmodr(VBLStackX.2,x)
+ =>
+  rvs
+
+
+/*
+  ;VBLStack(aa) & VBLStack(AA) & VBLStack(bb) & VBLStack(BB) & VBLStack(cc) & VBLStack(DD) & VBLStack(dd) & VBLStack(EE) & VBLStack(ee)
+*/
+
+
+END
+
+&
+
+THEORY PrintLocalVARInitValueX IS
+
+#define PrintLocalVARInitValue(x) \
+  bcall((PrintLocalVARInitValueX;WRITE):plviv(x))
+
+  bprintf(" = FALSE")
+ =>
+  plviv(BOOLEAN);
+
+  bprintf(" = 00")
+ =>
+  plviv(UNSIGNED);
+
+  bprintf(" = 0")
+ =>
+  plviv(BYTE)
+
+END
+
+&
+
+
+THEORY PrintLocalVarX IS
+
+#define prt_local_var_tac (((MAP;WRITE;RULE;MODR)~;PrintLocalVarX)~)
+
+#define PrintLocalVar(x) bcall(prt_local_var_tac: plv0(x))
+
+/*
+  (
+    (0.11 : BOOLEAN),
+    (0.8  : BYTE),
+    (1.1  : UNSIGNED)
+  );
+*/
+  (
+    (BOOLEAN   : BOOLEAN),
+    (BYTE      : BYTE),
+    (UNSIGNED  : UNSIGNED),
+    (SIGNED    : INTEGER),
+    (BITSEQ    : BYTE)
+  );
+#define ReadVBLTypes(x)   brule(PrintLocalVarX.1,x)
+
+  plv_chk_clash(v);
+
+  brule(GlobalSeen_var_storeX.I,(v:t)) &
+  ReadCurrentOpName(o) &
+  InformLocalGlobalVarClash(o,v) &
+  SetTRLError
+ =>
+  plv_chk_clash(v);
+
+  brule(Global_var_storeX.I,(v:t:M)) &
+  ReadCurrentOpName(o) &
+  InformLocalGlobalVarClash(o,v) &
+  SetTRLError
+ =>
+  plv_chk_clash(v);
+
+  ReadCurrentOpName(o) &
+  InformLocalVarNotPaspType(o,v,n) &
+  SetTRLError
+ =>
+  plv1(v)(n);
+
+  ReadSetParams(P) &
+  bsearch(n,P,Q) &
+  bprintf(": %",n) &
+  PrintLocalVARInitValue(n) & 
+  bprintf(";\n") /* &
+  bcrelr(Local_var_storeX,(o(v:t))) */
+ =>
+  plv1(v)(n);
+
+  ReadCurrentOpName(o) &
+  ReadNonOwnSets(T) &
+  bsearch(n(e),T,U) &
+  bprintf(": %",BYTE) &
+  PrintLocalVARInitValue(BYTE) & 
+  bprintf(";\n") /* &
+  bcrelr(Local_var_storeX,(o(v:t))) */
+ =>
+  plv1(v)(n);
+
+  ReadCurrentOpName(o) &
+  ReadOwnSets(T) &
+  bsearch(n(e),T,U) &
+  bprintf(": %",BYTE) &
+  PrintLocalVARInitValue(BYTE & 
+  bprintf(";\n")) /* &
+  bcrelr(Local_var_storeX,(o(v:t))) */
+ =>
+  plv1(v)(n);
+
+  ReadCurrentOpName(o) &
+  ReadVBLTypes(T) &
+  bsearch((n:t),T,U) &
+  bprintf(": %",t) &
+  PrintLocalVARInitValue(t) & 
+  bprintf(";\n") /* &
+  bcrelr(Local_var_storeX,(o(v:t))) */
+ =>
+  plv1(v)(n);
+
+  ReadCurrentOpName(o) &
+  WarningLocalVarNotUsed(o,v)
+ =>
+  plv(v);
+
+  ReadTrlImp(a.b) &
+  ReadCurrentOpName(o) &
+  brule(VBLStackX.1,(X|Y)) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)) &
+  bsearch(v(n),Y,Z) &
+  bmodr(VBLStackX.1,(X|Z)) &
+  plv1(v)(n)
+ =>
+  plv(v);
+
+  ModifyMaxLength(0) &
+  GetNextVRB &
+  SetMaxLength(v) &
+  IncMaxLength(12) &
+  bprintf("\n") &
+  plv_chk_clash bsmap (v) &
+  plv bsmap (v)
+ =>
+  plv0(v)
+
+END
+
+&
+
+THEORY GetActualFunParamX IS
+
+#define get_act_fun_aparam_tac (((MAP;MODR;WRITE)~;GetActualFunParamX)~)
+
+#define GetActualFunParam(x,y,z) \
+   bcall(get_act_fun_aparam_tac: gafp(x)(y)(z))
+
+  ?;
+#define ModifyActualFunParam(x)  bmodr(GetActualFunParamX.1,x)
+#define ReadActualFunParam(x)    brule(GetActualFunParamX.1,x)
+
+  gafp(A)(F)(x)
+ =>
+  gafp(A,a)(F,f)(x);
+
+  ModifyActualFunParam(a) /* &
+  bprintf("% := ",a) */
+ =>
+  gafp(A,a)(F,f)(f);
+
+  ModifyActualFunParam(a) /* &
+  bprintf("% := ",a) */
+ =>
+  gafp(a)(f)(f)
+
+END
+
+&
+
+
+
+THEORY ProcessInLineX IS
+
+#define trans_inline_tac (((SUB~;MODR)~;ProcessInLineX)~)
+
+#define ProcessInLine(x,y,z)  bcall(trans_inline_tac: til(x)(y)(z))
+
+  ?;
+#define ReadProcessedInLine(x)    brule(ProcessInLineX.1,x)
+#define ModifyProcessedInLine(x)  \
+           bcall(((PowerMacrosX;ARI)~;MODR):bmodr(ProcessInLineX.1,x))
+
+  ModifyProcessedInLine(s)
+ =>
+  s;
+
+  ([?:=?]s == s);
+
+  [a:=c]([b:=d](s))
+ =>
+  til(a|b)(c|d)(s)
+
+END
+
+&
+
+THEORY PowerMacrosX IS
+
+  2ranpow(n)(m) == (2ranpow(n+1)(m) + pow2(n));
+
+  2ranpow(m)(m) == (pow2(m));
+
+  pow2(7) == 128;
+
+  pow2(6) == 64;
+
+  pow2(5) == 32;
+
+  pow2(4) == 16;
+
+  pow2(3) == 8;
+
+  pow2(2) == 4;
+
+  pow2(1) == 2;
+
+  pow2(0) == 1
+
+END
+
+&
+
+THEORY CalculateProcessInLineX IS
+
+#define trans_cre_inline_tac (((REV;MODR)~;CalculateProcessInLineX)~)
+
+#define CalculateProcessInLine(x,y,z) \
+                   bcall(trans_cre_inline_tac: cpil00(x)(y)(z)(?))
+
+  ?; /* temp store for rename */
+
+  bmodr(CalculateProcessInLineX.1,((a|b),(c|d))) &
+  cpil1(o)
+ =>
+  cpil(o)(a|b)(c|d);
+
+  n2b(n) == n;
+
+  MinByt == 0;
+
+  MaxByt == 255;
+
+  cpil(o)(a|b)(c|brev(d))
+ =>
+  cpil0(o)(a|b)(c)(d);
+
+  bsearch(?,D,C) &
+  cpil0(a)(b)(c)(C)
+ =>
+  cpil0(a)(b)(c)(D);
+
+  cpil0(a)(b)(c)(Z,n)
+ =>
+  cpil00(a)(b)(c|n)(Z);
+
+  ReadFinalConstantsSettings(C) &
+  bsearch((n=v),C,D) &
+  cpil0(a)(b)(c)(Z,v)
+ =>
+  cpil00(a)(b)(c|n)(Z);
+
+  cpil00(a)(b)(c|N)(Z,n)
+ =>
+  cpil00(a)(b)(c|N,n)(Z);
+
+  ReadFinalConstantsSettings(C) &
+  bsearch((n=v),C,D) &
+  cpil00(a)(b)(c|N)(Z,v)
+ =>
+  cpil00(a)(b)(c|N,n)(Z);
+
+
+
+
+  /***
+  BIBS
+  ***/
+
+  brule(CalculateProcessInLineX.1,((a|b,e,i,s),(c|d,f,j,t))) &
+  ModifyProcessedInLine((c:=BOR(BAND(d,255-2ranpow(j)(t)),BMUL(f,pow2(j)))))
+ =>
+  cpil4(BIBS);
+
+  ReadCurrentOpName(o) &
+  brule(CalculateProcessInLineX.1,((a|b,e,i,s),(c|d,f,j,t))) &
+  InformActualParamsNotLessThan(o,i,j,s,t) &
+  SetTRLError
+ =>
+  cpil3(BIBS);
+
+  brule(CalculateProcessInLineX.1,((a|b,e,i,s),(c|d,f,j,t))) &
+  btest(j<=t) &
+  cpil4(BIBS)
+ =>
+  cpil3(BIBS);
+
+  ReadCurrentOpName(o) &
+  brule(CalculateProcessInLineX.1,((a|b,e,i,s),(c|d,f,j,t))) &
+  InformActualParamNotNumber(o,BIBS,s,t) &
+  SetTRLError
+ =>
+  cpil2(BIBS);
+
+  brule(CalculateProcessInLineX.1,((a|b,e,i,s),(c|d,f,j,t))) &
+  bnum(t) &
+  btest(t>=0) &
+  btest(t<=7) &
+  cpil3(BIBS)
+ =>
+  cpil2(BIBS);
+
+  ReadCurrentOpName(o) &
+  brule(CalculateProcessInLineX.1,((a|b,e,i,s),(c|d,f,j,t))) &
+  InformActualParamNotNumber(o,BIBS,i,j) &
+  SetTRLError
+ =>
+  cpil1(BIBS);
+
+  brule(CalculateProcessInLineX.1,((a|b,e,i,s),(c|d,f,j,t))) &
+  bnum(j) &
+  btest(j>=0) &
+  btest(j<=7) &
+  cpil2(BIBS)
+ =>
+  cpil1(BIBS);
+
+  /***
+  BFBS
+  ***/
+
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  btest(j<=t) &
+  ModifyProcessedInLine((c:=BDIV(BAND(d,2ranpow(j)(t)),pow2(j/*-1*/))))
+ =>
+  cpil3(BFBS);
+
+  ReadCurrentOpName(o) &
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  InformActualParamNotNumber(o,BFBS,s,t) &
+  SetTRLError
+ =>
+  cpil2(BFBS);
+
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  bnum(t) &
+  btest(t>=0) &
+  btest(t<=7) &
+  cpil3(BFBS)
+ =>
+  cpil2(BFBS);
+
+  ReadCurrentOpName(o) &
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  InformActualParamNotNumber(o,BFBS,i,j) &
+  SetTRLError
+ =>
+  cpil1(BFBS);
+
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  bnum(j) &
+  btest(j>=0) &
+  btest(j<=7) &
+  cpil2(BFBS)
+ =>
+  cpil1(BFBS);
+
+  /***
+  BSSET
+  ***/
+
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,0))) &
+  ModifyProcessedInLine((c:=BAND(d,(255-pow2(j)))))
+ =>
+  cpil3(BSSET);
+
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,1))) &
+  ModifyProcessedInLine((c:=BOR(d,pow2(j))))
+ =>
+  cpil3(BSSET);
+
+  ReadCurrentOpName(o) &
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  InformActualParamNotBit(o,BSSET,s,t) &
+  SetTRLError
+ =>
+  cpil2(BSSET);
+
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  bnum(t) &
+  btest(t>=0) &
+  btest(t<=1) &
+  cpil3(BSSET)
+ =>
+  cpil2(BSSET);
+
+  ReadCurrentOpName(o) &
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  InformActualParamNotNumber(o,BSSET,i,j) &
+  SetTRLError
+ =>
+  cpil1(BSSET);
+
+  brule(CalculateProcessInLineX.1,((a|b,i,s),(c|d,j,t))) &
+  bnum(j) &
+  btest(j>=0) &
+  btest(j<=7) &
+  cpil2(BSSET)
+ =>
+  cpil1(BSSET);
+
+  /***
+  BSXTR
+  ***/
+
+  ReadCurrentOpName(o) &
+  brule(CalculateProcessInLineX.1,((a|b,i),(c|d,j))) &
+  InformActualParamNotNumber(o,BSXTR,i,j) &
+  SetTRLError
+ =>
+  cpil1(BSXTR);
+
+  brule(CalculateProcessInLineX.1,((a|b,i),(c|d,j))) &
+  bnum(j) &
+  btest(j>=0) &
+  btest(j<=7) &
+  ModifyProcessedInLine((c:=BDIV(BAND(d,pow2(j)),pow2(j))))
+ =>
+  cpil1(BSXTR)
+
+END
+
+&
+
+THEORY SetIndentConstsGlobalVarsX IS
+
+#define set_indent_const_glob_tac (((MAP;ARI)~;SetIndentConstsGlobalVarsX)~)
+
+#define SetIndentConstsGlobalVars bcall(set_indent_const_glob_tac: sicg0)
+
+  sicg3(?);
+
+  bident(p) &
+  SetMaxLength(blen(p)+4)
+ =>
+  sicg3(p);
+
+  bUpident(p)
+ =>
+  sicg3(p);
+
+  ReadMachineParameters(P) &
+  sicg3 bsmap P
+ =>
+  sicg2s(N);
+
+  brule(GlobalSeen_var_storeX.N,(v:t)) &
+  SetMaxLength(blen(v)+4) &
+  sicg2s(N+1)
+ =>
+  sicg2s(N);
+
+  sicg2s(1)
+ =>
+  sicg2(N);
+
+  brule(Global_var_storeX.N,(v:t:M)) &
+  SetMaxLength(blen(v)+4) &
+  sicg2(N+1)
+ =>
+  sicg2(N);
+
+  IncMaxLength(6) &
+  sicg2(1)
+ =>
+  sicg1;
+
+  sicg1_1(x);
+
+  SetMaxLength(e)
+ =>
+  sicg1_1(S(e));
+
+  ReadOwnConstants(C) &
+  ReadNonOwnConstants(D) &
+  SetMaxLength(C) &
+  SetMaxLength(D) &
+  ReadOwnSets(S) &
+  ReadNonOwnSets(T) &
+  sicg1_1 bsmap S &
+  sicg1_1 bsmap T &
+  IncMaxLength(6) &
+  sicg2(1)
+ =>
+  sicg1;
+
+  ModifyMaxLength(0) &
+  sicg1 &
+  IncMaxLength(12)
+ =>
+  sicg0
+
+END
+
+&
+
+THEORY StoreRawConstantsSettingsX IS
+
+#define sto_raw_const_set_tac (((MAP;MODR)~;StoreRawConstantsSettingsX)~)
+
+#define StoreRawConstantsSettings(x) \
+               bcall(sto_raw_const_set_tac: (srcs bsmap x))
+
+  srcs(x);
+
+  ReadNonOwnConstants(C) &
+  bsearch(c,C,D) &
+  ReadRawConstantsSettings(P) &
+  ModifyRawConstantsSettings((P&(c=v)))
+ =>
+  srcs(v=c);
+
+  ReadNonOwnConstants(C) &
+  bsearch(c,C,D) &
+  ReadRawConstantsSettings(P) &
+  ModifyRawConstantsSettings((P&(c=v)))
+ =>
+  srcs(c=v);
+
+  ReadOwnConstants(C) &
+  bsearch(c,C,D) &
+  ReadRawConstantsSettings(R) &
+  ModifyRawConstantsSettings((R&(c=v)))
+ =>
+  srcs(v=c);
+
+  ReadOwnConstants(C) &
+  bsearch(c,C,D) &
+  ReadRawConstantsSettings(R) &
+  ModifyRawConstantsSettings((R&(c=v)))
+ =>
+  srcs(c=v);
+
+  ReadRawConstantsSettings(P) &
+  bsearch((c=v),P,Q)
+ =>
+  srcs(c=v)
+
+END
+
+&
+
+THEORY StoreOwnConstantsX IS
+
+#define sto_own_consts_tac (((MAP;MODR)~;StoreOwnConstantsX)~)
+
+#define StoreOwnConstants(x) bcall(sto_own_consts_tac: (soc bsmap x))
+
+  ReadOwnConstants(C) &
+  ModifyOwnConstants((C,c))
+ =>
+  soc(c);
+
+  ReadOwnConstants(C) &
+  bsearch(c,C,D)
+ =>
+  soc(c);
+
+  soc(?)
+
+END
+
+&
+
+THEORY StoreNonOwnConstantsX IS
+
+#define sto_non_own_consts_tac (((MAP;MODR)~;StoreNonOwnConstantsX)~)
+
+#define StoreNonOwnConstants(x) bcall(sto_non_own_consts_tac: (snoc bsmap x))
+
+  ?; /* current imp name */
+#define ReadNonOwnMchName(x)   brule(StoreNonOwnConstantsX.1,x)
+#define ModifyNonOwnMchName(x) bcall(MODR:bmodr(StoreNonOwnConstantsX.1,x))
+
+  ?; /* (mch:const),(mch:enumelem),... */
+#define ReadNonOwnMchNameColonConst(x)     brule(StoreNonOwnConstantsX.2,x)
+#define ModifyNonOwnMchNameColonConst(x)   \
+                                bcall(MODR:bmodr(StoreNonOwnConstantsX.2,x))
+
+  ReadNonOwnConstants(C) &
+  ModifyNonOwnConstants((C,c)) &
+  ReadNonOwnMchName(a) &
+  ReadNonOwnMchNameColonConst(D) &
+  ModifyNonOwnMchNameColonConst((D,(a:c)))
+ =>
+  snoc(c);
+
+  ReadNonOwnConstants(C) &
+  bsearch(c,C,D)
+ =>
+  snoc(c);
+
+  ReadBuiltInMinMaxConstants(C) &
+  bsearch((c:t),C,D)
+ =>
+  snoc(c);
+
+  ReadNatConversionFunctions(C) &
+  bsearch(c,C,D)
+ =>
+  snoc(c);
+
+  ReadConversionFunctions(C) &
+  bsearch((c:t),C,D)
+ =>
+  snoc(c);
+
+  snoc(?)
+
+END
+
+&
+
+THEORY StoreNonOwnSetsX IS
+
+#define sto_non_own_sets_tac (((MAP;MODR)~;StoreNonOwnSetsX)~)
+
+#define StoreNonOwnSets(x) bcall(sto_non_own_sets_tac: (snos bsmap x))
+
+  ReadNonOwnMchName(a) &
+  ReadNonOwnMchNameColonConst(D) &
+  ModifyNonOwnMchNameColonConst((D,(a:e)))
+ =>
+  snos_enum(e);
+
+  ReadNonOwnSets(C) &
+  ModifyNonOwnSets((C,c))
+ =>
+  snos(c);
+
+  ReadNonOwnSets(C) &
+  ModifyNonOwnSets((C,c(e))) &
+  snos_enum bsmap e
+ =>
+  snos(c(e));
+
+  snos(?)
+
+END
+
+&
+
+THEORY UpdateGivenSetsX IS
+
+#define upd_given_sets_tac   (((MAP;MODR)~;UpdateGivenSetsX)~)
+
+#define UpdateGivenSets(x)   bcall(upd_given_sets_tac: (ugs bsmap x))
+
+  ugs(x);
+
+  ReadGivenSetsTypeInfo(G) &
+  ModifyGivenSetsTypeInfo((G;given(g)))
+ =>
+  ugs(given(g));
+
+  ReadGivenSetsTypeInfo(G) &
+  bsearch((given(g)),G,H)
+ =>
+  ugs(given(g));
+
+  ReadGivenSetsTypeInfo(G) &
+  ModifyGivenSetsTypeInfo((G;given(g[n])))
+ =>
+  ugs(given(g[n]));
+
+  ReadGivenSetsTypeInfo(G) &
+  bsearch((given(g[n])),G,H)
+ =>
+  ugs(given(g[n]))
+
+END
+
+&
+
+THEORY UpdateOpTypeInfoX IS
+
+#define upd_op_type_info_tac  (((FLAT;MODR)~;UpdateOpTypeInfoX)~)
+
+#define UpdateOpTypeInfo(x)   bcall(upd_op_type_info_tac: uoti(x))
+
+  ReadOpTypeInfo(T) &
+  ModifyOpTypeInfo(bflat(T;t))
+ =>
+  uoti(t);
+
+  uoti(?)
+
+END
+
+&
+
+THEORY LoadOwnTypeInfoX IS
+
+#define load_typ_file_tac (((MAP;CATL;NEWV;FLAT;MODR;RULE)~;LoadOwnTypeInfoX)~)
+
+#define LoadOwnTypeInfo bcall(load_typ_file_tac: loti_0)
+
+  ?;  /* 1. OpTypeInfo: (o(O;I)==t);... */
+
+  ?;  /* 2. ImpNameDotImp: a.imp */
+
+  ?;  /* 3. GivenSetsTypeInfo: given(o);... */
+
+  ?;  /* 4.  */
+
+  ?;  /* 5.  */
+
+  ?;  /* 6.  */
+
+  ?;  /* 7. FunctionNames */
+
+  ?;  /* 8. CurrentFunctionName */
+
+  ?;  /* 9. SubordinateFunctionNames */
+
+  ?;  /* 10. InLineOps */
+
+  (?,Bool,Bool_File,Byt,Byt_File,Byt_BS,Byt_BS_File,Uns,Uns_File,Uns_BS,Uns_BS_File,
+   PASP,PASP_TYPE,PASP_TYPE_BS,PASP_BS,BiArr,BiArr_File,UiArr,UiArr_File,
+   Write_Byt,Read_Byt);
+      /* 11. StrippedStateMachineNames */
+
+  ?;  /* 12. DummyParamNames */
+
+  ?;  /* 13. RawConstantsSettings */
+
+  ?;  /* 14. FinalConstantsSettings */
+
+  ?;  /* 15. OwnConstants */
+
+  ?;  /* 16. NonOwnConstants */
+
+  ?;  /* 17. OwnSets */
+
+  ?;  /* 18. NonOwnSets */
+
+  (?, /* (BitSeq;TYPE), */ (q;Byt));  /* 19. CalculateInLineStateMachineNames - NOT USED */
+
+  (Rename_AND,Rename_OR,Rename_XOR,Rename_NOT,BXTR,BSET,BFBS,BIBS);
+                                         /* 20. CalculateInLineOpNames */
+
+
+  bsearch(a(T),X,Y) &
+  ModifyIniName(i) &
+  bmodr(VBLStackX.3,(Y;i(T)))    /* give name to INI entry in VBL stack */
+ =>
+  loti_initialise_VBL_1(a,X)(i);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  loti_initialise_VBL_0(a,f);
+
+  bget(f,X) &
+  ReadTrlAbs(m.q) &  
+  loti_initialise_VBL_1(a,X)(bnewv(INI_,m))
+ =>
+  loti_initialise_VBL_0(a,f);
+
+
+
+  ReadOpTypeInfo(T) &
+  ModifyOpTypeInfo(bflat(T;t))
+ =>
+  opd_ops(t);
+
+  opd_ops(?);
+
+
+
+  UpdateGivenSets(B) &            /* no ops */
+  StoreConstantsTypes(B)
+ =>
+  loti_2(B|C);
+
+  UpdateOpTypeInfo(A) &
+  UpdateGivenSets(B) &
+  StoreConstantsTypes(B)
+ =>
+  loti_2(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  loti_1(f);
+
+  bget(f,X) &
+  loti_2(X)
+ =>
+  loti_1(f);
+
+  ReadImpNameDotImp(a.imp) &
+  loti_1(bcatl("TYP/",a,".mri.typ")) &
+  loti_initialise_VBL_0(a,bcatl("TYP/",a,".imp.typ")) 
+ =>
+  loti_0
+
+END
+
+&
+
+THEORY LoadDotFileX IS
+
+#define load_dot_tac    (((CATL;MAP;MODR;RULE)~;LoadDotFileX)~)
+
+#define LoadDotFile(x,y)   bcall(load_dot_tac: ldf(x)(y))
+
+  ?;  /* DotIni */
+
+  bcrer(Final_sets_setting_storeX,(s==t))
+ =>
+  ldf_sets(s==t);
+
+  brule(Final_sets_setting_storeX.N,(s==t))
+ =>
+  ldf_sets(s==t);
+
+  ldf_sets(?);
+
+  ReadFinalConstantsSettings(C) &
+  ModifyFinalConstantsSettings((C,(c=e)))
+ =>
+  ldf_consts(c=e);
+
+  ldf_consts(?);
+
+  ldf_sets bsmap B &
+  ldf_consts bsmap C &
+  ReadDotIni(L) &
+  ModifyDotIni((L,a(J)))
+ =>
+  ldf1(a)(A|B|C|D|E|F|G|H|I|J|K);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ldf(a)(f);
+
+  bget(f,x) &
+  ldf1(a)(x)
+ =>
+  ldf(a)(f)
+
+END
+
+&
+
+THEORY ProcessImpX IS
+
+#define proc_imp_tac  (((CATL;MODR)~;ProcessImpX)~)
+
+#define ProcessImp(x)    bcall(proc_imp_tac: pi_0(x))
+
+  UpdateGivenSets(B) &            /* no ops */
+  StoreConstantsTypes(B)
+ =>
+  pi_3(B|C);
+
+  UpdateGivenSets(B) &             /* don't store ops (duplicated!) */
+  StoreConstantsTypes(B)
+ =>
+  pi_3(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  pi_2(f);
+
+  bget(f,X) &
+  pi_3(X)
+ =>
+  pi_2(f);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  pi_1(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ModifyOwnSets((C,?)) &
+/*
+  ModifyOwnConstants((E,?)) &
+*/
+  StoreOwnConstants(E) &
+/*
+  StoreOwnConstants(F) &
+*/
+  StoreRawConstantsSettings(G) &
+  StoreRawSetsSettings(G) &
+  StoreConstantsTypes(G) &
+  StoreEnumerationTypes(C)
+ =>
+  pi_1(Z);
+
+  pi_1(bcatl("ANL/",a,".imp.anl")) &
+  pi_2(bcatl("TYP/",a,".mri.typ")) 
+ =>
+  pi_0(a.imp)
+
+END
+
+&
+
+THEORY ProcessImportedImpX IS
+
+#define proc_ipt_imp_tac      (((CATL)~;ProcessImportedImpX)~)
+
+#define ProcessImportedImp(x)  bcall(proc_ipt_imp_tac: pii_0(x))
+
+  ?;  /* used locally for import param rename */
+
+  UpdateGivenSets(B) &           /* no ops */
+  StoreConstantsTypes(B)
+ =>
+  pii3(B|C);
+
+  UpdateOpTypeInfo(A) &
+  UpdateGivenSets(B) &
+  StoreConstantsTypes(B)
+ =>
+  pii3(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  pii2(i)(f);
+
+  bget(f,X) &
+  pii3(X)
+ =>
+  pii2(i)(f);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  pii1(i)(f);
+
+
+
+  
+/***
+HERE(("imported" - k - "is not a context machine"))&
+HERE((" StoreNonOwnConstants" --- F))&
+***/
+  StoreNonOwnConstants(F)
+ =>
+  pii_consts(k)(j)(F); /* ops */
+
+/***
+HERE(("imported" - k - "is a context machine"))&
+HERE((" StoreOwnConstants" --- F))&
+***/
+  StoreOwnConstants(F)
+ =>
+  pii_consts(k)(?)(F); /* no ops */
+
+
+
+  WriteDot &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  StoreNonOwnSets(C) &
+  pii_consts(k)(j)(F) &
+  StoreRawConstantsSettings(G) &
+  StoreRawSetsSettings(G) &
+  StoreConstantsTypes(G) &
+  StoreEnumerationTypes(C)
+ =>
+  pii1(X)(Z);
+
+  check_LoadDotFile(a,f);
+
+  bget(f,x) &
+  LoadDotFile(a,f)
+ =>
+  check_LoadDotFile(a,f);
+
+  ReadBotRef(i.j) &
+  check_LoadDotFile(a,bcatl("CDE/PASP/.",a)) &
+  pii1(i)(bcatl("ANL/",i,".",j,".anl")) &
+  pii2(i)(bcatl("TYP/",i,".mri.typ"))
+ =>  
+  pii(a);
+
+  ReadBotRef(i.imp) &
+  LoadDotFile(a,bcatl("CDE/PASP/.",a)) &
+  pii1(i)(bcatl("ANL/",i,".imp.anl")) &
+  pii2(i)(bcatl("TYP/",i,".mri.typ"))
+ =>  
+  pii(a);
+
+  ModifyNonOwnMchName(a) &
+  GetBotRef(a.mch) &
+  pii(a)
+ =>
+  pii_0(a)
+
+END
+
+&
+
+THEORY ProcessSeenImpX IS
+
+#define proc_seen_imp_tac   (((CATL)~;ProcessSeenImpX)~)
+
+#define ProcessSeenImp(x)   bcall(proc_seen_imp_tac: psi_0(x))
+
+  UpdateGivenSets(B) &            /* no ops */
+  StoreConstantsTypes(B)
+ =>
+  psi3(B|C);
+
+  UpdateOpTypeInfo(A) &
+  UpdateGivenSets(B) &
+  StoreConstantsTypes(B)
+ =>
+  psi3(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  psi2(i)(f);
+
+  bget(f,X) &
+  psi3(X)
+ =>
+  psi2(i)(f);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  psi1(i)(f);
+
+  WriteDot &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  StoreNonOwnSets(C) &
+  StoreNonOwnConstants(E) &
+  StoreRawConstantsSettings(G) &
+  StoreRawSetsSettings(G) &
+  StoreConstantsTypes(G) &
+  StoreEnumerationTypes(C)
+ =>
+  psi1(X)(Z);
+
+  CantFindImp(a) &
+  SetTRLError
+ =>
+  psi(a);
+
+  ReadBotRef(i.j) &
+  psi1(i)(bcatl("ANL/",i,".",j,".anl")) &
+  psi2(i)(bcatl("TYP/",i,".mri.typ"))
+ =>  
+  psi(a);
+
+  ReadBotRef(i.imp) &
+  LoadDotFile(a,bcatl("CDE/PASP/.",a)) &
+  psi1(i)(bcatl("ANL/",i,".imp.anl")) &
+  psi2(i)(bcatl("TYP/",i,".mri.typ"))
+ =>
+  psi(a);
+
+  ModifyNonOwnMchName(a) &
+  GetBotRef(a.mch) &
+  psi(a)
+ =>
+  psi_0(a)
+
+END
+
+&
+
+THEORY ProcessImportsSeesX IS
+
+#define proc_ipt_seen_tac \
+       (((CATL;MAP;RULE;NEWV;FLAT;MODR;SUB)~;ProcessImportsSeesX)~)
+
+#define ProcessSees(x)      bcall(proc_ipt_seen_tac: (ps_0 bsmap x))
+#define ProcessImports(x)   bcall(proc_ipt_seen_tac: (pi_0 bsmap x))
+
+  ?; /* IptSeesOpColonMch */
+
+  ?; /* ActualImportParameters */
+
+  ?; /* ImportedMchWithParam */
+
+
+  sto_inline4([a:=b]n)(r)            /* ARE WE SURE ??? */
+ =>
+  sto_inline4(n)(r&a=b);
+
+  StoreInLineOps((n))
+ =>
+  sto_inline4(n)(?);
+
+  ReadRawConstantsSettings(r) &
+  sto_inline4(n)(r)
+ =>
+  sto_inline3(n);
+
+  ReadOpTypeInfo(T) &
+  ModifyOpTypeInfo((T;(bnewv(INI_,k)(?;?)==?)))
+ =>
+  sto_inline2(k)(?|x)(n)(h);
+
+
+  sto_inline2(k)(a|b)(n)(h)
+ =>
+  sto_inline2(k)(a|b|c)(n)(h);
+
+
+
+
+
+
+  sto_inline3(n) &
+  ReadOpTypeInfo(T) &
+  ModifyOpTypeInfo((T;(bnewv(INI_,k)(?;?)==?)))
+ =>
+  sto_inline2(k)(x|(Bool_TYPE;Ops))(n)(h);  /* hardwired!!! */
+
+  ReadStrippedStateMachineNames(A) &
+  bsearch(a,A,B) &
+  sto_inline3(n) &
+  ReadOpTypeInfo(T) &
+  ModifyOpTypeInfo((T;(bnewv(INI_,k)(?;?)==?)))
+ =>
+  sto_inline2(k)(x|(R;a))(n)(h);
+
+  ReadUnderScoreToSemiColon(a) &
+  sto_inline2(k)(a)(n)(h)
+ =>
+  sto_inline1(k)(n)(h);
+
+  UnderScoreToSemiColon(k) &
+  sto_inline1(k)(n)(h)
+ =>
+  sto_inline(k)(n)(h);
+
+
+
+  ReadIptSeesOpColonMch(S) &
+  ModifyIptSeesOpColonMch((S,(j:k)))
+ =>
+  st_op_colon_mch(k,j);
+  
+
+
+  /***
+  imports
+  ***/
+
+  ReadRawConstantsSettings(C) &
+  ModifyRawConstantsSettings((C&(f=a)))  
+ =>
+  sto_ipt_raw_rename1(f)(a);
+
+  bUpident(f) &
+  ReadRawSetsSettings(S)
+ =>
+  sto_ipt_raw_rename1(f)(a);
+
+  sto_ipt_raw_rename1(f)(a)
+ =>
+  sto_ipt_raw_rename(f)(a);
+
+  sto_ipt_raw_rename(?)(?);
+
+  sto_ipt_raw_rename(F)(A) &
+  sto_ipt_raw_rename1(f)(a)
+ =>
+  sto_ipt_raw_rename(F,f)(A,a);
+
+  ReadImportedMchWithParam(R) &
+  ModifyImportedMchWithParam((R,k(f)(a))) &
+  sto_ipt_raw_rename(f)(a)
+ =>
+  sto_ipt_rename(k)(f)(a);
+
+  st_op_colon_mch(k) bsmap (j,bnewv(INI_,k)) &
+  StoreSubordinateFunctions((n)) &
+  sto_inline(k)(n)(h) &
+  ProcessImportedImp(k)
+ =>
+  pi_3(j)(k)(n)(h);
+
+  pi_3(j)(k)(n)(h)
+ =>
+  pi_2(j)(k)(n)(h);
+
+  ReadActualImportParameters(a) &
+  sto_ipt_rename(k)(f)(a)
+ =>
+  cre_rename(k)(f);
+
+  sto_ipt_rename(k)(?)(?)
+ =>
+  cre_rename(k)(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  pi_1(X)(Z);
+
+  WriteDot &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  cre_rename(k)(l) &
+  pi_2(j)(k)(n)(h)
+ =>
+  pi_1(X)(Z);
+
+  bcrer(Imports_storeX,r(p)) &
+  ModifyActualImportParameters(p) &
+  pi_1(r)(bcatl("ANL/",r,".mch.anl"))
+ =>
+  pi_0(r(p):t:(u,v,w));
+
+  bcrer(Imports_storeX,r) &
+  ModifyActualImportParameters(?) &
+  pi_1(r)(bcatl("ANL/",r,".mch.anl"))
+ =>
+  pi_0(r(?):t:(u,v,w));
+
+  pi_0(?);
+
+
+  /***
+  sees/uses
+  ***/
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ps_1(X)(Z);
+
+  WriteDot &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  st_op_colon_mch(k) bsmap (j,bnewv(INI_,k)) &
+  StoreSubordinateFunctions((n)) &
+  sto_inline(k)(n)(h)
+ =>
+  ps_1(X)(Z);
+
+  bcrer(Sees_storeX,r) &
+  ps_1(r)(bcatl("ANL/",r,".mch.anl")) &
+  ProcessSeenImp(r)
+ =>
+  ps_0(r(P):t:(?,?,?));
+
+  ps_0(r(P):t:(?,?,?))
+ =>
+  ps_0(R.r(P):t:(?,?,?));
+
+  ps_0(?)
+
+END
+
+&
+
+THEORY FinalizeConstantsSettingsX IS
+
+#define fze_cst_set_tac  (((MAP;ARI;MODR)~;FinalizeConstantsSettingsX)~)
+
+#define FinalizeConstantsSettings    bcall(fze_cst_set_tac: fcs_00)
+
+?;
+#define ReadFinalConcConstantsSettings(x)   \
+              brule(FinalizeConstantsSettingsX.1,x)
+#define ModifyFinalConcConstantsSettings(x) \
+              bmodr(FinalizeConstantsSettingsX.1,x)
+
+?;
+#define ReadFinalAbsConstantsSettings(x)   \
+              brule(FinalizeConstantsSettingsX.2,x)
+#define ModifyFinalAbsConstantsSettings(x) \
+              bmodr(FinalizeConstantsSettingsX.2,x)
+
+?;
+#define ReadMaxIterations(x)   \
+              brule(FinalizeConstantsSettingsX.3,x)
+#define ModifyMaxIterations(x) \
+              bmodr(FinalizeConstantsSettingsX.3,x)
+
+  fcs6(?);
+
+  ReadFinalConstantsSettings(C) &
+  ModifyFinalConstantsSettings((C,(c=e)))
+ =>
+  fcs6(c=e);
+
+  ReadFinalConcConstantsSettings(C) &
+  ReadFinalAbsConstantsSettings(D) &
+  fcs6 bsmap C &
+  fcs6 bsmap D
+ =>
+  fcs5;
+
+
+
+  fcs2$(N+1)
+ =>
+  fcs4$N;
+
+  ReadFinalAbsConstantsSettings(?)
+ =>
+  fcs4$N;
+
+  fcs3$N(x);
+  
+  ReadFinalConcConstantsSettings(C) &
+  bsearch((e=f),C,D) &
+  ModifyFinalConcConstantsSettings((C,(c=f))) &
+  ReadFinalAbsConstantsSettings(E) &
+  bsearch((c=e),E,F) &
+  ModifyFinalAbsConstantsSettings(F)
+ =>
+  fcs3$N(c=e);
+  
+  ReadFinalAbsConstantsSettings(C) &
+  fcs3$N bsmap C &
+  fcs4$N
+ =>
+  fcs2$N;
+
+  ReadMaxIterations(N)
+ =>
+  fcs2$N;
+
+  fcs1(?);
+
+  ReadFinalAbsConstantsSettings(C) &
+  ModifyFinalAbsConstantsSettings((C,(a=b)))
+ =>
+  fcs1(a=b);
+
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  ReadFinalConcConstantsSettings(C) &
+  ModifyFinalConcConstantsSettings((C,(a=f(n))))
+ =>
+  fcs1(a=f(n));
+ 
+  ReadRawConstantsSettings(C) &
+  fcs1 bsmap C &
+  fcs2$1 &
+  fcs5
+ =>
+  fcs;
+
+  fcs_0(x,m,n);
+  
+  ModifyMaxIterations(n+2) &
+  fcs
+ =>
+  fcs_0(x,n,n);
+  
+  ReadRawConstantsSettings(C) &
+  fcs_0 bnmap C
+ =>
+  fcs_00
+
+END
+
+&
+
+THEORY CheckOwnSetsArePaspTypesX IS
+
+#define chk_own_sets_Pasp_tac  (((MAP)~;CheckOwnSetsArePaspTypesX)~)
+
+#define CheckOwnSetsArePaspTypes bcall(chk_own_sets_Pasp_tac: cospt)
+
+  InformSetNotSet(s) &
+  SetTRLError  
+ =>
+  cospt1(s);
+
+  cospt1(BYTE);
+
+  cospt1(UNSIGNED);
+
+  ReadRawSetsSettings(E) &
+  bsearch((t=s),E,F) &
+  InformSetNotSetAsPaspType(s,t) &
+  SetTRLError  
+ =>
+  cospt1(s);
+
+  ReadRawSetsSettings(E) &
+  bsearch((s=t),E,F) &
+  InformSetNotSetAsPaspType(s,t) &
+  SetTRLError  
+ =>
+  cospt1(s);
+
+  brule(Final_sets_setting_storeX.N,(s==t)) &
+  ReadValidPaspTypes(T) &
+  bsearch(t,T,U)
+ =>
+  cospt1(s);
+
+  blident(e)
+ =>
+  cospt1(s(e));
+
+  cospt1(?);
+
+  ReadOwnSets(S) &
+  cospt1 bsmap S
+ =>
+  cospt
+
+END
+
+&
+
+THEORY FinalizeConstantsTypesX IS
+
+#define FinalizeConstantsTypes \
+   bcall(((Final_sets_setting_storeX~;MODR)~;FinalizeConstantsTypesX)~:fct)
+
+  ModifyConstantsTypes(C)
+ =>
+  fct1(C);
+
+  ReadConstantsTypes(C) &
+/*** PrintTHEORY(Final_sets_setting_storeX)& ***/
+  fct1(C)
+ =>
+  fct
+
+END
+
+&
+
+THEORY CheckOwnConstantsArePaspNumbersX IS
+
+#define chk_own_const_Pasp_tac  (((MAP)~;CheckOwnConstantsArePaspNumbersX)~)
+
+#define CheckOwnConstantsArePaspNumbers bcall(chk_own_const_Pasp_tac: cocpn)
+
+  InformConstantNotDefAsNum(c,e) &
+  SetTRLError
+ =>
+  cocpn2(c=e);
+
+/*
+  ReadBuiltInMinMaxConstants(C) &
+  bsearch((e:t),C,D)
+ =>
+  cocpn2(c=e);
+*/
+
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G)
+ =>
+  cocpn2(c=f(e));
+
+  cocpn1(c);                 /* not a ValidPaspType (eg constant set) */
+
+  ReadConstantsTypes(A) &
+  bsearch((c:t),A,B) &
+  ReadValidPaspTypes(C) &
+  bsearch(t,C,D) &
+  InformConstantNotSet(c) &
+  SetTRLError
+ =>
+  cocpn1(c);
+
+  ReadConstantsTypes(A) &
+  bsearch((c:t),A,B) &
+  ReadValidPaspTypes(C) &
+  bsearch(t,C,D) &
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=e),S,T) &
+  cocpn2(c=e)
+ =>
+  cocpn1(c);
+
+  cocpn1(?);
+
+  ReadOwnConstants(C) &
+  cocpn1 bsmap C
+ =>
+  cocpn
+
+END
+
+&
+
+THEORY IMPORT_PROCEDURE_storeX IS
+
+  ?;  /* used locally to list IMPORT names so (ensuring no repetitions)  */
+
+  ?;  /* used locally to determine param type */
+
+  0;  /* used locally to determine first param */
+
+  0;  /* max line length */
+#define ReadIMPORTMax_length(x)    brule(IMPORT_PROCEDURE_storeX.4,x)
+#define ModifyIMPORTMax_length(x)  bmodr(IMPORT_PROCEDURE_storeX.4,x)
+
+  0;  /* length of current line */
+#define ReadIMPORT_length(x)    brule(IMPORT_PROCEDURE_storeX.5,x)
+#define ModifyIMPORT_length(x)  bmodr(IMPORT_PROCEDURE_storeX.5,x)
+
+  ?;  /* import line lengths */
+#define ReadIMPORT_line_lengths(x)    brule(IMPORT_PROCEDURE_storeX.6,x)
+#define ModifyIMPORT_line_lengths(x)  bmodr(IMPORT_PROCEDURE_storeX.6,x)
+
+  ?;  /* function param */
+#define ReadIMPORT_func_param(x)    brule(IMPORT_PROCEDURE_storeX.7,x)
+#define ModifyIMPORT_func_param(x)  bmodr(IMPORT_PROCEDURE_storeX.7,x)
+
+  ?;  /* function param */
+#define ReadIMPORT_curr_param_rename(x)    brule(IMPORT_PROCEDURE_storeX.8,(x))
+#define ModifyIMPORT_curr_param_rename(x)  bmodr(IMPORT_PROCEDURE_storeX.8,(x))
+
+
+
+#define prt_IMPORT_tac (((MAP;ARI~;MODR;WRITE;SUB)~;IMPORT_PROCEDURE_storeX)~)
+
+#define UpdateIMPORT(x,y) bcall(prt_IMPORT_tac: ui0(x)(y))
+
+#define PrintIMPORT          bcall(prt_IMPORT_tac: (pio000 & pio00))
+
+  pio_spaces(p);
+
+  ReadIMPORTMax_length(N) &
+  ReadIMPORT_line_lengths(L) &
+  bsearch((p:M),L,Q) &
+  PrintSpaces(2+N-M)
+ =>
+  pio_spaces(p);
+
+  ReadIptSeesOpColonMch(S) &
+  bsearch((p:m),S,T) &
+  bprintf(");") & 
+/*
+  pio_spaces(p) &
+  bprintf("{ from file : %.param }\n",m)
+*/
+  bprintf("\n")
+ =>
+  pio_param_end(p);
+
+  brule(IMPORT_PROCEDURE_storeX.3,0) &
+  ReadIptSeesOpColonMch(S) &
+  bsearch((p:m),S,T) &
+  bprintf(";") &
+/*
+  pio_spaces(p) &
+  bprintf("{ from file : %.param }\n",m)
+*/
+  bprintf("\n")
+ =>
+  pio_param_end(p);
+
+
+  ReadIMPORT_curr_param_rename(R) &
+  [R](bprintf("%;",t))
+ =>
+  pio_param_fnc_end2(t);
+
+  pio_param_fnc_end2(INTEGER)
+ =>
+  pio_param_fnc_end2(SIGNED);
+
+  ReadIMPORT_func_param(v) &
+  brule(IMPORT_PROCEDURE_storeX.2,T) &
+  bsearch((v:t),T,U) &
+  pio_param_fnc_end2(t)
+ =>
+  pio_param_fnc_end1(p);
+
+
+
+  ReadIptSeesOpColonMch(S) &
+  bsearch((p:m),S,T) &
+  bprintf(") : ") & 
+  pio_param_fnc_end1(p) &
+/*
+  pio_spaces(p) &
+  bprintf("{ from file : %.param }\n",m)
+*/
+  bprintf("\n")
+ =>
+  pio_param_fnc_end(p);
+
+  brule(IMPORT_PROCEDURE_storeX.3,0) &
+  ReadIptSeesOpColonMch(S) &
+  bsearch((p:m),S,T) &
+  bprintf(" : ") &
+  pio_param_fnc_end1(p) &
+/*
+  pio_spaces(p) &
+  bprintf("{ from file : %.param }\n",m)
+*/
+  bprintf("\n")
+ =>
+  pio_param_fnc_end(p);
+
+
+  ReadIMPORT_curr_param_rename(R) &
+  [R](bprintf("; % : %",v,t))
+ =>
+  pio_param_nonvar1(v:t);
+
+  brule(IMPORT_PROCEDURE_storeX.3,0) &
+  bmodr(IMPORT_PROCEDURE_storeX.3,1) &
+  ReadIMPORT_curr_param_rename(R) &
+  [R](bprintf("(% : %",v,t))
+ =>
+  pio_param_nonvar1(v:t);
+
+  pio_param_nonvar1(v:INTEGER)
+ =>
+  pio_param_nonvar1(v:SIGNED);
+
+  brule(IMPORT_PROCEDURE_storeX.2,T) &
+  bsearch((v:t),T,U) &
+  pio_param_nonvar1(v:t)
+ =>
+  pio_param_nonvar(v);
+
+  pio_param_nonvar(?);
+
+
+  ReadIMPORT_curr_param_rename(R) &
+  [R](bprintf("; VAR % : %",v,t)) /* &
+  [R](PrintLocalVARInitValue(t)) */
+ =>
+  pio_param_var1(v:t);
+
+  brule(IMPORT_PROCEDURE_storeX.3,0) &
+  bmodr(IMPORT_PROCEDURE_storeX.3,1) &
+  ReadIMPORT_curr_param_rename(R) &
+  [R](bprintf("(VAR % : %",v,t)) /* &
+  [R](PrintLocalVARInitValue(t)) */
+ =>
+  pio_param_var1(v:t);
+
+  pio_param_var1(v:INTEGER)
+ =>
+  pio_param_var1(v:SIGNED);
+
+  brule(IMPORT_PROCEDURE_storeX.2,T) &
+  bsearch((v:t),T,U) &
+  pio_param_var1(v:t)
+ =>
+  pio_param_var(v);
+
+  ReadIMPORT_func_param(v)
+ =>
+  pio_param_var(v);
+
+  pio_param_var(?);
+
+
+  ModifyIMPORT_func_param(?) &
+  bprintf("IMPORT PROCEDURE % ",p) &
+  bmodr(IMPORT_PROCEDURE_storeX.3,0) &
+  pio_param_var bsmap o &
+  pio_param_nonvar bsmap i &
+  pio_param_end(p)
+ =>  
+  pio1(p)(o;i);
+
+  ReadSubordinateFunctionNames(F) &
+  bsearch((p(a)(b)),F,G) &
+  ModifyIMPORT_func_param(b) &
+  bprintf("IMPORT FUNCTION  % ",p) &
+  bmodr(IMPORT_PROCEDURE_storeX.3,0) &
+  pio_param_var bsmap o &
+  pio_param_nonvar bsmap i &
+  pio_param_fnc_end(p)
+ =>  
+  pio1(p)(o;i);
+
+  ReadIncDecOps(F) &
+  bsearch((p:a:b),F,G)
+ =>  
+  pio1(p)(o;i);
+
+  ReadOpTypeInfo(T) &
+  bsearch((p(x)==t),T,U) &
+  bmodr(IMPORT_PROCEDURE_storeX.2,(t&?)) &
+  pio1(p)(x)
+ =>  
+  pio(p);
+
+  ReadOpTypeInfo(T) &
+  bsearch((p(o;?)==t),T,U) &
+  bident(o) &
+  ReadDummyParamNames(N) &
+  bsearch((p:d),N,M) &  
+  bmodr(IMPORT_PROCEDURE_storeX.2,(t&d:BYTE)) &
+  pio1(p)(o;d)
+ =>  
+  pio(p);
+
+  [SIGNED:=INTEGER](ModifyIMPORT_curr_param_rename(f:=a))
+ =>
+  pio0_1(f)(a);
+
+  ModifyIMPORT_curr_param_rename(aaa:=aaa)
+ =>
+  pio0_1(?)(?);
+
+
+  pio0_1(?)(?) &  /* built-in */
+  pio(p) 
+ =>
+  pio0(p);
+
+  ReadIptSeesOpColonMch(S) &
+  bsearch((p:m),S,T) &
+  ReadImportedMchWithParam(I) &
+  bsearch((m(f)(a)),I,J) &
+  pio0_1(f)(a) &
+  pio(p) 
+ =>
+  pio0(p);
+
+  pio0(?);
+
+
+  brule(IMPORT_PROCEDURE_storeX.1,P) &   /* IMPORT - something to print */
+  bmodr(IMPORT_PROCEDURE_storeX.1,?) &
+  pio0 bsmap P &
+  bprintf("\n")
+ =>
+  pio00;
+
+  brule(IMPORT_PROCEDURE_storeX.1,?)     /* IMPORT - nothing to print */
+ =>
+  pio00;
+
+
+  brule(IMPORT_PROCEDURE_storeX.1,P) &
+  bmodr(IMPORT_PROCEDURE_storeX.1,(P,p))
+ =>
+  pio000_1(p);
+
+  bsearch(p,(?,SETBIT,ISBITSET,RESETBIT),Q) /* expanded operations */
+ =>
+  pio000_1(p);
+
+  brule(IMPORT_PROCEDURE_storeX.1,P) &
+  bmodr(IMPORT_PROCEDURE_storeX.1,?) &
+  pio000_1 bsmap P
+ =>
+  pio000;
+
+
+
+
+
+
+  ReadIMPORT_line_lengths(L) &
+  brule(IMPORT_PROCEDURE_storeX.1,(P,p)) & /* p is current proc/func name */
+  ModifyIMPORT_line_lengths((L,(p:N)))
+ =>
+  ui_ari_param_end1(N);
+
+  ReadIMPORTMax_length(M) &
+  btest(N>M) &
+  ModifyIMPORTMax_length(N) &
+  ReadIMPORT_line_lengths(L) &
+  brule(IMPORT_PROCEDURE_storeX.1,(P,p)) & /* p is current proc/func name */
+  ModifyIMPORT_line_lengths((L,(p:N)))
+ =>
+  ui_ari_param_end1(N);
+
+  ReadIMPORT_length(N) &
+  ui_ari_param_end1(N+7)
+/*  bprintf(");  { from file : %.param }\n",m) */
+ =>
+  ui_ari_param_end(p);
+
+  brule(IMPORT_PROCEDURE_storeX.3,0) &
+  ReadIMPORT_length(N) &
+  ui_ari_param_end1(N+6)
+/*  bprintf(";  { from file : %.param }\n",m) */
+ =>
+  ui_ari_param_end(p);
+
+
+  ReadIMPORT_line_lengths(L) &
+  brule(IMPORT_PROCEDURE_storeX.1,(P,p)) & /* p is current proc/func name */
+  ModifyIMPORT_line_lengths((L,(p:N)))
+ =>
+  ui_ari_param_fnc_end4(N);
+
+  ReadIMPORTMax_length(M) &
+  btest(N>M) &
+  ModifyIMPORTMax_length(N) &
+  ReadIMPORT_line_lengths(L) &
+  brule(IMPORT_PROCEDURE_storeX.1,(P,p)) & /* p is current proc/func name */
+  ModifyIMPORT_line_lengths((L,(p:N)))
+ =>
+  ui_ari_param_fnc_end4(N);
+
+  ui_ari_param_fnc_end4(N+blen(t))
+ =>
+  ui_ari_param_fnc_end3(N)(t);
+
+  ReadIMPORT_curr_param_rename(R) &
+  [R](ui_ari_param_fnc_end3(N)(t))
+ =>
+  ui_ari_param_fnc_end2(N)(t);
+
+  ui_ari_param_fnc_end2(N)(INTEGER)
+ =>
+  ui_ari_param_fnc_end2(N)(SIGNED);
+
+  ReadIMPORT_func_param(v) &
+  brule(IMPORT_PROCEDURE_storeX.2,T) &
+  bsearch((v:t),T,U) &
+  ui_ari_param_fnc_end2(N+3)(t)
+ =>
+  ui_ari_param_fnc_end1(N);
+
+  ReadIMPORT_length(N) &
+  ui_ari_param_fnc_end1(N+7)
+/*  bprintf(");  { from file : %.param }\n",m) */
+ =>
+  ui_ari_param_fnc_end(p);
+
+  brule(IMPORT_PROCEDURE_storeX.3,0) &
+  ReadIMPORT_length(N) &
+  ui_ari_param_fnc_end1(N+6)
+/*  bprintf(";  { from file : %.param }\n",m) */
+ =>
+  ui_ari_param_fnc_end(p);
+
+
+  ModifyIMPORT_length(N+blen(t))
+ =>
+  ui_ari_param_nonvar2(N)(t);
+
+  ReadIMPORT_length(N) &
+  ReadIMPORT_curr_param_rename(R) &
+  [R](ui_ari_param_nonvar2(N+blen(v)+5)(t))
+/*  bprintf("; % : %",v,t) */
+ =>
+  ui_ari_param_nonvar1(v:t);
+
+  brule(IMPORT_PROCEDURE_storeX.3,0) &
+  bmodr(IMPORT_PROCEDURE_storeX.3,1) &
+  ReadIMPORT_length(N) &
+  ReadIMPORT_curr_param_rename(R) &
+  [R](ui_ari_param_nonvar2(N+blen(v)+4)(t))
+/*  bprintf("(% : %",v,t) */
+ =>
+  ui_ari_param_nonvar1(v:t);
+
+  ui_ari_param_nonvar1(v:INTEGER)
+ =>
+  ui_ari_param_nonvar1(v:SIGNED);
+
+  brule(IMPORT_PROCEDURE_storeX.2,T) &
+  bsearch((v:t),T,U) &
+  ui_ari_param_nonvar1(v:t)
+ =>
+  ui_ari_param_nonvar(v);
+
+  ui_ari_param_nonvar(?);
+
+  ModifyIMPORT_length(N+blen(t))
+ =>
+  ui_ari_param_var2(N)(t);
+
+  ReadIMPORT_length(N) &
+  ReadIMPORT_curr_param_rename(R) &
+  [R](ui_ari_param_var2(N+blen(v)+9)(t))
+/*  bprintf("; VAR % : %",v,t) */
+ =>
+  ui_ari_param_var1(v:t);
+
+  brule(IMPORT_PROCEDURE_storeX.3,0) &
+  bmodr(IMPORT_PROCEDURE_storeX.3,1) &
+  ReadIMPORT_length(N) &
+  ReadIMPORT_curr_param_rename(R) &
+  [R](ui_ari_param_var2(N+blen(v)+8)(t))
+/*  bprintf("(VAR % : %",v,t) */
+ =>
+  ui_ari_param_var1(v:t);
+
+  ui_ari_param_var1(v:INTEGER)
+ =>
+  ui_ari_param_var1(v:SIGNED);
+
+  brule(IMPORT_PROCEDURE_storeX.2,T) &
+  bsearch((v:t),T,U) &
+  ui_ari_param_var1(v:t)
+ =>
+  ui_ari_param_var(v);
+
+  ReadIMPORT_func_param(v)
+ =>
+  ui_ari_param_var(v);
+
+  ui_ari_param_var(?);
+
+
+
+
+
+  ModifyIMPORT_func_param(?) &
+  brule(IMPORT_PROCEDURE_storeX.1,P) &
+  bmodr(IMPORT_PROCEDURE_storeX.1,(P,p)) &
+  bmodr(IMPORT_PROCEDURE_storeX.2,(t&?)) &
+  bmodr(IMPORT_PROCEDURE_storeX.3,0) &
+  ModifyIMPORT_length(19+blen(p)) &
+  ui_ari_param_var bsmap o &
+  ui_ari_param_nonvar bsmap i &
+  ui_ari_param_end(p)
+ =>
+  ui_sto(p(o;i)==t);
+
+  ReadSubordinateFunctionNames(F) &
+  bsearch((p(a)(b)),F,G) &
+  ModifyIMPORT_func_param(b) &
+  brule(IMPORT_PROCEDURE_storeX.1,P) &
+  bmodr(IMPORT_PROCEDURE_storeX.1,(P,p)) &
+  bmodr(IMPORT_PROCEDURE_storeX.2,(t&?)) &
+  bmodr(IMPORT_PROCEDURE_storeX.3,0) &
+  ModifyIMPORT_length(19+blen(p)) &
+  ui_ari_param_var bsmap o &
+  ui_ari_param_nonvar bsmap i &
+  ui_ari_param_fnc_end(p)
+ =>
+  ui_sto(p(o;i)==t);
+
+  brule(IMPORT_PROCEDURE_storeX.1,P) &
+  bsearch(p,P,Q)
+ =>
+  ui_sto(p(o;i)==t);
+
+
+  ui(x);
+
+
+  ReadOpTypeInfo(T) &
+  bsearch((p(x)==t),T,U) &
+  ui_sto(p(x)==t)
+ =>
+  ui(p);
+
+  ReadOpTypeInfo(T) &
+  bsearch((p(x)==t),T,U) &
+  ui_sto(p(x)==t)
+ =>
+  ui(a<--p);
+
+  bident(a) &
+  ReadOpTypeInfo(T) &
+  bsearch((p(o;?)==t),T,U) &
+  ReadDummyParamNames(N) &
+  bsearch((p:d),N,M) &  
+  ui_sto(p(o;d)==(t&d:BYTE))
+ =>
+  ui(a<--p);
+
+  ReadOpTypeInfo(T) &
+  bsearch((p(x)==t),T,U) &
+  ui_sto(p(x)==t)
+ =>
+  ui(p(b));
+
+  ReadOpTypeInfo(T) &
+  bsearch((p(x)==t),T,U) &
+  ui_sto(p(x)==t)
+ =>
+  ui(a<--p(b));
+
+
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:p:x),F,G)
+ =>
+  ui(p);
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:p:x),F,G)
+ =>
+  ui(a<--p);
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:p:x),F,G)
+ =>
+  ui(p(b));
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:p:x),F,G)
+ =>
+  ui(a<--p(b));
+
+
+
+  ReadInLineOps(P) &
+  bsearch((p(x)=s),P,Q)
+ =>
+  ui(p);
+
+  ReadInLineOps(P) &
+  bsearch((p(x)=s),P,Q)
+ =>
+  ui(p(b));
+
+  ReadInLineOps(P) &
+  bsearch((p(x)=s),P,Q)
+ =>
+  ui(a<--p);
+
+  ReadInLineOps(P) &
+  bsearch((p(x)=s),P,Q)
+ =>
+  ui(a<--p(b));
+
+
+  [SIGNED:=INTEGER](ModifyIMPORT_curr_param_rename(f:=a))
+ =>
+  ui0_1(f)(a);
+
+  ModifyIMPORT_curr_param_rename(aaa:=aaa)
+ =>
+  ui0_1(?)(?);
+
+
+  ui0_1(?)(?) &  /* built-in */
+  ui(o)
+ =>
+  ui0(p)(o);
+
+  ReadIptSeesOpColonMch(S) &
+  bsearch((p:m),S,T) &
+  ReadImportedMchWithParam(I) &
+  bsearch((m(f)(a)),I,J) &
+  ui0_1(f)(a) &
+  ui(o)
+ =>
+  ui0(p)(o);
+
+  brule(IMPORT_PROCEDURE_storeX.1,P) &
+  bsearch(p,P,Q)
+ =>
+  ui0(p)(o)
+
+END
+
+&
+
+THEORY PrintIMPORTConstX IS
+
+#define PrintIMPORTConst \
+  bcall(((MODR;ARI;MAP;WRITE)~;PrintIMPORTConstX)~:pic)
+
+  ?; /* for newline */
+
+  ?; /* constants actually printed */
+#define ReadImportedConstants(x)    brule(PrintIMPORTConstX.2,x)
+#define ModifyImportedConstants(x)  bmodr(PrintIMPORTConstX.2,x)
+
+  pic_nl;
+
+  brule(PrintIMPORTConstX.1,1) &
+  bprintf("\n")
+ =>
+  pic_nl;
+
+
+  ReadImportedConstants(C) &
+  ModifyImportedConstants((C,c))
+ =>
+  pic_add(c);
+
+
+  pic3(join);
+
+
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=e),S,T) &
+  InformConstantNotDefAsNum(c,e) &
+  SetTRLError  
+ =>
+  pic3(c);
+
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=e),S,T) &
+  ReadBuiltInMinMaxConstants(C) &
+  bsearch((e:t),C,D) &
+  bprintf("IMPORT CONST     % = %;\n",c,t) &
+  bmodr(PrintIMPORTConstX.1,1) &
+  pic_add(c)
+ =>
+  pic3(c);
+
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=f(n)),S,T) &
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  bprintf("IMPORT CONST     % = %;\n",c,t) &
+  bmodr(PrintIMPORTConstX.1,1) &
+  pic_add(c)
+ =>
+  pic3(c);
+
+  pic3(?);
+
+  pic2(c)(N);
+
+  brule(Operations_storeX.N,(o=s)) &
+  pic3(c)
+ =>
+  pic2(c)(N);
+
+  brule(Operations_storeX.N,(o=s)) &
+  c\s &
+  pic2(c)(N+1)
+ =>
+  pic2(c)(N);
+
+  pic2(c)(1)
+ =>
+  pic1(c);
+
+  ReadNatConversionFunctions(F) &
+  bsearch(c,F,G)
+ =>
+  pic1(c);
+
+  ReadConversionFunction(F) &
+  bsearch((c:t),F,G)
+ =>
+  pic1(c);
+
+  pic1(?);
+
+  bmodr(PrintIMPORTConstX.1,0) &
+  ReadNonOwnConstants(C) &
+  pic1 bsmap C &
+  pic_nl
+ =>
+  pic
+
+END
+
+&
+
+THEORY PrintOpBodyX IS
+
+#define prt_op_body_tac (((ARI;WRITE;MODR)~;PrintOpBodyX)~)
+
+#define PrintOpBody(x)  bcall(prt_op_body_tac: prt_op_body0(x))
+
+  /***
+  Error
+  ***/
+  ReadCurrentOpName(o) &
+  Writef(("\n\n    Error in operation %\n\n      %\n\n    Statement not recognized ...",bsrv o berv,bsrv s berv)) &
+  SetTRLError
+ =>
+  prt_op_body(i)(s);
+
+
+
+  /***
+  END;  { proc_name }
+  ***/
+
+  ReadCurrentOpName(o) &
+  bprintf("\nEND;  { % }",o)
+ =>
+  prt_op_body_end;
+
+  ReadCurrentOpName(o) &
+  ReadLastOpName(o) &
+  bprintf("\nEND;  { % }",o)
+ =>
+  prt_op_body_end;
+
+  IsMAIN &
+  ReadCurrentOpName(MAIN) &
+  ReadLastOpName(MAIN) &
+  bprintf("\nEND . { % }",MAIN)
+ =>
+  prt_op_body_end;
+
+
+  PopCASEMax(N) &
+  ModifyMaxLength(N)
+ =>
+  pop_case_max;
+
+  ReadMaxLength(N) &
+  PushCASEMax(N)
+ =>
+  push_case_max;
+
+  SetMaxLengthNoMap(B)
+ =>
+  prt_op_body_case_max1(EITHER B THEN C END);
+
+  prt_op_body_case_max1(EITHER A END) &
+  SetMaxLengthNoMap(B)
+ =>
+  prt_op_body_case_max1(EITHER A OR B THEN C END);
+
+  ModifyMaxLength(0) &
+  prt_op_body_case_max1(EITHER A THEN C END) &
+  IncMaxLength(4)
+ =>
+  prt_op_body_case_max(EITHER A THEN C END);
+
+  prt_op_body_case_max(EITHER A ELSE B END);
+
+
+
+  /***
+  EITHER ... THEN ... END
+  ***/
+
+  prt_op_body_block(1)(S)
+ =>
+  prt_op_either_body_block(S);
+
+  prt_op_body_block(2)(S;T)
+ =>
+  prt_op_either_body_block(S;T);
+
+  Indent(i) &
+  ReadCurrentOpName(n) &
+  ModifyExprErrMessg(("\n\n    Warning: Guard in operation %\n      %\n    may cause compiler error ...",n,A)) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(A) &
+  PrintSpacesToMaxLengthNoMap(A) &
+  bprintf(":") &
+  SetCASEcolon &
+  ModifyCASEIndent(i) &
+  SetInCASE &
+  prt_op_either_body_block(C) &
+  ResetInCASE &
+  ResetCASEIndent
+ =>
+  prt_op_body(i)(EITHER A THEN C END);
+
+
+  /***
+  EITHER ... OR ... THEN ... END
+  ***/
+
+  prt_op_body(i)(EITHER A END) &
+  bprintf("\n") &
+  Indent(i) &
+  ReadCurrentOpName(n) &
+  ModifyExprErrMessg(("\n\n    Warning: Guard in operation %\n      %\n    may cause compiler error ...",n,B)) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(B) &
+  PrintSpacesToMaxLengthNoMap(B) &
+  bprintf(":") &
+  SetCASEcolon &
+  ModifyCASEIndent(i) &
+  SetInCASE &
+  prt_op_either_body_block(C) &
+  ResetInCASE &
+  ResetCASEIndent
+ =>
+  prt_op_body(i)(EITHER A OR B THEN C END);
+
+
+  /***
+  EITHER ... ELSE ... END
+  ***/
+
+  ReadCurrentOpName(o) &
+  Writef(("\n\n    Error in operation %\n\n      %\n\n    Statement not recognized ...",bsrv o berv,bsrv EITHER A ELSE B END berv)) &
+  SetTRLError
+ =>
+  prt_op_body(i)(EITHER A ELSE B END);
+
+
+
+  /***
+  procedure call
+  ***/
+
+  bident(f) &
+  Indent(i) &
+  ReadCurrentOpName(n) &
+  ModifyExprErrMessg(("\n\n    Error message to follow ...")) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(f)
+ =>
+  prt_op_body(i)(f);
+
+  bident(f) &
+  Indent(i) &
+  bprintf("%(",f) &
+  ReadCurrentOpName(n) &
+  ModifyExprErrMessg(bcatl("\n\n    Warning: procedure/function parameter in operation ",n,"\n      ",g,"\n    may cause compiler error ...")) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(g) &
+  bprintf(")")
+ =>
+  prt_op_body(i)(f(g));
+
+
+
+  /***
+  skip
+  ***/
+
+  Indent(i) &
+  bprintf(";") &
+  ReadCurrentOpName(O) &
+  Warningskip(O)
+ =>
+  prt_op_body(i)(skip);
+
+  Indent(i) &
+  bprintf(";") &
+  ReadCurrentOpName(S) &
+  ReadIniName(S)
+ =>
+  prt_op_body(i)(skip);
+
+
+
+  /***
+  possible BEGIN ... END block
+  ***/
+
+  prt_op_body(i)(S)
+ =>
+  prt_op_body_block(i)(S);
+
+  Indent((i-1)) &
+  bprintf("BEGIN\n") &
+  prt_op_body(i)((S;T)) &
+  bprintf("\n") &
+  Indent((i-1)) &
+  bprintf("END")  
+ =>
+  prt_op_body_block(i)(S;T);
+
+
+  /***
+  WHILE ... DO ... END
+  ***/
+
+  Indent(i) &
+  bprintf("WHILE ( ") &
+  ReadCurrentOpName(n) &
+  ModifyExprErrMessg(("\n\n    Warning: Guard in operation %\n      %\n    may cause compiler error ...",n,E)) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(E) &
+  bprintf(" ) DO\n") &
+  prt_op_body_block(i+1)(B)
+ =>
+  prt_op_body(i)(WHILE E DO B END);
+
+
+
+  /***
+  IF ... END
+  ***/
+
+  ReadCurrentOpName(n) &
+  ModifyExprErrMessg(("\n\n    Warning: Guard in operation %\n      %\n    may cause compiler error ...",n,A)) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(A) &
+  bprintf(" ) THEN\n") &
+  prt_op_body_block(i+1)(B)
+ =>
+  prt_if_body(i)(A THEN B);
+
+  prt_if_body(i)(A) &
+  bprintf("\n") &  
+  Indent(i) &
+  bprintf("ELSE IF ( ") &
+  ReadCurrentOpName(n) &
+  ModifyExprErrMessg(("\n\n    Warning: Guard in operation %\n      %\n    may cause compiler error ...",n,C)) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(C) &
+  bprintf(" ) THEN\n") &
+  prt_op_body_block(i+1)(D)
+ =>
+  prt_if_body(i)(A ELSIF C THEN D);
+
+  prt_if_body(i)(A) &
+  bprintf("\n") &  
+  Indent(i) &
+  bprintf("ELSE\n") &
+  prt_op_body_block(i+1)(D)
+ =>
+  prt_if_body(i)(A ELSE D);
+
+  Indent(i) &
+  bprintf("IF ( ") &
+  prt_if_body(i)(A)
+ =>
+  prt_op_body(i)(IF A END);
+
+
+
+
+  /***
+  SEQUENCING
+  ***/
+
+  prt_op_body(i)(S) &
+  bprintf(";\n") &
+  prt_op_body(i)(T)
+ =>
+  prt_op_body(i)(S;T);
+
+
+
+
+
+  /***
+  ASSIGNMENT
+  ***/
+
+  Indent(i) &
+  ReadCurrentOpName(n) &
+  ModifyExprErrMessg(("\n\n    Error in operation %:\n      Assignment to non-variable % ... ",bsrv n berv,v)) &
+  ModifyPrintExprErrFatal &
+  PrintExpr(v) &
+  bprintf(" := ") &
+  ModifyExprErrMessg(("\n\n    Warning: Assignment in operation %\n      %\n    may cause compiler error ...",n,e)) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(e)
+ =>
+  prt_op_body(i)(v:=e);
+
+  Indent(i) &
+  bident(v) &
+  ReadCurrentOpName(f) &
+  ReadFunctionNames(F) &
+  bsearch(f(v),F,G) &
+  bprintf("% := ",f) &
+  ModifyExprErrMessg(("\n\n    Warning: Assignment in operation %\n      %\n    may cause compiler error ...",n,e)) &
+  ModifyPrintExprErrNotFatal &
+  PrintExpr(e)
+ =>
+  prt_op_body(i)(v:=e);
+
+
+  /***
+  type confusion: NAT = UNSIGNED
+  ***/
+  bnum(n) &
+  ReadCurrentOpName(o) &
+  brule(Local_var_storeX.N,(o(v:UNSIGNED))) &
+  prt_op_body(i)(v:=n2u(n))
+ =>
+  prt_op_body(i)(v:=n);
+
+  bnum(n) &
+  brule(GlobalSeen_var_storeX.N,(v:UNSIGNED)) &
+  prt_op_body(i)(v:=n2u(n))
+ =>
+  prt_op_body(i)(v:=n);
+
+  bnum(n) &
+  brule(Global_var_storeX.N,(v:UNSIGNED:M)) &
+  prt_op_body(i)(v:=n2u(n))
+ =>
+  prt_op_body(i)(v:=n);
+
+
+
+  /***
+  VAR error
+  ***/
+
+  ReadCurrentOpName(o) &
+  Writef(("\n\n    Error: Local VAR declaration of operation %\n      %\n    must be at outermost level ...",o,bsrv v berv)) &
+  SetTRLError
+ =>
+  prt_op_body(i)(VAR v IN s END);
+
+  
+  /***
+  outermost VAR
+  ***/
+
+  bprintf("\nBEGIN\n") &
+  prt_op_body(1)(s) &
+  prt_op_body_end
+ =>
+  prt_op_body0(s);
+
+  PrintLocalVar(v) &
+  bprintf("\nBEGIN\n") &
+  prt_op_body(1)(s) &
+  prt_op_body_end
+ =>
+  prt_op_body0(VAR v IN s END)
+
+END
+
+&
+
+THEORY bitseq_sto_X IS
+
+  ?;?;?;?;?;?;?;?;  /* first  byte - hsb in  1, lsb in  8 */
+  ?;?;?;?;?;?;?;?;  /* second byte - hsb in  9, lsb in 16 */
+  ?;?;?;?;?;?;?;?   /* result byte - hsb in 17, lsb in 24 */
+
+END
+
+&
+
+THEORY CMP_bitseqsX IS
+
+#define CMP_bitseqs bcall(((ARI~;MODR)~;CMP_bitseqsX)~:cbitseq(1)(17))
+
+  bmodr(bitseq_sto_X.R,1) &
+  cbitseq(P+1)(R+1)
+ =>
+  cbitseq(P)(R);
+
+  brule(bitseq_sto_X.P,1) &
+  bmodr(bitseq_sto_X.R,0) &
+  cbitseq(P+1)(R+1)
+ =>
+  cbitseq(P)(R);
+
+  cbitseq(9)(25)
+
+END
+
+&
+
+THEORY XOR_bitseqsX IS
+
+#define XOR_bitseqs bcall(((ARI~;MODR)~;XOR_bitseqsX)~:xobitseq(1)(9)(17))
+
+  bmodr(bitseq_sto_X.R,1) &
+  xobitseq(P+1)(Q+1)(R+1)
+ =>
+  xobitseq(P)(Q)(R);
+
+  brule(bitseq_sto_X.P,V) &
+  brule(bitseq_sto_X.Q,V) &
+  bmodr(bitseq_sto_X.R,0) &
+  xobitseq(P+1)(Q+1)(R+1)
+ =>
+  xobitseq(P)(Q)(R);
+
+  xobitseq(9)(17)(25)
+
+END
+
+&
+
+THEORY OR_bitseqsX IS
+
+#define OR_bitseqs bcall(((ARI~;MODR)~;OR_bitseqsX)~:obitseq(1)(9)(17))
+
+  bmodr(bitseq_sto_X.R,1) &
+  obitseq(P+1)(Q+1)(R+1)
+ =>
+  obitseq(P)(Q)(R);
+
+  brule(bitseq_sto_X.P,0) &
+  brule(bitseq_sto_X.Q,0) &
+  bmodr(bitseq_sto_X.R,0) &
+  obitseq(P+1)(Q+1)(R+1)
+ =>
+  obitseq(P)(Q)(R);
+
+  obitseq(9)(17)(25)
+
+END
+
+&
+
+THEORY AND_bitseqsX IS
+
+#define AND_bitseqs bcall(((ARI~;MODR)~;AND_bitseqsX)~:abitseq(1)(9)(17))
+
+  bmodr(bitseq_sto_X.R,0) &
+  abitseq(P+1)(Q+1)(R+1)
+ =>
+  abitseq(P)(Q)(R);
+
+  brule(bitseq_sto_X.P,1) &
+  brule(bitseq_sto_X.Q,1) &
+  bmodr(bitseq_sto_X.R,1) &
+  abitseq(P+1)(Q+1)(R+1)
+ =>
+  abitseq(P)(Q)(R);
+
+  abitseq(9)(17)(25)
+
+END
+
+&
+
+THEORY sto_byte_as_bitseqX IS
+
+#define sto_byte_as_bitseq(x,y) \
+   bcall(((ARI~;MODR)~;sto_byte_as_bitseqX):sbab(128)(x)(y))
+/* y is 1 or 9 */
+
+#define sto_byte_as_bitseq1(x)   sto_byte_as_bitseq(x,1)
+#define sto_byte_as_bitseq2(x)   sto_byte_as_bitseq(x,9)
+
+  bmodr( bitseq_sto_X.I,0) &
+  sbab(N/2)(x)(I+1)
+ =>
+  sbab(N)(x)(I);
+
+  btest(x>=N) &
+  bmodr( bitseq_sto_X.I,1) &
+  sbab(N/2)(x-N)(I+1)
+ =>
+  sbab(N)(x)(I);
+
+  sbab(0)(x)(I)
+
+END
+
+&
+
+THEORY sto_byte_from_bitseqX IS
+
+#define sto_byte_from_bitseq \
+   bcall(((ARI~;MODR)~;sto_byte_from_bitseqX):sbfb(17)(0))
+
+  ?;
+#define ReadByteFromBitseq(x)   brule(sto_byte_from_bitseqX.1,x)
+
+  brule(bitseq_sto_X.N,v) &
+  sbfb(N+1)((V*2)+v)
+ =>
+  sbfb(N)(V);
+
+  bmodr(sto_byte_from_bitseqX.1,V)
+ =>
+  sbfb(25)(V)
+
+END
+
+&
+
+THEORY ProcessOpsSimplifyX IS
+
+
+
+  bnum(a) &
+  bnum(b)
+ =>
+  (a MOD b) == (a - b*(a/b));
+
+
+
+  bnum(a)
+ =>
+  URIGHT(n2u(a)) == n2u(a/2);
+
+  bnum(a)
+ =>
+  ULEFT(n2u(a)) == n2u(a*2);
+
+
+  bnum(a)
+ =>
+  BRIGHT(n2b(a)) == n2b(a/2);
+
+  bnum(a)
+ =>
+  BLEFT(n2b(a)) == n2b(a*2);
+
+
+
+  bnum(a)
+ =>
+  HI(n2u(a)) == n2b(a MOD 256);
+
+
+  bnum(a)
+ =>
+  LO(n2u(a)) == n2b(a / 256);
+
+
+  bnum(a) &
+  bnum(b)
+ =>
+  JOIN(n2b(a),n2b(b)) == n2u((256*a)+b);
+
+
+  bnum(a) &
+  bnum(b) &
+  btest(b>0)
+ =>
+  BDIV(n2b(a),n2b(b)) == n2b(a/b);
+
+  bnum(a) &
+  bnum(b) &
+  btest(b>0)
+ =>
+  UDIV(n2u(a),n2u(b)) == n2u(a/b);
+
+
+  bnum(a) &
+  bnum(b)
+ =>
+  BMUL(n2b(a),n2b(b)) == n2b(a*b);
+
+  bnum(a) &
+  bnum(b)
+ =>
+  UMUL(n2u(a),n2u(b)) == n2u(a*b);
+
+ 
+  bnum(a) &
+  bnum(b)
+ =>
+  BSUB(n2b(a),n2b(b)) == n2b(a-b);
+
+  bnum(a) &
+  bnum(b)
+ =>
+  USUB(n2u(a),n2u(b)) == n2u(a-b);
+
+
+  bnum(a) &
+  bnum(b)
+ =>
+  BADD(n2b(a),n2b(b)) == n2b(a+b);
+
+  bnum(a) &
+  bnum(b)
+ =>
+  UADD(n2u(a),n2u(b)) == n2u(a+b);
+
+
+  BMUL(a,n2b(1)) == a;
+
+  UMUL(a,n2u(1)) == a;
+
+  BMUL(n2b(1),a) == a;
+
+  UMUL(n2u(1),a) == a;
+
+
+  BDIV(a,n2b(1)) == a;
+
+  UDIV(a,n2u(1)) == a;
+
+
+  BSUB(a,n2b(0)) == a;
+
+  USUB(a,n2u(0)) == a;
+
+
+  BADD(a,n2b(0)) == a;
+
+  UADD(a,n2u(0)) == a;
+
+  BADD(n2b(0),a) == a;
+
+  UADD(n2u(0),a) == a;
+
+
+  BAND(a,n2b(255)) == a;
+
+  BAND(n2b(255),a) == a;
+
+  BAND(a,n2b(0)) == n2b(0);
+
+  BAND(n2b(0),a) == n2b(0);
+
+
+  BOR(a,n2b(0)) == a;
+
+  BOR(n2b(0),a) == a;
+
+  BOR(a,n2b(255)) == n2b(255);
+
+  BOR(n2b(255),a) == n2b(255)
+
+END
+
+&
+
+THEORY ProcessOpsX IS
+
+#define process_op_tac (((ARI;FLAT;MODR;WRITE)~;ProcessOpsX)~)
+
+#define ProcessOps           bcall(process_op_tac: proc_op00)
+#define ReadProcessedOp(x)   brule(ProcessOpsX.1,(?|x))
+
+  ?;
+#define ReadOpStack(x)       brule(ProcessOpsX.1,x)
+#define ModifyOpStack(x)     bmodr(ProcessOpsX.1,x)
+
+#define PushOpStack(x)       ReadOpStack(X) & ModifyOpStack((X|x))
+#define PopOpStack(y)        ReadOpStack((Y|y)) & ModifyOpStack(Y)
+#define PopPushOpStack(x,y)  ReadOpStack((Y|x)) & ModifyOpStack((Y|y))
+#define PopPopPushOpStack(x,y,z)  \
+       ReadOpStack((Y|x|y)) & ModifyOpStack((Y|z))
+
+
+  0;  /* FirstRunProcessOp */
+
+  PushOpStack(s)
+ =>
+  proc_op(s);
+
+
+  PushOpStack(BAND(x))
+ =>
+  proc_op(BAND(x));
+
+
+  PopPopPushOpStack(b,a,(f(a,b)))
+ =>
+  proc_op_BuiltIn(f);
+
+  PopOpStack(a) &
+  proc_op_BuiltIn_1(f(a))
+ =>
+  proc_op_BuiltIn(f);
+
+  PopPushOpStack(b,f(a,b))
+ =>
+  proc_op_BuiltIn_1(f(a));
+
+  PopOpStack(b) &
+  proc_op(f(a,b))
+ =>
+  proc_op_BuiltIn_1(f(a));
+
+
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:f:x),F,G) &
+  PushOpStack(f(a,b))
+ =>
+  proc_op(f(a,b));
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:f:x),F,G) &
+  proc_op(b) &
+  proc_op(a) &
+  proc_op_BuiltIn(f)
+ =>
+  proc_op(f(a,b));
+
+
+  ReadByteFromBitseq(b) &
+  PushOpStack(n2bs(b))
+ =>
+  proc_op_bitseq_fini;
+
+  ReadByteFromBitseq(b) &
+  proc_op(n2bs(b))
+ =>
+  proc_op_bitseq_fini;
+
+
+
+
+
+
+  /***
+  CASE to ELSIF
+  ***/
+
+  proc_op(IF Z END)
+ =>
+  proc_op_CASE2ELSIF_1(v)(Z)(?);
+
+  (x=(Y,y)) == ((x=Y) or (x=y));
+
+  proc_op_CASE2ELSIF_1(v)(Z ELSE y)(X)
+ =>
+  proc_op_CASE2ELSIF_1(v)(Z)(X|? ELSE y);
+
+  proc_op_CASE2ELSIF_1(v)(Z ELSIF v=y THEN z)(X)
+ =>
+  proc_op_CASE2ELSIF_1(v)(Z)(X|? ELSIF y THEN z);
+
+
+  proc_op_CASE2ELSIF_1(v)(v=y THEN z)(Z)
+ =>
+  proc_op_CASE2ELSIF(v)(y THEN z)(Z);
+
+/*
+  proc_op_CASE2ELSIF(v)(Y THEN z)(Z|? ELSIF y THEN z)
+ =>
+  proc_op_CASE2ELSIF(v)(Y,y THEN z)(Z);
+*/
+
+  proc_op_CASE2ELSIF(v)(x)(Z|? ELSIF y THEN z)
+ =>
+  proc_op_CASE2ELSIF(v)(x OR y THEN z)(Z);
+
+/*
+  proc_op_CASE2ELSIF(v)(x OR Y THEN z)(Z|? ELSIF y THEN z)
+ =>
+  proc_op_CASE2ELSIF(v)(x OR Y,y THEN z)(Z);
+*/
+
+  proc_op_CASE2ELSIF(v)(x)(Z|? ELSE y)
+ =>
+  proc_op_CASE2ELSIF(v)(x ELSE y)(Z);
+
+
+
+  /***
+  so, must be procedure calls
+  ***/
+
+/*** HERE(("Must be procedure call":n(i)))& ***/
+  PushOpStack(n)
+ =>
+  proc_op_PROC(n);
+
+  SetProcessingExprActualParam &
+  CheckSimpleExpression(i) &
+  ProcessExpr(i) &
+  ResetProcessingExpr &
+  proc_op_PROC$n(i)
+ =>
+  proc_op_PROC(n(i));
+
+  SetProcessingExprActualParam &
+  CheckSimpleExpression(o) &
+  ProcessExpr(o) &
+  ResetProcessingExpr &
+  proc_op_PROC$n(o)
+ =>
+  proc_op_PROC(o<--n);
+
+  SetProcessingExprActualParam &
+  CheckSimpleExpression(bflat(o,i)) &
+  ProcessExpr(bflat(o,i)) &
+  ResetProcessingExpr &
+  proc_op_PROC$n(bflat(o,i))
+ =>
+  proc_op_PROC(o<--n(i));
+
+
+
+  /***
+  subsidiary functions
+  ***/
+
+  ReadActualFunParam(f) &
+/*** HERE(("ubsidiary function":n(f) -> f:=n))& ***/
+  proc_op(f:=n)
+ =>
+  proc_op_PROC_SUBSID_FUN(n(f));
+
+  ReadActualFunParam(f) &
+  bsearch(f,p,q) &
+  SetProcessingExprActualParam &
+  CheckSimpleExpression(q) &
+  ProcessExpr(q) &
+  ResetProcessingExpr &
+  proc_op_PROC$n(q) &
+  proc_op(f) &
+  proc_op_ASSIGN
+ =>
+  proc_op_PROC_SUBSID_FUN(n(p));
+
+  ReadSubordinateFunctionNames(F) &
+  bsearch(n(r)(f),F,G) &
+  GetActualFunParam(o,f,r) &
+  proc_op_PROC_SUBSID_FUN(n(o))
+ =>
+  proc_op_PROC(o<--n);
+
+  ReadSubordinateFunctionNames(F) &
+  bsearch(n(r)(f),F,G) &
+  GetActualFunParam(o,f,r) &
+  proc_op_PROC_SUBSID_FUN(n(bflat(o,i)))
+ =>
+  proc_op_PROC(o<--n(i));
+
+
+
+  /***
+  in-line expansions
+  ***/
+
+  ReadProcessedInLine(s) &
+  PushOpStack(s)
+ =>
+  proc_op_INLINE(x);
+
+  ReadProcessedInLine(s) &
+  proc_op(s)
+ =>
+  proc_op_INLINE(x);
+
+
+
+  ReadInLineOps(P) &
+  bsearch((n(X)=s),P,Q) &
+  ProcessInLine((X),(?|?),(s)) &
+/*** HERE(("InLine":n))& ***/
+  proc_op_INLINE(n)
+ =>
+  proc_op_PROC(n);
+
+
+
+  ReadInLineOps(P) &
+  bsearch((n(X)=s),P,Q) &
+  ProcessInLine((X),(o|?),(s)) &
+/*** HERE(("InLine 4":(o<--n)))& ***/
+  proc_op_INLINE(o<--n)
+ =>
+  proc_op_PROC(o<--n);
+
+
+
+  ReadInLineOps(P) &
+  bsearch((n(X)=s),P,Q) &
+  ProcessInLine((X),(?|i),(s)) &
+/*** HERE(("InLine 3":n(i)))& ***/
+  proc_op_INLINE(n(i))
+ =>
+  proc_op_PROC(n(i));
+
+
+
+  ReadInLineOps(P) &
+  bsearch((n(X)=s),P,Q) &
+  ProcessInLine((X),(o|i),(s)) &
+/*** HERE(("InLine 2":(o<--n(i))))& ***/
+  proc_op_INLINE(o<--n(i))
+ =>
+  proc_op_PROC(o<--n(i));
+
+  ReadCalculateInLineOpNames(N) &
+  bsearch(n,N,O) &
+  ReadInLineOps(P) &
+  bsearch((n(X)=?),P,Q) &
+  CalculateProcessInLine(n,(X),(o|i)) &
+/*** HERE(("InLine 1":(o<--n(i))))& ***/
+  proc_op_INLINE(o<--n(i))
+ =>
+  proc_op_PROC(o<--n(i));
+
+
+  /***
+  SLIB built-in functions
+  ***/
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:n:x),F,G) &
+/*** HERE(("BuiltIn":(o<--n)))& ***/
+  proc_op(o:=n)
+ =>
+  proc_op_PROC(o<--n);
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((t:n:x),F,G) &
+/*** HERE(("BuiltIn":(o<--n(i))))& ***/
+  SetProcessingExprActualParam &
+  CheckSimpleExpression(i) &
+  ProcessExpr(i) &
+  ResetProcessingExpr &
+  proc_op_PROC$n(i) &
+  proc_op(o) &
+  proc_op_ASSIGN
+ =>
+  proc_op_PROC(o<--n(i));
+
+
+
+
+
+
+  ReadProcessedExpr(e,a) &
+  PopPushOpStack(b,(a := b))
+ =>
+  proc_op_ASSIGN_EXPR(e);
+
+  PopOpStack(a) &
+  proc_op_ASSIGN_EXPR(e)$a
+ =>
+  proc_op_ASSIGN_EXPR(e);
+
+  ReadProcessedExpr(e,b) &
+  PushOpStack((a:=b))
+ =>
+  proc_op_ASSIGN_EXPR(e)$a;
+
+  ReadProcessedExpr(e,b) &
+  proc_op(a:=b)
+ =>
+  proc_op_ASSIGN_EXPR(e)$a;
+
+
+
+
+  PopPopPushOpStack(b,a,(a := b))
+ =>
+  proc_op_ASSIGN;
+
+  PopOpStack(a) &
+  proc_op_ASSIGN$a
+ =>
+  proc_op_ASSIGN;
+
+  PopPushOpStack(b,(a:=b))
+ =>
+  proc_op_ASSIGN$a;
+
+  PopOpStack(b) &
+  proc_op(a:=b)
+ =>
+  proc_op_ASSIGN$a;
+
+
+
+  PopPushOpStack(a,not(a))
+ =>
+  proc_op_NOT;
+
+  PopOpStack(a) &
+  proc_op(not(a))
+ =>
+  proc_op_NOT;
+
+  PopPushOpStack(not(a),a)
+ =>
+  proc_op_NOT;
+
+  PopOpStack(not(a)) &
+  proc_op(a)
+ =>
+  proc_op_NOT;
+
+
+
+
+  PopPopPushOpStack(b,a,(a ; b))
+ =>
+  proc_op_SC;
+
+  PopOpStack(a) &
+  proc_op_SC(a)
+ =>
+  proc_op_SC;
+
+  PopPushOpStack(b,(a ; b))
+ =>
+  proc_op_SC(a);
+
+  PopOpStack(b) &
+  proc_op(a ; b)
+ =>
+  proc_op_SC(a);
+
+
+
+  ReadProcessedExpr(e,a) &
+  PopPushOpStack(b,(a DO b))
+ =>
+  proc_op_DO$e;
+
+  ReadProcessedExpr(e,a) &
+  proc_op_DO(a)
+ =>
+  proc_op_DO$e;
+
+  PopPushOpStack(b,(a DO b))
+ =>
+  proc_op_DO(a);
+
+  PopOpStack(b) &
+  proc_op(a DO b)
+ =>
+  proc_op_DO(a);
+
+
+
+  PopPopPushOpStack(b,a,(a OF b))
+ =>
+  proc_op_OF;
+
+  PopOpStack(a) &
+  proc_op_OF(a)
+ =>
+  proc_op_OF;
+
+  PopPushOpStack(b,(a OF b))
+ =>
+  proc_op_OF(a);
+
+  PopOpStack(b) &
+  proc_op(a OF b)
+ =>
+  proc_op_OF(a);
+
+
+
+
+  PopPopPushOpStack(b,a,(a OR b))
+ =>
+  proc_op_OR;
+
+  PopOpStack(a) &
+  proc_op_OR(a)
+ =>
+  proc_op_OR;
+
+  PopPushOpStack(b,(a OR b))
+ =>
+  proc_op_OR(a);
+
+  PopOpStack(b) &
+  proc_op(a OR b)
+ =>
+  proc_op_OR(a);
+
+
+
+
+
+  PopPopPushOpStack((b THEN c),a,(a OR b THEN c))
+ =>
+  proc_op_ORTHEN;
+
+  PopOpStack(a) &
+  proc_op_ORTHEN(a)
+ =>
+  proc_op_ORTHEN;
+
+  PopPushOpStack((b THEN c),(a OR b THEN c))
+ =>
+  proc_op_ORTHEN(a);
+
+  PopOpStack(b THEN c) &
+  proc_op(a OR b THEN c)
+ =>
+  proc_op_ORTHEN(a);
+
+
+
+
+  ReadProcessedExpr(e,a) &
+  PopPushOpStack(b,(a THEN b))
+ =>
+  proc_op_THEN$e;
+
+  ReadProcessedExpr(e,a) &
+  proc_op_THEN(a)
+ =>
+  proc_op_THEN$e;
+
+  PopPushOpStack(b,(a THEN b))
+ =>
+  proc_op_THEN(a);
+
+  PopOpStack(b) &
+  proc_op(a THEN b)
+ =>
+  proc_op_THEN(a);
+
+
+
+  ReadProcessedExpr(e,f) &
+  PopPopPushOpStack(b,a,(a ELSIF f THEN b))
+ =>
+  proc_op_ELSIF$e;
+
+  PopOpStack(a) &
+  proc_op_ELSIF$e(a)
+ =>
+  proc_op_ELSIF$e;
+
+  ReadProcessedExpr(e,f) &
+  PopPushOpStack(b,(a ELSIF f THEN b))
+ =>
+  proc_op_ELSIF$e(a);
+
+  ReadProcessedExpr(e,b) &
+  proc_op_ELSIF(a)(b)
+ =>
+  proc_op_ELSIF$e(a);
+
+  PopPushOpStack(c,(a ELSIF b THEN c))
+ =>
+  proc_op_ELSIF(a)(b);
+
+  PopOpStack(c) &
+  proc_op(a ELSIF b THEN c)
+ =>
+  proc_op_ELSIF(a)(b);
+
+
+
+
+  PopPopPushOpStack(b,a,(a ELSE b))
+ =>
+  proc_op_ELSE;
+
+  PopOpStack(a) &
+  proc_op_ELSE(a)
+ =>
+  proc_op_ELSE;
+
+  PopPushOpStack(b,(a ELSE b))
+ =>
+  proc_op_ELSE(a);
+
+  PopOpStack(b) &
+  proc_op(a ELSE b)
+ =>
+  proc_op_ELSE(a);
+
+
+
+
+  PopPopPushOpStack(b,a,(a IN b))
+ =>
+  proc_op_IN;
+
+  PopOpStack(a) &
+  proc_op_IN(a)
+ =>
+  proc_op_IN;
+
+  PopPushOpStack(b,(a IN b))
+ =>
+  proc_op_IN(a);
+
+  PopOpStack(b) &
+  proc_op(a IN b)
+ =>
+  proc_op_IN(a);
+
+
+
+  PopPushOpStack(a,(EITHER a END))
+ =>
+  proc_op_EITHER;
+
+  PopOpStack(a) &
+  proc_op(EITHER a END)
+ =>
+  proc_op_EITHER;
+
+
+  PopPushOpStack(a,(CASE a END))
+ =>
+  proc_op_CASE;
+
+  PopOpStack(a) &
+  proc_op(CASE a END)
+ =>
+  proc_op_CASE;
+
+
+  PopPushOpStack(a,(WHILE a END))
+ =>
+  proc_op_WHILE;
+
+  PopOpStack(a) &
+  proc_op(WHILE a END)
+ =>
+  proc_op_WHILE;
+
+
+  PopPushOpStack(a,(IF a END))
+ =>
+  proc_op_IF;
+
+  PopOpStack(a) &
+  proc_op(IF a END)
+ =>
+  proc_op_IF;
+
+
+  PopPushOpStack(a,(VAR a END))
+ =>
+  proc_op_VAR;
+
+  PopOpStack(a) &
+  proc_op(VAR a END)
+ =>
+  proc_op_VAR;
+
+
+  /***
+  procedures
+  ***/
+
+  proc_op_PROC(n)
+ =>
+  proc_op(n);
+
+  FirstRunProcessOp &
+  ReadOpTypeInfo(T) &
+  bsearch((n(q)==t),T,U) &
+  UpdateIMPORT(n,n) &
+  proc_op_PROC(n)
+ =>
+  proc_op(n);
+
+
+  proc_op_PROC(n(i))
+ =>
+  proc_op(n(i));
+
+  FirstRunProcessOp &
+  ReadOpTypeInfo(T) &
+  bsearch((n(q)==t),T,U) &
+  UpdateIMPORT(n,(n(i))) &
+  proc_op_PROC(n(i))
+ =>
+  proc_op(n(i));
+
+
+  proc_op_PROC(o<--n)
+ =>
+  proc_op(o<--n);
+
+  FirstRunProcessOp &
+  ReadOpTypeInfo(T) &
+  bsearch((n(q)==t),T,U) &
+  UpdateIMPORT(n,(o<--n)) &
+  proc_op_PROC(o<--n)
+ =>
+  proc_op(o<--n);
+
+
+  proc_op_PROC(o<--n(i))
+ =>
+  proc_op(o<--n(i));
+
+  FirstRunProcessOp &
+  ReadOpTypeInfo(T) &
+  bsearch((n(q)==t),T,U) &
+  UpdateIMPORT(n,(o<--n(i))) &
+  proc_op_PROC(o<--n(i))
+ =>
+  proc_op(o<--n(i));
+
+
+
+
+  ReadNonTranslatedOps(N) &
+  bsearch(n,N,M) &
+  InformNoPASPEquivalent(n) &
+  SetTRLError
+ =>
+  proc_op(n);
+
+  ReadNonTranslatedOps(N) &
+  bsearch(n,N,M) &
+  InformNoPASPEquivalent(n) &
+  SetTRLError
+ =>
+  proc_op(n(i));
+
+  ReadNonTranslatedOps(N) &
+  bsearch(n,N,M) &
+  InformNoPASPEquivalent(n) &
+  SetTRLError
+ =>
+  proc_op(o<--n);
+
+  ReadNonTranslatedOps(N) &
+  bsearch(n,N,M) &
+  InformNoPASPEquivalent(n) &
+  SetTRLError
+ =>
+  proc_op(o<--n(i));
+
+
+
+
+
+  ReadProcessedExpr(e,i) &
+  PushOpStack(n(i))
+ =>
+  proc_op_PROC$n(e);
+
+  ReadProcessedExpr(e,i) &
+  proc_op(n(i))
+ =>
+  proc_op_PROC$n(e);
+
+
+
+
+  PushOpStack(skip)
+ =>
+  proc_op(skip);
+
+
+  proc_op(y) &
+  proc_op(x) &
+  proc_op_ASSIGN
+ =>
+  proc_op(x:=y);
+
+  FirstRunProcessOp &
+  SetProcessingExprRHS &
+  CheckSimpleExpression(y) &
+  ProcessExpr(y) &
+  ResetProcessingExpr &
+  proc_op(x) &
+  proc_op_ASSIGN_EXPR(y)
+ =>
+  proc_op(x:=y);
+
+
+  /***
+  expansion of RESETBIT
+  ***/
+
+  Writef(("\n\n    Error: bit parameter % for RESETBIT must be a\n           BYTE (not an identifier) in the range 0..7 ...",bsrv n berv)) &
+  SetTRLError
+ =>
+  proc_op(a:=RESETBIT(n,s));
+
+  bnum(n) &
+  btest(0<=n) &
+  btest(n<=7) &
+  proc_op(a:=BAND(s,n2b((255-pow2(n)))))
+ =>
+  proc_op(a:=RESETBIT(n2b(n),s));
+
+
+
+
+  /***
+  expansion of SETBIT
+  ***/
+
+  Writef(("\n\n    Error: bit parameter % for SETBIT must be a\n           BYTE (not an identifier) in the range 0..7 ...",bsrv n berv)) &
+  SetTRLError
+ =>
+  proc_op(a:=SETBIT(n,s));
+
+  bnum(n) &
+  btest(0<=n) &
+  btest(n<=7) &
+  proc_op(a:=BOR(s,n2b(pow2(n))))
+ =>
+  proc_op(a:=SETBIT(n2b(n),s));
+
+
+
+
+  /***
+  expansion of ISBITSET
+  ***/
+
+  Writef(("\n\n    Error: bit parameter % for ISBITSET must be a\n           BYTE (not an identifier) in the range 0..7 ...",bsrv n berv)) &
+  SetTRLError
+ =>
+  proc_op(a:=ISBITSET(n,s));
+
+  bnum(n) &
+  btest(0<=n) &
+  btest(n<=7) &
+  proc_op(IF BAND(s,n2b(pow2(n))) = n2b(0) THEN a := FALSE ELSE a := TRUE END)
+ =>
+  proc_op(a:=ISBITSET(n2b(n),s));
+
+
+
+  /***
+  B2BOOL
+  ***/
+
+  bnum(a) &
+  btest(a>0) &
+  proc_op(x:=TRUE)
+ =>
+  proc_op(x:=B2BOOL(n2b(a)));
+
+  proc_op(x:=FALSE)
+ =>
+  proc_op(x:=B2BOOL(n2b(0)));
+
+/*
+  b2bl(a) == B2BOOL(a);
+*/
+
+
+  /***
+  BOOL2B
+  ***/
+
+  proc_op(x:=n2b(1))
+ =>
+  proc_op(x:=BOOL2B(TRUE));
+
+  proc_op(x:=n2b(0))
+ =>
+  proc_op(x:=BOOL2B(FALSE));
+
+/*
+  bl2b(a) == BOOL2B(a);
+*/
+
+
+  /***
+  join
+  ***/
+
+/*
+  join(a,b) == JOIN(a,b);
+*/
+
+
+
+  proc_op(x:=(bool(a>=n2u(b))&bool(a<=n2u(c))))
+ =>
+  proc_op(x:=bool(u2n(a):b..c));
+
+  proc_op(x:=(bool(a>=n2b(b))&bool(a<=n2b(c))))
+ =>
+  proc_op(x:=bool(b2n(a):b..c));
+
+/*
+  proc_op(IF a>=n2b(b) & a<=n2b(c) THEN x:=TRUE ELSE x:=FALSE END)
+ =>
+  proc_op(x:=bool(b2n(a):b..c));
+*/
+
+  proc_op(x)
+ =>
+  proc_op(x/=FALSE);
+
+  proc_op(not(x))
+ =>
+  proc_op(x/=TRUE);
+
+  proc_op(not(x))
+ =>
+  proc_op(x=FALSE);
+
+  proc_op(x)
+ =>
+  proc_op(x=TRUE);
+
+  proc_op(x) &
+  proc_op_NOT
+ =>
+  proc_op(not(x));
+
+  proc_op(s) &
+  proc_op(S) &
+  proc_op_SC
+ =>
+  proc_op(S;s);
+
+  proc_op(S)
+ =>
+  proc_op(skip;S);
+
+  proc_op(S)
+ =>
+  proc_op(S;skip);
+
+  proc_op(y) &
+  SetProcessingExprGuard &
+  CheckSimpleExpression(x) &
+  ProcessExpr(x) &
+  ResetProcessingExpr &
+  proc_op_DO$x
+ =>
+  proc_op(x DO y);
+
+  proc_op(y) &
+  proc_op(x) &
+  proc_op_OF
+ =>
+  proc_op(x OF y);
+
+  proc_op(y) &
+  proc_op(x) &
+  proc_op_OR
+ =>
+  proc_op(x OR y);
+
+  proc_op(y) &
+  SetProcessingExprGuard &
+  CheckSimpleExpression(x) &
+  ProcessExpr(x) &
+  ResetProcessingExpr &
+  proc_op_THEN$x
+ =>
+  proc_op(x THEN y);
+
+  proc_op(z) &
+  SetProcessingExprGuard &
+  CheckSimpleExpression(y) &
+  ProcessExpr(y) &
+  ResetProcessingExpr &
+  proc_op_THEN$y &
+  proc_op(x) &
+  proc_op_ORTHEN
+ =>
+  proc_op(x OR y THEN z);
+
+  proc_op(z) &
+  SetProcessingExprGuard &
+  CheckSimpleExpression(y) &
+  ProcessExpr(y) &
+  ResetProcessingExpr &
+  proc_op(x) &
+  proc_op_ELSIF$y
+ =>
+  proc_op(x ELSIF y THEN z);
+
+  proc_op(y) &
+  proc_op(x) &
+  proc_op_ELSE
+ =>
+  proc_op(x ELSE y);
+
+  proc_op(y) &
+  proc_op(x) &
+  proc_op_IN
+ =>
+  proc_op(x IN y);
+
+  proc_op(x) &
+  proc_op_EITHER
+ =>
+  proc_op(EITHER x END);
+
+  proc_op(y) &
+  proc_op(x) &
+  proc_op_CASEELSE &
+  proc_op_EITHER
+ =>
+  proc_op(EITHER x ELSE y END);
+
+
+  PushOpStack(x)
+ =>
+  proc_CASE(x);
+
+  CASE2IFWarn &
+  SetInCASE &
+  proc_op_CASE2ELSIF(x)(y)(?) &
+  ResetInCASE
+ =>
+  proc_op(CASE x OF EITHER y END END);
+
+  CASE2IF_ELSEWarn &
+  SetInCASE &
+  proc_op_CASE2ELSIF(x)(y ELSE z)(?) &
+  ResetInCASE
+ =>
+  proc_op(CASE x OF EITHER y ELSE z END END);
+
+  proc_op(x) &
+  proc_op_WHILE
+ =>
+  proc_op(WHILE x END);
+
+  proc_op(x) &
+  proc_op_IF
+ =>
+  proc_op(IF x END);
+
+  proc_op(x) &
+  proc_op_VAR
+ =>
+  proc_op(VAR x END);
+
+  proc_op(WHILE w DO x END)
+ =>
+  proc_op(WHILE w DO x INVARIANT y VARIANT z END);
+
+  proc_op(WHILE w DO x END)
+ =>
+  proc_op(WHILE w DO x VARIANT y INVARIANT z END);
+
+  proc_op(x)
+ =>
+  proc_op(BEGIN x END);
+
+
+
+
+  ReadProcessedOp(s) &
+  bcall((ProcessOpsSimplifyX~;MODR):bmodr(Operations_storeX.N,(o=s)))
+ =>
+  proc_op_fini(N)(o);
+  
+  ModifyCurrentOpName(n)
+ =>
+  mod_op_name(n);
+
+  ModifyCurrentOpName(n)
+ =>
+  mod_op_name(n(i));
+
+  ModifyCurrentOpName(n)
+ =>
+  mod_op_name(o<--n);
+
+  ModifyCurrentOpName(n)
+ =>
+  mod_op_name(o<--n(i));
+
+  proc_op0(N);
+
+  brule(Operations_storeX.N,(o=s)) &
+  mod_op_name(o) &
+  LoadOpVRB(o) &
+  ModifyOpStack(?) &
+  proc_op(s) &
+  proc_op_fini(N)(o) &
+  proc_op0(N+1)
+ =>
+  proc_op0(N);
+
+  RestoreVRB &
+  proc_op0(1)
+ =>
+  proc_op00;
+
+  /***
+  pow rewrites
+  ***/
+
+  pow2(7) == 128;
+
+  pow2(6) == 64;
+
+  pow2(5) == 32;
+
+  pow2(4) == 16;
+
+  pow2(3) == 8;
+
+  pow2(2) == 4;
+
+  pow2(1) == 2;
+
+  pow2(0) == 1;
+
+
+
+  TRLErrorSet
+ =>
+  x
+
+END
+
+&
+
+THEORY PrintCodeModuleHeaderX IS
+
+#define prt_headerP_tac (((WRITE)~;PrintCodeModuleHeaderX)~)
+
+#define PrintCodeModuleHeader(x) bcall(prt_headerP_tac: pcmh(x))
+
+  bprintf("MODULE %;\n\n",m)
+ =>
+  pcmh(m);
+
+  IsMAIN &
+  bprintf("MAIN %;\n\n",m)
+ =>
+  pcmh(m)
+
+END
+
+&
+
+
+
+/*
+THEORY PrintNonOwnConstX IS
+
+#define prt_non_own_consts_tac (((MAP;ARI~;WRITE)~;PrintNonOwnConstX)~)
+
+#define PrintNonOwnConstants   bcall(prt_non_own_consts_tac: pnoc)
+
+  pnoes(x);
+
+  bprintf("CONST % ",e) &
+  PrintSpacesToMaxLength(blen(e)+6) &
+  bprintf(" = ") &
+  bprintf("%;\n",m-1)
+ =>
+  pnoes1(e,m,n);
+
+  pnoes1 bnmap e
+ =>
+  pnoes(s(e));
+
+  ReadNonBYTEenum(S) &
+  bsearch(s,S,T)
+ =>
+  pnoes(s(e));
+
+  bprintf("0")
+ =>
+  pnoc4(UNSIGNED);
+
+  pnoc4(BYTE);
+
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=e),S,T) &
+  ReadBuiltInMinMaxConstants(C) &
+  bsearch((e:t),C,D) &
+  bprintf("CONST % ",c) &
+  PrintSpacesToMaxLength(blen(c)+6) &
+  bprintf(" = ") &
+  bprintf("%",e) &
+  bprintf(";\n")
+ =>
+  pnoc3(c);
+
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=f(n)),S,T) &
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  bprintf("CONST % ",c) &
+  PrintSpacesToMaxLength(blen(c)+6) &
+  bprintf(" = ") &
+  pnoc4(t) &
+  bprintf("%;\n",n)
+ =>
+  pnoc3(c);
+
+  pnoc2(c)(N);
+
+  brule(Operations_storeX.N,(o=s)) &
+  pnoc3(c)
+ =>
+  pnoc2(c)(N);
+
+  brule(Operations_storeX.N,(o=s)) &
+  c\s &
+  pnoc2(c)(N+1)
+ =>
+  pnoc2(c)(N);
+
+  pnoc2(c)(1)
+ =>
+  pnoc1(c);
+
+  pnoc1(?);
+
+  ReadNonOwnConstants(C) &
+  ReadNonOwnSets(S) &
+  pnoc1 bsmap C &
+  pnoes bsmap S &
+  bprintf("\n")
+ =>
+  pnoc
+
+END
+
+&
+*/
+
+
+
+THEORY PrintOwnConstX IS
+
+#define prt_own_consts_tac (((MODR;MAP;ARI~;WRITE)~;PrintOwnConstX)~)
+
+#define PrintOwnConstants   bcall(prt_own_consts_tac: poc)
+
+  ?; /* for newline */
+
+
+  poc_nl;
+
+  brule(PrintOwnConstX.1,1) &
+  bprintf("\n")
+ =>
+  poc_nl;
+
+
+  poes(x);
+
+  bprintf("CONST % ",e) &
+  PrintSpacesToMaxLength(blen(e)+6) &
+  bprintf(" = ") &
+  bprintf("%;\n",m-1)
+ =>
+  poes1(e,m,n);
+
+  poes1 bnmap e
+ =>
+  poes(s(e));
+
+  ReadNonBYTEenum(S) &
+  bsearch(s,S,T)
+ =>
+  poes(s(e));
+
+  poc0(x);
+
+  bprintf("0")
+ =>
+  poc2(UNSIGNED);
+
+  poc2(BYTE);
+
+
+  poc1(c);                   /* not a ValidPaspType (eg constant set) */
+
+  ReadConstantsTypes(A) &
+  bsearch((c:d),A,B) &
+  ReadValidPaspTypes(C) &
+  bsearch(d,C,D) &
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=e),S,T) &
+  ReadBuiltInMinMaxConstants(U) &
+  bsearch((e:t),U,V) &
+  bprintf("CONST % ",c) &
+  PrintSpacesToMaxLength(blen(c)+6) &
+  bprintf(" = ") &
+  bprintf("%",e) &
+  bprintf(";\n") &
+  bmodr(PrintOwnConstX.1,1)
+ =>
+  poc1(c);
+
+  ReadConstantsTypes(A) &
+  bsearch((c:d),A,B) &
+  ReadValidPaspTypes(C) &
+  bsearch(d,C,D) &
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=f(n)),S,T) &
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  bprintf("CONST % ",c) &
+  PrintSpacesToMaxLength(blen(c)+6) &
+  bprintf(" = ") &
+  poc2(t) &
+  bprintf("%;\n",n) &
+  bmodr(PrintOwnConstX.1,1)
+ =>
+  poc1(c);
+
+  ReadNatConversionFunctions(F) &
+  bsearch(c,F,G)
+ =>
+  poc1(c);
+
+  ReadConversionFunction(F) &
+  bsearch((c:t),F,G)
+ =>
+  poc1(c);
+
+  poc1(?);
+
+  bmodr(PrintOwnConstX.1,0) &
+  ReadOwnConstants(C) &
+  ReadMachineParameters(P) &
+  ReadOwnSets(S) &
+  poc0 bsmap P &
+  poc1 bsmap C &
+  poes bsmap S &
+  poc_nl
+ =>
+  poc
+
+END
+
+&
+
+THEORY PrintGlobalVarX IS
+
+#define print_vars_tac (((ARI;WRITE)~;PrintGlobalVarX)~)
+
+#define PrintGlobalVars  bcall(print_vars_tac: pgv(1))
+
+
+  bprintf("0%",a)
+ =>
+  pgv_init_arr_val(UNSIGNED)(A,a);
+
+  bprintf("%",a)
+ =>
+  pgv_init_arr_val(BYTE)(A,a);
+
+
+  bprintf("%",a)
+ =>
+  pgv_init_val1(a);
+
+  n2u(a) == a;
+
+  n2b(a) == a;
+
+  n2bl(0) == FALSE;
+
+  n2bl(1) == TRUE;
+
+  n2b(b2n(a)) == a;
+
+  b2n(n2b(a)) == a;
+
+  bl2b(TRUE) == n2b(1);
+
+  bl2b(FALSE) == n2b(0);
+
+
+  bnum(n)
+ =>
+  b2bl(n2b(n)) == TRUE;
+
+  b2bl(n2b(0)) == FALSE;
+
+
+
+  bprintf("%",p)
+ =>
+  pgv1(v)(p);
+
+  brule(Ipt_PASP_VARX.N,(a|v;UiArr)) &
+  bprintf("0%",p)
+ =>
+  pgv1(v)(p);
+
+  brule(Ipt_PASP_VARX.N,(a|v;UiArr_File)) &
+  bprintf("0%",p)
+ =>
+  pgv1(v)(p);
+
+
+  bprintf("0") &
+  pgv_init_val1(n2u(a))
+ =>
+  pgv_init_val(UNSIGNED)(a);
+
+  pgv_init_val1(n2b(a))
+ =>
+  pgv_init_val(BYTE)(a);
+
+  pgv_init_val1(n2bl(a))
+ =>
+  pgv_init_val(BOOLEAN)(a);
+
+
+  bprintf("pgv_init_val(?)(?)")
+ =>
+  pgv_init_val(?)(?);
+
+
+/***
+PrintTHEORY(Global_var_storeX)&
+PrintTHEORY(Ipt_PASP_VARX)&
+PrintRule(ProcessImportsSeesX.3)&
+ReadImportedMchWithParam(I)&HERE((I))&
+***/
+  bprintf("\n")
+ =>
+  pgv(N);
+
+/***
+PrintTHEORY(Global_var_storeX)&
+PrintTHEORY(Ipt_PASP_VARX)&
+PrintRule(ProcessImportsSeesX.3)&
+ReadImportedMchWithParam(I)&HERE((I))
+=>
+***/
+  pgv(1);
+
+  brule(Global_var_storeX.N,(v:t:(R;M))) &
+/***
+HERE((R;M))&
+PrintTHEORY(Global_var_storeX)&
+PrintTHEORY(Ipt_PASP_VARX)&
+PrintRule(ProcessImportsSeesX.3)&
+ReadImportedMchWithParam(I)&HERE((I))&
+***/
+  bprintf("VAR % ",v) &
+  brule(Ipt_PASP_VARX.Q,(S|(R;M))) &
+  ReadImportedMchWithParam(I) &
+  bsearch((S(f)(a)),I,J) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : % = ",t) &
+  pgv_init_val(t)(a) &
+  bprintf(";\n",t) &
+  pgv(N+1)
+ =>
+  pgv(N);
+
+  brule(Global_var_storeX.N,(v:t:(R;Write_Byt))) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : {> WRITEONLY<} %;\n",t) &
+  pgv(N+1)
+ =>
+  pgv(N);
+
+  brule(Global_var_storeX.N,(v:t:(R;Read_Byt))) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : {> READONLY<} %;\n",t) &
+  pgv(N+1)
+ =>
+  pgv(N);
+
+  brule(Global_var_storeX.N,(v:t:(R;M))) &
+  IsFileMch(M) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : {>NVRAM<} %;\n",t) &
+  pgv(N+1)
+ =>
+  pgv(N);
+
+  brule(Global_var_storeX.N,(v:(a..b+->c):(R;M))) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : {>NVRAM<} ARRAY[") &
+  pgv1(v)(a) &
+  bprintf("..") &
+  pgv1(v)(b) &
+  bprintf("] OF %;\n",c) &
+  pgv(N+1)
+ =>
+  pgv(N);
+
+  brule(Global_var_storeX.N,(v:(a..b+->c):(R;M))) &
+  IsNonFileArr(M) &
+  brule(Ipt_PASP_VARX.Q,(S|(R;M))) &
+  ReadImportedMchWithParam(I) &
+  bsearch((S(F)(A)),I,J) & /* D is initial elem */
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : ARRAY[") &
+  pgv1(v)(a) &
+  bprintf("..") &
+  pgv1(v)(b) &
+  bprintf("] OF % = ",c) &
+  pgv_init_arr_val(c)(A) &
+  bprintf(";\n",c) &
+  pgv(N+1)
+ =>
+  pgv(N)
+
+END
+
+&
+
+THEORY PrintSeenVarX IS
+
+#define print_seen_vars_tac (((ARI;WRITE;PrintGlobalVarX)~;PrintSeenVarX)~)
+
+#define PrintSeenVars  bcall(print_seen_vars_tac: psv(1))
+
+  brule(Ipt_PASP_VARX.N,(a|v;UiArr_File)) &
+  bprintf("0%",p)
+ =>
+  psv2(v)(p);
+
+  brule(Ipt_PASP_VARX.N,(a|v;UiArr)) &
+  bprintf("0%",p)
+ =>
+  psv2(v)(p);
+
+  brule(Ipt_PASP_VARX.N,(a|v;BiArr)) &
+  bprintf("%",p)
+ =>
+  psv2(v)(p);
+
+  bprintf("%",p)
+ =>
+  psv1(v)(p);
+
+  bnum(p) &
+  psv2(v)(p)
+ =>
+  psv1(v)(p);
+
+  bident(p) &
+  ReadMachineNATParameters(P) &
+  bsearch(a,(P,?),Q) &
+  psv2(v)(p)
+ =>
+  psv1(v)(p);
+
+  bprintf("\n")
+ =>
+  psv(N);
+
+  psv(1);
+
+  brule(GlobalSeen_var_storeX.N,(v:t:(R;M))) &
+  bprintf("VAR % ",v) &
+  brule(Ipt_PASP_VARX.Q,(S|(R;M))) &
+  ReadImportedMchWithParam(I) &
+  bsearch((S(f)(a)),I,J) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : % = ",t) &
+  bcall((((ARI;WRITE)~;PrintGlobalVarX)~):pgv_init_val(t)(a)) &
+  bprintf(";\n",t) &
+  psv(N+1)
+ =>
+  psv(N);
+
+  brule(GlobalSeen_var_storeX.N,(v:t:(R;Write_Byt))) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : %;\n",t) &
+  psv(N+1)
+ =>
+  psv(N);
+
+  brule(GlobalSeen_var_storeX.N,(v:t:(R;Read_Byt))) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : %;\n",t) &
+  psv(N+1)
+ =>
+  psv(N);
+
+  brule(GlobalSeen_var_storeX.N,(v:t:(R;M))) &
+  IsFileMch(M) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : %;\n",t) &
+  psv(N+1)
+ =>
+  psv(N);
+
+  brule(GlobalSeen_var_storeX.N,(v:(a..b+->c):(R;M))) &
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : ARRAY[") &
+  psv1(v)(a) &
+  bprintf("..") &
+  psv1(v)(b) &
+  bprintf("] OF %;\n",c) &
+  psv(N+1)
+ =>
+  psv(N);
+
+  brule(GlobalSeen_var_storeX.N,(v:(a..b+->c):(R;M))) &
+  IsNonFileArr(M) &
+  brule(Ipt_PASP_VARX.Q,(S|(R;M))) &
+  ReadImportedMchWithParam(I) &
+  bsearch((S(F)(A)),I,J) & /* D is initial elem */
+  bprintf("VAR % ",v) &
+  PrintSpacesToMaxLength(blen(v)+4) &
+  bprintf(" : ARRAY[") &
+  psv1(v)(a) &
+  bprintf("..") &
+  psv1(v)(b) &
+  bprintf("] OF % = ",c) &
+  pgv_init_arr_val(c)(A) &
+  bprintf(";\n",c) &
+  psv(N+1)
+ =>
+  psv(N)
+
+
+END
+
+&
+
+THEORY PrintOpHdrX IS
+
+#define prt_op_hdr_tac (((MAP;WRITE;RULE;MODR)~;PrintOpHdrX)~)
+
+#define PrintOpHeader(x)  bcall(prt_op_hdr_tac: prt_op_hdr(x))
+
+
+  ?; /* CurrentOpName */
+
+  ?; /* LastOpName */
+
+  ReadCurrentFunctionName((o(p):t)) &
+  InformActualParamNotSimplePASPType(o,p,t) &
+  SetTRLError
+ =>
+  prt_function_type;
+
+  ReadNonOwnSets(S) &
+  ReadCurrentFunctionName((o(p):t)) &
+  bsearch(t(e),S,T) &
+  bprintf(") : %;\n",t)
+ =>
+  prt_function_type;
+
+  ReadOwnSets(S) &
+  ReadCurrentFunctionName((o(p):t)) &
+  bsearch(t(e),S,T) &
+  bprintf(") : %;\n",t)
+ =>
+  prt_function_type;
+
+  ReadFormalParameterTypes(T) &
+  ReadCurrentFunctionName((o(p):t)) &
+  bsearch(t,T,W) &
+  bprintf(") : %;\n",t)
+ =>
+  prt_function_type;
+
+  ReadValidPaspTypes(T) &
+  ReadCurrentFunctionName((o(p):t)) &
+  bsearch(t,T,W) &
+  bprintf(") : %;\n",t)
+ =>
+  prt_function_type;
+
+  ReadCurrentFunctionName((o(p):SIGNED)) &
+  bprintf(") : %;\n",INTEGER)
+ =>
+  prt_function_type;
+
+
+  ReadCurrentOpName(o) &
+  ReadOpTypeInfo(T) &
+  bsearch((o(q)==t),T,U) &
+  bsearch((p:x),(t&?),u) &
+  ReadCurrentFunctionName(o(p)) &
+  ModifyCurrentFunctionName((o(p):x))
+ =>
+  function_type(p);
+
+
+
+  ReadCurrentOpName(o) &
+  InformParamNotPASPType(o,(p:t)) &
+  SetTRLError
+ =>
+  param_type1(p:t);
+
+/***
+VERY TEMPORARY until Ib fixes TypeChecker ...
+***/
+  bprintf("%",BYTE)
+ =>
+  param_type1(p:POW(NAT*NAT));
+
+  ReadNonOwnSets(S) &
+  bsearch(t(e),S,T) &
+  bprintf("%",t)
+ =>
+  param_type1(p:t);
+
+  ReadOwnSets(S) &
+  bsearch(t(e),S,T) &
+  bprintf("%",t)
+ =>
+  param_type1(p:t);
+
+  ReadFormalParameterTypes(T) &
+  bsearch(t,T,W) &
+  bprintf("%",t)
+ =>
+  param_type1(p:t);
+
+  ReadValidPaspTypes(T) &
+  bsearch(t,T,W) &
+  bprintf("%",t)
+ =>
+  param_type1(p:t);
+
+  bprintf("%",INTEGER)
+ =>
+  param_type1(p:SIGNED);
+
+  ReadCurrentOpName(o) &
+  ReadOpTypeInfo(T)
+ =>
+  param_type(p);
+
+  ReadCurrentOpName(o) &
+  ReadOpTypeInfo(T) &
+  bsearch((o(q)==t),T,U) &
+  bsearch((p:x),(t&?),u) &
+  param_type1(p:x)
+ =>
+  param_type(p);
+
+
+
+  PrintSemiColonIfReqd &
+  bprintf("% : ",p) &
+  param_type(p)
+ =>
+  nonvar_param(p);
+
+
+  PrintSemiColonIfReqd &
+  bprintf("VAR % : ",p) &
+  param_type(p)
+ =>
+  var_param(p);
+
+  ReadCurrentOpName(o) &
+  ReadCurrentFunctionName(o(p)) &
+  function_type(p)
+ =>
+  var_param(p);
+
+
+
+  ModifyCurrentOpName(o) &
+  ModifyCurrentFunctionName(?) &
+  bprintf("\n\nPROCEDURE %",o) &
+  SetSemiColonNotRequired &
+  bprintf(";\n") &
+  LoadOpVRB(o)
+ =>
+  prt_op_hdr(o);
+
+  ModifyCurrentOpName(MAIN) &
+  ModifyCurrentFunctionName(?) &
+  LoadOpVRB(MAIN)
+ =>
+  prt_op_hdr(MAIN);
+
+  ModifyCurrentOpName(o) &
+  ModifyCurrentFunctionName(?) &
+  bprintf("\n\nPROCEDURE %(",o) &
+  SetSemiColonNotRequired &
+  var_param bsmap r &
+  bprintf(");\n") &
+  LoadOpVRB(o)
+ =>
+  prt_op_hdr(r <-- o);
+
+  ReadFunctionNames(O) &
+  bsearch(o(s),O,P) &
+  ModifyCurrentFunctionName(o(s)) &
+  ModifyCurrentOpName(o) &
+  bprintf("\n\nFUNCTION %(",o) &
+  SetSemiColonNotRequired &
+  var_param bsmap r &
+  prt_function_type &
+  LoadOpVRB(o)
+ =>
+  prt_op_hdr(r <-- o);
+
+  ModifyCurrentOpName(o) &
+  ModifyCurrentFunctionName(?) &
+  bprintf("\n\nPROCEDURE %(",o) &
+  SetSemiColonNotRequired &
+  nonvar_param bsmap p &
+  bprintf(");\n") &
+  LoadOpVRB(o)
+ =>
+  prt_op_hdr(o(p));
+
+  ModifyCurrentOpName(o) &
+  ModifyCurrentFunctionName(?) &
+  bprintf("\n\nPROCEDURE %(",o) &
+  SetSemiColonNotRequired &
+  var_param bsmap r &
+  nonvar_param bsmap p &
+  bprintf(");\n") &
+  LoadOpVRB(o)
+ =>
+  prt_op_hdr(r <-- o(p));
+
+  ReadFunctionNames(O) &
+  bsearch(o(s),O,P) &
+  ModifyCurrentFunctionName(o(s)) &
+  ModifyCurrentOpName(o) &
+  bprintf("\n\nFUNCTION %(",o) &
+  SetSemiColonNotRequired &
+  var_param bsmap r &
+  nonvar_param bsmap p &
+  prt_function_type &
+  LoadOpVRB(o)
+ =>
+  prt_op_hdr(r <-- o(p))
+
+END
+
+&
+
+THEORY PrintOpsX IS
+
+#define prt_ops_tac (((ARI;WRITE;RULE;NEWV;SUB)~;PrintOpsX)~)
+
+#define PrintOps bcall(prt_ops_tac: prt_op(1))
+
+  PrintOpBody(b)
+ =>
+  prt_op2(b);
+
+  WriteDot &
+  PrintOpHeader(h) &
+  prt_op2(b) &
+  bprintf("\n\n")
+ =>
+  prt_op1(h=b);
+
+  WriteDot &
+  ReadFunctionNames(O) &
+  bsearch(o(s),O,P) &
+  PrintOpHeader((r <-- o(p))) &
+  prt_op2([s:=o]b) &
+  bprintf("\n\n")
+ =>
+  prt_op1(r <-- o(p)=b);
+
+  IsMAIN &
+  WriteDot &
+  PrintOpHeader(MAIN) &
+  PrintOpBody(b) &
+  bprintf("\n")
+ =>
+  prt_op1(MAIN=b);
+
+
+  prt_op(N);
+
+  brule(Operations_storeX.N,o) &
+  prt_op1(o) &
+  prt_op(N+1)
+ =>
+  prt_op(N);
+
+/*
+  IsMAIN &       /? dont print INI ?/
+  brule(Operations_storeX.2,o) &
+  prt_op(2)
+ =>
+  prt_op(1);
+*/
+
+  TRLErrorSet
+ =>
+  x
+
+END
+
+&
+
+THEORY PrintEXPORTX IS
+
+#define prt_EXPORT_tac (((MAP;ARI;WRITE;MODR)~;PrintEXPORTX)~)
+
+#define PrintEXPORT bcall(prt_EXPORT_tac: \
+    (bmodr(PrintEXPORTX.1,0) & bprintf("\n") & pexp0))
+
+  ?; /* used locally to determine first op name */
+
+  ?; /* constants actually printed */
+#define ReadExportedConstants(x)    brule(PrintEXPORTX.2,x)
+#define ModifyExportedConstants(x)  bmodr(PrintEXPORTX.2,x)
+
+
+  pexp_add(c); /* an op  - not a constant */
+
+  ReadOwnConstants(A) &
+  bsearch(c,(A,?),B) &
+  ReadExportedConstants(C) &
+  ModifyExportedConstants((C,c))
+ =>
+  pexp_add(c);
+
+
+  bprintf(", %",p) &
+  pexp_add(p)
+ =>
+  pexp1(p);
+
+  brule(PrintEXPORTX.1,0) &
+  bmodr(PrintEXPORTX.1,1) &
+  bprintf("EXPORT %",p) &
+  pexp_add(p)
+ =>
+  pexp1(p);
+
+  ReadNatConversionFunctions(F) &
+  bsearch(p,F,G)
+ =>
+  pic1(p);
+
+  ReadConversionFunction(F) &
+  bsearch((p:t),F,G)
+ =>
+  pic1(p);
+
+  pexp1(?);
+
+  pexp1(p)
+ =>
+  pexp1(a<--p);
+
+  pexp1(p)
+ =>
+  pexp1(p(s));
+
+  pexp1(p)
+ =>
+  pexp1(a<--p(s));
+
+  bprintf(" .\n")
+ =>
+  pexp_fin;
+
+  brule(PrintEXPORTX.1,0) &
+  bprintf(".\n")
+ =>
+  pexp_fin;
+
+
+  ReadOwnConstants(C) &
+  pexp1 bsmap C &
+  pexp_fin
+ =>
+  pexp(N);
+
+  brule(Operations_storeX.N,(a=s)) &
+  pexp1(a) &
+  pexp(N+1)
+ =>
+  pexp(N);
+
+  pexp(1)
+ =>
+  pexp0;
+
+  brule(Operations_storeX.2,(MAIN=s)) &
+  bprintf(".\n")
+ =>
+  pexp0;
+
+  brule(Operations_storeX.2,(a=s)) &
+  pexp(1)
+ =>
+  pexp0;
+
+  IsMAIN
+ =>
+  pexp0
+
+END
+
+&
+
+THEORY PrintCodeModuleAnnotX IS
+
+#define prt_code_mod_annot_tac (((CATL;SHELL;WRITE)~;PrintCodeModuleAnnotX)~)
+
+#define PrintCodeModuleAnnot(x,y) bcall(prt_code_mod_annot_tac:pcma(x)(y))
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  bshell("echo '  CREATED BY:      ' `whoami` >> .Bcom") &
+  bshell("date '+  DATE:             %d/%m/%y%n  TIME:             %H:%M:%S' >> .Bcom") &
+  bshell("echo '  VERSION:         ' `cat .Bmvr` >> .Bcom" ) &
+  bshell("echo '}' >> .Bcom") &
+  bshell("echo '' >> .Bcom") &
+  bshell("echo '' >> .Bcom") &
+  bshell(bcatl("cat CDE/PASP/",a," >> .Bcom")) &
+  bshell(bcatl("mv .Bcom CDE/PASP/",a))
+ =>
+  pcma1(a);
+
+  /***
+  the .noatt/.pasp code files
+  ***/
+  bshell("echo '{' > .Bcom") &
+  bshell(bcatl("echo '  FILE:             ",a,"' >> .Bcom")) &
+  bshell(bcatl("echo '  CREATED FROM:     ",b,"' >> .Bcom")) &
+  pcma1(a)
+ =>
+  pcma(a)(b);
+
+  /***
+  the .param code file
+  ***/
+  ReadTrlImp(i.imp) &
+  bshell("echo '{' > .Bcom") &
+  bshell(bcatl("echo '  FILE:             ",a,"' >> .Bcom")) &
+  bshell(bcatl("echo '  TRANSLATED FROM:  ",i,".imp' >> .Bcom")) &
+  pcma1(a)
+ =>
+  pcma(a)(?)
+
+END
+
+&
+
+THEORY PrintCodeModuleX IS
+
+#define prt_code_mod_tac (((CATL;WRITE)~;PrintCodeModuleX)~)
+
+#define PrintCodeModule(x,y)  bcall(prt_code_mod_tac: pc0(x)(y))
+
+  Connect(f) &
+  RestoreVRB &
+  PrintCodeModuleHeader(m) &
+  PrintIMPORT &
+  PrintIMPORTConst &
+  SetIndentConstsGlobalVars &
+  PrintOwnConstants &
+/*
+  PrintNonOwnConstants &
+*/
+  PrintGlobalVars &
+  PrintSeenVars &
+  PrintOps &
+  PrintEXPORT &
+  bclose &
+  PrintCodeModuleAnnot(bcatl(m,".param"),(?))
+ =>
+  pc0(f)(m);
+
+  TRLErrorSet
+ =>
+  x
+
+END
+
+&
+
+THEORY CreIniOpX IS
+
+#define cre_ini_op_tac (((REV;ARI;NEWV;RULE;MODR)~;CreIniOpX)~)
+
+#define CreIniOp(x)  bcall(cre_ini_op_tac: cio0(x))
+
+
+  bcrer(Operations_storeX,(h=BEGIN BEGIN brev(I) END;BEGIN x END END))
+ =>
+  cio1(h)(N)(x)(I;?);
+
+  bcrer(Operations_storeX,(h=VAR v IN BEGIN brev(I) END;BEGIN x END END))
+ =>
+  cio1(h)(N)(VAR v IN x END)(I;?);
+
+  bcrer(Operations_storeX,(h=BEGIN x END))
+ =>
+  cio1(h)(N)(x)(?);
+
+  bcrer(Operations_storeX,(h=BEGIN I END))
+ =>
+  cio1(h)(N)(?)(I;?);
+
+  cio1(h)(N)(?)(?);
+
+  cio1(h)(N)(x)(brev(I))
+ =>
+  cio(h)(N)(x)(I);
+
+  brule(Imports_storeX.N,i) &
+  cio(h)(N+1)(x)(I;bnewv(INI_,i))
+ =>
+  cio(h)(N)(x)(I);
+
+  brule(Imports_storeX.N,i) &
+  ReadDotIni(L) &
+  bsearch(i(skip),L,M) &
+  cio(h)(N+1)(x)(I)
+ =>
+  cio(h)(N)(x)(I);
+
+  brule(Imports_storeX.N,i) &
+  ReadDotIni(L) &
+  bsearch(i(?),L,M) &
+  cio(h)(N+1)(x)(I)
+ =>
+  cio(h)(N)(x)(I);
+
+  brule(Imports_storeX.N,i) &
+  ReadPaspLibList(L) &
+  bsearch(i,L,M) &
+  cio(h)(N+1)(x)(I)
+ =>
+  cio(h)(N)(x)(I);
+
+  brule(Imports_storeX.N,i(p)) &
+  cio(h)(N+1)(x)(I;bnewv(INI_,i))
+ =>
+  cio(h)(N)(x)(I);
+
+  brule(Imports_storeX.N,i(p)) &
+  ReadDotIni(L) &
+  bsearch(i(skip),L,M) &
+  cio(h)(N+1)(x)(I)
+ =>
+  cio(h)(N)(x)(I);
+
+  brule(Imports_storeX.N,i(p)) &
+  ReadDotIni(L) &
+  bsearch(i(?),L,M) &
+  cio(h)(N+1)(x)(I)
+ =>
+  cio(h)(N)(x)(I);
+
+  brule(Imports_storeX.N,i(p)) &
+  ReadPaspLibList(L) &
+  bsearch(i,L,M) &
+  cio(h)(N+1)(x)(I)
+ =>
+  cio(h)(N)(x)(I);
+
+  ReadTrlAbs(m.q) &
+  cio(bnewv(INI_,m))(1)(x)(?)
+ =>
+  cio0(x);
+
+  cio0(x)  /* forget about initialisation! */
+
+END
+
+&
+
+THEORY FinalizeSetsSettingsX IS
+
+#define flz_sets_set_tac (((ARI;MAP;RULE;MODR)~;FinalizeSetsSettingsX)~)
+
+#define FinalizeSetsSettings bcall(flz_sets_set_tac: fss_0)
+
+  ?;?;?;  /* for error analysis */
+
+
+  brule(FinalizeSetsSettingsX.3,C) &
+  bmodr(FinalizeSetsSettingsX.3,(C,c)) &
+  Writef(("\n\n    % seems to have been set to both ",bsrv c berv))
+ =>
+  fss_anal7(c);
+
+  brule(FinalizeSetsSettingsX.3,C) &
+  bsearch(c,C,D)
+ =>
+  fss_anal7(c);
+
+  fss_anal6(b,e);
+
+  brule(FinalizeSetsSettingsX.1,C) &
+  bsearch(c,C,D) &
+  fss_anal7(c)
+ =>
+  fss_anal6(b,(c=b));
+
+  fss_anal6(b,(c=b))
+ =>
+  fss_anal6(b,(b=c));
+
+  fss_anal5(b)(e);
+
+  brule(FinalizeSetsSettingsX.1,C) &
+  bsearch(c,C,D) &
+  fss_anal7(c)
+ =>
+  fss_anal5(b)(c==b);
+
+  fss_anal5(b)(c==b)
+ =>
+  fss_anal5(b)(b==c);
+
+  ReadRawSetsSettings(E) &
+  fss_anal6(b) bsmap E
+ =>
+  fss_anal4(b)(N);
+  
+  brule(FinalizeSetsSettingsX.2,n) &
+  brule(Final_sets_setting_storeX.N,e) &
+  btest(N<=n) &
+  fss_anal5(b)(e) &
+  fss_anal4(b)(N+1)
+ =>
+  fss_anal4(b)(N);
+  
+
+  fss_anal3(a,b,x);
+
+  brule(FinalizeSetsSettingsX.1,C) &
+  bmodr(FinalizeSetsSettingsX.1,(C,c))
+ =>
+  fss_anal3(a,b,(c=a));
+
+  brule(FinalizeSetsSettingsX.1,C) &
+  bsearch(c,C,D)
+ =>
+  fss_anal3(a,b,(c=a));
+
+  fss_anal2(a)(b)(a=a);
+
+  fss_anal2(a)(b)(c=b);
+
+  fss_anal3(a,b,(c=a))
+ =>
+  fss_anal3(a,b,(a=c));
+
+  fss_anal2(a)(b)(e);
+
+  brule(FinalizeSetsSettingsX.1,C) &
+  bmodr(FinalizeSetsSettingsX.1,(C,c))
+ =>
+  fss_anal2(a)(b)(c==a);
+
+  brule(FinalizeSetsSettingsX.1,C) &
+  bsearch(c,C,D)
+ =>
+  fss_anal2(a)(b)(c==a);
+
+  fss_anal2(a)(b)(a==a);
+
+  fss_anal2(a)(b)(c==b);
+
+  fss_anal2(a)(b)(c==a)
+ =>
+  fss_anal2(a)(b)(a==c);
+
+  ReadRawSetsSettings(E) &
+  fss_anal3(a,b) bsmap E
+ =>
+  fss_anal1(a)(b)(N);
+
+  brule(FinalizeSetsSettingsX.2,n) &
+  brule(Final_sets_setting_storeX.N,e) &
+  btest(N<=n) &
+  fss_anal2(a)(b)(e) &                   /* store c, where c==a, not(c==b) */
+  fss_anal1(a)(b)(N+1)
+ =>
+  fss_anal1(a)(b)(N);
+
+
+
+  fss_check(N);
+
+  brule(Final_sets_setting_storeX.N,x) &
+  fss_check(N+1)
+ =>
+  fss_check(N);
+
+  brule(Final_sets_setting_storeX.N,(a==b)) &
+  ReadValidPaspTypes(T) &
+  bsearch(a,T,U) &
+  bsearch(a,T,V) &
+  Writef(("\n\n  \"Type Confusion\" has led to % = % !!! ",bsrv a berv,bsrv b berv)) &
+  fss_anal1(a)(b)(1) &
+  fss_anal4(b)(1) &                      /* find those c's equal to b */
+/*
+  SetTRLError
+*/
+  Writef(("\n\n  Continuing, but there may be problems ..."))
+ =>
+  fss_check(N);
+
+  brule(Final_sets_setting_storeX.N,(BOOLEAN==BOOL)) &
+  fss_check(N+1)
+ =>
+  fss_check(N);
+
+  brule(Final_sets_setting_storeX.N,(BOOL==BOOLEAN)) &
+  fss_check(N+1)
+ =>
+  fss_check(N);
+
+  brule(Final_sets_setting_storeX.N,(a==a)) &
+  fss_check(N+1)
+ =>
+  fss_check(N);
+
+
+
+
+  bcrer(Final_sets_setting_storeX,(p==t))
+ =>
+  fss5(M,(p=t));
+
+  brule(Final_sets_setting_storeX.N,(p==t))
+ =>
+  fss5(M,(p=t));
+
+  fss5(M,(p=p));
+
+  fss5(M,(p=q))
+ =>  
+  fss4(M,(p=q));
+
+  brule(Final_sets_setting_storeX.N,(p==t)) &
+  fss5(M,(q=t))
+ =>  
+  fss4(M,(p=q));
+
+  brule(Final_sets_setting_storeX.N,(q==t)) &
+  fss5(M,(p=t))
+ =>  
+  fss4(M,(p=q));
+
+  fss3(M,x);
+
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(given(q),G,H) &
+  fss4(M,(NAT=q))
+ =>
+  fss3(M,(q=NAT));
+
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(given(q[n]),G,H) &
+  fss4(M,(NAT=q))
+ =>
+  fss3(M,(q=NAT));
+
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(given(q),G,H) &
+  fss4(M,(NAT=q))
+ =>
+  fss3(M,(NAT=q));
+
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(given(q[n]),G,H) &
+  fss4(M,(NAT=q))
+ =>
+  fss3(M,(NAT=q));
+
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(given(p),G,H) &
+  bsearch(given(q),H,I) &
+  fss4(M,(p=q))
+ =>
+  fss3(M,(p=q));
+
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(given(p[n]),G,H) &
+  bsearch(given(q[n]),H,I) &
+  fss4(M,(p=q))
+ =>
+  fss3(M,(p=q));
+
+  ReadRawSetsSettings(E) &
+  fss3(M) bsmap E &
+  fss2(N)(M+1)
+ =>
+  fss2(N)(M);    /* made N iterations */
+
+  fss2(N)(N);    /* made N iterations */
+
+  fss1(a,m,n);
+
+  fss2(n)(1)
+ =>
+  fss1(a,n,n);
+
+
+
+  bcrer(Final_sets_setting_storeX,(p==q))
+ =>
+  fss_sto(p==q);
+
+  brule(Final_sets_setting_storeX.N,(p==q))
+ =>
+  fss_sto(p==q);
+
+  fss(x);
+
+  ReadValidPaspTypes(T) &
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(q,T,U) &
+  bsearch(given(p),G,H) &
+  fss_sto(p==q)
+ =>
+  fss(p=q);
+
+  ReadValidPaspTypes(T) &
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(q,T,U) &
+  bsearch(given(p[n]),G,H) &
+  fss_sto(p==q)
+ =>
+  fss(p=q);
+
+  ReadValidPaspTypes(T) &
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(p,T,U) &
+  bsearch(given(q),G,H) &
+  fss_sto(q==p)
+ =>
+  fss(p=q);
+
+  ReadValidPaspTypes(T) &
+  ReadGivenSetsTypeInfo(G) &
+  bsearch(p,T,U) &
+  bsearch(given(q[n]),G,H) &
+  fss_sto(q==p)
+ =>
+  fss(p=q);
+
+  fss(p=p);
+
+  fss_0;
+
+  blent(Final_sets_setting_storeX.n) &
+  bmodr(FinalizeSetsSettingsX.2,n) &
+  ReadRawSetsSettings(E) &
+  fss bsmap E &
+  fss1 bnmap E &
+  fss_check(1)
+ =>
+  fss_0
+
+END
+
+&
+
+THEORY StoreOpsX IS
+
+#define sto_ops_tac  (((MAP;NEWV;RULE;MODR)~;StoreOpsX)~)
+
+#define StoreOps(x)  bcall(sto_ops_tac: so0(x))
+
+  ?;
+
+
+  ModifyLastOpName(o)
+  =>
+  sto_last_op(o);
+
+  ModifyLastOpName(o)
+  =>
+  sto_last_op(r<--o);
+
+  ModifyLastOpName(o)
+  =>
+  sto_last_op(o(p));
+
+  ModifyLastOpName(o)
+  =>
+  sto_last_op(r<--o(p));
+
+
+
+  cre_proc_as_function_list(x);
+
+/*
+  bident(r) &
+  ReadFunctionNames(O) &
+  ModifyFunctionNames((O,o(r)))
+ =>
+  cre_proc_as_function_list(r<--o);
+*/
+
+  bident(r) &
+  ReadFunctionNames(O) &
+  ModifyFunctionNames((O,o(r)))
+ =>
+  cre_proc_as_function_list(r<--o(p));
+
+
+
+  cre_dummy_param(a)(bnewv(d,x))
+ =>
+  cre_dummy_param(a)(d);
+
+  InformCantDummy(o,c) &
+  SetTRLError
+ =>
+  cre_dummy_param((r<--o)|b|c)(d);
+
+  d\x &
+  bcrer(Operations_storeX,(r<--o(d)=x)) &
+  ReadOpTypeInfo(T) &
+  bsearch((o(r;?)==t),T,U) &
+  ModifyOpTypeInfo((U;(o(r;d)==(t&d:BYTE)))) &
+  cre_proc_as_function_list(r<--o(d))
+ =>
+  cre_dummy_param((r<--o)|w|x)(d);
+
+
+  so(?);
+
+  bcrer(Operations_storeX,(K=x)) &
+  cre_proc_as_function_list(K)
+ =>
+  so(K|w|x);
+
+  bident(r) &
+  bident(o) &
+  cre_dummy_param((r<--o)|w|x)(dummy)
+ =>
+  so((r<--o)|w|x);
+
+  SetNotMAIN &
+  so bsmap (N,(K|w|x)) &
+  sto_last_op(K)
+ =>
+  so0(N,(K|w|x));
+
+  SetMAIN &
+  so(MAIN|w|x) &
+  sto_last_op(MAIN)
+ =>
+  so0(?,(MAIN|w|x));
+
+/*
+  brule(Operations_storeX.1,(i=s)) &  /? INI ?/
+  SetMAIN &
+  so(MAIN|w|(s;x)) &
+  sto_last_op(MAIN)
+ =>
+  so0(?,(MAIN|w|x));
+*/
+
+  SetMAIN &
+  so(MAIN|w|VAR b IN x END) &
+  sto_last_op(MAIN)
+ =>
+  so0(?,(MAIN|w|VAR b IN x END));
+
+/*
+  brule(Operations_storeX.1,(i=s)) &  /? INI ?/
+  SetMAIN &
+  so(MAIN|w|VAR b IN s;x END) &
+  sto_last_op(MAIN)
+ =>
+  so0(?,(MAIN|w|VAR b IN x END));
+*/
+
+  InformErrorMAIN &
+  SetTRLError
+ =>
+  so0(?,(MAIN(i)|w|VAR b IN x END));
+
+  InformErrorMAIN &
+  SetTRLError
+ =>
+  so0(?,(o<--MAIN|w|VAR b IN x END));
+
+  InformErrorMAIN &
+  SetTRLError
+ =>
+  so0(?,(o<--MAIN(i)|w|VAR b IN x END));
+
+  SetNotMAIN
+ =>
+  so0(?)
+
+END
+
+&
+
+THEORY CreDotFileX IS
+
+#define prt_dot_infof_tac (((MAP;ARI;CATL;NEWV;WRITE;MODR)~;CreDotFileX)~)
+
+#define CreDotFile   bcall(prt_dot_infof_tac: cdf)
+
+
+  ?;
+
+  bprintf("%",skip)
+ =>
+  cdf_init(i);
+
+  brule(Operations_storeX.N,(i=s)) &
+  bprintf("%",s)
+ =>
+  cdf_init(i);
+
+
+
+
+
+  cdf_sees(a)(N);
+
+  brule(Sees_storeX.N,s) &
+  bprintf(",%",s) &
+  cdf_sees(a)(N+1)
+ =>
+  cdf_sees(a)(N);
+
+
+
+  cdf_import1(x);
+
+  bprintf(",(%:%:%)",m,f,a)
+ =>
+  cdf_import1(m(f)(a));
+
+  ReadImportedMchWithParam(R) &
+  cdf_import1 bsmap R
+ =>
+  cdf_import;
+
+
+
+
+  cdf_sets_set1(x);
+
+  brule(Final_sets_setting_storeX.N,(s==t)) &
+  bprintf(",(%)",(s==t))
+ =>
+  cdf_sets_set1(s);
+
+  ReadOwnSets(S) &
+  cdf_sets_set1 bsmap S
+ =>
+  cdf_sets_set;
+
+
+
+  cdf_const_set1(c);       /* not a ValidPaspType (eg constant set???) */
+
+/*
+  ReadConstantsTypes(A) &
+  bsearch((c:d),A,B) &
+  ReadValidPaspTypes(C) &
+  bsearch(d,C,D) &
+*/
+  ReadFinalConstantsSettings(S) &
+  bsearch((c=f(n)),S,T) &
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  bprintf(",(%)",(c=f(n))) 
+ =>
+  cdf_const_set1(c);
+
+  cdf_const_set1(?);
+
+  ReadOwnConstants(C) &
+  cdf_const_set1 bsmap C
+ =>
+  cdf_const_set;
+
+
+
+
+
+  bprintf(",%",s) 
+ =>
+  cdf_num_param1(s);
+
+  bUpident(s)
+ =>
+  cdf_num_param1(s);
+
+  cdf_num_param1(?);
+
+  ReadMachineParameters(P) &
+  cdf_num_param1 bsmap P
+ =>
+  cdf_num_param;
+
+
+
+  bprintf(",%",s) 
+ =>
+  cdf_set_param2(s);
+
+  cdf_set_param2(?);
+
+  cdf_set_param1(s);
+
+  bUpident(s) &
+  bprintf(",%",s) 
+ =>
+  cdf_set_param1(s);
+
+  ReadMachineParameters(P) &
+  cdf_set_param1 bsmap P
+ =>
+  cdf_set_param;
+
+
+
+
+  bprintf_glob_seen_var(N);
+
+  brule(GlobalSeen_var_storeX.N,(v:t)) &
+  bprintf(",(%)",(v:t)) &
+  bprintf_glob_seen_var(N+1)
+ =>
+  bprintf_glob_seen_var(N);
+
+
+
+  bprintf_glob_var(N);
+
+  brule(Global_var_storeX.N,(v:t:M)) &
+  bprintf(",(%)",(v:t)) &
+  bprintf_glob_var(N+1)
+ =>
+  bprintf_glob_var(N);
+
+
+
+  InformCantDetermineTypeLocalVar(m,v) &
+  SetTRLError
+ =>
+  cdf_ops2(m,v);
+
+  brule(Local_var_storeX.N,(n(v:t))) &
+  bprintf(",(%)",(v:t))
+ =>
+  cdf_ops2(m,v);
+
+  bprintf("%(?",n) &
+  cdf_ops2(n) bsmap v
+ =>
+  cdf_ops1(n)(v);
+
+  bprintf("%(?",n) &
+  cdf_ops2(n) bsmap v
+ =>
+  cdf_ops1(o<--n)(v);
+
+  bprintf("%(?",n) &
+  cdf_ops2(n) bsmap v
+ =>
+  cdf_ops1(n(i))(v);
+
+  bprintf("%(?",n) &
+  cdf_ops2(n) bsmap v
+ =>
+  cdf_ops1(o<--n(i))(v);
+
+  cdf_ops(m)(N);
+
+  brule(Operations_storeX.N,x) &
+  cdf_ops(m)(N+1)
+ =>
+  cdf_ops(m)(N);
+
+  brule(Operations_storeX.N,(n=(VAR v IN s END))) &
+  bprintf(",") &
+  bmodr(CreDotFileX.1,0) &
+  cdf_ops1(n)(v) &
+  bprintf(")") &
+  cdf_ops(m)(N+1)
+ =>
+  cdf_ops(m)(N);
+
+
+
+  bprintf("%",n)
+ =>
+  cdf_all_ops1(n);
+
+  bprintf("%",n)
+ =>
+  cdf_all_ops1(o<--n);
+
+  bprintf("%",n)
+ =>
+  cdf_all_ops1(n(i));
+
+  bprintf("%",n)
+ =>
+  cdf_all_ops1(o<--n(i));
+
+  cdf_all_ops(N);
+
+  brule(Operations_storeX.N,(h=s)) &
+  bprintf(",") &
+  cdf_all_ops1(h) &
+  cdf_all_ops(N+1)
+ =>
+  cdf_all_ops(N);
+
+
+  Connect(f) &
+  bprintf("(?") &
+  cdf_import &
+  bprintf(")\n|\n(?") &
+  cdf_sets_set &
+  bprintf(")\n|\n(?") &
+  cdf_const_set &
+  bprintf(")\n|\n(?") &
+  cdf_set_param &
+  bprintf(")\n|\n(?") &
+  cdf_num_param &
+  bprintf(")\n|\n(?") &
+  bprintf_glob_var(1) &
+  bprintf(")\n|\n(?") &
+  bprintf_glob_seen_var(1) &
+  bprintf(")\n|\n(?") &
+  cdf_ops(a)(1) &
+  bprintf(")\n|\n(?") &
+  cdf_all_ops(1) &
+  bprintf(")\n|\n(") &
+  cdf_init(bnewv(INI_,a)) &
+  bprintf(")\n|\n(?") &
+  cdf_sees(a)(1) &
+  bprintf(")\n") &
+  bclose
+ =>
+  cdf1(a)(f);
+
+  ReadTrlAbs(a.mch) &
+  cdf1(a)(bcatl("CDE/PASP/.",a))
+ =>
+  cdf;
+
+
+  TRLErrorSet
+ =>
+  x
+
+END
+
+&
+
+THEORY PushFinalSettingsOpTypeX IS
+
+#define PushFinalSettingsOpType    bcall(PushFinalSettingsOpTypeX~: pot)
+
+  ReadOpTypeInfo(T) &
+  bcall((Final_sets_setting_storeX~;MODR):ModifyOpTypeInfo(T))
+ =>
+  pot
+
+END
+
+&
+
+THEORY PushFinalSettingsVBLX IS
+
+#define PushFinalSettingsVBL  bcall(PushFinalSettingsVBLX~: pVBL)
+
+  brule(VBLStackX.3,V) &
+  bcall((Final_sets_setting_storeX~;MODR):bmodr(VBLStackX.3,V))
+ =>
+  pVBL
+
+END
+
+&
+
+THEORY PushFinalSettingsActualParamX IS
+
+#define psh_act_param_tac    (((MAP;MODR)~;PushFinalSettingsActualParamX)~)
+
+#define PushFinalSettingsActualParam   bcall(psh_act_param_tac: pap)
+
+  ?;  /* used locally */
+
+  ReadImportedMchWithParam(R) &
+  brule(PushFinalSettingsActualParamX.1,a) &
+  bsearch(?,a,b) &
+  ModifyImportedMchWithParam((R,m(f)(b)))
+ =>
+  pap4(m(f));
+
+
+
+  brule(PushFinalSettingsActualParamX.1,P) &
+  bmodr(PushFinalSettingsActualParamX.1,((P,p)))
+ =>  
+  pap3(p);
+
+  ReadFinalConstantsSettings(S) &
+  bsearch((p=f(n)),S,T) &
+  brule(PushFinalSettingsActualParamX.1,P) &
+  bmodr(PushFinalSettingsActualParamX.1,((P,f(n))))
+ =>  
+  pap3(p);
+
+  brule(PushFinalSettingsActualParamX.1,a) &
+  bmodr(PushFinalSettingsActualParamX.1,?) &
+  pap3 bsmap a
+ =>
+  pap2;
+
+
+
+
+  pap1(?);
+
+  bcall((Final_sets_setting_storeX~;MODR): 
+                               bmodr(PushFinalSettingsActualParamX.1,a)) &
+  pap2 &
+  pap4(m(f))  
+ =>
+  pap1(m(f)(a));
+
+  ReadImportedMchWithParam(R) &
+  ModifyImportedMchWithParam(?) &
+  pap1 bsmap R
+ =>
+  pap
+
+END
+
+&
+
+THEORY PushFinalSettingsX IS
+
+#define PushFinalSettings  bcall(PushFinalSettingsX: pfs)
+
+  pfs;         /* no final settings */
+
+  brule(Final_sets_setting_storeX.1,(s==t)) &
+  PushFinalSettingsOpType &
+  PushFinalSettingsVBL &
+  PushFinalSettingsActualParam
+ =>
+  pfs
+
+END
+
+&
+
+THEORY CreHtmlPASPCodeFileX IS
+
+#define CreHtmlPASPCodeFile(x) \
+  bcall(MODR:bmodr(CreHtmlPASPCodeFileX.1,x)) & \
+  bcall(((MAP;ARI;CATL;SHELL;WRITE)~;CreHtmlPASPCodeFileX)~:ch)
+
+/*
+  OWN (NAME)     ("<A NAME=\"%!%\">%</A>\n",CONST,c1,c1)
+    M MCH
+    O OP
+    C CONST
+
+  OTHERS (REF)   ("<A HREF=\"%.p.html#%!%\">%</A>\n",mchname,CONST,c1,c1) 
+    m MCH
+    o OP
+    c CONST
+*/
+
+  ?;  /* (string) filename extension */
+
+
+  InformCantExecute(x)
+ =>
+  bshell(x);
+
+
+  h_ref_typ_mch1(BOOLEAN:f:x);
+
+  h_ref("x")("Uns_TYPE.mch")(f)
+ =>
+  h_ref_typ_mch1(UNSIGNED:f:x);
+
+  h_ref("x")("Byt_TYPE.mch")(f)
+ =>
+  h_ref_typ_mch1(BYTE:f:x);
+
+  h_ref("x")("Bool_TYPE.mch")(f)
+ =>
+  h_ref_typ_mch1(BOOLEAN:f:x);
+
+  ReadSLIBBuiltInFunctions(F) &
+  h_ref_typ_mch1 bsmap F
+ =>
+  h_ref_typ_mch;
+
+
+
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|%\n",c)
+ =>
+  h_ref(a)(b)(c);
+
+  bstring(c) &
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|") &
+  bprintf(c) &
+  bprintf("\n")
+ =>
+  h_ref(a)(b)(c);
+
+  bprintf(a) &
+  bprintf("|%\n",b)
+ =>
+  h_name(a)(b);
+
+  bstring(b) &
+  bprintf(a) &
+  bprintf("|") &
+  bprintf(b) &
+  bprintf("\n")
+ =>
+  h_name(a)(b);
+
+
+
+
+  ch_non_own_const2(c)(N);
+
+  brule(CreHtmlPASPCodeFileX.1,e) & /* ".param" or ".pas" */
+  ReadNonOwnMchNameColonConst(C) &
+  bsearch((m:c),C,D) &
+  h_ref("c")(bcatl(m,e))(c)
+ =>
+  ch_non_own_const2(c)(N);
+
+  brule(Operations_storeX.N,(n=s)) &
+  c\s &
+  ch_non_own_const2(c)(N+1)
+ =>
+  ch_non_own_const2(c)(N);
+
+  ch_non_own_const2(c)(1)
+ =>
+  ch_non_own_const1(c);
+
+  ReadBuiltInMinMaxConstants(C) &
+  bsearch((c:t),C,D)
+ =>
+  ch_non_own_const1(c);
+
+  ReadConversionFunctions(F) &
+  bsearch((c:t),F,G)
+ =>
+  ch_non_own_const1(c);
+
+  ch_non_own_const1(?);
+
+  ReadNonOwnConstants(C) &
+  ch_non_own_const1 bsmap C
+ =>
+  ch_non_own_const;
+
+
+  ch_non_own_ops2(m)(o)(N);
+
+  brule(CreHtmlPASPCodeFileX.1,e) & /* ".param" or ".pas" */
+  brule(Operations_storeX.N,(n=s)) &
+  h_ref("o")(bcatl(m,e))(o)
+ =>
+  ch_non_own_ops2(m)(o)(N);
+
+  brule(Operations_storeX.N,(n=s)) &
+  o\s &
+  ch_non_own_ops2(m)(o)(N+1)
+ =>
+  ch_non_own_ops2(m)(o)(N);
+
+  ch_non_own_ops1(x);
+
+  ch_non_own_ops2(m)(o)(1)
+ =>
+  ch_non_own_ops1(o:m);
+
+  ReadNonTranslatedOps(N) &
+  bsearch(f,N,M)
+ =>
+  ch_non_own_ops1(f:m);
+
+  ReadNegSLIBBuiltInFunctions(N) &
+  bsearch((not(f):g),N,M)
+ =>
+  ch_non_own_ops1(f:m);
+
+  ReadSLIBBuiltInFunctions(F) &
+  bsearch((u:f:(? JOK2 ?)),F,G)
+ =>
+  ch_non_own_ops1(f:m);
+
+  ch_non_own_ops1(?:m);
+
+  ReadIptSeesOpColonMch(L) &
+  ch_non_own_ops1 bsmap L
+ =>
+  ch_non_own_ops;
+
+
+  h_name("C")(e)
+ =>
+  ch_own_set2(e);
+
+  ch_own_set1(x);
+
+  ch_own_set2 bsmap e
+ =>
+  ch_own_set1(S(e));
+
+  ReadOwnSets(C) &
+  ch_own_set1 bsmap C
+ =>
+  ch_own_set;
+
+  h_name("C")(c)
+  =>
+  ch_own_const1(c);
+
+  ch_own_const1(?);
+
+  ReadOwnConstants(C) &
+  ch_own_const1 bsmap C
+ =>
+  ch_own_const;
+
+  ch_own_ops(N);
+
+  brule(Operations_storeX.N,(a=s)) &
+  h_name("O")(a) &
+  ReadTrlImp(i.imp) &
+  h_ref("z")(bcatl(i,".imp"))(a) &
+  ch_own_ops(N+1)
+ =>
+  ch_own_ops(N);
+
+  brule(Operations_storeX.N,(o<--a=s)) &
+  h_name("O")(a) &
+  ReadTrlImp(i.imp) &
+  h_ref("z")(bcatl(i,".imp"))(a) &
+  ch_own_ops(N+1)
+ =>
+  ch_own_ops(N);
+
+  brule(Operations_storeX.N,(a(I)=s)) &
+  h_name("O")(a) &
+  ReadTrlImp(i.imp) &
+  h_ref("z")(bcatl(i,".imp"))(a) &
+  ch_own_ops(N+1)
+ =>
+  ch_own_ops(N);
+
+  brule(Operations_storeX.N,(o<--a(I)=s)) &
+  h_name("O")(a) &
+  ReadTrlImp(i.imp) &
+  h_ref("z")(bcatl(i,".imp"))(a) &
+  ch_own_ops(N+1)
+ =>
+  ch_own_ops(N);
+
+
+
+  h_ref_ipt(x);
+
+
+  
+  brule(CreHtmlPASPCodeFileX.1,e) &
+  h_ref("i")(bcatl(i,e))(bcatl(i,e))
+ =>
+  h_ref_ipt(i(a)(b));
+
+
+  h_ref("b")("?")(s)
+ =>
+  h_ref_bold(a,s);
+
+
+
+  
+  h_ref("w")(bcatl(a,".mch"))(b)
+ =>
+  ch_global_var1(a|b;UiArr_File);
+
+  h_ref("w")(bcatl(a,".mch"))(b)
+ =>
+  ch_global_var1(a|b;UiArr);
+
+  h_ref("w")(bcatl(a,".mch"))(b)
+ =>
+  ch_global_var1(a|b;BiArr_File);
+
+  h_ref("w")(bcatl(a,".mch"))(b)
+ =>
+  ch_global_var1(a|b;BiArr);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_uns"))
+ =>
+  ch_global_var1(a|b;Uns_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_uns"))
+ =>
+  ch_global_var1(a|b;Uns);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_uns"))
+ =>
+  ch_global_var1(a|b;Uns_BS_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_uns"))
+ =>
+  ch_global_var1(a|b;Uns_BS);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt"))
+ =>
+  ch_global_var1(a|b;Byt_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt"))
+ =>
+  ch_global_var1(a|b;Byt);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt"))
+ =>
+  ch_global_var1(a|b;Byt_BS_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt"))
+ =>
+  ch_global_var1(a|b;Byt_BS);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_bool"))
+ =>
+  ch_global_var1(a|b;Bool_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_bool"))
+ =>
+  ch_global_var1(a|b;Bool);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt_wo"))
+ =>
+  ch_global_var1(a|b;Write_Byt);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt_ro"))
+ =>
+  ch_global_var1(a|b;Read_Byt);
+
+  ch_global_var(N);
+
+  brule(Ipt_PASP_VARX.N,x) &
+  ch_global_var1(x) &
+  ch_global_var(N+1)
+ =>
+  ch_global_var(N);
+
+
+
+  Connect(".Bcom") &
+  ReadTrlAbs(m.q) &
+  ReadTrlImp(i.imp) &
+  ReadImportedMchWithParam(I) &
+  brule(CreHtmlPASPCodeFileX.1,e) &
+  h_name(bcatl("CDE/PASP/|",m,e,"|",i,".imp"))(m) &
+  h_ref_bold(m) bsmap PASP_keywords_html &
+  h_ref("y")(bcatl(i,".imp"))(i.imp) &
+  h_ref("v")("Byt_TYPE.mch")(BYTE) &
+  h_ref("v")("Byt_BS_TYPE.mch")(BYTE) &
+  h_ref("v")("Uns_TYPE.mch")(UNSIGNED) &
+  h_ref("v")("Uns_BS_TYPE.mch")(UNSIGNED) &
+  h_ref("v")("Sgn_TYPE.mch")(INTEGER) &
+  h_ref("v")("Bool_TYPE.mch")(BOOLEAN) &
+  h_ref("v")("Bool_TYPE_Ops.mch")(BOOLEAN) &
+  h_name("F")(bcatl(m,e)) &
+  h_ref_typ_mch &
+  h_ref_ipt bsmap I &
+  ch_own_ops(1) &
+  ch_own_const &
+  ch_own_set &
+  ch_non_own_ops &
+  ch_non_own_const &
+  ch_global_var(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc")
+ =>
+  ch
+
+END
+
+&
+
+THEORY CreDotHtmlPASPCodeSLIBFileX IS
+
+/*
+in Toolkit35.src
+
+#define CreDotHtmlPASPCodeSLIBFile(x) ...
+*/
+
+/*
+  OWN (NAME)     ("<A NAME=\"%!%\">%</A>\n",CONST,c1,c1)
+    M MCH
+    O OP
+    C CONST
+
+  OTHERS (REF)   ("<A HREF=\"%.p.html#%!%\">%</A>\n",mchname,CONST,c1,c1) 
+    m MCH
+    o OP
+    c CONST
+*/
+
+  ?;  /* (string) filename extension */
+
+  ?;  /* .ldf imported machine list - (i:f:a),... */
+/* defined at top
+#define ReadIptMchList_ldf(x)     brule(CreDotHtmlPASPCodeSLIBFileX.2,x)
+#define ModifyIptMchList_ldf(x)   bmodr(CreDotHtmlPASPCodeSLIBFileX.2,x)
+*/
+
+
+  InformCantExecute(x)
+ =>
+  bshell(x);
+
+
+  h_ref_typ_mch1(BOOLEAN:f:x);
+
+  h_ref("x")("Uns_TYPE.mch")(f)
+ =>
+  h_ref_typ_mch1(UNSIGNED:f:x);
+
+  h_ref("x")("Byt_TYPE.mch")(f)
+ =>
+  h_ref_typ_mch1(BYTE:f:x);
+
+  ReadSLIBBuiltInFunctions(F) &
+  h_ref_typ_mch1 bsmap F
+ =>
+  h_ref_typ_mch;
+
+
+
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|%\n",c)
+ =>
+  h_ref(a)(b)(c);
+
+  bstring(c) &
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|") &
+  bprintf(c) &
+  bprintf("\n")
+ =>
+  h_ref(a)(b)(c);
+
+  bprintf(a) &
+  bprintf("|%\n",b)
+ =>
+  h_name(a)(b);
+
+  bstring(b) &
+  bprintf(a) &
+  bprintf("|") &
+  bprintf(b) &
+  bprintf("\n")
+ =>
+  h_name(a)(b);
+
+
+
+
+  h_name("C")(e)
+ =>
+  ch_slib_own_set2(e);
+
+  ch_slib_own_set1(x);
+
+  ch_slib_own_set2 bsmap e
+ =>
+  ch_slib_own_set1(S(e));
+
+  ReadOwnSets(C) &
+  ch_slib_own_set1 bsmap C
+ =>
+  ch_slib_own_set;
+
+  h_name("C")(c)
+  =>
+  ch_slib_own_const1(c);
+
+  ch_slib_own_const1(?);
+
+  ReadOwnConstants(C) &
+  ch_slib_own_const1 bsmap C
+ =>
+  ch_slib_own_const;
+
+  ch_slib_own_ops(N);
+
+  brule(Operations_storeX.N,(a=s)) &
+  h_name("O")(a) &
+/*
+  ReadTrlImp(i.imp) &
+  h_ref("z")(bcatl(i,".imp"))(a) &
+*/
+  ch_slib_own_ops(N+1)
+ =>
+  ch_slib_own_ops(N);
+
+  brule(Operations_storeX.N,(o<--a=s)) &
+  h_name("O")(a) &
+/*
+  ReadTrlImp(i.imp) &
+  h_ref("z")(bcatl(i,".imp"))(a) &
+*/
+  ch_slib_own_ops(N+1)
+ =>
+  ch_slib_own_ops(N);
+
+  brule(Operations_storeX.N,(a(I)=s)) &
+  h_name("O")(a) &
+/*
+  ReadTrlImp(i.imp) &
+  h_ref("z")(bcatl(i,".imp"))(a) &
+*/
+  ch_slib_own_ops(N+1)
+ =>
+  ch_slib_own_ops(N);
+
+  brule(Operations_storeX.N,(o<--a(I)=s)) &
+  h_name("O")(a) &
+/*
+  ReadTrlImp(i.imp) &
+  h_ref("z")(bcatl(i,".imp"))(a) &
+*/
+  ch_slib_own_ops(N+1)
+ =>
+  ch_slib_own_ops(N);
+
+
+
+  h_ref_ipt(x);
+
+  h_ref("i")(bcatl(i,".param"))(bcatl(i,".param"))
+ =>
+  h_ref_ipt(i(a)(b));
+
+
+
+  
+  ch_slib_global_var1(a|x);
+
+  h_ref("w")(bcatl(a,".mch"))(b)
+ =>
+  ch_slib_global_var1(a|b;UiArr_File);
+
+  h_ref("w")(bcatl(a,".mch"))(b)
+ =>
+  ch_slib_global_var1(a|b;UiArr);
+
+  h_ref("w")(bcatl(a,".mch"))(b)
+ =>
+  ch_slib_global_var1(a|b;BiArr_File);
+
+  h_ref("w")(bcatl(a,".mch"))(b)
+ =>
+  ch_slib_global_var1(a|b;BiArr);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_uns"))
+ =>
+  ch_slib_global_var1(a|b;Uns_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_uns"))
+ =>
+  ch_slib_global_var1(a|b;Uns);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_uns"))
+ =>
+  ch_slib_global_var1(a|b;Uns_BS_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_uns"))
+ =>
+  ch_slib_global_var1(a|b;Uns_BS);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt"))
+ =>
+  ch_slib_global_var1(a|b;Byt_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt"))
+ =>
+  ch_slib_global_var1(a|b;Byt);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt"))
+ =>
+  ch_slib_global_var1(a|b;Byt_BS_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt"))
+ =>
+  ch_slib_global_var1(a|b;Byt_BS);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_bool"))
+ =>
+  ch_slib_global_var1(a|b;Bool_File);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_bool"))
+ =>
+  ch_slib_global_var1(a|b;Bool);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt_wo"))
+ =>
+  ch_slib_global_var1(a|b;Write_Byt);
+
+  h_ref("w")(bcatl(a,".mch"))(bcatl(b,"_byt_ro"))
+ =>
+  ch_slib_global_var1(a|b;Read_Byt);
+
+  ch_slib_global_var(N);
+
+  brule(Ipt_PASP_VARX.N,x) &
+  ch_slib_global_var1(x) &
+  ch_slib_global_var(N+1)
+ =>
+  ch_slib_global_var(N);
+
+
+
+
+  h_ref_ipt1(?);
+
+  h_ref_ipt(i(f)(a))
+ =>
+  h_ref_ipt1(i:f:a);
+
+  ModifyIptMchList_ldf(?)
+ =>
+  h_ref_ipt0(f);                /* no .ldf file */
+
+  bget(f,(x|y)) &
+  ModifyIptMchList_ldf(y) &
+  h_ref_ipt1 bsmap y
+ =>
+  h_ref_ipt0(f);
+
+
+  h_ref("b")("?")(s)
+ =>
+  h_ref_bold(a,s);
+
+
+
+  h_ref("o")(bcatl(m,".param"))(o)
+ =>
+  ch_slib_non_own_ops(m,o);
+
+  ch_slib_non_own_ops(m,?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  ch_slib_non_own_ops2(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ch_slib_non_own_ops(k,(bcatl("INI_",k))) &
+  ch_slib_non_own_ops(k) bsmap j
+ =>
+  ch_slib_non_own_ops2(Z);
+
+  ch_slib_non_own_ops1(?);
+
+  ch_slib_non_own_ops2(bcatl("ANL/",i,".mch.anl"))
+ =>
+  ch_slib_non_own_ops1(i:f:a);
+
+  ReadIptMchList_ldf(L) &
+  ch_slib_non_own_ops1 bsmap L
+ =>
+  ch_slib_non_own_ops0;
+
+
+
+
+/*
+  ch_slib_global_var1(m|a) &
+  ch_slib_global_var1(m|b)
+ =>
+  ch_slib_global_var_ldf3(m)(a|b);
+*/
+
+  ch_slib_global_var_ldf3(m)(a) &
+  ch_slib_global_var1(m|b)
+ =>
+  ch_slib_global_var_ldf3(m)(a|b);
+
+  ch_slib_global_var1(m|b)
+ =>
+  ch_slib_global_var_ldf3(m)(?|b);
+
+
+
+  ReadUnderScoreToSemiColon(x) &
+  ch_slib_global_var_ldf3(m)(x)
+ =>
+  ch_slib_global_var_ldf2(m);
+
+  UnderScoreToSemiColon(m) &
+  ch_slib_global_var_ldf2(m)
+ =>
+  ch_slib_global_var_ldf1(m:f:a);
+
+  ch_slib_global_var_ldf1(?);
+
+  ReadIptMchList_ldf(L) &
+  ch_slib_global_var_ldf1 bsmap L
+ =>
+  ch_slib_global_var_ldf0;
+
+
+
+
+  Connect(".Bcom") &
+  brule(CreHtmlPASPCodeFileX.1,e) &
+  h_name(bcatl("CDE/PASP/|",m,".param|",m,".mch"))(m) &
+  h_ref("s")(bcatl(m,".mch"))(m.mch) &
+  h_ref_bold(m) bsmap PASP_keywords_html &
+  h_ref("v")("Byt_TYPE.mch")(BYTE) &
+  h_ref("v")("Byt_BS_TYPE.mch")(BYTE) &
+  h_ref("v")("Uns_TYPE.mch")(UNSIGNED) &
+  h_ref("v")("Uns_BS_TYPE.mch")(UNSIGNED) &
+  h_ref("v")("Sgn_TYPE.mch")(INTEGER) &
+  h_ref("v")("Bool_TYPE.mch")(BOOLEAN) &
+  h_ref("v")("Bool_TYPE_Ops.mch")(BOOLEAN) &
+  h_name("F")(bcatl(m,".param")) &
+  h_ref_typ_mch &
+  h_ref_ipt0(bcatl("CDE/PASP/",m,".ldf")) &
+/*  h_ref_ipt bsmap I & */
+  ch_slib_own_ops(1) &
+  ch_slib_own_const &
+  ch_slib_own_set &
+/*  ch_slib_non_own_ops & */
+  ch_slib_non_own_ops0 &
+/*   ch_slib_non_own_const & */
+  ch_slib_global_var(1) &
+  ch_slib_global_var_ldf0 &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc")
+ =>
+  ch_slib(m.mch);
+
+
+  bprintf("|%",H)
+ =>
+  ch_slib_dot_glob_all_op5(a)(F)(H);
+
+  bprintf("|%|?|%",F,H)
+ =>
+  ch_slib_dot_glob_op5(a)(F)(H);
+
+  rm_type(v:t) == v; 
+  
+  (rm_type(?),x) == x; 
+  
+
+  ch_slib_dot_glob_all_op5(a)(F)(H)
+ =>
+  ch_slib_dot_glob_all_op4(a)(F)(?)(H);
+
+  ch_slib_dot_glob_all_op4(a)(F)(H)(X,h)
+ =>
+  ch_slib_dot_glob_all_op4(a)(F)(H,h)(X);
+
+  ch_slib_dot_glob_all_op4(a)(F)(H)(?)
+ =>
+  ch_slib_dot_glob_all_op2(a)(F)(?)(H);
+
+  ch_slib_dot_glob_all_op2(a)(F)(O)(X,o)
+ =>
+  ch_slib_dot_glob_all_op2(a)(F)(O,o(v))(X);
+
+  ch_slib_dot_glob_all_op2(a)(F)(O)(?)
+ =>
+  ch_slib_dot_glob_all_op1(a)(F|O);
+
+
+
+  ch_slib_dot_glob_op5(a)(F)(H)
+ =>
+  ch_slib_dot_glob_op4(a)(F)(?)(H);
+
+  ch_slib_dot_glob_op4(a)(F)(H)(X,h)
+ =>
+  ch_slib_dot_glob_op4(a)(F)(H,h)(X);
+
+  ch_slib_dot_glob_op4(a)(F)(H)(?)
+ =>
+  ch_slib_dot_glob_op2(a)(F)(?)(H);
+
+/*
+  ch_slib_dot_glob_op2(a)(F)(O)(X,o(rm_type bslmap v))
+*/
+  ch_slib_dot_glob_op2(a)(F)(O)(X,o(v))
+ =>
+  ch_slib_dot_glob_op2(a)(F)(O,o(v))(X);
+
+  ch_slib_dot_glob_op2(a)(F)(O)(X)
+ =>
+  ch_slib_dot_glob_op2(a)(F)(O,o(?))(X);
+
+  ch_slib_dot_glob_op2(a)(F)(O)(?)
+ =>
+  ch_slib_dot_glob_op1(a)(F|O);
+
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  ch_slib_dot_glob_op(a);
+
+  bget(".Bcom",x) &
+  ch_slib_dot_glob_op1(a)(x) &
+  ch_slib_dot_glob_all_op1(a)(x)
+ =>
+  ch_slib_dot_glob_op(a);
+
+
+  ch_slib_dot_nat(C,p);
+
+  bsearch((p:a..b),C,D) &
+  bprintf (",%",p)
+ =>
+  ch_slib_dot_nat(C,p);
+
+  bsearch((p:NAT),C,D) &
+  bprintf (",%",p)
+ =>
+  ch_slib_dot_nat(C,p);
+
+  bsearch((p:NAT1),C,D) &
+  bprintf (",%",p)
+ =>
+  ch_slib_dot_nat(C,p);
+
+  ch_slib_dot_set(C,p);
+
+  bsearch((card(p):NAT),C,D) &
+  bprintf (",%",p)
+ =>
+  ch_slib_dot_set(C,p);
+
+  bsearch((card(p):NAT1),C,D) &
+  bprintf (",%",p)
+ =>
+  ch_slib_dot_set(C,p);
+
+
+  bprintf(",(%)",(a:b:c))
+ =>
+  ch_slib_dot_ck_ldf1(a:b:c);
+
+  ch_slib_dot_ck_ldf1(?);
+
+  ch_slib_dot_ck_ldf(f);
+
+  bget(f,(x|y)) &
+  ch_slib_dot_ck_ldf1 bsmap y
+ =>
+  ch_slib_dot_ck_ldf(f);
+
+  bprintf("?|?")     /* no init, no sees */
+ =>
+  ch_slib_check_init(f);
+
+  bget(f,(x|y)) &
+  bprintf("%|?",x)   /* init, no sees */
+ =>
+  ch_slib_check_init(f);
+
+
+
+  Connect(f) &
+  bprintf("(?") &
+  ch_slib_dot_ck_ldf(bcatl("CDE/PASP/",a,".ldf")) &
+  bprintf(")|?|?|?") &
+  ch_slib_dot_set(C) bsmap P &
+  bprintf("|?") &
+  ch_slib_dot_nat(C) bsmap P &
+  bshell(bcatl("$BKIT/BLIB/PASPmap ",a,".param")) &
+  ch_slib_dot_glob_op(a) &
+  bprintf("|") &
+  ch_slib_check_init(bcatl("CDE/PASP/",a,".ldf")) &
+  bclose
+ =>
+  ch_slib_dot(a)(f)(C)(P);
+
+
+
+
+
+  bshell("echo '{' > .Bcom") &
+  bshell(bcatl("echo '  SLIB MODULE:      ",a,".param' >> .Bcom")) &
+  bshell(bcatl("echo '  SLIB SPEC:        ",a,".mch' >> .Bcom")) &
+  bshell("echo '  INTRODUCED BY:   ' `whoami` >> .Bcom") &
+  bshell("date '+  DATE:             %d/%m/%y%n  TIME:             %H:%M:%S' >> .Bcom") &
+  bshell("echo '  VERSION:         ' `cat .Bmvr` >> .Bcom" ) &
+  bshell("echo '}' >> .Bcom") &
+  bshell("echo '' >> .Bcom") &
+  bshell("echo '' >> .Bcom") &
+  bshell(bcatl("cat CDE/PASP/",a,".param >> .Bcom")) &
+  bshell(bcatl("mv .Bcom CDE/PASP/",a,".param"))
+ =>
+  ch_slib_init0(a);
+
+  ch_slib_init_ops(?);
+
+  bcrer(Operations_storeX,(K=skip))
+ =>
+  ch_slib_init_op1(s;(?,I,J,K);u;v;X;Y);
+
+  ch_slib_init_op1(n)
+ =>
+  ch_slib_init_op(n);
+
+  ch_slib_init_op1 bsmap (N,n)
+ =>
+  ch_slib_init_op(N,n);
+
+  Writef(bcatl("\n  Problem creating ",a,".param hypertext file\n")) 
+ =>
+  ch_slib_init1(a)(z);
+
+  bget(z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ch_slib_dot(a)(bcatl("CDE/PASP/.",a))(m&?)(l) &
+  bcrer(Operations_storeX,(bnewv(INI_,a)= /* skip */ h)) &
+  ch_slib_init_op(n) &
+  ModifyOwnConstants(F) &
+  ModifyOwnSets(D)
+ =>
+  ch_slib_init1(a)(z);
+
+/*  Writef(bcatl("\n  Created ",m,".param hypertext file\n")) & */
+/***
+HERE((564:m.mch))&
+***/
+  ch_slib_init0(m) &
+  ch_slib_init1(m)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  ch_slib_init(m.mch)
+
+END
+
+&
+
+THEORY PrintDotConstFileX IS
+
+#define PrintDotConstFile \
+  bcall(((WRITE)~;PrintDotConstFileX)~:pdcf)
+
+  ReadTrlAbs(a.mch) &
+  ReadImportedConstants(I) &
+  ReadExportedConstants(E) &
+  Connect(("CDE/PASP/.",a,".const")) &
+  bprintf("%;%\n",I,E) &
+/***
+HERE(("PrintDotConstFile" --(I;E)))&
+***/
+  bclose
+ =>
+  pdcf
+
+END
+
+&
+
+THEORY TransP_parse_impX IS
+
+  ?;    /* 1. parameters */
+
+  ?;    /* 2. prog language flag */
+
+  ?;    /* 3. code module filename */
+
+  ?;    /* 4. NAT params */
+
+  ?;    /* 5. C Compiler/Flags */
+
+  ?;    /* 6. Non-X Link Libraries */
+
+  ?;    /* 7. X Link Libraries */
+
+  ?;    /* 8. Interface - 0=>Motif 1=>Non-Motif */
+
+
+  CreHtmlPASPCodeFile(".param")
+ =>
+  check_trl_error;
+
+  TRLErrorSet &
+  OfferTransPASP_trl_FailureOptions
+ =>
+  check_trl_error;
+
+
+  InformCantConnect(".Bplf") &
+  PFZ
+ =>
+  load_Bplf;
+
+  bget(".Bplf",(z;f;a;b;c)) &
+  ModifyInterfaceFlag(z) &     /* Interface_Option     */
+  ModifyProgLangFlag(f) &      /* Prog_Language_Option */
+  ModifyCCompilerFlags(a) &    /* cc_compiler_str_num  */
+  ModifyNonXLinkLibs(b) &      /* cc_link_lib_str_num  */
+  ModifyXLinkLibs(c)           /* cc_Xlink_lib_str_num */
+ =>
+  load_Bplf;
+
+
+
+  ReadTrlAbs(m.q) &
+  ModifyPaspLibList((BitSeq_TYPE,Bool_TYPE,Bool_TYPE_Ops,String_TYPE,
+  Byt_TYPE,Byt_BS_TYPE,Uns_TYPE,Uns_BS_TYPE,PASP_TYPE,PASP_TYPE_Ops,
+  PASP_BS_TYPE,PASP_BS_TYPE_Ops)) &
+  ProcessParams(l,N) &
+  WriteDot &
+  ModifyCodeModuleFilename(bcatl("CDE/PASP/",m,".param")) &
+  load_Bplf &
+  WriteDot &
+  LoadOwnTypeInfo &
+  WriteDot &
+  ProcessImports(b) &           /* StoreSubordinateFunctions/InLineOps */
+  WriteDot &
+  ProcessSees(A) &              /* StoreSubordinateFunctions/InLineOps */
+  WriteDot &
+  ProcessSees(B) &              /* StoreSubordinateFunctions/InLineOps */
+  WriteDot &
+  ProcessImp(k.imp) &
+  WriteDot &
+
+
+  FinalizeSetsSettings &
+  CheckOwnSetsArePaspTypes &
+
+  FinalizeConstantsSettings &
+  FinalizeConstantsTypes &
+  CheckOwnConstantsArePaspNumbers &
+
+  PushFinalSettings & /* PushFinalSettingsOpType/VBL/ActualParam */
+
+  CreLocalVarStore &
+
+  StoreSetParams(l,N) &
+  CreGlobalVarFromImports &
+  CreGlobalSeenVarFromSees &
+  CreIniOp(h) &
+  WriteDot &
+  StoreOps((n)) &
+  WriteDot &
+  WriteDot &
+  ModifyIMPORTMax_length(0) &
+  ModifyIMPORT_line_lengths(?) &
+  SetFirstRunProcessOp &
+  ProcessOps &
+  SetNotFirstRunProcessOp &
+  ProcessOps &
+  PrintCodeModule(bcatl("CDE/PASP/",m,".param"),m) &
+  CreDotFile &
+  PrintDotConstFile &
+/***
+PrintPTrans_database &
+***/
+/*
+HERE(("------------------" --- m --- "------------------" ))&
+PrintTHEORY(Ipt_PASP_VARX)&
+HERE(("OwnConstants"))&
+PrintRule(LoadOwnTypeInfoX.15) &
+HERE(("NonOwnConstants"))&
+PrintRule(LoadOwnTypeInfoX.16) &
+HERE(("NonOwnMchNameColonConst")) &
+PrintRule(StoreNonOwnConstantsX.2) &
+*/
+  check_trl_error
+ =>
+  transpasp_store(h,n,G,C,A,B,b,k(l)(N))
+/*
+h: unexp init
+n: op list
+G: local props
+C: local sets
+A: sees
+B: uses
+b: includes
+k: imp name
+l: params
+*/
+
+END
+
+/*
+&
+
+THEORY TEST IS
+
+  bcall(process_op_tac:proc_op(
+
+
+    VAR aa,bb,cc,xx,ss,setel IN
+      xx := n2b(5);
+      IF true THEN
+        WHILE true DO
+          xx<--BSUB(xx,n2b(1))
+        INVARIANT true
+        VARIANT   b2n(xx)
+        END
+      ELSIF xx=n2b(4) THEN
+        skip
+      END
+    END
+
+  ))
+
+END
+*/
+
+/*
+A: import list (mch: formal params:actual params)
+B: sets set
+C: constants set
+D: set params
+E: num params
+F: glob vars
+G: glob_seen vars
+H: ops with local vars (op(vars))
+I: all ops (op)
+J: init
+K: sees list
+        so, parameterised over D,E
+*/
+
+

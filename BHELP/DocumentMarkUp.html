@@ -1,0 +1,282 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Document Mark Up Tool</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Document_Mark_Up"></A>
+<H1>
+The Document Mark-Up Tool (dmu)</H1>
+DocumentMarkUp (dmu) is invoked from the <A HREF="BToolkit.html#Environments!Documents">Documents
+Environment</A> and is applicable to all constructs that have not been
+marked up (with the exception of `<A HREF="BaseGen.html#Base_Generators">.ops</A>'
+constructs).
+
+<P>The tool produces&nbsp;<A NAME="latex"></A>LaTeX source code (controlled through the <TT><A HREF="Options.html#Options!Documents">Documents</A></TT>
+Option setting)&nbsp; - a source file named<TT> _constructname.tex </TT>written
+in the <A HREF="BToolkit.html#Development_Environment">TEX </A>directory
+- and the<tt> LaTeX Executable </tt>command issued.
+
+<A NAME="Executable"><P>The location of the executable</A> (<tt>LaTeX </tt>or<tt> LaTeX2e</tt>) may
+be set in the<tt> LaTeX Executable </tt>option of the <A HREF="Options.html#Options!Documents">Documents Options</A> (if not already in the <A HREF="BEnvironment.html#Environment!Variables!PATH">PATH</A> of the user); the default is <tt> latex </tt>.
+
+<P>The formatting of <A HREF="BToolkit.html#Constructs!Area">AMN constructs</A>
+is automatic; the user may, however, dictate the style by the positioning
+of newlines/annotations in the document.
+
+<P>Note that the following comments do not apply to proof files; see Top
+Bar Help on <A HREF="ProofPrinter.html#ProofPrinter">ProofPrinter</A> concerning
+the editing of proof files.
+
+<P>
+<HR>
+<H2>
+<A NAME="Annotations"></A>Comments and Annotations</H2>
+The AMN source document may contain normal C-like comments:
+<PRE>&nbsp;&nbsp; /* comment */</PRE>
+which are removed before processing.
+
+<P>However a special kind of comment - an annotation - is also permitted:
+<PRE>&nbsp;&nbsp; /*" annotation "*/</PRE>
+Annotations are not discarded, but processed, and form an integral part
+of the end document, and so provide a means of complementing the formal
+mathematics of AMN documents with informal comment.
+
+<P>Annotations comprise LaTeX source code, and thus any LaTeX commands
+may be used inside an annotation, for example:
+<PRE>&nbsp;&nbsp; /*" {\bf A bold statement}\\
+&nbsp;&nbsp; ... some annotation ... "*/</PRE>
+A single newline after the begin-annotation or preceding the end-annotation
+is not significant; thus the following annotations will appear the same
+in the printed document:
+<PRE>&nbsp; /*" annotation "*/
+
+&nbsp; /*"
+&nbsp;&nbsp;&nbsp;&nbsp; annotation
+&nbsp; "*/</PRE>
+More that one newline in either position will result in more space appearing
+at that point in the document.
+
+<P>Annotations will normally be separated from the mathematical content
+in a document by horizontal lines; horizontal lines will not, however,
+appear around an empty annotation - one consisting entirely of white space
+(which may therefore be used to print vertical space) , or around an newpage
+annotation - one consisting of the command `<TT>\newpage</TT>' and optional
+white space (which will, of course, cause a newpage to be produced).
+<H3>
+<A NAME="Annotations!Positioning"></A>Positioning of Comments</H3>
+
+<UL>
+<LI>
+Comments may appear anywhere in a document</LI>
+
+<LI>
+Comments may not be nested</LI>
+
+<LI>
+Comments may not appear inside annotations</LI>
+</UL>
+
+<H3>
+<A NAME="Newlines"></A>Positioning of Newlines</H3>
+
+<UL>
+<LI>
+Newlines may appear anywhere in a document, however only those detailed
+below are echoed in the LaTeX document.</LI>
+
+<LI>
+Optional newlines may appear after the following construct keywords:</LI>
+
+<PRE>&nbsp;&nbsp; <A HREF="AMNotation.html#MACHINE">MACHINE</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#REFINEMENT">REFINEMENT</A>&nbsp;&nbsp; <A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>&nbsp;&nbsp; <A HREF="Enumerator.html">ENUMERATION
+</A>&nbsp;&nbsp; <A HREF="BaseGen.html#Base_Generators">SYSTEM</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="BaseGen.html#Base_Generators">BASE</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#CONSTRAINTS_Clause">CONSTRAINTS
+</A>&nbsp;&nbsp; <A HREF="AMNotation.html#USES_Clause!Using">USES</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="Structuring.html#SEES_Clause!Using">SEES</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="Structuring.html#REFINES_Clause">REFINES</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="Structuring.html#INCLUDES_Clause!Using">INCLUDES
+</A>&nbsp;&nbsp; <A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTS</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="Structuring.html#PROMOTES_Clause!Using">PROMOTES</A>&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="Structuring.html#EXTENDS_Clause!Using">EXTENDS</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#SETS_Clause">SETS
+</A>&nbsp;&nbsp; <A HREF="AMNotation.html#CONSTANTS_Clause">CONSTANTS</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A>&nbsp;&nbsp; <A HREF="AMNotation.html#VARIABLES_Clause">VARIABLES</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#INVARIANT_Clause">INVARIANT
+</A>&nbsp;&nbsp; <A HREF="AMNotation.html#ASSERTIONS_Clause">ASSERTIONS</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#DEFINITIONS_Clause">DEFINITIONS</A>&nbsp; <A HREF="AMNotation.html#INITIALISATION_Clause">INITIALISATION</A>&nbsp; <A HREF="AMNotation.html#OPERATIONS_Clause">OPERATIONS</A></PRE>
+Each of the above keywords will always be preceded by a newline in the
+LaTeX document
+<LI>
+Optional newlines may appear before or after the following operation keywords:</LI>
+
+<PRE>&nbsp;&nbsp; BEGIN&nbsp;&nbsp; PRE&nbsp;&nbsp; THEN&nbsp;&nbsp;&nbsp; WHEN&nbsp;&nbsp;&nbsp;&nbsp; IF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
+&nbsp;&nbsp; ELSIF&nbsp;&nbsp; ANY&nbsp;&nbsp; WHERE&nbsp;&nbsp; SELECT&nbsp;&nbsp; CASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BE
+&nbsp;&nbsp; EITHER&nbsp; OR&nbsp;&nbsp;&nbsp; LET&nbsp;&nbsp;&nbsp;&nbsp; CHOICE&nbsp;&nbsp; IN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHILE
+&nbsp;&nbsp; DO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VAR&nbsp;&nbsp; OF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VARIANT&nbsp; INVARIANT</PRE>
+
+<LI>
+The keyword END will always be preceded by a newline in the LaTeX document
+except when no newline appears in the following constructs:</LI>
+
+<PRE>&nbsp;&nbsp; BEGIN ... END
+&nbsp;&nbsp; PRE ... THEN ... END
+&nbsp;&nbsp; IF ... THEN ... END
+&nbsp;&nbsp; IF ... THEN ... ELSE ... END
+&nbsp;&nbsp; ANY ... WHERE ... THEN ... END</PRE>
+
+<LI>
+Optional newlines may appear before or after any of the following symbols:</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&nbsp;&nbsp; ;&nbsp;&nbsp; ,&nbsp;&nbsp; ||&nbsp;&nbsp; =&nbsp;&nbsp; =>&nbsp;&nbsp; &lt;=>&nbsp;&nbsp; or&nbsp;&nbsp; :=</PRE>
+
+<LI>
+Breaking long lines may be achieved by the use of brackets; an open bracket
+immediately followed by a newline will cause a linebreak with all following
+lines being indented, and a closing bracket immediately preceded by a newline
+(followed by optional space characers) will stop the indentation. So a predicate written:</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xxx => (
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yyy&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; zzz
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</PRE>
+will be marked up with the consequent list indented as follows:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xxx => (
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yyy&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; zzz)</PRE>
+Note that if the brackets are unnecessary they will be discarded, although
+the linebreaking and indentation will still occur.
+<LI>
+Multiple newlines are treated as a single newline</LI>
+</UL>
+
+<H3>
+
+<HR WIDTH="60%"></H3>
+
+<H3>
+Rules Concerning Annotations</H3>
+
+<UL>
+<LI>
+No white space should appear between annotation-defining characters <TT>/
+* "</TT>. For example:</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* " annotation "*/</PRE>
+would be treated by the tool as a comment, and therefore discarded.
+<LI>
+The start-annotation symbol <TT>/*"</TT> must appear at the beginning of
+a line</LI>
+
+<LI>
+The end-annotation symbol <TT>"*/</TT> must appear at the end of a line</LI>
+
+<LI>
+Annotations may not be nested</LI>
+
+<LI>
+Annotations may not appear inside a comment</LI>
+
+<LI>
+Annotations may appear in the following positions:</LI>
+
+<UL>
+<LI>
+before or after each of the construct keywords listed above</LI>
+
+<LI>
+before or after after each of the operation keywords:</LI>
+
+<PRE>&nbsp;&nbsp; THEN&nbsp;&nbsp; WHEN&nbsp; ELSE&nbsp;&nbsp; ELSIF&nbsp;&nbsp; WHERE&nbsp; BE&nbsp; OR&nbsp; IN&nbsp; OF</PRE>
+
+<LI>
+after each of the operation keywords:</LI>
+
+<PRE>&nbsp;&nbsp; BEGIN&nbsp;&nbsp; PRE&nbsp;&nbsp;&nbsp;&nbsp; IF&nbsp;&nbsp;&nbsp;&nbsp; ANY&nbsp; SELECT&nbsp; CASE&nbsp;&nbsp;&nbsp;&nbsp; EITHER&nbsp;
+&nbsp;&nbsp; LET&nbsp;&nbsp;&nbsp;&nbsp; CHOICE&nbsp; WHILE&nbsp; DO&nbsp;&nbsp; VAR&nbsp;&nbsp;&nbsp;&nbsp; VARIANT&nbsp; INVARIANT</PRE>
+
+<LI>
+before or after after each of the symbols:</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&nbsp;&nbsp; ;&nbsp;&nbsp; ,&nbsp;&nbsp; ||&nbsp;&nbsp; :=</PRE>
+
+<LI>
+If no annotation appears immediately preceding an operation, the operation
+name will be automatically printed in bold preceding the operation</LI>
+</UL>
+</UL>
+
+<H3>
+
+<HR WIDTH="60%"></H3>
+
+<H3>
+<A NAME="Prologue">A Special Annotation</A></H3>
+An annotation appearing between the document name and the CONTENTS clause 
+of a DOCUMENT is treated in a different way to other annotations:
+it is taken to be a prologue annotation, and will appear in the<TT>
+.tex </TT>file of the document immediately before the <TT>\begin{document}</TT>.
+This is to enable LaTeX commands specific to that document to be included (for
+example, the inclusion of a particular package through the
+<TT> \usepackage </TT>command. This prologue text may be set in
+the<tt> LaTeX Declaration </tt> of the <A HREF="Options.html#Options!Documents">Documents Options</A>.
+<BR>&nbsp;
+<BR>
+<HR WIDTH="60%">
+<H3>
+If <A HREF="DocumentMarkUp.html#latex">LaTeX</A> complains</H3>
+Should your file fail to LaTeX correctly (for example if an annotation
+contains bad syntax) you should quit from LaTeX by typing `x' in the LaTeX
+window, edit the file, commit the edits and re-submit it for mark-up.
+
+<P>Note that the double quote character <TT>"</TT> inside an annotation
+causes the message `Bad annotation position' to be displayed (this is because
+annotations are represented internally as strings). Single quotes <TT>`</TT>
+and <TT>'</TT> may be used; if double quotes are required, <TT>``</TT>
+and <TT>''</TT> (double single quotes) should be used.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+<A NAME="Options!Documents"></A>The Document Options</H2>
+
+<UL>
+<LI>
+If the `Labels' option is set, the LaTeX commands <TT>\ref</TT> and <TT>\pageref</TT>
+may be used inside annotations to reference the occurrence of construct,
+variable, set, constant and operation names (for MACHINES, REFINEMENTS
+and IMPLEMENTATIONS)</LI>
+
+<LI>
+If the `Clause cross-references' option is set, a cross-reference of external
+construct, variable, set, constant and operation names will automatically
+be produced after the <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A>,
+<A HREF="AMNotation.html#INVARIANT_Clause">INVARIANT</A> <A HREF="AMNotation.html#ASSERTIONS_Clause">ASSERTIONS</A>,
+<A HREF="AMNotation.html#INITIALISATION_Clause">INITIALISATION</A> clauses
+(if present) and following each operation (for MACHINES, REFINEMENTS and
+IMPLEMENTATIONS)</LI>
+
+<LI>
+If the `Construct cross-references' option is set, a cross-reference of
+external construct, variable, set, constant and operation names will automatically
+be produced at the end of each MACHINE, REFINEMENT and IMPLEMENTATION</LI>
+
+<LI>
+If the `Index' option is set, an index will be produced containing references
+to all construct, variable, set, constant and operation names at the end
+of each DOCUMENT</LI>
+</UL>
+For a fuller explanation, see also <A HREF="Options.html#Options">Options.</A>
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

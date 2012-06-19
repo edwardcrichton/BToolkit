@@ -1,0 +1,14 @@
+PROOFMETHOD
+
+ factorial_1.imp.0
+
+IS
+
+ USETAC
+
+  (UsersTheory~),
+  (FwdUsersTheory~;FEQL~)
+
+ END
+
+END

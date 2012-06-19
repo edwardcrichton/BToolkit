@@ -1,0 +1,177 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+
+
+#include "GlobalDefs.src"
+
+
+
+
+#define InformNothingConfigured Writef(("\n  % % %\n",bsrv No berv,bsrv machines berv,bsrv configured berv))
+
+#define InformSearchUnsuccessful Writef(("\n  % %\n",bsrv Search berv,bsrv unsuccessful berv))
+
+#define InformFileAlreadyExists(x)  Writef(("\n    % already exists\n",bsrv x berv))
+
+#define InformAlreadyConfigured(x) Writef(("\n    % is already configured\n",bsrv x berv))
+
+#define InformNameAlreadyUsed(x) Writef(("\n    Name % is already used\n",bsrv x berv))
+
+#define InformNotIdentifier(x) Writef(("\n    % must be an identifier\n",bsrv x berv))
+
+#define InformDoesNotParse(x)  Writef(("\n    %\n\n    % does not parse\n",bwarn,x))
+
+#define InformCantWriteBerr Writef(("\n    %\n\n    Can't write to \".Berr\"\n",berr))
+
+#define InformErrorInvokingVi Writef(("\n    %\n\n    Error invoking vi\n",berr))
+
+
+THEORY BTOOLKITINIT END   /* Theory # 2 */
+
+&
+
+#include "Utils.src"
+
+&
+
+#include "ExpandMachineOps.src"
+
+#define sfsTac ((ARI;MAP;SimplifyX)~)
+
+
+/*
+#define AnimLibraryX \
+( \
+  AliasEqualsX~; \
+  ( \
+     ARI~; \
+     (((SetComprehensionX;(LMAP;GlueX;ARI;NEWV;SUB)~;MODR;SUB)~;(NegArithX~;ARI~)~;(UserLibX;SUB~)~; \
+    InclusionX~;IntersectionX~;DomRestrictX~;CodRestrictX~;DomSubtractX~; \
+    CodSubtractX~;FuncCompX~;MinMaxX~;TakeDropX~; \
+    ImageX~;InverseX~;FunApplicationX~; \
+    DomX~;CodX~;(FLAT;REV;ARI;SequenceX)~; SetEqualityX~; SeqEqualityX~; \
+    UnionX~;IntervalX~;CardProdX~;CardX~)~;SetDifferenceX)~;OverwriteX~;Set2SeqX~; \
+    LibraryBoolX;CATL \
+  )~ \
+)
+*/
+
+#define AnimLibraryX \
+( \
+  AliasEqualsX~; \
+  ( \
+    ( ARI~; \
+     PaspTheoryX~; \
+     (((SetComprehensionX;(LMAP;GlueX;ARI;NEWV;SUB)~;MODR;SUB)~;(NegArithX~;ARI~)~;(UserLibX;SUB~)~; \
+    IntersectionX~;DomRestrictX~;CodRestrictX~;DomSubtractX~; \
+    CodSubtractX~;FuncCompX~;MinMaxX~;(TakeDropX;REV)~; \
+    ImageX~;InverseX~;FunApplicationX~; \
+    DomX~;CodX~;(FLAT;REV;ARI;SequenceX)~;  \
+    UnionX~;IntervalX~;CardProdX~;CardX~)~;SetDifferenceX)~;OverwriteX~;Set2SeqX~;CATL \
+    )~; \
+    SetEqualityX~; SeqEqualityX~; InclusionX~; LibraryBoolX;CATL \
+  )~ \
+)
+
+
+
+&
+
+#include "Animator.src"
+
+&
+
+#include "Animator.thy"
+
+&
+
+#include "Toolkit_core.src"
+
+&
+
+THEORY ParseInitX IS
+
+  InformUnknownEnvironment(x) &
+  PFZ
+ =>  
+  pi$x;
+
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_LST_FLG:y),X,Y) &
+  ModifyJobs((Y;(x:BT_MOTIF_QUIT:(y+3426)))) &
+  LoadToolkit(7)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EMPTY_SCRIPT:0),X,Y) &
+  ModifyJobs(Y) &
+  CreEmptyExeScript(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EXE_AUTO:0),X,Y) &
+  ModifyJobs(Y) &
+  AnimatorExeAuto(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM_EXE_STEP:0),X,Y) &
+  ModifyJobs(Y) &
+  AnimatorExeStep(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_ANM:0),X,Y) &
+  ModifyJobs(Y) &
+  AnimatorDirect(x)
+ =>
+  run;
+
+  bnum(x) &
+  btest(1<=x) &
+  btest(5>=x) &
+  run
+ =>  
+  pi$x;
+
+  bnum(n) &
+  bmodr(ParseInitX.1,1) &             /* first loop */
+  bmodr(ParseEnvX.2,n) &
+  LoadJobs &
+  pi$n
+ =>
+  n$toolkit$n$n;
+
+  brule(ParseInitX.1,1) &             /* subsequent loops (bredo) */
+  brule(ANIX.1,m) &
+  AnimatorDirect(m.mch)
+ =>
+  n$toolkit$n$n
+
+END

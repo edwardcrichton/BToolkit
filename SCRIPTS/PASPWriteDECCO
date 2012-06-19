@@ -1,0 +1,96 @@
+#! /bin/sh
+
+#
+#  PASPWriteDECCO
+#
+
+plat=`uname`
+if [ "$plat" = "SunOS" ]
+then
+  copyop="unix2dos -ascii"
+elif [ "$plat" = "Linux" ]
+then
+  copyop="mcopy -tn"
+else
+  echo ""
+  echo "  PASPWriteFloppy: unknown platform $plat "
+  echo ""
+  exit 1
+fi
+
+if [ ! -d CDE/PASP/DECCO ]
+then
+  mkdir CDE/PASP/DECCO
+  if [ $? != 1 ]
+  then
+    printf "\n    mkdir CDE/PASP/DECCO failed in `pwd`\n"
+  fi
+fi
+
+#
+#  this might not be required
+#
+if [ $1 = 0 ]
+then
+  rm -f CDE/PASP/DECCO/*
+fi
+
+if [ $1 = 0 ]
+then
+  printf "\n    Copying subsidiary filtered code modules: \n"
+  for file in $2
+  do
+    printf "      CDE/PASP/$file.pasp.flt -> CDE/PASP/DECCO/$file.pas\n"
+    $BKIT/BLIB/Unix2Dos < CDE/PASP/$file.pasp.flt > CDE/PASP/DECCO/$file.pas
+    if [ $? != 0 ]
+    then
+      exit 1
+    fi
+  done
+elif [ $1 = 1 ]
+then
+  printf "\n\n    Copying top level code module: \n"
+  printf "      CDE/PASP/$2.pasp.flt -> CDE/PASP/DECCO/$2.pas\n"
+  $BKIT/BLIB/Unix2Dos < CDE/PASP/$2.pasp.flt > CDE/PASP/DECCO/$2.pas
+  if [ $? != 0 ]
+  then
+    exit 1
+  fi
+  printf "      CDE/PASP/L$2.lnk -> CDE/PASP/DECCO/L$2.lnk\n"
+  $BKIT/BLIB/Unix2Dos < CDE/PASP/L$2.lnk > CDE/PASP/DECCO/L$2.lnk
+  if [ $? != 0 ]
+  then
+    exit 1
+  fi
+  printf "      CDE/PASP/L$2.prj -> CDE/PASP/DECCO/L$2.prj\n"
+  $BKIT/BLIB/Unix2Dos < CDE/PASP/L$2.prj > CDE/PASP/DECCO/L$2.prj
+  if [ $? != 0 ]
+  then
+    exit 1
+  fi
+  printf "      CDE/PASP/auto.scr -> CDE/PASP/DECCO/auto.scr\n"
+  $BKIT/BLIB/Unix2Dos < CDE/PASP/auto.scr > CDE/PASP/DECCO/auto.scr
+  if [ $? != 0 ]
+  then
+    exit 1
+  fi
+  printf "      CDE/PASP/$2.map -> CDE/PASP/DECCO/$2.map\n"
+  $BKIT/BLIB/Unix2Dos < CDE/PASP/$2.map > CDE/PASP/DECCO/$2.map
+  if [ $? != 0 ]
+  then
+    exit 1
+  fi
+  printf "\n  Contents of CDE/PASP/DECCO: \n\n"
+  ls -lL CDE/PASP/DECCO
+  printf "\n"
+elif [ $1 = 2 ]
+then
+  rm -f CDE/PASP/DECCO/$2.pas
+elif [ $1 = 3 ]
+then
+  rm -f CDE/PASP/DECCO/$2.pas
+  rm -f CDE/PASP/DECCO/$2.map
+  rm -f CDE/PASP/DECCO/L$2.lnk
+  rm -f CDE/PASP/DECCO/L$2.prj
+  rm -f CDE/PASP/DECCO/auto.scr
+fi

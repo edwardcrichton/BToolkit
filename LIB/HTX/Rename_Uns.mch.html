@@ -1,0 +1,218 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Uns">
+  <TITLE>The Rename_Uns machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             25/01/01
+***/
+
+/*
+Description: Renamable Parameterised Library variable machine
+             encapsulating a single READWRITE Byte
+
+History :
+250101 v0.01 : Created from Rename_Byt_File
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>   Rename_Uns(init_val)
+
+/*"
+A renamable parameterised encapsulation of a single READWRITE {\em
+UNSIGNED\/} variable, providing the eleven operations {\em VAL, STO,
+INC, DEC, ADD, SUB, MUL, DIV\/} {\em MOD\/}, {\em LEFT\/}{\em
+RIGHT\/}. The operations are, where necessary, specified in terms of
+the operations of the corresponding type machine {\em Uns\_TYPE\/},
+and so that machine is brought into scope; {\em Bool\_TYPE\/} is also
+needed.
+
+The specification variable has the name {\em Rename\_byt\/} and the
+single parameter provides its initial value via its declaration.
+
+Because of the restriction in {\em AMN\/} that all machine parameters
+are natural numbers, the number is converted into a byte value through
+the {\tt n2u} operator {\em Uns\_TYPE}.
+
+So, for example, importing {\em prefix\_Byt(b2n(uu))\/} means that the
+byte variable will appear in the translated code as\ \ {\tt
+prefix\_byt}\ \ and results in the global data declaration:\\[1ex]
+\hspace*{3em}{\tt VAR prefix\_byt : UNSIGNED = uu;}\\[1ex]
+Thus the initialisation requires no translation since the above
+declaration achieves the nondeterminism specified.
+"*/
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>      init_val : 0..65535
+
+<A NAME="SEES"><B>SEES</B></A>             <A HREF="Uns_TYPE.mch.html#MACHINE">Uns_TYPE</A>, <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>        Rename_uns
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>        Rename_uns : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>   Rename_uns :: <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf Rename\_VAL}\\[1ex]
+Returns the value of the variable without precondition; translated as:\\\ \ \  {\tt vv := prefix\_uns}.
+"*/
+  vv <-- <A NAME="OPNAME!Rename_VAL">Rename_VAL</A> = <B>BEGIN</B> vv := Rename_uns <B>END</B>;
+
+
+/*"
+{\bf Rename\_STO}\\[1ex]
+Stores a new value in the variable with precondition that the
+parameter should be a {\em UNSIGNED\/}; translated as:\\\ \ \  {\tt prefix\_uns := vv}.
+"*/
+  <A NAME="OPNAME!Rename_STO">Rename_STO</A>(vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) = <B>BEGIN</B> Rename_uns:=vv <B>END</B>;
+
+/*"
+{\bf Rename\_INC}\\[1ex]
+Increments the variable with precondition that the
+incremented variable should be a {\em UNSIGNED\/} (thus avoiding
+nondefinedness); translated as:\\\ \ \  {\tt prefix\_uns := UADD(prefix\_uns,1)}.
+"*/
+  <A NAME="OPNAME!Rename_INC">Rename_INC</A> = 
+    <B>PRE</B> Rename_uns + <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(1): <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B>
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!UADD">UADD</A>(Rename_uns,<A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(1))
+    <B>END</B>;
+
+/*"
+{\bf Rename\_DEC}\\[1ex]
+Decrements the variable with precondition that the
+decremented variable should be a {\em UNSIGNED\/} (thus avoiding
+nondefinedness); translated as:\\\ \ \  {\tt prefix\_uns := USUB(prefix\_uns,1)}.
+"*/
+  <A NAME="OPNAME!Rename_DEC">Rename_DEC</A> =
+    <B>PRE</B> Rename_uns - <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(1): <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B>
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!USUB">USUB</A>(Rename_uns,<A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(1))
+    <B>END</B>;
+
+/*"
+{\bf Rename\_ADD}\\[1ex]
+Increases the variable by the value of the input parameter,
+with precondition that both the parameter and the 
+increased variable should be a {\em UNSIGNED\/} (the former ensuring that
+the precondition of {\em UADD\/} is met and the latter avoiding
+nondefinedness); translated as:\\\ \ \  {\tt prefix\_uns := UADD(prefix\_uns,vv)}.
+"*/
+  <A NAME="OPNAME!Rename_ADD">Rename_ADD</A>(vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>PRE</B> Rename_uns + vv: <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B> 
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!UADD">UADD</A>(Rename_uns,vv)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_SUB}\\[1ex]
+Decreases the variable by the value of the input parameter,
+with precondition that both the parameter and the 
+decreased variable should be a {\em UNSIGNED\/} (the former ensuring that
+the precondition of {\em USUB\/} is met and the latter avoiding
+nondefinedness); translated as:\\\ \ \  {\tt prefix\_uns := USUB(prefix\_uns,vv)}.
+"*/
+  <A NAME="OPNAME!Rename_SUB">Rename_SUB</A>(vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>PRE</B> Rename_uns - vv: <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B> 
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!USUB">USUB</A>(Rename_uns,vv)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_MUL}\\[1ex]
+Changes the variable to be the product of its current value and that
+of the input parameter, with precondition that both the parameter and
+the increased variable should be a {\em UNSIGNED\/} (the former ensuring
+that the precondition of {\em UMUL\/} is met and the latter avoiding
+nondefinedness); translated as:\\\ \ \ {\tt prefix\_uns :=
+UMUL(prefix\_uns,vv)}.
+"*/
+  <A NAME="OPNAME!Rename_MUL">Rename_MUL</A>(vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>PRE</B> Rename_uns * vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B> 
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!UMUL">UMUL</A>(Rename_uns,vv)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_DIV}\\[1ex]
+Changes the variable to be its current value divided by that of the
+input parameter, with precondition that both the parameter and the
+decreased variable should be a {\em UNSIGNED\/} and the parameter be
+non-zero (ensuring that the precondition of {\em UDIV\/} is met and
+avoiding nondefinedness); translated as:\\\ \ \ {\tt prefix\_uns :=
+UDIV(prefix\_uns,vv)}.
+"*/
+  <A NAME="OPNAME!Rename_DIV">Rename_DIV</A>(vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>PRE</B> vv /= <A HREF="Uns_TYPE.mch.html#DEFINITIONS">MinUns</A> & Rename_uns / vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B> 
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!UDIV">UDIV</A>(Rename_uns,vv)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_MOD}\\[1ex]
+Changes the variable to be its current value modulus that of the input
+parameter, with precondition that both the parameter and the decreased
+variable should be a {\em UNSIGNED\/} and the parameter be non-zero
+(ensuring that the precondition of {\em UMOD\/} is met and avoiding
+nondefinedness); translated as:\\\ \ \ {\tt prefix\_uns :=
+UMOD(prefix\_uns,vv)}.
+"*/
+  <A NAME="OPNAME!Rename_MOD">Rename_MOD</A>(vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>PRE</B> vv /= <A HREF="Uns_TYPE.mch.html#DEFINITIONS">MinUns</A> & Rename_uns mod vv : <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B> 
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!UMOD">UMOD</A>(Rename_uns,vv)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_LEFT}\\[1ex]
+Changes the variable to be its current value unsigned-shifted left,
+with precondition that resulting value is a {\em UNSIGNED\/}
+(ensuring that the precondition of {\em BLEFT\/} is met and avoiding
+nondefinedness); translated as:\\\ \ \ {\tt prefix\_byt :=
+ULEFT(prefix\_byt)}.
+"*/
+  <A NAME="OPNAME!Rename_LEFT">Rename_LEFT</A> =
+    <B>PRE</B> (Rename_uns * <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(2)) :  <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B> 
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!ULEFT">ULEFT</A>(Rename_uns)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_RIGHT}\\[1ex]
+Changes the variable to be its current value unsigned-shifted right,
+with precondition that resulting value is a {\em UNSIGNED\/}
+(ensuring that the precondition of {\em BRIGHT\/} is met and avoiding
+nondefinedness); translated as:\\\ \ \ {\tt prefix\_byt :=
+URIGHT(prefix\_byt)}.
+"*/
+  <A NAME="OPNAME!Rename_RIGHT">Rename_RIGHT</A> =
+    <B>PRE</B> (Rename_uns / <A HREF="Uns_TYPE.mch.html#CONSTANTS">n2u</A>(2)) :  <A HREF="Uns_TYPE.mch.html#SETS">UNSIGNED</A> <B>THEN</B> 
+      Rename_uns <-- <A HREF="Uns_TYPE.mch.html#OPNAME!URIGHT">URIGHT</A>(Rename_uns)
+    <B>END</B>
+
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:08:22 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

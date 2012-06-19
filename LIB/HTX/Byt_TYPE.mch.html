@@ -1,0 +1,289 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Byt_TYPE">
+  <TITLE>The Byt_TYPE machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.02
+  VERSION:          B-Toolkit Beta 4.32
+  DATE:             15/02/99
+v0.03
+  VERSION:          B-Toolkit Beta 4.51
+  DATE:             18/06/99
+v0.04
+  VERSION:          B-Toolkit Beta 4.52
+  DATE:             12/07/99
+v0.05
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             15/01/00
+***/
+
+/*
+Description: Library Type machine intruducing BYTE
+
+History :
+030698 v0.01 : Created.
+150299 v0.02 : added: b2bl, bl2b
+130699 v0.03 : change in PROPERTIES:
+  !nat.(nat:NAT =&gt; b2n(n2b(nat)) = nat) -&gt;
+    !nat.(nat:NAT&nat<=255 => b2n(n2b(nat)) = nat)
+120799 v0.04 : created Byt_SEMANTICS.mch & changed this TYPE machine
+               so that mimimal semantic information is given here (to
+               increase the efficiency of the provers - semantic information
+               is mirrored in the PASP mathematical library)
+150100 v0.05 : Changes for DecCo8.
+               Properties reduced to minimal type information; full
+               properies given in Byt_SEMANTICS.mch
+               Introduced the two operations BOOL2B and B2BOOL
+               Changed n2b/b2n from --&gt; to &gt;-&gt;&gt; in line with Byt_SEMANTICS.mch.
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Byt_TYPE
+
+/*"
+This specification models the built-in PASP {\em BYTE\/}
+type using the two conversion {\em BYTE-NAT\/} functions
+{\em n2b\/} and {\em b2n\/}. {\em MinByte\/} and {\em MaxByte\/}
+are also defined.
+
+Each of the operations is translated directly to its PASP equivalent
+by the B-PASP Translator; the exceptions are {\em BINC\/} and {\em
+BDEC\/} which are translated in terms of {\em BADD\/} and {\em BSUB\/}.
+
+The constants {\em n2b\/}, {\em  b2n\/}, {\em b2bl\/} and {\em  bl2b\/}
+are also introduced, being defined in the {\em Byt_SEMANTICS\/} machine.
+"*/
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+/*"
+Since some operations return a {\em BOOLEAN\/}
+we ensure that the {\em Bool\_TYPE\/} machine is in scope:
+"*/
+
+<A NAME="SETS"><B>SETS</B></A>                BYTE
+
+/*"
+We introduce the set {\em BYTE\/}:
+"*/
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>
+
+/*"
+We now introduce the two conversion functions between {\em BYTE\/}
+and {\em NAT\/}:
+"*/
+
+  n2b, b2n,
+
+/*"
+and the two conversion functions between {\em BYTE\/}
+and {\em BOOL\/}:
+"*/
+
+  b2bl, bl2b
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+/*"
+We give minimal properties here - full semantic information
+is contained in {\em Byt\_SEMANTICS.mch\/}:
+"*/
+
+  n2b : 0..255 &gt;-&gt;&gt; BYTE &
+  b2n : BYTE &gt;-&gt;&gt; 0..255 &
+
+  b2bl : BYTE --&gt; <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> &
+  bl2b : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> --&gt; BYTE
+
+<A NAME="DEFINITIONS"><B>DEFINITIONS</B></A>
+
+  MinByt == n2b(0);
+  MaxByt == n2b(255)
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+Each of the following six operations returns a {\em BOOLEAN\/}
+and is a specification of the identically-named built-in PASP
+function. Each precondition ensures that both input parameters
+have type {\em BYTE\/}. We use the AMN {\sf bool} operator which
+returns the boolean value of its argument.\\[1ex]
+
+{\bf BLE}\ \ \  translated as:\\{\tt rr := BLE(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BLE">BLE</A>(aa : BYTE & bb : BYTE) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa <= bb) <B>END</B>;
+
+/*"
+{\bf BGE}\ \ \  translated as:\\{\tt rr := BGE(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BGE">BGE</A>(aa : BYTE & bb : BYTE) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa &gt;= bb) <B>END</B>;
+
+/*"
+{\bf BLT}:\ \ \  translated as:\\{\tt rr := BLT(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BLT">BLT</A>(aa : BYTE & bb : BYTE) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa < bb) <B>END</B>;
+
+/*"
+{\bf BGT}:\ \ \  translated as:\\{\tt rr := BGT(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BGT">BGT</A>(aa : BYTE & bb : BYTE) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa &gt; bb) <B>END</B>;
+
+/*"
+\newpage
+{\bf BEQ}:\ \ \  translated as:\\{\tt rr := BEQ(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BEQ">BEQ</A>(aa : BYTE & bb : BYTE) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa = bb) <B>END</B>;
+
+/*"
+{\bf BNE}:\ \ \  translated as:\\{\tt rr := BNE(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BNE">BNE</A>(aa : BYTE & bb : BYTE) =
+    <B>BEGIN</B> rr := <B>bool</B> (aa /= bb) <B>END</B>;
+
+
+
+/*"
+\ \\
+
+The precondition for each of the following five arithmetic operations
+stipulates that both input and output parameters are of type {\em
+BYTE\/}; the former ensures that the operation is invoked safely, and
+the latter that we do not have to deal with undefinedness.  Each is a
+specification of the identically-named built-in PASP function\\[1ex]
+{\bf BADD}:\ \ \  translated as:\\{\tt rr := BADD(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BADD">BADD</A>(aa : BYTE & bb : BYTE) =
+    <B>PRE</B> aa + bb : BYTE <B>THEN</B>
+      rr := aa + bb
+    <B>END</B>;
+
+/*"
+{\bf BSUB}:\ \ \  translated as:\\{\tt rr := BSUB(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BSUB">BSUB</A>(aa : BYTE & bb : BYTE) =
+    <B>PRE</B> aa - bb : BYTE <B>THEN</B>
+      rr := aa - bb
+    <B>END</B>;
+
+/*"
+\newpage
+{\bf BMUL}:\ \ \  translated as:\\{\tt rr := BMUL(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BMUL">BMUL</A>(aa : BYTE & bb : BYTE) =
+    <B>PRE</B> aa * bb : BYTE <B>THEN</B>
+      rr := aa * bb
+    <B>END</B>;
+
+/*"
+{\bf BDIV}:\ \ \  translated as:\\{\tt rr := BDIV(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BDIV">BDIV</A>(aa : BYTE & bb : BYTE) =
+    <B>PRE</B> bb /= MinByt & aa / bb : BYTE <B>THEN</B>
+      rr := aa / bb
+    <B>END</B>;
+  
+/*"
+{\bf BMOD}:\ \ \  translated as:\\{\tt rr := BMOD(aa,bb)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BMOD">BMOD</A>(aa : BYTE & bb : BYTE) =
+    <B>PRE</B> bb /= MinByt & aa mod bb : BYTE <B>THEN</B>
+      rr := aa mod bb
+    <B>END</B>;
+  
+/*"
+\ \\
+
+The same comments apply to the next two operations except that they
+are translated in terms of the built-in PASP functions {\em BADD\/}
+and {\em BSUB\/}.\\[1ex]
+
+{\bf BINC}:\ \ \  translated as:\\{\tt rr := BADD(aa,1)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BINC">BINC</A>(aa : BYTE) =
+    <B>PRE</B> aa + n2b(1) : BYTE <B>THEN</B>
+      rr := aa + n2b(1)
+    <B>END</B>;
+
+/*"
+{\bf BDEC}:\ \ \  translated as:\\{\tt rr := BSUB(aa,1)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BDEC">BDEC</A>(aa : BYTE) =
+    <B>PRE</B> aa - n2b(1) : BYTE <B>THEN</B>
+      rr := aa - n2b(1)
+    <B>END</B>;
+
+/*"
+The next two  operations are specifications of the
+identically-named built-in PASP {\em BYTE\/}-{\em BOOL\/}
+commands, and are defined in terms of the operators {\em b2bl\/}
+and {\em bl2b\/}.\\[1ex]
+{\bf B2BOOL}\ \ \  translated as:\\{\tt rr := B2BOOL(aa)}\\
+"*/
+  rr <-- <A NAME="OPNAME!B2BOOL">B2BOOL</A>(aa : BYTE) =
+    <B>BEGIN</B> rr := b2bl(aa) <B>END</B>;
+
+/*"
+{\bf BOOL2B}\ \ \  translated as:\\{\tt rr := BOOL2B(aa)}\\
+"*/
+  rr <-- <A NAME="OPNAME!BOOL2B">BOOL2B</A>(aa : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) =
+    <B>BEGIN</B> rr := bl2b(aa) <B>END</B>;
+
+/*"
+The final operations are specifications of the shift commands;
+both input and output parameters are of type {\em BYTE\/};
+the former ensures that the operation is invoked safely, and
+the latter that we do not have to deal with undefinedness.\\[1ex]
+{\bf BLEFT}\ \ \  translated as:\\{\tt rr := BLEFT(aa) }\\
+"*/
+  rr <-- <A NAME="OPNAME!BLEFT">BLEFT</A>(aa : BYTE) =
+    <B>PRE</B> aa * n2b(2) : BYTE <B>THEN</B>
+      rr := aa * n2b(2)
+    <B>END</B>;
+
+/*"
+{\bf BRIGHT}\ \ \  translated as:\\{\tt rr := BRIGHT(aa) }\\
+"*/
+  rr <-- <A NAME="OPNAME!BRIGHT">BRIGHT</A>(aa : BYTE) =
+    <B>PRE</B> aa / n2b(2) : BYTE <B>THEN</B>
+      rr := aa / n2b(2)
+    <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:05:44 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

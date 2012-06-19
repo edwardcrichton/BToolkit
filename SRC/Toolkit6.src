@@ -1,0 +1,375 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOLD
+
+
+
+/*
+#define LatexProofDirect(x) \
+bcall(((CATL;MAP;WRITE;ARI;MODR;SHELL)~;LatexProofX)~:lp_0(x))
+
+  no ARI !!!
+
+*/
+
+#define LatexProofDirect(x) \
+bcall(((CATL;MAP;WRITE;MODR;SHELL)~;LatexProofX)~:lp_0(x))
+
+
+
+/*
+#define LatexProofTransTac  ((MODR;ARI;transX;CATL;WRITE)~)
+
+  no ARI !!!
+
+*/
+
+#define LatexProofTransTac  ((MODR;transX;CATL;WRITE)~)
+
+#define LPTrans(x) bcall(LatexProofTransTac:trans(0)(x))
+
+
+#define ClearLPError bcall(MODR:bmodr(LPErrorX.1,0))
+
+#define SetLPError   bcall(MODR:bmodr(LPErrorX.1,1))
+
+
+
+
+
+#define Latex_Tac \
+	((ARI;CATL;FLAT;MODR;WRITE;LMAP;MAP;CATL~;SHELL;CATL;LatexFromUserX)~)
+
+#define LatexerDirect(x,y) bcall(Latex_Tac:Latex_0(x)(y))
+
+#define ShowDirectTac  ((CATL;SHELL)~;ShowDirectX)~
+
+#define ShowDirect(x) bcall(ShowDirectTac: show_direct(x))
+
+
+
+#define ReadCurrProofTabLevel(x) brule(LatexProofX.2,x)
+#define ModrCurrProofTabLevel(x) bcall((ARI~;MODR):bmodr(LatexProofX.2,x))
+
+#define ReadCurrProofImpliesLevel(x) brule(LatexProofX.5,x)
+#define ModrCurrProofImpliesLevel(x) bcall((ARI~;MODR):bmodr(LatexProofX.5,x))
+
+
+#define prt_proof_nl_tab \
+         bcall(((WRITE)~;prt_proof_nl_tabX)~:prt_prf_nl_tab_0)
+
+
+#include "GlobalDefs.src"
+
+
+THEORY BTOOLKITINIT END   /* Theory # 2 */
+
+&
+
+#include "Utils.src"
+
+&
+
+#include "Latexer.src"
+
+&
+
+#include "LatexProof.src"
+
+&
+
+#include "Toolkit_core.src"
+
+&
+
+THEORY ParseInitX IS
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformUnknownEnvironment(x) &
+  PFZ
+ =>  
+  pi$x;
+
+
+  LoadToolkit(1)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b:BT_DOC:0),X,Y) &
+  ModifyJobs(Y) &
+  DocDirect(a.b)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b:BT_SHW:0),X,Y) &
+  ModifyJobs(Y) &
+  ShowDirect(a.b.anl)
+ =>
+  run;
+
+
+
+  GetJobs(X) &
+  bsearch((a.doc:BT_DMU:L),X,Y) &
+  ModifyJobs(Y) &
+  LatexerDirect(a.doc.anl,L)
+ =>
+  run;
+
+
+
+  GetJobs(X) &
+  bsearch((a.enm:BT_DMU:L),X,Y) &
+  Writef(("\n  DocumentMarkUp: % is not generated\n",a.enm)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.enm:BT_DMU:L),X,Y) &
+  IsGen(x) &
+  ModifyJobs(Y) &
+  LatexerDirect(a.enm.anl,L)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.itf:BT_DMU:L),X,Y) &
+  Writef(("\n  DocumentMarkUp: % is not generated\n",a.itf)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.itf:BT_DMU:L),X,Y) &
+  IsGen(x) &
+  ModifyJobs(Y) &
+  LatexerDirect(a.itf.anl,L)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.bse:BT_DMU:L),X,Y) &
+  Writef(("\n  DocumentMarkUp: % is not generated\n",a.bse)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.bse:BT_DMU:L),X,Y) &
+  IsGen(x) &
+  ModifyJobs(Y) &
+  LatexerDirect(a.bse.anl,L)
+ =>
+  run;
+
+
+
+
+
+  GetJobs(X) &
+  bsearch((a.mch:BT_DMU:L),X,Y) &
+  Writef(("\n  DocumentMarkUp: % is not analysed\n",a.mch)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.mch:BT_DMU:L),X,Y) &
+  IsAnl(a.mch) &
+  ModifyJobs(Y) &
+  LatexerDirect(a.mch.anl,L)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.ref:BT_DMU:L),X,Y) &
+  Writef(("\n  DocumentMarkUp: % is not analysed\n",a.ref)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.ref:BT_DMU:L),X,Y) &
+  IsAnl(a.ref) &
+  ModifyJobs(Y) &
+  LatexerDirect(a.ref.anl,L)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.imp:BT_DMU:L),X,Y) &
+  Writef(("\n  DocumentMarkUp: % is not analysed\n",a.imp)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.imp:BT_DMU:L),X,Y) &
+  IsAnl(a.imp) &
+  ModifyJobs(Y) &
+  LatexerDirect(a.imp.anl,L)
+ =>
+  run;
+
+
+
+  GetJobs(X) &
+  bsearch((a.mch:BT_DMU:L),X,Y) &
+  IsDmu(a.mch) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.ref:BT_DMU:L),X,Y) &
+  IsDmu(a.ref) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.imp:BT_DMU:L),X,Y) &
+  IsDmu(a.imp) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.doc:BT_DMU:L),X,Y) &
+  IsDmu(a.doc) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.bse:BT_DMU:L),X,Y) &
+  IsDmu(a.bse) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.itf:BT_DMU:L),X,Y) &
+  IsDmu(a.itf) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.enm:BT_DMU:L),X,Y) &
+  IsDmu(a.enm) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.prf:BT_DMU:L),X,Y) &
+  ModifyJobs(Y) &
+  LatexProofDirect(a.b)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.prf.n:BT_DMU:L),X,Y) &
+  ModifyJobs(Y) &
+  LatexProofDirect(a.b.n)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.prf:BT_DMU:L),X,Y) &
+  IsDmu(a.b.prf) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.prf.n:BT_DMU:L),X,Y) &
+  IsDmu(a.b.prf.n) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.n:BT_LP:0),X,Y) &
+  Writef(("\n  DocumentMarkUp: Proof level % for % not printed\n",n,a.b)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.0:BT_LP:0),X,Y) &
+  Writef(("\n  DocumentMarkUp: Proof obligations for % not printed\n",a.b)) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.n:BT_LP:0),X,Y) &
+  IsLvl(a.b(N)) &
+  btest(N>n) &
+  ModifyJobs(Y) &
+  LatexProofDirect(a.b.n)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b.n:BT_LP:0),X,Y) &
+  IsDmu(a.b.prf.n) &
+  ModifyJobs(Y)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b:BT_CMT_CSTR:0),X,Y) &
+  LoadToolkit(1)
+ =>
+  run;
+
+  bnum(x) &
+  btest(1<=x) &
+  btest(5>=x) &
+  run &
+  bredo
+ =>  
+  pi$x;
+
+  bnum(n) &
+  bmodr(ParseInitX.1,1) &             /* first loop */
+  bmodr(ParseEnvX.2,n) &
+  LoadJobs &
+  pi$n
+ =>
+  n$toolkit$n$n;
+
+  brule(ParseInitX.1,1) &             /* subsequent loops (bredo) */
+  run &
+  bredo
+ =>
+  n$toolkit$n$n
+
+
+END

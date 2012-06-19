@@ -1,0 +1,56 @@
+#! /bin/csh -f
+
+# the following need to be escaped:    <  >  #  "        ->        \<  \>  \#  \" 
+# spaces should be printed as:  " "
+
+
+
+#   sed \
+#      -e s+\<BODY" "BGCOLOR=\#FFFFE0\>+\<BODY" "TEXT=\"\#E9FFCC\"" "BGCOLOR=\"\#2C4D4D\"" "LINK="\#\66FFFF\"" "VLINK=\"\#FF6666\"" "ALINK=\"\#FF0000\"\>+g \
+#      -e s/\<FONT" "SIZE=+1\>/\<FONT" "COLOR=\"\#33CCFF\"\>\<FONT" "SIZE=+1\>/g \
+#      -e s+\#3366FF+\#33CCFF+g \
+#      $file > tmpfile
+
+#  sed \
+#         -e s+\<CENTER\>\<I\>\<FONT" "COLOR=\"\#33CCFF\"\>A" "full" "on-line" "help+\<P\>\<CENTER\>\<I\>\<FONT" "COLOR=\"\#33CCFF\"\>A" "full" "on-line" "help+g \
+#     $file > tmpfile
+
+#  sed \
+#         -e s+\<IMG" "SRC=\"+\<IMG" "SRC=\"IMG/+g \
+#     $file > tmpfile
+
+#  sed \
+#         -e s+\<IMG" "SRC=\"IMG/+\<IMG" "SRC=\"+g \
+#     $file > tmpfile
+
+
+#  sed \
+#         -e s+\<BODY" "BGCOLOR=\"\#FFFFE0\"\>+\<BODY" "TEXT=\"\#E9FFCC\"" "BGCOLOR=\"\#2C4D4D\"" "LINK=\"\#6FFFF0\"" "VLINK=\"\#FF6666\"" "ALINK=\"\#FF0000\"\>+g \
+#     $file > tmpfile
+#
+
+cd ../BHELP
+set files = `ls *.html`
+
+# cd ~/tmp
+# set files = "ASCIISymbols.html Animator.html"
+
+
+foreach file ( $files )
+
+  cp $file $file.save
+  sed \
+         -e s+\<BODY" "BGCOLOR=\"\#FFFFE0\"\>+\<BODY" "TEXT=\"\#E9FFCC\"" "BGCOLOR=\"\#2C4D4D\"" "LINK=\"\#6FFFF0\"" "VLINK=\"\#FF6666\"" "ALINK=\"\#FF0000\"\>+g \
+     $file > tmpfile
+  cp tmpfile $file
+  rm tmpfile
+  echo "---------------------- $file -----------------"
+  diff $file.save $file
+  echo "-----------------------------------------------------------"
+  echo ""
+
+end
+
+echo ""
+echo "  _sed_HELP_replace done"
+echo ""

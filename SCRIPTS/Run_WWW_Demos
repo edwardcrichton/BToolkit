@@ -1,0 +1,11 @@
+#! /bin/sh
+
+    ###################################################
+    #                                                 #
+    #  Script to run the B-Toolkit WWW Demonstration  #
+    #                                                 #
+    ###################################################
+
+BKIT=`pwd`/BKIT
+export BKIT
+$BKIT/BLIB/WWW_Demo_Selection

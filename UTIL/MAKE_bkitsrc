@@ -1,0 +1,348 @@
+#! /bin/csh -f
+
+#
+#  Creates MASTER_RELEASE/BKITSRC/bkitsrc_Release_n.n.n.tar.gz 
+#
+
+source ../UTIL/set_compile_variables
+
+if ( $status != 0 ) then
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+echo "  Looking for core files ... "
+echo ""
+find .. -name core -print
+echo ""
+echo "  1  Continue"
+echo "  2  Abort"
+
+echo ""
+echo -n "** Number [1]? "
+set answer=$<
+
+if ($answer == "2") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+cd ..
+
+if ( ! -d ../BKITSRC ) then
+  mkdir ../BKITSRC
+endif
+
+echo ""
+echo "  This script creates bkitsrc_$BT_VERSION.tar.gz from: "
+echo ""
+echo "      `pwd`: "
+echo ""
+echo "          UTIL SRC SCRIPTS BDEMO MOTIF LIB C LEX "
+echo "          BPALETTE BHELP BEESRC INSTALL_SCRIPTS "
+echo "          INFO ERROR_LOG WWW_DEMOS "
+echo ""
+echo "  in: "
+echo ""
+set curdir=`pwd`
+cd ..
+echo "      `pwd`/BKITSRC"
+cd $curdir
+echo ""
+echo ""
+
+echo ""
+echo "  1  Continue"
+echo "  2  Abort"
+
+echo ""
+echo -n "** Number [1]? "
+set answer=$<
+
+if ($answer == "2") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+tar cvf ../BKITSRC/bkitsrc_$BT_VERSION.tar \
+SRC/*.src SRC/*.thy SRC/AMNSYMBOL* \
+SRC/SetOfRules_core SRC/SetOfRules_NonPASP \
+SRC/Makefile \
+UTIL SCRIPTS BDEMO LIB \
+LEX/*.lex \
+C/*.c C/*.h \
+BPALETTE BHELP INSTALL_SCRIPTS \
+BEESRC/*.c BEESRC/*.h \
+BEESRC/BTL_PRF/CDE/C/*.c \
+BEESRC/BTL_PRF/CDE/C/*.g \
+BEESRC/BTL_PRF/CDE/C/*.h \
+BEESRC/BTL_PRF/BTL_PRF_SAVE \
+BEESRC/*.B-Core BEESRC/*.motif BEESRC/*.release \
+BEESRC/SYMBOL BEESRC/BTool_Tutorial \
+B2DOORS \
+MOTIF/*.c MOTIF/*.h MOTIF/Makefile \
+MOTIF/BMotif.resources MOTIF/BMotif.resources.mono \
+MOTIF/CFG_DEP_BASE/CDE/C/*.c \
+MOTIF/CFG_DEP_BASE/CDE/C/*.g \
+MOTIF/CFG_DEP_BASE/CDE/C/*.h \
+MOTIF/CFG_DEP_BASE/CFG_DEP_BASE_SAVE \
+INFO/*.info \
+ERROR_LOG \
+WWW_DEMOS
+
+if ( $status != 0 ) then
+  echo ""
+  echo "  Make aborted (tar problem - see above)"
+  echo ""
+  ls -l
+  echo ""
+  exit ( 1 )
+endif
+
+cd ../BKITSRC
+
+rm -f bkitsrc_$BT_VERSION*.gz
+rm -f bkitsrc_$BT_VERSION"_"*
+rm -f reconstruct_bkitsrc_$BT_VERSION*
+
+echo ""
+ls -l
+echo ""
+echo "  gzip -9 bkitsrc_$BT_VERSION.tar ... "
+echo ""
+gzip -9 bkitsrc_$BT_VERSION.tar
+if ( $status != 0 ) then
+  echo ""
+  echo "  Make aborted (gzip problem)"
+  echo ""
+  ls -l
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+ls -l
+
+echo ""
+echo "  BKITSRC/bkitsrc_$BT_VERSION.tar.gz complete"
+echo ""
+echo ""
+exit 0
+
+echo ""
+echo "  1  exit leaving bkitsrc_$BT_VERSION.tar.gz"
+echo "  2  on floppies"
+
+echo ""
+echo -n "** Number [1]? "
+set answer=$<
+
+if ($answer == "1" || $answer == "") then
+  echo ""
+  ls -l
+  echo ""
+  echo "  Done"
+  echo ""
+  exit ( 0 )
+endif
+
+echo ""
+ls -l
+set default = 1440000
+
+echo ""
+echo "  Enter (gnu)split factor ( CR for default of $default )"
+echo ""
+
+echo -n "? "
+set answer=$<
+
+if ( $answer == "" ) then
+  set split_fact = $default
+else
+  set split_fact = $answer
+endif
+
+echo ""
+echo "  Using (gnu)split factor of $split_fact "
+echo ""
+
+split -b $split_fact "bkitsrc_"$BT_VERSION".tar.gz" "bkitsrc_"$BT_VERSION"_"
+
+set verfiles="bkitsrc_"$BT_VERSION"*"
+set outfile="reconstruct_bkitsrc_"$BT_VERSION".tar"
+set afiles=bkitsrc_$BT_VERSION"_a*"
+set tgzfile=bkitsrc_$BT_VERSION".tar.gz"
+
+echo "#! /bin/csh -f" > $outfile
+echo "echo '  ' " >> $outfile
+echo "echo '    Reconstructing $tgzfile' " >> $outfile
+echo "echo '  ' " >> $outfile
+echo "cat $afiles > $tgzfile" >> $outfile
+echo "echo '  ' " >> $outfile
+echo "ls -al $verfiles " >> $outfile
+echo "echo '  ' " >> $outfile
+echo "echo '    You should now remove $afiles '"  >> $outfile
+echo "echo '  '"  >> $outfile
+
+chmod +x $outfile
+
+echo ""
+ls -l 
+
+echo ""
+echo "-- 1  Continue"
+echo "-- 2  Abort"
+
+echo ""
+echo -n "** Number [1]? "
+set answer=$<
+
+if ($answer == "2") then
+  echo ""
+  echo "  Aborted"
+  echo ""
+  ls -l
+  echo ""
+  exit ( 1 )
+endif
+
+if ( -r "bkitsrc_"$BT_VERSION"_aa" ) then
+  set disks="0"
+  set last_disk="bkitsrc_"$BT_VERSION"_aa"
+endif
+
+if ( -r "bkitsrc_"$BT_VERSION"_ab" ) then
+  set disks="0 1"
+  set last_disk="bkitsrc_"$BT_VERSION"_ab"
+endif
+
+if ( -r "bkitsrc_"$BT_VERSION"_ac" ) then
+  set disks="0 1 2"
+  set last_disk="bkitsrc_"$BT_VERSION"_ac"
+endif
+
+if ( -r "bkitsrc_"$BT_VERSION"_ad" ) then
+  set disks="0 1 2 3"
+  set last_disk="bkitsrc_"$BT_VERSION"_ad"
+endif
+
+if ( -r "bkitsrc_"$BT_VERSION"_ae" ) then
+  set disks="0 1 2 3 4"
+  set last_disk="bkitsrc_"$BT_VERSION"_ae"
+endif
+
+echo "  Ready to create release floppies $disks "
+echo ""
+
+foreach disk ($disks)
+
+  set done=0
+  while ($done == 0)
+
+    echo "  Insert DISK$disk - hit <CR> when ready"
+    echo ""
+    echo -n "***** ? "
+    set answer=$<
+    echo ""
+
+    if ($disk == 0) set files="reconstruct_bkitsrc_$BT_VERSION.tar $last_disk"
+    if ($disk == 1) set files="bkitsrc_"$BT_VERSION"_aa"
+    if ($disk == 2) set files="bkitsrc_"$BT_VERSION"_ab"
+    if ($disk == 3) set files="bkitsrc_"$BT_VERSION"_ac"
+    if ($disk == 4) set files="bkitsrc_"$BT_VERSION"_ad"
+
+    echo "    Writing"
+    echo ""
+
+    tar cvf /dev/fd0 $files
+
+    if ($status == 0) then
+
+      echo ""
+      eject
+      echo "    Eject and reinsert before checking - hit <CR> when ready"
+      set answer=$<
+      echo "    Checking"
+      echo ""
+      tar tvf /dev/fd0
+
+      if ($status == 0) then
+
+        echo ""
+        echo "    OK"
+        echo ""
+        eject
+        set done=1
+
+      endif
+
+    endif
+
+    if ($done == 0) then
+
+      eject
+      echo ""
+      echo "-- DISK$disk failed"
+      echo ""
+
+      set y_n=0
+      while ($y_n == 0)
+
+        echo -n "***** Retry (y/n)? "
+        set answer=$<
+        echo ""
+
+        if ($answer == "y") then
+
+          set y_n=1
+          set first_attempt=0
+
+        else
+
+          if ($answer == "n") then
+
+
+            echo ""
+            echo ""
+            ls -l
+            echo ""
+            echo ""
+            echo "                ----------------"
+            echo ""
+            echo "                     ABORTED"
+            echo ""
+            echo "                ----------------"
+            echo ""
+            cd ..
+            exit(1)
+
+          else
+
+            echo "-- Bad input"
+            echo ""
+
+          endif
+
+        endif
+
+      end
+
+    endif
+
+  end
+
+end
+
+
+
+echo ""
+echo "  BToolkit source floppies complete"
+echo ""
+echo ""
+

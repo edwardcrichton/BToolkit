@@ -1,0 +1,456 @@
+<HTML>
+<HEAD>
+<TITLE>Structuring Developments</TITLE>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Structuring_Developments"><HR></A>
+<H1>Structuring Developments</H1>
+
+<A NAME=Refinement><H2>Refinement</H2></A>
+
+The fundamental relationship between entities in the <A
+HREF="BMethod.html#B-Method">B-Method</A> is refinement.
+
+<P> <A HREF="refines.gif#">
+<IMG SRC="refines_icon.gif" ALT="Refinement Structure" ALIGN=MIDDLE> See figure<LATEX="\ \ref{refines.fig}">.</A>
+
+<P> The REFINEMENT clause is used in
+<A HREF="AMNotation.html#REFINEMENT">REFINEMENT</A>s and
+<A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>s
+to establish the refinement dependency.
+
+<P> An implementation is a particular form of refinement in which an
+implementable subset of <A HREF="AMNotation.html#AMN">AMN</A> is used.
+
+<P> Proof obligations are associated with refinement to establish 
+that the refining entity meets the constraints of the refined entity.
+
+<P> It is a matter of <A NAME=Information_Hiding>principle</A> that
+REFINEMENTs and IMPLEMENTATIONs are only visible through the MACHINE
+that specifies them. MACHINEs are external interfaces, and it is only
+MACHINEs that can be cited in the structuring clauses: <A
+HREF="Structuring.html#INCLUDES_Clause!Using">INCLUDES</A>, <A
+HREF="Structuring.html#USES_Clause!Using">USES</A>, <A
+HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTS</A> and <A
+HREF="Structuring.html#SEES_Clause!Using">SEES</A>.
+
+<P> It is via this principle that the right separation of concerns is
+established for separate implementability and other information-hiding
+issues.
+
+
+<H2>Structuring Machines</H2>
+
+<H3>Purpose</H3>
+
+The goal of structuring a machine is:-
+
+<UL> <LI> to aid in understanding of the specification;
+
+<LI> to factorise commonly used structures;
+
+<LI> to promote reuse;
+
+<LI> to decompose the problem of proving consistency.
+
+</UL>
+
+It is not the primary purpose of structuring a machine to achieve
+separate development of components. This is best done by structuring
+implementations (see below). It is rather to achieve separation of
+proof concerns.
+
+
+<A NAME=INCLUDES_Clause!Using><H3>Including Machines</H3></A>
+
+The <A HREF="AMNotation.html#INCLUDES_Clause!Syntax">INCLUDES
+clause</A> is the main mechanism for structuring large machines.
+It allows the abstract system state to be divided into several
+independent parts, each encapsulated by a separate included machine.
+These parts can then be combined into a single `including' <A
+HREF="AMNotation.html#MACHINE">MACHINE</A> using the INCLUDES clause.
+
+<P> <A HREF="includes.gif#"><IMG SRC="includes_icon.gif" ALT="Includes Structure" ALIGN=MIDDLE>
+See figure<LATEX="\ \ref{includes.fig}">.</A>
+
+<P> INCLUDES is transitive, i.e. included machines may include other,
+and so on, as illustrated in the diagram.  This allows specifications
+to be constructed hierarchically. No cycles in the inclusion
+relationship are allowed.
+
+<P> If an abstract state can be partitioned
+naturally into several independent parts, then it is an advantage to
+use this structuring technique.  A measure of this is whether the
+operations on the abstract state can be built from operations defined
+for the individual parts.
+
+<P> After identifying the independent parts, an included machine is
+written for each part. Each included machine will introduce its own
+state variables.  To avoid name clashes in the including machine, it
+is best to make the name spaces of the included machines
+disjoint. 
+
+<P> Several `copies' of the same machine can be included by using <A
+HREF="AMNotation.html#Renaming!INCLUDES">machine renaming</A>, which
+has the effect of making the name spaces of the two copies
+disjoint. Note, however, that names of <A
+HREF="AMNotation.html#SETS_Clause">SETS</A> and <A
+HREF="AMNotation.html#CONSTANTS_Clause">CONSTANTS</A> do not
+participate in the renaming.
+
+<P> A machine is only allowed to change its local state.  So if an
+operation of the including machine requires the state for an included
+machine to change in a certain way, it can only do this by invoking an
+operation on the included machine provided for this purpose.
+
+<P> The including machine state is the combined state of all its
+included machines. The operations which change the state are built by
+combining operations of the included machines.
+
+<P> <A NAME=Operations!Query>Query operations</A> are those that do
+not change the state of a machine. In an including machine, these can
+be written by referring directly to any of the included variables.
+There is therefore no point in writing query operations in machines
+that are only going to be included in another.
+
+<P> The including machine can add to the combined state by defining
+its own state variables, whose names must be distinct from those it is
+including.
+
+<P> While all the operations of the included machines are available to
+the including machine, none of these operations are part of the
+interface of the including machine --- unless this is explicitly
+specified using the PROMOTES clause.
+
+<P> <A NAME=PROMOTES_Clause!Using>The</A> 
+<A HREF="AMNotation.html#PROMOTES_Clause!Syntax">PROMOTES clause</A> 
+allows us to specify that an included operation
+is part of the interface of the including machine.
+It is simply a list of operations which we want to promote.
+
+<A NAME=EXTENDS_Clause!Using>The</A>
+<A HREF="AMNotation.html#EXTENDS_Clause!Syntax">EXTENDS clause</A> 
+is used instead of INCLUDES if we want to PROMOTE
+all included operations.
+
+<P> INCLUDES and EXTENDS can only be used in MACHINEs. The PROMOTES
+clause can be used in an 
+<A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>, 
+but it promotes imported
+operations rather than included operations. 
+
+<P> Included machines cannot be refined. The outermost including machine
+is the focus of refinement and implementation.
+
+
+<A NAME=USES_Clause!Using><H3>Using Machines</H3></A>
+
+The INCLUDES clause allows one machine to have exclusive knowledge of another.
+During specification construction using INCLUDES (or EXTENDS), it is
+often convenient for included machines to have shared knowledge of the
+variables of another included machine. This can be achieved by using
+USES. The using machine can reference all the variables of the used
+machine, but cannot modify the state of that machine.
+
+<P> The variables of the `used' machine do not become part of the state
+of the using machine. They can, however, be quoted anywhere inside the 
+`using' machine except on the left-hand side of a substitution.
+
+<P> You can name a parameterised machine in a USES clause, but you are not
+allowed to provide parameters. Nor can you reference the formal 
+parameters of the used machine in the `using' machine. 
+
+<P> Used machines and their `using' machines must both be included
+in the same `including' machine in the overall specification
+structure. At this level, all formal parameters of included machines
+are provided.
+
+<P> USES is not transitive, i.e. knowledge of variables from a used
+machine does <I>not</I> transfer from the using machine to any other
+using, including, seeing or importing machine.
+
+
+
+<H3>Non-Determinism in Included Machines</H3>
+
+Unbounded <A
+HREF="AMNotation.html#Non_Determinism">non-determinism</A> in the
+operations of included machines should be avoided. Parameterisation
+should be used instead.
+
+<P> The reason for this is that it is not possible to have any
+influence on the behaviour of non-deterministic operations from
+outside the machine. Through parameterisation, control can be exerted
+from without.
+
+
+
+<H3>Specification Structure and Proof</H3>
+
+By structuring a specification using INCLUDES, 
+not only are proofs of consistency correspondingly smaller,
+but the restricted impact of changes to the specification means that 
+fewer re-proofs have to be performed when local changes are made.
+
+<P> In the including machine, the proof obligations associated with
+included machines are assumed to be valid.
+Only if a new invariant is given in the including machine is there
+extra work to be done: the operations of the including machine have to
+preserve the new invariant.
+
+
+<H3>Viewing the Structure of Specifications</H3>
+
+The B-Toolkit <A HREF="Overview.html#Overview">Overview Tool</A> can be
+used to view the structure of a specification, by selecting the 
+<A HREF="Overview.html#Specification_Overview">Specification Overview</A>
+option from the Overview menu<LATEX="\ (see page \pageref{Specification_Overview})">.
+
+
+<H2>Structuring Designs</H2>
+
+<H3>Purpose</H3>
+
+The goal of structuring a design is:-
+
+<UL> <LI> to provide a <A
+HREF="Structuring.html#Layered_Approach">layered approach</A> to
+design;
+
+<LI> to achieve separate implementability;
+
+<LI> to allow <A HREF="Structuring.html#Code_Sharing">code sharing</A>;
+
+<LI> to ease the difficulty of proof of refinement;
+
+<LI> to encourage reuse of 
+<A HREF="SystemLibrary.html#System_Library">system library</A> machines.
+
+</UL>
+
+
+<A NAME=IMPORTS_Clause!Using><H3>Importing Machines</H3></A>
+
+The <A HREF="AMNotation.html#IMPORTS_Clause!Syntax">IMPORTS clause</A>
+is the main mechanism for structuring designs. An <A
+HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A> imports
+specifications of lower layers of design, allowing the design to be
+hierarchically structured.
+
+<P> <A HREF="imports.gif#"><IMG SRC="imports_icon.gif" ALT="Imports Structure" ALIGN=MIDDLE>
+See figure<LATEX="\ \ref{imports.fig}">.</A>
+
+<P> The full information hiding enforced by importing allows the imported
+machines to be separately developed.
+
+<P> When a machine is imported, it is also instantiated by providing
+values for its formal parameters.
+
+<P> The `leaves' of the development tree in the B-Method are always
+pre-implemented library machines. Where more than one instance of a
+library machine is imported, the library machines have to be
+renamed so that the name is unique across the whole development.
+Thus no sharing of code can be achieved through importing alone.
+
+
+<A NAME=SEES_Clause!Using><H3>Seeing Machines</H3></A>
+
+The <A HREF="AMNotation.html#SEES_Clause!Syntax">SEES clause</A> is
+used in <A HREF="AMNotation.html#REFINEMENT">REFINEMENT</A>s and <A
+HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>s for the
+purpose of <A NAME=Code_Sharing>sharing code</A>, and giving access to
+shared data.
+
+<P> Machines that are imported once somewhere in a development can be
+`seen' elsewhere in the development by citing the `seen' machine in a
+SEES clause. The code for the seen machine is linked only once in the
+development.
+
+<P> This establishes a `one writer, many readers' sharing
+scheme. Where the machine is imported, all operations can be invoked
+in the importing machine to effect state changes in the seen machine,
+corresponding to `write' access. Where the machine is seen, only query
+operations can be invoked, corresponding to `read-only' access.
+
+<P> A <A NAME=Stateless_Machine>stateless machine</A> is one which has
+no abstract state variables. Since they are stateless, all their
+operations are queries, and citing them in a SEES clause gives access
+to them all.
+
+<P> Stateless machines are typically used for sharing separately
+implemented system-wide types. Examples of these can be found
+in the <A HREF="SystemLibrary.html#SLIB'>System Library</A>, such as
+SCALAR, BOOL, STRING. These machines contain mathematics and
+operations, and have an implementation.
+
+<P> Stateless machine may also be operation-less. These can be used
+for sharing a particular mathematical context between several
+machines.  Rather than copying the same definitions into the <A
+HREF="AMNotation.html#CONSTANTS_Clause">CONSTANTS</A> and <A
+HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clauses of
+several machines, the definitions can be placed in a separate
+state-less (and operation-less) machine. This machine can then be
+cited in the SEES clause of every machine that needs the definitions.
+
+<P> The SEES clause can be used to share such machines at any layer of
+development. In fact, since SEES is not transitive, the sees machine
+will often have to be cited in the SEES clause of several machines
+down through the hierarchy.
+
+<P> <A HREF="sees.gif#"><IMG SRC="sees_icon.gif" ALT="Sees Structure" ALIGN=MIDDLE>
+See figure<LATEX="\ \ref{sees.fig}">.</A>
+
+<P> By importing a stateless machine once and seeing it many times,
+only one copy of the code is present in the final system.  If a
+machine is imported twice in a development, <A
+NAME=Linker!Name_Clashes>name clashes</A> will arise during <A
+HREF="Linker.html#Linker">linking</A>.
+
+<P> Operation-less machines may not need refining. Since it is just
+mathematics that they contain, the definitions may simply be
+`programmed away' in the algorithms used in the main
+development. However, from a book-keeping point of view, a dummy
+IMPLEMENTATION has to be present before linking can take place. This
+dummy implementation can take the following form:-
+
+<PRE>
+    IMPLEMENTATION
+        My_Maths_I
+    REFINES
+        My_Maths
+    END
+</PRE>
+
+If such an implementation has not been provided, the user will be
+notified if he attempts <A
+HREF="Translator.html"Translator">translation</A>.
+
+<P> As with the <A HREF="Structuring.html#USES_Clause!Using">USES</A>
+clause above, you can name a parameterised machine in a SEES clause,
+but you are not allowed to provide parameters. Formal parameters are
+provided where the `seen' machines is imported in the development.
+
+<P> SEES is not transitive, i.e. knowledge of variables from a seen
+machine does <I>not</I> transfer from the seeing machine to any other
+using, including, seeing or importing machine.
+
+
+<A NAME=Layered_Approach><H3>Hierarchical Design</H3></A>
+
+The <A HREF="Structuring.html#IMPORTS_Clause">IMPORTS</A> clause
+allows a development to be structured into layers of
+specification/implementation pairs. The <A
+HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>s of one layer
+import the specifications of the layer below.
+
+<P> <A HREF="hierarchy.gif#"><IMG SRC="hierarchy_icon.gif" 
+ALT="A Typical Hierarchical Design" ALIGN=MIDDLE>
+See figure<LATEX="\ \ref{hierarchy.fig}">.</A>
+
+<P> It is this capability that makes medium to large-scale software
+development possible with the <A
+HREF="BMethod.html#B-Method">B-Method</A> and <A
+HREF="BToolkit.html#B-Toolkit">B-Toolkit</A>. Monolithic refinement of
+a single large specification into code is impractical.  Hierarchical
+design allows complex systems to be specified abstractly, and
+implemented in detail, all within the same formal framework.
+
+<P> The specifications of each descending layer introduce more and
+more detail. The structure of the top level machine does not have to
+be strongly reflected in the structures of the machines in the next
+level down. Thus in the top level the most abstract machines can be
+presented in the most convenient way for specification purposes,
+whilst in the lower layers, they can be organised in the best way for
+implementation concerns, such as space and time efficiency.
+
+<P> There is no prescribed way of proceeding with a hierarchical
+design. Top-down or bottom-up designs are possible, and a mixture of
+the two is usually adopted.
+
+<P> The following is a typical approach:-
+
+<OL> <LI> We begin by specifying the machines of a middle layer, in
+which the essential functionality of the system is captured. <A
+HREF="Animator.html#Animator">Animation</A> and proof of consistency
+are used to establish the desired properties of the system at this
+stage.
+
+<P><LI> A lower layer of machines are specified, in which the previous
+layer of step 1 can be implemented. These machines may be drawn from
+the <A HREF="SystemLibrary.html#SLIB">System Library</A>, or invented for a
+specific purpose. Again, Animation and proof of consistency are used
+here.
+
+<P><LI> The layer specified at step 1 is now implemented in terms of the
+lower layer at step 2. Proofs of refinement are carried out to verify
+the design so far.
+
+<P><LI> Development can proceed downwards towards code in a similar
+fashion, repeating steps 2 and 3.
+
+<P><LI> The final step is to construct a top layer which presents the
+specific application's functionality through an appropriate
+interface. Where the machines specified in the middle layer of step 1
+may, for convenience of specification, have preconditions, the top
+layer is usually robust. Code is added to check that preconditions are
+preserved before invoking operations from the middle layer.
+
+</OL>
+
+<P> The middle layer can be used to provide an abstract instruction
+set specially designed to support a range of applications in the
+problem domain. The top layer then uses the generic functionality to
+implement a particular application. This approach encourages the
+maximum of reuse of specifications, designs and code.
+
+<P> A top layer can simply be a `main' program (an operation
+called <TT>main</TT>), which must exist before code can be executed.
+
+<P>One way of constructing such a top layer is by using the <A
+HREF="Interface.html#Interface_Generator">Interface Generator</A>
+<LATEX="\ (see page \pageref{Interface!Generator})">,
+which constructs a default main program with an interface that allows
+the operations of the middle layers to be invoked.
+
+
+<H3>Design Structure and Proof</H3>
+
+By structuring a development using <A
+HREF="Structuring.html#IMPORTS_Clause">IMPORTS</A>, it is possible to
+`divide and conquer' the problem of proof of refinement, as well as
+that of development.
+
+<P> The proofs of consistency of imported machines can be assumed
+in proofs concerning the importing machine.
+
+<P> Not only are proofs of refinement correspondingly smaller,
+but the restricted impact of changes to the development means that 
+fewer re-proofs have to be performed.
+
+
+<H3>Viewing the Structure of Designs</H3>
+
+The B-Toolkit <A HREF="Overview.html#Overview">Overview Tool</A> can be
+used to view the structure of a design, by selecting the 
+<A HREF="Overview.html#Design_Overview">Design Overview</A>
+option from the Overview menu.
+
+<P> In this option, the <A HREF="Overview.html#Overview">Overview Tool</A>
+displays the hierarchical structure
+established by the IMPORTS clauses in the development.
+
+<P>
+<HR WIDTH="60%">
+<P>
+<P><CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25  ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

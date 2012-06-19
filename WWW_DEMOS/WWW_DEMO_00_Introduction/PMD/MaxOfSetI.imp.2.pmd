@@ -1,0 +1,34 @@
+PROOFMETHOD MaxOfSetI.imp.2.pmd IS
+
+  USETAC (UsersTheory~),
+         (FwdUsersTheory~;FEQL~)
+
+  REASONING_DEPTH 2
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    max(a)<=b
+   =>
+    max(a\/{b}) == b;
+    
+    binhyp(b<max(a))
+   =>
+    max(a\/{b}) == max(a)
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END

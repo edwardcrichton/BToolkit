@@ -1,0 +1,6690 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+int pog_flag = 0;
+
+int binhyp_count = 0;
+
+/*  ; return DONE  */
+extern int max_fwd_ctr_auto_prf;
+int lst_tac_prf,tac_prf,tac_ptr_prf,auto_prf,lst_input_prf,
+max_ctr_prf,ctr_prf,abt_prf,aster_prf,halt_prf,
+lst_fwd_tac_prf,fwd_tac_prf,fwd_tac_ptr_prf,
+the_prf,new_tac_prf,end_of_tac_prf,max_fwd_ctr_prf,print_ext_prf,
+first_prf,
+sho_big_gol_prf,sho_gol_prf,sho_der_hyp_prf,exec_prf;
+char fstr_prf[1001];
+FILE *ff_prf;
+ini_prffunc()
+#define ini_prf ini_prffunc()
+{
+  print_ext_prf=FALSE;
+  aster_prf=FALSE;
+  
+/*
+  max_fwd_ctr_prf=100;
+*/
+  max_fwd_ctr_prf=max_fwd_ctr_auto_prf;
+  max_ctr_prf=100;
+}
+
+#define val_print_ext_prf_the     print_ext_prf
+
+#define mod_print_ext_prf_the(v)  print_ext_prf=v
+
+#define val_first_prf_the     first_prf
+
+#define mod_first_prf_the(v)  first_prf=v
+
+
+
+                     
+/*  LIST ){ HYPOTHESES ; s  */
+                     
+                  
+  lst_hyp_prf(p,n,s)
+  {register int m,g ;
+    itr_asc_nod(p,n,m,g,if( def_hso_gol(g)==TRUE ){
+                          rcnc(s,hso_gol(g))
+                       ;});
+  }
+
+  lst_genuine_hyp_frm_prf(p,n,s)
+  {register int ss,i,h ;
+    ss=cre(20);
+    lst_hyp_prf(p,n,ss);
+    itr(ss,i,h,if( isa_der_hyp(h)==FALSE ){
+                 psh(s,frm_hyp(h));
+              });
+    kil(ss);
+    rev(s);
+  }
+
+  lst_all_hyp_frm_prf(p,n,s)
+  {register int ss,i,h ;
+    ss=cre(20);
+    lst_hyp_prf(p,n,ss);
+    itr(ss,i,h,psh(s,frm_hyp(h)));
+    kil(ss);
+    rev(s);
+  }
+
+                    
+/*  HANDLING ){ VARIABLES  */
+  
+  
+                
+/*  ggg is supposed to be a single letter
+                   TRUE if h is of the form  bvrb(...,ggg,...)   */
+                         
+  is_vrb_in_hyp_prf(h,ggg)   
+  {register int op,ff,i,w,b,is_vrb_in_hyp_prf_res ;    
+    op=val_root_frm(h);
+    if( 
+/* (op==VRB_sym) || ( */
+op==BVRB_sym
+/* ) */
+ ){
+      ff=dec_tree(h,right_node_frm(h),COM_sym);
+      xst(ff,i,w,val_root_frm(w)==ggg,b=TRUE,b=FALSE);
+      is_vrb_in_hyp_prf_res=b;
+      itr(ff,i,w,kil(w));
+      kil(ff);
+    } else {
+      is_vrb_in_hyp_prf_res=FALSE;
+    }
+  ; return is_vrb_in_hyp_prf_res;
+  }
+
+                   
+/*  ggg is supposed to be a single letter
+                      TRUE if there exists an hypothesis
+                       of the form  vrb(...,ggg,...)   */
+                       
+                       
+  is_in_hyp_vrb_prf(p,n,ggg)   
+  {register int s,i,h,b ;                     
+    s=cre(20);
+    lst_hyp_prf(p,n,s);
+    xst(s,i,h,is_vrb_in_hyp_prf(frm_hyp(h),ggg)==TRUE,b=TRUE,b=FALSE);
+    kil(s);
+    return b;
+  }
+
+                   
+/*  ggg is supposed to be a single letter
+                      TRUE if
+                        . either there exists an hypothesis
+                          of the form bvrb(...,ggg,...)
+                        . || ggg does not appear in initial goal
+                   */
+                      
+  is_letter_vrb_prf(p,n,ggg)
+  {register int is_letter_vrb_prf_res ;
+    if( is_in_hyp_vrb_prf(p,n,ggg)==FALSE ){
+      if( exec_prf==FALSE ){
+        if( is_in_frm(frm_gol(info_nod(p)),ggg)==FALSE ){
+          is_letter_vrb_prf_res=TRUE;
+        } else {
+          is_letter_vrb_prf_res=FALSE;
+        };
+      } else {
+        is_letter_vrb_prf_res=TRUE;
+      };
+    } else {
+      is_letter_vrb_prf_res=TRUE;
+    }
+  ; return is_letter_vrb_prf_res;
+  }
+
+    
+                   
+/*  TRUE if 
+                        . either fff is a valid variable formula
+                          (identifier with more than one letter || digit && not made of digits only)
+                        . || fff is made of a single letter ggg
+                          which can be taken as a variable
+                   */
+  
+  chk_vrb_prf(p,n,fff)        
+  {register int ggg,chk_vrb_prf_res ;
+    if( is_vrb_spe_frm(fff)==FALSE ){
+      ggg=val_root_frm(fff);
+      if( letter_sym(ggg)==TRUE ){
+        chk_vrb_prf_res=is_letter_vrb_prf(p,n,ggg);
+      } else {
+        chk_vrb_prf_res=FALSE;
+      };
+    } else {
+      chk_vrb_prf_res=TRUE;
+    }
+  ; return chk_vrb_prf_res;
+  }
+
+is_lst_vrb_frm_prf(p,n,lv,f,i)
+{register int s,j,v,b ;
+  clr(lv);
+  s=dec_tree(f,i,COM_sym);
+  xst(s,j,v,chk_vrb_prf(p,n,v)==FALSE,b=FALSE,b=TRUE);
+  if( b==TRUE ){
+    itr(s,j,v,if( is_idx_vrb_frm(v,root_tree(v))==TRUE ){
+                psh(lv,code_idx_vrb_frm(v,root_tree(v)));
+              } else {
+                psh(lv,val_root_frm(v));
+              };
+              kil(v));
+  } else {
+    itr(s,j,v,kil(v));
+  };
+  kil(s);
+  return b;
+}
+
+is_qtf_frm_prf(p,n,lv,f,i)
+{register int l,op,is_qtf_frm_prf_res ;
+  is_qtf_frm_prf_res=FALSE;
+  op=val_tree(f,i);
+  if( op==DOT_sym ){
+    l=left_node_tree(f,i);
+    if( ari_sym(val_tree(f,l))==2 ){
+      if( val_tree(f,left_node_tree(f,l))==GHO_sym ){
+        if( is_lst_vrb_frm_prf(p,n,lv,f,right_node_tree(f,l))==TRUE ){
+          is_qtf_frm_prf_res=TRUE;
+        };
+      };
+    };
+  }
+; return is_qtf_frm_prf_res;
+}
+
+is_set_frm_prf(p,n,lv,f,i)                 
+/* x | P */
+{register int l,op,is_set_frm_prf_res ;
+  is_set_frm_prf_res=FALSE;
+  op=val_tree(f,i);
+  if( op==LCB_sym ){
+    l=right_node_tree(f,i);
+    if( val_tree(f,l)==BAR_sym ){
+      if( is_lst_vrb_frm_prf(p,n,lv,f,left_node_tree(f,l))==TRUE ){
+        is_set_frm_prf_res=TRUE;
+      };
+    };
+  }
+; return is_set_frm_prf_res;
+}
+
+is_unv_frm_prf(p,n,lv,f,i)
+{register int l,op,is_unv_frm_prf_res ;
+  is_unv_frm_prf_res=FALSE;
+  op=val_tree(f,i);
+  if( op==DOT_sym ){
+    l=left_node_tree(f,i);
+    if( val_tree(f,l)==UNV_sym ){
+      if( val_tree(f,left_node_tree(f,l))==GHO_sym ){
+        if( is_lst_vrb_frm_prf(p,n,lv,f,right_node_tree(f,l))==TRUE ){
+          is_unv_frm_prf_res=TRUE;
+        };
+      };
+    };
+  }
+; return is_unv_frm_prf_res;
+}
+
+is_sub_frm_prf(p,n,lv,le,f,i)
+{register int l,r,op,s,is_sub_frm_prf_res ;
+  clr(lv);
+  clr(le);
+  is_sub_frm_prf_res=FALSE;
+  op=val_tree(f,i);
+  if( op==SPE_sym ){
+    l=left_node_tree(f,i);
+    if( val_tree(f,l)==LSB_sym ){
+      r=right_node_tree(f,l);
+      if( val_tree(f,r)==CEQ_sym ){
+        if( is_lst_vrb_frm_prf(p,n,lv,f,left_node_tree(f,r))==TRUE ){
+          s=dec_tree(f,right_node_tree(f,r),COM_sym);
+          cop(s,le);
+          kil(s); 
+          is_sub_frm_prf_res=((len(lv)==len(le))!=0);
+        };
+      };
+    };
+  }
+; return is_sub_frm_prf_res;
+}
+
+  
+           
+/*   TEST FOR PRESENCE ){ GOAL AMONG HYPOTHESES   */
+           
+/*           OR ){ A "FALSE" HYPOTHESIS           */
+           
+                     
+  hyp_prf(p,n,g,f)
+  {register int s,i,h,hyp_prf_res ;
+    if ( pog_flag && ! binhyp_count ) {
+      return FALSE;
+    }
+    else {
+      s=cre(20);
+      lst_hyp_prf(p,n,s);
+      xst(s,i,h,(eql_frm(f,frm_hyp(h))==TRUE) || (val_root_frm(frm_hyp(h))==FAL_sym),
+              mod_uti_hyp(h);
+              mod_hyp_gol(g,h);
+              if( val_root_frm(frm_hyp(h))==FAL_sym ){
+                mod_spe_gol(g,CONTRA_gol);
+              } else {
+                mod_spe_gol(g,INHYP_gol);
+              };
+              hyp_prf_res=TRUE,
+              hyp_prf_res=FALSE);
+      kil(s);
+      if ( pog_flag && hyp_prf_res == TRUE && binhyp_count ) {
+        binhyp_count--;
+/***
+ fprintf ( bstdout, "pog_flag && hyp_prf_res == TRUE && binhyp_count now %d\n",binhyp_count);delay;
+***/
+      };
+      return hyp_prf_res;
+    }
+  }
+
+                           
+/*  FORWARD PROOF  */
+     
+     
+  chk_hyp_prf(i,f,s,h,lh)
+  {register int j,hh,chk_hyp_prf_res ;
+    if( i==1 ){
+      psh(s,h);
+      chk_hyp_prf_res=TRUE;
+    } else {
+      xst(lh,j,hh,chk_frm(f,frm_hyp(hh))==TRUE,psh(s,hh);
+                                              chk_hyp_prf_res=TRUE,
+                                              chk_hyp_prf_res=FALSE);
+    }
+  ; return chk_hyp_prf_res;
+  }
+
+  cre_drv_hyp(frm3,s,gl,r,lh)
+  {register int j,hh,dh,cre_drv_hyp_res ;
+    if( is_ff_eql_ff_frm(frm3)==FALSE ){
+      xst(lh,j,hh,(eql_frm(frm3,frm_hyp(hh))==TRUE) || (val_root_frm(frm_hyp(hh))==FAL_sym),
+                cre_drv_hyp_res=FALSE;
+                kil(s);
+                kil(frm3),
+                dh=cre_hyp(frm3);
+                if( r!=0 ){ 
+                  mod_rul_hyp(dh,r);
+                } else {
+                  mod_spe_hyp(dh,1)    
+/*  TO BE IMPROVED HERE  */;
+                };
+                mod_hso_hyp(dh,s);
+                psh(hso_gol(gl),dh);
+                psh(lh,dh);
+                cre_drv_hyp_res=TRUE);
+    } else {
+      cre_drv_hyp_res=FALSE;
+      kil(s);
+      kil(frm3);
+    }
+  ; return cre_drv_hyp_res;
+  }
+
+  dec_hyp_prf(rr,s,gl,lh)
+  {register int frm3,op,ss,j,frm4,t,b ;
+    frm3=prd_tree(cns_rul(rr));
+    b=FALSE;
+    op=val_root_frm(frm3);
+    if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+      ss=dec_frm(frm3,op);
+      itr(ss,j,frm4,t=cre(4);
+                    cop(s,t);
+                    if( cre_drv_hyp(frm4,t,gl,rr,lh)==TRUE ){
+                      b=TRUE
+                   ;});
+      kil(ss);  
+      kil(s);
+      kil(frm3);
+    } else {
+      b=cre_drv_hyp(frm3,s,gl,rr,lh);
+    }
+  ; return b;
+  }
+
+  chk_lst_hyp_prf(h,gl,rr,la,lh)
+  {register int x,idx,l,m,i,v,sta,b,s ;
+    b=FALSE;
+    idx=cre(len(la));
+    sta=cre(len(la));
+    l=len(lh);
+    m=len(la);
+    itr(la,i,v,psh(idx,0));
+    itr(la,i,v,psh(sta,0));
+    x=2;
+    str(idx,x,0);
+    str(sta,x,len_fnc);
+    while( x!=1 ){
+      while( val(idx,x)<l ){
+        reset_fnc(val(sta,x));
+        str(idx,x,val(idx,x)+1);
+        if( chk_frm(val(la,x),frm_hyp(val(lh,val(idx,x))))==TRUE ){
+          if( x==m ){
+            s=cre(len(la));
+            psh(s,h);
+            itrn( i , 2 , len(la) , {
+              psh(s,val(lh,val(idx,i)))
+           ;});
+            if( dec_hyp_prf(rr,s,gl,lh)==TRUE ){
+              b=TRUE;
+            };
+          } else {
+            x=x+1;
+            str(sta,x,len_fnc);
+            str(idx,x,0);
+};
+};
+      };
+      x=x-1;
+    };
+    kil(idx);
+    kil(sta)
+  ; return b;
+  }
+
+  dir_mon_prf(gl,h,rr,lh,r)
+  {register int la,frm1,frm2,s,dir_mon_prf_res ;
+    dir_mon_prf_res=FALSE;
+    if( (r!=rr) && (val_sts_rul(rr)==on_rul) ){
+      la=ant_rul(rr);
+      if( len(la)!=0 ){
+        frm1=fst(la);
+        frm2=frm_hyp(h);
+        clr_chk_frm;
+        if( chk_frm(frm1,frm2)==TRUE ){
+          if( len(la)==1 ){
+            s=cre(1);
+            psh(s,h);
+            dir_mon_prf_res=dec_hyp_prf(rr,s,gl,lh);
+          } else {
+            dir_mon_prf_res=chk_lst_hyp_prf(h,gl,rr,la,lh);
+          };
+        };
+      };
+    }
+  ; return dir_mon_prf_res;
+  }
+
+  dir_prf(r,gl,h,lh,th,t)
+  {register int i,rr ;
+    xst(rul_the(th),i,rr,dir_mon_prf(gl,h,rr,lh,r)==TRUE,
+                         mod_res_tac(t,TRUE),mod_res_tac(t,FALSE));
+  }
+
+  
+  down_fwd_tac_prf(n)
+  {register int m,s ;
+    m=n;
+    s=sons_nod(m);
+    while( len(s)!=0 ){
+      m=fst(s);
+      s=sons_nod(m);
+    }
+  ; return m;
+  }
+
+#define  fst_fwd_tac_prf(p) down_fwd_tac_prf(p)  
+  up_fwd_tac_prf(p,n)
+  {register int f,t,s,i,v,m,b,up_fwd_tac_prf_res ;
+    f=fath_nod(n);
+    if( f==fath_nod(p) ){
+      up_fwd_tac_prf_res=0;
+} else {
+      s=sons_nod(f);
+      m=snbr_nod(n);
+      if( m==len(s) ){
+        b=FALSE;
+        itr(s,i,v,t=info_nod(v);
+                  if( res_tac(t)==TRUE ){
+                    b=TRUE;
+                  };
+                  mod_res_tac(t,FALSE));
+        if( (b==TRUE) && (spe_tac(info_nod(f))==TIL_tac) ){
+          mod_res_tac(info_nod(f),TRUE);
+          up_fwd_tac_prf_res=down_fwd_tac_prf(fst(s));
+        } else {
+          up_fwd_tac_prf_res=up_fwd_tac_prf(p,f);
+        };
+      } else {
+        up_fwd_tac_prf_res=down_fwd_tac_prf(val(s,m+1));
+      };
+    }
+  ; return up_fwd_tac_prf_res;
+  }
+
+  
+  nxt_fwd_tac_prf(p,n)
+  {register int s,nxt_fwd_tac_prf_res ;
+    s=sons_nod(n);
+    if( len(s)!=0 ){
+      nxt_fwd_tac_prf_res=down_fwd_tac_prf(fst(s));
+    } else {
+      nxt_fwd_tac_prf_res=up_fwd_tac_prf(p,n);
+    }
+  ; return nxt_fwd_tac_prf_res;
+  }
+
+                           
+/*  FEQL SPECIAL TACTIC  */
+/* 
+  vrb_eql_frm_prf(h)
+  {register int vrb_eql_frm_prf_res ;
+    if( val_root_frm(h)==EQL_sym ){
+      if( is_vrb_spe_tree(h,left_node_frm(h))==TRUE ){
+        vrb_eql_frm_prf_res=TRUE;
+      } else {
+        vrb_eql_frm_prf_res=FALSE;
+      };
+    } else {
+      vrb_eql_frm_prf_res=FALSE;
+    }
+  ; return vrb_eql_frm_prf_res;
+  };
+ */
+  vrb_eql_frm_prf(p,n,h)
+  {register int vrb_eql_frm_prf_res,fff ;
+    if( val_root_frm(h)==EQL_sym ){
+      fff=left_frm(h);
+      if( chk_vrb_prf(p,n,fff)==TRUE ){
+        vrb_eql_frm_prf_res=TRUE;
+      } else {
+        vrb_eql_frm_prf_res=FALSE;
+      };
+      kil(fff)                                        
+/*  HERE  */;
+    } else {
+      vrb_eql_frm_prf_res=FALSE;
+    }
+  ; return vrb_eql_frm_prf_res;
+  }
+
+  sub_feql_prf(p,i,f)
+  {register int n,v,lv,le,fff,ff,gl,j,sub_feql_prf_res ;
+    lv=cre(4);
+    le=cre(4);
+    nxst_sub_frm(f,n,v,is_dis_sub_frm_prf(p,i,lv,le,f,n)==TRUE,
+                 fff=cre(4);
+                 rec_sub_prf(p,i,lv,le,f,right_node_tree(f,n),fff,TRUE);
+                 if( eql_tree(f,n,fff,root_tree(fff))==FALSE ){
+                   ff=cre_mod_tree(f,n,fff);
+                   kil(fff);
+                   sub_feql_prf_res=ff;
+} else {
+                   kil(fff);
+                   sub_feql_prf_res=0
+                 ;},
+                 sub_feql_prf_res=0);
+    kil(lv);
+    itr(le,j,v,kil(v));
+    kil(le)
+  ; return sub_feql_prf_res;
+  }
+
+  cre_finish_up_sub_feql_prf(p,i,g)
+  {register int gg,hh ;
+    hh=cre(len(g));
+    cop(g,hh);
+    gg=sub_feql_prf(p,i,hh);
+    while( gg!=0 ){
+      kil(hh);
+      hh=gg;
+      gg=sub_feql_prf(p,i,hh);
+    };
+  ; return hh;
+  }
+
+  cre_subst_frm_prf(p,n,h,lh,st)
+  {register int i,hh,ff,lff,w,lv,le,e,z,g,gg,cre_subst_frm_prf_res ;
+    lv=cre(5);
+    le=cre(5);
+    nitr(lh,i,hh,ff=frm_hyp(hh);
+                if( vrb_eql_frm_prf(p,n,ff)==TRUE ){
+                  lff=left_node_frm(ff);
+                  if( is_idx_vrb_frm(ff,lff)==TRUE ){
+                    w=code_idx_vrb_frm(ff,lff);
+} else {
+                    w=val_tree(ff,lff);
+                  };
+                  if( mbr(lv,w)==FALSE ){
+                    psh(lv,w);
+                    e=cre_cop_tree(ff,right_node_frm(ff));
+                    psh(le,e);
+                  }
+               ;});
+    if( len(lv)!=0 ){
+      z=len(h);
+      hh=cre(len(h));
+      cop(h,hh);
+      g=cre(z);
+      rec_sub_prf(p,n,lv,le,hh,root_tree(hh),g,TRUE
+/* FALSE */
+);
+      gg=cre_finish_up_sub_feql_prf(p,i,g);
+      kil(g);
+      
+/* fprintf ( bstdout, "\n2 st,FEQLS_tac: %d %d",st,FEQLS_tac);
+      {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;}; */
+      if( st==FEQLS_tac ){
+        while( eql_frm(hh,gg)==FALSE ){
+          kil(hh);
+          hh=gg;
+          g=cre(z);
+          rec_sub_prf(p,n,lv,le,hh,root_tree(hh),g,FALSE);
+          gg=cre_finish_up_sub_feql_prf(p,i,g);
+          kil(g);
+        };
+      };
+      kil(hh);
+      cre_subst_frm_prf_res=gg;
+    } else {
+      cre_subst_frm_prf_res=0;
+    };
+    kil(lv);
+    itr(le,i,e,kil(e));
+    kil(le)
+  ; return cre_subst_frm_prf_res;
+  }
+
+  
+  fwd_eql_prf(p,n,gl,h,lh,st)
+  {register int s,ff,f,lff,w,lv,le,e,b,c,i,hh,llh,gg,g,fwd_eql_prf_res ;
+    ff=frm_hyp(h);
+    if( vrb_eql_frm_prf(p,n,ff)==FALSE ){
+      f=cre_subst_frm_prf(p,n,ff,lh,st);
+      if( f!=0 ){
+        s=cre(1);
+        psh(s,h);
+        fwd_eql_prf_res=cre_drv_hyp(f,s,gl,0,lh);
+      } else {
+        fwd_eql_prf_res=FALSE;
+      };
+    } else {
+      lv=cre(1);
+      le=cre(1);
+      lff=left_node_frm(ff);
+      if( is_idx_vrb_frm(ff,lff)==TRUE ){
+        w=code_idx_vrb_frm(ff,lff);
+} else {
+        w=val_tree(ff,lff);
+      };
+      psh(lv,w);
+      e=cre_cop_tree(ff,right_node_frm(ff));
+      psh(le,e);
+      b=FALSE;
+      llh=len(lh);
+      itrn(i,1,llh,{
+        hh=val(lh,i);
+        if( (hh!=h) && (
+/* (isa_der_hyp(hh)==TRUE) || */
+(vrb_eql_frm_prf(p,n,hh)==FALSE)) ){
+          gg=frm_hyp(hh);
+          if( eql_frm(ff,gg)==FALSE ){
+            g=cre(10);
+            rec_sub_prf(p,n,lv,le,gg,root_tree(gg),g,FALSE);
+            if( eql_frm(gg,g)==FALSE ){
+              f=cre_subst_frm_prf(p,n,g,lh,st);
+              if( f!=0 ){
+                s=cre(1);
+                psh(s,h);
+                c=cre_drv_hyp(f,s,gl,0,lh);
+                if( b==FALSE ){
+                  b=c;
+                };
+              };
+            };
+            kil(g);
+          };
+        }
+     ;});
+      kil(lv);
+      kil(e);
+      kil(le);
+      fwd_eql_prf_res=b;
+    }
+  ; return fwd_eql_prf_res;
+  }
+
+                         
+/*  FORWARD PROOF INTERPRETER  */
+                         
+  
+  itp_fwd_tac_prf(p,n,r,gl,h,lh
+/* ,siz */ , max_no_hyp
+)
+  {register int t,st;
+    fwd_tac_ptr_prf=fst_fwd_tac_prf(fwd_tac_prf);
+    while( fwd_tac_ptr_prf!=0 ){
+
+      if ( len ( hso_gol ( gl ) ) > max_no_hyp ) return;
+
+      t=info_nod(fwd_tac_ptr_prf);
+      if( def_the_tac(t)==TRUE ){
+        dir_prf(r,gl,h,lh,the_tac(t),t);
+      } else if( def_spe_tac(t)==TRUE ){
+        st=spe_tac(t);
+        if( (st==FEQL_tac) || (st==FEQLS_tac) ){
+          
+/* fprintf ( bstdout, "\n1 st,FEQLS_tac: %d %d",st,FEQLS_tac);
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;}; */
+          if( fwd_eql_prf(p,n,gl,h,lh,st)==TRUE ){
+            mod_res_tac(t,TRUE);
+          } else {
+            mod_res_tac(t,FALSE);
+          };
+        } else {
+          mod_res_tac(t,FALSE);
+        };
+      };
+      fwd_tac_ptr_prf=nxt_fwd_tac_prf(fwd_tac_prf,fwd_tac_ptr_prf);
+    };
+    fwd_tac_ptr_prf=fst_fwd_tac_prf(fwd_tac_prf);
+  }
+
+  print_lh(lh)
+  {register int i,h ;
+    fprintf ( bstdout, "\n");
+    fprintf ( bstdout, "Content of lh");
+    fprintf ( bstdout, "\n");
+    itr(lh,i,h, {
+      reset_res(0);
+      write_frm_res(frm_hyp(h),0);
+      fprintf ( bstdout, "\n")
+   ;});
+  }
+
+  fwd_prf(p,n,r,gl)
+  {register int i,s,j,lh
+/* ,siz */
+ ;
+    i=1;
+    s=hso_gol(gl);
+    lh=cre(50);
+    rcnc(lh,s);
+    lst_hyp_prf(p,n,lh);
+    
+/* siz=len(lh)-len(s); */
+    if( exec_prf==FALSE ){
+      j=max_fwd_ctr_prf;
+    } else {
+      j=max_fwd_ctr_auto_prf;
+    };
+    while( i<=len(s) ){
+      
+/* 
+      fprintf ( bstdout, "\ni,len(s),len(lh): %d %d %d\n",i,len(s),len(lh));
+      reset_res(0);
+      write_frm_res(frm_hyp(val(s,i)),0);
+      print_lh(lh);
+      fprintf ( bstdout, "\nRC, please");
+      {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+       */
+      if( len(s)>=j  ){
+        fprintf(stderr,"\n      Too Many Derived Hypotheses (%d)",len(s));
+        
+/* 
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "      Too Many Derived Hypotheses ");
+        fprintf ( bstdout, "(");
+        write_nat(len(s));
+        fprintf ( bstdout, ")");
+*/
+        if( val_batch_sys==FALSE ){
+          fprintf(stderr,"Proceeding? ");
+          if( yes_no==NO ){
+            i=len(s)+1;
+          } else if( exec_prf==TRUE ){
+            j=j+max_fwd_ctr_auto_prf;
+          } else {
+            j=j+max_fwd_ctr_prf;
+          }
+        }
+        else {
+          
+/* fprintf ( bstdout, "\n"); */
+          fprintf(stderr,"\n");
+          i=len(s)+1;
+        }
+      } else {
+        itp_fwd_tac_prf(p,n,r,gl,val(s,i),lh
+/* ,siz */ , /*  max_no_hyp = */ j
+);
+        i=i+1;
+      };
+    };
+    kil(lh);
+  }
+
+                     
+/*   'DED' BUILT_IN RULE   */
+  ask_ded_prffunc()
+#define ask_ded_prf ask_ded_prffunc()
+  {register int ask_ded_prf_res ;
+    ask_ded_prf_res=TRUE;
+    if( auto_prf==FALSE ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      DED   YES? ");
+      if( yes_no==NO ){
+        ask_ded_prf_res=FALSE;
+      };
+    }
+  ; return ask_ded_prf_res;
+  }
+
+  ded_prf(r,p,n,g,f)
+  {register int w,s,t,i,v,gl,h,
+/* ss, */
+ii,hh,ded_prf_res ;
+    if( val_root_frm(f)==IMP_sym ){
+      if( ask_ded_prf==TRUE ){
+        mod_spe_gol(g,DED_gol);
+        w=right_frm(f);
+        gl=cre_gol(w);
+        s=dec_tree(f,left_node_frm(f),AND_sym);
+        t=cre(len(s));
+        
+/* ss=cre(20);
+        lst_hyp_prf(p,n,ss); */
+        itr(s,i,v,if( is_ff_eql_ff_frm(v)==FALSE ){
+                    
+/* 
+                    xst(ss,ii,hh,eql_frm(v,frm_hyp(hh))==TRUE,
+                        {},
+                        h=cre_hyp(v);
+                        psh(t,h))
+*/
+
+                    h=cre_hyp(v);
+                    psh(t,h);
+                  } else {
+                    kil(v)
+                 ;});
+        mod_hso_gol(gl,t);
+        
+/* kil(ss); */
+        kil(s);
+        cre_nod(gl,n);
+        if( (fwd_tac_prf!=0) && (len(t)!=0) ){
+          fwd_prf(p,n,r,gl);
+        };
+        ded_prf_res=TRUE;
+      } else {
+        ded_prf_res=FALSE;
+      };
+    } else {
+      ded_prf_res=FALSE;
+    }
+  ; return ded_prf_res;
+  }
+
+                   
+/*  'ARITHMETIC' BUILT_IN RULES  */
+    
+  log2e_prf(y)
+  {register int l,k ;
+    l=0;
+    k=1;
+    while( k<y ){
+      l=l+1;
+      if( k>(maxint / 2) ){
+        k=y;
+      } else {
+        k=2*k;
+      };
+    }
+  ; return l;
+  }
+
+  nrm2e_prf(y)
+  {register int k ;
+    k=1;
+    while( k<y ){
+      k=2*k;
+    }
+  ; return k;
+  }
+
+  comp_arith_prf(f,n,arith_prf_is_int)
+  int f;
+  int n;
+  int * arith_prf_is_int;
+  {register int op,l,r,fr,fl,comp_arith_prf_res, s;
+    * arith_prf_is_int = 0;
+    op=val_tree(f,n);
+    fl=val_tree(f,left_node_tree(f,n));
+    fr=val_tree(f,right_node_tree(f,n));
+    switch( op ){
+      case PLS_sym :{
+        if( is_nbr_sym(fl) ) {
+          l=arith_val_sym(fl);
+        }
+        else {
+          s=cre_cop_tree(f,left_node_tree(f,n));
+          l = val_int(s);
+          kil(s);
+          * arith_prf_is_int = 1;
+	}
+        if( is_nbr_sym(fr) ) {
+          r=arith_val_sym(fr);
+	}
+        else {
+          s=cre_cop_tree(f,right_node_tree(f,n));
+          r = val_int(s);
+          kil(s);
+          * arith_prf_is_int = 1;
+	}
+        comp_arith_prf_res=(-(l+r));
+        break;
+      }
+      case MIN_sym :{
+        if( is_nbr_sym(fl) ) {
+          l=arith_val_sym(fl);
+        }
+        else {
+          s=cre_cop_tree(f,left_node_tree(f,n));
+          l = val_int(s);
+          kil(s);
+          * arith_prf_is_int = 1;
+	}
+        if( is_nbr_sym(fr) ) {
+          r=arith_val_sym(fr);
+        }
+        else {
+          s=cre_cop_tree(f,right_node_tree(f,n));
+          r = val_int(s);
+          kil(s);
+          * arith_prf_is_int = 1;
+	}
+        comp_arith_prf_res=(-(l-r));
+        break;
+      }
+      case MUL_sym :{
+        if( is_nbr_sym(fl) ) {
+          l=arith_val_sym(fl);
+        }
+        else {
+          s=cre_cop_tree(f,left_node_tree(f,n));
+          l = val_int(s);
+          kil(s);
+          * arith_prf_is_int = 1;
+	}
+        if( is_nbr_sym(fr) ) {
+          r=arith_val_sym(fr);
+        }
+        else {
+          s=cre_cop_tree(f,right_node_tree(f,n));
+          r = val_int(s);
+          kil(s);
+          * arith_prf_is_int = 1;
+	}
+        comp_arith_prf_res=(-(l*r));
+        break;
+      }
+      case DIV_sym :{
+        if( is_nbr_sym(fl) ) {
+          l=arith_val_sym(fl);
+        }
+        else {
+          s=cre_cop_tree(f,left_node_tree(f,n));
+          l = val_int(s);
+          kil(s);
+          * arith_prf_is_int = 1;
+	}
+        if( is_nbr_sym(fr) ) {
+          r=arith_val_sym(fr);
+        }
+        else {
+          s=cre_cop_tree(f,right_node_tree(f,n));
+          r = val_int(s);
+          kil(s);
+          * arith_prf_is_int = 1;
+	}
+        comp_arith_prf_res=(-(l / r));
+        break;
+      }
+      case LOG2_sym :{
+        r=arith_val_sym(fr);
+        comp_arith_prf_res=(-log2e_prf(r));
+        break;
+      }
+      case NRM2_sym :{
+        r=arith_val_sym(fr);
+        comp_arith_prf_res=(-nrm2e_prf(r));
+        break;
+      }
+      case LEN_sym :{
+        comp_arith_prf_res=(-len_sym(fr));
+        break;
+      }
+    }
+  ; return comp_arith_prf_res;
+  }
+
+  ask_ari_prffunc()
+#define ask_ari_prf ask_ari_prffunc()
+  {register int ask_ari_prf_res ;
+    ask_ari_prf_res=TRUE;
+    if( auto_prf==FALSE ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      ARI   YES? ");
+      if( yes_no==NO ){
+        ask_ari_prf_res=FALSE;
+      };
+    }
+  ; return ask_ari_prf_res;
+  }
+
+  test_ari_prf(f,n)
+  {register int test_ari_prf_res ;
+    if( is_arith_frm(f,n)==TRUE ){
+      test_ari_prf_res=ask_ari_prf;
+    } else {
+      test_ari_prf_res=FALSE;
+    }
+  ; return test_ari_prf_res;
+  }
+
+  ari_prf(i,g,f)
+  {register int n,v,s,ff,gl,w,ari_prf_res ;
+    int arith_prf_is_int;
+    xst_sub_frm(f,n,v,test_ari_prf(f,n)==TRUE,w=comp_arith_prf(f,n,&arith_prf_is_int);
+                         if   ( arith_prf_is_int ) s=cre_int_frm(w);
+                         else                      s=cre_frm(w);
+                         ff=cre_mod_tree(f,n,s);
+                         kil(s);
+                         gl=cre_gol(ff);
+                         cre_nod(gl,i);
+                         mod_spe_gol(g,ARI_gol);
+                         ari_prf_res=TRUE,
+                         ari_prf_res=FALSE)
+  ; return ari_prf_res;
+  }
+
+  
+                   
+/*   'QUOTE && CATL' BUILT_IN RULE (bcat && bcatl)   */
+    
+    
+  
+  comp_quo_prf(f,n)
+  {register int s,st,i,v,t ;
+    s=dec_tree(f,right_node_tree(f,n),COM_sym);
+    st=cre(5);
+    psh_str(st,SMPQUO_sym);
+    itr(s,i,v,cnc_stri_sym(st,val_root_frm(v)));
+    itr(s,i,v,kil(v));
+    kil(s);
+    psh_str(st,SMPQUO_sym);
+    t=cre_sym(st,atm,nrml,0);
+    kil(st)
+  ; return t;
+  }
+
+  quo_prf(i,g,f)
+  {register int n,v,s,ff,gl,w,quo_prf_res ;
+    xst_sub_frm(f,n,v,is_quote_frm(f,n)==TRUE,w=comp_quo_prf(f,n);
+                                             s=cre_frm(w);
+                                             ff=cre_mod_tree(f,n,s);
+                                             kil(s);
+                                             gl=cre_gol(ff);
+                                             cre_nod(gl,i);
+                                             mod_spe_gol(g,QUO_gol);
+                                             quo_prf_res=TRUE,
+                                             quo_prf_res=FALSE)
+  ; return quo_prf_res;
+  }
+
+  bcatl_prf(i,g,f)
+  {register int n,v,s,ff,gl,w,quo_prf_res ;
+    xst_sub_frm(f,n,v,is_bcatl_frm(f,n)==TRUE,w=comp_quo_prf(f,n);
+                                             s=cre_frm(w);
+                                             ff=cre_mod_tree(f,n,s);
+                                             kil(s);
+                                             gl=cre_gol(ff);
+                                             cre_nod(gl,i);
+                                             mod_spe_gol(g,QUO_gol);
+                                             quo_prf_res=TRUE,
+                                             quo_prf_res=FALSE)
+  ; return quo_prf_res;
+  }
+
+  
+  
+  
+                   
+/*   'NEW VARIABLE' BUILT_IN RULE   */
+    
+    
+  
+  comp_new_vrb_prf(f,n)
+  {register int s,st,i,v,t ;
+    s=dec_tree(f,right_node_tree(f,n),COM_sym);
+    st=cre(5);
+    itr(s,i,v,cnc_stri_sym(st,val_root_frm(v)));
+    itr(s,i,v,kil(v));
+    kil(s);
+    t=cre_sym(st,atm,nrml,0);
+    kil(st)
+  ; return t;
+  }
+
+  new_vrb_prf(i,g,f)
+  {register int n,v,s,ff,gl,w,new_vrb_prf_res ;
+    xst_sub_frm(f,n,v,is_new_vrb_frm(f,n)==TRUE,w=comp_new_vrb_prf(f,n);
+                                             s=cre_frm(w);
+                                             ff=cre_mod_tree(f,n,s);
+                                             kil(s);
+                                             gl=cre_gol(ff);
+                                             cre_nod(gl,i);
+                                             mod_spe_gol(g,NEW_gol);
+                                             new_vrb_prf_res=TRUE,
+                                             new_vrb_prf_res=FALSE)
+  ; return new_vrb_prf_res;
+  }
+
+  bnewv_vrb_prf(i,g,f)
+  {register int n,v,s,ff,gl,w,new_vrb_prf_res ;
+    xst_sub_frm(f,n,v,is_bnew_vrb_frm(f,n)==TRUE,w=comp_new_vrb_prf(f,n);
+                                             s=cre_frm(w);
+                                             ff=cre_mod_tree(f,n,s);
+                                             kil(s);
+                                             gl=cre_gol(ff);
+                                             cre_nod(gl,i);
+                                             mod_spe_gol(g,NEW_gol);
+                                             new_vrb_prf_res=TRUE,
+                                             new_vrb_prf_res=FALSE)
+  ; return new_vrb_prf_res;
+  }
+
+                   
+/*   'LOWERING' BUILT_IN RULE   */
+    
+  comp_low_prf(f,n)
+  {register int s,st,ss,i,v,t ;
+    s=val_tree(f,right_node_tree(f,n));
+    st=cre(5);
+    if( letter_sym(s)==TRUE ){
+      psh_str(st,trans_to_low_sym(s));
+    } else {
+      ss=stri_sym(s);
+      itr_str(ss,i,v,psh_str(st,trans_to_low_sym(v)));
+    };
+    t=cre_sym(st,atm,nrml,0);
+    kil(st)
+  ; return t;
+  }
+
+  low_prf(i,g,f)
+  {register int n,v,s,ff,gl,w,low_prf_res ;
+    xst_sub_frm(f,n,v,is_low_frm(f,n)==TRUE,w=comp_low_prf(f,n);
+                                           s=cre_frm(w);
+                                           ff=cre_mod_tree(f,n,s);
+                                           kil(s);
+                                           gl=cre_gol(ff);
+                                           cre_nod(gl,i);
+                                           mod_spe_gol(g,NEW_gol);
+                                           low_prf_res=TRUE,
+                                           low_prf_res=FALSE)
+  ; return low_prf_res;
+  }
+
+   
+                     
+/*   'WRITE' BUILT_IN RULES   */
+  
+  bwrite_prf(f)
+  {register int op,ff,i,fff,b,bwrite_prf_res ;
+    op=val_root_frm(f);
+    if( op==WRI_sym ){
+    
+      save_fic;
+      
+      con_stdout_fic;
+      ff=dec_tree(f,right_node_frm(f),COM_sym);
+      itr(ff,i,fff,write_frm_out(fff,0);kil(fff));
+      kil(ff);
+      flush_fic;
+                                        
+      restore_fic;
+      
+      bwrite_prf_res=TRUE;
+    } else {
+      bwrite_prf_res=FALSE;
+    }
+  ; return bwrite_prf_res;
+  }
+
+                     
+/*   'WRITEF' BUILT_IN RULES   */
+                     
+  
+  bwritef_prf(f)
+  {register int op,ff,i,fff,b,bwrite_prf_res,ss,vv ;
+    op=val_root_frm(f);
+    if( (op==WRIF_sym) || (op==PRIF_sym) || (op==WRIM_sym) ){
+      ff=dec_tree(f,right_node_frm(f),COM_sym);
+      ss=fst(ff);
+      vv=val_root_frm(ss);
+      if( is_string_sym(vv)==TRUE ){
+        if( op==WRIF_sym ){
+          save_fic;
+          con_stdout_fic;
+        };
+        if( op==WRIM_sym ){
+          save_fic;
+          open_men_win;
+          con_stdwin_fic;
+};
+        write_format_out(vv,ff);
+        flush_fic;
+        if( op==WRIF_sym ){
+          restore_fic;
+        };
+        if( op==WRIM_sym ){
+          restore_fic;
+          clos_win;
+        };
+        bwrite_prf_res=TRUE;
+      } else {
+        bwrite_prf_res=FALSE;
+      };
+      itr(ff,i,fff,kil(fff));
+      kil(ff);
+    } else {
+      bwrite_prf_res=FALSE;
+    }
+  ; return bwrite_prf_res;
+  }
+
+/*   'SHELL' BUILT_IN RULE   */
+  bshell_prf(f)
+  {register int v,s,i,w,l,x,bshell_prf_res ;
+    bshell_prf_res=FALSE;
+    if( val_root_frm(f)==SHL_sym ){
+      v=val_tree(f,right_node_frm(f));
+      if( ari_sym(v)==0  ){
+        if( nrml_stri_sym(v)==TRUE ){
+          s=stri_sym(v);
+          if( (fst_str(s)==SMPQUO_sym) && (lst_str(s)==SMPQUO_sym) ){
+            l=len_str(s);
+            x=0;
+            itr_str(s,i,w,
+                    if( (i!=1) && (i!=l) ){
+                      fstr_prf[x]=chr(w);
+                      x=x+1
+                   ;});
+            fstr_prf[x]='\0';
+            if( system(fstr_prf)==0 ){
+              bshell_prf_res=TRUE;
+            };
+          };
+        };
+      }        ;
+    }
+  ; return bshell_prf_res;
+  }
+
+                     
+/*   'MODIFYING RULE' BUILT_IN RULE   */
+                     
+  bmodr_prf(f)
+  {register int bmodr_res,r,lr,llrn,thn,t,b,rlrn,rc,n,rr ;
+    bmodr_res=FALSE;
+    if( val_root_frm(f)==MODR_sym ){
+      r=right_frm(f);
+      if( val_root_frm(r)==COM_sym ){
+        lr=left_frm(r);
+        if( val_root_frm(lr)==DOT_sym ){
+          llrn=left_node_frm(lr);
+          thn=val_tree(lr,llrn);
+          if( ari_sym(thn)==0 ){
+            xst_the(t,nam_the(t)==thn,b=TRUE,b=FALSE);
+            if( b==TRUE ){
+              rlrn=right_node_frm(lr);
+              rc=val_tree(lr,rlrn);
+              if( ari_sym(rc)==0 ){
+                if( is_nbr_sym(rc)==TRUE ){
+                  n=arith_val_sym(rc);
+                  if( (n>0) && (n<=nbr_rul_the(t)) ){
+                    rr=right_frm(r);
+                    mod_rul_the(t,n,rr);
+                    bmodr_res=TRUE;
+                  };
+                };
+              };
+            };
+          };
+        };
+        kil(lr);
+      };
+      kil(r);
+    }
+  ; return bmodr_res;
+  }
+
+  bmark_proved_prf(f)
+  {register int bmark_proved_res,lr,llrn,thn,t,b,rlrn,rc,n,rr ;
+    bmark_proved_res=FALSE;
+    if( val_root_frm(f)==MARK_sym ){
+      lr=right_frm(f);
+      if( val_root_frm(lr)==DOT_sym ){
+        llrn=left_node_frm(lr);
+        thn=val_tree(lr,llrn);
+        if( ari_sym(thn)==0 ){
+          xst_the(t,nam_the(t)==thn,b=TRUE,b=FALSE);
+          if( b==TRUE ){
+            rlrn=right_node_frm(lr);
+            rc=val_tree(lr,rlrn);
+            if( ari_sym(rc)==0 ){
+              if( is_nbr_sym(rc)==TRUE ){
+                n=arith_val_sym(rc);
+                if( (n>0) && (n<=nbr_rul_the(t)) ){
+                  rr=val_rul_the(t,n);
+                  mod_pvd_rul(rr,now_rul);
+                  bmark_proved_res=TRUE;
+                };
+              };
+            };
+          };
+        };
+      };
+      kil(lr);
+    }
+  ; return bmark_proved_res;
+  }
+
+  
+                       
+/*   'POP THEORY' BUILT_IN RULE   */
+                     
+  bpopt_prf(rr,f)
+  {register int bpopt_res,thn,t,r ;
+    bpopt_res=FALSE;
+    if( val_root_frm(f)==BPOP_sym ){
+      thn=val_tree(f,right_node_frm(f));
+      if( ari_sym(thn)==0 ){
+        xst_the(t,nam_the(t)==thn,if( len(rul_the(t))!=0 ){
+                                   r=lst(rul_the(t));
+                                   if( typ_rul(r)!=nrm_rul ){
+                                     if( test_lsb_rul(rr,r)==TRUE ){
+                                       rmv_lsb_rul(rr,r);
+                                       rem_rul_the(t,len(rul_the(t)));
+                                       bpopt_res=TRUE
+                                     ;}
+                                   ;}
+                                 ;},{});
+};
+    }
+  ; return bpopt_res;
+  }
+
+  bcleant_prf(rr,f)
+  {register int bcleant_res,thn,t,r,l,b ;
+    bcleant_res=FALSE;
+    if( val_root_frm(f)==BCLEAN_sym ){
+      thn=val_tree(f,right_node_frm(f));
+      if( ari_sym(thn)==0 ){
+        xst_the(t,nam_the(t)==thn,b=TRUE,b=FALSE);
+        if( b==TRUE ){
+          l=len(rul_the(t));
+          bcleant_res=TRUE;
+          while( l!=0 ){
+            r=val(rul_the(t),l);
+            if( typ_rul(r)!=nrm_rul ){
+              if( test_lsb_rul(rr,r)==TRUE ){
+                rmv_lsb_rul(rr,r);
+                rem_rul_the(t,l);
+};
+            };
+            l=l-1;
+          };
+        };
+      };
+    }
+  ; return bcleant_res;
+  }
+
+                    
+/*  'EQUALITY' BUILT_IN RULE   */
+       
+       
+  eql_prf(g,f)
+  {register int eql_prf_res ;
+    if ( pog_flag ) {
+      return FALSE;
+    }
+    else {
+      if( val_root_frm(f)==EQL_sym ){
+        if( eql_tree(f,left_node_frm(f),f,right_node_frm(f))==TRUE ){
+          mod_spe_gol(g,EQL_gol);
+          eql_prf_res=TRUE;
+        } else {
+          eql_prf_res=FALSE;
+        };
+      } else {
+        eql_prf_res=FALSE;
+      };
+      return eql_prf_res;
+    }
+  }
+
+                      
+/*  'CLOSE' BUILT_IN RULE   */
+       
+       
+  clo_prf(f)
+  {register int clo_prf_res ;
+    if( val_root_frm(f)==CLO_sym ){
+      clo_prf_res=TRUE;
+      close_fic;
+} else {
+      clo_prf_res=FALSE;
+    }
+  ; return clo_prf_res;
+  }
+
+                      
+/*  'HALT' AND 'REDO' BUILT_IN RULE  */
+                      
+  hlt_prf(r,g,f)
+  {register int hlt_prf_res ;
+    if( (val_root_frm(f)==HALT_sym) || (val_root_frm(f)==REDO_sym) ){
+      halt_prf=TRUE;
+      if( val_root_frm(f)==REDO_sym ){
+        abt_prf=TRUE;
+        mod_spe_gol(g,REDO_gol);
+      } else {
+        mod_spe_gol(g,HALT_gol);
+      };
+      rem_sub_rul_the(the_rul(r),num_rul(r));
+      hlt_prf_res =TRUE;
+    } else {
+      hlt_prf_res=FALSE;
+    }
+  ; return hlt_prf_res;
+  }
+
+                   
+/*  'STATISTICS' BUILT ; RULES  */
+  stat_prf(f)
+  {register int stat_prf_res ;
+    if( val_root_frm(f)==BSTATISTICS_sym ){
+      max0_tool;
+      stat_prf_res=TRUE;
+    } else {
+      stat_prf_res=FALSE;
+    }
+  ; return stat_prf_res;
+  }
+
+                   
+/*  'SUSPEND' BUILT ; RULES  */
+  susp_prf(f)
+  {register int susp_prf_res ;
+    if( val_root_frm(f)==BSUSPEND_sym ){
+      sigpause ( SIGCONT );
+      susp_prf_res=TRUE;
+    } else {
+      susp_prf_res=FALSE;
+    };
+    return susp_prf_res;
+  }
+
+                   
+/*  'RECOMPACT' BUILT ; RULES  */
+  recompact_prf(f)
+  {register int recompact_prf_res ;
+    if( val_root_frm(f)==BRECOMPACT_sym ){
+      cmp_seq(20);
+      recompact_prf_res=TRUE;
+    } else {
+      recompact_prf_res=FALSE;
+    }
+  ; return recompact_prf_res;
+  }
+
+  
+              
+/*   'ADDING RULE TO A THEORY' BUILT_IN RULES   */
+              
+ 
+  old_lod_rul_prf(f)
+  {register int v,t,ff,r,i,gg,fff,lod_rul_prf_res ;
+    lod_rul_prf_res=FALSE;
+    if( val_root_frm(f)==PLS_sym ){
+      v=val_tree(f,left_node_frm(f));
+      if( ari_sym(v)==0 ){
+        if( is_nbr_sym(v)==FALSE ){
+          t=cre_the(v);
+          ff=right_frm(f);
+          if( val_root_frm(ff)==SMC_sym ){
+            gg=dec_frm(ff,SMC_sym);
+            itr(gg,i,fff,r=add_rul_the(fff,t,rul_rul));
+            kil(gg);
+            kil(ff);
+          } else {
+            r=add_rul_the(ff,t,rul_rul);
+          };
+        };
+        lod_rul_prf_res=TRUE;
+      };
+    }
+  ; return lod_rul_prf_res;
+  }
+
+  lod_rul_prf(f)
+  {register int v,t,ff,r,i,gg,fff,newfff,lod_rul_prf_res ;
+    lod_rul_prf_res=FALSE;
+    if( val_root_frm(f)==PLS_sym ){
+      v=val_tree(f,left_node_frm(f));
+      if( ari_sym(v)==0 ){
+        if( is_nbr_sym(v)==FALSE ){
+          t=cre_the(v);
+          ff=right_frm(f);
+          if( val_root_frm(ff)==SMC_sym ){
+            gg=dec_frm(ff,SMC_sym);
+            itr(gg,i,fff,if( val_root_frm(fff)==UNPLEM_sym ){
+              newfff=right_frm(fff);
+              kil(fff);
+              r=add_rul_the(newfff,t,lem_rul);
+            } else if( val_root_frm(fff)==PLEM_sym ){
+              newfff=right_frm(fff);
+              kil(fff);
+              r=add_rul_the(newfff,t,lem_rul);
+              mod_pvd_rul(r,now_rul);
+            } else {
+              r=add_rul_the(fff,t,rul_rul)
+           ;});
+            kil(gg);
+            kil(ff);
+          } else {
+            if( val_root_frm(ff)==UNPLEM_sym ){
+              newfff=right_frm(ff);
+              kil(ff);
+              r=add_rul_the(newfff,t,lem_rul);
+            } else if( val_root_frm(ff)==PLEM_sym ){
+              newfff=right_frm(ff);
+              kil(ff);
+              r=add_rul_the(newfff,t,lem_rul);
+              mod_pvd_rul(r,now_rul);
+            } else {
+              r=add_rul_the(ff,t,rul_rul);
+            };
+          };
+        };
+        lod_rul_prf_res=TRUE;
+      };
+    }
+  ; return lod_rul_prf_res;
+  }
+
+  add_rul_prf(p,n,rr,f)
+  {register int v,t,ff,r,s,fff,w,add_rul_prf_res ;
+    add_rul_prf_res=FALSE;
+    w=val_root_frm(f);
+    if( (w==PLS_sym) || (w==MUL_sym) ){
+      v=val_tree(f,left_node_frm(f));
+      if( (ari_sym(v)==0) && (is_nbr_sym(v)==FALSE) ){
+        t=cre_the(v);
+        ff=right_frm(f);
+        s=cre(7);
+        lst_genuine_hyp_frm_prf(p,n,s);
+        if( len(s)!=0 ){
+          fff=rec_frm(s,AND_sym);
+          cnc(fff,ff);
+          psh(fff,IMP_sym);
+          kil(ff);
+          ff=fff;
+        };
+        kil(s);
+        if( w==PLS_sym ){
+          r=add_rul_the(ff,t,rul_rul);
+        } else {
+          r=add_rul_the(ff,t,lem_rul);
+        };
+        add_lsb_rul(rr,r);
+        add_rul_prf_res=TRUE;
+      };
+    }
+  ; return add_rul_prf_res;
+  }
+
+  badd_lirul_prf(rr,f)
+  {register int w,rp,v,t,ff,r,i,gg,fff,newfff,badd_lirul_prf_res ;
+    badd_lirul_prf_res=FALSE;
+    w=val_root_frm(f);
+    if( w==BCRELR_sym ){
+      rp=right_frm(f);
+      if( val_root_frm(rp)==COM_sym ){
+        v=val_tree(rp,left_node_frm(rp));
+        if( ari_sym(v)==0 ){
+          if( is_nbr_sym(v)==FALSE ){
+            t=cre_the(v);
+            ff=right_frm(rp);
+            if( val_root_frm(ff)==SMC_sym ){
+              gg=dec_frm(ff,SMC_sym);
+              itr(gg,i,fff,if( val_root_frm(fff)==UNPLEM_sym ){
+                newfff=right_frm(fff);
+                kil(fff);
+                r=add_rul_the(newfff,t,lem_rul);
+                add_lsb_rul(rr,r);
+              } else if( val_root_frm(fff)==PLEM_sym ){
+                newfff=right_frm(fff);
+                kil(fff);
+                r=add_rul_the(newfff,t,lem_rul);
+                add_lsb_rul(rr,r);
+                mod_pvd_rul(r,now_rul);
+              } else {
+                r=add_rul_the(fff,t,rul_rul);
+                add_lsb_rul(rr,r)
+             ;});
+              
+/* itr(gg,i,fff,r=add_rul_the(fff,t,rul_rul);add_lsb_rul(rr,r)); */
+              kil(gg);
+              kil(ff);
+            } else {
+              if( val_root_frm(ff)==UNPLEM_sym ){
+                newfff=right_frm(ff);
+                kil(ff);
+                r=add_rul_the(newfff,t,lem_rul);
+                add_lsb_rul(rr,r);
+              } else if( val_root_frm(ff)==PLEM_sym ){
+                newfff=right_frm(ff);
+                kil(ff);
+                r=add_rul_the(newfff,t,lem_rul);
+                add_lsb_rul(rr,r);
+                mod_pvd_rul(r,now_rul);
+              } else {
+                r=add_rul_the(ff,t,rul_rul);
+                add_lsb_rul(rr,r);
+              }
+              
+/* r=add_rul_the(ff,t,rul_rul);
+              add_lsb_rul(rr,r) */;
+            };
+            badd_lirul_prf_res=TRUE;
+          };
+        };
+      };
+      kil(rp);
+    }
+  ; return badd_lirul_prf_res;
+  }
+
+ 
+  badd_rul_prf(p,n,rr,f)
+  {register int v,t,ff,r,s,fff,w,rp,add_rul_prf_res ;
+    add_rul_prf_res=FALSE;
+    w=val_root_frm(f);
+    if( (w==BCRER_sym) || (w==BCREL_sym) ){
+      rp=right_frm(f);
+      if( val_root_frm(rp)==COM_sym ){
+        v=val_tree(rp,left_node_frm(rp));
+        if( (ari_sym(v)==0) && (is_nbr_sym(v)==FALSE) ){
+          t=cre_the(v);
+          ff=right_frm(rp);
+          s=cre(7);
+          lst_genuine_hyp_frm_prf(p,n,s);
+          if( len(s)!=0 ){
+            fff=rec_frm(s,AND_sym);
+            cnc(fff,ff);
+            psh(fff,IMP_sym);
+            kil(ff);
+            ff=fff;
+          };
+          kil(s);
+          if( w==BCRER_sym ){
+            r=add_rul_the(ff,t,rul_rul);
+          } else {
+            r=add_rul_the(ff,t,lem_rul);
+          };
+          add_lsb_rul(rr,r);
+          add_rul_prf_res=TRUE;
+        };
+      };
+      kil(rp);
+    }
+  ; return add_rul_prf_res;
+  }
+
+  
+  
+                  
+/*   'AND' BUILT_IN RULE   */
+                  
+                  
+  and_prf(n,g,f)
+  {register int s,i,v,gl,and_prf_res ;
+    if( val_root_frm(f)==AND_sym ){
+      s=dec_frm(f,AND_sym);
+      itr(s,i,v,gl=cre_gol(v);
+                cre_nod(gl,n));
+      mod_spe_gol(g,AND_gol);
+      kil(s);
+      and_prf_res=TRUE;
+    } else {
+      and_prf_res=FALSE;
+    }
+  ; return and_prf_res;
+  }
+
+  
+                 
+/*   'MAP' BUILT_IN RULE   */
+                 
+   map_prf(n,g,f)
+   {register int op,s,rf,lf,i,v,w,gl,map_prf_res ;
+     if( val_root_frm(f)==MAP_sym ){
+       op=val_tree(f,right_node_frm(f));
+       if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+         s=dec_tree(f,right_node_frm(f),op)
+       ;} else {
+         s=cre(1);
+         rf=right_frm(f);
+         psh(s,rf)
+       ;};
+       lf=left_frm(f);
+       itr(s,i,v,w=cons_frm(lf,EVL_sym,v);
+                 gl=cre_gol(w);
+                 cre_nod(gl,n);
+                 kil(v));
+       mod_spe_gol(g,MAP_gol);
+       kil(lf);
+       kil(s);
+       map_prf_res=TRUE
+     ;} else {
+       map_prf_res=FALSE
+     ;}
+   ; return map_prf_res
+   ;}
+
+    
+                 
+/*   'LMAP' BUILT_IN RULE   */
+                 
+   lmap_cmp_prf(n,g,f,i)
+   {register int ff,op,s,rf,lf,t,ii,v,w,u,fff,gl,  fnc,prm,lprm   ;
+     ff=cre_cop_tree(f,i);
+     op=val_tree(ff,right_node_frm(ff));
+     if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+       s=dec_tree(ff,right_node_frm(ff),op)
+     ;} else {
+       s=cre(1);
+       rf=right_frm(ff);
+       psh(s,rf)
+     ;};
+     lf=left_frm(ff);
+     t=cre(len(s)); 
+     if( val_root_frm(lf)!=EVL_sym ){
+       itr(s,ii,v,w=cons_frm(lf,EVL_sym,v);
+                  psh(t,w);
+                  kil(v))
+     ;} else {
+       fnc=left_frm(lf);
+       prm=right_frm(lf);
+       itr(s,ii,v,lprm=cons_frm(prm,COM_sym,v);
+                  w=cons_frm(fnc,EVL_sym,lprm);
+                  kil(lprm);
+                  psh(t,w);
+                  kil(v));
+       kil(fnc);
+       kil(prm)
+     ;};
+     u=rec_frm(t,op);
+     itr(t,ii,v,kil(v));
+     kil(t);
+     kil(lf);
+     kil(s);
+     fff=cre_mod_tree(f,i,u);
+     kil(u);
+     gl=cre_gol(fff);
+     cre_nod(gl,n);
+     mod_spe_gol(g,MAP_gol);
+     kil(ff)
+   ;}
+
+   lmap_prf(n,g,f)
+   {register int v,i,lmap_prf_res ;
+     xst_sub_frm(f,i,v,v==LMAP_sym,lmap_cmp_prf(n,g,f,i);
+                                  lmap_prf_res=TRUE,
+                                  lmap_prf_res=FALSE);
+   ; return lmap_prf_res
+   ;}
+
+                 
+/*   'SMAP' BUILT_IN RULE   */
+                 
+   smap_prf(n,g,f)
+   {register int op,s,rf,lf,i,v,w,gl,fnc,prm,lprm,smap_prf_res ;
+     if( val_root_frm(f)==SMAP_sym ){
+       op=val_tree(f,right_node_frm(f));
+       if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+         s=dec_tree(f,right_node_frm(f),op)
+       ;} else {
+         s=cre(1);
+         rf=right_frm(f);
+         psh(s,rf)
+       ;};
+       lf=left_frm(f);
+       if( val_root_frm(lf)!=EVL_sym ){
+         itr(s,i,v,w=cons_frm(lf,EVL_sym,v);
+                   gl=cre_gol(w);
+                   cre_nod(gl,n);
+                   kil(v))
+       ;} else {
+         fnc=left_frm(lf);
+         prm=right_frm(lf);
+         itr(s,i,v,lprm=cons_frm(prm,COM_sym,v);
+                   w=cons_frm(fnc,EVL_sym,lprm);
+                   kil(lprm);
+                   gl=cre_gol(w);
+                   cre_nod(gl,n);
+                   kil(v));
+         kil(fnc);
+         kil(prm)
+       ;};
+       mod_spe_gol(g,MAP_gol);
+       kil(lf);
+       kil(s);
+       smap_prf_res=TRUE
+     ;} else {
+       smap_prf_res=FALSE
+     ;}
+   ; return smap_prf_res
+   ;}
+
+    
+                 
+/*   'NMAP' BUILT_IN RULE   */
+                 
+   nmap_prf(n,g,f)
+   {register int op,s,rf,lf,i,v,w,gl,fnc,prm,lprm,smap_prf_res,siz,lprm1,lprm2,lprm11 ;
+     if( val_root_frm(f)==NMAP_sym ){
+       op=val_tree(f,right_node_frm(f));
+       if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+         s=dec_tree(f,right_node_frm(f),op)
+       ;} else {
+         s=cre(1);
+         rf=right_frm(f);
+         psh(s,rf)
+       ;};
+       lf=left_frm(f);
+       if( val_root_frm(lf)!=EVL_sym ){
+         siz=len(s);
+         itr(s,i,v,lprm11=cre_frm(arith_val_sym(i));
+                   lprm1=cons_frm(v,COM_sym,lprm11);
+                   lprm11=cre_frm(arith_val_sym(siz));
+                   lprm2=cons_frm(lprm1,COM_sym,lprm11);
+                   w=cons_frm(lf,EVL_sym,lprm2);
+                   kil(lprm11);
+                   kil(lprm1);
+                   kil(lprm2);
+                   gl=cre_gol(w);
+                   cre_nod(gl,n);
+                   kil(v))
+       ;} else {
+         siz=len(s);
+         fnc=left_frm(lf);
+         prm=right_frm(lf);
+         itr(s,i,v,lprm=cons_frm(prm,COM_sym,v);
+                   lprm11=cre_frm(arith_val_sym(i));
+                   lprm1=cons_frm(lprm,COM_sym,lprm11);
+                   lprm11=cre_frm(arith_val_sym(siz));
+                   lprm2=cons_frm(lprm1,COM_sym,lprm11);
+                   w=cons_frm(fnc,EVL_sym,lprm2);
+                   kil(lprm);
+                   kil(lprm11);
+                   kil(lprm1);
+                   kil(lprm2);
+                   gl=cre_gol(w);
+                   cre_nod(gl,n);
+                   kil(v));
+         kil(fnc);
+         kil(prm)
+       ;};
+       mod_spe_gol(g,MAP_gol);
+       kil(lf);
+       kil(s);
+       smap_prf_res=TRUE
+     ;} else {
+       smap_prf_res=FALSE
+     ;}
+   ; return smap_prf_res
+   ;}
+
+    
+                 
+/*   'SLMAP' BUILT_IN RULE   */
+                 
+   slmap_cmp_prf(n,g,f,i)
+   {register int ff,op,s,rf,lf,t,ii,v,w,u,fff,gl,fnc,prm,lprm ;
+     ff=cre_cop_tree(f,i);
+     op=val_tree(ff,right_node_frm(ff));
+     if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+       s=dec_tree(ff,right_node_frm(ff),op)
+     ;} else {
+       s=cre(1);
+       rf=right_frm(ff);
+       psh(s,rf)
+     ;};
+     lf=left_frm(ff);
+     t=cre(len(s)); 
+     if( val_root_frm(lf)!=EVL_sym ){
+       itr(s,ii,v,w=cons_frm(lf,EVL_sym,v);
+                  psh(t,w);
+                  kil(v))
+     ;} else {
+       fnc=left_frm(lf);
+       prm=right_frm(lf);
+       itr(s,ii,v,lprm=cons_frm(prm,COM_sym,v);
+                  w=cons_frm(fnc,EVL_sym,lprm);
+                  kil(lprm);
+                  psh(t,w);
+                  kil(v));
+       kil(fnc);
+       kil(prm)
+     ;};
+     u=rec_frm(t,op);
+     itr(t,ii,v,kil(v));
+     kil(t);
+     kil(lf);
+     kil(s);
+     fff=cre_mod_tree(f,i,u);
+     kil(u);
+     gl=cre_gol(fff);
+     cre_nod(gl,n);
+     mod_spe_gol(g,MAP_gol);
+     kil(ff)
+   ;}
+
+   slmap_prf(n,g,f)
+   {register int v,i,slmap_prf_res ;
+     xst_sub_frm(f,i,v,v==SLMAP_sym,slmap_cmp_prf(n,g,f,i);
+                                  slmap_prf_res=TRUE,
+                                  slmap_prf_res=FALSE);
+   ; return slmap_prf_res
+   ;}
+
+ 
+                 
+/*   'NLMAP' BUILT_IN RULE   */
+                 
+   nlmap_cmp_prf(n,g,f,i)
+   {register int ff,op,s,rf,lf,t,ii,v,w,u,fff,gl,fnc,prm,lprm,
+       siz,lprm1,lprm2,lprm11 ;
+     ff=cre_cop_tree(f,i);
+     op=val_tree(ff,right_node_frm(ff));
+     if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+       s=dec_tree(ff,right_node_frm(ff),op)
+     ;} else {
+       s=cre(1);
+       rf=right_frm(ff);
+       psh(s,rf)
+     ;};
+     lf=left_frm(ff);
+     t=cre(len(s)); 
+     if( val_root_frm(lf)!=EVL_sym ){
+       siz=len(s);
+       itr(s,ii,v,
+/* w=cons_frm(lf,EVL_sym,v); */
+                  lprm11=cre_frm(arith_val_sym(ii));
+                  lprm1=cons_frm(v,COM_sym,lprm11);
+                  lprm11=cre_frm(arith_val_sym(siz));
+                  lprm2=cons_frm(lprm1,COM_sym,lprm11);
+                  w=cons_frm(lf,EVL_sym,lprm2);
+                  kil(lprm11);
+                  kil(lprm1);
+                  kil(lprm2);
+                  psh(t,w);
+                  kil(v))
+     ;} else {
+       siz=len(s);
+       fnc=left_frm(lf);
+       prm=right_frm(lf);
+       itr(s,ii,v,
+/* lprm=cons_frm(prm,COM_sym,v);
+                  w=cons_frm(fnc,EVL_sym,lprm);
+                  kil(lprm); */
+                  lprm=cons_frm(prm,COM_sym,v);
+                  lprm11=cre_frm(arith_val_sym(ii));
+                  lprm1=cons_frm(lprm,COM_sym,lprm11);
+                  lprm11=cre_frm(arith_val_sym(siz));
+                  lprm2=cons_frm(lprm1,COM_sym,lprm11);
+                  w=cons_frm(fnc,EVL_sym,lprm2);
+                  kil(lprm);
+                  kil(lprm11);
+                  kil(lprm1);
+                  kil(lprm2);
+                  psh(t,w);
+                  kil(v));
+       kil(fnc);
+       kil(prm)
+     ;};
+     u=rec_frm(t,op);
+     itr(t,ii,v,kil(v));
+     kil(t);
+     kil(lf);
+     kil(s);
+     fff=cre_mod_tree(f,i,u);
+     kil(u);
+     gl=cre_gol(fff);
+     cre_nod(gl,n);
+     mod_spe_gol(g,MAP_gol);
+     kil(ff)
+   ;}
+
+   nlmap_prf(n,g,f)
+   {register int v,i,slmap_prf_res ;
+     xst_sub_frm(f,i,v,v==NLMAP_sym,nlmap_cmp_prf(n,g,f,i);
+                                  slmap_prf_res=TRUE,
+                                  slmap_prf_res=FALSE);
+   ; return slmap_prf_res
+   ;}
+
+                     
+/*  'REV' BUILT-; RULE  */
+                     
+   rev_cmp_prf(n,g,f,i)
+   {register int ff,op,s,rf,u,fff,gl,j,ggg ;
+     ff=cre_cop_tree(f,i);
+     op=val_tree(ff,right_node_frm(ff));
+     if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+       s=dec_tree(ff,right_node_frm(ff),op)
+     ;} else {
+       s=cre(1);
+       rf=right_frm(ff);
+       psh(s,rf)
+     ;};
+     rev(s);
+     u=rec_frm(s,op);
+     itr(s,j,ggg,kil(ggg));
+     kil(s);
+     fff=cre_mod_tree(f,i,u);
+     kil(u);
+     gl=cre_gol(fff);
+     cre_nod(gl,n);
+     mod_spe_gol(g,REV_gol);
+     kil(ff)
+   ;}
+
+   
+   rev_prf(n,g,f)
+   {register int v,i,rev_prf_res ;
+     nxst_sub_frm(f,i,v,v==REV_sym,rev_cmp_prf(n,g,f,i);
+                                  rev_prf_res=TRUE,
+                                  rev_prf_res=FALSE);
+   ; return rev_prf_res
+   ;}
+
+   
+                     
+/*  'FLAT' BUILT-; RULE  */
+                     
+   
+   flat_cmp_prf(n,g,f,i)
+   {register int ff,op,s,u,t,ii,v,w,fff,gl ;
+     ff=cre_cop_tree(f,i);
+     op=val_tree(ff,right_node_frm(ff));
+     if( 
+/* ari_sym(op)==2 */
+(op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+       s=dec_tree(ff,right_node_frm(ff),op);
+       t=cre(len(s));
+       itr(s,ii,v, w=dec_frm(v,op);
+                   cnc(t,w);
+                   kil(w);
+                   kil(v));
+       while( len(s)!=len(t) ){
+         cop(t,s);
+         clr(t);
+         itr(s,ii,v, w=dec_frm(v,op);
+                     cnc(t,w);
+                     kil(w);
+                     kil(v));
+};
+       u=rec_frm(t,op);
+       itr(t,ii,v,kil(v));
+       kil(t);
+       kil(s);
+       } else {
+       u=right_frm(ff)
+     ;};
+     fff=cre_mod_tree(f,i,u);
+     kil(u);
+     gl=cre_gol(fff);
+     cre_nod(gl,n);
+     mod_spe_gol(g,FLAT_gol);
+     kil(ff)
+   ;}
+
+   
+   flat_prf(n,g,f)
+   {register int v,i,flat_prf_res ;
+     nxst_sub_frm(f,i,v,v==FLAT_sym,flat_cmp_prf(n,g,f,i);
+                                 flat_prf_res=TRUE,
+                                 flat_prf_res=FALSE);
+   ; return flat_prf_res
+   ;}
+
+   
+                          
+/*   TACTIC CONSTRUCTION   */
+                
+  
+  cre_tac_prf(f,i)
+  {register int z,tt,th,ff ;
+    z=val_root_frm(f);
+    if( z==TIL_sym ){
+      tt=cre_tac(left_frm(f));
+      mod_spe_tac(tt,TIL_tac);
+    } else if( z == SMC_sym ){
+      {register int s,j,fff,ttt ;
+        s=dec_frm(f,SMC_sym);
+        itr(s,j,fff,ttt=cre_tac_prf(fff,i);
+                    if( ttt!=0 ){
+                      cre_nod(ttt,i);
+                    };
+                    kil(fff));
+        kil(s);
+      };
+      tt=0;
+    } else if( z==DED_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,DED_tac);
+    } else if( z==ARI_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,ARI_tac);
+    } else if( z==SUB_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,SUB_tac);
+    } else if( z==REV_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,REV_tac);
+    } else if( z==FLAT_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,FLAT_tac);
+    } else if( z==MAP_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,MAP_tac);
+    } else if( z==MODR_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,MODR_tac);
+    } else if( z==SHELL_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,SHELL_tac);
+    } else if( z==LMAP_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,LMAP_tac);
+    } else if( z==WRITE_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,WRITE_tac);
+    } else if( z==RULE_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,RULE_tac);
+    } else if( z==TAC_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,TAC_tac);
+    } else if( z==CATL_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,CATL_tac);
+    } else if( z==NEWV_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,NEWV_tac);
+    } else if( z==GEN_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,GEN_tac);
+    } else if( z==HYP_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,HYP_tac);
+    } else if( z==FEQL_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,FEQL_tac);
+    } else if( z==FEQLS_tac_sym ){
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      mod_spe_tac(tt,FEQLS_tac);
+    } else {
+      ff=cre(len(f));
+      cop(f,ff);
+      tt=cre_tac(ff);
+      xst_the(th,nam_the(th)==z,mod_the_tac(tt,th),{});
+    }
+  ; return tt;
+  }
+
+  cre_ini_tac_prf(f)
+  {register int t,ff ;
+    if( val_root_frm(f)==TIL_sym ){
+      t=cre_tac(left_frm(f));
+      mod_spe_tac(t,TIL_tac);
+    } else {
+      ff=cre(len(f));
+      cop(f,ff);
+      t=cre_tac(ff);
+      mod_spe_tac(t,RUT_tac);
+    }
+  ; return cre_root_nod(t);
+  }
+
+  step_tac_prf(i,t)
+  {register int f,j,s,p,tt ;
+    if( def_spe_tac(t)==TRUE ){
+      p=spe_tac(t);
+      if( (p==TIL_tac) || (p==RUT_tac) ){
+        f=frm_tac(t);
+        if( val_root_frm(f)==SMC_sym ){
+          s=dec_frm(f,SMC_sym);
+          itr(s,j,f,tt=cre_tac_prf(f,i);
+                    if( tt!=0 ){
+                      cre_nod(tt,i);
+                    };
+                    kil(f));
+          kil(s);
+        } else {
+          cre_nod(cre_tac_prf(f,i),i);
+        };
+      };
+    };
+  }
+
+                  
+/*   TACTIC  NAVIGATION   */
+  
+  
+  down_tac_prf(n)
+  {register int m,s ;
+    m=n;
+    s=sons_nod(m);
+    while( len(s)!=0 ){
+      m=fst(s);
+      s=sons_nod(m);
+    }
+  ; return m;
+  }
+
+  build_tac_prf(f)
+  {register int i,t ;
+    tac_prf=cre_ini_tac_prf(f);
+    add_set(lst_tac_prf,tac_prf);
+    itr_next_nod(tac_prf,tac_prf,i,t,step_tac_prf(i,t));
+    tac_ptr_prf=down_tac_prf(tac_prf);
+  }
+
+  func_build_tac_prf(f)
+  {register int i,t ;
+    tac_prf=cre_ini_tac_prf(f);
+    itr_next_nod(tac_prf,tac_prf,i,t,step_tac_prf(i,t));
+    tac_ptr_prf=down_tac_prf(tac_prf)
+  ; return tac_prf;
+  }
+
+  build_fwd_tac_prf2(f)
+  {register int i,t ;
+    fwd_tac_prf=cre_ini_tac_prf(f);
+    add_set(lst_fwd_tac_prf,fwd_tac_prf);
+    itr_next_nod(fwd_tac_prf,fwd_tac_prf,i,t,step_tac_prf(i,t));
+    fwd_tac_ptr_prf=down_tac_prf(fwd_tac_prf);
+  }
+
+  func_build_fwd_tac_prf2(f)
+  {register int i,t ;
+    fwd_tac_prf=cre_ini_tac_prf(f);
+    itr_next_nod(fwd_tac_prf,fwd_tac_prf,i,t,step_tac_prf(i,t));
+    fwd_tac_ptr_prf=down_tac_prf(fwd_tac_prf)
+  ; return fwd_tac_prf;
+  }
+
+  kil_tac_prffunc()
+#define kil_tac_prf kil_tac_prffunc()
+  {register int ta,j,i,t ;
+    itr(lst_tac_prf,j,ta,itr_nod(ta,i,t,kil_tac(t),{},{});
+                         kil_nod(ta));
+    kil(lst_tac_prf);
+  }
+
+  kil_fwd_tac_prffunc()
+#define kil_fwd_tac_prf kil_fwd_tac_prffunc()
+  {register int i,t ;
+    itr_nod(fwd_tac_prf,i,t,kil_tac(t),{},{});
+    kil_nod(fwd_tac_prf);
+  }
+
+  kil_fwd_tac_prf2func()
+#define kil_fwd_tac_prf2 kil_fwd_tac_prf2func()
+  {register int ta,j,i,t ;
+    itr(lst_fwd_tac_prf,j,ta,itr_nod(ta,i,t,kil_tac(t),{},{});
+                             kil_nod(ta));
+    kil(lst_fwd_tac_prf);
+  }
+
+  
+  kil_input_prffunc()
+#define kil_input_prf kil_input_prffunc()
+  {register int i,s ;
+    itr(lst_input_prf,i,s,kil(s));
+    kil(lst_input_prf);
+  }
+
+  kil_content_input_prffunc()
+#define kil_content_input_prf kil_content_input_prffunc()
+  {register int i,s ;
+    itr(lst_input_prf,i,s,kil(s));
+    clr(lst_input_prf);
+  }
+
+#define fst_tac_prf(p) down_tac_prf(p)  
+  up_tac_prf(p,n)
+  {register int f,t,s,i,v,m,b,up_tac_prf_res ;
+    f=fath_nod(n);
+    if( f==fath_nod(p) ){
+      up_tac_prf_res=down_tac_prf(p);
+      end_of_tac_prf=TRUE;
+    } else {
+      s=sons_nod(f);
+      m=snbr_nod(n);
+      if( m==len(s) ){
+        b=FALSE;
+        itr(s,i,v,t=info_nod(v);
+                  if( res_tac(t)==TRUE ){
+                    b=TRUE;
+                  };
+                  mod_res_tac(t,FALSE));
+        if( (b==TRUE) && (spe_tac(info_nod(f))==TIL_tac) ){
+          mod_res_tac(info_nod(f),TRUE);
+          up_tac_prf_res=down_tac_prf(fst(s));
+        } else {
+          up_tac_prf_res=up_tac_prf(p,f);
+        };
+      } else {
+        up_tac_prf_res=down_tac_prf(val(s,m+1));
+      };
+    }
+  ; return up_tac_prf_res;
+  }
+
+  
+  nxt_tac_prf(p,n)
+  {register int s,nxt_tac_prf_res ;
+    s=sons_nod(n);
+    if( len(s)!=0 ){
+      nxt_tac_prf_res=down_tac_prf(fst(s));
+    } else {
+      nxt_tac_prf_res=up_tac_prf(p,n);
+    }
+  ; return nxt_tac_prf_res;
+  }
+
+  clean_tac_prffunc()
+#define clean_tac_prf clean_tac_prffunc()
+  {register int i,t ;
+    itr_nod(tac_prf,i,t,mod_res_tac(t,TRUE),{},{});
+  }
+
+    
+               
+/*   'MODIFYING TACTICS' BUILT_IN RULE   */
+               
+  
+  lod_add_tac_prf(f)
+  {register int v,t,ff,op,lod_add_tac_prf_res ;
+    op=val_root_frm(f);
+    lod_add_tac_prf_res=FALSE;
+    if( (op==DIV_sym) || (op==MIN_sym) ){
+      v=val_tree(f,left_node_frm(f));
+      if( (ari_sym(v)==0) ){
+        if( is_nbr_sym(v)==FALSE ){
+          t=cre_the(v);
+          ff=right_frm(f);
+          if( op==DIV_sym ){
+            mod_tac_the(t,ff);
+          } else {
+            mod_fwd_tac_the(t,ff);
+          };
+        };
+        lod_add_tac_prf_res=TRUE;
+      };
+    }
+  ; return lod_add_tac_prf_res;
+  }
+
+  add_tac_prf(f)
+  {register int v,t,ff,op,add_tac_prf_res ;
+    op=val_root_frm(f);
+    add_tac_prf_res=FALSE;
+    if( (op==DIV_sym) || (op==MIN_sym) ){
+      v=val_tree(f,left_node_frm(f));
+      if( (ari_sym(v)==0) && (is_nbr_sym(v)==FALSE) ){
+        t=cre_the(v);
+        ff=right_frm(f);
+        if( op==DIV_sym ){
+          mod_tac_the(t,ff);
+        } else {
+          mod_fwd_tac_the(t,ff);
+        };
+        add_tac_prf_res=TRUE;
+      };
+    }
+  ; return add_tac_prf_res;
+  }
+
+  badd_tac_prf(f)
+  {register int v,t,ff,op,rp,add_tac_prf_res ;
+    
+/* fprintf ( bstdout, "coucou1"); */
+    op=val_root_frm(f);
+    add_tac_prf_res=FALSE;
+    if( (op==BTAC_sym) || (op==FTAC_sym) ){
+      
+/* fprintf ( bstdout, "coucou2"); */
+      rp=right_frm(f);
+      if( val_root_frm(rp)==COM_sym ){
+       
+/* fprintf ( bstdout, "coucou3"); */
+        v=val_tree(rp,left_node_frm(rp));
+        if( (ari_sym(v)==0) && (is_nbr_sym(v)==FALSE) ){
+          
+/* fprintf ( bstdout, "coucou4"); */
+          t=cre_the(v);
+          ff=right_frm(rp);
+          if( op==BTAC_sym ){
+            mod_tac_the(t,ff);
+          } else {
+            mod_fwd_tac_the(t,ff);
+          };
+          add_tac_prf_res=TRUE;
+        };
+      };
+      kil(rp);
+    }
+  ; return add_tac_prf_res;
+  }
+
+  
+  
+                          
+/*   GUARD HANDLING   */
+                   
+                   
+                          
+/*  ARITHMETIC GUARD  */
+  test_arith_prf(v)
+  {register int w,l,o,r,test_arith_prf_res ;
+/***
+printf ( "test_arith_prf\n" );
+***/
+    w=right_frm(v);
+    if( is_rel_arith_frm(w)==TRUE ){
+      o=val_root_frm(w);
+/*
+      l=(arith_val_sym_int(val_tree(w,left_node_frm(w)),w));
+      r=(arith_val_sym_int(val_tree(w,right_node_frm(w)),w));
+*/
+/*
+      l=(arith_val_sym_or_int(val_tree(w,left_node_frm(w)),left_frm(w)));
+      r=(arith_val_sym_or_int(val_tree(w,right_node_frm(w)),right_frm(w)));
+*/
+      if ( is_nbr_sym ( val_tree(w,left_node_frm(w)) ) )
+        l = - (val_tree(w,left_node_frm(w)));
+      else
+        l = val_int ( left_frm(w) );
+
+      if ( is_nbr_sym ( val_tree(w,right_node_frm(w)) ) )
+        r = - (val_tree(w,right_node_frm(w)));
+      else
+        r = val_int ( right_frm(w) );
+
+/***
+printf ( "  l=%d r=%d\n", l, r );
+***/
+      switch( o ){
+        case SMR_sym :{
+          test_arith_prf_res=((l<r)!=0);
+        ;break;}case GTR_sym :{
+          test_arith_prf_res=((l>r)!=0);
+        ;break;}case SEQ_sym :{
+          test_arith_prf_res=((l<=r)!=0);
+        ;break;}case GEQ_sym :{
+          test_arith_prf_res=((l>=r)!=0);
+        ;break;}case NEQ_sym :{
+          test_arith_prf_res=((l!=r)!=0)
+        ;break;}case EQL_sym :{
+          test_arith_prf_res=((l==r)!=0)
+        ;break;};
+      };
+    } else {
+      test_arith_prf_res=FALSE;
+    };
+    kil(w)
+  ; return test_arith_prf_res;
+  }
+
+  
+  
+  
+                       
+/*  NON FREENESS GUARD  */
+                       
+               
+/*  In fre_jok_prf(p,n,lv,s),
+                  s is supposed to be a joker || a genuine variable
+                  lv is a list of variables (with at least a joker in
+                  case s is not a joker)
+                  
+                  semantics: s is free in lv
+               
+                  FALSE iff s can be considered not free in lv:
+                    when all element v of lv are such that
+                      v \ s  is a side-condition || s \ v  is a side-condition && s is a variable || bvrb(...,v,...,s,...) is a side-condition || v has no occurrence in initial goal (that is, v has 
+                      been introduced during the proof) || when
+                      s has no occurrence in initial goal (that is, s has 
+                      been introduced during the proof)
+                      
+                */
+                      
+                    
+fre_jok_prf(p,n,lv,s)
+{register int lh,lvv,j,h,fh,lw,ff,v,gg,fre_jok_prf_res ;                     
+  lh=cre(50);
+  lvv=cre(len(lv));
+  cop(lv,lvv);
+  lst_hyp_prf(p,n,lh);
+  itr(lh,j,h,fh=frm_hyp(h);
+             if( val_root_frm(fh)==ANTI_SLASH_sym ){
+               if( s==val_tree(fh,right_node_frm(fh)) ){
+                 lw=cre(4);
+                 if( is_lst_vrb_frm_prf(p,n,lw,fh,left_node_frm(fh))==TRUE ){
+                   diff_set(lvv,lw)
+                 ;};
+                 kil(lw)
+               ;} else if( is_idx_vrb_frm(fh,right_node_frm(fh))==TRUE ){
+                 if( s == code_idx_vrb_frm(fh,right_node_frm(fh)) ){
+                   lw=cre(4);
+                   if( is_lst_vrb_frm_prf(p,n,lw,fh,left_node_frm(fh))==TRUE ){
+                     diff_set(lvv,lw)
+                   ;};
+                   kil(lw)
+                 ;}
+               ;} else if( s == val_tree(fh,left_node_frm(fh)) ){
+                 lw=cre(4);
+                 if( (is_lst_vrb_frm_prf(p,n,lw,fh,left_node_frm(fh))==TRUE) && (is_lst_vrb_frm_prf(p,n,lw,fh,right_node_frm(fh))==TRUE) ){
+                   diff_set(lvv,lw)
+                 ;};
+                 kil(lw)
+               ;}
+             ;} else if( val_root_frm(fh)==BVRB_sym ){
+               lw=cre(4);
+               if( is_lst_vrb_frm_prf(p,n,lw,fh,right_node_frm(fh))==TRUE ){
+                 if( is_in_set(lw,s)==TRUE ){
+                   diff_set(lvv,lw)
+                 ;}
+               ;};
+               kil(lw);
+            });
+  if( len(lvv)==0 ){
+    fre_jok_prf_res=FALSE;
+} else {
+    if( exec_prf==FALSE ){
+      ff=frm_gol(info_nod(p));
+      gg=cre_encode_tree(ff,root_tree(ff));
+      if( is_in_frm(gg,s)==FALSE ){
+        fre_jok_prf_res=FALSE;
+      } else {
+        exist_set(lvv,v,(is_in_frm(gg,v)==TRUE) 
+/* || (letter_sym(v)==FALSE) */
+,
+                  fre_jok_prf_res=TRUE,
+                  fre_jok_prf_res=FALSE);
+      };
+      kil(gg);
+    } else {
+      fre_jok_prf_res=FALSE;
+    };
+  };
+  kil(lh);
+  kil(lvv)
+; return fre_jok_prf_res;
+}
+
+      
+/*  lv is a list of variable
+         f,i is the  sub-tree of f with top node i
+         
+         semantics: lv is free in sub-tree (f,i)
+         
+         local s is the value at top of sub-tree f,i
+         
+         if s is an atom
+           if s is a non-joker variable
+             if s belongs to lv
+               TRUE
+             else
+               see previous procedure
+             end
+           elsif s is a joker then
+             if s is a variable then 
+               if s belongs to lv then
+                 TRUE
+               else
+                 see previous procedure
+               end
+             else (certainly s cannot be a member of lv)
+               see previous procedure
+             end
+           else (s is a constant)
+             FALSE
+           end
+         else (s is a binary operator)
+           if (f,i) an indexed variable then
+             if (f,i) belongs to lv then
+               TRUE 
+             else
+               see previous section
+             end
+           elsif (f,i) is a meta-predicate (bvrb || \ ) || a dummy ($)
+             FALSE
+           elsif (f,i) is a quantified formula then 
+             remove from lv the quantified variables && invoke recursively with the new lv
+             unless the new lv is empty in which case: FALSE
+           elsif (f,i) is a substitution formula [lw=E]F then
+             recursive call on lv && E
+             if result is TRUE then 
+               TRUE
+             else
+               if lv-lw is empty then
+                 FALSE
+               else
+                 result is as recursive invocation on lv-lw && F
+               end
+             end
+           else
+             call recursively both left && right sub-trees
+           end  */
+           
+rec_fre_prf(p,n,lv,f,i)   
+/* lv is free in (f,i) */
+{register int s,lq,le,lvv,v,j,b,ff,gg,rec_fre_prf_res ;
+  s=val_tree(f,i);
+  if( ari_sym(s)==0 ){
+    if( is_vrb_spe_sym(s)==TRUE ){
+      if( is_in_set(lv,s)==TRUE ){
+        rec_fre_prf_res=TRUE;
+      } else {
+        exist_set(lv,v,letter_sym(v)==TRUE,b=FALSE,b=TRUE);
+        if( b == TRUE ){
+          rec_fre_prf_res=FALSE;
+        } else {
+          rec_fre_prf_res=fre_jok_prf(p,n,lv,s)
+          
+/* 
+          ff=frm_gol(info_nod(p));
+          gg=cre_encode_tree(ff,root_tree(ff));
+          exist_set(lv,v,(is_in_frm(gg,v)==TRUE) && (letter_sym(v)==TRUE),
+                          rec_fre_prf_res=TRUE,
+                          rec_fre_prf_res=FALSE);
+          kil(gg)
+           */;
+        };
+      };
+    } else if( letter_sym(s)==TRUE ){
+      if( is_letter_vrb_prf(p,n,s)==TRUE ){
+        if( is_in_set(lv,s)==TRUE ){
+          rec_fre_prf_res=TRUE;
+        } else {
+          rec_fre_prf_res=fre_jok_prf(p,n,lv,s);
+        };
+      } else {
+        rec_fre_prf_res=fre_jok_prf(p,n,lv,s);
+      };
+    } else {
+      rec_fre_prf_res=FALSE;
+    };
+  } else {
+    lq=cre(4);
+    le=cre(4);
+    if( is_idx_vrb_frm(f,i)==TRUE ){
+      if( is_in_set(lv,code_idx_vrb_frm(f,i)) == TRUE ){
+        rec_fre_prf_res=TRUE;
+      } else {
+        exist_set(lv,v,letter_sym(v)==TRUE,b=FALSE,b=TRUE);
+        if( b == TRUE ){
+          rec_fre_prf_res=FALSE;
+        } else {
+          rec_fre_prf_res=fre_jok_prf(p,n,lv,code_idx_vrb_frm(f,i));
+        };
+      }
+      
+/* rec_fre_prf_res=is_in_set(lv,code_idx_vrb_frm(f,i)) */;
+    } else if( (s==UNDERSCORE_sym) || (s==ANTI_SLASH_sym) || (s==BVRB_sym) ){
+      rec_fre_prf_res=FALSE;
+    } else if( is_qtf_frm_prf(p,n,lq,f,i)==TRUE ){
+      lvv=cre(len(lv));
+      cop(lv,lvv);
+      diff_set(lvv,lq);
+      if( len(lvv)!=0 ){
+        rec_fre_prf_res=rec_fre_prf(p,n,lvv,f,right_node_tree(f,i));
+} else {
+        rec_fre_prf_res=FALSE;
+      };
+      kil(lvv);
+    } else if( is_set_frm_prf(p,n,lq,f,i)==TRUE ){
+      lvv=cre(len(lv));
+      cop(lv,lvv);
+      diff_set(lvv,lq);
+      if( len(lvv)!=0 ){
+        j=right_node_tree(f,i);
+        rec_fre_prf_res=rec_fre_prf(p,n,lvv,f,right_node_tree(f,j));
+} else {
+        rec_fre_prf_res=FALSE;
+      };
+      kil(lvv);
+    } else if( is_sub_frm_prf(p,n,lq,le,f,i)==TRUE ){
+      if( rec_fre_prf(p,n,lv,f,
+      right_node_tree(f,right_node_tree(f,left_node_tree(f,i))))==TRUE ){
+        rec_fre_prf_res=TRUE;
+      } else {
+        lvv=cre(len(lv));
+        cop(lv,lvv);
+        diff_set(lvv,lq);
+        if( len(lvv)!=0 ){
+          rec_fre_prf_res=rec_fre_prf(p,n,lvv,f,right_node_tree(f,i));
+        } else {
+          rec_fre_prf_res=FALSE;
+        };
+        kil(lvv);
+      }       ;
+    } else {
+      if( rec_fre_prf(p,n,lv,f,left_node_tree(f,i))==TRUE ){
+        rec_fre_prf_res=TRUE;
+      } else {
+        rec_fre_prf_res=rec_fre_prf(p,n,lv,f,right_node_tree(f,i));
+      };
+    };
+    kil(lq);
+    kil(le);
+  }
+; return rec_fre_prf_res;
+}
+
+  is_dis_lst_vrb_frm_prf(p,n,l,f,i)
+  {register int m,j,v,is_dis_lst_vrb_frm_prf_res ;
+    m=cre(4);
+    if( is_lst_vrb_frm_prf(p,n,l,f,i)==TRUE ){
+      xst(l,j,v,test_ident_vrb_prf(p,n,l,m,j,v)==TRUE,
+                is_dis_lst_vrb_frm_prf_res=FALSE,
+                is_dis_lst_vrb_frm_prf_res=TRUE);
+    } else {
+      is_dis_lst_vrb_frm_prf_res=FALSE  ;
+    };
+    kil(m)
+  ; return is_dis_lst_vrb_frm_prf_res;
+  }
+
+  test_non_freeness_prf(p,n,w)
+  {register int l,test_non_freeness_prf_res ;
+    l=cre(4);
+    if( is_dis_lst_vrb_frm_prf(p,n,l,w,left_node_frm(w))==TRUE ){
+      test_non_freeness_prf_res=((rec_fre_prf(p,n,l,w,right_node_frm(w))==FALSE)!=0);
+    } else {
+      test_non_freeness_prf_res=FALSE;
+    };
+    kil(l)
+  ; return test_non_freeness_prf_res;
+  }
+
+                        
+/*  VARIABLE GUARD  */
+                        
+                        
+  test_ident_vrb_prf(p,n,l,m,i,v)
+  {register int w,test_ident_vrb_prf_res ;
+    cop(l,m);
+    rem(m,i);
+    w=cre_frm(v);
+    test_ident_vrb_prf_res=rec_fre_prf(p,n,m,w,root_tree(w));
+    kil(w)
+  ; return test_ident_vrb_prf_res;
+  }
+
+                          
+  test_vrb_prf(p,n,w)
+  {register int l,test_vrb_prf_res ;
+    l=cre(4);
+    test_vrb_prf_res=is_dis_lst_vrb_frm_prf(p,n,l,w,right_node_frm(w));
+    kil(l)
+  ; return test_vrb_prf_res;
+  }
+
+  is_dis_sub_frm_prf(p,n,lv,le,f,i)
+  {register int l,r,op,s,is_dis_sub_frm_prf_res ;
+  clr(lv);
+  clr(le);
+  is_dis_sub_frm_prf_res=FALSE;
+  op=val_tree(f,i);
+  if( op==SPE_sym ){
+    l=left_node_tree(f,i);
+    if( val_tree(f,l)==LSB_sym ){
+      r=right_node_tree(f,l);
+      if( val_tree(f,r)==CEQ_sym ){
+        if( is_dis_lst_vrb_frm_prf(p,n,lv,f,left_node_tree(f,r))==TRUE ){
+          s=dec_tree(f,right_node_tree(f,r),COM_sym);
+          cop(s,le);
+          kil(s); 
+          is_dis_sub_frm_prf_res=((len(lv)==len(le))!=0);
+        };
+      };
+    };
+  }
+; return is_dis_sub_frm_prf_res;
+}
+
+   
+                       
+/*  INTEGER GUARD  */
+                       
+   
+val_int(w)
+{
+  int pos_neg;
+  if   ( val_root_frm ( w ) == PLS_sym ) pos_neg = (-1);
+  else                                   pos_neg = 1;
+  return ( pos_neg * ( val_root_frm ( right_frm ( w ) ) ) );
+}
+
+
+test_int_prf(w)
+{
+/***
+{
+int s;
+printf ( "\n++++++++++++ test_int_prf +++++++++++\n" ); fflush ( stdout );
+printf ( "    `" ); fflush ( stdout );
+dump_tree(w); fflush ( stdout );
+printf ( "'  len %d\n", len ( w ) ); fflush ( stdout );
+
+s=right_frm(w);
+printf ( "\nval_root_right_frm: " ); fflush ( stdout );
+write_stri_sym( val_root_frm(s) ); fflush ( stdout );
+printf ( "\n" ); fflush ( stdout );
+printf ( "dump_tree right_frm `" ); fflush ( stdout );
+dump_tree(s); fflush ( stdout );
+printf ( "'  len %d\n", len ( s ) ); fflush ( stdout );
+kil(s);
+printf ( "+++++++++++++++++++++++++++++++++++++\n" );
+}
+***/
+  return ( is_int_frm ( right_frm ( w ) ) );
+}
+
+/*
+   test_int_prf(w)
+     register int v, s, t, u, res;
+
+/???/
+printf ( "\n++++++++++++ test_int_prf +++++++++++\n" ); fflush ( stdout );
+printf ( "    `" ); fflush ( stdout );
+dump_tree(w); fflush ( stdout );
+printf ( "'\n" ); fflush ( stdout );
+printf ( "len %d\n", len ( w ) ); fflush ( stdout );
+
+s=right_frm(w);
+printf ( "\nval_root_right_frm: " ); fflush ( stdout );
+write_stri_sym( val_root_frm(s) ); fflush ( stdout );
+printf ( "\n" ); fflush ( stdout );
+printf ( "dump_tree right_frm --> | " ); fflush ( stdout );
+dump_tree(s); fflush ( stdout );
+printf ( "|\n" ); fflush ( stdout );
+printf ( "len %d\n", len ( s ) ); fflush ( stdout );
+kil(s);
+printf ( "+++++++++++++++++++++++++++++++++++++\n" );
+/???/
+
+     v=val_tree(w,right_node_frm(w));
+
+     if ( is_nbr_sym ( v ) ) return 1;
+
+     s = right_frm ( w );
+     if ( ( len ( s ) != 3 )                       ||        
+          ( ( val_root_frm ( s ) != PLS_sym ) &&
+            ( val_root_frm ( s ) != MIN_sym )    )    ) {
+       kil(s);
+       return 0;
+     }
+
+/???
+printf ( "\n:::::::::::::::::::::::::::::::::::::\n" ); fflush ( stdout );
+t=left_frm(s);
+printf ( "\nval_root_left_frm: " ); fflush ( stdout );
+write_stri_sym( val_root_frm(t) ); fflush ( stdout );
+printf ( "\n" ); fflush ( stdout );
+printf ( "dump_tree right_frm of --> left_frm | " ); fflush ( stdout );
+dump_tree(t); fflush ( stdout );
+printf ( "|\n" ); fflush ( stdout );
+printf ( "len %d\n", len ( t ) ); fflush ( stdout );
+kil(t);
+t=right_frm(s);
+printf ( "\nval_root_right_frm: " ); fflush ( stdout );
+write_stri_sym( val_root_frm(t) ); fflush ( stdout );
+printf ( "\n" ); fflush ( stdout );
+printf ( "dump_tree right_frm of --> right_frm | " ); fflush ( stdout );
+dump_tree(t); fflush ( stdout );
+printf ( "|\n" ); fflush ( stdout );
+printf ( "len %d\n", len ( t ) ); fflush ( stdout );
+kil(t);
+printf ( "::::::::::::::::::::::::::::::::::::::\n" );
+???/
+
+     t = left_frm ( s );
+     u = right_frm ( s );
+     res = 0;
+
+     if ( ( len ( t ) == 1 ) && ( len ( u ) == 1 ) ) {
+       if ( is_nbr_sym ( val_root_frm ( u ) ) ) {
+         if ( val_root_frm ( t ) == GHO_sym ) {
+           res = 1;
+         }
+       }
+     }
+
+     kil(u);
+     kil(t);
+     kil(s);
+     return res;
+
+   }
+*/
+
+                        
+/*  NUMERIC GUARD  */
+                       
+   
+   test_num_prf(w)
+   {register int v ;
+     v=val_tree(w,right_node_frm(w))
+   ; return is_nbr_sym(v)
+   ;}
+
+                        
+/*  STRING GUARD  */
+                    
+                       
+  test_string_prf(w)
+  {register int v ;
+    v=val_tree(w,right_node_frm(w));
+  ; return is_string_sym(v);
+  }
+
+                       
+/*  BITSTRING GUARD  */
+                    
+                       
+  test_bitstring_prf(w)
+  {register int v ;
+    v=val_tree(w,right_node_frm(w));
+  ; return is_bitstring_sym(v);
+  }
+
+                       
+/*  LITERAL GUARD  */
+                    
+                       
+  test_literal_prf(w)
+  {register int v ;
+    v=val_tree(w,right_node_frm(w));
+  ; return is_literal_sym(v);
+  }
+
+                       
+/*  SINGLETON GUARD  */
+                    
+                       
+  test_singleton_prf(w)
+  {
+    return((val_tree(w,right_node_frm(w)) == COM_sym) == 0 );
+  }
+
+                       
+/*  CONSTANT GUARD  */
+                                           
+  test_constant_prf ( v )
+  {
+    if      ( is_nbr_sym ( v ) )       { /*** printf ( " num\n") ;        ***/ return ( 1 ); }
+    else if ( is_string_sym ( v ) )    { /*** printf ( " string\n") ;     ***/ return ( 1 ); }
+    else if ( is_literal_sym ( v ) )   { /*** printf ( " literal\n") ;    ***/ return ( 1 ); }
+    else if ( is_ident_sym ( v ) )     { /*** printf ( " ident\n") ;      ***/ return ( 1 ); }
+    else if ( is_empty_set_sym ( v ) ) { /*** printf ( " empty set\n") ;  ***/ return ( 1 ); }
+    else if ( is_empty_seq_sym ( v ) ) { /*** printf ( " empty seq\n") ;  ***/ return ( 1 ); }
+    else                               { /*** printf ( " NO\n") ;         ***/ return ( 0 ); }
+  }
+
+                       
+/*  LCONSTANT GUARD  */
+                                           
+  test_lconstant_prf(w)
+  {
+    int f, l, i, ok;
+    ok = 1;
+    f = dec_tree ( w, right_node_frm ( w ), COM_sym );
+    l = len ( f );
+    i = 1;
+    while ( ( i <= l ) && ( ok ) ) {
+     ok = test_constant_prf ( val_root_frm ( val ( f, i ) ) );
+     i++;
+    }
+    kil ( f );
+    return ( ok );
+  }
+
+
+
+
+/*  INFO GUARD  */
+                    
+                       
+  test_info_prf(w)
+{
+/***
+int s,t;
+printf ( "\n------------------------------------------" );
+s=right_frm(w);
+printf ( "\n" );
+dump_tree(s);
+printf ( "\nlen %d\n", len ( s ) );
+
+if ( len(s) > 1 ) {
+
+  printf ( "\n  root ` " );
+  write_stri_sym( val_root_frm(s) );
+  printf ( " '\n" );
+
+  t=left_frm(s);
+  printf ( "\n    left      ` " );
+  dump_tree(t);
+  printf ( "'\n" );
+  kil(t);
+
+  t=right_frm(s);
+  printf ( "\n    right     ` " );
+  dump_tree(t);
+  printf ( "'\n" );
+  kil(t);
+
+}
+kil(s);
+printf ( "------------------------------------------\n" );
+return ( 1 );
+***/
+/***
+      int ff=dec_tree(w,right_node_frm(w),COM_sym);
+      printf ( "len(ff)=%d\n", len(ff) );
+      return ( 1 );
+***/
+
+    return FALSE;
+  }
+
+                       
+/*  IDENTIFIER GUARDS  */
+test_ident_prf(w)
+{register int v ;
+  v=val_tree(w,right_node_frm(w));
+; return is_ident_sym(v);
+}
+
+test_upper_ident_prf(w)
+{register int v ;
+  v=val_tree(w,right_node_frm(w));
+; return is_upper_ident_sym(v);
+}
+
+is_lst_ident_frm_prf(lv,f,i)
+{register int s,j,v,b ;
+  clr(lv);
+  s=dec_tree(f,i,COM_sym);
+  xst(s,j,v,is_ident_sym(val_root_frm(v))==FALSE,b=FALSE,b=TRUE);
+  if( b==TRUE ){
+    itr(s,j,v,psh(lv,val_root_frm(v));kil(v));
+  } else {
+    itr(s,j,v,kil(v));
+  };
+  kil(s);
+  return b;
+}
+
+  test_ident_ident_prf(p,n,l,m,i,v)
+  {register int w,test_ident_vrb_prf_res ;
+    cop(l,m);
+    rem(m,i);
+    w=cre_frm(v);
+    test_ident_vrb_prf_res=rec_fre_prf(p,n,m,w,root_tree(w));
+    kil(w)
+  ; return test_ident_vrb_prf_res;
+  }
+
+  is_dis_lst_ident_frm_prf(p,n,l,f,i)
+  {register int m,j,v,is_dis_lst_ident_frm_prf_res ;
+    m=cre(4);
+    if( is_lst_ident_frm_prf(l,f,i)==TRUE ){
+      xst(l,j,v,test_ident_ident_prf(p,n,l,m,j,v)==TRUE,
+                is_dis_lst_ident_frm_prf_res=FALSE,
+                is_dis_lst_ident_frm_prf_res=TRUE);
+    } else {
+      is_dis_lst_ident_frm_prf_res=FALSE  ;
+    };
+    kil(m)
+  ; return is_dis_lst_ident_frm_prf_res;
+  }
+
+  test_lident_prf(p,n,w)
+  {register int l,test_lident_prf_res ;
+    l=cre(4);
+    test_lident_prf_res=is_dis_lst_ident_frm_prf(p,n,l,w,right_node_frm(w));
+    kil(l)
+  ; return test_lident_prf_res;
+  }
+
+                         
+/*  INHYP GUARD  */
+  
+                   
+  tst_hyp_prf(a,h)
+  {register int rn,fh ;
+    rn=right_node_frm(a);
+    fh=frm_hyp(h)
+  ; return chk_tree(a,rn,beg_tree(a,rn),fh,root_tree(fh),1);
+  }
+
+  test_inhyp_prf(p,n,a,li,w)
+  {register int s,i,h,ww,test_inhyp_prf_res,wc ;
+    s=cre(4);
+    lst_hyp_prf(p,n,s);
+    xst(s,i,h,tst_hyp_prf(a,h)==TRUE,ww=right_frm(a);
+                                    kil(w);
+                                    wc=prd_tree(ww);
+                                    kil(ww);
+                                    psh(li,wc);
+                                    test_inhyp_prf_res=TRUE,
+                                    kil(w);
+                                    test_inhyp_prf_res=FALSE);
+    kil(s);
+    return test_inhyp_prf_res;
+  }
+
+                    
+/*  SPARE MEMORY GUARD  */
+  spare_mem_test_prf(f)
+  {register int j,s,spare_mem_test_prf_res ;
+    j=right_frm(f);
+    s=cre_frm(arith_val_sym(spare_mem_percent_seq));
+    psh(lst_input_prf,s);
+    spare_mem_test_prf_res=chk_frm(j,s)
+  ; return spare_mem_test_prf_res;
+  }
+                      
+/*  RULE NUMBER GUARD  */
+  test_len_theo_prf(w,a)
+  {register int r,lr,thn,ra,rra,t,b,n,s,test_len_theo_prf_res ;
+    test_len_theo_prf_res=FALSE;
+    r=right_frm(w);
+    if( val_root_frm(r)==DOT_sym ){
+      lr=left_frm(r);
+      thn=val_root_frm(lr);
+      if( ari_sym(thn)==0 ){
+        xst_the(t,nam_the(t)==thn,b=TRUE;n=nbr_rul_the(t),b=FALSE);
+        if( b==TRUE ){
+          s=cre_frm(arith_val_sym(n));
+          psh(lst_input_prf,s);
+          ra=right_frm(a);
+          rra=right_frm(ra);
+          test_len_theo_prf_res=chk_frm(rra,s);
+          kil(ra);
+          kil(rra);
+        };
+      };
+      kil(lr);
+    };
+    kil(r)
+  ; return test_len_theo_prf_res;
+  }
+  
+                        
+/*  RULE GUARD  */
+                        
+  test_rule_prf(rul,i,rra,rlra)
+  {register int s,nn,result ;
+    result=FALSE;
+    s=cre_rec_rul(rul);
+    if( chk_frm(rra,s)==TRUE ){
+      nn=cre_frm(arith_val_sym(i));
+      if( chk_frm(rlra,nn)==TRUE ){
+        result=TRUE;
+        psh(lst_input_prf,s);
+        psh(lst_input_prf,nn);
+      } else {
+        kil(nn);
+        kil(s);
+      };
+    } else {
+      kil(s);
+    }
+  ; return result;
+  }
+
+  
+  test_rul_grd_prf(w,a)
+  {register int r,lr,llrn,thn,t,b,rlrn,rc,n,rul,s,ra,rra,
+  lra,lra2,rlra,c,i,lr2,nb,nbv,nbval,test_rul_grd_prf_res ;
+    test_rul_grd_prf_res=FALSE;
+    r=right_frm(w);
+    nbval=0-1;
+    if( val_root_frm(r)==COM_sym ){
+      lr=left_frm(r);
+      if( val_root_frm(lr)==COM_sym ){
+        nb=left_frm(lr);
+        nbv=val_root_frm(nb);
+        kil(nb);
+        if( is_nbr_sym(nbv)==TRUE ){
+          nbval=arith_val_sym(nbv);
+        };
+        lr2= right_frm(lr);
+        kil(lr);
+        lr=lr2;
+      };
+      if( val_root_frm(lr)==DOT_sym ){
+        llrn=left_node_frm(lr);
+        thn=val_tree(lr,llrn);
+        if( ari_sym(thn)==0 ){
+          xst_the(t,nam_the(t)==thn,b=TRUE,b=FALSE);
+          if( b==TRUE ){
+            rlrn=right_node_frm(lr);
+            rc=val_tree(lr,rlrn);
+            if( ari_sym(rc)==0 ){
+              if( is_nbr_sym(rc)==TRUE ){
+                n=(arith_val_sym(rc));
+                if( (n>0) && (n<=nbr_rul_the(t)) ){
+                  rul=val_rul_the(t,n);
+                  s=cre_rec_rul(rul);
+                  psh(lst_input_prf,s);
+                  ra=right_frm(a);
+                  rra=right_frm(ra);
+                  test_rul_grd_prf_res=chk_frm(rra,s);
+                  kil(rra);
+                  kil(ra);
+                };
+              } else {
+                ra=right_frm(a);
+                rra=right_frm(ra);
+                lra=left_frm(ra);
+                if( val_root_frm(lra)==COM_sym ){
+                  lra2=right_frm(lra);
+                  kil(lra);
+                  lra=lra2;
+                };
+                rlra=right_frm(lra);
+                c=FALSE;
+                if( nbval==(-1) ){
+                  nitr(rul_the(t),i,rul,if( c==FALSE ){
+                    c=test_rule_prf(rul,i,rra,rlra)
+                 ;});
+                } else {
+                  nitr(rul_the(t),i,rul,if( (c==FALSE) && (i <= nbval) ){
+                    c=test_rule_prf(rul,i,rra,rlra);
+                  } else {
+                 ;});
+                };
+                test_rul_grd_prf_res=c;
+                kil(rra);
+                kil(ra);
+                kil(lra);
+                kil(rlra);
+              };
+            };
+          };
+        };
+      };
+      kil(lr);
+    };
+    kil(r)
+  ; return test_rul_grd_prf_res;
+  }
+
+  test_unproved_lem_grd_prf(w,a)
+  {register int r,lr,llrn,thn,t,b,rlrn,rc,n,rul,s,ra,rra,
+  lra,lra2,rlra,c,i,lr2,nb,nbv,nbval,test_rul_grd_prf_res ;
+    test_rul_grd_prf_res=FALSE;
+    r=right_frm(w);
+    nbval=0-1;
+    if( val_root_frm(r)==COM_sym ){
+      lr=left_frm(r);
+      if( val_root_frm(lr)==COM_sym ){
+        nb=left_frm(lr);
+        nbv=val_root_frm(nb);
+        kil(nb);
+        if( is_nbr_sym(nbv)==TRUE ){
+          nbval=arith_val_sym(nbv);
+        };
+        lr2= right_frm(lr);
+        kil(lr);
+        lr=lr2;
+      };
+      if( val_root_frm(lr)==DOT_sym ){
+        llrn=left_node_frm(lr);
+        thn=val_tree(lr,llrn);
+        if( ari_sym(thn)==0 ){
+          xst_the(t,nam_the(t)==thn,b=TRUE,b=FALSE);
+          if( b==TRUE ){
+            rlrn=right_node_frm(lr);
+            rc=val_tree(lr,rlrn);
+            if( ari_sym(rc)==0 ){
+              if( is_nbr_sym(rc)==TRUE ){
+                n=(arith_val_sym(rc));
+                if( (n>0) && (n<=nbr_rul_the(t)) ){
+                  rul=val_rul_the(t,n);
+                  if( (typ_rul(rul)==lem_rul) && (pvd_rul(rul)!=now_rul) ){
+                    s=cre_rec_rul(rul);
+                    psh(lst_input_prf,s);
+                    ra=right_frm(a);
+                    rra=right_frm(ra);
+                    test_rul_grd_prf_res=chk_frm(rra,s);
+                    kil(rra);
+                    kil(ra);
+                  };
+                };
+              } else {
+                ra=right_frm(a);
+                rra=right_frm(ra);
+                lra=left_frm(ra);
+                if( val_root_frm(lra)==COM_sym ){
+                  lra2=right_frm(lra);
+                  kil(lra);
+                  lra=lra2;
+                };
+                rlra=right_frm(lra);
+                c=FALSE;
+                if( nbval==(-1) ){
+                  nitr(rul_the(t),i,rul,if( c==FALSE ){
+                    if( (typ_rul(rul)==lem_rul) && (pvd_rul(rul)!=now_rul) ){
+                      c=test_rule_prf(rul,i,rra,rlra);
+                    }
+                 ;});
+                } else {
+                  nitr(rul_the(t),i,rul,if( (c==FALSE) && (i <= nbval) ){
+                    if( (typ_rul(rul)==lem_rul) && (pvd_rul(rul)!=now_rul) ){
+                      c=test_rule_prf(rul,i,rra,rlra);
+                    };
+                  } else {
+                 ;});
+                };
+                test_rul_grd_prf_res=c;
+                kil(rra);
+                kil(ra);
+                kil(lra);
+                kil(rlra);
+              };
+            };
+          };
+        };
+      };
+      kil(lr);
+    };
+    kil(r)
+  ; return test_rul_grd_prf_res;
+  }
+
+                             
+/*  READF GUARD  */
+    
+  ridf_test_prf(w,a)
+  {register int ff,i,fff,s,gg,ggg,b,rid_test_prf_res,ss,vv ;
+    ff=dec_tree(w,right_node_frm(w),COM_sym);
+    gg=dec_tree(a,right_node_frm(a),COM_sym);
+    pop(ff);
+    if( len(ff)>0 ){
+      ss=fst(ff);
+      vv=val_root_frm(ss);
+      if( is_string_sym(vv)==TRUE ){    
+        save_fic;
+        con_stderr_fic;
+        reset_out(0);
+        write_format_out(vv,ff);
+        flush_fic;
+        restore_fic;
+      };
+    };
+    s=
+/* read_eol_frm */
+read_frm;
+    psh(lst_input_prf,s);
+    rid_test_prf_res=chk_frm(lst(gg),s);
+    itr(ff,i,fff,kil(fff));
+    kil(ff);
+    itr(gg,i,ggg,kil(ggg));
+    kil(gg)
+  ; return rid_test_prf_res;
+  }
+
+  rideol_test_prf(w,a)
+  {register int ff,i,fff,s,gg,ggg,b,rid_test_prf_res,ss,vv ;
+    ff=dec_tree(w,right_node_frm(w),COM_sym);
+    gg=dec_tree(a,right_node_frm(a),COM_sym);
+    pop(ff);
+    if( len(ff)>0 ){
+      ss=fst(ff);
+      vv=val_root_frm(ss);
+      if( is_string_sym(vv)==TRUE ){    
+        save_fic;
+        con_stderr_fic;
+        reset_out(0);
+        write_format_out(vv,ff);
+        flush_fic;
+        restore_fic;
+      };
+    };
+    s=read_eol_frm;
+    psh(lst_input_prf,s);
+    rid_test_prf_res=chk_frm(lst(gg),s);
+    itr(ff,i,fff,kil(fff));
+    kil(ff);
+    itr(gg,i,ggg,kil(ggg));
+    kil(gg)
+  ; return rid_test_prf_res;
+  }
+
+                             
+/*  GET FILE GUARD  */
+  get_test_prf(f)
+  {register int ff,v,s,ss,p,get_test_prf_res ;
+    get_test_prf_res=FALSE;
+    ff=right_frm(f);
+    if( val_root_frm(ff)==COM_sym ){
+      v=val_tree(ff,left_node_frm(ff));
+      if( ari_sym(v)==0 ){
+        if( nrml_stri_sym(v)==TRUE ){
+          s=stri_sym(v);
+          if( (fst_str(s)==SMPQUO_sym) && (lst_str(s)==SMPQUO_sym) ){
+            if( mod_str_read_name_fil(s)==TRUE ){
+              ss=read_file_frm;
+              if( ss!=0 ){
+                psh(lst_input_prf,ss);
+                p=right_frm(ff);
+                get_test_prf_res=chk_frm(p,ss);
+                kil(p);
+              };
+            };
+          };
+        };
+      };
+    };
+    kil(ff)
+  ; return get_test_prf_res;
+  }
+
+  
+                               
+/*  GET HYP GUARD  */
+  gethyp_test_prf(p,n,f)
+  {register int ff,s,fff,gethyp_test_prf_res ;
+    gethyp_test_prf_res=FALSE;
+    ff=right_frm(f);
+    s=cre(7);
+    lst_genuine_hyp_frm_prf(p,n,s);
+    if( len(s)!=0 ){
+      fff=rec_frm(s,AND_sym);
+      psh(lst_input_prf,fff);
+      gethyp_test_prf_res=chk_frm(ff,fff);
+    };
+    kil(s);
+    kil(ff)
+  ; return gethyp_test_prf_res;
+  }
+
+  getallhyp_test_prf(p,n,f)
+  {register int ff,s,fff,getallhyp_test_prf_res ;
+    getallhyp_test_prf_res=FALSE;
+    ff=right_frm(f);
+    s=cre(10);
+    lst_all_hyp_frm_prf(p,n,s);
+    if( len(s)!=0 ){
+      fff=rec_frm(s,AND_sym);
+      psh(lst_input_prf,fff);
+      getallhyp_test_prf_res=chk_frm(ff,fff);
+    };
+    kil(s);
+    kil(ff)
+  ; return getallhyp_test_prf_res;
+  }
+
+  
+                           
+/*  FILE CONNECT GUARD  */
+  
+  test_con_prf(f)
+  {register int v,s,test_con_prf_res ;
+    test_con_prf_res=FALSE;
+    v=val_tree(f,right_node_frm(f));
+    if( ari_sym(v)==0 ){
+      if( nrml_stri_sym(v)==TRUE ){
+        s=stri_sym(v);
+        if( (fst_str(s)==SMPQUO_sym) && (lst_str(s)==SMPQUO_sym) ){
+          if( con_fic(v)==TRUE ){
+            reset_out(0);
+            test_con_prf_res=TRUE;
+          };
+        };
+      };
+    }
+  ; return test_con_prf_res;
+  }
+
+                           
+/*  FILE APPEND GUARD  */
+  
+  test_app_prf(f)
+  {register int v,s,test_app_prf_res ;
+    test_app_prf_res=FALSE;
+    v=val_tree(f,right_node_frm(f));
+    if( ari_sym(v)==0 ){
+      if( nrml_stri_sym(v)==TRUE ){
+        s=stri_sym(v);
+        if( (fst_str(s)==SMPQUO_sym) && (lst_str(s)==SMPQUO_sym) ){
+          if( app_fic(v)==TRUE ){
+            
+/* reset_out(0); */
+            test_app_prf_res=TRUE;
+          };
+        };
+      };
+    }
+  ; return test_app_prf_res;
+  }
+
+                            
+/*  SET_FWD_PRF GUARD  */
+  
+  test_set_fwd_prf(f)
+  {register int v,s,test_set_fwd_prf_res ;
+    test_set_fwd_prf_res=FALSE;
+    v=val_tree(f,right_node_frm(f));
+    if( is_nbr_sym(v) ){
+      max_fwd_ctr_auto_prf = arith_val_sym ( v );
+      test_set_fwd_prf_res=TRUE;
+    }
+    return test_set_fwd_prf_res;
+  }
+
+                            
+/*  SEARCH GUARD  */
+                            
+  search_test_prf(w)
+  {register int rw,v,s,i,ss,pat,res,list,op,u,j,frm,b,newlist,search_test_prf_res ;
+    search_test_prf_res=FALSE;
+    rw=right_frm(w);
+    v=val_root_frm(rw);
+    if( v == COM_sym ){
+      s=dec_frm(rw,COM_sym);
+      if( len(s) == 3 ){
+        pat=val(s,1);
+        list=val(s,2);
+        res=val(s,3);
+        op=val_root_frm(list);
+        if( (op==AND_sym) || (op==SMC_sym) || (op==COM_sym) ){
+          u=dec_frm(list,op);
+          nxst(u,j,frm,chk_frm(pat,frm) == TRUE,
+          rem(u,j);
+          
+/* psh(u,frm); */
+          b=TRUE,
+          b=FALSE);
+          if( b==TRUE ){
+            newlist=rec_frm(u,op);
+            if( chk_frm(res,newlist) == TRUE ){
+              psh(lst_input_prf,frm);
+              psh(lst_input_prf,newlist);
+              itr(u,i,ss,kil(ss));
+              search_test_prf_res=TRUE;
+            } else {
+              kil(newlist);
+              itr(u,i,ss,kil(ss));
+              kil(frm);
+            };
+          } else {
+            itr(u,i,ss,kil(ss));
+          };
+          kil(u);
+        };
+      };
+      itr(s,i,ss,kil(ss));
+      kil(s);
+    };
+    kil(rw)
+  ; return search_test_prf_res;
+  }
+
+                           
+/*  GUARD MONITOR  */
+ 
+  guard_prf(p,n,a,li,app_rule_flag,prf_seq_breade)
+  {register int w,op,guard_prf_res ;
+    w=prd_tree(a);
+    op=val_root_frm(w);
+    if( op==BTST_sym ){             
+      guard_prf_res=test_arith_prf(w);     
+/*  arithmetic relation  */
+      kil(w);
+    } else if( op==BNUM_sym  ){
+      guard_prf_res=test_num_prf(w);            
+/*  numericness */
+      kil(w);
+    } else if( op==BINT_sym  ){
+      guard_prf_res=test_int_prf(w);            
+/*  intergerness */
+      kil(w);
+    } else if( op==STR_sym ){
+      guard_prf_res=test_string_prf(w);         
+/*  stringness  */
+      kil(w);
+    } else if( op==BBITSTR_sym ){
+      guard_prf_res=test_bitstring_prf(w);         
+/*  bitstringness  */
+      kil(w);
+    } else if( op==BLITERAL_sym ){
+      guard_prf_res=test_literal_prf(w);         
+/*  literalness  */
+      kil(w);
+    } else if( op==BSINGLETON_sym ){
+      guard_prf_res=test_singleton_prf(w);         
+/*  singletonness  */
+      kil(w);
+    } else if( op==BCONSTANT_sym ){
+      guard_prf_res=test_constant_prf(val_tree(w,right_node_frm(w)));         
+/*  constantness  */
+      kil(w);
+    } else if( op==BLCONSTANT_sym ){
+      guard_prf_res=test_lconstant_prf(w);         
+/*  lconstantness  */
+      kil(w);
+    } else if( op==BINFO_sym ){
+      guard_prf_res=test_info_prf(w);         
+/*  infoness  */
+      kil(w);
+    } else if( op==IDENT_sym ){
+      guard_prf_res=test_ident_prf(w);          
+/*  identifierness  */
+      kil(w);
+    } else if( op==UIDENT_sym ){
+      guard_prf_res=test_upper_ident_prf(w);    
+/*  upidentifierness  */
+      kil(w);
+    } else if( op==LIDENT_sym ){
+      guard_prf_res=test_lident_prf(p,n,w);     
+/*  listidentifierness  */
+      kil(w);
+    } else if( op==ANTI_SLASH_sym ){                 
+      guard_prf_res=test_non_freeness_prf(p,n,w);
+/*  non freeness  */
+      kil(w);
+    } else if( op==BVRB_sym  ){                      
+      guard_prf_res=test_vrb_prf(p,n,w);       
+/*  variableness  */
+      kil(w);
+    } else if( op==CON_sym ){                        
+      guard_prf_res=test_con_prf(w);            
+/*  bconnect  */
+      kil(w);
+    } else if( op==APP_sym ){                        
+      guard_prf_res=test_app_prf(w);           
+/*  bappend  */
+      kil(w);
+    } else if( op==BINH_sym  ){                      
+/*  binhyp  */
+    
+      guard_prf_res=test_inhyp_prf(p,n,a,li,w);
+      if ( pog_flag && guard_prf_res == TRUE ) {
+          binhyp_count++;
+/***
+ fprintf ( bstdout, "binhyp_count %d\n",binhyp_count);delay;
+***/
+        }
+    } else if( op==RUL_sym ){                        
+      guard_prf_res=test_rul_grd_prf(w,a);       
+/*  rule  */
+      kil(w);
+    } else if( op==BLENT_sym ){                        
+      guard_prf_res=test_len_theo_prf(w,a);       
+/*  nbr of rules  */
+      kil(w);
+    } else if( op==LEM_sym ){                        
+/*  unproved lemma  */
+      guard_prf_res=test_unproved_lem_grd_prf(w,a);
+      kil(w);
+    } else if( op==RIDF_sym ){                   
+/*  reading  from terminal (`) */
+      guard_prf_res=ridf_test_prf(w,a);
+      kil(w);
+    } else if( op==RIDE_sym ){                  
+/*  reading  from terminal (eol) */
+      guard_prf_res=rideol_test_prf(w,a);  
+      kil(w);
+    } else if( op==GET_sym ){                        
+/*  getting from file  */
+      guard_prf_res=get_test_prf(w);
+      kil(w);
+    } else if( op==BGETHYP_sym ){                    
+/*  getting genuine hypos.  */
+      guard_prf_res=gethyp_test_prf(p,n,w);
+      kil(w);
+    } else if( op==BGETALLHYP_sym ){                 
+/*  getting all hypos.  */
+      guard_prf_res=getallhyp_test_prf(p,n,w);
+      kil(w);
+    } else if( op==BSEARCH_sym ){                    
+/*  Searching in a list  */
+      guard_prf_res=search_test_prf(w);
+      kil(w);
+    } else if( op==BSPAREMEM_sym ){    
+/*  Getting Spare Memory Percentage  */
+      guard_prf_res=spare_mem_test_prf(w);
+      kil(w);
+    } else if( op==BSETFWDPRF_sym  ){
+/*  Setting max_fwd_ctr_auto_prf  */
+      guard_prf_res=test_set_fwd_prf(w);
+      kil(w);
+    } else {
+      psh(li,w);
+      guard_prf_res=TRUE;
+    }
+    return guard_prf_res;
+  }
+
+              
+/*  TENTATIVE GOAL FORMULA ALREADY ; PARENT GOALS  */
+  
+  already_frm_prf(p,n,f)
+  {register int m,g,already_frm_prf_res ;
+    xst_asc_nod(p,n,m,g,eql_spe_frm(f,frm_gol(g))==TRUE,
+                                  already_frm_prf_res=TRUE,
+                                  already_frm_prf_res=FALSE)
+  ; return already_frm_prf_res;
+  }
+
+                
+/*  EXTERNAL 'NORMAL' RULE HANDLING   */
+                
+                
+  cre_lst_gol_prf(p,li,n)
+  {register int j,a,g,cre_lst_gol_prf_res ;
+    xst(li,j,a,already_frm_prf(p,n,a)==TRUE,
+               cre_lst_gol_prf_res=FALSE,
+               itr(li,j,a,g=cre_gol(a);cre_nod(g,n));
+               cre_lst_gol_prf_res=TRUE)
+  ; return cre_lst_gol_prf_res;
+  }
+
+  ask_rul_prf(rr)
+  {register int ask_rul_prf_res ;
+    ask_rul_prf_res=TRUE;
+    if( auto_prf==FALSE ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      RULE: ");
+      write_nam_the(the_rul(rr));
+      fprintf ( bstdout, ".");
+      write_nat(num_rul(rr));
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+      write_spe_ver_rul(rr);
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      YES? ");
+      if( yes_no==NO ){
+        ask_rul_prf_res=FALSE;
+      };
+    }
+  ; return ask_rul_prf_res;
+  }
+
+  ask_eql_rul_prf(f,i,rr)
+  {register int k,ask_eql_rul_prf_res ;
+    ask_eql_rul_prf_res=TRUE;
+    if( auto_prf==FALSE ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      RULE: ");
+      write_nam_the(the_rul(rr));
+      fprintf ( bstdout, ".");
+      write_nat(num_rul(rr));
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+      write_spe_ver_rul(rr);
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+      if( (len(f)<200) || (sho_big_gol_prf==TRUE) ){
+        k=cre_high_frm(f,i);
+        fprintf ( bstdout, "      To be applied to the highlighted sub-formula\n");
+        fprintf ( bstdout, "\n");
+        reset_res(6);
+        write_frm_res(k,6);
+        kil(k);
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "\n");
+      };
+      fprintf ( bstdout, "      YES? ");
+      if( yes_no==NO ){
+        ask_eql_rul_prf_res=FALSE;
+      };
+    }
+  ; return ask_eql_rul_prf_res;
+  }
+
+  test_nrm_rul_prf(p,n,rr)
+  {register int la,li,j,a,b,i,pa ;
+    la=ant_rul(rr);
+    li=cre(len(la));
+      nxst(la,j,a,guard_prf(p,n,a,li, /* app_rule_flag = */ 0, /* prf_seq_breade = */ 0 )==FALSE,
+                  b=FALSE,
+                  if( ask_rul_prf(rr)==TRUE ){
+                    b=cre_lst_gol_prf(p,li,n);
+                  } else {
+                    b=FALSE
+                 ;});
+    if( b==FALSE ){
+      itr(li,i,pa,kil(pa));
+    };
+    kil(li)
+  ; return b;
+  }
+
+  
+              
+/*   EXTERNAL REWRITING RULE HANDLING   */
+       
+       
+  
+/*  Obtain left-most sub_formula of goal that matches the left hand side of the  */
+  
+/*  rewriting rule; expand the antecedents (if any) of the rule (together     */
+  
+/*  with the testing of the guards); if these expansions are successful then */
+  
+/*  expand the right hand side of the rule && put this expansion in the     */
+  
+/*  right place in the old goal to form the new goal; test whether the new   */
+  
+/*  goal && the expanded antecedents are genuinely new; if not so, try next */
+  
+/*  sub_formula in goal, etc ...  */
+  
+  
+  clean_prf(li)
+  {register int ii,pa ;
+    itr(li,ii,pa,kil(pa));
+    clr(li);
+  }
+
+  test3_eql_rul_prf(f,i,rr,li,p,n)
+  {register int test3_eql_rul_prf_res ;
+    if( ask_eql_rul_prf(f,i,rr)==FALSE ){
+      clean_prf(li);
+      test3_eql_rul_prf_res=FALSE;
+    } else if( cre_lst_gol_prf(p,li,n)==TRUE ){
+      test3_eql_rul_prf_res=TRUE;
+    } else {
+      clean_prf(li);
+      test3_eql_rul_prf_res=FALSE ;
+    }
+  ; return test3_eql_rul_prf_res;
+  }
+
+  is_fre_in_ant_prf(p,n,lv,a)
+  {register int is_fre_in_ant_res ;
+    if( is_bspec_sym(val_root_frm(a))==TRUE ){
+      is_fre_in_ant_res=FALSE;
+    } else {
+      is_fre_in_ant_res=rec_fre_prf(p,n,lv,a,root_tree(a));
+    }
+  ; return is_fre_in_ant_res;
+  }
+
+  
+/*  After testing the guards ( && thus possibly producing some
+     new joker instanciations), it tests whether some quantified
+     variables that are visible from the place of replacement are free 
+     in some antecedent; if it is the case, the rule is not applied  */
+     
+  test2_eql_rul_prf(rr,p,n,la,f,i,c,lnod,li)
+  {register int rp,s,ff,j,a,test2_eql_rul_prf_res   ,b,lv   ;
+    if( chk_tree(c,lnod,beg_tree(c,lnod),f,i,beg_tree(f,i))==TRUE ){
+      if( ari_sym(val_tree(f,i))==0 ){
+        b=father_is_idx_vrb_frm(f,i) 
+/*  to avoid left of aaa$1 to match 
+                                             with aaa  */;
+      } else {
+        b=FALSE;
+      };
+      if( b==TRUE ){
+        test2_eql_rul_prf_res=FALSE;
+      } else if( len(la)!=0 ){
+        nxst(la,j,a,guard_prf(p,n,a,li, /* app_rule_flag = */ 0, /* prf_seq_breade = */ 0 )==FALSE,
+                    b=FALSE,
+                    b=TRUE)
+        if( b==TRUE ){
+          lv=cre(5);
+          get_asc_nod_vrb_frm(lv,f,i);
+          if( len(lv)!=0 ){
+            nxst(li,j,a,is_fre_in_ant_prf(p,n,lv,a)==TRUE,
+                        
+/* rec_fre_prf(p,n,lv,a,root_tree(a)) */
+              clean_prf(li);
+              test2_eql_rul_prf_res=FALSE,
+              
+              rp=right_frm(c);
+              s=prd_tree(rp);
+              ff=cre_mod_tree(f,i,s);
+              psh(li,ff);
+              test2_eql_rul_prf_res=test3_eql_rul_prf(f,i,rr,li,p,n);
+              kil(rp);
+              kil(s)
+              
+            );
+          } else {
+            rp=right_frm(c);
+            s=prd_tree(rp);
+            ff=cre_mod_tree(f,i,s);
+            psh(li,ff);
+            test2_eql_rul_prf_res=test3_eql_rul_prf(f,i,rr,li,p,n);
+            kil(rp);
+            kil(s);
+          };
+          kil(lv);
+        } else {
+          clean_prf(li);
+          test2_eql_rul_prf_res=FALSE;
+        };
+      } else {
+        rp=right_frm(c);
+        s=prd_tree(rp);
+        ff=cre_mod_tree(f,i,s);
+        psh(li,ff);
+        test2_eql_rul_prf_res=test3_eql_rul_prf(f,i,rr,li,p,n);
+        kil(rp);
+        kil(s);
+      };
+    } else {
+      test2_eql_rul_prf_res=FALSE;
+    };
+    if( test2_eql_rul_prf_res==FALSE ){
+      clr_chk_frm;
+      clean_prf(li);
+    }
+  ; return test2_eql_rul_prf_res;
+  }
+
+  test_eql_rul_prf(p,n,r,f)
+  {register int c,lnod,op,li,la,i,v,test_eql_rul_prf_res ;
+    c=cns_rul(r);
+    lnod=left_node_frm(c);
+    op=val_tree(c,lnod);
+    if( (is_in_frm(f,op)==TRUE) || (letter_sym(op)==TRUE) || (op==JK2_sym) || (op==JK1_sym) ){
+      la=ant_rul(r);
+      li=cre(len(la));
+      nxst_sub_frm(f,i,v,test2_eql_rul_prf(r,p,n,la,f,i,c,lnod,li)==TRUE,
+                         test_eql_rul_prf_res=TRUE,
+                         test_eql_rul_prf_res=FALSE);
+      kil(li);
+    } else {
+      test_eql_rul_prf_res=FALSE;
+    }
+  ; return test_eql_rul_prf_res;
+  }
+
+                               
+                
+/*   EXTERNAL RULE HANDLING   */
+            
+            
+  test_rul_prf(p,n,r,rr,frm)
+  {register int c,op,test_rul_prf_res ;
+    if( (r!=rr) && (val_sts_rul(rr)==on_rul) ){
+      c=cns_rul(rr);
+      op=val_root_frm(c);
+      clr_chk_frm;
+      if( op==MAC_sym ){
+        test_rul_prf_res=test_eql_rul_prf(p,n,rr,frm);
+      } else if( chk_frm(c,frm)==TRUE ){
+        test_rul_prf_res=test_nrm_rul_prf(p,n,rr);
+      } else {
+        test_rul_prf_res=FALSE;
+      };
+      kil_content_input_prf;
+    } else {
+      test_rul_prf_res=FALSE;
+    }
+  ; return test_rul_prf_res;
+  }
+
+                        
+/*  HYP PROOF HANDLING  */
+         
+  ask_hyp_prf(hf) 
+  {register int ask_hyp_prf_res ;
+    ask_hyp_prf_res=TRUE;
+    if( auto_prf==FALSE ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      HYPOTHESIS\n");
+      fprintf ( bstdout, "\n");
+      reset_res(6);
+      write_frm_res(hf,6);
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      YES? ");
+      if( yes_no==NO ){
+        ask_hyp_prf_res=FALSE;
+      };
+    }
+  ; return ask_hyp_prf_res;
+  }
+
+  ask_eql_hyp_prf(f,i,hf) 
+  {register int k,ask_eql_hyp_prf_res ;
+    ask_eql_hyp_prf_res=TRUE;
+    if( auto_prf==FALSE ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      HYPOTHESIS\n");
+      fprintf ( bstdout, "\n");
+      reset_res(6);
+      write_frm_res(hf,6);
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+      if( (len(f)<200) || (sho_big_gol_prf==TRUE) ){
+        k=cre_high_frm(f,i);
+        fprintf ( bstdout, "      To be applied to the highlighted sub-formula\n");
+        fprintf ( bstdout, "\n");
+        reset_res(6);
+        write_frm_res(k,6);
+        kil(k);
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "\n");
+      }; 
+      fprintf ( bstdout, "      YES? ");
+      if( yes_no==NO ){
+        ask_eql_hyp_prf_res=FALSE;
+      };
+    }
+  ; return ask_eql_hyp_prf_res;
+  }
+
+  test3_eql_hyp_prf(p,n,hf,lnod,rnod,f,i)
+  {register int rp,ff,gl,gg,s,j,v,b,test3_eql_hyp_prf_res,lv ;
+    if( eql_tree(hf,lnod,f,i)==TRUE ){
+      if( ari_sym(val_tree(f,i))==0 ){
+        b=father_is_idx_vrb_frm(f,i) 
+/*  to avoid left of aaa$1 to match 
+                                             with aaa  */;
+      } else {
+        b=FALSE;
+      };
+      if( b==TRUE ){
+        test3_eql_hyp_prf_res=FALSE;
+      } else {
+        rp=cre_cop_tree(hf,rnod);
+        ff=cre_mod_tree(f,i,rp);
+        kil(rp);
+        
+        lv=cre(5);
+        get_asc_nod_vrb_frm(lv,f,i);
+        if( rec_fre_prf(p,n,lv,hf,root_tree(hf)) ==TRUE ){
+          kil(ff);
+          test3_eql_hyp_prf_res=FALSE;
+        } else if( already_frm_prf(p,n,ff)==TRUE ){
+          kil(ff);
+          test3_eql_hyp_prf_res=FALSE;
+        } else {
+          gg=left_frm(hf);
+          if( val_root_frm(gg)==AND_sym ){
+            s=dec_frm(gg,AND_sym);
+            xst(s,j,v,already_frm_prf(p,n,v)==TRUE,b=FALSE,b=TRUE);
+            if( b==TRUE ){
+              b=ask_eql_hyp_prf(f,i,hf);
+            };
+            if( b==TRUE ){
+              itr(s,j,v,gl=cre_gol(v);cre_nod(gl,n));
+              gl=cre_gol(ff);
+              cre_nod(gl,n);
+              test3_eql_hyp_prf_res=TRUE;
+            } else {
+              itr(s,j,v,kil(v));
+              kil(ff);
+              test3_eql_hyp_prf_res=FALSE;
+            };
+            kil(s);
+            kil(gg);
+          } else {
+            if( already_frm_prf(p,n,gg)==TRUE ){
+              test3_eql_hyp_prf_res=FALSE;
+              kil(ff);
+              kil(gg);
+            } else if( ask_eql_hyp_prf(f,i,hf)==FALSE ){
+              test3_eql_hyp_prf_res=FALSE;
+              kil(ff);
+              kil(gg);
+            } else {
+              test3_eql_hyp_prf_res=TRUE;
+              gl=cre_gol(gg);
+              cre_nod(gl,n);
+              gl=cre_gol(ff);
+              cre_nod(gl,n);
+            };
+          };
+        };
+        kil(lv);
+      };
+    } else {
+      test3_eql_hyp_prf_res=FALSE;
+    }
+  ; return test3_eql_hyp_prf_res;
+  }
+
+  test2_eql_hyp_prf(p,n,hf,lnod,f,i)
+  {register int rp,ff,gl,test2_eql_hyp_prf_res,lv,b ;
+    if( eql_tree(hf,lnod,f,i)==TRUE ){
+      if( ari_sym(val_tree(f,i))==0 ){
+        b=father_is_idx_vrb_frm(f,i) 
+/*  to avoid left of aaa$1 to match 
+                                             with aaa  */;
+      } else {
+        b=FALSE;
+      };
+      if( b==TRUE ){
+        test2_eql_hyp_prf_res=FALSE;
+      } else {
+        rp=right_frm(hf);
+        ff=cre_mod_tree(f,i,rp);
+        kil(rp);
+      
+        lv=cre(5);
+        get_asc_nod_vrb_frm(lv,f,i);
+        if( rec_fre_prf(p,n,lv,hf,root_tree(hf)) ==TRUE ){
+          kil(ff);
+          test2_eql_hyp_prf_res=FALSE;
+        } else if( ask_eql_hyp_prf(f,i,hf)==FALSE ){
+          kil(ff);
+          test2_eql_hyp_prf_res=FALSE;
+        } else if( already_frm_prf(p,n,ff)==TRUE ){
+          kil(ff);
+          test2_eql_hyp_prf_res=FALSE;
+        } else {
+          gl=cre_gol(ff);
+          cre_nod(gl,n);
+          test2_eql_hyp_prf_res=TRUE;
+        };
+        kil(lv);
+      };
+    } else {
+      test2_eql_hyp_prf_res=FALSE;
+    }
+  ; return test2_eql_hyp_prf_res;
+  }
+
+  test_eql_hyp_prf(p,n,hf,f)
+  {register int i,v,op,lnod,test_eql_hyp_prf_res ;
+    lnod=left_node_frm(hf);
+    op=val_tree(hf,lnod);
+    
+/* if( may_have_qtf_or_sub_frm(f)==TRUE ){
+      test_eql_hyp_prf_res=FALSE
+    ELS */
+if( is_in_frm(f,op)==TRUE ){
+      nxst_sub_frm(f,i,v,test2_eql_hyp_prf(p,n,hf,lnod,f,i)==TRUE,
+                        test_eql_hyp_prf_res=TRUE,
+                        test_eql_hyp_prf_res=FALSE);
+    } else {
+      test_eql_hyp_prf_res=FALSE;
+    }
+  ; return test_eql_hyp_prf_res;
+  }
+
+  
+  test_imp_hyp_prf(p,n,hf,f)
+  {register int ff,gl,s,i,v,b,rn,op,lrn,rrn,op2,test_imp_hyp_prf_res ;
+    if( eql_tree(hf,right_node_frm(hf),f,root_tree(f))==TRUE ){
+      ff=left_frm(hf);
+      if( val_root_frm(ff)==AND_sym ){
+        s=dec_frm(ff,AND_sym);
+        xst(s,i,v,already_frm_prf(p,n,v)==TRUE,b=FALSE,b=TRUE);
+        if( b==TRUE ){
+          b=ask_hyp_prf(hf);
+        };
+        if( b==TRUE ){
+          itr(s,i,v,gl=cre_gol(v);cre_nod(gl,n));
+          test_imp_hyp_prf_res=TRUE;
+        } else {
+          test_imp_hyp_prf_res=FALSE;
+          itr(s,i,v,kil(v));
+        };
+        kil(s);
+        kil(ff);
+      } else {
+        if( ask_hyp_prf(hf)==FALSE ){
+          test_imp_hyp_prf_res=FALSE;
+          kil(ff);
+        } else if( already_frm_prf(p,n,ff)==TRUE ){
+          test_imp_hyp_prf_res=FALSE;
+          kil(ff);
+        } else {
+          test_imp_hyp_prf_res=TRUE;
+          gl=cre_gol(ff);
+          cre_nod(gl,n);
+        };
+      }      ;
+    } else {
+      rn=right_node_frm(hf);
+      op=val_tree(hf,rn);
+      if( (op==EQL_sym) || (op==EQV_sym) ){
+        lrn=left_node_tree(hf,rn);
+        rrn=right_node_tree(hf,rn);
+        op2=val_tree(hf,lrn);
+        
+/* if( may_have_qtf_or_sub_frm(f)==TRUE ){
+          test_imp_hyp_prf_res=FALSE
+        ELS */
+if( is_in_frm(f,op2)==TRUE ){
+          nxst_sub_frm(f,i,v,test3_eql_hyp_prf(p,n,hf,lrn,rrn,f,i)==TRUE,
+                            test_imp_hyp_prf_res=TRUE,
+                            test_imp_hyp_prf_res=FALSE);
+        } else {
+          test_imp_hyp_prf_res=FALSE;
+        };
+      } else { 
+        test_imp_hyp_prf_res=FALSE;
+      };
+    }
+  ; return test_imp_hyp_prf_res;
+  }
+
+  test2_unv_eql_hyp_prf(p,n,hhf,hf,f,i,lv)
+  {register int rf,rp,ff,gl,gf,rq,ln,ef,test2_unv_eql_hyp_prf_res,lvv,b ;
+    gf=cre_encode_tree(hf,root_tree(hf));
+    ln=left_node_frm(gf);
+    ef=cre_encode_tree(f,i);
+    lvv = cre(5);
+    get_asc_nod_vrb_frm(lvv,f,i);
+    if( len(lvv)!=0 ){
+      test2_unv_eql_hyp_prf_res=FALSE;
+    } else if( chk_set_tree(gf,ln,beg_tree(gf,ln),ef,root_tree(ef),1,lv)==TRUE ){
+      if( ari_sym(val_tree(f,i))==0 ){
+        b=father_is_idx_vrb_frm(f,i) 
+/*  to avoid left of aaa$1 to match 
+                                             with aaa  */;
+      } else {
+        b=FALSE;
+      };
+      if( b==TRUE ){
+        test2_unv_eql_hyp_prf_res=FALSE;
+      } else {
+        rf=right_frm(gf);
+        rq=prd_tree(rf);
+        rp=cre_decode_tree(rq,root_tree(rq));
+        kil(rf);
+        kil(rq);
+        ff=cre_mod_tree(f,i,rp);
+        kil(rp);
+        if( ask_eql_hyp_prf(f,i,hhf)==FALSE ){
+          kil(ff);
+          test2_unv_eql_hyp_prf_res=FALSE;
+        } else if( already_frm_prf(p,n,ff)==TRUE ){
+          kil(ff);
+          test2_unv_eql_hyp_prf_res=FALSE;
+        } else {
+          gl=cre_gol(ff);
+          cre_nod(gl,n);
+          test2_unv_eql_hyp_prf_res=TRUE;
+        };
+      };
+    } else {
+      test2_unv_eql_hyp_prf_res=FALSE;
+    };
+    kil(lvv);
+    kil(gf);
+    kil(ef);
+    
+    if( test2_unv_eql_hyp_prf_res == FALSE ){
+      clr_chk_frm;
+    }
+  ; return test2_unv_eql_hyp_prf_res;
+  }
+
+  test3_unv_eql_hyp_prf(p,n,hf,sgf,f,i,lv)
+  {register int gf,ln,rf,rq,rp,ff,sf,sq,gg,gl,ef,test3_unv_eql_hyp_prf_res,lvv,b ;
+    gf=right_frm(sgf);
+    ln=left_node_frm(gf);
+    ef=cre_encode_tree(f,i);
+    lvv = cre(5);
+    get_asc_nod_vrb_frm(lvv,f,i);
+    if( len(lvv)!=0 ){
+      test3_unv_eql_hyp_prf_res=FALSE;
+    } else if( is_qtf_frm(lvv,f,i)==TRUE ){ 
+/*  added Fri Jun 12 1992  */
+      test3_unv_eql_hyp_prf_res=FALSE;
+    } else if( chk_set_tree(gf,ln,beg_tree(gf,ln),ef,root_tree(ef),1,lv)==TRUE ){
+      if( ari_sym(val_tree(f,i))==0 ){
+        b=father_is_idx_vrb_frm(f,i) 
+/*  to avoid left of aaa$1 to match 
+                                             with aaa  */;
+      } else {
+        b=FALSE;
+      };
+      if( b==TRUE ){
+        test3_unv_eql_hyp_prf_res=FALSE;
+      } else {
+        rf=right_frm(gf);
+        rq=prd_tree(rf);
+        rp=cre_decode_tree(rq,root_tree(rq));
+        kil(rf);
+        kil(rq);
+        ff=cre_mod_tree(f,i,rp);
+        kil(rp);
+        if( already_frm_prf(p,n,ff)==TRUE ){
+          kil(ff);
+          test3_unv_eql_hyp_prf_res=FALSE;
+        } else {
+          sf=left_frm(sgf);
+          sq=prd_tree(sf);
+          gg=cre_decode_tree(sq,root_tree(sq));
+          kil(sf);
+          kil(sq);
+          if( already_frm_prf(p,n,gg)==TRUE ){
+            kil(ff);
+            kil(gg);
+            test3_unv_eql_hyp_prf_res=FALSE;
+          } else if( ask_eql_hyp_prf(f,i,hf)==FALSE ){
+            kil(ff);
+            kil(gg);
+            test3_unv_eql_hyp_prf_res=FALSE;
+          } else {
+            gl=cre_gol(gg);
+            cre_nod(gl,n);
+            gl=cre_gol(ff);
+            cre_nod(gl,n);
+            test3_unv_eql_hyp_prf_res=TRUE;
+          };
+        };
+      };
+    } else {
+      test3_unv_eql_hyp_prf_res=FALSE;
+    };
+    kil(lvv);
+    kil(gf);
+    kil(ef);
+    
+    if( test3_unv_eql_hyp_prf_res == FALSE ){
+      clr_chk_frm;
+    }
+  ; return test3_unv_eql_hyp_prf_res;
+  }
+
+  test_hyp_prf(p,n,hf,frm)
+  {register int op,lv,rhf,lhf,ff,gl,s,i,v,lnod,gf,fq,rn,lrn,op2,ef,test_hyp_prf_res ;
+    op=val_root_frm(hf);
+    if( (op==EQL_sym) || (op==EQV_sym) ){
+      test_hyp_prf_res=test_eql_hyp_prf(p,n,hf,frm);
+    } else if( op==IMP_sym ){
+      test_hyp_prf_res=test_imp_hyp_prf(p,n,hf,frm);
+    } else {
+      lv=cre(4);
+      if( is_unv_frm_prf(p,n,lv,hf,root_tree(hf))==TRUE ){
+        clr_chk_frm;
+        rhf=right_frm(hf);
+        if( val_root_frm(rhf)==IMP_sym ){
+          gf=cre_encode_tree(rhf,root_tree(rhf));
+          rn=right_node_frm(gf);
+          ef=cre_encode_tree(frm,root_tree(frm));
+          if( chk_set_tree(gf,rn,beg_tree(gf,rn),
+          ef,root_tree(ef),1,lv)==TRUE ){
+            if( ask_hyp_prf(hf)==FALSE ){
+              test_hyp_prf_res=FALSE;
+            } else {
+              lhf=left_frm(gf);
+              fq=prd_tree(lhf);
+              ff=cre_decode_tree(fq,root_tree(fq));
+              kil(lhf);
+              kil(fq);
+              if( val_root_frm(ff)==AND_sym ){
+                s=dec_frm(ff,AND_sym);
+                itr(s,i,v,gl=cre_gol(v);cre_nod(gl,n));
+                kil(s);
+                kil(ff);
+              } else {
+                gl=cre_gol(ff);
+                cre_nod(gl,n);
+              };
+              test_hyp_prf_res=TRUE;
+            };
+          } else {
+            rn=right_node_frm(gf);
+            op=val_tree(gf,rn);
+            if( (op==EQL_sym) || (op==EQV_sym) ){
+              lrn=left_node_tree(gf,rn);
+              op2=val_tree(gf,lrn);
+              
+/* if( may_have_qtf_or_sub_frm(frm)==TRUE ){
+                test_hyp_prf_res=FALSE;
+              } else {  */
+ 
+/* if( is_in_frm(frm,op2)==TRUE ){ */
+                nxst_sub_frm(frm,i,v,
+                            test3_unv_eql_hyp_prf(p,n,hf,gf,frm,i,lv)==TRUE,
+                            test_hyp_prf_res=TRUE,
+                            test_hyp_prf_res=FALSE)
+              
+/*  ;} else {
+                test_hyp_prf_res=FALSE  */
+              
+/* ;} */;
+            } else {
+              test_hyp_prf_res=FALSE;
+            };
+          };
+          kil(gf);
+          kil(ef);
+        } else if( (val_root_frm(rhf)==EQL_sym) || (val_root_frm(rhf)==EQV_sym) ){
+          lnod=left_node_frm(rhf);
+          op=val_tree(rhf,lnod);
+          
+/* if( may_have_qtf_or_sub_frm(frm)==TRUE ){
+            test_hyp_prf_res=FALSE;
+          } else { */
+ 
+/*  if( is_in_frm(frm,op)==TRUE ){  */
+            nxst_sub_frm(frm,i,v,
+                        test2_unv_eql_hyp_prf(p,n,hf,rhf,frm,i,lv)==TRUE,
+                        test_hyp_prf_res=TRUE,
+                        test_hyp_prf_res=FALSE)
+          
+/*  ;} else {
+            test_hyp_prf_res=FALSE  */
+          
+/* ;} */;
+        } else {
+          if( chk_set_frm(rhf,frm,lv)==TRUE ){
+            if( ask_hyp_prf(hf)==FALSE ){
+              test_hyp_prf_res=FALSE;
+            } else {
+              test_hyp_prf_res=TRUE;
+            };
+          } else {
+            test_hyp_prf_res=FALSE;
+          };
+        };
+        kil(rhf);
+      } else {
+        test_hyp_prf_res=FALSE;
+      };
+      kil(lv);
+    }
+  ; return test_hyp_prf_res;
+  }
+
+  mon_hyp_prf(p,n,g,f)
+  {register int s,i,h,mon_hyp_prf_res ;
+    s=cre(50);
+    lst_hyp_prf(p,n,s);
+    nxst(s,i,h,test_hyp_prf(p,n,frm_hyp(h),f)==TRUE,
+               mod_uti_hyp(h);
+               mod_spe_gol(g,HYP_gol);
+               mod_hyp_gol(g,h);
+               mon_hyp_prf_res=TRUE,
+               mon_hyp_prf_res=FALSE);
+    kil(s);
+    return mon_hyp_prf_res;
+  }
+
+  mon2_hyp_prf(p,n,g,f)
+  {register int s,i,h,mon2_hyp_prf_res ;
+    s=cre(50);
+    lst_hyp_prf(p,n,s);
+    xst(s,i,h,test_hyp_prf(p,n,frm_hyp(h),f)==TRUE,
+               mod_uti_hyp(h);
+               mod_spe_gol(g,HYP_gol);
+               mod_hyp_gol(g,h);
+               mon2_hyp_prf_res=TRUE,
+               mon2_hyp_prf_res=FALSE);
+    kil(s);
+    return mon2_hyp_prf_res;
+  }
+
+                       
+/*  GEN BUILT-; RULE  */
+  ask_gen_prffunc()
+#define ask_gen_prf ask_gen_prffunc()
+  {register int ask_gen_prf_res ;
+    ask_gen_prf_res=TRUE;
+    if( auto_prf==FALSE ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      GEN   YES? ");
+      if( yes_no==NO ){
+        ask_gen_prf_res=FALSE;
+      };
+    }
+  ; return ask_gen_prf_res;
+  }
+
+  gen_prf(p,n,g,f)
+  {register int lv,w,gl,s,b,newlv,newlvp,nbr,i,h,gen_prf_res ;
+    lv=cre(4);
+    if( is_unv_frm_prf(p,n,lv,f,root_tree(f))==TRUE ){
+      if( ask_gen_prf==TRUE ){
+        s=cre(50);
+        lst_hyp_prf(p,n,s);
+        newlv=cre(len(lv));
+        newlvp=cre(len(lv));
+        cop(lv,newlv);
+        b=TRUE;
+        nbr=0;
+        while( b==TRUE ){
+          xst(s,i,h,rec_fre_prf(p,n,newlv,frm_hyp(h),
+                  root_tree(frm_hyp(h)))==TRUE,
+                  nbr=nbr+1;
+                  clr(newlvp);
+                  inc_lst_vrb_frm(newlv,newlvp);
+                  cop(newlvp,newlv),
+                  b=FALSE)
+     ;
+        };
+        if( nbr>0 ){
+          w=cre(len(f)+4*len(lv)+4);
+          psh(w,GHO_sym);                          
+/*  [t=t$i]f  */
+          rec_vrb_frm(w,lv);
+          rec_vrb_frm(w,newlv);
+          psh(w,CEQ_sym);
+          psh(w,LSB_sym);
+          cnc_tree(w,f,right_node_frm(f));
+          psh(w,SPE_sym);
+          mod_spe_gol(g,GEN_gol);
+          gl=cre_gol(w);
+          cre_nod(gl,n);
+} else {
+          mod_spe_gol(g,GEN_gol);
+          w=right_frm(f);
+          gl=cre_gol(w);
+          cre_nod(gl,n);
+        };
+        kil(s);
+        kil(newlv);
+        kil(newlvp);
+        gen_prf_res=TRUE;
+      } else {
+        gen_prf_res=FALSE;
+      };
+    } else {
+      gen_prf_res=FALSE;
+    };
+    kil(lv)
+  ; return gen_prf_res;
+  }
+
+                         
+/*  SUBSTITUTION BUILT-; RULE  */
+                         
+                       
+  free_in_lst_prf(p,n,lv,lf)
+  {register int g,free_in_lst_prf_res ; 
+    g=rec_frm(lf,COM_sym);
+    free_in_lst_prf_res=rec_fre_prf(p,n,lv,g,root_tree(g));
+    kil(g)
+  ; return free_in_lst_prf_res;
+  }
+
+  sub_jok_prf(p,n,lv,le,f,i,g,s)
+  {register int lq,nlq,j,v,lef,newlv,newle ;
+    lq=cre(1);
+    nlq=cre(len(lv));
+        
+    itr(lv,j,v,clr(lq);
+               psh(lq,v);
+               if( chk_vrb_prf(p,n,val(le,j))==TRUE ){
+                 if( v==code_vrb_frm(val(le,j)) ){    
+                   psh(nlq,v)
+                 ;} else if( rec_fre_prf(p,n,lq,f,i)==FALSE ){
+                   psh(nlq,v)
+                 ;}
+               ;} else if( rec_fre_prf(p,n,lq,f,i)==FALSE ){
+                 psh(nlq,v);
+              });
+    if( len(nlq)==len(lv) ){              
+                              
+/*  if x\P then [y,x,z=F,E,G]P <=> [y,z=F,G]P  */
+      if( is_idx_vrb_frm(f,i)==TRUE ){
+        cnc_tree(g,f,i);
+      } else {
+        psh(g,s);
+      };
+    } else if( len(nlq)==0 ){     
+      psh(g,GHO_sym);
+      rec_vrb_frm(g,lv);
+      lef=rec_frm(le,COM_sym);
+      cnc_frm(g,lef);
+      kil(lef);
+      psh(g,CEQ_sym);
+      psh(g,LSB_sym);
+      if( is_idx_vrb_frm(f,i)==TRUE ){
+        cnc_tree(g,f,i);
+      } else {
+        psh(g,s);
+      };
+      psh(g,SPE_sym);
+    } else {
+      newlv=cre(4);
+      newle=cre(4);
+          
+      anti_restr_fnc(lv,le,nlq,newlv,newle);
+      psh(g,GHO_sym);
+      rec_vrb_frm(g,newlv);
+      lef=rec_frm(newle,COM_sym);
+      cnc_frm(g,lef);
+      kil(lef);
+      psh(g,CEQ_sym);
+      psh(g,LSB_sym);
+      if( is_idx_vrb_frm(f,i)==TRUE ){
+        cnc_tree(g,f,i);
+      } else {
+        psh(g,s);
+      };
+      psh(g,SPE_sym);
+          
+      kil(newlv);
+      kil(newle);
+    }
+
+    kil(lq);
+    kil(nlq);
+  }
+
+  
+/* procedure rec_sub_prf(p,n,lv,le,f,i,g,v); */
+  rec_sub_prf(p,n,lv,le,f,i,g,v)
+  {register int s,k,newlv,newlvp,newle,lq,lef,lee,rs,b ;
+    s=val_tree(f,i);
+    if( ari_sym(s)==0 ){
+      if( is_vrb_spe_sym(s)==TRUE ){
+        k=idx(lv,s);
+        if( k==0 ){
+          exist_set(lv,v,letter_sym(v)==TRUE,b=FALSE,b=TRUE);
+          if( b == TRUE ){
+            psh(g,s);
+          } else {
+            sub_jok_prf(p,n,lv,le,f,i,g,s);
+          };
+        } else {
+          cnc(g,val(le,k));
+        };
+      } else if( (letter_sym(s)==TRUE) && (v==TRUE) ){
+        if( is_letter_vrb_prf(p,n,s)==TRUE ){
+          k=idx(lv,s);
+          if( k==0 ){
+            if( exec_prf==TRUE ){
+              psh(g,s);
+            } else if( is_in_frm(frm_gol(info_nod(p)),s)==FALSE ){
+              psh(g,s);
+            } else {
+              sub_jok_prf(p,n,lv,le,f,i,g,s);
+            };
+          } else {
+            cnc(g,val(le,k));
+          };
+        } else {
+          sub_jok_prf(p,n,lv,le,f,i,g,s);
+        };
+      } else {
+        psh(g,s);
+      };
+    } else {
+      lq=cre(4);
+      lee=cre(4);
+      if( is_idx_vrb_frm(f,i)==TRUE ){
+        k=idx(lv,code_idx_vrb_frm(f,i));
+        if( k==0 ){
+          exist_set(lv,v,letter_sym(v)==TRUE,b=FALSE,b=TRUE);
+          if( b == TRUE ){
+            cnc_tree(g,f,i);
+          } else {
+            sub_jok_prf(p,n,lv,le,f,i,g,code_idx_vrb_frm(f,i));
+          };
+        } else {
+          cnc(g,val(le,k));
+        };
+      } else if( (s==UNDERSCORE_sym) || (s==ANTI_SLASH_sym) || (s==BVRB_sym) 
+/* || (s==VRB_sym) */
+ ){
+        cnc_tree(g,f,i);
+      } else if( is_qtf_frm_prf(p,n,lq,f,i)==TRUE ){
+        newlv=cre(4);
+        newlvp=cre(len(lv));
+        newle=cre(4);
+        
+        anti_restr_fnc(lv,le,lq,newlv,newle);
+        if( len(newlv)!=0 ){
+          if( free_in_lst_prf(p,n,lq,newle)==FALSE ){
+            cnc_tree(g,f,left_node_tree(f,i));
+            rec_sub_prf(p,n,newlv,newle,f,right_node_tree(f,i),g,v);
+            psh(g,DOT_sym);
+          } else {
+            clr(newlv);                      
+/*  alpha conversion  */
+            inc_lst_vrb_frm(lq,newlv);
+            while( rec_fre_prf(p,n,newlv,f,right_node_tree(f,i))==TRUE ){
+              
+/* fprintf ( bstdout, "dodo3"); */
+              clr(newlvp);
+              inc_lst_vrb_frm(newlv,newlvp);
+              cop(newlvp,newlv);
+            };
+            psh(g,GHO_sym);
+            rec_vrb_frm(g,lv);
+            lef=rec_frm(le,COM_sym);
+            cnc_frm(g,lef);
+            kil(lef);
+            psh(g,CEQ_sym);
+            psh(g,LSB_sym);
+            
+            psh(g,GHO_sym);            
+            rec_vrb_frm(g,newlv);
+            psh(g,val_tree(f,left_node_tree(f,i)));
+            psh(g,GHO_sym);
+            rec_vrb_frm(g,lq);
+            rec_vrb_frm(g,newlv);
+            psh(g,CEQ_sym);
+            psh(g,LSB_sym);
+            cnc_tree(g,f,right_node_tree(f,i));
+            psh(g,SPE_sym);
+            psh(g,DOT_sym);
+            
+            psh(g,SPE_sym)
+            ;
+          };
+        } else {
+          cnc_tree(g,f,i);
+        };
+        kil(newlv);
+        kil(newlvp);
+        kil(newle);
+      } else if( is_set_frm_prf(p,n,lq,f,i)==TRUE ){
+        newlv=cre(4);
+        newlvp=cre(len(lv));
+        newle=cre(4);
+        
+        anti_restr_fnc(lv,le,lq,newlv,newle);
+        if( len(newlv)!=0 ){
+          if( free_in_lst_prf(p,n,lq,newle)==FALSE ){
+            psh(g,GHO_sym);
+            rs=right_node_tree(f,i);
+            cnc_tree(g,f,left_node_tree(f,rs));
+            rec_sub_prf(p,n,newlv,newle,f,right_node_tree(f,rs),g,v);
+            psh(g,BAR_sym);
+            psh(g,LCB_sym);
+          } else {
+            clr(newlv);                      
+/*  alpha conversion  */
+            rs=right_node_tree(f,i);
+            inc_lst_vrb_frm(lq,newlv);
+            while( rec_fre_prf(p,n,newlv,f,right_node_tree(f,rs))==TRUE ){
+              clr(newlvp);
+              inc_lst_vrb_frm(newlv,newlvp);
+              cop(newlvp,newlv);
+            };
+            psh(g,GHO_sym);
+            rec_vrb_frm(g,lv);
+            lef=rec_frm(le,COM_sym);
+            cnc_frm(g,lef);
+            kil(lef);
+            psh(g,CEQ_sym);
+            psh(g,LSB_sym);
+            
+            psh(g,GHO_sym);
+            rec_vrb_frm(g,newlv);
+            psh(g,GHO_sym);
+            rec_vrb_frm(g,lq);
+            rec_vrb_frm(g,newlv);
+            psh(g,CEQ_sym);
+            psh(g,LSB_sym);
+            cnc_tree(g,f,right_node_tree(f,rs));
+            psh(g,SPE_sym);
+            psh(g,BAR_sym);
+            psh(g,LCB_sym);
+            
+            psh(g,SPE_sym)
+            ;
+          };
+        } else {
+          cnc_tree(g,f,i);
+        };
+        kil(newlv);
+        kil(newlvp);
+        kil(newle);
+      } else if( val_tree(f,i)==SPE_sym ){
+        psh(g,GHO_sym);
+        rec_vrb_frm(g,lv);
+        lef=rec_frm(le,COM_sym);
+        cnc_frm(g,lef);
+        kil(lef);
+        psh(g,CEQ_sym);
+        psh(g,LSB_sym);
+        
+        cnc_tree(g,f,i);
+        
+        psh(g,SPE_sym)
+        ;
+      } else {
+        rec_sub_prf(p,n,lv,le,f,left_node_tree(f,i),g,v);
+        rec_sub_prf(p,n,lv,le,f,right_node_tree(f,i),g,v);
+        psh(g,s);
+      };
+      kil(lq);
+      kil(lee);
+    };
+  }
+
+  tell_sub_prf(f,i)
+  {register int k ;
+    if( auto_prf==FALSE ){
+      if( (len(f)<200) || (sho_big_gol_prf==TRUE) ){
+        k=cre_high_frm(f,i);
+        fprintf ( bstdout, "\n");
+        reset_res(6);
+        write_frm_res(k,6);
+        kil(k);
+        fprintf ( bstdout, "\n");
+      };
+    };
+  }
+
+  ask_sub_prf(f,i)
+  {register int k,ask_sub_prf_res ;
+    ask_sub_prf_res=TRUE;
+    if( auto_prf==FALSE ){
+      if( (len(f)<200) || (sho_big_gol_prf==TRUE) ){
+        k=cre_high_frm(f,i);
+        fprintf ( bstdout, "\n");
+        reset_res(6);
+        write_frm_res(k,6);
+        kil(k);
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "\n");
+      };
+      fprintf ( bstdout, "      SUB   YES? ");
+      if( yes_no==NO ){
+        ask_sub_prf_res=FALSE;
+      };
+    }
+  ; return ask_sub_prf_res;
+  }
+
+  sub_prf(p,i,g,f)
+  {register int n,v,lv,le,fff,ff,gl,j,sub_prf_res ;
+    lv=cre(4);
+    le=cre(4);
+    nxst_sub_frm(f,n,v,is_dis_sub_frm_prf(p,i,lv,le,f,n)==TRUE,
+                 fff=cre(4);
+                 rec_sub_prf(p,i,lv,le,f,right_node_tree(f,n),fff,TRUE);
+                 if( eql_tree(f,n,fff,root_tree(fff))==FALSE ){
+                   if( ask_sub_prf(f,n)==TRUE ){
+                     ff=cre_mod_tree(f,n,fff);
+                     kil(fff);
+                     gl=cre_gol(ff);
+                     cre_nod(gl,i);
+                     mod_spe_gol(g,SUB_gol);
+                     sub_prf_res=TRUE
+                   ;} else {
+                     kil(fff);
+                     sub_prf_res=FALSE
+                   ;}
+                 ;} else {
+                   kil(fff);
+                   sub_prf_res=FALSE
+                 ;},
+                 sub_prf_res=FALSE);
+    kil(lv);
+    itr(le,j,v,kil(v));
+    kil(le)
+  ; return sub_prf_res;
+  }
+
+                    
+/*  "bcall" built-in rule  */
+                   
+ 
+  cal_prf(p,n,g,f)
+  {register int ss,ff,b,tac,gol,i,gg,gl,j,v,tt,ftac,cal_prf_res,ta,taf ;
+    if( val_root_frm(f)==CAL_sym ){
+      ss=dec_tree(f,right_node_frm(f),BAR_sym);
+      xst(ss,j,v,val_root_frm(v)!=COL_sym,b=FALSE,b=TRUE);     
+      if( (b==TRUE) && (val_alt_gol(g)==0) ){
+        ff=fst(ss);
+        tt=left_frm(ff);
+        if( val_root_frm(tt)==COM_sym ){
+          tac=left_frm(tt);
+          ftac=right_frm(tt);
+        } else {
+          ftac=0;
+          tac=left_frm(ff);
+        };
+        kil(tt);
+        gol=right_frm(ff);
+        i=next_nod(p,n);
+        if( i!=0 ){
+          gg=info_nod(i);
+          if( def_tac_gol(gg)==FALSE ){
+            mod_tac_gol(gg,tac_prf,tac_ptr_prf,fwd_tac_prf,fwd_tac_ptr_prf);
+};
+        };
+        ta=func_build_tac_prf(tac);
+        kil(tac);
+        if( ftac!=0 ){
+          taf=func_build_fwd_tac_prf2(ftac);
+          kil(ftac);
+        } else {
+          taf=0;
+          fwd_tac_prf=0;
+          fwd_tac_ptr_prf=0;
+        }
+
+/* new_tac_prf=TRUE; */
+        new_tac_prf=FALSE;
+        gl=cre_gol(gol);
+        mod_tcl_gol(gl,ta);
+        if( taf!=0 ){
+          mod_fcl_gol(gl,taf);
+        };
+        cre_nod(gl,n);
+        mod_spe_gol(g,CAL_gol);
+        ini_alt_gol(g);
+        cal_prf_res=TRUE;
+      } else {
+        cal_prf_res=FALSE;
+      };
+      itr(ss,j,v,kil(v));
+      kil(ss);
+    } else {
+      cal_prf_res=FALSE;
+    }
+  ; return cal_prf_res;
+  }
+
+  recal_prf(n,g)
+  {register int ss,c,tac,gol,gl,j,v,f,ff,tt,ftac,recal_prf_res,ta,taf ;
+    f=frm_gol(g);
+    ss=dec_tree(f,right_node_frm(f),BAR_sym);
+    c=val_alt_gol(g)+1;
+    if( c<=len(ss) ){
+      ff=val(ss,c);
+      tt=left_frm(ff);
+      if( val_root_frm(tt)==COM_sym ){
+        tac=left_frm(tt);
+        ftac=right_frm(tt);
+      } else {
+        ftac=0;
+        tac=left_frm(ff);
+      };
+      kil(tt);
+      gol=right_frm(ff);
+      ta=func_build_tac_prf(tac);
+      kil(tac);
+      if( ftac!=0 ){
+        taf=func_build_fwd_tac_prf2(ftac);
+        kil(ftac);
+      } else {
+        taf=0;
+        fwd_tac_prf=0;
+        fwd_tac_ptr_prf=0;
+      };
+      new_tac_prf=FALSE;
+      gl=cre_gol(gol);
+      mod_tcl_gol(gl,ta);
+      if( taf!=0 ){
+        mod_fcl_gol(gl,taf);
+      };
+      cre_nod(gl,n);
+      inc_alt_gol(g);
+      recal_prf_res=TRUE;
+    } else {
+      recal_prf_res=FALSE;
+    };
+    itr(ss,j,v,kil(v));
+    kil(ss)
+  ; return recal_prf_res;
+  }
+
+             
+/*  TACTIC INTERPRETER FOR NORMAL PROOF  */
+             
+  itp_tac_prf(r,p,i,gl,f)
+  {register int t,j,rr,th,st,itp_tac_prf_res ;
+    t=info_nod(tac_ptr_prf);
+    itp_tac_prf_res=FALSE;
+    if( def_the_tac(t)==TRUE ){
+      th=the_tac(t);
+      xst(rul_the(th),j,rr,
+          test_rul_prf(p,i,r,rr,f)==TRUE,
+          mod_rul_gol(gl,rr);
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE,
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE);
+} else if( def_spe_tac(t)==TRUE ){
+      st=spe_tac(t);
+      if( st==DED_tac ){                       
+/*  DED  */
+        if( ded_prf(r,p,i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==GEN_tac ){                    
+/*  GEN  */
+        if( gen_prf(p,i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==HYP_tac ){                    
+/*  HYP  */
+        if( mon2_hyp_prf(p,i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==SUB_tac ){                    
+/*  SUB  */
+        if( sub_prf(p,i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        }
+    
+/* ;} else if( st==HYPD_tac ){                    
+        if( mon_hyp_prf(p,i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        }  */;
+      } else if( st==ARI_tac ){                    
+/*  ARI  */
+        if( ari_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==REV_tac ){                    
+/*  REV  */
+        if( rev_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==FLAT_tac ){                   
+/*  FLAT  */
+        if( flat_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==MAP_tac ){                   
+/*  MAP  */
+        if( smap_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else if( nmap_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==MODR_tac ){                   
+/*  MODR  */
+        if( bmodr_prf(f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else if( bmark_proved_prf(f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==SHELL_tac ){                  
+/*  SHELL  */
+        if( bshell_prf(f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==WRITE_tac ){                  
+/*  WRITE  */
+        if( bwritef_prf(f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE
+        
+/* ;} else if( bcopf_prf(f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE */;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==RULE_tac ){                  
+/*  RULE  */
+        if( badd_rul_prf(p,i,r,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else if( badd_lirul_prf(r,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else if( bpopt_prf(r,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else if( bcleant_prf(r,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==TAC_tac ){                  
+/*  TACTICS  */
+        if( badd_tac_prf(f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==CATL_tac ){                  
+/*  BCATL  */
+        if( bcatl_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==NEWV_tac ){                  
+/*  BNEWV BLOW  */
+        if( bnewv_vrb_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else if( low_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else if( st==LMAP_tac ){                   
+/*  LMAP  */
+        if( slmap_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else if( nlmap_prf(i,gl,f)==TRUE ){
+          mod_res_tac(t,TRUE);
+          itp_tac_prf_res=TRUE;
+        } else {
+          mod_res_tac(t,FALSE);
+          itp_tac_prf_res=FALSE;
+        };
+      } else {
+        mod_res_tac(t,FALSE);
+        itp_tac_prf_res=FALSE;
+      };
+    };
+    if( new_tac_prf==FALSE ){
+      tac_ptr_prf=nxt_tac_prf(tac_prf,tac_ptr_prf);
+    } else {
+      new_tac_prf=FALSE;
+    }
+  ; return itp_tac_prf_res;
+  }
+
+             
+/*  TACTIC INTERPRETER FOR LOAD PROOF  */
+                      
+  itp_tac_lod_prf(r,i,gl,f)
+  {register int t,j,a,w,rr,la,g,th,itp_tac_lod_prf_res ;
+    t=info_nod(tac_ptr_prf);
+    itp_tac_lod_prf_res=FALSE;
+    if( def_the_tac(t)==TRUE ){
+      th=the_tac(t);
+      rr=match_rul_the(r,th,f);
+      if( rr!=0 ){
+        la=ant_rul(rr);
+        itr(la,j,a,w=prd_tree(a);
+                   g=cre_gol(w);
+                   cre_nod(g,i));
+        mod_rul_gol(gl,rr);
+        mod_res_tac(t,TRUE);
+        itp_tac_lod_prf_res=TRUE;
+      } else {
+        mod_res_tac(t,FALSE);
+        itp_tac_lod_prf_res=FALSE;
+      };
+};
+    tac_ptr_prf=nxt_tac_prf(tac_prf,tac_ptr_prf)
+  ; return itp_tac_lod_prf_res;
+  }
+
+   
+                  
+/*   KILLING PROOF   */
+        
+                
+              
+  kil_prf(p)
+  {register int i,g ;
+    itr_nod(p,i,g,kil_gol(g),{},{});
+    kil_nod(p);
+  }
+
+                   
+/*   CREATING PROOF   */
+               
+    
+  cre_prf(r)
+  {register int f,g ;
+    f=cre_rec_rul(r);
+    g=cre_gol(f);
+    return cre_root_nod(g);
+  }
+
+                    
+/*  PROOF STEP FOR EXEC PROOF  */
+  
+  step_exec_prf(r,p,i,g)
+  {register int f,step_exec_prf_res ;    
+    f=frm_gol(g);
+    if( and_prf(i,g,f)==TRUE ){                /* AND */
+      step_exec_prf_res=TRUE;
+    } else if( cal_prf(p,i,g,f)==TRUE ){       /* BCALL */
+      step_exec_prf_res=TRUE;
+    } else if( eql_prf(g,f)==TRUE ){           /* EQL */
+      step_exec_prf_res=TRUE;
+    } else if( hlt_prf(r,g,f)==TRUE ){         /* BHALT */
+      step_exec_prf_res=TRUE;
+    } else if( hyp_prf(p,i,g,f)==TRUE ){       /* INHYP/BFALSE */
+      step_exec_prf_res=TRUE;
+    } else if( clo_prf(f)==TRUE ){             /* BCLOSE */
+      step_exec_prf_res=TRUE;
+    } else if( stat_prf(f)==TRUE ){            /* BSTATISTICS */
+      step_exec_prf_res=TRUE;
+    } else if( susp_prf(f)==TRUE ){            /* BSUSPEND */
+      step_exec_prf_res=TRUE;
+    } else if( recompact_prf(f)==TRUE ){       /* BRECOMPACT */
+      step_exec_prf_res=TRUE;
+    } else if( itp_tac_prf(r,p,i,g,f)==TRUE ){ /* tactic driven */
+      step_exec_prf_res=TRUE;
+    } else {
+      step_exec_prf_res=FALSE;
+      if ( binhyp_count && pog_flag ) {
+        binhyp_count = 0;
+      }
+    };
+    return step_exec_prf_res;
+  }
+
+  
+                   
+/*  PROOF STEP FOR NORMAL PROOF  */
+                   
+  
+  step_prf(r,p,i,g)
+  {register int f,success,op ;    
+    f=frm_gol(g);
+    mod_tac_gol(g,tac_prf,tac_ptr_prf,fwd_tac_prf,fwd_tac_ptr_prf);
+    if( and_prf(i,g,f)==TRUE ){                /* AND */
+      success=TRUE;
+    } else if( cal_prf(p,i,g,f)==TRUE ){       /* BCALL */
+      success=TRUE;
+    } else if( eql_prf(g,f)==TRUE ){           /* EQL */
+      success=TRUE;
+    } else if( hlt_prf(r,g,f)==TRUE ){         /* BHALT */
+      success=TRUE;
+    } else if( hyp_prf(p,i,g,f)==TRUE ){       /* INHYP/BFALSE */
+      success=TRUE;
+    } else if( clo_prf(f)==TRUE ){             /* BCLOSE */
+      success=TRUE;
+    } else if( stat_prf(f)==TRUE ){            /* BSTATISTICS */
+      success=TRUE;
+    } else if( susp_prf(f)==TRUE ){            /* BSUSPEND */
+      success=TRUE;
+    } else if( recompact_prf(f)==TRUE ){       /* BRECOMPACT */
+      success=TRUE;
+    } else if( itp_tac_prf(r,p,i,g,f)==TRUE ){ /* tactic driven */
+      success=TRUE;
+    } else {
+      success=FALSE;
+      if ( binhyp_count && pog_flag ) {
+        binhyp_count = 0;
+      }
+    };
+    if( (success==TRUE) && (auto_prf==FALSE) ){
+      if( def_rul_gol(g)==TRUE ){
+        {};
+      } else if( def_spe_gol(g)==TRUE ){
+        if( (spe_gol(g)==DED_gol) || (spe_gol(g)==GEN_gol) || (spe_gol(g)==ARI_gol) || (spe_gol(g)==SUB_gol) || (spe_gol(g)==HYP_gol) ){
+          {};
+        } else {
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      ");
+          write_spe_gol(spe_gol(g));
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        };
+      } else if( def_hyp_gol(g)==TRUE ){
+        if( val_root_frm(frm_hyp(hyp_gol(g)))==FAL_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Hypothesis is Contradictory");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else {
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Goal is an Hypothesis");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        };
+      } else {
+        op=val_root_frm(frm_gol(g));
+        if( (op==BCRER_sym) ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Generating a Rule");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( (op==BCREL_sym) ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Generating a Lemma");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==BPOP_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Popping a Theory");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==BCLEAN_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Cleaning a Theory");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==CLO_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Closing File");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==BCRELR_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Generating a List of Rules");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==MODR_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Modifying a Rule");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==MARK_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Marking a Rule as Proved");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==SHL_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Shell");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==WRIF_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Writing on Screen");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;}
+        } else if( op==WRIM_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Writing on Menu Window");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==PRIF_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Writing on File");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==BTAC_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Generating a Normal Tactic");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==FTAC_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Generating a Forward Tactic");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==BRECOMPACT_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Recompacting Memory");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( op==BSTATISTICS_sym ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Statistics");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else {
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Backtracking");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        };
+      };
+    }
+  ; return success    ;
+  }
+
+                     
+/*  PROOF STEP FOR 'LOAD' PROOF  */
+  
+  
+  step_lod_prf(r,i,g)
+  {register int f ;
+    f=frm_gol(g);
+    if( and_prf(i,g,f)==TRUE ){
+      {};
+    } else if( lod_rul_prf(f)==TRUE ){
+      {};
+    } else if( lod_add_tac_prf(f)==TRUE ){
+      {};
+    } else if( bwrite_prf(f)==TRUE ){
+      {};
+    } else if( itp_tac_lod_prf(r,i,g,f)==TRUE ){
+      {};
+    };
+  }
+
+  
+                         
+/*  PROOF I/O  */
+                       
+/*  GOAL PARAGRAPH  */
+   
+  write_gol_prf(g)
+  {
+    if( (len(frm_gol(g))<200) || (sho_big_gol_prf==TRUE) ){
+      reset_res(6);
+      write_frm_res(frm_gol(g),6);
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+    } else {
+      fprintf ( bstdout, "      Goal is big\n");
+      fprintf ( bstdout, "\n");
+    };
+  }
+
+  write_spe_gol_prf(g)
+  {register int f,a,c,i,v ;
+    if( (len(frm_gol(g))<200) || (sho_big_gol_prf==TRUE) ){
+      f=frm_gol(g);
+      if( val_root_frm(f)==IMP_sym ){
+        a=dec_tree(f,left_node_tree(f,root_tree(f)),AND_sym);
+        c=cre_cop_tree(f,right_node_tree(f,root_tree(f)));
+        itr(a,i,v,reset_res(6);
+                  write_frm_res(v,6);
+                  fprintf ( bstdout, "\n"));
+        reset_res(6);
+        write_chr_res(ord('='));
+        write_chr_res(ord('>'));
+        fprintf ( bstdout, "\n");
+        reset_res(6);
+        write_frm_res(c,6);
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "\n");
+        itr(a,i,v,kil(v));
+        kil(a);
+        kil(c);
+      } else {
+        reset_res(6);
+        write_frm_res(f,6);
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "\n");
+      };
+    } else {
+      fprintf ( bstdout, "      Goal is big\n");
+      fprintf ( bstdout, "\n");
+    };
+  }
+
+  writeln_lst_gol_prf(p,n)
+  {register int g,m,c ;
+    fprintf ( bstdout, "GOALS\n");
+    fprintf ( bstdout, "\n");
+    c=0;
+    itr_next_nod(p,n,m,g,c=c+1;
+                         if( c==1 ){
+                           write_spe_gol_prf(g);
+                         } else if( c==2 ){
+                           if( sho_gol_prf==FALSE ){
+                             fprintf ( bstdout, "      ...\n");
+                             fprintf ( bstdout, "\n");
+                           } else {
+                             write_gol_prf(g);
+                           };
+                         } else if( sho_gol_prf==TRUE ){
+                           write_gol_prf(g);
+                        });
+  }
+
+  
+  writeln_lst_gol_prf_ABORTED(p,n)
+  {register int g,m,c ;
+   static int already_printed = 0;
+    if ( ! already_printed ) {
+      already_printed = 1;
+      c=0;
+      itr_next_nod(p,n,m,g,c=c+1;
+                         if( c==1 ){
+                           write_spe_gol_prf(g);
+                         } else {
+                           write_gol_prf(g);
+                        });
+      }
+   }
+
+  
+                        
+/*  PROOF PARAGRAPH  */
+  
+  write_ext_prf4(n,g,i,dec,t,nn)
+  {register int s,j,m,gl ;
+    s=cre(len(sons_nod(i)));
+    itr(sons_nod(i),j,m,gl=info_nod(m);
+                        if( is_not_printed_gol(gl)==FALSE ){
+                            psh(s,niv_gol(gl))
+                         ;});
+    if( niv_gol(g)==1 ){
+      fprintf ( bstdout, "proof_script(\n");
+    };
+    write_ext_gol(s,g,(dec / 2));
+    if( niv_gol(g)!=n ){
+      fprintf ( bstdout, ";");
+    } else {
+      fprintf ( bstdout, ";");
+      write_nam_the(t);
+      fprintf ( bstdout, ".");
+      write_nat(nn);
+      fprintf ( bstdout, ")");
+    };
+    fprintf ( bstdout, "\n");
+    kil(s);
+  }
+
+  write_prf4(g,i,dec)
+  {register int s,j,m,gl ;
+    s=cre(len(sons_nod(i)));
+    itr(sons_nod(i),j,m,gl=info_nod(m);
+                        if( is_not_printed_gol(gl)==FALSE ){
+                            psh(s,niv_gol(gl))
+                         ;});
+    write_gol(s,g,dec);
+    fprintf ( bstdout, "\n");
+    kil(s);
+  }
+
+  write_ext_prf(p,t,nn)
+  {register int i,ii,g,h,n,dec ;
+    n=0;
+    itr_nod(p,i,g,if( def_hso_gol(g)==TRUE ){
+                    itr(hso_gol(g),ii,h,if( 
+                      (uti_hyp(h)==TRUE) || (isa_der_hyp(h)==FALSE) ){
+                      n=n+1;
+                      mod_niv_hyp(h,n)
+                   ;});
+                  },
+                  {},
+                  if( (is_not_printed_gol(g)==FALSE) ){
+                    n=n+1;
+                    mod_niv_gol(g,n)
+                 ;});
+    dec=0;
+    itr_nod(p,i,g,
+    if( def_hso_gol(g)==TRUE ){
+      itr(hso_gol(g),ii,h,
+      if( (uti_hyp(h)==TRUE) || (isa_der_hyp(h)==FALSE) ){
+        if( niv_hyp(h)==1 ){
+          fprintf ( bstdout, "proof_script(\n");
+        };
+        write_ext_hyp(h,(dec / 2));
+        if( niv_hyp(h)!=n ){
+          fprintf ( bstdout, ";");
+        } else {
+          fprintf ( bstdout, ";");
+          write_nam_the(t);
+          fprintf ( bstdout, ".");
+          write_nat(nn);
+          fprintf ( bstdout, ")");
+        };
+        fprintf ( bstdout, "\n")
+     ;});
+      dec=dec+2;
+    },
+    {},
+    if(  (is_not_printed_gol(g)==FALSE) ){
+      write_ext_prf4(n,g,i,dec,t,nn);
+    };
+    if( def_hso_gol(g)==TRUE ){
+    dec=dec-2
+   ;});
+  }
+
+  write_prf(p)
+  {register int i,ii,g,h,n,dec ;
+    n=0;
+    save_MAX_COL_RES;
+    mod_MAX_COL_RES(50);
+    fprintf ( bstdout, "PROOF\n");
+    fprintf ( bstdout, "\n");
+    itr_nod(p,i,g,if( def_hso_gol(g)==TRUE ){
+                    itr(hso_gol(g),ii,h,if( 
+                      (uti_hyp(h)==TRUE) || (isa_der_hyp(h)==FALSE) ){
+                      n=n+1;
+                      mod_niv_hyp(h,n)
+                   ;});
+                  },
+                  {},
+                  if( is_not_printed_gol(g)==FALSE ){
+                    n=n+1;
+                    mod_niv_gol(g,n)
+                 ;});
+    dec=0;
+    itr_nod(p,i,g,
+    if( def_hso_gol(g)==TRUE ){
+    itr(hso_gol(g),ii,h,
+    if( (uti_hyp(h)==TRUE) || (isa_der_hyp(h)==FALSE) ){
+     write_hyp(h,dec);
+     fprintf ( bstdout, "\n")
+   ;});
+    dec=dec+2;
+    },
+    {},
+    if( is_not_printed_gol(g)==FALSE ){
+      write_prf4(g,i,dec);
+    };
+    if( def_hso_gol(g)==TRUE ){
+    dec=dec-2
+   ;});
+    fprintf ( bstdout, "\n");
+    fprintf ( bstdout, "END OF PROOF\n");
+    restore_MAX_COL_RES;
+  }
+
+ 
+                     
+/*  BACKWARD TACTIC PARAGRAPH  */
+ 
+ 
+  write_tac_prf1(p,i,t)
+  {register int l,f ;
+    l=len(sons_nod(i));
+    if( l>1 ){
+      if( spe_tac(info_nod(i))==TIL_tac ){
+        write_chr_res(ord(')'));
+        write_chr_res(ord('~'));
+      };
+    } else if( l==1 ){
+      if( spe_tac(info_nod(i))==TIL_tac ){
+        write_chr_res(ord('~'));
+      };
+    } else {
+      f=frm_tac(t);
+      if( i==p ){
+        write_srv_res;
+        write_frm_res(f,6);
+        write_erv_res;
+      } else {
+        write_frm_res(f,6);
+      };
+    };
+  }
+
+                
+  
+  writeln_tac_prf(p)
+  {register int i,t ;
+    fprintf ( bstdout, "NORMAL TACTIC\n");
+    fprintf ( bstdout, "\n");
+    reset_res(6);
+    itr_nod(p,i,t,if( len(sons_nod(i))>1 ){
+                    if( spe_tac(info_nod(i))==TIL_tac ){
+                      write_chr_res(ord('('));
+                    };
+                  },
+                  write_chr_res(ord(';')),
+                  write_tac_prf1(tac_ptr_prf,i,t));
+    fprintf ( bstdout, "\n");
+    fprintf ( bstdout, "\n");
+  }
+
+                 
+/*  FORWARD TACTIC PARAGRAPH  */
+                 
+  
+  writeln_fwd_tac_prf(p)
+  {register int i,t ;
+    fprintf ( bstdout, "FORWARD TACTIC\n");
+    fprintf ( bstdout, "\n");
+    reset_res(6);
+    itr_nod(p,i,t,if( len(sons_nod(i))>1 ){
+                    if( spe_tac(info_nod(i))==TIL_tac ){
+                      write_chr_res(ord('('));
+                    };
+                  },
+                  write_chr_res(ord(';')),
+                  write_tac_prf1(fwd_tac_ptr_prf,i,t));
+    fprintf ( bstdout, "\n");
+    fprintf ( bstdout, "\n");
+  }
+
+                         
+/*  HYPOTHESES PARAGRAPH  */
+  
+  
+  writeln_lst_hyp_prf(p,n)
+  {register int s,i,h,dec,b,v,nsc ;
+    s=cre(50);
+    lst_hyp_prf(p,n,s);
+    rev(s);
+    nsc=0;
+    xst(s,i,h,(
+/* (val_root_frm(frm_hyp(h))==VRB_sym) || */
+    (val_root_frm(frm_hyp(h))==BVRB_sym) || (val_root_frm(frm_hyp(h))==ANTI_SLASH_sym)),b=TRUE,b=FALSE);
+    if( b==TRUE ){
+      fprintf ( bstdout, "SIDE CONDITIONS\n");
+      fprintf ( bstdout, "\n");
+      itr(s,i,h,{
+        v=val_root_frm(frm_hyp(h));
+        if( 
+/* (v==VRB_sym) || */
+ (v==ANTI_SLASH_sym) || (v==BVRB_sym) ){
+          dec=6;
+          reset_res(dec);
+          write_frm_res(frm_hyp(h),dec);
+          nsc=nsc+1;
+          fprintf ( bstdout, "\n");
+        }
+     ;});
+      fprintf ( bstdout, "\n");
+};
+    if( len(s)>nsc ){
+      fprintf ( bstdout, "HYPOTHESES\n");
+      fprintf ( bstdout, "\n");
+      b=TRUE;
+      itr(s,i,h,{
+        v=val_root_frm(frm_hyp(h));
+        if( (v==ANTI_SLASH_sym) || (v==BVRB_sym) ){
+          {};
+        } else if( (isa_der_hyp(h)==TRUE) && (sho_der_hyp_prf==TRUE) ){
+          dec=8;
+          reset_res(dec);
+          write_frm_res(frm_hyp(h),dec);
+          fprintf ( bstdout, "\n");
+        } else {
+          if( isa_der_hyp(h)==TRUE ){
+            if( b==TRUE ){
+              b=FALSE;
+              fprintf ( bstdout, "        ...\n");
+};
+          } else {
+            b=TRUE;
+            dec=6;
+            reset_res(dec);
+            write_frm_res(frm_hyp(h),dec);
+            fprintf ( bstdout, "\n");
+          };
+        }
+     ;});
+      fprintf ( bstdout, "\n");
+    };
+    kil(s);
+  }
+
+  writeln_head_prf(p,i)
+  {
+    write_top_clear_res;
+    if( fwd_tac_prf!=0 ){
+      writeln_fwd_tac_prf(fwd_tac_prf);
+    };
+    writeln_tac_prf(tac_prf);
+    writeln_lst_hyp_prf(p,i);
+    writeln_lst_gol_prf(p,i);
+  }
+
+  
+                        
+/*  PROOF INTERFACE  */
+  
+  screen_doc_prffunc()
+#define screen_doc_prf screen_doc_prffunc()
+  {
+    fprintf ( bstdout, "  CR: Loop Until Quota      1: Menu\n");
+    fprintf ( bstdout, "   z: Step by Step          c: Shell\n");
+    fprintf ( bstdout, "   w: Undo                  n: Show More Hyp. (on/off)\n");
+    fprintf ( bstdout, "   x: DED || GEN            j: Show Big Goal (on/off)\n");
+    fprintf ( bstdout, "   a: HYP                   g: Goals (on/off)\n");
+    fprintf ( bstdout, "   q: LEM                   l: Change Quota\n");
+    fprintf ( bstdout, "   b: Tactic Browsing       r: Theories\n");
+    fprintf ( bstdout, "   v: Dump Hypotheses       *: While Proving\n");
+    fprintf ( bstdout, "   s: Statistics            4: Recursive Quit\n");
+    fprintf ( bstdout, "   d: SUB                  13: Reload (Source)\n")  ;
+  }
+
+  doc_prffunc()
+#define doc_prf doc_prffunc()
+  {
+    open_win;
+    screen_doc_prf; 
+    clos_win;
+  }
+
+  
+  
+                      
+/*  BACKTRACKING  - this is really `undo'*/
+                      
+                      
+   backtrack_prf(p,i,r)
+   {register int j,ii,k,g,op,rr ;
+     
+/* j=prev_nod(p,i); */
+     if( i!=p ){ 
+       j=fath_nod(i);
+       itr(sons_nod(j),ii,k,kil_prf(k));
+       clr(sons_nod(j));
+       g=info_nod(j);
+       if( def_rul_gol(g)==FALSE ){
+         op=val_root_frm(frm_gol(g));
+         if( (op==PLS_sym) || (op==MUL_sym) || (op==BCREL_sym) || (op==BCRER_sym) ){
+           if( def_lsb_rul(r)==TRUE ){
+             rr=lst(lsb_rul(r));
+             rem_rul_the(the_rul(rr),num_rul(rr));
+             pop(lsb_rul(r))
+           ;}
+         ;}
+       ;};
+       clean_gol(g)
+     ;} else {
+       j=i
+     ;}
+   ; return j
+   ;}
+
+                     
+/*  EXEC PROOF  */
+                      
+  run_exec_prf(r,p,i,g)
+  {register int success,ii,gg,b,j,run_exec_prf_res ;
+    success=FALSE;
+    end_of_tac_prf=FALSE;
+    while( (success==FALSE) && (end_of_tac_prf==FALSE) ){
+      success=step_exec_prf(r,p,i,g);
+      if( success==TRUE ){
+        if( aster_prf==TRUE ){
+          fprintf ( bstdout, "*");
+          fflush(bstdout);
+        };
+};
+    };
+    if( (success==FALSE) && (end_of_tac_prf==TRUE) ){
+      xst_asc_nod(p,fath_nod(i),ii,gg,is_cal_gol(gg)==TRUE,
+                                   b=TRUE,b=FALSE);
+      j=i;
+      while( (success==FALSE) && (b==TRUE) ){
+        j=backtrack_prf(p,j,r);
+        while( is_cal_gol(info_nod(j))==FALSE ){
+          j=backtrack_prf(p,j,r);
+};
+        success=recal_prf(j,info_nod(j));
+        if( success==FALSE ){
+          xst_asc_nod(p,fath_nod(j),ii,gg,is_cal_gol(gg)==TRUE,
+                                             b=TRUE,b=FALSE);
+        };
+      };
+      if( success==TRUE ){
+        run_exec_prf_res=j;
+      } else {
+        run_exec_prf_res=(-j);
+      };
+    } else {
+      run_exec_prf_res=i;
+    }
+  ; return run_exec_prf_res;
+  }
+
+                      
+/*  PROOF  */
+                       
+  
+  one_step_of_prf(r,p,i,g)
+  {register int success,ii,gg,b,j,nn,one_step_of_prf_res ;
+    end_of_tac_prf=FALSE;
+    success=FALSE;
+    while( (success==FALSE) && (end_of_tac_prf==FALSE) ){
+      success=step_prf(r,p,i,g);
+      if( (success==TRUE) && (auto_prf==TRUE) ){
+        if( aster_prf==TRUE ){
+          fprintf ( bstdout, "*");
+          fflush(bstdout);
+        };
+        if( exec_prf==FALSE ){
+          ctr_prf=ctr_prf-1;
+          if( ctr_prf<=0  ){
+            nn=next_nod(p,i);
+            if( nn!=0 ){
+              writeln_head_prf(p,nn);
+              fprintf ( bstdout, "Too Many Steps. Proceeding? ");
+              if( yes_no==NO ){
+                auto_prf=FALSE;
+              } else {
+                ctr_prf=max_ctr_prf;
+              };
+            };
+          };
+        };
+      };
+    };
+
+    if ( (success==FALSE) && (end_of_tac_prf==TRUE) ) {
+      xst_asc_nod(p,fath_nod(i),ii,gg,is_cal_gol(gg)==TRUE,
+                                   b=TRUE,b=FALSE);
+      j=i;
+      while ( (success==FALSE) && (b==TRUE) ) {
+        j=backtrack_prf(p,j,r);
+        while ( is_cal_gol(info_nod(j))==FALSE ) {
+          j=backtrack_prf(p,j,r);
+        }
+        success=recal_prf(j,info_nod(j));
+        if ( success==FALSE ) {
+          xst_asc_nod(p,fath_nod(j),ii,gg,is_cal_gol(gg)==TRUE,b=TRUE,b=FALSE);
+        }
+        else if ( auto_prf==FALSE ) {
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Backtracking");
+          fprintf ( bstdout, " ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        }
+      }
+      if ( success==TRUE ) {
+        one_step_of_prf_res=j;
+      }
+      else {
+        one_step_of_prf_res=(-j);
+      }
+    } /* if ( (success==FALSE) && (end_of_tac_prf==TRUE) ) */
+    else {
+      one_step_of_prf_res=i;
+    }
+    return one_step_of_prf_res;
+  }
+
+  
+  quota_prffunc()
+#define quota_prf quota_prffunc()
+  {
+    fprintf ( bstdout, "      Normal Quota: ");
+    write_nat(max_ctr_prf);
+    fprintf ( bstdout, "  Change? ");
+    if( yes_no==YES ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      New Normal Quota:    ");
+      max_ctr_prf=read_nat;
+    };
+    fprintf ( bstdout, "\n");
+    fprintf ( bstdout, "      Forwrd Quota: ");
+    write_nat(max_fwd_ctr_prf);
+    fprintf ( bstdout, "  Change? ");
+    if( yes_no==YES ){
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      New Forwrd Quota:    ");
+      max_fwd_ctr_prf =read_nat;
+    };
+  }
+
+  switch_aster_prffunc()
+#define switch_aster_prf switch_aster_prffunc()
+  {
+    aster_prf=((aster_prf==FALSE)!=0);
+  }
+
+#define val_aster_prf  aster_prf
+
+#define sys_all_the sys_all_thefunc()
+
+  run_man_prf(r,p,iii,gg)
+  {register int l,success,bbuf,s,ff,fff,j,i,gl,g,menu,run_man_prf_res ;
+    i=iii;
+    g=gg;
+    success=FALSE;
+    bbuf=cre(1);
+    menu=FALSE;
+    while( success==FALSE ){
+      if( menu==FALSE ){
+        writeln_head_prf(p,i);
+      } else {
+        menu=FALSE;
+      };
+      fprintf ( bstdout, "PROOF OPERATION: ");
+      read_str(bbuf);
+      l=len_str(bbuf);
+      if( l==1 ){
+        s=fst_str(bbuf);
+        if( s==ord('0') ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Aborting Proof? ");
+          if( yes_no==YES ){
+            abt_prf=TRUE;
+            success=TRUE;
+            run_man_prf_res=i   
+/* ADDED */;
+          };
+        } else if( s==ord('1') ){
+          fprintf ( bstdout, "\n");
+          screen_doc_prf;
+          menu=TRUE;
+          fprintf ( bstdout, "\n");
+        } else if( s==ord('4') ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Aborting Proof Then Recursive Quit? ");
+          if( yes_no==YES ){
+            mod_ret_sys(TRUE);
+            abt_prf=TRUE;
+            success=TRUE;
+            run_man_prf_res=i   
+/* ADDED */;
+          };
+        } else if( s==ord('l') ){
+          fprintf ( bstdout, "\n");
+          quota_prf;
+        } else if( s==ord('a') ){
+          success=mon2_hyp_prf(p,i,g,frm_gol(g));
+          run_man_prf_res=i      
+/* ADDED */;
+        } else if( s==ord('q') ){
+          ff=cre_frm(nam_the(the_rul(r)));
+          fff=cons_frm(ff,MUL_sym,frm_gol(g));
+          gl=cre_gol(fff);
+          cre_nod(gl,i);
+          mod_spe_gol(g,LEM_gol);
+          kil(ff);
+          i=next_nod(p,i);
+          success=add_rul_prf(p,i,r,fff);
+          run_man_prf_res=i       
+/* ADDED */;
+        } else if( s==ord('d') ){
+          success=sub_prf(p,i,g,frm_gol(g));
+          run_man_prf_res=i         
+/* ADDED */;
+        } else if( s==ord('x') ){
+          if( ded_prf(r,p,i,g,frm_gol(g))==TRUE ){
+            success=TRUE;
+          } else {
+            success=gen_prf(p,i,g,frm_gol(g));
+          };
+          run_man_prf_res=i         
+/* ADDED */;
+        } else if( s==ord('w') ){
+          end_of_tac_prf=FALSE;
+          run_man_prf_res=(-i);
+          auto_prf=FALSE;
+          success=TRUE;
+        } else if( s==ord('b') ){
+          tac_ptr_prf=nxt_tac_prf(tac_prf,tac_ptr_prf);
+          new_tac_prf=FALSE;
+        } else if( s==ord('z') ){ 
+          j=one_step_of_prf(r,p,i,g);  
+          if( j>0 ){
+            run_man_prf_res=j;
+            success=TRUE;
+          } else {
+            i=(-j);
+            g=info_nod(i);
+            if( def_tac_gol(g)==TRUE ){
+              tac_prf=tac_gol(g);
+              tac_ptr_prf=tpt_gol(g);
+              fwd_tac_prf=ftac_gol(g);
+              fwd_tac_ptr_prf=ftpt_gol(g);
+              end_of_tac_prf=FALSE;
+            };
+          };
+        } else if( s==ord('r') ){
+          mod_rec_sys(TRUE);
+          fprintf ( bstdout, "\n");
+          sys_all_the;
+          mod_rec_sys(FALSE);
+          if( is_win==TRUE ){ 
+            doc_prf  ;
+          };
+        } else if( s==ord('c') ){
+          sys_shl;
+        } else if( s==ord('s') ){
+          fprintf ( bstdout, "\n");
+          max_tool;
+        } else if( s==ord('v') ){
+          redirect_trm("b.s"); 
+/* freopen("b.s","w", bstdout); */
+          if( sho_der_hyp_prf==FALSE ){
+            sho_der_hyp_prf=TRUE;
+            writeln_lst_hyp_prf(p,i);
+            sho_der_hyp_prf=FALSE;
+          } else {
+            writeln_lst_hyp_prf(p,i);
+          };
+          reset_trm; 
+/* freopen(TERMINAL,"w", bstdout); */
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Hypotheses displayed on file b.s ");
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        } else if( s==ord('j') ){
+          sho_big_gol_prf=((sho_big_gol_prf==FALSE)!=0);
+        } else if( s==ord('g') ){
+          sho_gol_prf=((sho_gol_prf==FALSE)!=0);
+        } else if( s==ord('n') ){
+          sho_der_hyp_prf=((sho_der_hyp_prf==FALSE)!=0);
+        } else if( s==ord('*') ){
+          switch_aster_prf;
+          fprintf ( bstdout, "\n");
+          if( val_aster_prf==TRUE ){
+             fprintf ( bstdout, "      ***  are on now ");
+          } else {
+             fprintf ( bstdout, "      ***  are off now ");
+          };
+          {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+        };
+      } else if( l==2 ){
+        if( (fst_str(bbuf)=='1') && (val_str(bbuf,2)=='3') ){
+          if( val_loaded_sys==TRUE ){
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      Aborting Proof Then Reload? ");
+            if( yes_no==YES ){
+              mod_ret_sys(TRUE);
+              mod_reload_sys(TRUE);
+              abt_prf=TRUE;
+              success=TRUE;
+              run_man_prf_res=i   
+/* ADDED */;
+            };
+          };
+        };
+      } else if( l==0 ){
+        auto_prf=TRUE;
+        ctr_prf=max_ctr_prf;
+        j=one_step_of_prf(r,p,i,g);
+        if( j>0 ){
+          run_man_prf_res=j;
+          success=TRUE;
+        } else {
+          auto_prf=FALSE;
+          i=(-j);
+          g=info_nod(i);
+          if( def_tac_gol(g)==TRUE ){
+            tac_prf=tac_gol(g);
+            tac_ptr_prf=tpt_gol(g);
+            fwd_tac_prf=ftac_gol(g);
+            fwd_tac_ptr_prf=ftpt_gol(g);
+            end_of_tac_prf=FALSE;
+          }
+        }
+      }
+    }
+    kil(bbuf)
+  ; return run_man_prf_res;
+  }
+
+                        
+/*  NORMAL PROOF MONITOR  */
+                        
+  
+  loop_do_prf(t,n)
+  {register int r,p,i,g,j ;
+    r=val_rul_the(t,n);
+    mod_rul_sys(num_rul(r));
+    mod_theo_sys(num_the(the_rul(r)));
+    p=cre_prf(r);
+    i=p;
+    while( i!=0 ){
+      g=info_nod(i);
+      if( def_tac_gol(g)==TRUE ){
+        tac_prf=tac_gol(g);
+        tac_ptr_prf=tpt_gol(g);
+        fwd_tac_prf=ftac_gol(g);
+        fwd_tac_ptr_prf=ftpt_gol(g);
+        end_of_tac_prf=FALSE;
+      }
+      if( abt_prf==TRUE ){
+        j=i;
+      }
+      else if( halt_prf==TRUE ){
+        j=i;
+      }
+      else if( auto_prf==FALSE ){
+        j=run_man_prf(r,p,i,g);
+      }
+      else {
+        j=one_step_of_prf(r,p,i,g);
+/*
+printf ( ">>>>>>>>>>>>>>>>> loop_do_prf(%d,%d) j %d\n", t,n,j );
+*/
+        if( j<0 ){
+          g=info_nod(-j);
+          if( def_tac_gol(g)==TRUE ){
+            tac_prf=tac_gol(g);
+            tac_ptr_prf=tpt_gol(g);
+            fwd_tac_prf=ftac_gol(g);
+            fwd_tac_ptr_prf=ftpt_gol(g);
+            end_of_tac_prf=FALSE;
+          };
+          auto_prf=FALSE;
+          j=run_man_prf(r,p,-j,g);
+        }
+      }
+      if( j>0 ){
+        i=nextp_nod(p,j);
+      }
+      else {
+        i=backtrack_prf(p,-j,r);
+        clean_spe_gol(info_nod(i));
+      }
+    }
+    return p;
+  }
+
+  prelude_prf(t,a)
+  {
+    sho_big_gol_prf=FALSE;
+    sho_gol_prf=FALSE;
+    sho_der_hyp_prf=FALSE;
+    reset_fic;
+    reset_out(0);
+    end_of_tac_prf=FALSE;
+    abt_prf=FALSE;
+    halt_prf=FALSE;
+    auto_prf=a;
+    the_prf=t;
+    new_tac_prf=FALSE;
+    ctr_prf=max_ctr_prf;
+    lst_tac_prf=cre(3);
+    lst_fwd_tac_prf=cre(3);
+    lst_input_prf=cre(5);  
+    build_tac_prf(tac_the(t));
+    if( has_fwd_tac_the(t)==TRUE ){
+      build_fwd_tac_prf2(fwd_tac_the(t));
+    } else {
+      fwd_tac_prf=0;
+      fwd_tac_ptr_prf=0;
+};
+}
+
+  write_res_prffunc()
+#define write_res_prf write_res_prffunc()
+  {
+    flush_all_fic;
+  }
+
+  postlude_prf(p
+/* ,t */
+)
+  {
+    kil_prf(p);
+    kil_tac_prf;
+    kil_fwd_tac_prf2;
+    kil_input_prf;
+    close_all_fic;
+    
+/* if( has_fwd_tac_the(t)==TRUE ){
+      kil_fwd_tac_prf;
+    }
+*/
+
+  }
+
+  
+/* 
+  procedure do_prf(t,n,a:integer);forward;
+   */
+  
+  mon_lem_prf(l,bbuf)
+  {register int k,mon_lem_prf_res ;
+    mon_lem_prf_res=TRUE;
+    if( (typ_rul(l)==lem_rul) && (pvd_rul(l)!=now_rul) ){
+      write_top_clear_res;
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      Theory: ");
+      write_nam_the(the_rul(l));
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+      write_old_ver_rul(l);
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      Proving it?  (0 to quit) ");
+      read_str(bbuf);
+      k=len_str(bbuf);
+      if( k==0 ){
+        do_prf(the_rul(l),num_rul(l),FALSE);
+        if( val_ret_sys==TRUE ){
+          mon_lem_prf_res=FALSE;
+        };
+      } else if( (k==1) && (fst_str(bbuf)==ord('0')) ){
+        mon_lem_prf_res=FALSE;
+      } else {
+        {};
+      };
+    }
+  ; return mon_lem_prf_res;
+  }
+
+  do_prf(t,n,a)
+  {register int p,r,i,l,
+/* k, */
+b,bbuf ;
+    abt_prf=TRUE;
+    halt_prf=TRUE;
+    while( (abt_prf==TRUE) && (halt_prf==TRUE) ){
+      if( is_win==TRUE ){ 
+        doc_prf  ;
+      };
+      exec_prf=FALSE;
+      prelude_prf(t,FALSE
+/* ,100,100 */
+);
+      p=loop_do_prf(t,n);
+      if( (abt_prf==FALSE) && ((a==TRUE) || (val_print_ext_prf_the==TRUE)) ){
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "      Printing Proof? ");
+        if( yes_no==YES ){
+          if( val_print_ext_prf_the==TRUE ){
+            if( val_first_prf_the==FALSE ){
+              reappend_trm(name_prf_fil); 
+/* freopen(name_prf_fil,"a", bstdout); */
+              fprintf ( bstdout, ",\n");
+            } else {
+              redirect_trm(name_prf_fil); 
+/* freopen(name_prf_fil,"w", bstdout); */
+              mod_first_prf_the(FALSE);
+            };
+            write_ext_prf(p,t,n);
+            reset_trm 
+/* freopen(TERMINAL,"w", bstdout) */;
+          }
+          else {
+            fprintf ( bstdout, "\n");
+            write_prf(p);
+          }
+        }
+        write_res_prf;
+      }
+      postlude_prf(p
+/* ,t */
+);
+      r=val_rul_the(t,n);
+      if( abt_prf==FALSE ){
+        mod_pvd_rul(r,now_rul);
+
+        if( (def_lsb_rul(r)==TRUE) && (val_ret_sys==FALSE)  ){
+          xst(lsb_rul(r),i,l,(typ_rul(l)==lem_rul) && (pvd_rul(l)!=now_rul),b=TRUE,b=FALSE);
+
+          if( b==TRUE ){
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      Proving Lemmas? ");
+            if( yes_no==YES ){
+              bbuf=cre(1);
+              itr(lsb_rul(r),i,l,if( b==TRUE ){
+                                   b=mon_lem_prf(l,bbuf)
+                                ;});
+              kil(bbuf);
+            };
+          };
+        };
+      }
+      else {   /* if( abt_prf==FALSE ) */
+        rem_sub_rul_the(t,n);
+      }
+    }
+  }
+
+  itr_lem_prf(r)
+  {register int i,l,b,bbuf ;
+    b=TRUE;
+    bbuf=cre(1);
+    itr(lsb_rul(r),i,l,if( b==TRUE ){
+                         b=mon_lem_prf(l,bbuf);
+                      });
+    kil(bbuf);
+  }
+
+  itr_lem_the_prf(t)
+  {register int i,l,b,bbuf ;
+    b=TRUE;
+    bbuf=cre(1);
+    itr(rul_the(t),i,l,if( b==TRUE ){
+                         b=mon_lem_prf(l,bbuf);
+                      });
+    kil(bbuf);
+  }
+
+  
+                     
+/*  EXEC 'PROOF' MONITOR  */
+                     
+  loop_exec_prf(r,f)
+  {register int p,i,g,j,ii,k,aborted_i;
+    g=cre_gol(f);
+    p=cre_root_nod(g);
+    i=p;
+/* fprintf ( bstdout, "init: i %d\n",i); */
+    while( i!=0 ){
+/* fprintf ( bstdout, "loop: i %d\n",i); */
+      g=info_nod(i);
+      if( def_tac_gol(g)==TRUE ){
+        tac_prf=tac_gol(g);
+        tac_ptr_prf=tpt_gol(g);
+        fwd_tac_prf=ftac_gol(g);
+        fwd_tac_ptr_prf=ftpt_gol(g);
+        end_of_tac_prf=FALSE;
+      };
+      if( snbr_nod(i)>1 ){
+        j=val(sons_nod(fath_nod(i)),snbr_nod(i)-1);
+        itr(sons_nod(j),ii,k,kil_prf(k));
+        clr(sons_nod(j));
+      };
+      if( abt_prf==TRUE ){
+
+/* fprintf ( bstdout, "p %d i %d aborted_i %d\n",p,i,aborted_i); */
+/* writeln_lst_gol_prf_ABORTED(p,i); */
+/* writeln_lst_gol_prf_ABORTED(p,aborted_i); */
+
+        j=i;
+      } else if( halt_prf==TRUE ){
+        j=i;
+      } else { 
+        j=run_exec_prf(r,p,i,g);
+      };
+      if( j<0 ){
+        aborted_i=i;
+        i=next_nod(p,-j);
+        abt_prf=TRUE;
+      } else {
+        i=next_nod(p,j);
+      };
+    };
+    itr(sons_nod(p),ii,k,kil_prf(k));
+    clr(sons_nod(p))
+  ; return p;
+  }
+
+                      
+/*  FILE EXEC 'PROOF'  */
+                          
+                          
+  exec_file_prf(t)
+  {register int f,g,p,s,ff,r,i,b,l,bb ;
+    
+/* if( val_batch_sys==TRUE ){
+      freopen("tmp.b","r",stdin);
+}; */
+    if( val_batch_sys == FALSE ){
+      bb=mod_read_name_fil(t);
+    } else {
+      bb=TRUE;
+    };
+    while( (bb==TRUE) && (val_ret_sys==FALSE) ){
+      f=read_file_frm;
+      if( f!=0 ){
+        s=cre_sym_fil;
+        ff=cre_frm(s);
+        r=add_rul_the(ff,t,nrm_rul);
+        abt_prf=TRUE;
+        halt_prf=TRUE;
+        while( (abt_prf==TRUE) && (halt_prf==TRUE) ){
+          exec_prf=TRUE;
+          prelude_prf(t,TRUE);
+          if( val_batch_sys==FALSE ){
+            
+/* fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      EXECUTING\n"); */;
+          };
+          g=cre(10);
+          cop(f,g);
+          p=loop_exec_prf(r,g
+/* f */
+);
+          if( abt_prf==FALSE ){
+            write_res_prf;
+          } else if( halt_prf==TRUE ){
+            {};
+          } else {
+            fprintf(stderr,"\n      EXECUTION ABORTED(1)\n");
+          };
+          postlude_prf(p);
+          if( (abt_prf==FALSE) && (val_batch_sys==FALSE) ){
+            mod_pvd_rul(r,now_rul);
+            if( def_lsb_rul(r)==TRUE ){
+              xst(lsb_rul(r),i,l,(typ_rul(l)==lem_rul) && (pvd_rul(l)!=now_rul),b=TRUE,b=FALSE);
+              if( b==TRUE ){
+                fprintf(stderr,"\n      Proving Lemmas? ");
+                if( yes_no==YES ){
+                  itr_lem_prf(r);
+                };
+              };
+            };
+          };
+        };
+        kil(f);
+      } else {
+        
+/* if( val_batch_sys == FALSE ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      QUIT\n");
+        } */;
+      };
+      if( val_batch_sys == FALSE ){
+        if( val_ret_sys==FALSE ){
+          if( nbr_rul_the(t)>0 ){
+            fprintf ( bstdout, "\n");
+            lst_short_rul_the(t);
+          };
+        };
+        fprintf ( bstdout, "\n");
+        bb=mod_read_name_fil(t);
+      } else {
+        bb=FALSE;
+      };
+    };
+  }
+
+                        
+/*  DIRECT EXEC 'PROOF'  */
+                      
+                      
+  exec_dir_prf(t)
+  {register int f,g,p,r,ff,i,b,l ;
+    f=read_frm;
+    ff=cre_frm(TTY_sym);
+    r=add_rul_the(ff,t,nrm_rul);
+    abt_prf=TRUE;
+    halt_prf=TRUE;
+    while( (abt_prf==TRUE) && (halt_prf==TRUE) ){
+      exec_prf=TRUE;
+      prelude_prf(t,TRUE);
+     
+/*  fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      EXECUTING\n"); */
+      g=cre(10);
+      cop(f,g);
+      p=loop_exec_prf(r,g
+/* f */
+);
+      if( abt_prf==FALSE ){
+        write_res_prf;
+      } else if( halt_prf==TRUE ){
+        {};
+      } else {
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "      EXECUTION ABORTED(2)\n");
+      };
+      postlude_prf(p
+/* ,t */
+);
+      if( abt_prf==FALSE ){
+        mod_pvd_rul(r,now_rul);
+        if( def_lsb_rul(r)==TRUE ){
+          xst(lsb_rul(r),i,l,(typ_rul(l)==lem_rul) && (pvd_rul(l)!=now_rul),b=TRUE,b=FALSE);
+          if( b==TRUE ){
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      Proving Lemmas? ");
+            if( yes_no==YES ){
+              itr_lem_prf(r);
+            };
+          };
+        };
+      };
+    };
+    kil(f);
+  }
+
+                            
+/*  LOAD 'PROOF' MONITOR  */
+  
+  lod_prffunc()
+#define lod_prf lod_prffunc()
+  {register int p,i,g,f,t ;
+    reset_fic;
+    if( mod_lod_read_name_fil==TRUE ){
+      f=read_load_file_frm;
+      if( f!=0 ){
+        t=cre_the(BOT_sym);
+        lst_tac_prf=cre(1);
+        build_tac_prf(tac_the(t));
+        g=cre_gol(f);
+        p=cre_root_nod(g); 
+        if( val_batch_sys == FALSE ){
+          
+/* fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      LOADING\n"); */;
+        };
+        itr_next_nod(p,p,i,g,step_lod_prf(0,i,g));
+        kil_prf(p);
+        kil_tac_prf;
+      } else {
+        
+/* if( val_batch_sys == FALSE ){
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      QUIT\n");
+        } */;
+      };
+    };
+    close_all_fic;
+  }
+
+  relod_prffunc()
+#define relod_prf relod_prffunc()
+  {register int p,i,g,f,t ;
+    reset_fic;
+    f=read_load_file_frm;
+    if( f!=0 ){
+      t=cre_the(BOT_sym);
+      lst_tac_prf=cre(1);
+      build_tac_prf(tac_the(t));
+      g=cre_gol(f);
+      p=cre_root_nod(g); 
+      if( val_batch_sys == FALSE ){
+        
+/* fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "      LOADING\n"); */;
+      };
+      itr_next_nod(p,p,i,g,step_lod_prf(0,i,g));
+      kil_prf(p);
+      kil_tac_prf;
+    } else {
+      
+/* if( val_batch_sys == FALSE ){
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "      QUIT\n");
+      } */;
+    };
+    close_all_fic;
+  }
+

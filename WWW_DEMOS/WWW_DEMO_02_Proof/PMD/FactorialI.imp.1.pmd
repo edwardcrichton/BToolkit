@@ -1,0 +1,25 @@
+PROOFMETHOD FactorialI.imp.1.pmd IS
+
+  USETAC           (UsersTheory~),(FwdUsersTheory~)
+
+  REASONING_DEPTH  1
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    ?
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END

@@ -1,0 +1,36 @@
+PROOFMETHOD Person2I.imp.0.pmd IS
+
+  USETAC (UsersTheory~;BToolUsersTheory~),
+         (FwdUsersTheory~;FwdBToolUsersTheory~ /* ;FEQL~ */ )
+
+  REASONING_DEPTH 2
+
+  ON ?
+
+  END
+
+  &
+
+  THEORY UsersTheory IS
+
+    ?
+
+  END
+
+  &
+
+  THEORY FwdUsersTheory IS
+
+    ?
+
+  END
+
+END
+
+DEFINITIONS
+
+  ?
+
+INCLUSIONS
+
+  "/home/btoolkit/TOOLKIT/PMD/Global.pmd"

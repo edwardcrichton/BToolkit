@@ -1,0 +1,209 @@
+#! /bin/csh -f
+
+echo ""
+echo "  ------------------------- "
+echo "  This script links BMotif "
+echo "  in `pwd`/BKIT/BLIB "
+echo "  ------------------------- "
+
+######################################
+# set all variables 
+######################################
+
+set cur=`pwd`
+cd ../UTIL
+source set_compile_variables 1
+cd $cur
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+
+if ( ! -d $BKIT/BLIB ) then
+  mkdir $BKIT/BLIB
+endif
+
+################################
+# clear /tmp/cc*
+################################
+
+echo ""
+echo "  ls -l /tmp/cc*"
+echo ""
+ls -l /tmp/cc*
+if ( $status == 0 ) then
+  echo ""
+  echo "  rm -f /tmp/cc*"
+  rm -f /tmp/cc*
+endif
+echo ""
+
+cd ../MOTIF
+
+################################
+# link BMotif
+################################
+
+echo ""
+echo "  ----------------------------------"
+echo "  Linking BMotif"
+echo ""
+
+echo "  $CC \ "
+echo "      $CC_opt_Motif \ "
+echo "      -o BMotif \ "
+echo "      -Dbmotif  -DBTOOLKIT_FLAG \ "
+echo "      -DBTOOL_FLAG -DBTOOLM_FLAG \ "
+echo "      $ALL_FLAGS  \ "
+foreach file ( $BMotif_obj_files_m )
+  echo "       $file \ " 
+end
+foreach file ( $motif_b_dot_o )
+  echo "       $file \ " 
+end
+foreach file ( $motif_btl_b_dot_o )
+  echo "       $file \ " 
+end
+echo "       $CC_X_link_dir \ "
+echo "       $CC_X_link_lib \ "
+echo "       $CC_non_X_link_lib "
+ $CC \
+    $CC_opt_Motif \
+    -o BMotif \
+    -Dbmotif  -DBTOOLKIT_FLAG \
+    -DBTOOL_FLAG -DBTOOLM_FLAG \
+    $ALL_FLAGS \
+    $BMotif_obj_files_m \
+    $motif_b_dot_o \
+    $motif_btl_b_dot_o \
+    $CC_X_link_dir \
+    $CC_X_link_lib \
+    $CC_non_X_link_lib
+
+if ($status == 0) then
+  cp BMotif $BKIT/BLIB/BMotif
+  if ($status != 0) then
+    rm BMotif > /dev/null
+    echo ""
+    echo ""
+    echo "  Aborted"
+    echo ""
+    cd ../BEESRC
+    exit ( 1 )
+  endif
+else
+  echo ""
+  echo ""
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+rm BMotif > /dev/null
+echo ""
+echo "  strip $BKIT/BLIB/BMotif"
+# enc: running gdb
+#strip $BKIT/BLIB/BMotif
+ echo "                                 >>>>> STRIP SUPPRESSED <<<<<"
+
+rm -f $HOME/XBMotif
+cp BMotif.resources $HOME/XBMotif
+
+
+echo ""
+echo "  Installed: $BKIT/BLIB/BMotif"
+echo "             $HOME/XBMotif"
+echo ""
+
+rm -f ~/XBMotif $BKIT/XBMotif $BKIT/XBMotif.mono
+cp BMotif.resources ~/XBMotif
+cp BMotif.resources $BKIT/XBMotif
+cp BMotif.resources.mono $BKIT/XBMotif.mono
+
+echo ""
+echo "  ----------------------------------------------------------------------"
+echo ""
+echo "  Copied XBMotif and XBMotif.mono "
+echo "  (BMotif.resources and BMotif.resources.mono) to $BKIT "
+echo ""
+echo "  Copied XBMotif to $BKIT "
+echo ""
+
+exit ( 0 )
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
+
+
+################################
+# compile WWW_Demo_Selection
+################################
+
+if ( $TOOLKIT_VERSION == "WWW_VERSION" ) then
+
+  echo ""
+  echo "  ----------------------------------------------------------------------"
+  echo "  $WWW_motif_files "
+  echo ""
+
+  foreach file ( $WWW_motif_files )
+
+    echo "  $CC -Dbmotif \ "
+    echo "      $ALL_FLAGS  \ "
+    echo "      $CC_opt_Motif \ "
+    echo "      $CC_X_incl_dir \"
+    echo "      -o $BKIT/BLIB/$file \ "
+    echo "      $file.c \ "
+    echo "      $CC_X_link_dir \ "
+    echo "      $CC_X_link_lib \ "
+    echo "      $CC_non_X_link_lib "
+     $CC -Dbmotif \
+        $ALL_FLAGS \
+        $CC_opt_Motif \
+        $CC_X_incl_dir \
+        -o $BKIT/BLIB/$file \
+        $file.c \
+        $CC_X_link_dir \
+        $CC_X_link_lib \
+        $CC_non_X_link_lib
+ 
+    if ($status != 0) then
+      rm -f $file $file.o > /dev/null
+      echo ""
+      echo ""
+      echo "  Aborted $file "
+      echo ""
+      exit ( 1 )
+    endif
+
+#    echo "  strip $BKIT/BLIB/$file"
+#    strip $BKIT/BLIB/$file
+    echo "                                 >>>>> STRIP SUPPRESSED <<<<<"
+    echo "  Installed: $BKIT/BLIB/$file"
+    echo ""
+
+  end
+
+else
+
+  foreach file ( $WWW_motif_files )
+
+    if ( -r $BKIT/BLIB/$file ) then
+      rm $BKIT/BLIB/$file
+      echo ""
+      echo "    Removed $BKIT/BLIB/$file "
+      echo ""
+    endif
+
+  end
+
+endif
+
+# rm -f bplatsize.o
+cd ../BEESRC
+rm -f bmotif itfmch.c natmch.c filmch.c themch.c prfmch.c tolmch.c symmch.c strmch.c lexmch.c frmmch.c errmch.c macmch.c rulmch.c resmch.c hypmch.c tacmch.c nodmch.c golmch.c seqmch.c
+

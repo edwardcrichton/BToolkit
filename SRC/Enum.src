@@ -1,0 +1,1163 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define FullEnumSetsStore             (EnumFromUserX.3)
+#define ModrFullEnumSetsStore(x)      bmodr(FullEnumSetsStore,x)
+#define ReadFullEnumSetsStore(x)      brule(FullEnumSetsStore,x)
+
+#define EnumSetsStore             (EnumFromUserX.4)
+#define ModrEnumSetsStore(x)      bmodr(EnumSetsStore,x)
+#define ReadEnumSetsStore(x)      brule(EnumSetsStore,x)
+
+#define SeesStore              (EnumFromUserX.5)
+#define ModrSeesStore(x)       bmodr(SeesStore,x)
+#define ReadSeesStore(x)       brule(SeesStore,x)
+
+
+#define EnumTac ((REV;CATL~;MAP;WRITE;FLAT;MODR;SHELL;RULE)~;EnumFromUserX)~
+
+#define EnumDirect(x) bcall(EnumTac: enum_check_edit_0(x))
+
+#define InformEnmbasic_ioNotConfigured \
+  Writef(("\n\n    basic_io is not configured"))
+
+#define InformEnmNotConfigured(x) \
+  Writef(("\n\n    % is not configured\n",bsrv x berv))
+
+#define InformEnmNotAnalysed(x) \
+  Writef(("\n\n    % is not analysed\n",x))
+
+#define InformSetNotFound(x) \
+  Writef(("\n\n    Enumerated set % not found in SEEN MACHINES\n",bsrv x berv))
+
+#define InformSetsSyntaxError(x) \
+  Writef(("\n\n    SETS syntax error %\n",bsrv x berv))
+
+#define InformSeesSyntaxError(x) \
+  Writef(("\n\n    SEES syntax error %\n",bsrv x berv))
+
+#define InformNotMatchEnumFileName(x) \
+  Writef(("\n\n    Construct name % does not match filename\n",bsrv x berv))
+
+
+#define ANSIC_Enum_set brule(EnumFromUserX.6,0)
+
+
+
+
+THEORY Mch_SetX END &
+
+THEORY EnumErrorX IS 0;0;0 END &
+
+#define ClearEnumError bcall(MODR: bmodr(EnumErrorX.1,0))
+
+#define SetEnumError   bcall(MODR: bmodr(EnumErrorX.1,1))
+
+#define ClearNormaliseRequired bcall(MODR: bmodr(EnumErrorX.2,0))
+
+#define SetNormaliseRequired   bcall(MODR: bmodr(EnumErrorX.2,1))
+
+#define NormaliseRequired      brule(EnumErrorX.2,1)
+
+#define Clearbasic_io_Required bcall(MODR: bmodr(EnumErrorX.3,0))
+
+#define Setbasic_io_Required   bcall(MODR: bmodr(EnumErrorX.3,1))
+
+#define basic_io_Required      brule(EnumErrorX.3,1)
+
+
+
+THEORY OfferEnumFailureOptionsX IS
+
+#define OfferEnumFailureOptions \
+	bcall(OfferEnumFailureOptionsX: failure_options)
+
+
+  failure_options;
+
+  brule(EnumFromUserX.1,a.b) &
+  ModifyCurrentJob((a.b:BT_ENUM:0)) &
+  GetJobs(X) &
+  ModifyJobs((X;(a.b:BT_MINI_RMK_M:0))) &
+  LoadToolkit(1)
+ =>
+  failure_options;
+
+  NormaliseRequired &
+  UnloadJobs &
+  LoadToolkit(1)
+ =>
+  failure_options
+
+END
+
+&
+
+THEORY Check_BOOL_CHARX IS
+
+#define Check_BOOL_CHAR bcall(((MAP)~;Check_BOOL_CHARX)~:cbc)
+
+  Writef(("\n\n    Functionality for BOOL/CHAR is provided by basic_io\n")) &
+  SetEnumError
+ =>
+  cbc2;
+
+  cbc1(x);
+
+  cbc2
+ =>
+  cbc1(CHAR=x);
+
+  cbc2
+ =>
+  cbc1(BOOL=x);
+
+  ReadEnumSetsStore(S) &
+  cbc1 bsmap S
+ =>
+  cbc;
+
+  EnumErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY decl_EnumX IS
+
+  determine_length(e,i,j);
+
+  bcrer(length_EnumX,i) &
+  bcrer(length_EnumX,i-1)
+ =>
+  determine_length(e,i,i);
+
+  bprintf(", \"%\"",e)
+ =>
+  treat_decl_c1(e);
+
+  brule(EnumFromUserX.1,a.enm) &
+  bclean(length_EnumX) &
+  determine_length bnmap S &
+  bprintf("static char * _%_% [] = { \"\"",a,D) &
+  treat_decl_c1 bsmap S &
+  bprintf(", \"_%\" };\n\n",D)
+ =>
+  treat_decl_c(D,S);
+
+  NormaliseRequired
+ =>
+  x;
+
+  EnumErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY length_EnumX END
+
+&
+
+
+THEORY PUT_EnumX IS
+
+/*
+  bprintf("void\nPUT_%( n )\n",D) &
+  bprintf("int n;\n")
+ =>
+  treat_PUT_hdr(D);
+
+  ANSIC_Enum_set &
+  bprintf("void\nPUT_%( int n )\n",D)
+ =>
+  treat_PUT_hdr(D);
+*/
+
+  bprintf("void\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("PUT_%( int n )\n",D) &
+  bprintf("#else\n") &
+  bprintf("PUT_%( n )\n",D) &
+  bprintf("int n;\n") &
+  bprintf("#endif\n")
+ =>
+  treat_PUT_hdr(D);
+
+  brule(EnumFromUserX.1,a.enm) &
+  treat_PUT_hdr(D) &
+  bprintf("{\n") &
+  bprintf("#ifndef _BT_Motif\n") &
+  bprintf("  int i;\n") &
+  bprintf("  char c;\n") &
+  bprintf("  i = 0;\n") &
+  bprintf("  c = _%_%[n][i];\n",a,D) &
+  bprintf("  while( c!='\0' ){\n") &
+  bprintf("    putchar(c);\n") &
+  bprintf("    i=i+1;\n") &
+  bprintf("    c = _%_%[n][i];\n",a,D) &
+  bprintf("  }\n") &
+  bprintf("#else\n") &
+  bprintf("    extern void  PUT_ACT_TOK_M();\n") &
+  bprintf("    PUT_ACT_TOK_M(_%_%,n);\n",a,D) &
+  bprintf("#endif\n") &
+  bprintf("}\n\n")
+ =>
+  treat_PUT(D);
+
+  NormaliseRequired
+ =>
+  treat_PUT(D);
+
+  EnumErrorFlagged
+ =>
+  treat_PUT(D);
+
+  bprintf("\n\n  PUT_%(nn) = \n",D) &
+  bprintf("\n    PRE nn:% THEN skip END;\n",D)
+=>
+  treat_PUT_mch(D);
+
+  NormaliseRequired
+ =>
+  treat_PUT_mch(D);
+
+  EnumErrorFlagged
+ =>
+  treat_PUT_mch(D)
+
+END
+
+&
+
+THEORY GET_EnumX IS
+
+  bprintf("void\nGET_%( r )\n",D) &
+  bprintf("int *r;\n")
+ =>
+  treat_GET_hdr(D);
+
+  ANSIC_Enum_set &
+  bprintf("void\nGET_%( int *r )\n",D)
+ =>
+  treat_GET_hdr(D);
+
+  bprintf("void\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("GET_%( int *r )\n",D) &
+  bprintf("#else\n") &
+  bprintf("GET_%( r )\n",D) &
+  bprintf("int *r;\n") &
+  bprintf("#endif\n")
+ =>
+  treat_GET_hdr(D);
+
+  brule(EnumFromUserX.1,a.enm) &
+  brule(length_EnumX.2,i) &
+  brule(length_EnumX.1,j) &
+  treat_GET_hdr(D) &
+  bprintf("{\n") &
+  bprintf("#ifndef _BT_Motif\n") &
+  bprintf("  int n;\n") &
+  bprintf("  int i;\n") &
+  bprintf("  int j;\n") &
+  bprintf("  int done = 0;\n") &
+  bprintf("  char u [50];\n") &
+  bprintf("  i=1;\n") &
+  bprintf("  while(_%_%[i][0] != '_' ) i++;\n",a,D) &
+  bprintf("  j=0;\n") &
+  bprintf("  while(_%_%[i][j+1] != '\\0' && j<50) {\n",a,D) &
+  bprintf("    u[j]=_%_%[i][j+1];\n",a,D) &
+  bprintf("    j++;\n") &
+  bprintf("  }\n") &
+  bprintf("  u[j]='\\0';\n") &
+  bprintf("  while( !done ) {\n") &
+  bprintf("    i = 1;\n") &
+  bprintf("    NWL(2);\n") &
+  bprintf("    while( _%_%[i][0] != '_' ){\n",a,D) &
+  bprintf("      BLK(8); PUT_STR(u);PUT_STR(\".\");\n") &
+  bprintf("      PUT_NAT_PAD(i,4); PUT_STR(_%_%[i]);NWL(1);\n",a,D) &
+  bprintf("      i++;\n") &
+  bprintf("    }\n") &
+  bprintf("    BLK(4);PUT_STR(u); PUT_STR(\" value \");") &
+  bprintf("    PUT_STR(\"(1..%): \"); FLSH ();",i+1) &
+  bprintf("    GET_NAT( &n );\n") &
+  bprintf("    if   ( n>=1 && n<=% ) { done = 1; }\n",i+1) & 
+  bprintf("    else                  { BLK(15); printf(\"Bad input!\"); }\n") & 
+  bprintf("  }\n") &
+  bprintf("  *r = n; \n") &
+  bprintf("#else\n") &
+  bprintf("  GET_PROMPT_%(r,\"      Select token:     \");\n",D) &
+  bprintf("#endif\n") &
+  bprintf("}\n\n")
+=>
+  treat_GET(D);
+
+
+
+/*
+  bprintf("void\nGET_PROMPT_%( r, s )\n",D) &
+  bprintf("int *r;\n") &
+  bprintf("char *s;\n")
+ =>
+  treat_GET_PROMPT_hdr(D);
+
+  ANSIC_Enum_set &
+  bprintf("void\nGET_PROMPT_%( int *r, char *s )\n",D)
+ =>
+  treat_GET_PROMPT_hdr(D);
+*/
+
+  bprintf("void\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("GET_PROMPT_%( int *r, char *s )\n",D,D) &
+  bprintf("#else\n") &
+  bprintf("GET_PROMPT_%( r, s )\n",D) &
+  bprintf("int *r;\n") &
+  bprintf("char *s;\n") &
+  bprintf("#endif\n")
+ =>
+  treat_GET_PROMPT_hdr(D);
+
+  brule(EnumFromUserX.1,a.enm) &
+  treat_GET_PROMPT_hdr(D) &
+  bprintf("{\n") &
+  bprintf("#ifndef _BT_Motif\n") &
+  bprintf("  void GET_%();\n",D) &
+  bprintf("  printf(s);\n") &
+  bprintf("  GET_%(r);\n",D) &
+  bprintf("#else\n") &
+  bprintf("  extern void  GET_ACT_TOK_M();\n") &
+  bprintf("  GET_ACT_TOK_M(_%_%,r,s);\n",a,D) &
+  bprintf("#endif\n") &
+  bprintf("}\n\n")
+=>
+  treat_GET_PROMPT(D);
+
+
+
+  bprintf("\n  rr <-- GET_% = \n",D) &
+  bprintf("\n    BEGIN rr:: % END;\n",D) &
+  bprintf("\n  rr <-- GET_PROMPT_%(ss) =\n",D) &
+  bprintf("\n    PRE ss: STRING THEN rr:: % END;\n\n",D)
+ =>
+  treat_GET_mch(D,n,m);
+
+  bprintf("\n  rr <-- GET_% = \n",D) &
+  bprintf("\n    BEGIN rr:: % END;\n",D) &
+  bprintf("\n  rr <-- GET_PROMPT_%(ss) = \n",D) &
+  bprintf("\n    PRE ss: STRING THEN rr:: % END\n\nEND",D)
+ =>
+  treat_GET_mch(D,n,n);
+
+  NormaliseRequired
+ =>
+  treat_GET_mch(X);
+
+  EnumErrorFlagged
+ =>
+  treat_GET_mch(X);
+
+  NormaliseRequired
+ =>
+  treat_GET(X);
+
+  NormaliseRequired
+ =>
+  treat_GET_PROMPT(X);
+
+  EnumErrorFlagged
+ =>
+  treat_GET(X);
+
+  EnumErrorFlagged
+ =>
+  treat_GET_PROMPT(X)
+
+END
+
+&
+
+THEORY enum_Enum_X IS
+
+  bcall((decl_EnumX;MAP;ARI;RULE;WRITE)~: treat_decl_c(D,S)) &
+  bcall((WRITE~;PUT_EnumX)~: treat_PUT(D)) &
+  bcall((WRITE~;GET_EnumX)~: treat_GET_PROMPT(D)) &
+  bcall(((ARI~;WRITE)~;GET_EnumX)~: treat_GET(D))
+ =>
+  treat_enum(D,S);
+
+  SetEnumError &
+  Writef(("syntax error: \n\n    %\n",bsrv (S JOK2 s) berv))
+ =>
+  treat_enum(D,(S JOK2 s));
+
+  bcall((decl_EnumX;MAP;ARI;RULE;WRITE)~: treat_decl_c(D,(S,s))) &
+  bcall((WRITE~;PUT_EnumX)~: treat_PUT(D)) &
+  bcall((WRITE~;GET_EnumX)~: treat_GET_PROMPT(D)) &
+  bcall(((ARI~;WRITE)~;GET_EnumX)~: treat_GET(D))
+ =>
+  treat_enum(D,(S,s));
+
+  bcall((WRITE~;PUT_EnumX)~: treat_PUT_mch(D)) &
+  bcall((WRITE~;GET_EnumX)~: treat_GET_mch(D,n,m))
+ =>
+  treat_enumch(D,S,n,m);
+
+  NormaliseRequired
+ =>
+  treat_enumch(X);
+
+  EnumErrorFlagged
+ =>
+  treat_enumch(X);
+
+  NormaliseRequired
+ =>
+  treat_enum(X);
+
+  EnumErrorFlagged
+ =>
+  treat_enum(X)
+
+#define call_treat_enum(D,S) bcall(enum_Enum_X~ : treat_enum(D,S))
+
+#define call_treat_enumch(D,S,n,m) bcall(enum_Enum_X~ : treat_enumch(D,S,n,m))
+
+END
+
+&
+
+THEORY EnumFromUserX IS
+
+/*
+#define FullEnumSetsStore             (EnumFromUserX.3)
+#define ModrFullEnumSetsStore(x)      bmodr(FullEnumSetsStore,x)
+#define ReadFullEnumSetsStore(x)      brule(FullEnumSetsStore,x)
+
+#define EnumSetsStore             (EnumFromUserX.4)
+#define ModrEnumSetsStore(x)      bmodr(EnumSetsStore,x)
+#define ReadEnumSetsStore(x)      brule(EnumSetsStore,x)
+
+#define SeesStore              (EnumFromUserX.5)
+#define ModrSeesStore(x)       bmodr(SeesStore,x)
+#define ReadSeesStore(x)       brule(SeesStore,x)
+*/
+
+  ?;   /* a.enm */
+
+  ?;   /* enum_mch_prt_sets semicolon flag */
+
+  ?;?;?;
+
+  ?; /* 6. 0=>ANSIC 1=>non_ANSIC */
+
+  ?; /* 7. cc_string */
+
+  ?; /* 8. Non-X Link Libraries */
+
+  ?; /* 9. X Link Libraries */
+
+  ?; /* 10. Interface - 0=>Motif 1=>Non-Motif */
+
+  ?; /* 11. seen .h includes prnited (NOT USED) */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((a.enm:BT_ENUM:S,basic_io);(a.mch:BT_CMT_GEN_CSTR:a.enm))) &
+  AddCfg(a.mch) &
+  AddAnl(a.mch) &
+  AddGen(a.enm) &
+  CreHtml(a.mch) &
+  Writef(("  Generated % and code module\n",a.mch))
+ =>
+  check_error1(a.enm)(S); 
+
+  bsearch(basic_io,S,T) &
+  check_error1(a.enm)(T)
+ =>
+  check_error1(a.enm)(S);
+
+  ReadSeesStore(S) &
+  check_error1(a.enm)(S)
+ =>
+  check_error(a.enm); 
+
+  bmodr(EnumFromUserX.1,a.enm) &
+  basic_io_Required &
+  GetJobs(X) &
+  AddJobs((((?,basic_io):BT_LIB_FRC:0);(a.enm:BT_ENUM:0)),X)  &
+  Writef("\n")
+ =>
+  check_error(a.enm); 
+
+  NormaliseRequired &
+  GetJobs(X) &
+  AddJobs(X,((a.enm:BT_ENUM:0))) &
+  Writef("\n")
+ =>
+  check_error(a.enm); 
+
+  EnumErrorFlagged &
+  OfferEnumFailureOptions
+ =>
+  check_error(a.enm); 
+
+  Writef(("\n  Compilation error (Programming Language Flag: C)\n")) &
+  SetEnumError
+ =>
+  enum_cc_chk_err1(1);
+
+  ANSIC_Enum_set &
+  Writef(("\n  Compilation error (Programming Language Flag: ANSI C)\n")) &
+  SetEnumError
+ =>
+  enum_cc_chk_err1(1);
+
+  enum_cc_chk_err1(0);
+
+  Writef(("\n")) &
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  enum_cc_chk_err;
+
+  bget(".Bcom",x) &
+  enum_cc_chk_err1(x)
+ =>
+  enum_cc_chk_err;
+
+  bshell(f) &
+  enum_cc_chk_err
+ =>
+  enum_cc(f);
+
+  InformSetNotFound(e) &
+  SetEnumError
+ =>
+  check_enm_syntax(e);
+
+  InformSetsSyntaxError(?) &
+  SetEnumError
+ =>
+  check_enm_syntax(?);
+
+  InformSetsSyntaxError((e JOK2 f)) &
+  SetEnumError
+ =>
+  check_enm_syntax((e JOK2 f));
+
+  ReadFullEnumSetsStore(X) &
+  ReadEnumSetsStore(S) &
+  bsearch(e(Z),X,Y) &
+  ModrEnumSetsStore((S;e={Z}))
+ =>
+  check_enm_syntax(e);
+
+  InformSetNotFound(e) &
+  SetEnumError
+ =>
+  check_enm_syntax(E;e);
+
+  ReadFullEnumSetsStore(X) &
+  ReadEnumSetsStore(S) &
+  bsearch(e(Z),X,Y) &
+  ModrEnumSetsStore((S;e={Z})) &
+  check_enm_syntax(E)
+ =>
+  check_enm_syntax(E;e);
+
+  NormaliseRequired
+ =>
+  check_enm_syntax(E;e);
+
+  EnumErrorFlagged
+ =>
+  check_enm_syntax(E;e);
+
+  NormaliseRequired
+ =>
+  check_enm_syntax(E);
+
+  EnumErrorFlagged &
+  OfferEnumFailureOptions
+ =>
+  check_enm_syntax(E);
+
+
+
+  InformSetsSyntaxError(s) &
+  SetEnumError
+ =>
+  check_enm_syntax_00(s);
+
+  bident(s)
+ =>
+  check_enm_syntax_00(s);
+
+  bident(s) &
+  check_enm_syntax_00(S)
+ =>
+  check_enm_syntax_00(S;s);
+
+
+  check_enm_syntax_00(E) &
+  check_enm_syntax(E)
+ =>
+  check_enm_syntax_0(E);
+
+
+
+
+  check_mch_anl_2(k,x);
+
+  ReadFullEnumSetsStore(X) &
+  ModrFullEnumSetsStore((X;S(E))) &
+  bcrer(Mch_SetX,(S:k))
+ =>
+  check_mch_anl_2(k,S(E));
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  check_mch_anl_1(m)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  check_mch_anl_2(k) bsmap D 
+ =>
+  check_mch_anl_1(k)(Z);
+
+  InformEnmNotConfigured((m.mch)) &
+  SetEnumError
+ =>
+  check_mch_anl_0(m);
+
+  IsCfg(m.mch) &
+  brule(EnumFromUserX.1,a.b) &
+  GetJobs(X) &
+  InformEnmNotAnalysed((m.mch)) &
+  SetEnumError &
+  AddJob(X,((m.mch:BT_ENUM_NML:0);(a.enm:BT_ENUM_DELAY:0))) &
+  SetNormaliseRequired
+ =>
+  check_mch_anl_0(m);
+
+  IsAnl(m.mch) &
+  check_mch_anl_1(m)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  check_mch_anl_0(m);
+
+
+  EnumErrorFlagged
+ =>
+  check_mch_anl_0(m);
+
+
+  InformSeesSyntaxError(?) &
+  SetEnumError
+ =>
+  check_sees_syntax(S);
+
+  blident(S)
+ =>
+  check_sees_syntax(S);
+
+
+  NormaliseRequired
+ =>
+  check_sees_syntax(S);
+
+  EnumErrorFlagged
+ =>
+  check_sees_syntax(S);
+
+
+  bprintf(";\n(PUT_%(?;nn) == (nn:%));\n(GET_%(rr;?) == (rr:%));\n(GET_PROMPT_%(rr;ss) == (rr:% & ss:POW(NAT*CHAR)))",E)
+ =>
+  enum_typ_ops(E={S});
+
+  brule(EnumFromUserX.2,0) &
+  bmodr(EnumFromUserX.2,1) &
+  bprintf("\n(PUT_%(?;nn) == (nn:%));\n(GET_%(rr;?) == (rr:%));\n(GET_PROMPT_%(rr;ss) == (rr:% & ss:POW(NAT*CHAR)))",E)
+ =>
+  enum_typ_ops(E={S});
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  enum_typ_0(f,m,E);            /* f is `TYP/m.mri.typ' */
+
+  bconnect(f) &
+  WriteDot &
+  bmodr(EnumFromUserX.2,0) &
+  enum_typ_ops bsmap E &
+  bprintf("\n|\ntrue\n|\n(?)\n")
+ =>
+  enum_typ_0(f,m,E);            /* f is `TYP/m.mri.typ' */
+
+
+  NormaliseRequired
+ =>
+  enum_typ_0(f,m,E);
+
+  EnumErrorFlagged
+ =>
+  enum_typ_0(f,m,E);
+
+
+
+
+  bprintf("\n,\n(PUT_%;?,Val_Op,Det_Op,PUT_%(nn);nn;?;(nn:%|skip);(nn:%|skip))",E) &
+  bprintf("\n,\n(GET_%;?,Val_Op,NonDet_Op,(rr<--GET_%);?;rr;(true|BEGIN rr::% END);(true|@rrx.(rrx:%==>rr:=rrx)))",E) &
+  bprintf("\n,\n(GET_PROMPT_%;?,Val_Op,NonDet_Op,(rr<--GET_PROMPT_%(ss));ss;rr;(ss:seq(CHAR)|BEGIN rr::% END);(ss:seq(CHAR)|@rrx.(rrx:%==>rr:=rrx)))",E)
+ =>
+  enum_anl_ops(E={S});
+
+  brule(EnumFromUserX.2,0) &
+  bmodr(EnumFromUserX.2,1) &
+  bprintf("\n(PUT_%;?,Val_Op,Det_Op,PUT_%(nn);nn;?;(nn:%|skip);(nn:%|skip))",E) &
+  bprintf("\n,\n(GET_%;?,Val_Op,NonDet_Op,(rr<--GET_%);?;rr;(true|BEGIN rr::% END);(true|@rrx.(rrx:%==>rr:=rrx)))",E) &
+  bprintf("\n,\n(GET_PROMPT_%;?,Val_Op,NonDet_Op,(rr<--GET_PROMPT_%(ss));ss;rr;(ss:seq(CHAR)|BEGIN rr::% END);(ss:seq(CHAR)|@rrx.(rrx:%==>rr:=rrx)))",E)
+ =>
+  enum_anl_ops(E={S});
+
+
+  bprintf(",PUT_%,GET_%,GET_PROMPT_%",E)
+ =>
+  enum_anl_opnames(E={S});
+
+  brule(EnumFromUserX.2,0) &
+  bmodr(EnumFromUserX.2,1) &
+  bprintf("PUT_%,GET_%,GET_PROMPT_%",E)
+ =>
+  enum_anl_opnames(E={S});
+
+
+  bprintf(" & not(%={})",E)
+ =>
+  enum_anl_properties(E={S});
+
+  brule(EnumFromUserX.2,0) &
+  bmodr(EnumFromUserX.2,1) &
+  bprintf("not(%={})",E)
+ =>
+  enum_anl_properties(E={S});
+
+
+  bprintf(",%(%)",E,S)
+ =>
+  enum_anl_sets(E={S});
+
+  brule(EnumFromUserX.2,0) &
+  bmodr(EnumFromUserX.2,1) &
+  bprintf("%(%)",E,S)
+ =>
+  enum_anl_sets(E={S});
+
+
+  bprintf("(%(?):(?):((?),(?),(?)))\n,\n",s)
+ =>
+  prt_sees_anl(s,M,N);
+
+  bprintf("(%(?):(?):((?),(?),(?)))\n",s)
+ =>
+  prt_sees_anl(s,N,N);
+
+  Connect(f) &
+  WriteDot &
+  ReadSeesStore(S) &
+  bprintf("(\n(?);\n (\n (\n ?\n )\n |\n (\n ?\n )\n )\n)\n;\n") &
+  bprintf("(\n") &
+  prt_sees_anl(basic_io,1,2) &
+  prt_sees_anl bnmap S &
+  bprintf(")\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(?)\n;\n(") &
+  bmodr(EnumFromUserX.2,0) &
+  enum_anl_opnames bsmap E &
+  bprintf(")\n;\n(") &
+  bmodr(EnumFromUserX.2,0) &
+  enum_anl_opnames bsmap E &
+  bprintf(")\n;\n(%(?):(?):(?))\n;\n(",m) &
+  bmodr(EnumFromUserX.2,0) &
+  enum_anl_ops bsmap E &
+  bprintf("\n)\n")
+ =>
+  enum_anl_0(f,m,E);            /* f is `ANL/m.mch.anl' */
+
+  NormaliseRequired
+ =>
+  enum_anl_0(f,m,E);
+
+  EnumErrorFlagged
+ =>
+  enum_anl_0(f,m,E);
+
+
+
+
+  Writef(("\n\n  Syntax error %\n",bsrv S berv)) &
+  SetEnumError
+ =>
+  enum_mch_1(S,n,m);
+
+  call_treat_enumch(D,S,n,m)
+ =>
+  enum_mch_1((D={S}),n,m);
+
+  NormaliseRequired
+ =>
+  enum_mch_1(D,n,m);
+
+  EnumErrorFlagged
+ =>
+  enum_mch_1(D,n,m);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  enum_mch_0(f,m,E);            /* f is `CFG/m.mch' */
+
+  bprintf(", %",S)
+ =>
+  enum_mch_prt_sees(S);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  enum_mch_0(f,m,E);            /* f is `CFG/m.mch' */
+
+  enum_mch_prt_sees bsmap S
+ =>
+  enum_mch_prt_sees_0(S);
+
+  bsearch(basic_io,S,T) &
+  enum_mch_prt_sees_0(T)
+ =>
+  enum_mch_prt_sees_0(S);
+
+  bconnect(f) &
+  WriteDot &
+  ReadSeesStore(S) &
+  bprintf("MACHINE     %\n\nSEES\n\n  basic_io",m) &
+  bmodr(EnumFromUserX.2,0) &
+  enum_mch_prt_sees_0(S) &
+  bprintf("\n\nOPERATIONS\n") &
+  enum_mch_1 bnmap E &
+  bprintf("\n")
+ =>
+  enum_mch_0(f,m,E);            /* f is `CFG/m.mch' */
+
+  NormaliseRequired
+ =>
+  enum_mch_0(f,m,E);
+
+  EnumErrorFlagged
+ =>
+  enum_mch_0(f,m,E);
+
+
+
+  Writef(("\n\n  Syntax error %\n",bsrv S berv)) &
+  SetEnumError
+ =>
+  enum_cde_c1(S);
+
+  call_treat_enum(D,S)
+ =>
+  enum_cde_c1(D={S});
+
+  NormaliseRequired
+ =>
+  enum_cde_c1(D);
+
+  EnumErrorFlagged
+ =>
+  enum_cde_c1(D);
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  enum_cde_c(m)(f,E);               /* f is `CDE/C/m.c' */
+
+  bconnect(f) &
+  bprintf("#include \"%.h\"\n",m) &
+  bprintf("#include \"basic_io.h\"\n\n") &
+/*
+  enum_cde_c_sees &
+*/
+  enum_cde_c1 bsmap E
+ =>
+  enum_cde_c(m)(f,E);               /* f is `CDE/C/m.c' */
+
+  NormaliseRequired
+ =>
+  enum_cde_c(m)(f,E);               /* f is `CDE/C/m.c' */
+
+  EnumErrorFlagged
+ =>
+  enum_cde_c(m)(f,E);               /* f is `CDE/C/m.c' */
+
+
+
+  Writef(("\n\n  Syntax error %\n",bsrv S berv)) &
+  SetEnumError
+ =>
+  enum_cde_h1(S);
+
+  bcall(WRITE: bprintf("void PUT_%();\n",D)) &
+  bcall(WRITE: bprintf("void GET_PROMPT_%();\n",D)) &
+  bcall(WRITE: bprintf("void GET_%();\n\n",D))
+ =>
+  enum_cde_h1(D={S});
+
+  NormaliseRequired
+ =>
+  enum_cde_h1(D);
+
+  EnumErrorFlagged
+ =>
+  enum_cde_h1(D);
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  enum_cde_h(f,E,m);                /* f is `CDE/C/m.h' */
+
+  bconnect(f) &
+  bcall(WRITE: bprintf("#define INI_%() { ; }\n\n",m)) &
+  enum_cde_h1 bsmap E
+ =>
+  enum_cde_h(f,E,m);                /* f is `CDE/C/m.h' */
+
+  NormaliseRequired
+ =>
+  enum_cde_h(f,E,m);
+
+  EnumErrorFlagged
+ =>
+  enum_cde_h(f,E,m);
+
+
+
+
+  Writef(("\n\n  Syntax error %\n",bsrv S berv)) &
+  SetEnumError
+ =>
+  enum_cde_g1(S);
+
+  enum_cde_g1(D={S});
+
+  NormaliseRequired
+ =>
+  enum_cde_g1(D);
+
+  EnumErrorFlagged
+ =>
+  enum_cde_g1(D);
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  enum_cde_g(f,E);                /* f is `CDE/C/m.g' */
+
+  bconnect(f) &
+  enum_cde_g1 bsmap E
+ =>
+  enum_cde_g(f,E);                /* f is `CDE/C/m.g' */
+
+  NormaliseRequired
+ =>
+  enum_cde_g(f,E);
+
+  EnumErrorFlagged
+ =>
+  enum_cde_g(f,E);
+
+
+
+
+
+
+
+
+
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  enum_empty(f);         /* f is `CDE/C/m.(g or c) */
+
+  bconnect(f)
+ =>
+  enum_empty(f);        /* f is `CDE/C/m.(g or c) */   
+   
+  NormaliseRequired
+ =>
+  enum_empty(f);
+
+  EnumErrorFlagged
+ =>
+  enum_empty(f);
+
+  Writef(("\n\n  Syntax error %\n",bsrv S berv)) &
+  SetEnumError
+ =>
+  enum_init_2(S);
+
+  /***
+  TransCFile:
+	$1 	name (eg, Bool_TYPE)
+	$2	1=>TransCFilter/NLFilter - from Translators 0=>skip - from Enum.src
+	$3 	compiler string
+	$4 	0=>Motif 1=>Non-Motif
+	$5 	0=>ANSIC 1=>non_ANSIC
+  ***/
+  brule(EnumFromUserX.7,C) &     /* cc flags etc. */
+  brule(EnumFromUserX.10,z) &    /* 0=>Motif 1=>Non-Motif */
+  brule(EnumFromUserX.6,n) &    /* 0=>ANSIC 1=>non_ANSIC */
+  enum_cde_h(bcatl("CDE/C/",m,".h"),E,m) &
+  enum_cde_c(m)(bcatl("CDE/C/",m,".c"),E) &
+  enum_cde_g(bcatl("CDE/C/",m,".g"),E) &
+  enum_mch_0(bcatl("CFG/",m,".mch"),m,E) &
+  enum_anl_0(bcatl("ANL/",m,".mch.anl"),m,E) &
+  enum_typ_0(bcatl("TYP/",m,".mri.typ"),m,E) &
+  enum_cc(bcatl("$BKIT/BLIB/TransCFile ",m," 0 ", C, " ",z, " ",n))
+ =>
+  enum_init_4(m)(E);
+
+  bsearch(?,E,F) &
+  enum_init_4(m)(brev(F))
+ =>
+  enum_init_4(m)(E);
+
+  ReadEnumSetsStore(E) &
+  WriteDot &
+  enum_init_4(m)(E)
+ =>
+  enum_init_3(m);
+
+  NormaliseRequired
+ =>
+  enum_init_3(m);
+
+  EnumErrorFlagged
+ =>
+  enum_init_3(m);
+
+  InformNotMatchEnumFileName(b) &
+  SetEnumError
+ =>
+  check_name(b);
+
+  brule(EnumFromUserX.1,a.enm) &
+  WriteDot
+ =>
+  check_name(a);
+
+  Writef(("\n\n  Syntax error %\n",bsrv S berv)) &
+  SetEnumError
+ =>
+  enum_init_2(S);
+
+  InformEnmbasic_ioNotConfigured &
+  Setbasic_io_Required
+ =>
+  check_basic_io_configured;
+
+  IsCfg(basic_io.mch)
+ =>
+  check_basic_io_configured;
+
+  check_name(m) &
+  ModrSeesStore(S) &
+  check_sees_syntax(S) &
+  check_mch_anl_0 bsmap S &
+  check_enm_syntax_0(E) &
+  Check_BOOL_CHAR &
+  enum_init_3(m)
+ =>
+  enum_init_2(ENUMERATION m SETS E SEES S END);
+
+  enum_init_2(ENUMERATION m SETS E SEES S END)
+ =>
+  enum_init_2(ENUMERATION m SEES S SETS E END);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  enum_init_1(f);
+
+  bstring(f) &
+  bget(f,x) &
+  enum_init_2(x)
+ =>
+  enum_init_1(f);
+
+  basic_io_Required
+ =>
+  enum_init_1(f);
+
+  ClearEnumError &
+  ClearNormaliseRequired &
+  Clearbasic_io_Required &
+  Writef(("\n  Enumerating % ",a)) &
+  bmodr(EnumFromUserX.1,a.enm) &
+  check_basic_io_configured &
+  enum_init_1(bcatl("CFG/",a,".enm")) &
+  check_error(a.enm)
+ =>
+  enum_init_0(a.enm);
+
+  InformCantConnect(".Bplf") &
+  PFZ
+ =>
+  load_Bplf;
+
+  bget(".Bplf",(z;x;a;b;c)) &
+  bmodr(EnumFromUserX.10,z) &   /* Interface_Option     */
+  bmodr(EnumFromUserX.6,x) &    /* Prog_Language_Option */
+  bmodr(EnumFromUserX.7,a) &    /* cc_compiler_str_num  */
+  bmodr(EnumFromUserX.8,b) &    /* cc_link_lib_str_num  */
+  bmodr(EnumFromUserX.9,c)      /* cc_Xlink_lib_str_num */
+ =>
+  load_Bplf;
+
+
+  load_Bplf &
+  enum_init_0(a.b)
+ =>
+  enum_check_edit_0(a.b)
+
+END
+

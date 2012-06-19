@@ -1,0 +1,34 @@
+   ************
+   ENUMERATIONS
+   ************
+
+ENUMERATION
+
+  enumerationname
+
+SEES
+
+  constructname,
+  ...,
+  constructname
+
+SETS
+
+  setname;
+  ...;
+  setname
+
+END
+
+
+Notes:
+-----
+
+Each set in the SETS
+clause must be a set
+of one of the constructs
+in the SEES clause.
+
+See Top Bar Help for
+Enumerations for
+more information.

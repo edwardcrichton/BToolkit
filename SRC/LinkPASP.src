@@ -1,0 +1,3717 @@
+/* Copyright (c) 1985-96, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define LinkModifyPaspLibList \
+    ModifyPaspLibList((BitSeq_TYPE,Bool_TYPE,Bool_TYPE_Ops,String_TYPE, \
+                       Byt_TYPE,Byt_BS_TYPE,Uns_TYPE,Uns_BS_TYPE, \
+                       PASP_TYPE,PASP_TYPE_Ops,PASP_BS_TYPE,PASP_BS_TYPE_Ops, \
+                       (Rename;BiArr),(Rename;BiArr_File), \
+                       (Rename;UiArr),(Rename;UiArr_File), \
+                       (Rename;Byt),(Rename;Byt_File), \
+                       (Rename;Byt_BS),(Rename;Byt_BS_File), \
+                       (Rename;Uns),(Rename;Uns_File), \
+                       (Rename;Byt_Write),(Rename;Byt_Read), \
+                       (Rename;Uns_BS),(Rename;Uns_BS_File), \
+                       (Rename;Bool),(Rename;Bool_File)))
+
+
+
+
+#define InformATClash(V,w,x,y,z) \
+        Writef(("\n\n    Error - memory location clash for %\n\n      % in %\n\n      % in % ...",bsrv V berv,w,x,y,z))
+
+#define InformSeenNotSet(x,y) \
+        Writef(("\n\n    Error - memory location for:\n\n      % of %\n\n    must be set (SEEN variable) ...",bsrv y berv,bsrv x berv))
+
+#define InformRange(x,y,z) \
+        Writef(("\n\n      % occupies addresses % to % ",bsrv x berv,y,z))
+
+#define InformLocation(x,y) \
+        Writef(("\n\n      % occupies address % ",bsrv x berv,y))
+
+
+
+
+
+
+THEORY CrePASPSLIBImport END &
+
+THEORY CrePASPSLIBModuleX IS
+
+#define CrePASPSLIBModule(x) \
+  bcall(((ARI;MAP;WRITE;RULE;MODR)~;CrePASPSLIBModuleX):cpsm(x))
+
+  ?; /* (BKIT_path:m:i) */
+
+
+  Writef(("\n\n  Unable to determine imported\n  renameable PASP SLIB construct:\n\n    %\n\n",bsrv r berv))
+ =>
+  cpsm_ipt_err(r);
+  
+
+  bprintf(",\n")
+ =>
+  cpsm11(N);
+
+  bprintf("(0 /* => no initialisation */ )\n|\n(\n")
+ =>
+  cpsm11(1);
+
+
+  brule(CrePASPSLIBModuleX.1,(B:m:i)) &
+  bprintf("\n)\n") &
+  bclose &
+  WriteDot &
+  Bshell(("cp CFG/",m,".mch ",B,"/BLIB/LIB/CFG")) &
+  Bshell(("cp ANL/",m,".mch.anl ",B,"/BLIB/LIB/ANL")) &
+  Bshell(("cp TYP/",m,".mri.typ ",B,"/BLIB/LIB/TYP")) &
+  Bshell(("cp CDE/PASP/",m,".param ",B,"/BLIB/LIB/CDE/PASP")) &
+  Bshell(("cp CDE/C/",m,".c ",B,"/BLIB/LIB/CDE/C")) &
+  Bshell(("cp CDE/C/",m,".h ",B,"/BLIB/LIB/CDE/C")) &
+  Bshell(("cp CDE/C/",m,".g ",B,"/BLIB/LIB/CDE/C")) &
+  Writef((" done\n"))
+ =>
+  cpsm10(N);
+
+  brule(CrePASPSLIBImport.N,a) &
+  cpsm11(N) &
+  bprintf("  (%)",a) &
+  cpsm10(N+1)
+ =>
+  cpsm10(N);
+
+  WriteDot &
+  Connect((B,"/BLIB/LIB/CDE/PASP/",m,".ldf")) &
+  cpsm10(1)
+ =>
+  cpsm9(B:m:i);
+
+
+  Writef(("\n\n  The rename prefix of imported SLIB construct\n\n    %\n\n  is not of form:\n\n    %\n\n",bsrv m berv,bsrv Rename_identifier berv))
+ =>
+  cpsm8(m(f)(a))(C|A;B);
+
+  ReadBget((Rename;r)) &
+  bcrer(CrePASPSLIBImport,((Rename_;r;B):(f):(a)))
+ =>
+  cpsm8(m(f)(a))(C|A;B);
+
+  cpsm6(m(f)(a))(C)
+ =>
+  cpsm7(m(f)(a))(C|A;B);
+
+  ReadBget(0) &
+  Connect("TMP/.Bcom") &
+  bprintf ("%\n",A) &
+  bclose &
+  Bshell(("sed -e s+'_'+';'+g < TMP/.Bcom > TMP/.BBcom")) &
+  Bget("TMP/.BBcom") &
+  cpsm8(m(f)(a))(C|A;B)
+ =>
+  cpsm7(m(f)(a))(C|A;B);
+
+  cpsm_ipt_err(m)
+ =>
+  cpsm6(m(f)(a))(?);
+
+  cpsm_ipt_err(m)
+ =>
+  cpsm6(m(f)(a))(?|A);
+
+  cpsm6(m(f)(a))(A|B)
+ =>
+  cpsm6(m(f)(a))(A|B|C);
+
+  Bshell(("$BKIT/BLIB/CheckFileExists Rename_",B,".mch $BKIT/BLIB/LIB/CFG")) &
+  Bget(".Bcom") &
+  cpsm7(m(f)(a))(C|A;B)
+ =>
+  cpsm6(m(f)(a))(C|A;B);
+
+  ReadBget(s) &
+  cpsm6(m(f)(a))(s)
+ =>
+  cpsm5(m(f)(a));
+
+  Bshell(("echo ",m," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  Bget(".Bcom") &
+  cpsm5(m(f)(a))
+ =>
+  cpsm4(m(a))(f);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  cpsm4(K)(l)
+ =>
+  cpsm3(K);
+
+  Bget(("ANL/",r,".mch.anl")) &
+  cpsm3(r(s))
+ =>
+  cpsm2(r(s):t:(u,v,w));
+
+  cpsm2(?);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  WriteDot &
+  cpsm2 bsmap b &
+  cpsm9(K)
+ =>
+  cpsm1(K);
+
+/***
+HERE((cpsm(B:m:i))) &
+***/
+  Writef(("\n  Creating % PASP SLIB module .",m)) &
+  bmodr(CrePASPSLIBModuleX.1,(B:m:i)) &
+  Bget(("ANL/",i,".imp.anl")) &
+  cpsm1(B:m:i)
+ =>
+  cpsm(B:m:i)
+
+END
+
+&
+
+THEORY LnkRename_stoX END &
+
+THEORY LnkSetConstants_stoX END &
+
+THEORY SatAT_stoX END &
+
+THEORY AT_start_end_stoX END &
+
+THEORY AT_start_end_sto_sortedX END &
+
+
+
+THEORY LoadLinkDotFilesX IS
+
+#define load_lnk_dot_tac \
+  (((MAP;LMAP;CATL;MODR;SHELL;REV;WRITE)~;LoadLinkDotFilesX)~)
+
+#define LoadLinkDotFiles   bcall(load_lnk_dot_tac: lldf)
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  /***
+  for example, slib_RCD
+  ***/
+  lldf2(a)(bcatl("CDE/PASP/.",a))
+ =>
+  ldf1_2(a)(?);
+
+  ldf1_2(a)(A)
+ =>
+  ldf1_2(a)(A|B);
+
+  ReadPaspLibList(L) &
+  bsearch((Rename;l),L,M)
+ =>
+  ldf1_2(a)(R|r;l);
+
+  ReadPaspLibList(L) &
+  bsearch(l,L,M)
+ =>
+  ldf1_2(a)(R|l);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  ldf1_1(a);
+
+  bget(".Bcom",x) &
+  ldf1_2(a)(x)
+ =>
+  ldf1_1(a);
+
+  ReadDotFiles(D) &
+  ModifyDotFilesFormalParams(D)
+ =>
+  lldf3;
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  lldf2(a)(Z);
+
+  bget(Z,d) &
+  ReadDotFiles(D) &
+  ModifyDotFiles((D,a(d)))
+ =>
+  lldf2(a)(Z);
+
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  ldf1_1(a)
+ =>
+  lldf1(a);
+
+  ReadPaspLibList(L) &
+  bsearch(a,L,M)
+ =>
+  lldf1(a);
+
+  IsGen(a.mch)
+ =>
+  lldf1(a);
+
+  IsUsr(a.mch) &
+  lldf2(a)(bcatl("CDE/PASP/.",a))
+ =>
+  lldf1(a);
+
+  lldf1(?);
+
+  ReadImportedUsrMch(I) &
+  lldf1 bsmap I &
+  lldf3
+ =>
+  lldf
+
+END
+
+&
+
+THEORY RenameLinkHtxFileX IS
+
+#define RenameLinkHtxFile_tac \
+              (((CATL;SHELL;MAP;WRITE)~;RenameLinkHtxFileX)~)
+
+#define RenameLinkHtxFile(x)   bcall(RenameLinkHtxFile_tac:clhf(x))
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  clhf3(m);
+
+  bshell(bcatl("$BKIT/BLIB/Greplace CDE/PASP/",m,".noatt .BBcom 0 1 1")) &
+  bshell(bcatl("cp .BBcom CDE/PASP/",m,".noatt")) &
+  /* leave above as ... 0 1 1 */
+  bshell(bcatl("$BKIT/BLIB/Greplace HTX/",m,".noatt.html .BBcom 0 1 1")) &
+  bshell(bcatl("cp .BBcom HTX/",m,".noatt.html")) &
+/*
+bshell(bcatl("echo ---------------- HTX/",m,".noatt.html -------------"))&
+bshell(bcatl("cat HTX/",m,".noatt.html"))&
+*/
+  bshell(bcatl("$BKIT/BLIB/PASPhtml ",1," ",m))
+ =>
+  clhf3(m);
+
+  clhf2(x);
+
+  bprintf("%.param,%.noatt\n",i,i) &
+  bprintf("%.param.html,%.noatt.html\n",i,i)
+ =>
+  clhf2(i);
+
+  clhf2(?);
+
+  bprintf("%.param,%.noatt\n",i,i) &
+  bprintf("%.param.html,%.noatt.html\n",i,i)
+ =>
+  clhf2(i:x:y);
+
+  ReadPaspLibList(L) &
+  bsearch(i,L,M)
+ =>
+  clhf2(i:x:y);
+
+  Connect(".Bcom") &
+  bprintf("%.param,%.noatt\n",m,m) &
+  clhf2 bsmap A &
+  clhf2 bsmap K &
+  bclose &
+  clhf3(m)
+ =>
+  clhf1(m(A|B|C|D|E|F|G|H|I|J|K));
+
+  ReadDotFiles(D) &
+  bsearch(a(x),D,E) &
+  clhf1(a(x))  
+ =>
+  clhf(a)
+
+END
+
+&
+
+THEORY StoreSetConstantsX IS
+
+#define sto_set_cst_tac   (((MAP;ARI;MODR;RULE)~;StoreSetConstantsX)~)
+
+#define StoreSetConstants(x)    bcall(sto_set_cst_tac: ssc_0(x))
+
+  ?;
+#define ReadNotYetProcessedSetConstants(x)    brule(StoreSetConstantsX.1,x)
+#define ModifyNotYetProcessedSetConstants(x)  bmodr(StoreSetConstantsX.1,x)
+
+
+  ReadNotYetProcessedSetConstants(C) &
+  bsearch((c=e),C,D) &
+  ModifyNotYetProcessedSetConstants(D)
+ =>
+  ssc_rem(c=e);
+
+  bcrer(LnkSetConstants_stoX,(c==e)) &
+  ssc_rem(c=e)
+ =>
+  ssc_cre(c=e);
+
+  brule(LnkSetConstants_stoX.N,(c==e)) &
+  ssc_rem(c=e)
+ =>
+  ssc_cre(c=e);
+
+
+
+  ssc5$N(x);
+
+  brule(LnkSetConstants_stoX.N,(e==f)) &
+  ssc_cre(c=e)
+ =>  
+  ssc5$N(c=e);
+
+  ReadNotYetProcessedSetConstants(C) &
+  ssc5$N bsmap C &
+  ssc3$(N+1)
+ =>
+  ssc3$N;
+
+  ReadNotYetProcessedSetConstants(?)
+ =>
+  ssc3$N;
+
+
+  ssc4$1(x);
+
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  ssc_cre(c=f(e))
+ =>
+  ssc4$1(f(e)=c);
+
+  ReadConversionFunctions(F) &
+  bsearch((f:t),F,G) &
+  ssc_cre(c=f(e))
+ =>
+  ssc4$1(c=f(e));
+
+  ReadNotYetProcessedSetConstants(C) &
+  ssc4$1 bsmap C &
+  ssc3$2
+ =>
+  ssc3$1;
+
+  ssc2(x);
+
+  ReadNotYetProcessedSetConstants(C) &
+  ModifyNotYetProcessedSetConstants((C,(c=e)))
+ =>
+  ssc2(c=e);
+
+
+  ssc_ipt(?);
+
+  ssc(m)
+ =>
+  ssc_ipt(m:f:a);
+
+  ModifyNotYetProcessedSetConstants(?) &
+  ssc2 bsmap C &
+  ssc_ipt bsmap A
+ =>
+  ssc1(m(A|B|C|D|E|F|G|H|I|J|K));
+
+  ssc(m);
+
+  ReadDotFiles(T) &
+  bsearch(m(x),T,U) &
+  ssc1(m(x)) &
+  ssc3$1
+ =>
+  ssc(m);
+
+  bclean(LnkSetConstants_stoX) &
+  ssc(m)
+ =>
+  ssc_0(m)
+
+END
+
+&
+
+THEORY PushActualParamsDownLnkX IS
+
+#define push_act_param_dn_l_tac \
+     (((SHELL;WRITE;MAP;SUB;MODR)~;PushActualParamsDownLnkX)~)
+
+#define PushActualParamsDownLnk    bcall(push_act_param_dn_l_tac: papdl)
+
+  ?; /* 1=> dot file exists */
+
+  ?; /* temp storege */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  ReadDotFiles(T) &
+  bsearch(m(y),T,U) &
+  brule(PushActualParamsDownLnkX.2,m(x)) &
+  ModifyDotFiles((U,m(x)))
+ =>
+  papdl11(m);
+
+  brule(PushActualParamsDownLnkX.2,m(A|b|c|d|e|f|g|h|i|j|k)) &
+  bmodr(PushActualParamsDownLnkX.2,m(A,(I:F:a)|b|c|d|e|f|g|h|i|j|k))
+ =>
+  papdl10(m)(I:F:a);
+
+  papdl9(m)(?)(?);
+
+  papdl9(m)(X)(Y) &
+  papdl10(m)(I:F:a)
+ =>
+  papdl9(m)(X,(I:F:A))(Y,(I:f:a));
+
+  bmodr(PushActualParamsDownLnkX.2,m(?|b|c|d|e|f|g|h|i|j|k)) &
+  papdl9(m)(A)(a)
+ =>
+  papdl8(m)(A|B|C|D|E|F|G|H|I|J|K)(a|b|c|d|e|f|g|h|i|j|k);
+
+  papdl7(m);
+
+  brule(PushActualParamsDownLnkX.1,1) &
+  InformCantConnect(".BBBcom") &
+  PFZ
+ =>
+  papdl7(m);
+
+  brule(PushActualParamsDownLnkX.1,1) &
+  bget(".BBBcom",x) &
+  ReadDotFiles(T) &
+  bsearch(m(y),T,U) &
+  papdl8(m)(y)(x) &
+  papdl11(m)
+ =>
+  papdl7(m);
+
+  bprintf("%,%\n0%,%\n",f,a,f,a) &
+  bclose &
+  bshell("$BKIT/BLIB/Greplace .BBcom .BBBcom 0 0 0") &
+  papdl7(m)
+ =>
+  papdl6(m)(f:a);
+
+  bprintf("%,%\n0%,%\n",f,a,f,a) &
+  papdl6(m)(F:A)
+ =>
+  papdl6(m)(F,f:A,a);
+
+  Connect(".Bcom") &
+  papdl6(m)(f:a)
+ =>
+  papdl5(m)(f:a);
+
+  papdl4(m)(?:?);
+
+  bmodr(PushActualParamsDownLnkX.1,0) &
+  papdl5(m)(f:a)
+ =>
+  papdl4(m)(f:a);
+
+  ReadDotFiles(T) &
+  bsearch(m(x),T,U) &
+  bmodr(PushActualParamsDownLnkX.1,1) &
+  bprintf("%",x) &
+  bclose &
+  papdl5(m)(f:a)
+ =>
+  papdl4(m)(f:a);
+
+  papdl3(x,?);
+
+  Connect(".BBcom") &
+  papdl4(m)(f:a)
+ =>
+  papdl3(?,(m:f:a));
+
+  Connect(".BBcom") &
+  ReadDotFiles(T) &
+  bsearch(m(x),T,U) &
+  papdl4(m)(f:a) &
+  papdl1(m)
+ =>
+  papdl3(?,(m:f:a));
+
+  papdl3(B,(m:f:[s:=t]a))
+ =>
+  papdl3((B,(s==t)),(m:f:a));
+
+  ReadDotFiles(T) &
+  bsearch(m(x),T,U) &
+  papdl1(m)
+ =>
+  papdl3(B,(m:?:?));
+
+  papdl3(B) bsmap  A
+ =>
+  papdl2(a(A|B|C|D|E|F|G|H|I|J|K));
+
+  ReadDotFiles(T) &
+  bsearch(a(x),T,U) &
+  papdl2(a(x))
+ =>
+  papdl1(a);
+
+  ReadLnkAbs(a.mch) &
+  papdl1(a)
+ =>
+  papdl
+
+END
+
+&
+
+THEORY DetermineSetTypeX IS
+
+#define det_set_type_tac      (((MAP;MODR)~;DetermineSetTypeX)~)
+
+#define DetermineSetType(x,y) bcall(det_set_type_tac: dst(x)(y))
+
+  ?;
+#define ReadDeterminedSetType(x)    brule(DetermineSetTypeX.1,x)
+#define ModifyDeterminedSetType(x)  bmodr(DetermineSetTypeX.1,x)
+#define SetTypeNotDetermined        brule(DetermineSetTypeX.1,?)
+
+  dst2(x);
+
+  SetTypeNotDetermined &
+  dst1(n)(s=t)
+ =>
+  dst2(m,(s=t),(n:f:a));
+
+  dst2(m,(s=t)) bsmap A
+ =>
+  dst2(m)(s=t)(A|B|C|D|E|F|G|H|I|J|K);
+
+  bsearch((t==u),B,b) &
+  ModifyDeterminedSetType(u)
+ =>
+  dst2(m)(s=t)(A|B|C|D|E|F|G|H|I|J|K);
+
+  dst1(m)(s=t);
+
+  SetTypeNotDetermined &
+  ReadDotFiles(T) &
+  bsearch(m(x),T,U) &
+  dst2(m)(s=t)(x)
+ =>
+  dst1(m)(s=t);
+
+  ReadLnkAbs(a.mch) &
+  ModifyDeterminedSetType(?) &
+  dst1(a)(s=t)
+ =>
+  dst(m)(s=t)
+
+END
+
+&
+
+
+THEORY DetermineCstTypeX IS
+
+#define det_cst_type_tac  (DetermineCstTypeX;LnkSetConstants_stoX~;MODR)
+
+#define DetermineCstType(x) bcall(det_cst_type_tac: dct(x))
+
+  ?;
+#define ReadDeterminedCstType(x)    brule(DetermineCstTypeX.1,x)
+#define ModifyDeterminedCstType(x)  bmodr(DetermineCstTypeX.1,x)
+
+  ModifyDeterminedCstType(c)
+ =>
+  dct(c)
+
+END
+
+&
+
+
+
+#define det_num_type_tac      (((MAP;MODR)~;DetermineNumTypeX)~)
+
+/*
+#define DetermineNumType(x,y) bcall(det_num_type_tac: dnt(x)(y))
+
+#define ReadDeterminedNumType(x)    brule(DetermineNumTypeX.1,x)
+#define ModifyDeterminedNumType(x)  bmodr(DetermineNumTypeX.1,x)
+#define NumTypeNotDetermined        brule(DetermineNumTypeX.1,?)
+*/
+
+
+
+THEORY ProcessLinkDotFilesX IS
+
+#define proc_lnk_dot_files_tac  (((MAP;MODR;RULE)~;ProcessLinkDotFilesX)~)
+
+#define ProcessLinkDotFiles     bcall(proc_lnk_dot_files_tac: pldf)
+
+  ?;
+#define ReadCurrMch_(x)     brule(ProcessLinkDotFilesX.1,x)
+#define ModifyCurrMch_(x)   bmodr(ProcessLinkDotFilesX.1,x)
+
+  ?;
+#define ReadRename_(x)     brule(ProcessLinkDotFilesX.2,x)
+#define ModifyRename_(x)   bmodr(ProcessLinkDotFilesX.2,x)
+
+  ReadCurrMch_(m) &
+  ReadRename_(R) &
+  bcrer(LnkRename_stoX,m(R))
+ =>
+  pldf_fini;   
+
+
+  ReadDeterminedSetType(u) &
+  InformCantDetermineSetType(s,m,u) &
+  SetLNKError
+ =>
+  pldf_set2(m)(s=t);
+
+  ReadDeterminedSetType(u) &
+  ReadValidPaspTypes(T) &
+  bsearch(u,T,U) &
+  ReadRename_(R) &
+  ModifyRename_((R,(s=u)))
+ =>
+  pldf_set2(m)(s=t);
+
+  SetTypeNotDetermined &
+  InformCantDetermineSetType(s,m,t) &
+  SetLNKError
+ =>
+  pldf_set2(m)(s=t);
+
+  ReadCurrMch_(m) &
+  DetermineSetType(m,(s=t)) &
+  pldf_set2(m)(s=t)
+ =>
+  pldf_set1(s=t);
+  
+  ReadValidPaspTypes(T) &
+  bsearch(t,T,U) &
+  ReadRename_(R) &
+  ModifyRename_((R,(s=t)))
+ =>
+  pldf_set1(s=t);
+
+  pldf_set(?)(?);
+
+  pldf_set1(s=t) &
+  pldf_set(S)(T)
+ =>
+  pldf_set(S,s)(T,t);
+
+  ReadDeterminedCstType(u) &
+  InformCantDetermineConstantType(s,m,u) &
+  SetLNKError
+ =>
+  pldf_num3(m)(s=t);
+
+  ReadDeterminedCstType(f(n)) &
+  bnum(n) &
+  ReadConversionFunctions(F) &
+  bsearch((f:w),F,G) &
+  ReadRename_(R) &
+  ModifyRename_((R,(s=f(n))))  
+ =>
+  pldf_num3(m)(s=t);
+
+  ReadCurrMch_(m) &
+  DetermineCstType(t) &
+  pldf_num3(m)(s=t)
+ =>
+  pldf_num1(s=t);
+
+  bnum(t) &
+  ReadRename_(R) &
+  ModifyRename_((R,(s=t)))
+ =>
+  pldf_num1(s=t);
+
+  pldf_num(?)(?);
+
+  pldf_num1(s=t) &
+  pldf_num(S)(T)
+ =>
+  pldf_num(S,s)(T,t);
+
+
+
+  ModifyCurrMch_(m) &
+  ModifyRename_(?) &
+  pldf_set(D)(d) &
+  pldf_num(E)(e) &
+  pldf_fini    
+ =>
+  pldf2(m)(A|B|C|D|E|F|G|H|I|J|K)(a|b|c|d|e|f|g|h|i|j|k);
+
+  pldf1(?);
+
+  ReadDotFiles(T) &
+  bsearch(m(x),T,U) &
+  StoreSetConstants(m) &
+  pldf2(m)(A|B|C|D|E|F|G|H|I|J|K)(x)
+ =>
+  pldf1(m(A|B|C|D|E|F|G|H|I|J|K));
+
+  ReadDotFilesFormalParams(T) &
+  pldf1 bsmap T
+ =>
+  pldf
+
+END
+
+&
+
+THEORY ExecutePASPActParamX IS
+
+#define exe_PASPActParam_tac ((((ARI~;CATL;SHELL)~;ARI~;MAP;WRITE)~;ExecutePASPActParamX)~)
+
+#define ExecutePASPActParam bcall(exe_PASPActParam_tac: en)
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  bprintf("%",l)
+ =>
+  en6(m)(l);
+
+  en6(m)(L) &
+  bprintf(",%",l)
+ =>
+  en6(m)(L,l);
+
+  Connect(".BBcom") &
+  en6(m)(x) &
+  bclose &
+  bshell(bcatl("$BKIT/BLIB/PASPActParam 1 CDE/PASP/",m,".noatt")) &
+  bshell(bcatl("cp CDE/PASP/",m,".noatt .BBcom")) &
+  bshell(bcatl("$BKIT/BLIB/Greplace .BBcom CDE/PASP/",m,".noatt 0 2 1")) &
+  bshell(bcatl("cp HTX/",m,".noatt.html .BBcom")) &
+  bshell(bcatl("$BKIT/BLIB/Greplace .BBcom HTX/",m,".noatt.html 0 2 1"))
+ =>
+  en5(m)(x);
+
+  en5(m)(?);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  en4(m);
+
+  bget(".Bcom",x) &
+  en5(m)(x)
+ =>
+  en4(m);
+
+  bshell(bcatl("$BKIT/BLIB/PASPActParam 0 CDE/PASP/",m,".noatt")) &
+  en4(m)
+ =>
+  en3(m)(?);
+
+  en3(m)(A)
+ =>
+  en3(m)(A|B);
+
+  ReadPaspLibList(L) &
+  bsearch((Rename;l),L,M)
+ =>
+  en3(m)(R|r;l);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  en2(m);
+
+  bget(".Bcom",x) &
+  en3(m)(x)
+ =>
+  en2(m);
+
+  en1(x);
+
+  bshell(bcatl("echo ",m," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  en2(m)
+ =>
+  en1(m(A|B|C|D|E|F|G|H|I|J|K));
+
+  ReadPaspLibList(L) &
+  bsearch(m,L,M)
+ =>
+  en1(m(A|B|C|D|E|F|G|H|I|J|K));
+
+  ReadDotFiles(D) &
+  en1 bsmap D
+ =>
+  en;
+
+  LNKErrorSet
+ =>
+  x
+
+END
+
+&
+
+THEORY ExecuteRenameX IS
+
+#define exe_rename_tac (((MAP;ARI;WRITE;CATL;SHELL)~;ExecuteRenameX)~)
+
+#define ExecuteRename  bcall(exe_rename_tac: er)
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  er4(N);
+
+  brule(LnkRename_stoX.N,m(r)) &
+  Writef(("      %.noatt\n",m)) &
+  er4(N+1)
+ =>
+  er4(N);
+
+  er3(?);
+
+  Writef(("      % -> %\n",a,b)) &
+  bprintf("%,%\n",a,b)
+ =>
+  er3(a=b);
+
+  Writef(("      % -> %\n",a,SIGNED)) &
+  bprintf("%,%\n",a,INTEGER)
+ =>
+  er3(a=SIGNED);
+
+  bident(a) &
+  bnum(b) &
+  Writef(("      % -> %\n",a,b)) &
+  bprintf("0%,0%\n",a,b) &
+  bprintf("%,%\n",a,b)
+ =>
+  er3(a=b);
+
+  Writef(("      % -> %\n",a,b)) &
+  bprintf("%,%\n",a,b)
+ =>
+  er3(a=n2b(b));
+
+  Writef(("      % -> 0%\n",a,b)) &
+  bprintf("%,0%\n",a,b)
+ =>
+  er3(a=n2u(b));
+
+  Writef(("      % -> %\n",a,n)) &
+  bprintf("%,%\n",a,n)
+ =>
+  er3(a=(n:t));
+
+  Writef(("      % -> (+%)\n",a,n)) &
+  bprintf("%,(+%)\n",a,n)
+ =>
+  er3(a=(n:SIGNED));
+
+  Writef(("      % -> (-%)\n",a,n)) &
+  bprintf("%,(-%)\n",a,n)
+ =>
+  er3(a=(n:SIGNED_U));
+
+  Writef(("      % -> 0%\n",a,n)) &
+  bprintf("%,0%\n",a,n)
+ =>
+  er3(a=(n:UNSIGNED));
+
+  Connect(".Bcom") &
+  Writef(("\n    % - instantiating parameters:\n",m)) &
+  er3 bsmap R &
+  bclose &
+  bshell(bcatl("$BKIT/BLIB/Greplace CDE/PASP/",m,".param CDE/PASP/",m,".noatt 0 0 1")) &
+  bshell(bcatl("$BKIT/BLIB/Greplace HTX/",m,".param.html HTX/",m,".noatt.html 0 0 1")) &
+  PrintCodeModuleAnnot(bcatl(m,".noatt"),(bcatl(m,".param"))) &
+  RenameLinkHtxFile(m)
+ =>
+  er2(m(R));
+
+  Writef(("\n    % - not parameterised\n",m)) &
+  bshell(bcatl("cp CDE/PASP/",m,".param CDE/PASP/",m,".noatt")) &
+  bshell(bcatl("cp HTX/",m,".param.html HTX/",m,".noatt.html")) &
+  PrintCodeModuleAnnot(bcatl(m,".noatt"),(bcatl(m,".param"))) &
+  RenameLinkHtxFile(m)
+ =>
+  er2(m(?));
+
+  er1(N);
+
+  brule(LnkRename_stoX.N,r) &
+  er2(r) &
+  er1(N+1)
+ =>
+  er1(N);
+
+  Writef(("\n")) &
+  er1(1) &
+  Writef(("\n    Created:\n")) &
+  er4(1)
+ =>
+  er;
+
+  LNKErrorSet
+ =>
+  x
+
+END
+
+&
+
+THEORY CreLnkIptImpX IS
+
+#define cre_lnk_ipt_imp_tac  (((MAP;MODR)~;CreLnkIptImpX)~)
+
+#define CreLnkIptImp         bcall(cre_lnk_ipt_imp_tac: clii_0)
+
+  ReadLnkImp(a.imp) &
+  ReadLnkIptImp(I) &
+  bsearch(?,I,J) &
+  ModifyLnkIptImp((J,a.imp))
+ =>
+  clii2;
+
+  ReadLnkImp(a.imp) &
+  ReadLnkIptImp(?) &
+  ModifyLnkIptImp((a.imp))
+ =>
+  clii2;
+
+  clii1(a.mch);
+
+  ReadBotRef(i.imp) &
+  ReadLnkIptImp(I) &
+  ModifyLnkIptImp((I,i.imp))
+ =>
+  clii1(a.mch);
+
+  clii(?);
+
+  GetBotRef(a.mch) &
+  clii1(a.mch)
+ =>
+  clii(a.mch);
+
+  ReadLnkIpt(M) &
+  clii bsmap M &
+  clii2
+ =>
+  clii_0
+
+END
+
+&
+
+THEORY StorePreviousMapFileX IS
+
+#define sto_prev_map_tac \
+           (((CATL;MAP;LMAP;MODR;SHELL;WRITE)~;StorePreviousMapFileX)~)
+
+#define StorePreviousMapFile  bcall(sto_prev_map_tac: spmf)
+
+  ?;
+#define ReadStoredMapFile(x)    brule(StorePreviousMapFileX.1,x)
+#define ModifyStoredMapFile(x)  bmodr(StorePreviousMapFileX.1,x)
+
+  ReadStoredMapFile(M) &
+  ModifyStoredMapFile((M,m(x;?)))
+ =>
+  spmf3(m(x));
+
+  (?^?) == (?);
+
+  (AT(a),t) == (AT(a));
+
+  (add_qm(o(x)) == o(x;?));
+
+  spmf3(m(add_qm bslmap x))
+ =>
+  spmf2(m(x));
+
+  spmf2(empty);
+
+/***
+  InformCantConnect(f) &
+***/
+  spmf1(a)(f);
+
+  bget(f,MEMORY_MAP a IS x END) &
+  bprintf("\n    Saving previous map file in SRC/%.map.prev\n",a) &
+  bprintf("\n    Reusing attributes (if possible) in current map file\n") &
+  bshell(bcatl("cp CDE/PASP/",a,".map SRC/",a,".map.prev")) &
+  spmf2 bsmap x
+ =>
+  spmf1(a)(f);
+
+  ReadLnkAbs(a.mch) &
+  spmf1(a)(bcatl("CDE/PASP/",a,".map"))
+ =>
+  spmf
+
+END
+
+&
+
+THEORY CreMapFileX IS
+
+#define cre_map_tac (((MAP;FLAT;ARI;WRITE;CATL;SHELL;MODR)~;CreMapFileX)~)
+
+#define CreMapFile  bcall(cre_map_tac: cm)
+
+  ?;
+#define ReadMapVarList(x)    brule(CreMapFileX.1,x)
+#define ModifyMapVarList(x)  bmodr(CreMapFileX.1,x)
+
+  0;
+#define OuterSCRequired       brule(CreMapFileX.2,1)
+#define SetOuterSCRequired    bmodr(CreMapFileX.2,1)
+
+  0;
+#define MiddleSCRequired       brule(CreMapFileX.3,1)
+#define SetMiddleSCRequired    bmodr(CreMapFileX.3,1)
+#define ReSetMiddleSCRequired  bmodr(CreMapFileX.3,0)
+
+  0;
+#define InnerSCRequired       brule(CreMapFileX.4,1)
+#define SetInnerSCRequired    bmodr(CreMapFileX.4,1)
+#define ReSetInnerSCRequired  bmodr(CreMapFileX.4,0)
+
+  ?;
+#define ReadCurrMapMch(x)      brule(CreMapFileX.5,x)
+#define ModifyCurrMapMch(x)    bmodr(CreMapFileX.5,x)
+
+  ?;
+#define ReadCurrMapOp(x)      brule(CreMapFileX.6,x)
+#define ModifyCurrMapOp(x)    bmodr(CreMapFileX.6,x)
+
+  ?;
+#define ModifyCurrMapMchType(x)  bmodr(CreMapFileX.7,x)
+#define ReadCurrMapMchType(x)    brule(CreMapFileX.7,x)
+#define CurrMapMchType_readonly   READONLY
+#define CurrMapMchType_writeonly  WRITEONLY
+#define CurrMapMchType_nvram      NVRAM
+
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  ModifyCurrMapMchType(?)
+ =>
+  determine_mch_type_map1(c)(?|x);
+
+  determine_mch_type_map1(c)(x|y)
+ =>
+  determine_mch_type_map1(c)(x|y|z);
+
+  bident(m) &
+  IsPASPSLIBMch(m) &
+  ModifyCurrMapMchType(?)
+ =>
+  determine_mch_type_map1(c)(a|R;m);
+
+  bident(m) &
+  IsFileMch(m) &
+  ModifyCurrMapMchType(CurrMapMchType_nvram)
+ =>
+  determine_mch_type_map1(c)(a|R;m);
+
+  ModifyCurrMapMchType(CurrMapMchType_writeonly)
+ =>
+  determine_mch_type_map1(c)(a|R;Byt_Write);
+
+  ModifyCurrMapMchType(CurrMapMchType_readonly)
+ =>
+  determine_mch_type_map1(c)(a|R;Byt_Read);
+
+
+  ReadUnderScoreToSemiColon(a) &
+  determine_mch_type_map1(m)(a)
+ =>
+  determine_mch_type_map(m);
+
+
+  bident(m) &
+  IsPASPSLIBMch(m) &
+  ModifyCurrMapMchType(?)
+ =>
+  determine_mch_type_map(m);
+
+
+  bprintf("/*Examples:\n\n`AT(?)'      produces no memory attribute\n") &
+  bprintf("`AT(1000)'   produces the attribute `AT(1000)'\n") &
+  bprintf("`AT(2^111)'  produces the attribute `AT(2#111)'\n*/\n\n")
+ =>
+  pr_comm;
+
+  SetOuterSCRequired
+ =>
+  outer_sc;
+
+  OuterSCRequired &
+  bprintf("\n\n\n  ;\n\n")
+ =>
+  outer_sc;
+
+
+  SetMiddleSCRequired
+ =>
+  middle_sc;
+
+  MiddleSCRequired &
+  bprintf("\n            ;")
+ =>
+  middle_sc;
+
+
+  SetInnerSCRequired
+ =>
+  inner_sc;
+
+  InnerSCRequired &
+  bprintf("\n                        ;")
+ =>
+  inner_sc;
+
+
+
+  ModifyMaxLength(0) &
+  ReadMapVarList(V) &
+  SetMaxLength(V) &
+  IncMaxLength(12)
+ =>
+  cre_len1;
+
+
+  ReadMapVarList(V) &
+  ModifyMapVarList((V,v))
+ =>
+  cm_len_var(v);
+
+  ReadMapVarList(V) &
+  bsearch(v,V,W)
+ =>
+  cm_len_var(v);
+
+  cm_len_var(v)
+ =>
+  cm_len_var(v:t);
+
+  cm_len_var(?);
+
+  cm_len_loc(?);
+
+  cm_len_var bsmap v
+ =>
+  cm_len_loc(o(v));
+
+  cm_len(?);
+
+  cm_len_var bsmap F &
+  cm_len_var bsmap G &
+  cm_len_loc bsmap H
+ =>
+  cm_len(m(A|B|C|D|E|F|G|H|I|J|K));
+
+
+
+
+  bprintf("\n\n\n\n        empty\n\n\n\n")
+ =>
+  check_empty;
+
+  OuterSCRequired
+ =>
+  check_empty;
+
+
+  bprintf(": AT(?)")
+ =>
+  cm_var_att(v);
+
+  ReadCurrMapMch(m) &
+  ReadCurrMapOp(o) &
+  ReadStoredMapFile(M) &
+  bsearch(m(x),M,P) &
+  bsearch(o(y),x,w) &
+  bsearch((v:AT(a)),y,z) &
+  bprintf(": AT(%)",a)
+ =>
+  cm_var_att(v);
+
+
+
+  inner_sc &
+  bprintf("\n                        %",v) &
+  PrintSpacesToMaxLength(blen(v)) &
+  cm_var_att(v)
+ =>
+  cm_var(v);
+
+  cm_var(v)
+ =>
+  cm_var(v:t);
+
+  cm_var(?);
+
+  ModifyCurrMapOp(o) &
+  middle_sc &
+  bprintf("\n            %\n                (",o) &
+  ReSetInnerSCRequired &
+  cm_var bsmap v &
+  bprintf("\n                )")
+ =>
+  cm_op(o(v));
+
+  cm_op(?);
+
+  cm_op(o(?));
+
+
+
+  outer_sc &
+  bprintf("\n  %\n        (",m) &
+  ReSetMiddleSCRequired &
+  cm_op(bcatl(m,"_global_variables")(F)) &
+  cm_op bsmap H &
+  bprintf("\n        )")
+ =>
+  cm3_1(m)(F)(H);
+
+  outer_sc &
+  bprintf("\n  %\n        (",m) &
+  ReSetMiddleSCRequired &
+  cm_op(bcatl(m,"_global_variables")(F)) &
+  bprintf("\n        )")
+ =>
+  cm3_1(m)(F)(?);
+
+  outer_sc &
+  bprintf("\n  %\n        (",m) &
+  ReSetMiddleSCRequired &
+  cm_op bsmap H &
+  bprintf("\n        )")
+ =>
+  cm3_1(m)(?)(H);
+
+  cm3_1(m)(?)(?);
+
+  bsearch(?,F,G) &
+  cm3_1(m)(G)(H)
+  =>
+  cm3_1(m)(F)(H);
+
+  ModifyCurrMapMch(m) &
+  UnderScoreToSemiColon(m) &
+  determine_mch_type_map(m) &
+  cm3_1(m)(bflat(F,G))(H)
+ =>
+  cm3(m(A|B|C|D|E|F|G|H|I|J|K));
+
+  cm2(N);
+
+  brule(LnkRename_stoX.N,(m(r))) &
+  ReadDotFiles(D) &
+  bsearch(m(x),D,E) &
+  cm3(m(x)) &  
+  cm2(N+1)
+ =>
+  cm2(N);
+
+  Connect(f) &
+  pr_comm &
+  bprintf("MEMORY_MAP % IS\n\n",a) &
+  ReadDotFiles(D) &
+  cm_len bsmap D &
+  cre_len1 &
+  cm2(1) &
+  check_empty &
+  bprintf("\n\n\nEND\n") &
+  bclose
+ =>
+  cm1(a)(f);
+
+  ReadLnkAbs(a.mch) &
+  cm1(a)(bcatl("CDE/PASP/",a,".map"))
+ =>
+  cm;
+
+  LNKErrorSet
+ =>
+  x
+
+END
+
+&
+
+
+
+#define PrintPLink_database \
+  Writef(("\n\n"))& \
+HERE(("DotFilesFormalParams"))& \
+  PrintRule(LinkRenamePX.1)& \
+HERE(("DotFiles"))& \
+  PrintRule(LinkRenamePX.2)& \
+HERE(("ImportedUsrMch"))& \
+  PrintRule(LinkRenamePX.3)& \
+  PrintTHEORY(LnkSetConstants_stoX)& \
+  PrintTHEORY(LnkRename_stoX)& \
+  PrintTHEORY(SatAT_stoX)& \
+  PrintTHEORY(SatDotFiles_stoX)& \
+  PrintTHEORY(AT_start_end_stoX)
+
+
+THEORY LinkRenamePX IS
+
+  ?; /* 1. DotFilesFormalParams */
+
+  ?; /* 2. DotFiles */
+
+  ?; /* 3. ImportedUsrMch */
+
+  ?; /* 4. */
+
+  ?; /* 5. */
+
+  ?; /* 6. */
+
+
+  ReadImportedUsrMch(I) &
+  ModifyImportedUsrMch((I,a))
+ =>
+  add_ImportedUsrMch(a);
+
+
+
+  check_ipt_ldf1(?);
+
+  lr1(m.mch)
+ =>
+  check_ipt_ldf1(m:f:a);
+
+  check_ipt_ldf(f);
+
+  bget(f,(x|y)) &
+  check_ipt_ldf1 bsmap y
+ =>
+  check_ipt_ldf(f);
+
+
+  /***
+  for example, slib_RCD
+  ***/
+  check_ipt_ldf(bcatl("CDE/PASP/",a,".ldf")) &
+  add_ImportedUsrMch(a)
+ =>
+  lr3(a.mch)(?);
+
+  lr3(a.mch)(A)
+ =>
+  lr3(a.mch)(A|B);
+
+  ReadPaspLibList(L) &
+  bsearch((Rename;l),L,M)
+ =>
+  lr3(a.mch)(R|r;l);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  lr2(a.mch);
+
+  bget(".Bcom",x) &
+  lr3(a.mch)(x)
+ =>
+  lr2(a.mch);
+
+  lr1(x);
+
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  lr2(a.mch)
+ =>
+  lr1(a.mch);
+
+  ReadPaspLibList(L) &
+  bsearch(a,L,M)
+ =>
+  lr1(a.mch);
+
+  IsGen(a.mch)
+ =>
+  lr1(a.mch);
+
+  IsUsr(a.mch) &
+  add_ImportedUsrMch(a)
+ =>
+  lr1(a.mch);
+
+  ReadLnkAbs(a.mch) &
+  LinkModifyPaspLibList &
+  CreLnkIptImp &
+  ReadLnkIpt(I) &
+  lr1 bsmap I &
+  lr1(a.mch) &
+  LoadLinkDotFiles &
+  PushActualParamsDownLnk &
+  ProcessLinkDotFiles &
+  ExecuteRename &
+  ExecutePASPActParam &
+  StorePreviousMapFile &
+  CreMapFile
+/*** & PrintPLink_database ***/
+ =>
+  lr
+
+END
+
+
+
+
+
+
+
+
+
+
+
+/***************************************************************************/
+
+
+
+
+&
+
+THEORY RenameSatHtxFileX IS
+
+#define RenameSatHtxFile_tac \
+              (((CATL;SHELL;MAP;WRITE)~;RenameSatHtxFileX)~)
+
+#define RenameSatHtxFile(x)   bcall(RenameSatHtxFile_tac:crhf(x))
+
+  ?;  /* used locally */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  crhf3(m);
+
+  bshell(bcatl("$BKIT/BLIB/Greplace CDE/PASP/",m,".pasp .BBcom 0 1 1")) &
+  bshell(bcatl("cp .BBcom CDE/PASP/",m,".pasp")) &
+  /* leave above as ... 0 1 */
+  bshell(bcatl("$BKIT/BLIB/Greplace HTX/",m,".pasp.html .BBcom 0 1 1")) &
+  bshell(bcatl("cp .BBcom HTX/",m,".pasp.html")) &
+  bshell(bcatl("$BKIT/BLIB/PASPhtml ",2," ",m))
+ =>
+  crhf3(m);
+
+  crhf2(x);
+
+  bprintf("%.noatt,%.pasp\n",i,i) &
+  bprintf("%.noatt.html,%.pasp.html\n",i,i)
+ =>
+  crhf2(i);
+
+  bprintf("%.noatt,%.pasp\n",i,i) &
+  bprintf("%.noatt.html,%.pasp.html\n",i,i)
+ =>
+  crhf2(i:x:y);
+
+/*
+  ReadPaspLibList(L) &
+  bsearch(i,L,M)
+ =>
+  crhf2(i);
+*/
+
+  crhf2(?);
+
+  ReadPaspLibList(L) &
+  bsearch(i,L,M)
+ =>
+  crhf2(i:x:y);
+
+  Connect(".Bcom") &
+  bprintf("%.noatt,%.pasp\n",m,m) &
+  crhf2 bsmap A &
+  crhf2 bsmap K &
+  bclose &
+  crhf3(m)
+ =>
+  crhf1(m(A|B|C|D|E|F|G|H|I|J|K));
+
+  brule(SatDotFiles_stoX.N,a(x)) &
+  crhf1(a(x))  
+ =>
+  crhf(a)
+
+END
+
+&
+
+THEORY LoadSatDotMapFilesX IS
+
+#define load_sat_dot_map_tac \
+    (((CATL;MAP;MODR;RULE;SHELL;REV)~;LoadSatDotMapFilesX)~)
+
+#define LoadSatDotFiles(x,y)    bcall(load_sat_dot_map_tac: lrdf(x)(y))
+
+#define LoadMapFile(x,y)        bcall(load_sat_dot_map_tac: lmf(x)(y))
+
+  ?; /* SatDotFiles */
+
+  ?; /* MapFile */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lmf(f);
+
+  bget(f,MEMORY_MAP m IS x END) &
+  ModifyMapFile(x)
+ =>
+  lmf(m)(f);
+
+  /***
+  for example, slib_RCD
+  ***/
+  bshell(bcatl("$BKIT/BLIB/PASPmap ",m,".noatt")) &
+  lrdf(m)(bcatl("CDE/PASP/.",m))
+ =>
+  lrdf4(m.mch)(?);
+
+  lrdf4(m.mch)(A)
+ =>
+  lrdf4(m.mch)(A|B);
+
+  ReadPaspLibList(L) &
+  bsearch((Rename;l),L,M)
+ =>
+  lrdf4(m.mch)(R|r;l);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  lrdf3(m.mch);
+
+  bget(".Bcom",x) &
+  lrdf4(m.mch)(x)
+ =>
+  lrdf3(m.mch);
+
+  lrdf2(x);
+
+  bshell(bcatl("echo ",m," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  lrdf3(m.mch)
+ =>
+  lrdf2(m:f:t);
+
+  ReadPaspLibList(L) &
+  bsearch(m,L,M)
+ =>
+  lrdf2(m:f:t);
+
+  IsGen(m.mch)
+ =>
+  lrdf2(m:f:t);
+
+  IsUsr(m.mch) &
+  lrdf(m)(bcatl("CDE/PASP/.",m))
+ =>
+  lrdf2(m:f:t);
+
+  ReadSatDotFiles(R) &
+  ModifySatDotFiles((R,m)) &
+  bcrer(SatDotFiles_stoX,(m((A|B|C|D|E|F|G|H|I|J|K)))) &
+  lrdf2 bsmap A
+ =>
+  lrdf1(m)(A|B|C|D|E|F|G|H|I|J|K);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lrdf(m)(f);
+
+  bget(f,x) &
+  lrdf1(m)(x)
+ =>
+  lrdf(m)(f)
+
+END
+
+&
+
+THEORY CheckConflictingATX IS
+
+#define CheckConflictingAT \
+  bcall(((ARI~;RULE;MODR)~;CheckConflictingATX)~: cca(1))
+
+  0; /* 1. max length of a..b in AT_start_end_sto_sortedX */
+
+  0; /* 2. tmp sto */
+
+  0; /* 3. max length of VAR names */
+
+
+  brule(CheckConflictingATX.3,M) &
+  Writef(("%",v)) &
+  PrintSpaces(M-blen(v)+2) &
+  Writef(("VAR of % in %\n",o,m))
+ =>
+  cca_prt_sort7(o,v,m);
+
+  brule(CheckConflictingATX.3,M) &
+  Writef(("%",v)) &
+  PrintSpaces(M-blen(v)+2) &
+  Writef(("Global VAR in %\n",m))
+ =>
+  cca_prt_sort7("global",v,m);
+
+  Writef(("    %",(a..b)))
+ =>
+  cca_prt_sort6(a,b);
+
+  Writef(("    %",a))
+ =>
+  cca_prt_sort6(a,a);
+
+  cca_prt_sort5(N);
+
+  brule(AT_start_end_sto_sortedX.N,(m(o,v),(a,b)(n))) &
+  brule(CheckConflictingATX.1,M) &
+  cca_prt_sort6(a,b) &
+  PrintSpaces(M-n+2) &
+  cca_prt_sort7(o,v,m) &
+  cca_prt_sort5(N-1)
+ =>
+  cca_prt_sort5(N);
+
+
+
+  brule(AT_start_end_sto_sortedX.N,(m(o,v),(a,b))) &
+  brule(CheckConflictingATX.2,n) &
+  bmodr(AT_start_end_sto_sortedX.N,(m(o,v),(a,b)(n)))
+ =>
+  cca_prt_sort4(N);
+
+  cca_prt_sort3;
+
+  brule(CheckConflictingATX.2,m) &
+  brule(CheckConflictingATX.1,n) &
+  btest(m>n) &
+  bmodr(CheckConflictingATX.1,m)
+ =>
+  cca_prt_sort3;
+
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+1)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>9) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+2)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>99) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+3)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>999) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+4)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>9999) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+5)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>99999) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+6)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>999999) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+7)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>9999999) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+8)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>99999999) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+9)) 
+ =>
+  cca_prt_sort2(n);
+
+  btest(n>999999999) &
+  brule(CheckConflictingATX.2,m) &
+  bmodr(CheckConflictingATX.2,(m+10)) 
+ =>
+  cca_prt_sort2(n);
+
+  bmodr(CheckConflictingATX.2,2) &
+  cca_prt_sort2(a) &
+  cca_prt_sort2(b) &
+  cca_prt_sort3
+ =>
+  cca_prt_sort1(a,b);
+
+  bmodr(CheckConflictingATX.2,0) &
+  cca_prt_sort2(a) &
+  cca_prt_sort3
+ =>
+  cca_prt_sort1(a,a);
+
+  Writef(("\n\n    Memory Map:\n\n")) &
+  blent(AT_start_end_sto_sortedX.L) &
+  cca_prt_sort5(L)
+ =>
+  cca_prt_sort(N);
+
+  brule(AT_start_end_sto_sortedX.N,(m(o,v),(a,b))) &
+  cca_prt_sort1(a,b) &
+  cca_prt_sort4(N) &
+  cca_prt_sort(N+1)
+ =>
+  cca_prt_sort(N);
+
+
+
+  cca_prt_sort01(m);
+
+  brule(CheckConflictingATX.3,n) &
+  btest(m>n) &
+  bmodr(CheckConflictingATX.3,m)
+ =>
+  cca_prt_sort01(m);
+
+  cca_prt_sort(1)
+ =>
+  cca_prt_sort0(N);
+
+  brule(AT_start_end_sto_sortedX.N,(m(o,v),(a,b))) &
+  cca_prt_sort01(blen(v)) &
+  cca_prt_sort0(N+1)
+ =>
+  cca_prt_sort0(N);
+
+
+  brule(AT_start_end_stoX.M,(m(o,v),(a,b))) &
+  bcrer(AT_start_end_sto_sortedX,(m(o,v),(a,b))) &
+  brule(AT_start_end_stoX.P,(n(p,w),(c,d))) &
+  bcrer(AT_start_end_sto_sortedX,(n(p,w),(c,d))) &
+  bmodr(AT_start_end_stoX.M,?) &
+  bmodr(AT_start_end_stoX.P,?) &
+  cca_sort(W+1)(0:0)(0:0)(1)
+ =>
+  cca_sort(W)(U:P)(T:M)(N);
+
+  brule(AT_start_end_stoX.M,(m(o,v),(a,b))) &
+  bcrer(AT_start_end_sto_sortedX,(m(o,v),(a,b))) &
+  bmodr(AT_start_end_stoX.M,?) &
+  cca_sort(W+1)(0:0)(0:0)(1)
+ =>
+  cca_sort(W)(0:P)(T:M)(N);
+
+  cca_prt_sort0(1)
+ =>
+  cca_sort(W)(0:P)(0:M)(N);
+
+  brule(AT_start_end_stoX.N,(m(o,v),(a,b))) &
+  cca_sort(W)(U:P)(T:M)(N+1)
+ =>
+  cca_sort(W)(U:P)(T:M)(N);
+
+  brule(AT_start_end_stoX.N,(m(o,v),(a,b))) &
+  btest(a>U) &
+  cca_sort(W)(a:N)(T:M)(N+1)
+ =>
+  cca_sort(W)(U:P)(T:M)(N);
+
+  brule(AT_start_end_stoX.N,(m(o,v),(a,b))) &
+  btest(a>T) &
+  cca_sort(W)(T:M)(a:N)(N+1)
+ =>
+  cca_sort(W)(U:P)(T:M)(N);
+
+  brule(AT_start_end_stoX.N,?) &
+  cca_sort(W)(U:P)(T:M)(N+1)
+ =>
+  cca_sort(W)(U:P)(T:M)(N);  /* start  cca_sort(0)(0:0)(0:0)(1) */
+
+
+
+  Writef(("local VAR % of %",bsrv v berv,bsrv o berv))
+ =>
+  cca6(o,v);
+
+  Writef(("global VAR %",bsrv v berv))
+ =>
+  cca6("global",v);
+
+  ReadBotRef(i.r) &
+  Writef(("%:\n        ",i)) &
+  cca6(o,v)
+ =>
+  cca5(m(o,v));
+
+  Writef(("\n\n    Memory location overlap AT %\n\n      ",bsrv a..b berv,bsrv b berv))
+ =>
+  cca4_1(a,b);
+
+  Writef(("\n\n    Memory location overlap AT %\n\n      ",bsrv a berv,bsrv b berv))
+ =>
+  cca4_1(a,a);
+
+  btest(c<=a) &
+  btest(d<=b) &
+  cca4_1(a,d)
+ =>
+  cca4(a,b)(c,d);
+
+  btest(c<=a) &
+  btest(b<=d) &
+  cca4_1(a,b)
+ =>
+  cca4(a,b)(c,d);
+
+  btest(a<=c) &
+  btest(b<=d) &
+  cca4_1(c,b)
+ =>
+  cca4(a,b)(c,d);
+
+  btest(a<=c) &
+  btest(d<=b) &
+  cca4_1(c,d)
+ =>
+  cca4(a,b)(c,d);
+
+  bcrer(AT_start_end_stoX,(m(o,v),(a,b)))
+ =>
+  cca3(m(o,v),(a,b))(N);
+
+  brule(AT_start_end_stoX.N,(n(p,w),(c,d))) &
+  cca4(c,d)(a,b) &
+  GetBotRef(m.mch) &
+  cca5(m(o,v)) &
+  Writef(("\n\n      ")) &
+  GetBotRef(n.mch) &
+  cca5(n(p,w)) &
+  Writef((" ..")) &
+  cca3(m(o,v),(a,b))(N+1) &
+  SetSatError
+ =>
+  cca3(m(o,v),(a,b))(N);
+
+  brule(AT_start_end_stoX.N,(n(p,w),(c,d))) &
+  btest(b<c) &
+  cca3(m(o,v),(a,b))(N+1)
+ =>
+  cca3(m(o,v),(a,b))(N);
+
+  brule(AT_start_end_stoX.N,(n(p,w),(c,d))) &
+  btest(d<a) &
+  cca3(m(o,v),(a,b))(N+1)
+ =>
+  cca3(m(o,v),(a,b))(N);
+
+  brule(AT_start_end_stoX.N,(n("global",v),(c,d))) &
+  cca3(m("global",v),(a,b))(N+1)    /* globals checked later */
+ =>
+  cca3(m("global",v),(a,b))(N);
+
+  bsearch(t,(UNSIGNED,INTEGER),T) &
+/***
+HERE((m(o,v,a,a+1+((q-p)*2))(p..q+->t))) &
+***/
+  cca3(m(o,v),(a,a+1+((q-p)*2)))(1)
+ =>
+  cca2(m(o,v,a))(p..q+->t);
+
+
+  bsearch(t,(BYTE,BOOLEAN),T) &
+/***
+HERE((m(o,v,a,a+q-p)(p..q+->t))) &
+***/
+  cca3(m(o,v),(a,a+q-p))(1)
+ =>
+  cca2(m(o,v,a))(p..q+->t);
+
+
+  bsearch(t,(UNSIGNED,INTEGER),T) &
+/***
+HERE((m(o,v,a,a+1)(t))) &
+***/
+  cca3(m(o,v),(a,a+1))(1)
+ =>
+  cca2(m(o,v,a))(t);
+
+
+  bsearch(t,(BYTE,BOOLEAN),T) &
+/***
+HERE((m(o,v,a,a)(t))) &
+***/
+  cca3(m(o,v),(a,a))(1)
+ =>
+  cca2(m(o,v,a))(t);
+
+
+  cca1(m(o,v,a));
+
+  brule(SatDotFiles_stoX.M,(m(A|B|C|D|E|F|G|H|I|J|K))) &
+  bsearch(o(L),H,P) &
+  bsearch((v:t),(L,?),Q) &
+  cca2(m(o,v,a))(t)
+ =>
+  cca1(m(o,v,a));
+
+  brule(SatDotFiles_stoX.M,(m(A|B|C|D|E|F|G|H|I|J|K))) &
+  bsearch((v:t),G,L) &                                   /* SEEN */
+  cca2(m("global",v,a))(t)
+ =>
+  cca1(m("global",v,a));
+
+  brule(SatDotFiles_stoX.M,(m(A|B|C|D|E|F|G|H|I|J|K))) &
+  bsearch((v:t),F,L) &
+  cca2(m("global",v,a))(t)
+ =>
+  cca1(m("global",v,a));
+
+/***
+PrintTHEORY(AT_start_end_stoX)&
+***/
+  cca_sort(0)(0:0)(0:0)(1)
+/***
+&PrintTHEORY(AT_start_end_sto_sortedX)
+***/
+ =>
+  cca(N);
+
+  brule(SatAT_stoX.N,(m(o,v,a))) &
+  cca1(m(o,v,a)) &
+  cca(N+1)
+ =>
+  cca(N);
+
+  brule(SatAT_stoX.N,(m(o,v,?))) &
+  cca(N+1)
+ =>
+  cca(N);
+
+
+  (b^a) == ((b**(a/10))|(a-((a/10)*10)));
+
+  ((b**a)|n) == (((b*b)**(a/10))|(n+((a-((a/10)*10))*b)));
+
+  ((b**0)|n) == (n)
+
+
+END
+
+&
+
+THEORY SatDotFiles_stoX END &
+
+THEORY CheckGlobalsAreSetSameATX IS
+
+#define CheckGlobalsAreSetSameAT \
+        bcall(((MAP;ARI;MODR);CheckGlobalsAreSetSameATX)~:cgs(1))
+
+  ?;
+
+  brule(CheckGlobalsAreSetSameATX.1,L) &
+  bmodr(CheckGlobalsAreSetSameATX.1,(L,(m:v:a)))
+ =>
+  cgs3(m:v:a);
+
+  brule(CheckGlobalsAreSetSameATX.1,L) &
+  bsearch((n:v:b),L,P) &                   /* different AT */
+  Writef(("\n\n    Global variable % map conflict:\n\n      AT % in %\n\n      AT % in %  ..",bsrv v berv,bsrv b berv,bsrv n berv,bsrv a berv,bsrv m berv)) &
+  SetSatError
+ =>
+  cgs3(m:v:a);
+
+  brule(CheckGlobalsAreSetSameATX.1,L) &
+  bsearch((n:v:a),L,P)                     /* same AT */
+ =>
+  cgs3(m:v:a);
+
+  cgs2(m,v);
+
+  brule(CheckSeenVarsAreSetATX.1,V) &
+  bsearch(v,V,W) &
+  brule(SatAT_stoX.N,(m("global",v,a))) &
+  cgs3(m:v:a)
+ =>
+  cgs2(m,v);
+
+  cgs2(m,v)
+ =>
+  cgs2(m,(v:t));
+
+  cgs2(m,?);
+
+  cgs2(m) bsmap L
+ =>
+  cgs1(m,L);
+
+  cgs(N);
+
+  brule(SatDotFiles_stoX.N,(m(A|B|C|D|E|F|G|H|I|J|K))) &
+  cgs1(m) bsmap F & /* real globals */
+  cgs1(m) bsmap G & /* seen globals */
+  cgs(N+1)
+ =>
+  cgs(N)
+
+END
+
+&
+
+THEORY CheckSeenVarsAreSetATX IS
+
+#define CheckSeenVarsAreSetAT \
+        bcall(((MAP;ARI;MODR);CheckSeenVarsAreSetATX)~:csv0(1))
+
+  ?; /* list of all seen variables */
+
+  InformSeenNotSet(m,v) &
+  SetSatError
+ =>
+  csv4(m,v);
+
+  brule(SatAT_stoX.N,(m("global",v,a)))
+ =>
+  csv4(m,v);
+
+  csv3(m,v);
+
+  brule(CheckSeenVarsAreSetATX.1,V) &
+  bsearch(v,V,W) &  /* v seen, must have an AT! */
+  csv4(m,v)
+ =>
+  csv3(m,v);
+
+  csv3(m,v)
+ =>
+  csv3(m,(v:t));
+
+  csv3(m,?);
+
+  csv2(N);
+
+  brule(SatDotFiles_stoX.N,(m(A|B|C|D|E|F|G|H|I|J|K))) &
+  csv3(m) bsmap F & /* real globals */
+  csv3(m) bsmap G & /* seen globals */
+  csv2(N+1)
+ =>
+  csv2(N);
+
+
+
+  brule(CheckSeenVarsAreSetATX.1,V) &
+  bmodr(CheckSeenVarsAreSetATX.1,(V,v))
+ =>
+  csv1(v);
+
+  csv1(v)
+ =>
+  csv1(v:t);
+
+  csv1(?);
+
+  csv2(1)
+ =>
+  csv0(N);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|F|G|H|I|J|K)))) &
+  csv1 bsmap G &
+  csv0(N+1)
+ =>
+  csv0(N)
+
+END
+
+&
+
+THEORY CreSatRenameModulesX IS
+
+#define cre_sat_rnm_tac \
+      (((REV;MAP;RULE;MODR;CATL;SHELL;WRITE)~;CreSatRenameModulesX)~)
+
+#define CreSatRenameModules     bcall(cre_sat_rnm_tac: crr)
+
+  ?;
+#define ReadSatRenameOpName(x)    brule(CreSatRenameModulesX.1,x)
+#define ModifySatRenameOpName(x)  bmodr(CreSatRenameModulesX.1,x)
+
+  ?;
+#define ReadSatRenameOrigEntry(x)    brule(CreSatRenameModulesX.2,x)
+#define ModifySatRenameOrigEntry(x)  bmodr(CreSatRenameModulesX.2,x)
+
+  ?;
+#define ReadSatRenameVarName(x)    brule(CreSatRenameModulesX.3,x)
+#define ModifySatRenameVarName(x)  bmodr(CreSatRenameModulesX.3,x)
+
+  ?;
+#define ReadSatRenameAT(x)    brule(CreSatRenameModulesX.4,x)
+#define ModifySatRenameAT(x)  bmodr(CreSatRenameModulesX.4,x)
+
+  ?;
+#define ReadSatRenameIO(x)    brule(CreSatRenameModulesX.5,x)
+#define ModifySatRenameIO(x)  bmodr(CreSatRenameModulesX.5,x)
+
+  ?;
+#define ReadSatRenameReqd(x)    brule(CreSatRenameModulesX.6,x)
+#define ModifySatRenameReqd(x)  bmodr(CreSatRenameModulesX.6,x)
+
+  ?;
+#define ReadMchAttributesSet(x)    brule(CreSatRenameModulesX.7,x)
+#define ModifyMchAttributesSet(x)  bmodr(CreSatRenameModulesX.7,x)
+
+  ?;
+#define ReadSatRenameMchName(x)    brule(CreSatRenameModulesX.8,x)
+#define ModifySatRenameMchName(x)  bmodr(CreSatRenameModulesX.8,x)
+
+
+#define IsValidMapType(x) \
+  bsearch(x,(READONLY,WRITEONLY,NVRAM),z)
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  PrintCodeModuleAnnot(bcatl(m,".pasp"),(bcatl(m,".noatt"))) &
+  RenameSatHtxFile(m)
+ =>
+  crr_annot(m);
+
+  crr_annot(?);
+
+
+
+  bshell(bcatl("$BKIT/BLIB/PASPpost CDE/PASP/",m,".pasp")) &
+  bshell(bcatl("$BKIT/BLIB/PASPpost HTX/",m,".pasp.html"))
+ =>
+  crr11(m);
+
+
+  ReadMchAttributesSet(M) &
+  ModifyMchAttributesSet((M,m)) &
+  bshell(bcatl("$BKIT/BLIB/PASPSreplace CDE/PASP/",m,".noatt CDE/PASP/",m,".pasp")) &
+  bshell(bcatl("$BKIT/BLIB/PASPSreplace HTX/",m,".noatt.html HTX/",m,".pasp.html"))
+ =>
+  crr10(m);
+
+  ReadSatRenameReqd(0) &
+  bshell(bcatl("cp CDE/PASP/",m,".noatt CDE/PASP/",m,".pasp")) &
+  bshell(bcatl("cp HTX/",m,".noatt.html HTX/",m,".pasp.html"))
+ =>
+  crr10(m);
+
+
+
+  bprintf("%",a)
+ =>
+  crr8IO(a);
+
+  bprintf("AT(%)",a)
+ =>
+  crr8AT(a);
+
+  bprintf("AT(%#%)",a,b)
+ =>
+  crr8AT(a^b);
+
+  crr8AT(a) &
+  bprintf(",") &
+  crr8IO(b)
+ =>
+  crr8(a)(b);
+
+  crr8IO(b)
+ =>
+  crr8(?)(b);
+
+  crr8AT(a)
+ =>
+  crr8(a)(?);
+
+  ReadSatRenameMchName(m) &
+  ReadSatRenameOpName(o) &     /* g != o ((not global) */
+  ReadSatRenameVarName(v) &
+  ModifySatRenameReqd(1) &
+  bprintf("%,%, {>",o,v) &
+  crr8(a)(b) &
+  bcrer(SatAT_stoX,(m(o,v,a))) &
+  bprintf("<}\n")
+ =>
+  crr7_1(a)(b)(g);
+
+  ReadSatRenameMchName(m) &
+  ReadSatRenameOpName(g) &
+  ReadSatRenameVarName(v) &
+  ModifySatRenameReqd(1) &
+  bprintf("VAR,%, {>",v) &
+  crr8(a)(b) &
+  bcrer(SatAT_stoX,(m("global",v,a))) &
+  bprintf("<}\n")
+ =>
+  crr7_1(a)(b)(g);
+
+  ReadSatRenameMchName(m) &
+  crr7_1(a)(b)(bcatl(m,"_global_variables"))
+ =>
+  crr7(a)(b);
+
+  crr7(?)(?);
+
+  ReadSatRenameAT(a) &
+  ReadSatRenameIO(i) &
+  crr7(a)(i)
+ =>
+  crr6;
+
+
+
+  SatErrorSet
+ =>
+  x;
+
+
+  ReadSatRenameOpName(o) &
+  ReadSatRenameVarName(v) &
+  ReadSatRenameOrigEntry(e) &
+  Writef(("\n\n    Operation % variable % - map syntax error:\n\n    %\n",bsrv o berv,bsrv v berv,bsrv e berv)) &
+  SetSatError
+ =>
+  crr4(x);
+
+  bnum(n) &
+  ModifySatRenameAT(n)
+ =>
+  crr4(n);
+
+  bnum(m) &
+  bnum(n) &
+  ModifySatRenameAT(m^n)
+ =>
+  crr4(m^n);
+
+  ModifySatRenameAT(?)
+ =>
+  crr4(?);
+
+  ReadSatRenameOpName(o) &
+  Writef(("\n\n    Operation % - map syntax error:\n\n    %\n",bsrv o berv,bsrv x berv)) &
+  SetSatError
+ =>
+  crr3(x);
+
+  crr3(?);
+
+  ModifySatRenameVarName(v) &
+  ModifySatRenameOrigEntry((v:(AT(a),b))) &
+  crr4(a) &
+  crr6
+ =>
+  crr3(v:(AT(a)));
+
+  ModifySatRenameOpName(o) &
+  crr3 bsmap p
+ =>
+  crr2(o(p));
+
+  bshell(bcatl("cp CDE/PASP/",m,".noatt CDE/PASP/",m,".pasp")) &
+  bshell(bcatl("cp HTX/",m,".noatt.html HTX/",m,".pasp.html")) &
+  crr11(m)
+ =>
+  crr1(m);
+
+  crr1(?);
+
+  ReadMapFile(M) &
+  bsearch(m(p),(M;?),P) &
+  Connect("TMP/.Bcom") &
+  ModifySatRenameMchName(m) &
+  ModifySatRenameReqd(0) &
+  crr2 bsmap p &
+  bclose &
+  crr10(m) &
+  crr11(m)
+ =>
+  crr1(m);
+
+  ReadSatDotFiles(D) &
+  crr1 bsmap brev(D) &
+  crr_annot bsmap brev(D)
+ =>
+  crr
+
+END
+
+&
+
+THEORY SatParamRenamesX END &
+
+THEORY CreateSatParamRenamesX IS
+
+#define CreateSatParamRenames \
+      bcall(((MAP;ARI)~;CreateSatParamRenamesX)~:crpr(1))
+
+
+  crpr4(a=b);
+
+  bnum(b) &
+  bcrer(SatParamRenamesX,(a==b))
+ =>
+  crpr4(a=b);
+
+  bnum(a)
+ =>
+  crpr4(a=b);
+
+  bcall((SatParamRenamesX~;CreateSatParamRenamesX;RULE):crpr4(a=b))
+ =>
+  crpr3(a=b);
+
+  crpr3(a=b)
+ =>
+  crpr2(a:b);
+
+  crpr2(A:B) &
+  crpr3(a=b)
+ =>
+  crpr2(A,a:B,b);
+
+  crpr1(x);
+
+  crpr2(a:b)
+ =>
+  crpr1(m:a:b);
+
+  crpr(N);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|F|G|H|I|J|K)))) &
+  crpr1 bsmap A &
+  crpr(N+1)
+ =>
+  crpr(N)
+
+END
+
+&
+
+THEORY CreMapHtxFileX IS
+
+#define CreMapHtxFile \
+           bcall(((ARI~;CATL;WRITE;SHELL;MAP;MODR)~;CreMapHtxFileX)~: cmh)
+
+  ?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  bstring(c) &
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|") &
+  bprintf(c) &
+  bprintf("\n")
+ =>
+  h_ref(a)(b)(c);
+
+  h_ref("b")("?")(s)
+ =>
+  h_ref_bold(a,s);
+
+
+  bprintf("o%.pasp|%\n",m,o)
+ =>
+  cmh4(m,o,v);
+
+  cmh3(m,?);
+  
+  cmh4(m,o) bsmap v
+ =>
+  cmh3(m,o(v));
+
+  cmh2(N);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|F|G|H|I|J|K)))) &
+  bprintf("m%.pasp|%\n",m,m) &
+  cmh3(m) bsmap H &
+  cmh2(N+1)
+ =>
+  cmh2(N);
+
+  Connect(".Bcom") &
+  bprintf(bcatl("HTX/|",a,".map|dummy.imp|",a,"\n")) &
+  cmh2(1) &
+  h_ref_bold(m) bsmap PASP_keywords_html &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc") &
+  bshell(bcatl("rm -f HTX/",a,".map"))
+ =>
+  cmh1(a);
+
+
+  brule(CreMapHtxFileX.1,S) &
+  bshell(bcatl(S,"' >> .Bcom"))
+ =>
+  cmh_(N);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|F|G|H|I|J|K)))) &
+  brule(CreMapHtxFileX.1,S) &
+  bmodr(CreMapHtxFileX.1,bcatl(S," ",m,".pasp")) &
+  cmh_(N+1)
+ =>
+  cmh_(N);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|?|?|?|?|J|K)))) &
+  cmh_(N+1)
+ =>
+  cmh_(N);
+
+  ReadSatMchName(a.mch) &
+  bshell("echo '{' > .Bcom") &
+  bshell(bcatl("echo '  FILE:             ",a,".map' >> .Bcom")) &
+  bmodr(CreMapHtxFileX.1,bcatl("echo '  CREATED FOR:     ")) &
+  cmh_(1) &
+  bshell("echo '  CREATED BY:      ' `whoami` >> .Bcom") &
+  bshell("date '+  DATE USED:        %d/%m/%y%n  TIME USED:        %H:%M:%S' >> .Bcom") &
+  bshell("echo '  VERSION:         ' `cat .Bmvr` >> .Bcom" ) &
+  bshell("echo '}' >> .Bcom") &
+  bshell("echo '' >> .Bcom") &
+  bshell("echo '' >> .Bcom") &
+  bshell(bcatl("cat CDE/PASP/",a,".map >> .Bcom")) &
+  bshell(bcatl("mv .Bcom HTX/",a,".map")) &
+  cmh1(a)
+ =>
+  cmh
+
+END
+
+&
+
+THEORY PushActualParamsDownSatX IS
+
+#define push_act_param_dn_r_tac   (((SHELL;MAP;SUB;MODR;WRITE)~;PushActualParamsDownSatX)~)
+
+#define PushActualParamsDownSat    bcall(push_act_param_dn_r_tac: papdr)
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformCantConnect(".BBBcom") &
+  PFZ
+ =>
+  papdr7(N)(m);
+
+  bget(".BBBcom",x) &
+  bmodr(SatDotFiles_stoX.N,(m(x)))
+ =>
+  papdr7(N)(m);
+
+  bprintf("%,%\n0%,%\n",f,a,f,a) &
+  bclose &
+  bshell("$BKIT/BLIB/Greplace .BBcom .BBBcom 0 0 0") &
+  papdr7(N)(m)
+ =>
+  papdr6(N)(m)(f:a);
+
+  bprintf("%,%\n0%,%\n",f,a,f,a) &
+  papdr6(N)(m)(F:A)
+ =>
+  papdr6(N)(m)(F,f:A,a);
+
+  Connect(".Bcom") &
+  papdr6(N)(m)(f:a)
+ =>
+  papdr5(N)(m)(f:a);
+
+  papdr4(m)(f:a); /* no dot file entry (eg. BiArr) */
+
+  papdr4(m)(?:?);
+
+  brule(SatDotFiles_stoX.N,(m(x))) &
+  bprintf("%",x) &
+  bclose &
+  papdr5(N)(m)(f:a)
+ =>
+  papdr4(m)(f:a);
+
+  papdr3(x,?);
+
+  Connect(".BBcom") &
+  papdr4(m)(f:a) &
+  papdr1(m)
+ =>
+  papdr3(?,(m:f:a));
+
+/*  brule(SatDotFiles_stoX.N,(m(x))) & */
+  papdr3(B,(m:f:[s:=t]a))
+ =>
+  papdr3((B,(s==t)),(m:f:a));
+
+  brule(SatDotFiles_stoX.N,(m(x))) &
+  papdr1(m)
+ =>
+  papdr3(B,(m:?:?));
+
+  papdr3(B) bsmap  A
+ =>
+  papdr2(a(A|B|C|D|E|F|G|H|I|J|K));
+
+  papdr1(a);  /* eg. no dot file entry (Byte_TYPE) */
+
+  brule(SatDotFiles_stoX.N,(a(x))) &
+  papdr2(a(x))
+ =>
+  papdr1(a);
+
+  ReadSatMchName(a.mch) &
+  papdr1(a)
+ =>
+  papdr
+
+END
+
+&
+
+THEORY SatPX IS
+
+  ?; /* SatImpName */
+
+  ?; /* SatMchName */
+
+  Writef(("\n      %.pasp (no attributes)",m))
+ =>
+  check_error1(m);
+
+  ReadMchAttributesSet(M) &
+  bsearch(m,M,P) &
+  Writef(("\n      %.pasp",m))
+ =>
+  check_error1(m);
+
+  check_error1(?);
+
+  GetCompletedJobs(X) &
+  ReadSatImpName(a.imp) &
+  AddCompletedJobs(X,((a.imp:BT_RUN:?))) &
+  CreMapHtxFile &
+  Writef(("\n    Created:")) &
+  ReadSatDotFiles(D) &
+  check_error1 bsmap brev(D) &
+  Writef(("\n\n  Creation of .pasp attribute modules complete\n"))
+ =>
+  check_error;
+
+  SatErrorSet &
+  Writef(("\n\n  Creation of .pasp attribute modules aborted\n"))
+ =>
+  check_error;
+
+/*
+  Writef(("\n  Creating final Pasp modules from %.map\n",b)) &
+*/
+  Writef(("\n  Creating .pasp attribute modules from %.map\n",b)) &
+  ModifySatImpName(a.imp) &
+  ModifySatMchName(b.mch) &
+  LinkModifyPaspLibList &
+  LoadSatDotFiles(b,bcatl("CDE/PASP/.",b)) &
+  PushActualParamsDownSat &
+  CreateSatParamRenames &
+  LoadMapFile(b,bcatl("CDE/PASP/",b,".map")) &
+  CreSatRenameModules &
+  CheckSeenVarsAreSetAT &
+  CheckGlobalsAreSetSameAT &
+  CheckConflictingAT &
+  check_error
+/*
+&PrintTHEORY(SatAT_stoX)
+&PrintTHEORY(AT_start_end_stoX)
+&PrintTHEORY(AT_start_end_sto_sortedX)
+*/
+ =>
+  rpasp_0(a.imp|b.mch)
+
+END
+
+&
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**************************************************************************/
+
+THEORY ProcessLnkOpsX IS
+
+#define ProcessLnkOps(x) \
+    bcall (((MODR;MAP;CATL;NEWV;SHELL;WRITE)~;ProcessLnkOpsX):plo(x))
+
+  ?;
+#define ReadLnkOpBods(x)   brule(ProcessLnkOpsX.1,x)
+#define ModifyLnkOpBods(x) bmodr(ProcessLnkOpsX.1,x)
+
+  ?;
+#define ReadLnkFullMchColNames(x)   \
+    brule(ProcessLnkOpsX.2,x)
+#define ModifyLnkFullMchColNames(x) \
+    bcall((NEWV;FLAT;MODR):bmodr(ProcessLnkOpsX.2,x))
+
+  ?;
+#define ReadLnkFilteredMchColNames(x)   brule(ProcessLnkOpsX.3,x)
+#define ModifyLnkFilteredMchColNames(x) bmodr(ProcessLnkOpsX.3,x)
+
+  ?; /* .4 tmp */
+
+  ?;
+#define ReadCurrentPromotedOps(x)    brule(ProcessLnkOpsX.5,x)
+#define ModifyCurrentPromotedOps(x)  bmodr(ProcessLnkOpsX.5,x)
+
+  0; /* 1 => EXPORT printed */
+#define EXPORTprinted       brule(ProcessLnkOpsX.6,1)
+#define SetEXPORTprinted    bmodr(ProcessLnkOpsX.6,1)
+#define ResetEXPORTprinted  bmodr(ProcessLnkOpsX.6,0)
+
+
+  print_EXPORT_final_dot;
+
+  EXPORTprinted &
+  bprintf(" .\n")
+ =>
+  print_EXPORT_final_dot;
+
+  bprintf("EXPORT ") &
+  SetEXPORTprinted
+ =>
+  print_EXPORT_or_comma;
+
+  EXPORTprinted &
+  bprintf(", ")
+ =>
+  print_EXPORT_or_comma;
+
+
+  write_export_consts(f); /* .const file not exist - SLIB construct */
+
+  bget(f,(I;E)) &
+  print_export_ops bsmap E
+ =>
+  write_export_consts(f);
+
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ModifyCurrentPromotedOps((c,?)) &
+/***
+HERE(("------>> Storing promoted ops":c))&
+***/
+  ResetEXPORTprinted
+ =>
+  write_export_store_current_promoted_ops1(k);
+
+  write_export_store_current_promoted_ops(m); /* m has no imp */
+
+  ReadBotRef(i.imp) &
+  Bget(("ANL/",i,".imp.anl")) &
+  write_export_store_current_promoted_ops1(i)
+ =>
+  write_export_store_current_promoted_ops(m);
+
+
+
+  print_EXPORT_or_comma &
+  bprintf("%",o)
+ =>
+  print_export_ops(o);
+
+  ReadCurrentPromotedOps(P) &
+  bsearch(o,P,Q)
+/***
+&HERE(("------>> Not exporting promoted op":o))
+***/
+ =>
+  print_export_ops(o);
+
+  print_export_ops(?);
+
+  Append(bcatl("CDE/PASP/",m,".pasp.flt")) &
+  ResetEXPORTprinted &
+  print_export_ops bsmap (O) &
+  write_export_consts(bcatl("CDE/PASP/.",m,".const")) &
+  print_EXPORT_final_dot &
+  bclose
+ =>
+  print_export(m)(O);
+
+
+  bshell("echo '{' > .Bcom") &
+  bshell(bcatl("echo '  FILE:             ",a,"' >> .Bcom")) &
+  bshell(bcatl("echo '  FILTERED FROM:    ",b,"' >> .Bcom")) &
+  bshell("echo '  CREATED BY:      ' `whoami` >> .Bcom") &
+  bshell("date '+  DATE:             %d/%m/%y%n  TIME:             %H:%M:%S' >> .Bcom") &
+  bshell("echo '  VERSION:         ' `cat .Bmvr` >> .Bcom" ) &
+  bshell("echo '}' >> .Bcom") &
+  bshell("echo '' >> .Bcom") &
+  bshell("echo '' >> .Bcom")
+ =>
+  filter_ops_printf_init_annot(m)(a)(b);
+
+
+  ReadBget(s) &
+/***
+HERE((filter_ops --- s))&
+***/
+  filter_ops_printf_init_annot(m)(bcatl(m,".pas"))(bcatl(m,".pasp")) &
+  bshell(bcatl("$BKIT/BLIB/PASPfilter CDE/PASP/",m,".pasp CDE/PASP/",m,".pasp.flt ",s)) &
+  print_export(m)(O)
+ =>
+  filter_ops(m)(O);
+
+  ReadBget(" ?") &
+/***
+HERE(("NO FILTER NECESSARY"))&
+***/
+  filter_ops_printf_init_annot(m)(bcatl(m,".pas"))(bcatl(m,".pasp")) &
+  bshell(bcatl("cp .Bcom  CDE/PASP/",m,".pasp.flt")) &
+  bshell(bcatl("cat CDE/PASP/",m,".pasp >> CDE/PASP/",m,".pasp.flt"))
+ =>
+  filter_ops(m)(O);
+
+  bprintf(" %",o)
+ =>
+  filter_ops0(o);
+
+  Connect("TMP/.Bcom") &
+  bprintf("\"") &
+  filter_ops0 bsmap O &
+  bprintf("\"") &
+  bclose &
+/***
+HERE((" ------>> Ops reqd":O))&
+***/
+  Bget("TMP/.Bcom") &
+  filter_ops(m)(O)
+ =>
+  chk_ini_filter_ops3(m)(O);
+
+
+
+/***
+HERE((------>> write_export(m)))&
+***/
+  ReadLnkFilteredMchColNames(L) &
+  bsearch((m:O),L,M) &
+  GetBotRef(m.mch) &
+  write_export_store_current_promoted_ops(m) &
+  chk_ini_filter_ops3(m)(O)
+ =>
+  write_export(m);
+
+  write_export(?);
+
+  ReadLnkFilteredMchColNames(L) &
+  ModifyLnkFilteredMchColNames((L;(m:O)))
+ =>
+  sto_filtered_op3(m)(O);
+
+  bsearch(?,O,P) &
+  sto_filtered_op3(m)(P)
+ =>
+  sto_filtered_op3(m)(O);
+
+  brule(ProcessLnkOpsX.4,O) &
+  sto_filtered_op3(m)(O)
+ =>
+  sto_filtered_op2(m);
+
+  brule(ProcessLnkOpsX.4,O) &
+  bmodr(ProcessLnkOpsX.4,(O,o))
+ =>
+  sto_filtered_ops1(m,o);
+
+  brule(ProcessLnkOpsX.4,O) &
+  bsearch(o,(O,?),P)
+ =>
+  sto_filtered_ops1(m,o);
+
+  ReadLnkOpBods(B) &
+  o\B &
+  Writef(("      %: %\n",m,o)) &
+  bmodr(FinModulesX.3,1)
+ =>
+  sto_filtered_ops1(m,o);
+
+  sto_filtered_ops1(?);
+
+  bmodr(ProcessLnkOpsX.4,?) &
+  ReadLnkFullMchColNames(L) &
+  bsearch((m:O),L,M) &
+  sto_filtered_ops1(m) bsmap O &
+  sto_filtered_op2(m)
+ =>
+  sto_filtered_ops(a,m);  /* subsid mch */
+
+  sto_filtered_ops(m,m);  /* top level mch */
+
+  sto_filtered_ops(a,?);
+
+  sto_op_bods(?);
+
+  ReadLnkOpBods(B) &
+  ModifyLnkOpBods((B;x))   /* unexp subs */
+ =>
+  sto_op_bods(s;t;u;v;(w|x);(y|z));
+
+  sto_op_bods bsmap (N,n)
+ =>
+  sto_op_bods(N,n);
+
+
+
+  sto_ops2_chk_ldf(o)(f); /* no INI! */
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ReadLnkFullMchColNames(L) &
+  ModifyLnkFullMchColNames((L;(R:j))) &
+  sto_ops2_chk_ldf(bnewv(INI_,R))(bcatl("CDE/PASP/",R,".ldf"))
+ =>
+  sto_ops2(P,R)(k.mch);              /* subsid SLIB mch with no imp */
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ReadLnkFullMchColNames(L) &
+  ModifyLnkFullMchColNames((L;(R:j))) &
+  ReadLnkOpBods(M) &
+  sto_op_bods(n)
+/***
+&HERE(("subsid mch with imp":k:(bnewv(INI_,R))(i)))
+***/
+ =>
+  sto_ops2(P,R)(k.imp);              /* subsid mch with imp */
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  ReadLnkOpBods(M) &
+  sto_op_bods(n) &
+  filter_ops_printf_init_annot(P)(bcatl(P,".pas"))(bcatl(P,".pasp")) &
+  bshell(bcatl("cp .Bcom  CDE/PASP/",P,".pasp.flt")) &
+  bshell(bcatl("cat CDE/PASP/",P,".pasp >> CDE/PASP/",P,".pasp.flt")) &
+  bshell(bcatl("cp CDE/PASP/",P,".pasp.flt CDE/PASP/",P,".pasp")) 
+ =>
+  sto_ops2(P,P)(k.imp);              /* imp of top level mch */
+
+  ReadBotRef(i.j) &
+  Bget(("ANL/",i,".",j,".anl")) &
+  sto_ops2(a,m)(i.j)
+ =>
+  sto_ops1(a,m);
+
+  GetBotRef(m.mch) &
+  sto_ops1(a,m)
+ =>
+  sto_ops(a,m);
+
+  sto_ops(a,?);
+
+  Writef(("\n"))
+ =>
+  chk_ops_reqd;
+
+  brule(FinModulesX.3,0) &
+  Writef(("      <all ops required>\n"))
+ =>
+  chk_ops_reqd;
+
+  ReadSatDotFiles(D) &
+  sto_ops(a) bsmap D &
+  sto_filtered_ops(a) bsmap D &
+  bsearch(a,D,E) &
+  write_export bsmap E &
+  chk_ops_reqd
+ =>
+  plo(a)
+
+END
+
+&
+
+THEORY AllSubsidsPasX END &
+
+THEORY AllConstsPasX END &
+
+THEORY AllGlobsPasX END &
+
+THEORY AllOpsPasX END &
+
+THEORY CreHtmlPasCodeFileX IS
+
+#define CreHtmlPasCodeFile(x,y) \
+  bcall(((MAP;ARI;CATL~;SHELL;WRITE)~;CreHtmlPasCodeFileX)~:chpas00(x)(y))
+
+/*
+  ?;
+#define ModifyOwnOpsPas(x) bmodr(CreHtmlPasCodeFileX.1,x)
+#define ReadOwnOpsPas(x)   brule(CreHtmlPasCodeFileX.1,x)
+
+#define ModifyAllOpsPas(x) bmodr(CreHtmlPasCodeFileX.2,x)
+#define ReadAllOpsPas(x)   brule(CreHtmlPasCodeFileX.2,x)
+*/
+
+  InformCantExecute(x)
+ =>
+  bshell(x);
+
+
+  h_ref_typ_mch1(BOOLEAN:f:x);
+
+  h_ref("x")("Uns_TYPE.mch")(f)
+ =>
+  h_ref_typ_mch1(UNSIGNED:f:x);
+
+  h_ref("x")("Byt_TYPE.mch")(f)
+ =>
+  h_ref_typ_mch1(BYTE:f:x);
+
+  h_ref("x")("Bool_TYPE.mch")(f)
+ =>
+  h_ref_typ_mch1(BOOLEAN:f:x);
+
+  ReadSLIBBuiltInFunctions(F) &
+  h_ref_typ_mch1 bsmap F
+ =>
+  h_ref_typ_mch;
+
+
+
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|%\n",c)
+ =>
+  h_ref(a)(b)(c);
+
+  bstring(c) &
+  bprintf(a) &
+  bprintf(b) &
+  bprintf("|") &
+  bprintf(c) &
+  bprintf("\n")
+ =>
+  h_ref(a)(b)(c);
+
+  bprintf(a) &
+  bprintf("|%\n",b)
+ =>
+  h_name(a)(b);
+
+  bstring(b) &
+  bprintf(a) &
+  bprintf("|") &
+  bprintf(b) &
+  bprintf("\n")
+ =>
+  h_name(a)(b);
+
+
+
+
+  ch_non_own_globs(o)(n)(M);
+
+  brule(AllGlobsPasX.M,((O <-- N):(a:t))) & /* not own */
+  h_ref("c")(bcatl(O,".mch"))(a) &
+  ch_non_own_globs(o)(n)(M+1)
+ =>
+  ch_non_own_globs(o)(n)(M);
+
+  brule(AllGlobsPasX.M,((o <-- n):(a:t))) & /* own */
+  ch_non_own_globs(o)(n)(M+1)
+ =>
+  ch_non_own_globs(o)(n)(M);
+
+
+
+  
+  ch_own_globs(o)(n)(M);
+
+  brule(AllGlobsPasX.M,((O <-- N):(a:t))) & /* not own */
+  ch_own_globs(o)(n)(M+1)
+ =>
+  ch_own_globs(o)(n)(M);
+
+  brule(AllGlobsPasX.M,((o <-- n):(a:t))) & /* own */
+  h_ref("w")(bcatl(o,".mch"))(a) &
+  ch_own_globs(o)(n)(M+1)
+ =>
+  ch_own_globs(o)(n)(M);
+
+
+
+  
+  ch_non_own_consts(o)(n)(M);
+
+  brule(AllConstsPasX.M,((O <-- N):a)) & /* not own */
+  h_ref("c")(bcatl(O,".pas"))(a) &
+  ch_non_own_consts(o)(n)(M+1)
+ =>
+  ch_non_own_consts(o)(n)(M);
+
+  brule(AllConstsPasX.M,((o <-- n):a)) & /* own */
+  ch_non_own_consts(o)(n)(M+1)
+ =>
+  ch_non_own_consts(o)(n)(M);
+
+
+
+  
+  ch_own_consts(o)(n)(M);
+
+  brule(AllConstsPasX.M,((O <-- N):a)) & /* not own */
+  ch_own_consts(o)(n)(M+1)
+ =>
+  ch_own_consts(o)(n)(M);
+
+  brule(AllConstsPasX.M,((o <-- n):a)) & /* own */
+  h_name("C")(a) &
+  ch_own_consts(o)(n)(M+1)
+ =>
+  ch_own_consts(o)(n)(M);
+
+
+
+  
+  ch_non_own_ops(o)(n)(M);
+
+  brule(AllOpsPasX.M,((O <-- N):a)) & /* not own */
+  h_ref("o")(bcatl(O,".pas"))(a) &
+  ch_non_own_ops(o)(n)(M+1)
+ =>
+  ch_non_own_ops(o)(n)(M);
+
+  brule(AllOpsPasX.M,((o <-- n):a)) & /* own */
+  ch_non_own_ops(o)(n)(M+1)
+ =>
+  ch_non_own_ops(o)(n)(M);
+
+
+
+  
+  ch_own_ops(o)(n)(M);
+
+  brule(AllOpsPasX.M,((O <-- N):a)) & /* not own */
+  h_ref("i")(bcatl(N,".pas"))(bcatl(a,"")) &
+  ch_own_ops(o)(n)(M+1)
+ =>
+  ch_own_ops(o)(n)(M);
+
+  brule(AllOpsPasX.M,((o <-- n):a)) & /* own */
+  h_ref("i")(bcatl(o,".pasp"))(bcatl(a,"")) &
+/*
+  h_name("O")(a) &
+*/
+  ch_own_ops(o)(n)(M+1)
+ =>
+  ch_own_ops(o)(n)(M);
+
+
+
+  h_subsid(o)(n)(M);
+
+/*
+  brule(AllSubsidsPasX.M,(O <-- N)) & /? not own ?/
+  h_ref("i")(bcatl(o,".pas"))(bcatl(o,".pas")) &
+  h_subsid(o)(n)(M+1)
+ =>
+  h_subsid(o)(n)(M);
+*/
+
+  brule(AllSubsidsPasX.M,(o <-- n)) & /* own */
+  h_ref("i")(bcatl(o,".pasp"))(bcatl(o,".pasp")) &
+  h_ref("i")(bcatl(o,".noatt"))(bcatl(o,".noatt")) &
+  h_ref("i")(bcatl(o,".param"))(bcatl(o,".param")) &
+  h_ref("i")(bcatl(o,".mch"))(bcatl(o,".mch")) &
+  h_subsid(o)(n)(M+1)
+ =>  
+  h_subsid(o)(n)(M);
+
+/*
+href: x "aaa" "bbb" --> <A HREF="aaa">bbb</A>
+*/
+
+  h_ref("b")("?")(s)
+ =>
+  h_ref_bold(a,s);
+
+
+
+  Connect(".Bcom") &
+  h_name(bcatl("CDE/PASP/DECCO/|",n,".pas","|",o,".pasp"))(o) &
+  h_ref_bold(m) bsmap PASP_keywords_html &
+  h_ref("v")("Byt_TYPE.mch")(BYTE) &
+  h_ref("v")("Byt_BS_TYPE.mch")(BYTE) &
+  h_ref("v")("Uns_TYPE.mch")(UNSIGNED) &
+  h_ref("v")("Uns_BS_TYPE.mch")(UNSIGNED) &
+  h_ref("v")("Sgn_TYPE.mch")(INTEGER) &
+  h_ref("v")("Bool_TYPE.mch")(BOOLEAN) &
+  h_ref("v")("Bool_TYPE_Ops.mch")(BOOLEAN) &
+  h_name("F")(bcatl(m,".pas")) &
+  h_ref_typ_mch &
+  h_subsid(o)(n)(1) &
+  ch_own_globs(o)(n)(1) &
+  ch_non_own_globs(o)(n)(1) &
+  ch_own_consts(o)(n)(1) &
+  ch_non_own_consts(o)(n)(1) &
+  ch_own_ops(o)(n)(1) &
+  ch_non_own_ops(o)(n)(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc")
+ =>
+  chpas(o)(n);
+
+  ReadBget(1)
+/***
+&HERE(("File does NOT exists" -- n))
+***/
+ =>
+  chpas0(o)(n);
+
+  ReadBget(0) &
+/***
+HERE(("File exists" -- n))&
+***/
+  chpas(o)(n)
+ =>
+  chpas0(o)(n);
+
+  Bshell(("$BKIT/BLIB/CheckFileExists CDE/PASP/DECCO/",n,".pas .")) &
+  Bget(".Bcom") &
+  chpas0(o)(n) 
+ =>
+  chpas00(o)(n)  
+
+END
+
+&
+
+THEORY CreateHtmlPasFilesX IS
+
+#define CreateHtmlPasFiles \
+  bcall(((MAP;MODR;RULE;CATL;SHELL)~;CreateHtmlPasFilesX)~:chpf)
+
+
+  brule(FinModulesX.4,R) &
+  bsearch((a <-- b),(R,?),P) &
+  Bshell(("cp CDE/PASP/DECCO/L",b,".prj CDE/PASP/DECCO/L",a,".prj"))
+/***
+&HERE(("Copy prj file":b -> a))
+***/
+ =>
+  chpf_copy_prj(a);
+
+  brule(FinModulesX.4,R) &
+  bsearch((a <-- a),(R,?),P)
+/***
+&HERE(("No need to copy prj file"))
+***/
+ =>
+  chpf_copy_prj(a);
+
+
+
+  brule(FinModulesX.4,R) &
+  bsearch((a <-- b),(R,?),P) &
+  Bshell(("cp CDE/PASP/DECCO/L",b,".lnk CDE/PASP/DECCO/L",a,".lnk"))
+/***
+&HERE(("Copy lnk file":b -> a))
+***/
+ =>
+  chpf_copy_lnk(a);
+
+  brule(FinModulesX.4,R) &
+  bsearch((a <-- a),(R,?),P)
+/***
+&HERE(("No need to copy lnk file"))
+***/
+ =>
+  chpf_copy_lnk(a);
+
+
+
+  CreHtmlPasCodeFile(o,n)
+ =>
+  chpf_html(o <-- n);
+
+
+  bcrer(AllConstsPasX,((o <-- n):a))
+ =>
+  chpf_const((o <-- n),a);
+
+  chpf_const((o <-- n),?);
+
+
+  bcrer(AllGlobsPasX,((o <-- n):a))
+ =>
+  chpf_glob((o <-- n),a);
+
+  chpf_glob((o <-- n),?);
+
+
+  bcrer(AllOpsPasX,((o <-- n):a))
+ =>
+  chpf_ops((o <-- n),a);
+
+  chpf_ops((o <-- n),?);
+
+
+  chpf_const(o <-- n) bsmap C &
+  chpf_glob(o <-- n) bsmap F &
+  chpf_ops(o <-- n) bsmap I
+ =>
+  chpf3(o <-- n)(A|B|C|D|E|F|G|H|I|J|K);
+
+  ReadBget(x) &
+  chpf3(o <-- n)(x)
+ =>
+  chpf2(o <-- n);
+
+  bcrer(AllSubsidsPasX,(o <-- n)) &
+  Bget(("CDE/PASP/.",o)) &
+  chpf2(o <-- n)
+ =>
+  chpf1(o <-- n);
+
+  ReadSatMchName(a.mch) &
+  brule(FinModulesX.4,R) &
+  chpf1 bsmap R &
+  chpf_html bsmap R &
+  chpf_copy_lnk(a) &
+  chpf_copy_prj(a)
+ =>
+  chpf
+
+END
+
+&
+
+THEORY FinModulesX IS
+
+#define FinModules(x) \
+  bcall(((ARI;REV;CATL;MAP;SHELL;MODR;WRITE)~;FinModulesX)~:fm0(x))
+
+  ?;
+
+  ?;
+
+  0;  /* for all ops reqd message */
+
+  ?;  /* MULTI_INP result */
+
+
+
+  bmodr(FinModulesX.1,f)
+ =>
+  bshell(f);
+
+
+
+  brule(FinModulesX.4,R) &
+  bsearch((a<--r),(R,?),P) &
+  bshell(bcatl("$BKIT/BLIB/PASPWriteDECCO 3 ",r))
+ =>
+  fm_clean_renamed_files_floppy4(a);
+
+  brule(FinModulesX.1,0)
+ =>
+  fm_clean_renamed_files_floppy4(a);
+
+
+  bshell(bcatl("$BKIT/BLIB/PASPWriteDECCO 2 ",r))
+ =>
+  fm_clean_renamed_files_floppy3(m<--r);
+
+  fm_clean_renamed_files_floppy3 bsmap R
+ =>
+  fm_clean_renamed_files_floppy2(R);
+
+  fm_clean_renamed_files_floppy2(?);
+
+  bsearch(?,R,P) &
+  fm_clean_renamed_files_floppy2(P)
+ =>
+  fm_clean_renamed_files_floppy2(R);
+
+  bsearch((a<--r),(R,?),P) &
+  fm_clean_renamed_files_floppy2(P)
+ =>
+  fm_clean_renamed_files_floppy1(a)(R);
+
+  brule(FinModulesX.1,0)
+ =>
+  fm_clean_renamed_files_floppy1(x)(y);
+
+
+  brule(FinModulesX.4,R) &
+  bsearch((a<--r),(R,?),P) &
+  bshell(bcatl("rm -f CDE/PASP/",r,".map")) &
+  bshell(bcatl("rm -f CDE/PASP/L",r,".lnk")) &
+  bshell(bcatl("rm -f CDE/PASP/L",r,".prj"))
+ =>
+  fm_clean_renamed_files_CDE(a);
+
+  brule(FinModulesX.4,R) &
+  bsearch((a<--a),(R,?),P) &
+  bshell(bcatl("rm -f CDE/PASP/L",a,".lnk")) &
+  bshell(bcatl("rm -f CDE/PASP/L",a,".prj"))
+ =>
+  fm_clean_renamed_files_CDE(a);            /* top has not been renamed */
+
+
+  bshell(bcatl("rm -f CDE/PASP/*.pasp.flt")) &
+  brule(FinModulesX.4,R) &
+  fm_clean_renamed_files_CDE(a) &
+  fm_clean_renamed_files_floppy1(a)(R) &
+  fm_clean_renamed_files_floppy4(a)
+ =>
+  fm_clean_renamed_files(a);
+
+ 
+
+  brule(FinModulesX.1,f) &
+  bshell("cat .Bcom") &
+  InformCantExecute(f) &
+  Writef(("\n  Creation of Final Pasp Modules in CDE/PASP/DECCO aborted\n"))
+ =>
+  chk_res_main(a);
+
+  brule(FinModulesX.1,0) &
+  CreateHtmlPasFiles &
+  Writef(("\n  Final Pasp Modules created in CDE/PASP/DECCO\n"))
+/***
+&HERE((chk_res_main(a)))
+&PrintTHEORY(AllOpsPasX)
+&PrintTHEORY(AllConstsPasX)
+&PrintTHEORY(AllGlobsPasX)
+&PrintTHEORY(AllSubsidsPasX)
+***/
+ =>
+  chk_res_main(a);
+
+
+
+
+  brule(FinModulesX.4,R) &
+  bsearch((m<--r),(R,?),T) &
+  bprintf("%.pas\n",r)
+ =>
+  fm_write_to_floppy_prj(a,m);
+
+  brule(FinModulesX.2,0) &
+  bmodr(FinModulesX.2,1) &
+  brule(FinModulesX.4,R) &
+  bsearch((m<--r),(R,?),T) &
+  bprintf("%.pas\n",r)
+ =>
+  fm_write_to_floppy_prj(a,m);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|?|?|?|?|J|K))))
+ =>
+  fm_write_to_floppy_prj(a,m);
+
+  fm_write_to_floppy_prj(a,a);
+
+
+
+  brule(FinModulesX.4,R) &
+  bsearch((m<--r),(R,?),T) &
+  bprintf(";%",r)
+ =>
+  fm_write_to_floppy_lnk(a,m);
+
+  brule(FinModulesX.2,0) &
+  bmodr(FinModulesX.2,1) &
+  brule(FinModulesX.4,R) &
+  bsearch((m<--r),(R,?),T) &
+  bprintf("%",r)
+ =>
+  fm_write_to_floppy_lnk(a,m);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|?|?|?|?|J|K))))
+ =>
+  fm_write_to_floppy_lnk(a,m);
+
+  fm_write_to_floppy_lnk(a,a);
+
+
+
+  brule(FinModulesX.1,f) &
+  bshell("cat .Bcom") &
+  Writef(("\n  Creation of Final Pasp Modules in CDE/PASP/DECCO aborted\n"))
+ =>
+  chk_res_subsid(a)(P)(r);
+
+  brule(FinModulesX.1,0) &
+  Connect(("CDE/PASP/L",r,".lnk")) &
+  bprintf("DATA : 0..64000;\nPROGRAM MEMORY {>AT(0)<};\nMODULES(") &
+  bmodr(FinModulesX.2,0) &
+  fm_write_to_floppy_lnk(a) bsmap P &
+  bprintf(");\nMAIN(%);\n",r) &
+  bclose &
+  Connect(("CDE/PASP/L",r,".prj")) &
+  bprintf("%.pas\n",r) &
+  fm_write_to_floppy_prj(a) bsmap P &
+  bclose &
+  Connect(("CDE/PASP/auto.scr")) &
+  bprintf("display(off).\n1000000.\ndisplay(on).\nshowram.\nstop.\n") &
+  bclose &
+  bshell(bcatl("$BKIT/BLIB/PASPWriteDECCO 1 ",r)) &
+  chk_res_main(a)
+ =>
+  chk_res_subsid(a)(P)(r);
+
+
+
+
+
+  bshell(bcatl("$BKIT/BLIB/PASPWriteDECCO 0 '",S,"'"))
+ =>
+  fm_write_to_floppy_subsid_1(S);
+
+  fm_write_to_floppy_subsid_1("");           /* no subsid .pasp.flt to write */
+
+  brule(FinModulesX.4,R) &
+  bsearch((m<--r),(R,?),T) &
+  fm_write_to_floppy_subsid_1(bcatl(S,r," "))
+ =>
+  fm_write_to_floppy_subsid(m)(S);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|?|?|?|?|J|K)))) &
+  fm_write_to_floppy_subsid_1(S)
+ =>
+  fm_write_to_floppy_subsid(m)(S);
+
+  brule(FinModulesX.4,R) &
+  bsearch((m<--r),(R,?),T) &
+  fm_write_to_floppy_subsid(M)(bcatl(S,r," "))
+ =>
+  fm_write_to_floppy_subsid(M,m)(S);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|?|?|?|?|J|K)))) &
+  fm_write_to_floppy_subsid(M)(S)
+ =>
+  fm_write_to_floppy_subsid(M,m)(S);
+
+  bsearch(?,M,P) &
+  fm_write_to_floppy_subsid(P)(S)
+ =>
+  fm_write_to_floppy_subsid(M)(S);
+
+  fm_write_to_floppy_subsid(?)("");       /* no subsid .pasp.flt to write */
+
+  bsearch(a,(P,?),Q) &
+  brule(FinModulesX.4,R) &
+  bsearch((m<--r),(R,?),T) &
+  fm_write_to_floppy_subsid(Q)("") &
+  chk_res_subsid(a)(P)(r)
+ =>
+  fm_write_to_floppy(a)(P);
+
+
+
+  brule(FinModulesX.4,R) &
+  bsearch((m<--r),(R,?),T) &
+  bshell(bcatl("$BKIT/BLIB/Greplace CDE/PASP/",m,".pasp.flt .BBcom 0 0 1")) &
+  bshell(bcatl("cp .BBcom CDE/PASP/",r,".pasp.flt"))
+ =>
+  fm_get_shortNames4(a,m);
+
+  brule(FinModulesX.4,R) &
+  bsearch((m<-- r),(R,?),T) &
+  bshell(bcatl("$BKIT/BLIB/Greplace CDE/PASP/",a,".pasp .BBcom 0 0 1")) &
+  bshell(bcatl("cp .BBcom CDE/PASP/",r,".pasp.flt")) &
+  bshell(bcatl("$BKIT/BLIB/Greplace CDE/PASP/",a,".map .BBcom 0 0 0")) &
+  bshell(bcatl("cp .BBcom CDE/PASP/",r,".map"))
+ =>
+  fm_get_shortNames4(a,a);
+
+  bprintf("%,%\n",r,R)
+ =>
+  fm_get_shortNames3(r<--R);
+
+  brule(FinModulesX.4,R) &
+  bprintf("pasp,pas\n") &
+  fm_get_shortNames3 bsmap R
+ =>
+  fm_get_shortNames2;
+
+  FifoWrite_Store((BT_PASP_MULTI_INP_M,S,0),(FinModulesX.4)) &
+  Connect(".Bcom") &
+  fm_get_shortNames2 &
+  bclose &
+  fm_get_shortNames4(a) bsmap P &
+  fm_write_to_floppy(a)(P)
+ =>
+  fm_get_shortNames1(a)(S)(P);
+
+  fm_get_shortNames1(a)(bcatl(N,"|",S))(P)
+ =>
+  fm_get_shortNames(a)(?)(S)(N)(P);
+
+  fm_get_shortNames(a)(M)(bcatl(S,"|",m))(N+1)(P,m)
+ =>
+  fm_get_shortNames(a)(M,m)(S)(N)(P);
+
+  fm_get_shortNames(a)(M)(S)(N)(P)
+ =>
+  fm_get_shortNames(a)(M,a)(S)(N)(P);
+
+  brule(SatDotFiles_stoX.N,(m((A|B|C|D|E|?|?|?|?|J|K)))) &
+  fm_get_shortNames(a)(M)(S)(N)(P)
+ =>
+  fm_get_shortNames(a)(M,m)(S)(N)(P);
+
+  fm_get_shortNames(a)(M)(S)(N)(P)
+ =>
+  fm_get_shortNames(a)(M,?)(S)(N)(P);
+
+  ReadSatDotFiles(D) &
+  Writef(("\n  Writing final PASP Modules to CDE/PASP/DECCO\n\n")) &
+  Writef(("    Filtering out the following operations:\n")) &
+/***
+PrintTHEORY(SatDotFiles_stoX)&
+***/
+  bmodr(FinModulesX.3,0) &
+  ProcessLnkOps(a) &
+/***
+HERE((76:D))&
+***/
+  bmodr(FinModulesX.1,0) &
+  fm_get_shortNames(a)(D)(bcatl(a,""))(1)(a) &
+  fm_clean_renamed_files(a)
+ =>
+  fm0(a)
+
+END
+
+&
+
+THEORY FinPX IS
+
+  ModifySatImpName(a.imp) &
+  ModifySatMchName(b.mch) &
+  LinkModifyPaspLibList &
+  LoadSatDotFiles(b,bcatl("CDE/PASP/.",b)) &
+  FinModules(b) 
+ =>
+  fpasp_0(a.imp|b.mch)
+
+END
+
+
+/*
+A: import list (mch: formal params:actual params)
+B: sets set
+C: constants set
+D: set params
+E: num params
+F: glob vars
+G: glob_seen vars
+H: ops with local vars (op(vars))
+I: all ops (op)
+J: init
+K: sees list
+        so, parameterised over D,E
+*/
+
+

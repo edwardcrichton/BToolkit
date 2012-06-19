@@ -1,0 +1,335 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+`AMNSYMBOL
+
+
+#include "GlobalDefs.src"
+
+#define pfTac  ((MAP;REV;MODR;RULE;CATL;WRITE;SHELL)~;pfX)~
+
+#define pf(x)     bcall(pfTac: pf_000(x))
+
+#define gnxtpTac  ((CATL;WRITE;SHELL)~;gnxtpX)~
+
+#define gnxtp  bcall(gnxtpTac: gnxtp_0)
+
+#define loadbcomTac  ((CATL;WRITE)~;loadbcomX)~
+
+#define loadbcom(x)  bcall(loadbcomTac: lbcom(x))
+
+#define lwsTac  ((WRITE)~;crelwsX)~
+
+#define crelws  bcall(lwsTac: clX_0)
+
+#define gplTac  ((ARI;ARI;MODR;RULE;CATL;MAP;REV;FLAT;WRITE;SHELL)~;gplX)~
+
+#define gplNoARITac  ((MODR;RULE;CATL;MAP;REV;FLAT;WRITE;SHELL)~;gplX)~
+
+#define gpl(x)  bcall(gplTac: gpl_0(x))
+
+
+
+#define ExtractProof(x) (gpl(x) & crelws & gnxtp)
+
+#define MidProof(x) (pf(x) & gnxtp & loadbcom(15))
+
+#define MidProofBTool(x) (pf(x) & gnxtp)
+
+
+
+THEORY BTOOLKITINIT END 
+
+&
+
+#include "Utils.src"
+
+&
+
+#include "Standardize.src"
+
+&
+
+#include "CommonTheory.src"
+
+&
+
+#include "SetOfRules.made"
+
+&
+
+#include "Proof.src"
+
+&
+
+#include "LoadUnloadProofMethod.src"
+
+&
+
+#include "BToolProver.src"
+
+&
+
+#include "Toolkit_core.src"
+
+&
+
+THEORY ParseInitX IS
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformUnknownEnvironment(x) &
+  PFZ
+ =>  
+  pi$x;
+
+ 
+  SetSpaceCount(n)
+ =>
+  get_spc_ct1(n);
+
+  btest(n>100) &
+  SetSpaceCount(n-100)
+ =>
+  get_spc_ct1(n);
+
+  InformCantConnect(".Bnum") &
+  PFZ
+ =>
+  get_spc_ct;
+
+  bget(".Bnum",n) &
+/***
+HERE((".Bnum":n:get_spc_ct1(n)))&
+***/
+  get_spc_ct1(n)
+ =>
+  get_spc_ct;
+
+
+
+
+
+
+  InformCantConnect(".Bplt") &
+  MofifyJobs(?) &
+  LoadToolkit(1)
+ =>
+  run1_next_btl(a.b.n);
+
+
+  AppendSrcFileForBToolProver((a.b.n),m)
+ =>
+  AppendSrcFileForBToolProver_delay((a.b.n),m);
+
+  SetBToolProver &
+  ModrFirstTheory(?) &
+  ModrLastTheory(?) &
+  ModrBToolConstructName(a.b) &
+  ModifyPOFileName_btl((bcatl("POB/",a,".",b,".",n-1,".po"))) &
+  ModifyPMDFileName(bcatl("PMD/",a,".",b,".",n-1,".pmd")) &
+  ModifyBtlPMDFileName(bcatl("PMD/",a,".",b,".",n-1,".btl.pmd")) &
+  CreSrcFileForBToolProver(a.b.(n-1)) &
+  AppendSrcFileForBToolProver_delay((a.b.n),(n-1)) &
+  run1_btl_1(a.b.n)
+ =>
+  run1_next_btl(a.b.n);
+
+
+
+  brule(gnxtpX.1,(T.N)) &
+  GetJobs(X) &
+  AddJob(X,((a.3.n):BT_PNP_BTL_M:(T.N))) &
+  LoadToolkit(1)
+ =>
+  run1_btl_1(a.imp.n);
+
+  brule(gnxtpX.1,(T.N)) &
+  GetJobs(X) &
+  AddJob(X,((a.2.n):BT_PNP_BTL_M:(T.N))) &
+  LoadToolkit(1)
+ =>
+  run1_btl_1(a.ref.n);
+
+  brule(gnxtpX.1,(T.N)) &
+  GetJobs(X) &
+  AddJob(X,((a.1.n):BT_PNP_BTL_M:(T.N))) &
+  LoadToolkit(1)
+ =>
+  run1_btl_1(a.mch.n);
+
+  SetBToolProver &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_PNP_BTL:n)) &
+  ExtractProof(a.b|n|M) &          /* (a.b | lvl | num) */
+  ModrFirstTheory(?) &
+  ModrLastTheory(?) &
+  ModrBToolConstructName(a.b) &
+  ModifyPOFileName_btl((bcatl("POB/",a,".",b,".",n-1,".po"))) &
+  ModifyPMDFileName(bcatl("PMD/",a,".",b,".",n-1,".pmd")) &
+  ModifyBtlPMDFileName(bcatl("PMD/",a,".",b,".",n-1,".btl.pmd")) &
+  CreSrcFileForBToolProver(a.b.(n-1)) &
+  AppendSrcFileForBToolProver_delay((a.b.n),(n-1)) &
+  run1_btl_1(a.b.n)
+ =>
+  run1_btl(a.b|n|M);
+
+  Writef(("\n  ProofPrinter: Level % proofs for %",n-1,a.b)) &
+  Writef(("\n                do not exist - can't ProofPrint!\n")) &
+  LoadToolkit(1)
+ =>
+  run1_btl(a.b|n|0);
+
+  Writef(("\n  ProofPrinter: Proof Obligations for %",a.b)) &
+  Writef(("\n                do not exist - can't ProofPrint!\n")) &
+  LoadToolkit(1)
+ =>
+  run1_btl(a.b|0|0);
+
+  LoadToolkit(1)
+ =>
+  run0_btl(x);    /* Remake/Options-related problem */
+
+  Writef(("\n  ProofPrinter: Level % proofs for %",n-1,a.b)) &
+  Writef(("\n                do not exist - can't ProofPrint!\n")) &
+  LoadToolkit(1)
+ =>
+  run0_btl(a.b|n|M);
+
+  Writef(("\n  ProofPrinter: Proof Obligations for %",a.b)) &
+  Writef(("\n                do not exist - can't ProofPrint!\n")) &
+  LoadToolkit(1)
+ =>
+  run0_btl(a.b|0|M);
+
+  IsLvl(a.b(N)) &
+  btest(n<=N) &
+  run1_btl(a.b|n|M)
+ =>
+  run0_btl(a.b|n|M);
+
+
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_PNP:n)) &
+  ExtractProof(a.b|n|M) &   /* (a.b | lvl | num) */
+  LoadToolkit(14)
+ =>
+  run1(a.b|n|M);
+
+  Writef(("\n  ProofPrinter: Level % proofs for %",n-1,a.b)) &
+  Writef(("\n                do not exist - can't ProofPrint!\n")) &
+  LoadToolkit(1)
+ =>
+  run1(a.b|n|0);
+
+  Writef(("\n  ProofPrinter: Proof Obligations for %",a.b)) &
+  Writef(("\n                do not exist - can't ProofPrint!\n")) &
+  LoadToolkit(1)
+ =>
+  run1(a.b|0|0);
+
+
+  LoadToolkit(1)
+ =>
+  run0(x);    /* Remake/Options-related problem */
+
+  Writef(("\n  ProofPrinter: Level % proofs for %",n-1,a.b)) &
+  Writef(("\n                do not exist - can't ProofPrint!\n")) &
+  LoadToolkit(1)
+ =>
+  run0(a.b|n|M);
+
+  Writef(("\n  ProofPrinter: Proof Obligations for %",a.b)) &
+  Writef(("\n                do not exist - can't ProofPrint!\n")) &
+  LoadToolkit(1)
+ =>
+  run0(a.b|0|M);
+
+  IsLvl(a.b(N)) &
+  btest(n<=N) &
+  run1(a.b|n|M)
+ =>
+  run0(a.b|n|M);
+
+
+
+  GetJobs(X) &
+  bsearch((x:BT_PFP_BTL:0),X,Y) &   /* from Motif */
+  ModifyJobs(Y) &
+  SetBToolProver &
+  bshell("echo 0 > .Bnum") &
+  run0_btl(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((x:BT_PFP:0),X,Y) &   /* from Motif */
+  ModifyJobs(Y) &
+  run0(x)
+ =>
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b:BT_PNP_BTL:n),X,Y) &
+  SetBToolProver &
+  MidProofBTool(a.b.n) &
+  WriteDot &
+  get_spc_ct &
+  CheckForSpace &
+  run1_next_btl(a.b.n)
+ => 
+  run;
+
+  GetJobs(X) &
+  bsearch((a.b:BT_PNP:n),X,Y) &
+  MidProof(a.b.n) &
+  WriteDot &
+  get_spc_ct &
+  CheckForSpace
+ => 
+  run;
+
+  GetJobs(X) &
+  bsearch((a:BT_PUP:0),X,Y) &
+  ModifyJobs(Y) &
+  PrintUnproved(a) &
+  LoadToolkit(1)
+ => 
+  run;
+
+  bnum(x) &
+  btest(1<=x) &
+  btest(5>=x) &
+/***
+GetJobs(X) &HERE((X))&
+***/
+  run
+ =>  
+  pi$x;
+
+  bnum(n) &
+  bmodr(ParseEnvX.2,n) &
+  LoadJobs &
+  pi$n
+ =>
+  n$toolkit$n$n
+
+END

@@ -1,0 +1,137 @@
+#! /bin/csh -f
+
+#
+# lex executables installed
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script installs executables from LEX "
+echo "  in `pwd`/BKIT/BLIB "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+
+if ( ! -d $BKIT/BLIB ) then
+  mkdir $BKIT/BLIB
+endif
+
+cd ../LEX
+
+######################################
+# compile lex files
+######################################
+
+echo ""
+foreach file ($lex_files)
+  echo "  $CC_lex $file.lex"
+  $CC_lex $file.lex
+  if ( $status == 0 ) then
+    echo '  cat lex.yy.c | sed -e "s+YYLMAX\ 200+YYLMAX\ 1024+" > ll.yy.c '
+    cat lex.yy.c | sed -e "s+YYLMAX\ 200+YYLMAX\ 1024+" > ll.yy.c
+    echo "  $CC \ "
+    echo "      $CC_opt_non_Motif \ "
+    echo "      -o $BKIT/BLIB/$file \ "
+    echo "      ll.yy.c \ "
+    echo "      $ALL_FLAGS \ "
+    echo "      $CC_lex_lib "
+    $CC \
+        $CC_opt_non_Motif \
+        -o $BKIT/BLIB/$file \
+        ll.yy.c \
+        $ALL_FLAGS \
+        $CC_lex_lib
+    echo "  strip $BKIT/BLIB/$file"
+    strip $BKIT/BLIB/$file
+  else
+    echo ""
+    echo "                            >>>>> $file NOT COMPILED <<<<<"
+    echo ""
+    echo "  Aborted"
+    echo ""
+    exit ( 1 )
+  endif
+  echo ""
+end
+
+echo ""
+
+######################################
+# compile lex_html files
+######################################
+
+foreach file ($lex_html_files)
+
+  echo "  $CC_lex $file.lex"
+  $CC_lex $file.lex
+  if ( $status == 0 ) then
+    echo '  cat lex.yy.c | sed -e "s/BUFSIZ/10000/" > ll.yy.c '
+    cat lex.yy.c | sed -e "s/BUFSIZ/10000/" > ll.yy.c
+    if ( $status == 0 ) then
+      echo "  $CC \ "
+      echo "      $CC_opt_non_Motif \ "
+      echo "      -DSTDINPUT \ "
+      echo "      -o $BKIT/BLIB/$file \ "
+      echo "      ll.yy.c \ "
+      echo "      $ALL_FLAGS \ "
+      echo "      $CC_lex_lib "
+      $CC \
+          $CC_opt_non_Motif \
+          -DSTDINPUT \
+          -o $BKIT/BLIB/$file \
+          ll.yy.c \
+          $ALL_FLAGS \
+          $CC_lex_lib
+      if ( $status == 0 ) then
+        echo "  strip $BKIT/BLIB/$file >>SUPPRESSED<<"
+        #strip $BKIT/BLIB/$file
+        echo ""
+      else
+        echo ""
+        echo ""
+        echo "                                 >>>>> $file NOT COMPILED <<<<<"
+        echo ""
+        echo "  Aborted"
+        echo ""
+        exit ( 1 )
+      endif
+    else
+      echo ""
+      echo ""
+      echo "                                 >>>>> $file NOT COMPILED <<<<<"
+      echo ""
+      echo "  Aborted"
+      echo ""
+      exit ( 1 )
+    endif
+  else
+    echo ""
+    echo ""
+    echo "                                 >>>>> $file NOT COMPILED <<<<<"
+    echo ""
+    echo "  Aborted"
+    echo ""
+    exit ( 1 )
+  endif
+
+end
+
+rm -f lex.yy.c ll.yy.c
+
+echo ""
+echo "  Done"
+echo ""

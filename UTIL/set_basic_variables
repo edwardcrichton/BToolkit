@@ -1,0 +1,181 @@
+#! /bin/csh -f
+
+###################################
+#  set BT_VERSION
+###################################
+
+# pull out the version number (3rd item in the line)
+set VERSION_NUM=`grep "#define BT_VERSION" ../MOTIF/BMotif_version.c | awk '{ print $3 }'`
+
+# run it through sed to eliminate the quotes
+setenv BT_VERSION_NUM `echo $VERSION_NUM | sed -e 's/"//g'`
+
+setenv BT_VERSION     "Release_"$BT_VERSION_NUM
+
+
+setenv BT_MAJOR_VERSION `echo $BT_VERSION_NUM | cut -d'.' -f1`
+setenv BT_MINOR_VERSION `echo $BT_VERSION_NUM | cut -d'.' -f2`
+setenv BT_PATCH_VERSION `echo $BT_VERSION_NUM | cut -d'.' -f3`
+
+
+############################  BOOSTER_VERSION
+
+setenv BOOSTER_VERSION YES
+setenv BOOSTER_VERSION NO
+
+
+if ( ! $?BOOSTER_VERSION ) then
+  echo ""
+  echo ""
+  echo "  BOOSTER_VERSION not set"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $BOOSTER_VERSION != "YES" && $BOOSTER_VERSION != "NO" ) then
+  echo ""
+  echo ""
+  echo "  Bad BOOSTER_VERSION setting"
+  echo ""
+  exit ( 1 )
+endif
+
+
+############################  DBSERVER_VERSION leave set - do not edit
+
+setenv DBSERVER_VERSION YES  # do not edit - leave set - do not edit
+
+if ( ! $?DBSERVER_VERSION ) then
+  echo ""
+  echo ""
+  echo "  DBSERVER_VERSION not set"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $DBSERVER_VERSION != "YES" && $DBSERVER_VERSION != "NO" ) then
+  echo ""
+  echo ""
+  echo "  Bad DBSERVER_VERSION setting"
+  echo ""
+  exit ( 1 )
+endif
+
+
+
+###################################
+#  set BKIT
+###################################
+
+set curdir = `pwd`
+cd ..
+setenv BKIT `pwd`/BKIT
+if ( ! -d $BKIT ) then
+  mkdir $BKIT
+endif
+cd $curdir
+
+
+
+###################################
+#  set umask
+###################################
+
+umask 022
+
+
+##############################################################
+#
+#  set PLATFORM from `uname`
+#
+##############################################################
+
+setenv PLATFORM `uname`
+setenv OS_VERSION `uname -r | cut -d'.' -f1-2`
+set pp = `uname -p`
+
+if( $pp == "unknown" ) then
+  set pp=`uname -m`
+endif
+
+if ( `echo $pp | grep "i.86"` == "" ) then
+      setenv PROCESSOR "$pp"
+else
+      setenv PROCESSOR "intel"
+endif
+
+echo $PROCESSOR
+
+if ( $PLATFORM == SunOS ) then
+  echo `uname -r` > .Bcom
+  grep "4\." .Bcom > /dev/null
+  if ( $status != 0 ) then
+    if ( $PROCESSOR == sparc ) then
+      setenv PLATFORM Solaris_sparc
+    else if ( $PROCESSOR == intel ) then
+      setenv PLATFORM Solaris_intel
+    else
+      setenv PLATFORM Solaris_unknown
+    endif
+  endif
+  rm -f .Bcom
+endif
+
+##############################################################
+#
+#  to override PLATFORM `uname` setting (should not be needed)
+#
+##############################################################
+
+switch ( $PLATFORM )
+
+  case SunOS:
+    setenv VERSION SUNOS_VERSION
+    setenv SUB_VERSION SUNOS_SUB_VERSION
+    breaksw
+  case Solaris_sparc:
+    setenv VERSION SOLARIS_VERSION
+    setenv SUB_VERSION SPARC_SUB_VERSION
+    breaksw
+  case Solaris_intel:
+    setenv VERSION SOLARIS_VERSION
+    setenv SUB_VERSION INTEL_SUB_VERSION
+    breaksw
+  case Linux:
+    setenv VERSION LINUX_VERSION
+    setenv SUB_VERSION LINUX_SUB_VERSION
+    breaksw
+  case OSF1:
+    setenv VERSION OSF1_VERSION
+    setenv SUB_VERSION OSF1_SUB_VERSION
+    breaksw
+  case IRIX:
+    setenv VERSION IRIX_VERSION
+    setenv SUB_VERSION IRIX_SUB_VERSION
+    breaksw
+  case AIX:
+    setenv VERSION AIX_VERSION
+    setenv SUB_VERSION AIX_SUB_VERSION
+    breaksw
+  case Darwin:
+    setenv VERSION MAC_VERSION
+    if ( $PROCESSOR == intel ) then
+      setenv SUB_VERSION INTEL_SUB_VERSION
+    else
+      setenv SUB_VERSION POWERPC_SUB_VERSION
+    endif
+    breaksw
+  case CYGWIN_NT-5.1
+    setenv VERSION CYGWIN_VERSION
+    setenv SUB_VERSION CYGWIN_SUB_VERSION
+  breaksw
+  case MINGW32_NT-5.1
+    setenv VERSION MINGW_VERSION
+    setenv SUB_VERSION MINGW_SUB_VERSION
+  breaksw
+  default:
+    setenv VERSION UNKNOWN_VERSION
+    setenv SUB_VERSION UNKNOWN_SUB_VERSION
+    breaksw
+
+endsw

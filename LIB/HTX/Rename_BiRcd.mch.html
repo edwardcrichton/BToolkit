@@ -1,0 +1,223 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.51">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_BiRcd">
+  <TITLE>The Rename_BiRcd machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+V1.0
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+***/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Rename_BiRcd(VALUE,numfld,maxrcd)
+
+/*"
+A parameterised renamable encapsulation of a machine which can
+hold records; the total number of data entries (i.e.\ the product of
+fields and records) must not exceed {\em MaxByt\/}.
+
+The values to be stored in each record field appear as the {\em
+VALUE\/} parameter which may be instantiated to any valid PASP type;
+the {\em numfld\/} parameter indicates the number of fields that each
+record contains; the {\em maxrcd\/} parameter indicates the maximum
+number of records required at any one time.
+
+This PASP library construct comprises this specification together with
+the PASP module {\em Rename\_BiRcd.param\/}, which is also renamed and
+introduced into a development at the same time as the
+specification. From then on the library module is treated in exactly
+the same way as a PASP code module directly translated form an AMN
+implementation. The three concrete variables {\em Rename\_RCD\_ARR\/},
+{\em Rename\_RCD\_HEAP\_ARR\/} and {\em Rename\_RCD\_TOT\_byt\/}
+(renamed) will appear in the {\em map} file so that attributes can be
+set if required.
+
+Importing, for example, `{\em control\_BiRcd(UNSIGNED,3,50)\/}' will
+result in  the global data declaration in {\em Rename\_BiRcd.noatt\/}:
+\begin{verbatim}
+    VAR control_RCD_ARR                  : ARRAY[0..149] OF UNSIGNED;
+    VAR control_RCD_HEAP_ARR             : ARRAY[0..49] OF BYTE;
+    VAR control_RCD_TOT_byt              : BYTE;
+\end{verbatim}
+
+An operation to reset the machine {\em Rename\_BiRcd\_RST\/} is
+provided, together with the three enquiry operations
+{\em Rename\_BiRcd\_IDX\/}, {\em Rename\_BiRcd\_FULL\/},
+{\em Rename\_BiRcd\_VLD\/}, operations to create and
+kill a record {\em Rename\_BiRcd\_CRE\/} and
+{\em Rename\_BiRcd\_KILL\/}, and operations to store and
+retrieve a value {\em Rename\_BiRcd\_STO\/} and
+{\em Rename\_BiRcd\_VAL\/}. 
+"*/
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>       numfld &gt; 0 & maxrcd&gt; 0 & numfld * maxrcd &lt; 256
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>
+
+<A NAME="SETS"><B>SETS</B></A>
+
+/*"
+{\em Rename\_BiRcd\/} is the abstract set from which all records
+will be taken.
+"*/
+
+  Rename_BiRcd
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>        card(Rename_BiRcd) = maxrcd
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>
+
+  Rename_rcd, Rename_rcd_fnc
+
+/*"
+\newpage
+"*/
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+/*"
+{\em Rename\_rcd\/} is the set of record identifiers currently in use,
+and {\em Rename\_rcd\_fnc\/} is the total function mapping each into a
+record comprising {\em numfld\/} values.
+"*/
+
+  Rename_rcd &lt;: Rename_BiRcd &
+  Rename_rcd_fnc: Rename_rcd --&gt; (1..numfld +-&gt; VALUE)
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+/*"
+In line with current PASP programming practice, the initialisation
+nondeterministically sets the two variables:
+"*/
+
+/*
+  Rename_rcd : (Rename_rcd &lt;: Rename_BiRcd) ||
+  Rename_rcd_fnc :: Rename_rcd --&gt; (1..numfld +-&gt; VALUE)
+*/
+  <B>ANY</B> Rename_rcdx, Rename_rcd_fncx <B>WHERE</B>
+    Rename_rcdx &lt;: Rename_BiRcd &
+    Rename_rcd_fncx: Rename_rcdx --&gt; (1..numfld +-&gt; VALUE)
+  <B>THEN</B>
+    Rename_rcd, Rename_rcd_fnc :=  Rename_rcdx, Rename_rcd_fncx
+  <B>END</B>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+
+/*"
+{\bf Rename\_BiRcd\_RST}\\[1ex]
+Resets the machine so that the current number of records is $0$:
+"*/
+
+  <A NAME="OPNAME!Rename_BiRcd_RST">Rename_BiRcd_RST</A> =
+    <B>BEGIN</B> Rename_rcd := {} || Rename_rcd_fnc := {} <B>END</B>;
+
+/*"
+{\bf Rename\_BiRcd\_IDX}\\[1ex]
+Returns a boolean indicating whether or not the index input is a
+valid field number:
+"*/
+
+  bb <-- <A NAME="OPNAME!Rename_BiRcd_IDX">Rename_BiRcd_IDX</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B> bb := <B>bool</B>(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 0..numfld) <B>END</B>;
+
+/*"
+\newpage
+{\bf Rename\_BiRcd\_FULL}\\[1ex]
+Returns a boolean indicating whether or not the machine is full:
+"*/
+
+  bb <-- <A NAME="OPNAME!Rename_BiRcd_FULL">Rename_BiRcd_FULL</A> =
+    <B>BEGIN</B> bb:=<B>bool</B>(Rename_rcd = Rename_BiRcd) <B>END</B>;
+
+/*"
+{\bf Rename\_BiRcd\_CRE}\\[1ex]
+The operation to create a record; a unique token is returned through
+which the record may subsequently be referenced:
+"*/
+
+  rr <-- <A NAME="OPNAME!Rename_BiRcd_CRE">Rename_BiRcd_CRE</A> =
+    <B>PRE</B> Rename_rcd /= Rename_BiRcd <B>THEN</B>
+      <B>ANY</B> new_rcd <B>WHERE</B> new_rcd : Rename_BiRcd - Rename_rcd <B>THEN</B>
+        Rename_rcd := Rename_rcd \/ {new_rcd} ||
+        Rename_rcd_fnc(new_rcd) := {} ||
+        rr := new_rcd
+      <B>END</B>
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiRcd\_KILL}\\[1ex]
+The operation to kill a record; the token input must have previously
+been returned by {\em Rename\_BiRcd\_CRE\/}, and must be currently valid:
+"*/
+
+  <A NAME="OPNAME!Rename_BiRcd_KILL">Rename_BiRcd_KILL</A>(rr : Rename_BiRcd) =
+    <B>PRE</B> rr : Rename_rcd <B>THEN</B>
+      Rename_rcd := Rename_rcd - {rr} ||
+      Rename_rcd_fnc := {rr} &lt;<| Rename_rcd_fnc
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiRcd\_VLD}\\[1ex]
+Returns a boolean indicating whether or not the input token is a
+valid record (i.e.\ currently in use):
+"*/
+
+  bb <-- <A NAME="OPNAME!Rename_BiRcd_VLD">Rename_BiRcd_VLD</A>(rr : Rename_BiRcd) =
+    <B>BEGIN</B> bb := <B>bool</B>(rr : Rename_rcd) <B>END</B>;
+
+/*"
+\newpage
+{\bf Rename\_BiRcd\_STO}\\[1ex]
+The operation to store a value, {\em vv\/} in the field {\em idx\/}
+of the record {\em rr\/};  {\em idx\/} must be a valid field, and
+{\em rr\/} a valid record.
+"*/
+
+  <A NAME="OPNAME!Rename_BiRcd_STO">Rename_BiRcd_STO</A>(rr : Rename_BiRcd & idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : VALUE) =
+    <B>PRE</B> rr : Rename_rcd & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 1..numfld <B>THEN</B>
+      Rename_rcd_fnc(rr)(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := vv
+   <B>END</B>;
+
+/*"
+{\bf Rename\_BiRcd\_VAL}\\[1ex]
+The operation to return the value stored in field {\em idx\/} of record
+of {\em vv\/};  {\em idx\/} must be a valid field, and
+{\em rr\/} a valid record.
+"*/
+
+  vv <-- <A NAME="OPNAME!Rename_BiRcd_VAL">Rename_BiRcd_VAL</A>(rr : Rename_BiRcd & idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> rr : Rename_rcd & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 1..numfld <B>THEN</B>
+      vv := Rename_rcd_fnc(rr)(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx))
+    <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Tue Jul 13 15:14:09 1999
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Beta 4.51</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

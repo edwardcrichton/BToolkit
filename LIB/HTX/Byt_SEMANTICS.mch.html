@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Byt_SEMANTICS">
+  <TITLE>The Byt_SEMANTICS machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.52
+  DATE:             12/07/99
+***/
+
+/*
+Description: Library Type semantics machine
+
+History :
+120799 v0.01 : Created.
+               semantic descriptions of the four operators n2b, b2n, b2bl, bl2b
+               moved here from Byt_TYPE to aid efficiency pf proof.
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Byt_SEMANTICS
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+/*"
+We define the {\em NAT\/} to {\em BYTE\/} conversion function
+as a bijection between natural numbers in the range {\em 0\/}
+to {\em 255\/} and {\em BYTE\/} (i.e.\  there is
+a 1-to-1 correspondence between the two);
+the {\em BYTE\/} to {\em NAT\/} function
+may then be defined as the inverse:
+"*/
+
+  !byt.(byt:<A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> =&gt; <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(byt)) = byt) &
+  !nat.(nat:NAT&nat<=255 => <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(<A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(nat)) = nat) &
+
+  <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2bl</A>(<A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(0)) = FALSE &
+  !byt.(byt:<A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & not(byt=<A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(0)) =&gt; <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2bl</A>(byt) = TRUE) &
+  <A HREF="Byt_TYPE.mch.html#CONSTANTS">bl2b</A>(FALSE) = <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(0) &
+  <A HREF="Byt_TYPE.mch.html#CONSTANTS">bl2b</A>(TRUE) = <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(1)
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:05:55 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

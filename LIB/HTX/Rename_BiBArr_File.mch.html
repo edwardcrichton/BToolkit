@@ -1,0 +1,331 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_BiBArr_File">
+  <TITLE>The Rename_BiBArr_File machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.02
+  VERSION:          
+  DATE:             18/04/97
+v0.03
+  VERSION:          
+  DATE:             06/05/97
+***/
+
+/*
+Description: Renamable Library variable machine
+             encapsulating an NVRAM Byte-indexed Byte array
+
+History:
+030698 v0.01 : Created as Rename_BiBArr.
+180497 v0.02 : Made into specific BYTE machine. 
+060597 v0.03 : Added over kill pre-conditions to discharge POB.
+270101 v0.04 : Renamed to Rename_BiBarr_File for DecCo8
+*/
+<A NAME="MACHINE"><B>MACHINE</B></A>          Rename_BiBArr_File(lb,ub)
+
+/*"
+A renamable parameterised encapsulation of
+{\em BYTE}-indexed array of Bytes.
+
+
+The array indices are set through the instantiation of the {\em lb\/}
+and {\em ub\/} parameters, which may be instantiated to any natural
+numbers in the range {\em 0\/} to {\em 255\/}.
+
+The specification array variable has the name {\em Rename\_B\/} and
+pointer {\em Rename\_N_byt\/}.
+
+For example importing `{\em control\_BiArr(10,20)\/}'
+will result in the global data declaration (in the .pas module):\\[1ex]
+\hspace*{3em}{\tt VAR control\_B : ARRAY [10..20] OF UNSIGNED;}\\[1ex]
+\hspace*{3em}{\tt VAR control\_N_byt : BYTE = 20;}\\[1ex]
+Thus the initialisation requires no translation.
+"*/
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>      lb&gt;=0 & ub&lt;=255 & lb<=ub
+
+<A NAME="SEES"><B>SEES</B></A>             <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>, <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>        Rename_bba,  /* Map used to respresent the array storage. */
+		 Rename_nxt   /* Pointer that records the next available index. */
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>        Rename_bba : lb..ub +-&gt; <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &  
+		 Rename_nxt : lb..ub
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>   Rename_bba :: lb..ub +-&gt; <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> ||
+		 Rename_nxt := ub
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf  Rename\_BiBA\_IDX}\\[.5ex]
+The operation returns a boolean indicating whether or not the index
+input parameter is within the bounds of the array, using the AMN {\sf
+bool} operator (which returns the boolean value of its argument) - the
+precondition ensures that the index input parameter has type {\em
+BYTE\/}; translated as:\\
+{\tt bb := (BGE(idx,lb) AND BLE(idx,ub))}
+\newpage
+"*/
+  bb <-- <A NAME="OPNAME!Rename_BiBA_IDX">Rename_BiBA_IDX</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B> bb := <B>bool</B>(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx): lb..ub) <B>END</B>;
+
+/*"
+{\bf  Rename\_BiBA\_VAL}\\[.5ex]
+The operation to retrieve a value stored at a particular array index -
+the precondition ensures that the index input parameter has type {\em
+BYTE\/}, is within the bounds of the array and the array at that index
+has been initialised; translated as:\\
+{\tt vv := prefix [idx]}
+"*/
+  vv <-- <A NAME="OPNAME!Rename_BiBA_VAL">Rename_BiBA_VAL</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) <B>THEN</B>
+      vv := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx))
+    <B>END</B>;
+
+/*"
+{\bf  Rename\_BiBA\_STO}\\[.5ex]
+The operation to store a value at a particular array index -
+the precondition ensures that the index input parameter has type {\em
+BYTE\/} and is within the bounds of the array, and that the value
+parameter is of the right type; translated as:\\
+{\tt prefix [idx] := vv}
+"*/
+  <A NAME="OPNAME!Rename_BiBA_STO">Rename_BiBA_STO</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : lb..ub <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := vv ||
+      <B>IF</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) &lt; ub 
+      <B>THEN</B>
+        Rename_nxt := <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) + 1	/* next available position recorded. */
+      <B>ELSE</B> 
+        Rename_nxt := lb		/* wraps around. */
+      <B>END</B>
+    <B>END</B>;
+
+/*"
+{\bf  Rename\_BiBA\_EQ}\\[.5ex]
+The operation returns a boolean indicating whether or not the value
+input parameter is the same as that currently stored at the at the
+array location at the index parameter, using the AMN {\sf bool}
+operator (which returns the boolean value of its argument) - the
+precondition ensures that the both input parameters have the right
+type and that additionally the array at that index has been
+initialised; if, for example, {\em VALUE\/} is instantiated to {\em
+BYTE\/}, translated as:\\ {\tt bb := BEQ(prefix [idx], vv)} "*/
+
+  bb <-- <A NAME="OPNAME!Rename_BiBA_EQ">Rename_BiBA_EQ</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) <B>THEN</B>
+      bb := <B>bool</B>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) = vv)
+    <B>END</B>;
+
+/*-------------------  EXTRA OPERATIONS V0.02 ----------------- */
+
+  bb <-- <A NAME="OPNAME!Rename_BiBA_IEQ">Rename_BiBA_IEQ</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BEQ">BEQ</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)))
+    <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_BiBA_NE">Rename_BiBA_NE</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba)  <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BNE">BNE</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), vv)
+    <B>END</B>;
+
+/* Not Equals - two indexes. */
+  bb <-- <A NAME="OPNAME!Rename_BiBA_INE">Rename_BiBA_INE</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BNE">BNE</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)))
+    <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_BiBA_GT">Rename_BiBA_GT</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BGT">BGT</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), vv)
+    <B>END</B>;
+
+/* Greater than - two indexes. */
+  bb <-- <A NAME="OPNAME!Rename_BiBA_IGT">Rename_BiBA_IGT</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BGT">BGT</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)))
+    <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_BiBA_GE">Rename_BiBA_GE</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) <B>THEN</B>
+      bb <--  <A HREF="Byt_TYPE.mch.html#OPNAME!BGE">BGE</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), vv)
+    <B>END</B>;
+
+/* Greater than or equal to - two indexes. */
+  bb <-- <A NAME="OPNAME!Rename_BiBA_IGE">Rename_BiBA_IGE</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BGE">BGE</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)))
+    <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_BiBA_LT">Rename_BiBA_LT</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BLT">BLT</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), vv)
+    <B>END</B>;
+
+/* Less than - two indexes. */
+  bb <-- <A NAME="OPNAME!Rename_BiBA_ILT">Rename_BiBA_ILT</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BLT">BLT</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)))
+    <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_BiBA_LE">Rename_BiBA_LE</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BLE">BLE</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), vv)
+    <B>END</B>;
+
+/* Less than or equal to - two indexes. */
+  bb <-- <A NAME="OPNAME!Rename_BiBA_ILE">Rename_BiBA_ILE</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : dom(Rename_bba) <B>THEN</B>
+      bb <-- <A HREF="Byt_TYPE.mch.html#OPNAME!BLE">BLE</A>(Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)), Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)))
+    <B>END</B>;
+
+/* */
+  <A NAME="OPNAME!Rename_BiBA_ADD">Rename_BiBA_ADD</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) + vv <= <A HREF="Byt_TYPE.mch.html#DEFINITIONS">MaxByt</A> &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) + vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) + vv 
+    <B>END</B>;
+
+/* Add to indexes put result in first index. */
+  <A NAME="OPNAME!Rename_BiBA_IADD">Rename_BiBA_IADD</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : dom(Rename_bba) &
+    	Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) + Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)) : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) + Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)) <= <A HREF="Byt_TYPE.mch.html#DEFINITIONS">MaxByt</A>
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) + Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)) 
+    <B>END</B>;
+
+  <A NAME="OPNAME!Rename_BiBA_SUB">Rename_BiBA_SUB</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) &
+	Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) &gt;= vv &	/* Result must be positive. */
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) - vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) - vv &gt;= <A HREF="Byt_TYPE.mch.html#DEFINITIONS">MinByt</A>
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) - vv
+    <B>END</B>;
+
+/* Sub to indexes put result in first index. */
+  <A NAME="OPNAME!Rename_BiBA_ISUB">Rename_BiBA_ISUB</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) & <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : dom(Rename_bba) &
+	Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) &gt;= Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)) &	/* Result must be positive. */
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) -  Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)) : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) -  Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)) &gt;= <A HREF="Byt_TYPE.mch.html#DEFINITIONS">MinByt</A>
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) - Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2))
+    <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_BiBA_INC">Rename_BiBA_INC</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) < <A HREF="Byt_TYPE.mch.html#DEFINITIONS">MaxByt</A> &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) + <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(1) : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) + <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(1) 
+    <B>END</B>;
+
+  <A NAME="OPNAME!Rename_BiBA_DEC">Rename_BiBA_DEC</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) &
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) - <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(1) : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) &gt; <A HREF="Byt_TYPE.mch.html#DEFINITIONS">MinByt</A>
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) - <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(1) 
+    <B>END</B>;
+
+  <A NAME="OPNAME!Rename_BiBA_MUL">Rename_BiBA_MUL</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) * vv <= <A HREF="Byt_TYPE.mch.html#DEFINITIONS">MaxByt</A> &
+        Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) * vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> 
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) * vv 
+    <B>END</B>;
+
+  <A NAME="OPNAME!Rename_BiBA_DIV">Rename_BiBA_DIV</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B>
+      vv /= <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(0) &
+      idx /= <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(0) &
+      (Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) / vv) : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) / vv 
+    <B>END</B>;
+
+  <A NAME="OPNAME!Rename_BiBA_REM">Rename_BiBA_REM</A> (idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : dom(Rename_bba) &
+        (Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) mod vv) : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> &
+        vv &gt; <A HREF="Byt_TYPE.mch.html#DEFINITIONS">MinByt</A> 		/* greater than zero. */
+    <B>THEN</B>
+      Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := Rename_bba(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) mod vv 
+    <B>END</B>;
+
+/*--------------------------- Sequence type operations. ---------------------------*/
+
+/* store next position - append. */
+  <A NAME="OPNAME!Rename_BiBA_STO_NXT">Rename_BiBA_STO_NXT</A>(vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B>
+      Rename_bba(Rename_nxt) := vv ||
+      <B>IF</B> Rename_nxt &lt; ub 
+      <B>THEN</B>
+        Rename_nxt := Rename_nxt + 1	/* next available position recorded. */
+      <B>ELSE</B> 
+        Rename_nxt := lb		/* wraps around. */
+      <B>END</B>
+    <B>END</B>;
+
+
+/* fill store. */
+  <A NAME="OPNAME!Rename_BiBA_FILL">Rename_BiBA_FILL</A>(vv : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B>
+      Rename_bba : 
+        (
+        Rename_bba : seq(<A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) &
+        card(Rename_bba) = ub - lb + 1 &
+        ran(Rename_bba) = {vv} 
+        ) ||
+        Rename_nxt := lb		/* wraps around. */
+
+    <B>END</B>;
+
+/* what is next position. */
+nn <-- <A NAME="OPNAME!Rename_BiBA_NXT">Rename_BiBA_NXT</A> = nn := <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(Rename_nxt)
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:07:11 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo $1
+dvips $1 -o $1.ps
+ls
+lpr $1.ps
+rm $1.ps
+lpq

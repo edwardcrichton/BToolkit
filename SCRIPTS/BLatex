@@ -1,0 +1,49 @@
+#! /bin/sh
+
+if [ ${TEXINPUTS} ]
+then
+  TEXINPUTS=$TEXINPUTS:$BKIT/BLIB:.
+  export TEXINPUTS
+else
+  TEXINPUTS=::$BKIT/BLIB:.
+  export TEXINPUTS
+fi
+
+if [ "$1" = "1" ]
+then
+  $4 $2.$3.tex
+  if [ $? = 0 ]
+  then
+    printf "\nRerun #1 (to get cross-references right)\n\n"
+    $4 $2.$3.tex
+    if [ $? = 0 ]
+    then
+      printf "\nRerun #2 (to get cross-references right)\n\n"
+      $4 $2.$3.tex
+      if [ $? = 0 ]
+      then
+        printf "0\n" > ../.Bcom
+      else
+        printf "\n<CR> to continue "
+        read input
+      fi
+    else
+      printf "\n<CR> to continue "
+      read input
+    fi
+  else
+    printf "\n<CR> to continue "
+    read input
+  fi
+  printf "\n"
+else
+  $4 $2.$3.tex
+  if [ $? = 0 ]
+  then
+    printf "0\n" > ../.Bcom
+  else
+    printf "\n<CR> to continue "
+    read input
+  fi
+  printf "\n"
+fi

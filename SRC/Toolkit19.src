@@ -1,0 +1,658 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define If_hostids       brule(AA.1,0)
+#define If_IPAddresses   brule(AA.1,1)
+
+
+
+
+
+#define Writef(x)  bwritef(x)
+#define Printf(x)  bprintf(x)
+
+
+THEORY OO IS
+
+  1;
+
+  bcall(MODR:bmodr(AA.1,x)) &
+  ab$0
+ =>
+  x
+
+TAC
+
+  (OO;((ARI~;WRITE;MODR;MAP;CATL;SHELL)~;BB)~)
+
+END
+
+&
+
+THEORY AA IS
+
+#define aa_aa bcall(((ARI~;REV;WRITE;MAP;CATL;SHELL;MODR)~;AA)~ : aa_0)
+
+  ?;  /*  0=>hostids, 1=>IPAddresses */
+
+  ?; /* for hostid: 5:7:2:0:1:3:15:10:? */
+
+
+  bshell(bcatl("echo -n ",x," >> .codes"))
+ =>
+  aa_66(x);
+
+  bshell("echo -n f >> .codes")
+ =>
+  aa_66(15);
+
+  bshell("echo -n e >> .codes")
+ =>
+  aa_66(14);
+
+  bshell("echo -n d >> .codes")
+ =>
+  aa_66(13);
+
+  bshell("echo -n c >> .codes")
+ =>
+  aa_66(12);
+
+  bshell("echo -n b >> .codes")
+ =>
+  aa_66(11);
+
+  bshell("echo -n a >> .codes")
+ =>
+  aa_66(10);
+
+  brule(AA.2,(A:B:C:D:E:F:G:H:?)) &
+  aa_66(A) &
+  aa_66(B) &
+  aa_66(C) &
+  aa_66(D) &
+  aa_66(E) &
+  aa_66(F) &
+  aa_66(G) &
+  aa_66(H) &
+  bshell("echo '' >> .codes")
+ =>
+  aa_55;
+
+
+  Writef(("\n\n  Can't open \".codes\" for appending\n\n")) &
+  bhalt
+ =>
+  aa_33(s);
+
+  bappend(".codes") &
+  Printf((s))
+ =>
+  aa_33(s);
+
+  If_hostids &
+  brule(BB.5,Y) &
+  Printf(("    For hostid: ")) &
+  bclose &
+/*  bshell("hostid >> .codes") & */  aa_55 &
+  aa_33(("\n    Expiry: %:%\n",y,m))
+ =>
+  aa_3a(y)(m);
+
+  If_hostids &
+  btest(m<10 ) &
+  brule(BB.5,Y) &
+  Printf(("    For hostid: ")) &
+  bclose &
+/*  bshell("hostid >> .codes") & */  aa_55 &
+  aa_33(("\n    Expiry: %:0%\n",y,m))
+ =>
+  aa_3a(y)(m);
+
+  If_hostids &
+  brule(BB.5,Y) &
+  Printf(("    For hostid: ")) &
+  bclose &
+/*  bshell("hostid >> .codes") & */  aa_55 &
+  aa_33(("\n    Expiry: %:% (Permanent code!)\n",1995,11))
+ =>
+  aa_3a(1995)(11);
+
+
+
+  If_IPAddresses &
+  bget(".BBcom",x) &
+  brule(BB.5,Y) &
+  Printf(("    For ip address: %",x)) &
+  Printf(("\n\n    Expiry: %:%\n",y,m))
+ =>
+  aa_3a(y)(m);
+
+  If_IPAddresses &
+  btest(m<10 ) &
+  bget(".BBcom",x) &
+  brule(BB.5,Y) &
+  Printf(("    For ip address: %",x)) &
+  Printf(("\n\n    Expiry: %:0%\n",y,m))
+ =>
+  aa_3a(y)(m);
+
+  If_IPAddresses &
+  bget(".BBcom",x) &
+  brule(BB.5,Y) &
+  Printf(("    For ip address: %",x)) &
+  Printf(("\n\n    Expiry: %:% (Permanent code!)\n",1995,11))
+ =>
+  aa_3a(1995)(11);
+
+
+
+  btest(m>12) &
+  aa_3a(y+1)(m-12)
+ =>
+  aa_3a(y)(m);
+
+  
+  brule(BB.5,F) &
+  aa_3a(1995)(n+10+F*72)
+ =>
+  aa_3(n);
+
+  aa_0_3(X)(n*2)
+ =>
+  aa_0_2(X)(n);
+
+  aa_1(X)(n+1)(0)
+ =>
+  aa_0_4(X)(n);
+
+  Writef(("\n\n  Codes: Decode Error\n\n")) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt  '  Decode Error - Aborted  '")) &
+  bhalt
+ =>
+  aa_2(y)(x)(n);
+
+  aa_2(X)(x)(n+1)
+ =>
+  aa_2(X,y)(x)(n);
+
+  aa_3(73-n)
+ =>
+  aa_2(x)(x)(n);
+
+  aa_3(73-n)
+ =>
+  aa_2(X,x)(x)(n);
+
+  brule(BB.1,X) &
+  aa_2(X)(n*m+x)(1)
+ =>
+  aa_1(x)(m)(n);
+
+  aa_1(X)(m)(n*m+x)
+ =>
+  aa_1(X,x)(m)(n);
+
+  aa_0_2(brev(c,h,g,d,b,e,a,f))(2)
+ =>
+  aa_0_1(a,b,c,d,e,f,g,h);
+
+  aa_0_4(X)(n*2)
+ =>
+  aa_0_3(X)(n);
+
+  brule(BB.3,(a,b,c,d,e,f,g,h,i)) &    /* ?,host id */
+  brule(BB.4,(A,B,C,D,E,F,G,H)) &      /* code */
+  aa_0_1(A-g,B-e,C-i,D-d,E-f,F-h,G-c,H-b)
+ =>
+  aa_0
+
+END
+
+&
+
+THEORY BB IS
+
+  10764283,3874765,34189235,18953552,4909649,25542714,6781773,34525768,8886274,35519921,33964215,10670369,13286872,1224367,36384270,32056010,38474627,39812152,3359310,30803190,15975142,30655434,22081402,22699596,6546428,42182928,6616365,9410905,30611146,28903604,32403409,23553124,37516425,39715186,30802270,9020153,24702334,1449484,16754631,16410362,5651828,7099413,6084438,29479976,10515027,24754857,16435418,35834727,28661851,14296159,11050253,34878355,38236654,27505519,1725534,10007220,22888973,1800657,23471869,5446837,25580686,14002005,18924189,10380333,32890851,25919950,437245,35112655,37442959,30620967,21680389,9759395;
+
+  ?;?;?;?;
+
+
+  Writef(("\n\n  Codes: Can't execute \"%\"\n\n\n",f)) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  Can't execute ",f," - Aborted  '")) &
+  bhalt
+ =>
+  bshell(f);
+
+  Writef(("\n\n  Codes: Date Error(3) (%)\n\n",(x,m,n))) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  Date Error(3) (",x,",",m,",",n,") - Aborted  '")) &
+  bhalt
+ =>
+  cc_4(x,m,n);
+
+  btest(m<9) &
+  btest(x<9)
+ =>
+  cc_4(x,m,n);
+
+  brule(BB.2,X) &
+  cc_4 bnmap X
+ =>
+  cc_3;
+
+  brule(BB.2,X) &
+  bmodr(BB.2,(X,x))
+ =>
+  cc_2(x);
+
+  brule(BB.2,?) &
+  bmodr(BB.2,x)
+ =>
+  cc_2(x);
+
+  cc_1(x/9) &
+  cc_2(x-((x/9)*9))
+ =>
+  cc_1(x);
+
+  cc_1(0);
+
+  cc_0(n);
+
+  brule(BB.1,(X,x)) &
+  bmodr(BB.1,X) &
+  cc_1(x) &
+  cc_0(n+1)
+ =>
+  cc_0(n);
+
+  cc_0(x);
+
+  cc_1(x) &
+  cc_3
+ =>
+  cc_0(m,x,m,n);
+
+  Writef(("\n\n  Codes: Date Error(2)\n\n")) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt  '  Date Error(2) - Aborted  '")) &
+  bhalt
+ =>
+  cc_00(n)(Y);
+
+  btest(n>0) &
+  btest(n<73) &
+  brule(BB.1,X) &
+  bmodr(BB.5,Y) &
+  cc_0(n) bnmap X
+ =>
+  cc_00(n)(Y);
+
+  btest(n>0) &
+  btest(n>72) &
+  cc_00(n-72)(Y+1)
+ =>
+  cc_00(n)(Y);
+
+  Writef(("\n\n\n  Codes: Computation Error\n\n")) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt  '  Computation Error - Aborted  '")) &
+  bhalt
+ =>
+  ab7(x,8,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  Printf(("%%\n\n",x/10,(x-((x/10)*10))))
+ =>
+  ab7(x,8,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  Printf(("%%",x/10,(x-((x/10)*10))))
+ =>
+  ab7(x,7,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  Printf(("%%-",x/10,(x-((x/10)*10))))
+ =>
+  ab7(x,6,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  Printf(("%%",x/10,(x-((x/10)*10))))
+ =>
+  ab7(x,5,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  Printf(("%%-",x/10,(x-((x/10)*10))))
+ =>
+  ab7(x,4,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  Printf(("%%",x/10,(x-((x/10)*10))))
+ =>
+  ab7(x,3,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  Printf(("%%-",x/10,(x-((x/10)*10))))
+ =>
+  ab7(x,2,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  Writef(("\n\n  Can't open \".codes\" for appending\n\n")) &
+  bhalt
+ =>
+  ab7(x,1,8);
+
+  btest(x>=0) &
+  btest(x<=100) &
+  bappend(".codes") &
+  Printf(("\n    -----------------------------")) &
+  Printf(("\n\n    BSITECODE: %%",x/10,(x-((x/10)*10))))
+ =>
+  ab7(x,1,8);
+
+  brule(BB.4,X) &
+  ab7 bnmap X
+ =>
+  ab6;
+
+  brule(BB.3,(a,b,c,d,e,f,g,h,i)) &
+  brule(BB.2,(A,B,C,D,E,F,G,H)) &
+  bmodr(BB.4,(g+G,e+E,i+A,d+D,f+F,h+H,c+C,b+B)) &
+  ab6
+ =>
+  ab5;
+
+  brule(BB.2,(X)) &
+  Writef(("\n\n  Codes: Date Error(1) (%)\n\n",X)) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  Date Error(1) - Aborted  '")) &
+  bhalt
+ =>
+  ab4a;
+
+  brule(BB.2,(A)) &
+  bnum(A) &
+  bmodr(BB.2,(0,0,0,0,0,0,0,A))
+ =>
+  ab4a;
+
+  brule(BB.2,(A,B)) &
+  bnum(A) &
+  bnum(B) &
+  bmodr(BB.2,(0,0,0,0,0,0,A,B))
+ =>
+  ab4a;
+
+  brule(BB.2,(A,B,C)) &
+  bnum(A) &
+  bnum(B) &
+  bnum(C) &
+  bmodr(BB.2,(0,0,0,0,0,A,B,C))
+ =>
+  ab4a;
+
+  brule(BB.2,(A,B,C,D)) &
+  bnum(A) &
+  bnum(B) &
+  bnum(C) &
+  bnum(D) &
+  bmodr(BB.2,(0,0,0,0,A,B,C,D))
+ =>
+  ab4a;
+
+  brule(BB.2,(A,B,C,D,E)) &
+  bnum(A) &
+  bnum(B) &
+  bnum(C) &
+  bnum(D) &
+  bnum(E) &
+  bmodr(BB.2,(0,0,0,A,B,C,D,E))
+ =>
+  ab4a;
+
+  brule(BB.2,(A,B,C,D,E,F)) &
+  bnum(A) &
+  bnum(B) &
+  bnum(C) &
+  bnum(D) &
+  bnum(E) &
+  bnum(F) &
+  bmodr(BB.2,(0,0,A,B,C,D,E,F))
+ =>
+  ab4a;
+
+  brule(BB.2,(A,B,C,D,E,F,G)) &
+  bnum(A) &
+  bnum(B) &
+  bnum(C) &
+  bnum(D) &
+  bnum(E) &
+  bnum(F) &
+  bnum(G) &
+  bmodr(BB.2,(0,A,B,C,D,E,F,G))
+ =>
+  ab4a;
+
+  brule(BB.2,(A,B,C,D,E,F,G,H)) &
+  bnum(A) &
+  bnum(B) &
+  bnum(C) &
+  bnum(D) &
+  bnum(E) &
+  bnum(F) &
+  bnum(G) &
+  bnum(H)
+ =>
+  ab4a;
+
+  brule(BB.3,X) &
+  bmodr(BB.3,(X,(n-3)))
+ =>
+  ab4(n)(5);
+
+  ab4(n*2)(5)
+ =>
+  ab4(n)(4);
+
+  ab4(n-49)(4)
+ =>
+  ab4(n)(3);
+
+  ab4(n*3)(3)
+ =>
+  ab4(n)(2);
+
+  ab4(n+17)(2)
+ =>
+  ab4(n)(1);
+
+  Writef(("\n  Codes: IP address Error: %\n\n",bsrv n berv)) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  IP address Error - Aborted  '")) &
+  bhalt
+ =>
+  ab4(n);
+
+  bnum(n) &
+  ab4(n)(1)
+ =>
+  ab4(n);
+
+
+
+
+
+
+
+
+
+  If_hostids &
+  Printf(("\n  %\n",x)) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  Invalid hostid  '")) &
+  bhalt
+ =>
+  ab2b$N(x);
+
+  If_hostids &
+  bnum(a) &
+  btest(a>=0) &
+  btest(a<16) &
+  bnum(b) &
+  btest(b>=0) &
+  btest(b<16) &
+  bnum(c) &
+  btest(c>=0) &
+  btest(c<16) &
+  bnum(d) &
+  btest(d>=0) &
+  btest(d<16) &
+  bnum(e) &
+  btest(e>=0) &
+  btest(e<16) &
+  bnum(f) &
+  btest(f>=0) &
+  btest(f<16) &
+  bnum(g) &
+  btest(g>=0) &
+  btest(g<16) &
+  bnum(h) &
+  btest(h>=0) &
+  btest(h<16) &
+  ab4 bsmap (a,b,c,d,e,f,g,h) &
+  ab4a &
+  ab5 &
+  aa_aa
+ =>
+  ab2b$N(a:b:c:d:e:f:g:h:?);
+
+
+
+
+
+  If_IPAddresses &
+  ab4 bsmap x &
+  ab4a &
+  ab5 &
+  aa_aa
+ =>
+  ab2c(x);
+
+  If_IPAddresses &
+  Printf(("\n  %\n",x)) &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  Invalid IP address  '")) &
+  bhalt
+ =>
+  ab2b$N(x);
+
+  If_IPAddresses &
+  bnum(a) &
+  btest(a>=0) &
+  btest(a<=255) &
+  bnum(b) &
+  btest(b>=0) &
+  btest(b<=255) &
+  ab2c(a/16,a-(a/16)*16,b/16,b-(b/16)*16,0,0,0,0)
+ =>
+  ab2b$N(a.b);
+
+  If_IPAddresses &
+  bnum(a) &
+  btest(a>=0) &
+  btest(a<=255) &
+  bnum(b) &
+  btest(b>=0) &
+  btest(b<=255) &
+  bnum(c) &
+  btest(c>=0) &
+  btest(c<=255) &
+  ab2c(a/16,a-(a/16)*16,b/16,b-(b/16)*16,c/16,c-(c/16)*16,0,0)
+ =>
+  ab2b$N(a.b.c);
+
+  If_IPAddresses &
+  bnum(a) &
+  btest(a>=0) &
+  btest(a<=255) &
+  bnum(b) &
+  btest(b>=0) &
+  btest(b<=255) &
+  bnum(c) &
+  btest(c>=0) &
+  btest(c<=255) &
+  bnum(d) &
+  btest(d>=0) &
+  btest(d<=255) &
+  ab2c(a/16,a-(a/16)*16,b/16,b-(b/16)*16,c/16,c-(c/16)*16,d/16,d-(d/16)*16)
+ =>
+  ab2b$N(a.b.c.d);
+
+  If_hostids &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  Invalid hostid  '")) &
+  bhalt
+ =>
+  ab2a$N;
+
+  If_IPAddresses &
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  Invalid IP address  '")) &
+  bhalt
+ =>
+  ab2a$N;
+
+  bget(".BBcom",x) &
+  bmodr(AA.2,x) &
+  ab2b$N(x)
+ =>
+  ab2a$N;
+
+  ab2a$N
+ =>
+  ab2$N;
+
+
+
+  bshell(bcatl("$BKIT/BLIB/BPrompt '  Invalid date  '")) &
+  ab$(N+1)
+ =>
+  ab1$N;
+
+  bget(".Bcom",(x:y)) &
+  bnum(x) &
+  bnum(y) &
+  btest(x>1994) &
+  btest(x<3000) &
+  btest(y>0) &
+  btest(y<13) &
+  cc_00(((x-1995)*12)+y-10)(0) &
+  ab2$N
+ =>
+  ab1$N;
+
+  bmodr(BB.2,?) &
+  bmodr(BB.3,?) &
+  bmodr(BB.4,?) &
+  bmodr(BB.5,?) &
+  bshell("xterm -geometry 68x3+200+200 -bg Ivory -e codesinp 1") &
+  ab1$N
+ =>
+  ab$N
+
+END

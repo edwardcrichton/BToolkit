@@ -1,0 +1,96 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY POGPreProcessStandardizeX IS
+
+/***
+HERE(("nested if conversion from POGPreProcessStandardizeX"))=>
+   (a ==> ( C [] c ) ) == _____dist__(a)(?[]c)(C);
+***/
+
+/*** HERE((6))=> ***/
+  _____dist3__(a)(?)(Y) == Y;
+
+/*** HERE((5))=> ***/
+  _____dist3__(a)(C[]c)(Y) == _____dist1__(a)(C)(Y)(c);
+
+/*** HERE((4b))=> ***/
+  _____dist2__(a)(X)(C)(c) == _____dist3__(a)(X)(C[]c);
+
+/*** HERE((4a))=> ***/
+  _____dist2__(a)(X)(?)(c) == _____dist3__(a)(X)(c);
+
+/*** HERE((3b))=> ***/
+  _____dist1__(a)(X)(C)(c) == _____dist2__(a)(X)(C)(a==>c);
+
+/*** HERE((3a))=> ***/
+  _____dist1__(a)(X)(C)(g==>c) == _____dist2__(a)(X)(C)(bflat(a&g)==>c);
+
+/*** HERE((2))=> ***/
+  _____dist__(a)(X)(c) == _____dist1__(a)(X)(?)(c);
+
+/*** HERE((1))=> ***/
+  _____dist__(a)(X)(C[]c) == _____dist__(a)(X[]c)(C);
+
+
+
+/***
+HERE(("bool conversion from POGPreProcessStandardizeX"))=>
+***/
+  ((n<=m ==> v:=TRUE [] m<n ==> v:=FALSE) == (v:=bool(n<=m)));
+
+/***
+HERE(("bool conversion from POGPreProcessStandardizeX"))=>
+***/
+  ((m<n ==> v:=FALSE [] n<=m ==> v:=TRUE) == (v:=bool(n<=m)));
+
+/***
+HERE(("bool conversion from POGPreProcessStandardizeX"))=>
+***/
+  ((n<=m ==> v:=FALSE [] m<n ==> v:=TRUE) == (v:=bool(m<n)));
+
+/***
+HERE(("bool conversion from POGPreProcessStandardizeX"))=>
+***/
+  ((m<n ==> v:=TRUE [] n<=m ==> v:=FALSE) == (v:=bool(m<n)));
+
+
+
+/***
+HERE(("bool conversion from POGPreProcessStandardizeX"))=>
+***/
+  ((not(c) ==> v:=TRUE [] c ==> v:=FALSE) == (v:=bool(not(c))));
+
+/***
+HERE(("bool conversion from POGPreProcessStandardizeX"))=>
+***/
+  ((c ==> v:=FALSE [] not(c) ==> v:=TRUE) == (v:=bool(not(c))));
+
+/***
+HERE(("bool conversion from POGPreProcessStandardizeX"))=>
+***/
+  ((not(c) ==> v:=FALSE [] c ==> v:=TRUE) == (v:=bool(c)));
+
+/***
+HERE(("bool conversion from POGPreProcessStandardizeX"))=>
+***/
+  ((c ==> v:=TRUE [] not(c) ==> v:=FALSE) == (v:=bool(c)))
+
+END
+
+

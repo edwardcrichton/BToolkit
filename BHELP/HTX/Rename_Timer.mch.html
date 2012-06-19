@@ -1,0 +1,80 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Timer">
+  <TITLE>The Rename_Timer machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>               Rename_Timer
+
+<A NAME="SEES"><B>SEES</B></A>                  <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Scalar_TYPE.mch.html#MACHINE">Scalar_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>             Rename_cur_time, Rename_sto_time, Rename_exp_time
+
+/*
+  Rename_cur_time is implemented as the system call "time(NULL)", and thus
+  represents the time in seconds since 00:00:00 UTC, January 1, 1970.;
+  it is returned by Rename_GetCurTime.
+
+  Rename_sto_time stores a time (previously obtained through Rename_GetCurTime)
+  and may be accessed through Rename_GetStoTime.
+
+  Rename_StartTimer takes an inteval (in seconds) and sets Rename_exp_time;
+  Rename_CheckTimer then checks if Rename_exp_time has been reached.
+*/
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_cur_time : <A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A> &
+  Rename_sto_time : <A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A> &
+  Rename_exp_time : <A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A>
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_cur_time :: <A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A> ||
+  Rename_sto_time := 0 ||
+  Rename_exp_time := 0
+ 
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  time <-- <A NAME="OPNAME!Rename_GetCurTime">Rename_GetCurTime</A> = <B>BEGIN</B> time := Rename_cur_time <B>END</B>;
+
+  <A NAME="OPNAME!Rename_StoTime">Rename_StoTime</A>(time:<A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A>) = <B>BEGIN</B> Rename_sto_time := time <B>END</B>;
+
+  time <-- <A NAME="OPNAME!Rename_GetStoTime">Rename_GetStoTime</A> = <B>BEGIN</B> time := Rename_sto_time <B>END</B>;
+
+  exp_time <-- <A NAME="OPNAME!Rename_StartTimer">Rename_StartTimer</A>(interval:<A HREF="Scalar_TYPE.mch.html#SETS">SCALAR</A>) =
+    <B>PRE</B> Rename_cur_time + interval <= <A HREF="Scalar_TYPE.mch.html#DEFINITIONS">MaxScalar</A> <B>THEN</B>
+      Rename_exp_time := Rename_cur_time + interval ||
+      exp_time := Rename_cur_time + interval
+    <B>END</B>;
+
+  expired <-- <A NAME="OPNAME!Rename_CheckTimer">Rename_CheckTimer</A> =
+    <B>BEGIN</B> expired := <B>bool</B> ( Rename_exp_time <= Rename_cur_time ) <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:15 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

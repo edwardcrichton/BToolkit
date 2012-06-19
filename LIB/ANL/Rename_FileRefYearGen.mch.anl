@@ -1,0 +1,126 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(String_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(GEN_FILE_REF_YEAR)
+;
+(GEN_FILE_REF_YEAR)
+;
+(Rename_FileRefYearGen(?):(?):(?))
+;
+(
+(
+ (GEN_FILE_REF_YEAR)
+;
+ (? , Val_Op , NonDet_Op , (filePath , updatedYear , updatedRefNo <-- GEN_FILE_REF_YEAR(refString , year , refNo)))
+;
+ (refString , year , refNo)
+;
+ (filePath , updatedYear , updatedRefNo)
+;
+ (
+ (refString : STRING & year : NAT & refNo : NAT)
+ |
+ (
+ (BEGIN
+ filePath :: STRING ||
+ updatedYear :: NAT ||
+ updatedRefNo :: NAT
+ END)
+ )
+ )
+;
+ (
+ (refString : STRING & year : NAT & refNo : NAT)
+ |
+ (
+ (
+ (
+ @(filePathx).
+ (
+ (
+ (filePathx : STRING)
+ )
+ ==>
+ (
+ (filePath := filePathx)
+ )
+ )
+ )
+ ||
+ (
+ @(updatedYearx).
+ (
+ (
+ (updatedYearx : NAT)
+ )
+ ==>
+ (
+ (updatedYear := updatedYearx)
+ )
+ )
+ )
+ )
+ ||
+ (
+ @(updatedRefNox).
+ (
+ (
+ (updatedRefNox : NAT)
+ )
+ ==>
+ (
+ (updatedRefNo := updatedRefNox)
+ )
+ )
+ )
+ )
+ )
+)
+)

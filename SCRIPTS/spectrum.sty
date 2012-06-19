@@ -1,0 +1,499 @@
+% spectrum.sty
+%
+% Should be used with a PostScript printer.
+% Written by Jonathan Bowen/Peter Breuer, July 1989.
+% Adapted from PROCOS.sty and redo.sty
+% Modified by M.Tobin (18/3/91): "Report" -> "Report"
+% Modified by K.Lano (11/11/92). 
+% Modified by A.C.Lee (05/01/93).
+% Modified by B. Ritchie (11/02/97) for use in Spectrum project
+%    -- cosmetic changes, and added stuff to do ``page 3 of 20''
+%    -- simplified some of the ``heavier'' doc mgt stuff.
+%    -- renamed type and status to doctype and docstatus
+%       for compatibility with vdm-sl, 24 Feb 97
+% Modified by B-Core for compatibility with B-Toolkit
+%
+% Use as follows (for example):
+%
+%       \documentstyle[spectrum]{article}
+%
+%       \title{The BCore project document}   (no default)
+%       \author{Ib and Dave}		     (no default)
+%	\originator{BCORE}		     (RAL,DE,GMAV,CEA,SSI,IFAD,BCORE)
+%       \date{Jan, 1998}                     (default \today)
+%
+%       \projectno{AWE OCG 0682}
+%       \projectname{AMN-VHDL}
+%	\workpackage{1.0}		     (no default)
+%	\ident{001}			     (no default)
+%	\version{v1}			     (no default)
+%
+%	\doctype{TR}			     (default MI (misc))
+%       \docstatus{Draft}                    (default "Draft")
+%       \distrib{All staff}                  (no default)
+%       \toolversion{B-Toolkit V 4.25}       (B-Toolkit Current Release)
+%       \copyr{B-Core}                       (B-Core(UK) Limited)
+%       \history{This is the first edition.} (no default)
+%       \classification{RESTRICTED COMMERCIAL} (default UNCLASSIFIED )
+%       \purpose{To write LaTeX documents}   (no default)
+%       \approval{...}                       (default to standard blurb)
+%       \history{history of doc}             ( no default )
+%       \acknowledge{...}                    (default to standard blurb)
+%
+%       \begin{document}
+%	\maketitle
+%         :
+%	\section{Introduction}
+%	Here is an example of the kind of thing you want 
+%       in your \ document \ldots
+%         :
+%         :
+%       \end{document}
+ 
+% Front cover definition -- typically a \special command.
+\def\cover#1{\gdef\@cover{#1}}
+ 
+ 
+% Organization specific information.
+% ***THIS SHOULD BE EDITED AS REQUIRED AT THE LOCAL SITE***
+%
+% Site dependent \special name for PostScript file for front page
+% BR left this out (for now at least)
+% \cover{\special{psfile="/u/jcb/PROJECTS/BUT/frontpage.ps"}} % Works at LR
+\cover{\relax}
+
+% \cover{\special{...}}             % Works at your site hopefully!
+%
+% Optional logo.
+% E.g. Oxford University Arms.
+% \font\crestfont=crest
+% \def\Oxfordcrest{{\crestfont \char1}}
+% REDO project logo
+% \def\redologo{\special{/users/redo/ps/REDOlogo.ps}\hbox{\hskip 30pt}}
+ 
+% Output may be sent to a PostScript printer.
+% If \PostScript is defined then \special commands are used.
+% These may need to be modified for different versions of "dvi2ps".
+% If in doubt, or if PostScript not available, comment out the next
+% line with a "%" in the first column.
+\def\PostScript{}
+ 
+% End of organisation specific information.
+ 
+% Message for user.
+\typeout{Document Style Option `spectrum' <01 Dec 98>.}
+ 
+% Test for undefined definitions.
+\def\ifundefined#1{\expandafter\ifx\csname#1\endcsname\relax}
+% E.g.  \ifundefined{PostScript}<DVI option>\else<\special option>\fi
+ 
+% The following appears in fields which are absent when they
+% really oughtn't to be, shown by `no default' above.
+\def\unspecified{\fbox{\bf TO BE SPECIFIED}}
+ 
+% Postal address of site
+\def\address#1{\gdef\@address{#1}}
+\address{[ADDRESS not defined]}
+ 
+% International telephone number for site
+\def\tel#1{\gdef\@tel{Tel: #1 \\}}
+\tel{not defined}
+ 
+% International FAX telephone number for site
+\def\fax#1{\gdef\@fax{Fax: #1 \\}}
+\fax{none} % really, should allow empty fax number
+ 
+% Telex number for site (not used at present)
+\def\telex#1{\gdef\@telex{Telex: #1 \\}}
+\telex{none}
+ 
+% Eurokom address for site
+\def\eurokom#1{\gdef\@eurokom{Eurokom: {\tt #1} \\}}
+\eurokom{none}
+ 
+% E-mail address for site
+\def\email#1{\gdef\@email{E-mail: {\tt #1} \\}}
+\email{none}
+ 
+
+% Document type
+\def\doctype#1{\gdef\@doctype{#1}
+ \gdef\full@doctype{\@nameuse{doctype@#1}}}
+\doctype{MI}
+ 
+
+% Document types (from Documentation Standard)
+\def\doctype@WP{Working-paper}
+\def\doctype@TR{Report}
+\def\doctype@RE{Report}
+\def\doctype@DE{Deliverable}
+\def\doctype@ST{Standard}
+\def\doctype@PL{Plan}
+\def\doctype@PR{Presentation}
+\def\doctype@MM{Meeting Minutes}
+\def\doctype@MA{Management}
+\def\doctype@LE{Legal}
+\def\doctype@MI{Miscellaneous document}
+% Add further definitions here if required.
+% IF ANY PARTNER ADDS ANY DEFINITIONS, PLEASE DISTRIBUTE TO
+% ALL OTHER PARTNERS VIA EUROKOM.
+% PLEASE TRY TO AVOID ADDING NEW DEFINITIONS IF POSSIBLE!
+
+% The following five items are picked up from the \code macro:
+% (which BR does not recommend using!)
+  
+% 1)
+% Project number 
+\def\projectno#1{\gdef\@projectno{#1}}
+\projectno{Not defined}
+
+% 1a)
+% Project name
+\def\projectname#1{\gdef\@projectname{#1}}
+\projectname{Not given}
+ 
+% 2)
+% Organisation acronym for originator of document
+% Must be one of the following partners
+\def\originator#1{\gdef\@originator{#1}
+ \@nameuse{originator@#1}}
+ 
+% Partners
+% Currently Tel, Fax, Telex, Eurokom and e-mail are included but not
+% used. Only the address is displayed in the front cover.
+ 
+% BCORE are also the coordinator
+\def\originator@COORD{\originator@BCORE}
+ 
+% other originators can be defined
+
+\def\originator@BCORE{
+\address{B-Core (UK) Ltd.\\
+    The Magdalen Centre\\
+    Oxford Science Park\\
+    Oxford OX4 4GA, UK}
+\tel{+44 1865 784520}
+\fax{+44 1865 784518}
+\email{b@bcore.com}
+}
+
+% 3)
+% Initials
+\def\initials#1{\gdef\@initials{#1}}
+\initials{N N}
+ 
+ 
+% 4)
+% Document identification number - 4 digits
+\def\ident#1{\gdef\@ident{#1}}
+\ident{\unspecified}
+ 
+
+% 5)
+% Document version number - V digits
+\def\version#1{\gdef\@ident{#1}}
+\version{unspecified}
+  
+% All-in-one identification info. Be sure to get it right:
+% The info must be in the form: 
+% `projectname/originator/wkpackage/ident/version'.
+% Actually, BR doesn't like this - too error-prone in use
+% Suggest using individual macros instead: \originator, \activity, \ident
+% and \version
+%
+\def\code#1{\@myindent #1 }
+\def\@myindent #1/#2/#3/#4/#5 {
+\projectname{#1}
+\originator{#2}
+\activity{#3} 
+\ident{#4}
+\version{#5}
+}
+\def\@code{\@projectname/\@originator/\@workpackage/\@ident/\@version}
+\def\code@version{\@code}
+ 
+
+% Title
+\def\title#1{\gdef\@title{#1}}
+\title{\unspecified}
+ 
+% Author
+\def\author#1{\gdef\@author{#1}}
+\author{\unspecified}
+ 
+%% Approved by
+%\def\approved#1{\gdef\@approved{#1}}
+%\approved{\unspecified}
+ 
+% Document version
+\def\version#1{\gdef\@version{#1}}
+\version{\fbox{\bf DRAFT}}
+ 
+% Version number
+\def\@Version{Version\ \@version}
+ 
+% Status
+\def\docstatus#1{\gdef\@docstatus{#1}}
+\docstatus{Draft}
+ 
+ 
+% The following two items are specified by the `\activity' macro.
+% The format workpackage.task must be used.
+ 
+ 
+% 1) workpackage designator
+\def\workpackage#1{\gdef\@workpackage{#1}}
+\workpackage{\unspecified}
+ 
+ 
+%% 2) task number
+%\def\task#1{\gdef\@task{#1}}
+%\task{\unspecified}
+ 
+ 
+% Activity allocation
+% simplified by BR (no tasks)
+\def\activity#1{\@myactivity #1 }
+% \def\@myactivity #1.#2 {
+\def\@myactivity #1 {
+\workpackage{#1}
+% \task{#2}
+}
+ 
+% Distribution
+\def\distrib#1{\gdef\@distrib{#1}}
+\distrib{\unspecified}
+ 
+% B Toolkit Version used
+\def\toolversion#1{\gdef\@toolversion{#1}}
+\toolversion{B-Toolkit Current Release}
+ 
+% Copyright
+\def\copyr#1{\gdef\@copyright{#1}}
+\copyr{B-Core(UK) Limited}
+ 
+% Document History
+\def\history#1{\gdef\@history{#1}}
+\history{\unspecified}
+ 
+% Document Purpose
+\def\purpose#1{\gdef\@purpose{#1}}
+\purpose{\unspecified}
+ 
+% Standard acknowledgement of funding
+\def\acknowledge#1{\gdef\@acknowledge{#1}}
+\acknowledge{
+\section*{Acknowledgement}
+This report reflects work which is funded or partially funded by Esprit
+under the Spectrum project. 
+}
+ 
+% Standard classification blurb.
+\def\classification#1{\gdef\@classification{#1}}
+\classification{UNCLASSIFIED}
+ 
+ 
+% Standard approval blurb.
+\def\approval#1{\gdef\@approval{#1}}
+\approval{
+Unless otherwise specified, this document is for use only within the
+specified
+project and may not be used for any other purpose unless
+specifically authorised in writing by the B-Core(UK) Limited  
+}
+ 
+% Page usage.
+\oddsidemargin 1pt
+\evensidemargin 1pt
+\marginparwidth 30pt
+%\topmargin 1pt
+%\footskip 24pt
+\textheight 650pt
+%\textheight 630pt
+\textwidth 460pt
+% End of page usage.
+ 
+% Paragraph styles.
+% No indentation, space between paragraphs
+\def\spacepars{\parindent 0pt \parskip 8pt}
+% Indentation, no space between paragraphs
+\def\nonspacepars{\parindent 2em \parskip 0pt}
+% Default is \nonspacepars
+ 
+% Backwards compatibility with "redo.sty"
+\def\Project{\@projectno}
+\def\Name{B-Core}
+\def\Doctype{\@doctype}
+\def\No{\@ident}
+\def\Org{\@originator}
+\def\ID{\Project--\Doctype--\Org--\No}
+\def\IssueNo{\@version} % Default is first "pre-release" version
+\def\Issue{Issue \IssueNo}
+\def\DocID{\rm\ID\quad\Issue}
+\def\Title{\@title}
+\def\Author{\@author}
+\def\Page{\rm Page\ }
+\def\Address{\@address}
+ 
+% Access to tel, fax, telex, Eurokom and e-mail info:
+\def\Tel{\@tel}
+\def\Fax{\@fax}
+\def\Telex{\@telex}
+\def\Eurokom{\@eurokom}
+\def\Email{\@email}
+ 
+%% Note: we need to set a \label{lastpage} at the end of the document
+%% in order to use the following correctly.  This is done here by
+%% (re)defining \enddocument from latex.tex; I hope that this doesn't
+%% cause any subsequent problems!
+%%
+% Page style
+\if@twoside         % If two-sided printing.
+\def\ps@plain{
+\def\@oddfoot{\code@version \hfill \@date}
+\def\@evenfoot{\@date \hfill \code@version}
+\def\@oddhead{\fbox{\classification} \hfil \rm\thepage\ (of \pageref{documentlastpage})}%  Right heading.
+\def\@evenhead{\rm \thepage\hfil \fbox{\classification}}% Left heading.
+}
+\else               % If one-sided printing.
+\def\ps@plain{
+%\def\@oddfoot{\code@version \hfill \@date}
+%\def\@evenfoot{\code@version \hfill \@date}
+\def\@oddfoot{\hfill \code@version}
+\def\@evenfoot{\hfill \code@version}
+\def\@oddhead{\fbox{\@classification} \hfil \rm\thepage\ (of \pageref{documentlastpage})}% Heading.
+\def\@evenhead{\fbox{\@classification} \hfil \rm\thepage\ (of \pageref{documentlastpage})}% Heading.
+}
+\fi
+ 
+\let\ps@headings\ps@plain
+ 
+% Date: day month, year
+\def\today{\number\day\space\ifcase\month\or
+  January\or February\or March\or April\or May\or June\or
+  July\or August\or September\or October\or November\or December\fi,
+  \number\year}
+ 
+ 
+% Special index
+\def\thespecialindex{\@restonecoltrue\if@twocolumn\@restonecolfalse\fi
+\columnseprule \z@
+\columnsep 35pt\twocolumn
+ \parindent\z@
+ \parskip\z@ plus .3pt\relax\let\item\@idxitem}
+\def\endthespecialindex{\if@restonecol\onecolumn\else\clearpage\fi}
+ 
+% Standard font sizes (don't change with 10pt/11pt/12pt options)
+\def\cover@tiny{\@setsize\tiny{7pt}\vipt\@vipt}
+\def\cover@scriptsize{\@setsize\scriptsize{9.5pt}\viiipt\@viiipt}
+\def\cover@footnotesize{\@setsize\footnotesize{11pt}\ixpt\@ixpt}
+\def\cover@small{\@setsize\small{12pt}\xpt\@xpt}
+\def\cover@normalsize{\@setsize\normalsize{13.6pt}\xipt\@xipt}
+\def\cover@large{\@setsize\large{14pt}\xiipt\@xiipt}
+\def\cover@Large{\@setsize\Large{18pt}\xivpt\@xivpt}
+\def\cover@LARGE{\@setsize\LARGE{22pt}\xviipt\@xviipt}
+\def\cover@huge{\@setsize\huge{25pt}\xxpt\@xxpt}
+\def\cover@Huge{\@setsize\Huge{30pt}\xxvpt\@xxvpt}
+ 
+%% List of partners
+%\def\Star{$\star$ \quad}
+%\def\Partner#1{\par\noindent\hbox{\Star #1}}
+%\def\Partners{\begin{minipage}{5in}\cover@normalsize\bf
+%\Partner{Rutherford Appleton Laboratory (UK) -- coordinator}
+%% ...
+%\end{minipage}}
+ 
+% Centered rule
+\def\Rule{\begin{center}
+\makebox[4in]{\hrulefill}
+\end{center}}
+
+%% Old style definition included for compatibility.
+%% HOWEVER NOTE THAT \originator MUST BE DEFINED.
+%\def\REDOdocument#1#2#3#4{\doctype{#1}\ident{#2}
+%  \version{#3}\title{#4}}
+ 
+% The cover page
+\def\cover@page{
+\let\th@nks\thanks\def\thanks##1{}
+\let\@nd\and\def\and{\\}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{center}
+    \vspace*{70mm}
+    {\cover@Large\bf \@title}\\[6mm]
+    {\cover@large \@author}\\[5mm]
+    \cover@normalsize
+    \code@version\\[2.5mm]
+    \@date\\[5mm]
+    {\bf \@address}\\[5mm]
+%   \@tel \@fax \@telex \@eurokom \@email \vspace{5mm}
+    Copyright \copyright\ \number\year \quad \@copyright
+  \end{center}
+  \ifundefined{PostScript}{}\else\@cover\fi    % @cover / But
+  \newpage                              % second page
+  \thispagestyle{empty}
+\section*{Document Information}
+{\bf Classification:} \quad \@classification\\[4mm]
+{\bf Approval:}\\
+\@approval\\[4mm]
+  \begin{tabular}{@{}lp{11.5cm}} \cover@normalsize\rm
+    {\bf Author(s): }       &
+      \parbox[t]{11.45cm}{\@author\vspace{1.5mm}}   \\[1.5mm]
+%    {\bf Approved: }        &
+%      \parbox[t]{11.45cm}{\@approved\vspace{1.5mm}} \\[1.5mm]
+    {\bf Date: }            & {\@date}              \\[1.5mm]
+    {\bf Doc.\ Id.: }        & {\code@version}       \\[1.5mm]
+    {\bf Doc.\ type:}        & {\full@doctype}       \\[1.5mm]
+    {\bf No. of pages:}     & {\pageref{documentlastpage}}
+                                                    \\[1.5mm]
+    {\bf Status:}           & {\@docstatus}         \\[1.5mm]
+    {\bf Project:}          & {\@projectno : \@projectname} \\[1.5mm]
+    {\bf Work Package:}     & {\@workpackage}       \\[1.5mm]
+%    {\bf Task:}             & {\@task}              \\[1.5mm]
+    {\bf Distribution:}     & {\@distrib}           \\[1.5mm]
+   {\bf Tool Version:}  & {\@toolversion}
+  \end{tabular}
+  \vfil
+\noindent
+\cover@normalsize\rm
+{\bf Document History} \\ \\
+{\@history}
+\vfil
+\noindent
+{\bf Purpose} \\
+{\@purpose}
+%\vfil
+%\@acknowledge
+\end{titlepage}
+\ps@plain
+\pagenumbering{arabic}
+\let\thanks\th@nks\let\and\@nd}
+ 
+ 
+\let\d@cument\document
+\def\document{\d@cument\cover@page}
+ 
+% "alltt" environment - like the "verbatim" environment
+% except that LaTeX macros can be included.
+\def\docspecials{\do\ \do\$\do\&%
+  \do\#\do\^\do\^^K\do\_\do\^^A\do\%\do\~}
+\def\alltt{\trivlist \item[]\if@minipage\else\vskip\parskip\fi
+\leftskip\@totalleftmargin\rightskip\z@
+\parindent\z@\parfillskip\@flushglue\parskip\z@
+\@tempswafalse
+\def\par{\if@tempswa\hbox{}\fi\@tempswatrue\@@par}
+\obeylines \tt \catcode``=13
+% \@noligs
+\let\do\@makeother \docspecials
+ \frenchspacing\@vobeyspaces}
+\let\endalltt=\endtrivlist
+ 
+%% Redefine \enddocument to add a label for the last page number.
+%%
+\def\enddocument{\@checkend{document}\label{documentlastpage}\clearpage\begingroup  
+\if@filesw \immediate\closeout\@mainaux 
+\def\global\@namedef##1##2{}\def\newlabel{\@testdef r}%
+\def\bibcite{\@testdef b}\@tempswafalse \makeatletter\input \jobname.aux
+\if@tempswa \@warning{Label(s) may have changed.  Rerun to get
+cross-references right}\fi\fi\endgroup\deadcycles\z@\@@end}

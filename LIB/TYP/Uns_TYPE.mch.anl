@@ -1,0 +1,515 @@
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(UNSIGNED)
+;
+(UNSIGNED)
+;
+(MinUns,MaxUns,n2u,u2n,u2bs,bs2u)
+;
+(MinUns,MaxUns,n2u,u2n,u2bs,bs2u)
+;
+(?+?: UNSIGNED*UNSIGNED +-> UNSIGNED & ?-?: UNSIGNED*UNSIGNED +-> UNSIGNED & ?*?: UNSIGNED*UNSIGNED +-> UNSIGNED & ?/?: UNSIGNED*UNSIGNED +-> UNSIGNED & ? mod ?: UNSIGNED*UNSIGNED +-> UNSIGNED & n2u: 0..65535 >->> UNSIGNED & u2n = n2u~ & MinUns = n2u(0) & MaxUns = n2u(65535) & u2bs: UNSIGNED >->> {ss | ss: seq({0,1}) & size(ss) = 16} & bs2u = u2bs~ & bnd = {0|->0|->0,0|->1|->0,1|->0|->0,1|->1|->1} & bor = {0|->0|->0,0|->1|->1,1|->0|->1,1|->1|->1} & bxr = {0|->0|->0,0|->1|->1,1|->0|->1,1|->1|->0} & bcp = {0|->1,1|->0} & card(UNSIGNED): NAT1)
+;
+(?+?: UNSIGNED*UNSIGNED +-> UNSIGNED & ?-?: UNSIGNED*UNSIGNED +-> UNSIGNED & ?*?: UNSIGNED*UNSIGNED +-> UNSIGNED & ?/?: UNSIGNED*UNSIGNED +-> UNSIGNED & ? mod ?: UNSIGNED*UNSIGNED +-> UNSIGNED & n2u: 0..65535 >->> UNSIGNED & u2n = n2u~ & MinUns = n2u(0) & MaxUns = n2u(65535) & u2bs: UNSIGNED >->> {ss | ss: seq({0,1}) & size(ss) = 16} & bs2u = u2bs~ & bnd = {0|->0|->0,0|->1|->0,1|->0|->0,1|->1|->1} & bor = {0|->0|->0,0|->1|->1,1|->0|->1,1|->1|->1} & bxr = {0|->0|->0,0|->1|->1,1|->0|->1,1|->1|->0} & bcp = {0|->1,1|->0} & card(UNSIGNED): NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(ULE,UGE,ULT,UGT,UEQ,UNE,UADD,USUB,UMUL,UDIV,UMOD,UINC,UDEC,UAND,UOR,UXOR,UNOT)
+;
+(ULE,UGE,ULT,UGT,UEQ,UNE,UADD,USUB,UMUL,UDIV,UMOD,UINC,UDEC,UAND,UOR,UXOR,UNOT)
+;
+(Uns_TYPE(?):(?):(?))
+;
+(
+(
+ (ULE)
+;
+ (?,Val_Op,Det_Op,(rr <-- ULE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa<=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bool(aa<=bb))
+ )
+ )
+)
+,
+(
+ (UGE)
+;
+ (?,Val_Op,Det_Op,(rr <-- UGE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa>=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bool(bb<=aa))
+ )
+ )
+)
+,
+(
+ (ULT)
+;
+ (?,Val_Op,Det_Op,(rr <-- ULT(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa<bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bool(aa<bb))
+ )
+ )
+)
+,
+(
+ (UGT)
+;
+ (?,Val_Op,Det_Op,(rr <-- UGT(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa>bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bool(bb<aa))
+ )
+ )
+)
+,
+(
+ (UEQ)
+;
+ (?,Val_Op,Det_Op,(rr <-- UEQ(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa = bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bool(aa = bb))
+ )
+ )
+)
+,
+(
+ (UNE)
+;
+ (?,Val_Op,Det_Op,(rr <-- UNE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa/=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bool(not(aa = bb)))
+ )
+ )
+)
+,
+(
+ (UADD)
+;
+ (?,Val_Op,Det_Op,(rr <-- UADD(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & aa+bb: UNSIGNED)
+ |
+ (
+ (rr:=aa+bb)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & aa+bb: UNSIGNED)
+ |
+ (
+ (rr:=aa+bb)
+ )
+ )
+)
+,
+(
+ (USUB)
+;
+ (?,Val_Op,Det_Op,(rr <-- USUB(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & aa-bb: UNSIGNED)
+ |
+ (
+ (rr:=aa-bb)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & aa-bb: UNSIGNED)
+ |
+ (
+ (rr:=aa-bb)
+ )
+ )
+)
+,
+(
+ (UMUL)
+;
+ (?,Val_Op,Det_Op,(rr <-- UMUL(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & aa*bb: UNSIGNED)
+ |
+ (
+ (rr:=aa*bb)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & aa*bb: UNSIGNED)
+ |
+ (
+ (rr:=aa*bb)
+ )
+ )
+)
+,
+(
+ (UDIV)
+;
+ (?,Val_Op,Det_Op,(rr <-- UDIV(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & bb/=MinUns & aa/bb: UNSIGNED)
+ |
+ (
+ (rr:=aa/bb)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & not(bb = MinUns) & aa/bb: UNSIGNED)
+ |
+ (
+ (rr:=aa/bb)
+ )
+ )
+)
+,
+(
+ (UMOD)
+;
+ (?,Val_Op,Det_Op,(rr <-- UMOD(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & bb/=MinUns & aa mod bb: UNSIGNED)
+ |
+ (
+ (rr:=aa mod bb)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED & not(bb = MinUns) & aa mod bb: UNSIGNED)
+ |
+ (
+ (rr:=aa mod bb)
+ )
+ )
+)
+,
+(
+ (UINC)
+;
+ (?,Val_Op,Det_Op,(rr <-- UINC(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & aa+n2u(1): UNSIGNED)
+ |
+ (
+ (rr:=aa+n2u(1))
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & aa+n2u(1): UNSIGNED)
+ |
+ (
+ (rr:=aa+n2u(1))
+ )
+ )
+)
+,
+(
+ (UDEC)
+;
+ (?,Val_Op,Det_Op,(rr <-- UDEC(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & aa-n2u(1): UNSIGNED)
+ |
+ (
+ (rr:=aa-n2u(1))
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & aa-n2u(1): UNSIGNED)
+ |
+ (
+ (rr:=aa-n2u(1))
+ )
+ )
+)
+,
+(
+ (UAND)
+;
+ (?,Val_Op,Det_Op,(rr <-- UAND(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bs2u(u2bs(aa)><u2bs(bb);
+ bnd)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bs2u(u2bs(aa)><u2bs(bb);
+bnd))
+ )
+ )
+)
+,
+(
+ (UOR)
+;
+ (?,Val_Op,Det_Op,(rr <-- UOR(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bs2u(u2bs(aa)><u2bs(bb);
+ bor)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bs2u(u2bs(aa)><u2bs(bb);
+bor))
+ )
+ )
+)
+,
+(
+ (UXOR)
+;
+ (?,Val_Op,Det_Op,(rr <-- UXOR(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bs2u(u2bs(aa)><u2bs(bb);
+ bxr)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED & bb: UNSIGNED)
+ |
+ (
+ (rr:=bs2u(u2bs(aa)><u2bs(bb);
+bxr))
+ )
+ )
+)
+,
+(
+ (UNOT)
+;
+ (?,Val_Op,Det_Op,(rr <-- UNOT(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bs2u(u2bs(aa);
+ bcp)
+ END)
+ )
+ )
+;
+ (
+ (aa: UNSIGNED)
+ |
+ (
+ (rr:=bs2u(u2bs(aa);
+bcp))
+ )
+ )
+)
+)

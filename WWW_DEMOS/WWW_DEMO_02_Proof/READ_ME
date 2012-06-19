@@ -1,0 +1,180 @@
+Proof - the `Factorial' development
+
+
+This demonstration illustrates a complete software development of the
+mathematical factorial function, incorporating animation, the use of
+SLIB constructs in the design, the proof obligation generator, the
+provers to establish correctness, and the interface generator to
+produce running code.
+
+The main purpose of this demonstration is to illustrate proof, and
+you should read the on-line help for `ProofObligations' (under
+`Main') and all topics under `Proof' (particularly the help on
+the InterProver - `Interactive Proofs').
+
+
+
+
+The B-Toolkit configuration and dependency managers are illustrated,
+together with the following tools:
+
+        B-Analyser (anl)
+        B-Animator (anm)
+        B-POGenerator (pog)
+        B-ProofPrinter (ppf)
+        B-AutoProver (apr)
+        B-InterProver (ipr)
+        B-Hypertext (ToolBar)
+        B-InterfaceGenerator (itf)
+
+
+
+
+A stateless specification (MACHINE) `Factorial' contains a single
+operation to return the factorial of its input if possible (the
+mathematical definition of factorial is contained in the subordinate
+machine `FACTORIAL'). This is implemented in `FactorialI' which is
+built on an SLIB integer machine using a single WHILE loop.
+
+1.  Analyse the implementation `FactorialI'; the specification
+    `Factorial' is first analysed and three SLIB constructs are
+    introduced.
+
+2.  Now invoke `Hypertext' on the ToolBar and choose the `Summary
+    Page' (check that the Hypertext Viewer in the Editors/Viewers
+    of the TopBar Options is appropriately set first); use the
+    navigation facilities to read how the specification and
+    implementation are built.
+
+3.  You may animate `Factorial' (anm); the animation makes use of
+    a simple theory file `Factorial.mch.thy' containing two rewrite
+    rules to correspond with the definition of the factorial function.
+
+4.  Generate the proof obligations for `FactorialI' (pog).
+
+5.  Enter the Provers Environment (TopBar Environment button) and
+    print the proof obligations (ppf); `FactorialI.imp.0.prf' is created,
+    and this may be opened to inspect the 21 proof obligations.
+
+6.  We now conduct three levels of automatic proof; first open the
+    PROOFMETHOD file (pmd) for the current level. It specifies the
+    standard tactic and a REASONING_DEPTH of 0 (the lowest). Close
+    it (the `OK' button) and submit for AutoProof (apr).
+
+7.  At this level eight proof obligations are discharged; now open
+    the PROOFMETHOD file again (pmd); this next level specifies the
+    standard tactic and a REASONING_DEPTH of 1. Again close it and
+    submit for AutoProof (apr).
+
+8.  Two further proof obligation are discharged; repeat the cycle
+    once more, when nine further proof obligations are discharged
+    using the highest REASONING_DEPTH of 2.
+
+9.  We are now at Level 3 and have exhausted the capabilities of the
+    AutoProver (the only thing we haven't tried is to incorporate
+    `FEQL' in the tactic, although in this development it does not
+    help - since we are implementing a stateless machine we have no
+    abstract-concrete invariant equalities for which that tactic
+    is most useful). So we have to develop some theory of our own
+    to supplement that of the built-in library ...
+
+10. You have two options - either you can develop your own theory,
+    or you can proceed to the next level where we have provided
+    some. If you want to do the latter, first invoke the AutoProver,
+    and although no further proof obligations are discharged, a
+    further level is created when you can invoke the InterProver
+    (ipr). However, if you want to develop your own theory, invoke
+    the InterProver now.
+
+11. An editor is invoked containing `FactorialI.imp.3.pmd' which
+    contains two empty theories `UsersTheory' and `FwdUsersTheory';
+    the former is for normal (goal-match) rules, and the latter
+    for forward (hypothesis-match) rules. Select `comp_fac' from
+    the `Undischarged Theories' menu, followed by`comp_fac.19',
+    the second (easier!) of the two unproved goals.
+
+12. We now begin the InterProof proper. Select a depth from the
+    `InterProver Reasoning Depth' menu; although we have conducted
+    AutoProofs at all three depths, since you are now supplementing
+    the mathematical library, it may not be necessary to select
+    depth 2, although in a small example like this the saving achieved
+    through lower depths (in the main, fewer hypotheses being
+    generated) may not be worthwhile. Now invoke `Run Prover' from
+    the `InterProver Operation' menu.
+
+13. This first phase of InterProof is concerned with finding an
+    appropriate point in the INCOMPLETE proof where you think you can
+    provide mathematical insight; the prover stops and displays the
+    `Current Goal' - ie. the point at which the AutoProver could make
+    no further progress. Now invoke `Backtrack' - this causes the
+    prover to navigate back up the incomplete proof tree to find an
+    alternative branch. Again the `Current Goal' is displayed and
+    the dialogue window provides a commentary.
+
+14. Continue with `Backtrack' until the original goal is restored.
+    You have now seen all the points at which the incomplete proof
+    broke down; and it is necessary to select one of them that you
+    feel looks most promising - ie. one you feel that you can prove!
+    It will be necessary to have a look at the hypotheses when doing
+    so - `Show Hypotheses' and possibly to try different reasoning
+    depths. Having made the selection you should invoke `Create Lemma'
+    (it may ne necessary to create more than one lemma from a
+    particular goal), after which you see `Proof Obligation discharged'
+    in the dialogue window and you are returned to the `Undischarged
+    Theories' menu - now showing Lemmas. Whilst creating the lemmas
+    you should be entering the mathematical rules in one of the
+    THEORY containers of the PROOFMETHOD. (Note that the appearance of
+    `done = TRUE' in the hypothesis list, and the subsequent appearance
+    of `in_range = TRUE' indicates that you should be considering the
+    first disjunct ...)
+
+15. The first phase of InterProof is now complete - you should have
+    created one or more lemmas and entered some mathematical theory
+    in the PROOFMETHOD. Now select `Lemmas' from the `Undischarged
+    Theories' menu and select one from the resulting menu. Now the
+    dialog window should confirm `PROOFMETHOD loaded' (if there
+    is a parse error, correct it, save, and invoke `Reload
+    PROOFMETHOD' from the `InterProver Operation' menu. Note that
+    there is now no depth to select, since this is set in the
+    PROOFMETHOD.
+
+16. This second phase if InterProof now simulates the subsequent action
+    of the AutoProver; the built-in library is supplemented with your
+    theory and, after invoking `Run Prover' a detailed commentary of
+    what is happening is displayed in the dialogue window indicating
+    the success or otherwise of your attempt. If you do not succeed,
+    edit your PROOFMETHOD theory, invoke `Reload PROOFMETHOD' and
+    then `Run Prover'. When toy have succeeded with `comp_fac.19',
+    try `comp_fac.13'.
+
+17. If you have been successful, you may quit the InterProver and now
+    invoke the AutoProver, when the proofs will actually be committed
+    to the system (remember, the InterProver is just a browsing tool).
+    If you have not been successful, still invoke the AutoProver (to
+    move up a level) and repeat the InterProof at Level 4 when
+    `FactorialI.imp.4.pmd' already contains theory. Having done this
+    you may like to have another attempt at providing your own theory
+    which you may do by leaving the InterProver, and restoring Level 3
+    (rsl).
+
+18. All proof obligations and proofs may, of course, be printed
+    by selecting `ppf'.
+
+19. To execute this module, we now enter the Generators Environment and
+    first open the interface `Factorial.itf'; this file is automatically
+    introduced from the ToolBar Introduce option `Introduce new construct'
+    and `Interface of implemented machine' selected.
+
+20. Next check the setting for the interface (TopBar Options - Interface);
+    if you have Motif installed you should use the setting `Motif' when a
+    push-button interface is created, otherwise set it to `Non-Motif'
+    when a teletype interface will be built on the system library. Now
+    generate the interface (itf). If the Motif interface does not compile
+    properly, it may be necessary to change the `X Link Libraries' setting
+    of the Translators/Compilers Options; it may also be necessary to
+    use the `-I' flag (add directory for include files) in the 
+    `C Compiler/Flags' setting. See the on-line help for Options
+    for a full description.
+
+21. When complete, enter the Translators Environment again and run the
+    generated interface (run).

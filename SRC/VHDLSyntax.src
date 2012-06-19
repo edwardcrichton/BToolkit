@@ -1,0 +1,649 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define FlagVHDLError       bmodr(VHDLCheckSyntaxX.1,1)
+#define VHDLErrorFlagged    brule(VHDLCheckSyntaxX.1,1)
+ 
+#define VHDL_curr_construct  VHDLCheckSyntaxX.3
+#define v_SEES               VHDLCheckSyntaxX.4
+#define v_USES               VHDLCheckSyntaxX.5
+#define v_INCLUDES           VHDLCheckSyntaxX.6
+#define v_VARIABLES          VHDLCheckSyntaxX.7
+#define v_OWN_OPNAMES        VHDLCheckSyntaxX.8
+
+THEORY OPSX END &
+
+THEORY VHDLCheckAPRX IS
+
+#define VHDLCheckAPR bcall(((WRITE;MODR;FLAT)~;VHDLCheckAPRX)~:capr)
+
+
+  brule(VHDLCheckSyntaxX.2,(P,"_EV")) &
+  Writef(("\n\n      Invalid operation names:\n\n      ")) &
+  Writef(P) &
+  Writef((" VHDL Event should\n      comprise the two operations\n      ")) &
+  Writef(P) &
+  Writef(("_chg and ")) &
+  Writef(P) &
+  Writef(("_ack\n")) &
+  FlagVHDLError
+ =>
+  capr2(W)(?);
+
+  capr2(?)(?);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_EV")) &
+  Writef(("\n\n      Invalid operation name: %\n\n      ",bsrv y berv)) &
+  Writef(P) &
+  Writef((" VHDL Event should\n      comprise the two operations\n      ")) &
+  Writef(P) &
+  Writef(("_chg and ")) &
+  Writef(P) &
+  Writef(("_ack ..")) &
+  FlagVHDLError
+ =>
+  capr2(W)(x,y);
+
+  bsearch(y,W,V) &
+  capr2(V)(x)
+ =>
+  capr2(W)(x,y);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  capr1;
+
+  bget(".Bcom",x) &
+  brule(v_OWN_OPNAMES,W) &
+  capr2(bflat(?,x))(bflat(?,W))
+ =>
+  capr1;
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  capr;
+
+  brule(VHDLCheckSyntaxX.2,(P,"_EV")) &
+  bconnect(".Bcom") &
+  bprintf(P) &
+  bprintf("_chg,") &
+  bprintf(P) &
+  bprintf("_ack") &
+  capr1
+ =>
+  capr;
+
+  brule(VHDL_curr_construct,a.imp)
+ =>
+  capr;
+
+  brule(VHDL_curr_construct,a.ref)
+ =>
+  capr
+
+END
+
+&
+
+THEORY VHDLCheckCMX IS
+
+#define VHDLCheckCM bcall(((WRITE;MODR;FLAT;MAP)~;VHDLCheckCMX)~:ccm)
+
+  ?;  /* aaa_port, aaa_architecture */
+
+  ?;  /* BT_POSTFIX_M */
+  
+  ?;  /* 0=>no modules included, 1=>ok */
+  
+  
+  Writef(("\n\n      IMPORTS error:\n\n      A Complex Module must import at least one other Module ..")) &
+  FlagVHDLError
+ =>
+  ccm6;
+
+  brule(VHDLCheckCMX.3,1)
+ =>
+  ccm6;
+
+  Writef(("\n\n      IMPORTS error:\n\n      %\n\n      VHDL Type not recognized ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  ccm5(r);
+
+  brule(VHDLCheckCMX.2,(P,"_SG"))
+ =>
+  ccm5(r);
+
+  brule(VHDLCheckCMX.2,(P,"_EV"))
+ =>
+  ccm5(r);
+
+  brule(VHDLCheckCMX.2,(P,"_CP"))
+ =>
+  ccm5(r);
+
+  brule(VHDLCheckCMX.2,(P,"_PR"))
+ =>
+  ccm5(r);
+
+  brule(VHDLCheckCMX.2,(P,"_PK"))
+ =>
+  ccm5(r);
+
+  brule(VHDLCheckCMX.2,(P,"_CM")) &
+  bmodr(VHDLCheckCMX.3,1)
+ =>
+  ccm5(r);
+
+  brule(VHDLCheckCMX.2,(P,"_SM")) &
+  bmodr(VHDLCheckCMX.3,1)
+ =>
+  ccm5(r);
+
+  FifoWrite_Store((BT_POSTFIX_M,r,0),(VHDLCheckCMX.2)) &
+  ccm5(r)
+ =>
+  ccm4(r(s):t:U);
+
+  ccm4(r(s):t:U)
+ =>
+  ccm4(R.r(s):t:U);
+
+  ccm4(?);
+
+  brule(v_INCLUDES,I) &
+  bmodr(VHDLCheckCMX.3,0) &
+  ccm4 bsmap I &
+  ccm6
+ =>
+  ccm3(a)(s);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_CM")) &
+  Writef(("\n\n      Architecture operation\n\n        %\n\n      of ",bsrv a berv)) &
+  Writef(P) &
+  Writef((" may not have local variables\n\n        % ..",bsrv v berv)) &
+  FlagVHDLError
+ =>
+  ccm3(a)(ANY v WHERE p THEN s END);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_CM")) &
+  Writef(("\n\n      Architecture operation\n\n        %\n\n      of ",bsrv a berv)) &
+  Writef(P) &
+  Writef((" may not have local variables\n\n        % ..",bsrv v berv)) &
+  FlagVHDLError
+ =>
+  ccm3(a)(VAR v IN s END);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_CM")) &
+  Writef(("\n\n      Invalid operation names:\n\n      ")) &
+  Writef(P) &
+  Writef((" VHDL Compound Module should\n      comprise the two operations\n      ")) &
+  Writef(P) &
+  Writef(("_port and ")) &
+  Writef(P) &
+  Writef(("_architecture ..")) &
+  FlagVHDLError
+ =>
+  ccm2(W)(?);
+
+  brule(VHDLCheckCMX.1,(p,a)) &
+  brule(OPSX.N,(a;t;u;v;(w|x);(y|z))) &
+  ccm3(a)(x)
+ =>
+  ccm2(?)(?);
+
+  brule(OPSX.2,(a;t;u;v;(w|x);(y|z))) &
+/***/
+Writef(("\n      TEMPORARY - assuming:\n        %\n      is the architecture op! ...",a)) &
+/***/
+  ccm3(a)(x)
+ =>
+  ccm2(?)(?);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_CM")) &
+  Writef(("\n\n      Invalid operation name: %\n\n      ",bsrv y berv)) &
+  Writef(P) &
+  Writef((" VHDL Compound Module should\n      comprise the two operations\n      ")) &
+  Writef(P) &
+  Writef(("_port and ")) &
+  Writef(P) &
+  Writef(("_architecture ..")) &
+  FlagVHDLError
+ =>
+  ccm2(W)(x,y);
+
+  bsearch(y,W,V) &
+  ccm2(?)(?)
+ =>
+  ccm2(W)(x,y);
+
+  brule(VHDL_curr_construct,a.imp) &
+  ccm2(?)(?)
+ =>
+  ccm2(W)(x,y);
+
+  brule(VHDL_curr_construct,a.ref) &
+  ccm2(V)(x)
+ =>
+  ccm2(W)(x,y);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  ccm1;
+
+  bget(".Bcom",x) &
+  bmodr(VHDLCheckCMX.1,x) &
+  brule(v_OWN_OPNAMES,W) &
+  ccm2(bflat(?,x))(bflat(?,W))
+ =>
+  ccm1;
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  ccm;
+
+  brule(VHDLCheckSyntaxX.2,(P,"_CM")) &
+  bconnect(".Bcom") &
+  bprintf(P) &
+  bprintf("_port,") &
+  bprintf(P) &
+  bprintf("_architecture") &
+  ccm1
+ =>
+  ccm
+
+END
+
+&
+
+THEORY VHDLCheckSMX IS
+
+#define VHDLCheckSM bcall(((WRITE;MODR;FLAT;MAP)~;VHDLCheckSMX)~:csm)
+
+
+  ?;  /* aaa_port, aaa_architecture */
+
+  ?;  /* BT_POSTFIX_M */
+  
+  Writef(("\n\n      SEES error:\n\n      %\n\n      VHDL Type not recognized ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm7(r);
+
+  brule(VHDLCheckSMX.2,(P,"_EV")) &
+  Writef(("\n\n      SEES error %\n\n      A parameterised Signal should be included ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm7(r);
+
+  brule(VHDLCheckSMX.2,(P,"_EV")) &
+  Writef(("\n\n      SEES error %\n\n      A parameterised Event should be included ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm7(r);
+
+  brule(VHDLCheckSMX.2,(P,"_CP")) &
+  Writef(("\n\n      SEES error %\n\n      A parameterised Clocked Process should be included ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm7(r);
+
+  brule(VHDLCheckSMX.2,(P,"_PR")) &
+  Writef(("\n\n      SEES error %\n\n      A parameterised Process should be included ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm7(r);
+
+  brule(VHDLCheckSMX.2,(P,"_PK")) &
+  Writef(("\n\n      SEES error %\n\n      A parameterised Package should be included ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm7(r);
+
+  brule(VHDLCheckSMX.2,(P,"_CM")) &
+  Writef(("\n\n      IMPORTS error %\n\n      A Simple Module may not see another Module ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm7(r);
+
+  brule(VHDLCheckSMX.2,(P,"_SM")) &
+  Writef(("\n\n      IMPORTS error %\n\n      A Simple Module may not see another Module ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm7(r);
+
+  FifoWrite_Store((BT_POSTFIX_M,r,0),(VHDLCheckSMX.2)) &
+  csm7(r)
+ =>
+  csm6(r(s):t:U);
+
+  csm6(r(?):?:?,?,?);           /* no params - so ok */
+
+  csm6(?);
+
+
+
+  Writef(("\n\n      IMPORTS error:\n\n      %\n\n      VHDL Type not recognized ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm5(r);
+
+  brule(VHDLCheckSMX.2,(P,"_SG"))
+ =>
+  csm5(r);
+
+  brule(VHDLCheckSMX.2,(P,"_EV"))
+ =>
+  csm5(r);
+
+  brule(VHDLCheckSMX.2,(P,"_CP"))
+ =>
+  csm5(r);
+
+  brule(VHDLCheckSMX.2,(P,"_PR"))
+ =>
+  csm5(r);
+
+  brule(VHDLCheckSMX.2,(P,"_PK"))
+ =>
+  csm5(r);
+
+  brule(VHDLCheckSMX.2,(P,"_CM")) &
+  Writef(("\n\n      IMPORTS error %\n\n      A Simple Module may not import another Module ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm5(r);
+
+  brule(VHDLCheckSMX.2,(P,"_SM")) &
+  Writef(("\n\n      IMPORTS error %\n\n      A Simple Module may not import another Module ..",bsrv r berv)) &
+  FlagVHDLError
+ =>
+  csm5(r);
+
+  FifoWrite_Store((BT_POSTFIX_M,r,0),(VHDLCheckSMX.2)) &
+  csm5(r)
+ =>
+  csm4(r(s):t:U);
+
+  FifoWrite_Store((BT_POSTFIX_M,r,0),(VHDLCheckSMX.2)) &
+  csm5(r)
+ =>
+  csm4(R.r(s):t:U);
+
+  csm4(?);
+
+  brule(v_INCLUDES,I) &
+  csm4 bsmap I &
+  brule(v_SEES,S) &
+  csm6 bsmap S
+ =>
+  csm3(a)(s);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_SM")) &
+  Writef(("\n\n      Architecture operation\n\n        %\n\n      of ",bsrv a berv)) &
+  Writef(P) &
+  Writef((" may not have local variables\n\n        %  ..",bsrv v berv)) &
+  FlagVHDLError
+ =>
+  csm3(a)(ANY v WHERE p THEN s END);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_SM")) &
+  Writef(("\n\n      Architecture operation\n\n        %\n\n      of ",bsrv a berv)) &
+  Writef(P) &
+  Writef((" may not have local variables\n\n        %  ..",bsrv v berv)) &
+  FlagVHDLError
+ =>
+  csm3(a)(VAR v IN s END);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_SM")) &
+  Writef(("\n\n      Invalid operation names:\n\n      ")) &
+  Writef(P) &
+  Writef((" VHDL Simple Module should\n      comprise the two operations\n      ")) &
+  Writef(P) &
+  Writef(("_port and ")) &
+  Writef(P) &
+  Writef(("_architecture ..")) &
+  FlagVHDLError
+ =>
+  csm2(W)(?);
+
+  brule(OPSX.2,(a;t;u;v;(w|x);(y|z))) &
+/***/
+Writef(("\n      TEMPORARY - assuming:\n        %\n      is the architecture op! ...",a)) &
+/***/
+  csm3(a)(x)
+ =>
+  csm2(?)(?);
+
+  brule(VHDLCheckSMX.1,(p,a)) &
+  brule(OPSX.N,(a;t;u;v;(w|x);(y|z))) &
+  csm3(a)(x)
+ =>
+  csm2(?)(?);
+
+  brule(VHDLCheckSyntaxX.2,(P,"_SM")) &
+  Writef(("\n\n      Invalid operation name: %\n\n      ",bsrv y berv)) &
+  Writef(P) &
+  Writef((" VHDL Simple Module should\n      comprise the two operations\n      ")) &
+  Writef(P) &
+  Writef(("_port and ")) &
+  Writef(P) &
+  Writef(("_architecture ..")) &
+  FlagVHDLError
+ =>
+  csm2(W)(x,y);
+
+  bsearch(y,W,V) &
+  csm2(V)(x)
+ =>
+  csm2(W)(x,y);
+
+  brule(VHDL_curr_construct,a.imp) &
+  csm2(?)(?)
+ =>
+  csm2(W)(x,y);
+
+  brule(VHDL_curr_construct,a.ref) &
+  csm2(?)(?)
+ =>
+  csm2(W)(x,y);
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  csm1;
+
+  bget(".Bcom",x) &
+  bmodr(VHDLCheckSMX.1,x) &
+  brule(v_OWN_OPNAMES,W) &
+  csm2(bflat(?,x))(bflat(?,W))
+ =>
+  csm1;
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  csm;
+
+  brule(VHDLCheckSyntaxX.2,(P,"_SM")) &
+  bconnect(".Bcom") &
+  bprintf(P) &
+  bprintf("_port,") &
+  bprintf(P) &
+  bprintf("_architecture") &
+  csm1
+ =>
+  csm
+
+END
+
+&
+
+THEORY VHDLCheckPRX IS
+
+#define VHDLCheckPR bcall(((WRITE;MODR)~;VHDLCheckPRX)~:cpr)
+
+  cpr
+
+END
+
+&
+
+THEORY VHDLCheckPKX IS
+
+#define VHDLCheckPK bcall(((WRITE;MODR)~;VHDLCheckPKX)~:cpk)
+
+  Writef(bcatl("\n\n      A VHDL Package may not have state ..")) &
+  FlagVHDLError
+ =>
+  cpk;
+
+  brule(v_VARIABLES,?)
+ =>
+  cpk
+
+END
+
+&
+
+THEORY VHDLCheckSGX IS
+
+#define VHDLCheckSG bcall(((WRITE;MODR)~;VHDLCheckSGX)~:csg)
+
+  Writef(bcatl("\n\n      A VHDL Signal must comprise a single variable ..")) &
+  FlagVHDLError
+ =>
+  csg1(V);
+
+  bident(v)
+ =>
+  csg1(v);
+
+  brule(v_VARIABLES,V) &
+  csg1(V)
+ =>
+  csg
+
+END
+
+&
+
+THEORY VHDLCheckSyntaxX IS
+
+#define VHDLSyntaxDirect(x) \
+   bcall(((WRITE;MODR;CATL;NEWV;MAP;RULE);VHDLCheckSyntaxX)~:cs(x))
+
+
+  ?;?;?;?;?;?;?;?;
+
+  bcrer(OPSX,n)
+ =>
+  cs3(n);
+
+  cs3 bsmap (N,n)
+ =>
+  cs3(N,n);
+
+  WriteDot &
+  GetJobs(X) &
+  bsearch((a.b:BT_VHDL_SYTX:0),X,Y) &
+  ModifyJobs((Y;(a.b:BT_TYP:0)))
+ =>
+  chk_err(a.b);
+
+  VHDLErrorFlagged &
+  ModifyCurrentJob((a.b:BT_NML:0)) &
+  GetJobs(X) &
+  bsearch((a.b:BT_VHDL_SYTX:0),X,Y) &
+  AddJobs(Y,((a.b:BT_EDT_NML:0)))
+ =>
+  chk_err(a.b);
+
+
+
+
+  brule(VHDLCheckSyntaxX.2,(P,"_EN"))
+ =>
+  cs2(a.enm);
+  
+  brule(VHDLCheckSyntaxX.2,(P,"_SG")) &
+  VHDLCheckSG
+ =>
+  cs2(a.b);
+  
+  brule(VHDLCheckSyntaxX.2,(P,"_EV")) &
+  VHDLCheckAPR
+ =>
+  cs2(a.b);
+  
+  brule(VHDLCheckSyntaxX.2,(P,"_CM")) &
+  VHDLCheckCM
+ =>
+  cs2(a.b);
+  
+  brule(VHDLCheckSyntaxX.2,(P,"_SM")) &
+  VHDLCheckSM
+ =>
+  cs2(a.b);
+  
+  brule(VHDLCheckSyntaxX.2,(P,"_CP")) &
+  VHDLCheckPR
+ =>
+  cs2(a.b);
+  
+  brule(VHDLCheckSyntaxX.2,(P,"_PR")) &
+  VHDLCheckPR
+ =>
+  cs2(a.b);
+  
+  brule(VHDLCheckSyntaxX.2,(P,"_PK")) &
+  VHDLCheckPK
+ =>
+  cs2(a.b);
+
+  
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  cs1(a.b)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  bmodr(v_SEES,A) &
+  bmodr(v_USES,B) &
+  bmodr(v_INCLUDES,b) &
+  bmodr(v_VARIABLES,d) &
+  bmodr(v_OWN_OPNAMES,W) &
+  cs3(n) &
+  cs2(x.y)
+ =>
+  cs1(x.y)(Z);
+  
+  Writef("\n    VHDL checking .") &
+  bmodr(VHDL_curr_construct,a.b) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(VHDLCheckSyntaxX.2)) &
+  cs1(a.b)(bcatl("ANL/",a,".",b,".anl")) &
+  chk_err(a.b)
+ =>
+  cs(a.b)
+
+END

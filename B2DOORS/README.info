@@ -1,0 +1,163 @@
+
+               B to DOORS   Bridge
+               ===================
+
+
+Using the B to Doors Bridge
+===========================
+
+Typical Scenario :
+
+1) Start a new B-Development and set the Optional Utility as
+   described above.
+
+2) Use the Optional Utility 'Bdoors' to start Doors.
+
+step 3,4 below can happen in any order
+
+3) In the started Doors:
+   a) In Doors create a new Project for holding the Modules
+      ( requirement documents, design documents,  AMN document ).
+   b) In Doors create  requirement documents Modules  by using
+      general Doors facilities ( e.g. templates, general imports )
+
+4) In the related B development:
+   Use the B-Toolkit facilities to create AMN specification and
+   AMN designs and Analyse these formal descriptions.
+
+  
+step 5,6 below can now be repeated several times as the development
+and its description progresses over time.
+
+5) In Doors
+  a) 'Import AMN' 
+      This will automatically create a Doors AMN Module giving a
+      Doors view of all configured specification (.mch), designs (.ref)
+      and implementations ( .imp ) from the B development.
+      ( Several Link Modules for internal administration will also
+      be created, and the Module of interest is the Formal Module
+      within the Project)
+      The Doors view consists of a collection of identifiable Objects. 
+      Specification , Designs or Implementations are made up of
+      several Objects, e.g. and AMN  Operation is an Object, the
+      specified Invariant is an Object.
+  b) Inspect the AMN and create links from the AMN Objects to
+      existing Objects in the requirement documents or design
+      document created in step 3. ( or create these documents now
+      as Doors Modules). At this time you may also make changes
+      to the imported documents themselves using the Doors editing
+      facilities; you might also add new Objects e.g. Operations.
+
+  c) 'Export AMN' from the Doors AMN Module.
+       This will make the 'links', and other changes made during 
+       session b) above available within the related B-Toolkit
+       development environment ( see below) 
+   
+  d) 'HTML export requirements' from the NON AMN Modules.
+       This will make the 'NON AMN Module', i.e the informal
+       requirements and the informal design documentation created
+       in step 3) above, accessible when using the  B-Toolkit Browser 
+       in the related B-Development.
+
+6)  In The B-Toolkit  
+    Returning to the B-Toolkit after session 5 above, the user is
+    visually notified of the changed made to the development.
+    Within the Main development control panel all constructs
+    which have been affected by the Doors session will be marked
+    ( with a ! ).
+ 
+    a)
+    The changes made to the individual construct can be immediately
+    committed into the B-Development by using the 'cmt' tool-bar
+    facility. 
+    The B-Toolkit will manage the consequences of committing any
+    changes. 
+    If only link information which relate the AMN construct to the
+    informal documentation have been inserted then the B-Toolkit's
+    then the related 'browsable' documents will be changed. 
+    If the mathematical text of the construct have been changed then
+    all dependent work ( e.g. proofs ) will be removed, ready for
+    the general B-Toolkit 're-make' facility to recover the removed
+    work wherever possible.
+
+    b)
+    All changes made during the Doors session can be inspected using
+    the 'top bar' 'Commit All Updated Constructs' facility. A list
+    of all modified constructs is displayed and selected constructs
+    can be inspected for changes and individually committed.
+
+    c) 
+    Using the 'top bar' Browse Hypertext facility the AMN and the
+    produced C-code (if any) can be inspected in the context of the 
+    informal requirement documentation exported from Doors to the B-Toolkit 
+    as described in 5 d) above.
+    The Browsing facilities in the combined Doors and B-Toolkit environment
+    allow for code fragment to be related - through the automatically 
+    inserted links within the B formal development - to statements
+    in the informal document managed by doors.
+
+
+
+Summary of facilities Provided by the 'B to Doors Bridge'
+=======================================================
+
+
+ In Doors :
+
+   1) Import AMN
+      A collection of scripts ( DXL ) which allow the Doors user to
+      extract a selection of AMN constructs from a B development.
+      The constructs are copied from the B-Toolkit CFG directory
+      and a simple parser creates Doors Modules to hold the
+      Doors view of the selected AMN construct. 
+
+   2) Export AMN
+      A collection of scripts ( DXL ) which allow the Doors user to
+      extract a collection of AMN constructs from the Door database.
+      The constructs are parsed to create B Toolkit formatted
+      constructs and copied into the SRC directory of the related
+      B development.
+
+   3) HTML Export Requirements
+      A script which allow the user to convert a doors Module
+      into HTML format and to copy it into the HTML directory of the 
+      related B development.
+
+
+   In the B-Toolkit :
+
+   1) The 'Change Notification Facility'.
+      An extension to the B-Toolkit which check for 
+      modified constructs to arrive from a
+      Doors session. Notifications are given on the Main
+      Panel and changes can be commited into the B development
+      under the user control.
+
+   2) The 'Update All Updated Constructs' Facility.
+      An extension to the B-Toolkit Construct Utility which
+      allow the user to inspect and selectively commit changes
+      into the B development.     
+
+   3) Traceability Enhancements
+      The Browse Hypertext facility of the B-Toolkit has been
+      extended to allow a simple tracing from C code fragments
+      to informal requirement document. This facility utilises
+      links automatically inserted into the hierarchy of the
+      formal software design
+. 
+   
+
+   Industrial Interest :
+
+   The 'B to Doors Bridge' was exhibited and demonstated at  
+   FM'99 ( 20-24 September ) conference in Toulouse, France.
+   The new technology attracted interest from both Industry
+   and educational institutions.
+
+
+
+
+     
+    
+     
+

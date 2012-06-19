@@ -1,0 +1,254 @@
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(Rename_RCD)
+;
+(Rename_RCD)
+;
+(?)
+;
+(?)
+;
+(card(Rename_RCD) = maxrcd & card(Rename_RCD): NAT1)
+;
+(card(Rename_RCD) = maxrcd & card(Rename_RCD): NAT1)
+;
+(?)
+;
+(?)
+;
+(Rename_rcd,Rename_rcd_fnc)
+;
+(Rename_rcd,Rename_rcd_fnc)
+;
+(Rename_rcd <: Rename_RCD & Rename_rcd_fnc: Rename_rcd --> (1..maxfld +-> VALUE))
+;
+(Rename_rcd <: Rename_RCD & Rename_rcd_fnc: Rename_rcd --> (1..maxfld +-> VALUE))
+;
+(?)
+;
+(Rename_rcd:={} || Rename_rcd_fnc:={})
+;
+(Rename_rcd,Rename_rcd_fnc:={},{})
+;
+(Rename_RCD_IDX,Rename_RCD_FULL,Rename_RCD_CRE,Rename_RCD_KILL,Rename_RCD_DEF,Rename_RCD_STO,Rename_RCD_VAL)
+;
+(Rename_RCD_IDX,Rename_RCD_FULL,Rename_RCD_CRE,Rename_RCD_KILL,Rename_RCD_DEF,Rename_RCD_STO,Rename_RCD_VAL)
+;
+(Rename_RCD(VALUE,maxfld,maxrcd):(maxrcd>0 & maxrcd: NAT & maxfld: NAT & card(VALUE): NAT1):(?))
+;
+(
+(
+ (Rename_RCD_IDX)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_RCD_IDX(idx)))
+;
+ (idx)
+;
+ (bb)
+;
+ (
+ (idx: BYTE)
+ |
+ (
+ (BEGIN
+ bb:=bool(b2n(idx): 0..maxfld)
+ END)
+ )
+ )
+;
+ (
+ (idx: BYTE)
+ |
+ (
+ (bb:=bool(b2n(idx): 0..maxfld))
+ )
+ )
+)
+,
+(
+ (Rename_RCD_FULL)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_RCD_FULL))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb:=bool(Rename_rcd = Rename_RCD)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb:=bool(Rename_rcd = Rename_RCD))
+ )
+ )
+)
+,
+(
+ (Rename_RCD_CRE)
+;
+ (?,Mod_Op,NonDet_Op,(rr <-- Rename_RCD_CRE))
+;
+ (?)
+;
+ (rr)
+;
+ (
+ (Rename_rcd/=Rename_RCD)
+ |
+ (
+ (ANY new_rcd WHERE
+ new_rcd: Rename_RCD-Rename_rcd
+ THEN
+ Rename_rcd:=Rename_rcd\/{new_rcd} ||
+ Rename_rcd_fnc(new_rcd):={} ||
+ rr:=new_rcd
+ END)
+ )
+ )
+;
+ (
+ (not(Rename_rcd = Rename_RCD))
+ |
+ (
+ @(new_rcd).
+ (
+ (
+ (new_rcd: Rename_RCD-Rename_rcd)
+ )
+ ==>
+ (
+ (Rename_rcd,Rename_rcd_fnc,rr:=Rename_rcd\/{new_rcd},Rename_rcd_fnc<+{new_rcd|->{}},new_rcd)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_RCD_KILL)
+;
+ (?,Mod_Op,Det_Op,Rename_RCD_KILL(rr))
+;
+ (rr)
+;
+ (?)
+;
+ (
+ (rr: Rename_RCD & rr: Rename_rcd)
+ |
+ (
+ (
+ (Rename_rcd:=Rename_rcd-{rr})
+ )
+ ||
+ (
+ (Rename_rcd_fnc:={rr}<<|Rename_rcd_fnc)
+ )
+ )
+ )
+;
+ (
+ (rr: Rename_RCD & rr: Rename_rcd)
+ |
+ (
+ (Rename_rcd,Rename_rcd_fnc:=Rename_rcd-{rr},{rr}<<|Rename_rcd_fnc)
+ )
+ )
+)
+,
+(
+ (Rename_RCD_DEF)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_RCD_DEF(rr)))
+;
+ (rr)
+;
+ (bb)
+;
+ (
+ (rr: Rename_RCD)
+ |
+ (
+ (BEGIN
+ bb:=bool(rr: Rename_rcd)
+ END)
+ )
+ )
+;
+ (
+ (rr: Rename_RCD)
+ |
+ (
+ (bb:=bool(rr: Rename_rcd))
+ )
+ )
+)
+,
+(
+ (Rename_RCD_STO)
+;
+ (?,Mod_Op,Det_Op,Rename_RCD_STO(rr,idx,vv))
+;
+ (rr,idx,vv)
+;
+ (?)
+;
+ (
+ (rr: Rename_RCD & idx: BYTE & vv: VALUE & rr: Rename_rcd & b2n(idx): 1..maxfld)
+ |
+ (
+ (Rename_rcd_fnc(rr)(b2n(idx)):=vv)
+ )
+ )
+;
+ (
+ (rr: Rename_RCD & idx: BYTE & vv: VALUE & rr: Rename_rcd & b2n(idx): 1..maxfld)
+ |
+ (
+ (Rename_rcd_fnc:=Rename_rcd_fnc<+{rr|->(Rename_rcd_fnc(rr)<+{b2n(idx)|->vv})})
+ )
+ )
+)
+,
+(
+ (Rename_RCD_VAL)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_RCD_VAL(rr,idx)))
+;
+ (rr,idx)
+;
+ (vv)
+;
+ (
+ (rr: Rename_RCD & idx: BYTE & rr: Rename_rcd & b2n(idx): dom(Rename_rcd_fnc(rr)))
+ |
+ (
+ (vv:=Rename_rcd_fnc(rr)(b2n(idx)))
+ )
+ )
+;
+ (
+ (rr: Rename_RCD & idx: BYTE & rr: Rename_rcd & b2n(idx): dom(Rename_rcd_fnc(rr)))
+ |
+ (
+ (vv:=Rename_rcd_fnc(rr)(b2n(idx)))
+ )
+ )
+)
+)

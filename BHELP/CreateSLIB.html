@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>Creating a System Library</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="CreateSLIB"></A>
+<H1>
+CreateSLIB</H1>
+This option is invoked from the <A HREF="BToolkit.html#Construct">TopBar
+Constructs</A> pull-down
+and facilitates the creation of a new library construct in the <A HREF="SystemLibrary.html#System_Library">system
+library directory - SLIB </A>. A library construct is a specification together
+with a code module, and this facility assists in the creation of the C
+code files.
+
+<P>The option is applicable to any <A HREF="Analyser.html#Analyser">analysed</A>
+<A HREF="AMNotation.html#Abstract_Machines">specification</A> which is
+not already present in SLIB; the construct should, however, not <A HREF="Structuring.html#SEES_Clause!Using">SEE</A>
+any non-renamable SLIB machines.
+
+<P>Two types of library construct may be created:
+<BR>&nbsp;
+<OL>
+<LI>
+Create SLIB-Committable construct</LI>
+
+<LI>
+Create lower-level SLIB construct</LI>
+</OL>
+The former enables the created construct to be subsequently <A HREF="Introduce.html#Introduce">introduced</A>
+into other developments, whereas the latter provides a library construct
+on which other SLIB constructs may be built (by <A HREF="Structuring.html#IMPORTS_Clause!Using">importing</A>
+- see below); this one, however, is not made available for direct introduction
+into other developments.
+
+<P>Importation of lower-level SLIB constructs is achieved through the LIBDEF
+(.ldf) file - a template is provided, and the <A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTS</A>
+clause should be completed as it would in an <A HREF="AMNotation.html#IMPLEMENTATION">Abstract
+Machine Implementation</A> (with parameters set where appropriate); if
+nothing is being imported, the clause should be removed. Lower level SLIB
+constructs may themselves import other lower-level constructs.
+
+<P>After the LIBDEF file has been edited, the following prompt appears:
+<PRE>&nbsp;&nbsp;&nbsp; Create code template files in SRC</PRE>
+<A NAME="System_Library!Files!.h"></A><A NAME="System_Library!Files!.g"></A><A NAME="System_Library!Files!.c"></A>Three
+templates are provided in editors to produce the `.h', `.g' and `.c' files
+that constitute a library code module. The first contains header information
+for the code modules of machines which <A HREF="Structuring.html#SEES_Clause!Using">SEE</A>
+or <A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORT</A> this construct
+together with the definitions of any operations that are to be in-lined.
+The second contains module parameterisation information to be used at <A HREF="Linker.html#Linker">link-time</A>
+when the values of module parameters are known. The last file contains
+the C code of the operations not in-lined in the `.h' file.
+
+<P>Data should be declared in the `.g' file, and declared as `extern' in
+the .h file. It is recommended that one of the existing SLIB code modules
+is inspected for guidance (for example `Rename_Nvar').
+
+<P>As much information as possible will have been written to these three
+files (templates for operations in both the `.h' and `.c' file, and parameter
+information in the `.g' file).
+
+<P>The prompt:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp; Create SLIB construct</PRE>
+is then offered which, when selected, attempts to create the library construct
+by first compiling the code provided in the three files. If compilation
+fails the reasons are given in the <A HREF="BToolkit.html#Display_Area">Display
+Area</A> and the prompt re-appears. When the compilation succeeds, files
+are copied from the current <A HREF="BToolkit.html#Development_Environment">ANL</A>
+<A HREF="BToolkit.html#Development_Environment">CFG</A> <A HREF="BToolkit.html#Development_Environment">TYP</A>
+and <A HREF="BToolkit.html#Development_Environment">CDE/C</A> directories
+into the corresponding SLIB directories (so you must have write permission
+in that directory).
+
+<P>`Cancel' aborts the creation, but preserves the code files in the SRC
+directory.
+
+<P>See also <A HREF="RemoveSLIB.html">Remove SLIB Construct</A>.
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

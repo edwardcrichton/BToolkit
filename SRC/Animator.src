@@ -1,0 +1,8874 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define AnimatorDirect(x) \
+    bcall(((FLAT~;REV;MAP;ARI;MODR;CATL;NEWV~)~;AnimatorFromUserX)~:afu_direct$0(x))
+
+#define AnimatorExeStep(x) \
+    bcall(((MAP;ARI;MODR;CATL;NEWV~)~;AnimatorFromUserX)~:afu_exe_step$0(x))
+
+#define AnimatorExeAuto(x) \
+    bcall(((MAP;ARI;MODR;CATL;NEWV~)~;AnimatorFromUserX)~:afu_exe_auto$0(x))
+
+#define CreEmptyExeScript(x) \
+    bcall(((WRITE)~;AnimatorFromUserX)~:afu_empty_exe_script$0(x))
+
+#define Line "========================================================\n"
+
+#define ___default_val Q_ju____q_____j_____y____
+
+#define ___default_bv  J_pu____s__r________l____
+
+#define DisplayUserLib PrintTHEORY(UserLibX)
+
+
+
+#define ModifyCurrentConstruct(x)   bcall(MODR:bmodr(AnimatorFromUserX.1,x))
+#define ReadCurrentConstruct(x)     brule(AnimatorFromUserX.1,x)
+
+#define ModifySeesUsedList(x)   bcall(MODR:bmodr(AnimatorFromUserX.2,x))
+#define ReadSeesUsedList(x)     brule(AnimatorFromUserX.2,x)
+
+#define ModifySets(x)  bcall(MODR:bmodr(AnimatorFromUserX.3,x))
+#define ReadSets(x)    brule(AnimatorFromUserX.3,x) 
+
+#define ModifyEqualityProps(x)  bcall(MODR:bmodr(AnimatorFromUserX.4,x))
+#define ReadEqualityProps(x)    brule(AnimatorFromUserX.4,x) 
+
+#define ModifyStateVarStrings(x) bcall(MODR:bmodr(AnimatorFromUserX.5,x))
+#define ReadStateVarStrings(x)   brule(AnimatorFromUserX.5,x)
+
+#define ModifyCurrValState(x) bcall(((SUB~;SUB_seqX)~;MODR):bmodr(AnimatorFromUserX.6,x))
+#define ReadCurrValState(x)   brule(AnimatorFromUserX.6,x)
+
+#define ModifyStateVarNames(x) bcall(MODR:bmodr(AnimatorFromUserX.7,x))
+#define ReadStateVarNames(x)   brule(AnimatorFromUserX.7,x)
+
+#define ModifyStateHistory(x) bcall(MODR:bmodr(AnimatorFromUserX.8,x))
+#define ReadStateHistory(x)   brule(AnimatorFromUserX.8,x)
+
+#define ModifyInvariant(x) bcall(MODR:bmodr(AnimatorFromUserX.9,x))
+#define ReadInvariant(x)   brule(AnimatorFromUserX.9,x)
+
+#define ModifyMchParamRename(x) bcall(MODR:bmodr(AnimatorFromUserX.10,x))
+#define ReadMchParamRename(x)   brule(AnimatorFromUserX.10,x)
+
+#define ModifySetsRename(x) bcall(MODR:bmodr(AnimatorFromUserX.11,x))
+#define ReadSetsRename(x)   brule(AnimatorFromUserX.11,x)
+
+#define ModifyEnumSetsRename(x) bcall(MODR:bmodr(AnimatorFromUserX.12,x))
+#define ReadEnumSetsRename(x)   brule(AnimatorFromUserX.12,x)
+
+#define ModifyCompositeRename(x) bcall((FLAT~;MODR):bmodr(AnimatorFromUserX.13,x))
+#define ReadCompositeRename(x)   brule(AnimatorFromUserX.13,x)
+
+#define ModifyRawParamConstr(x) bcall(MODR:bmodr(AnimatorFromUserX.14,x))
+#define ReadRawParamConstr(x)   brule(AnimatorFromUserX.14,x)
+
+#define ModifyDeferredSetsConsts(x) bcall(MODR:bmodr(AnimatorFromUserX.15,x))
+#define ReadDeferredSetsConsts(x)   brule(AnimatorFromUserX.15,x)
+
+#define ModifyRawProps(x) bcall((FLAT~;MODR):bmodr(AnimatorFromUserX.16,x))
+#define ReadRawProps(x)   brule(AnimatorFromUserX.16,x)
+
+#define Constant____(v,x)    brule(SimplifyX.4,v) & v\(x)
+
+#define ReadBoundVars(x)   brule(SimplifyX.4,x)
+#define ReadUnaccConsts(x)   brule(SimplifyX.5,x)
+/* all sets; all constants, except those set to themselves */
+
+#define ReadPropertiesSimplificationUnacceptableTemp(x)   brule(GetContextX.1,x)
+#define ModifyPropertiesSimplificationUnacceptableTemp(x) bmodr(GetContextX.1,x)
+
+#define ModifyOpOutput(x) bcall((FLAT~;MODR):bmodr(AnimatorFromUserX.18,x))
+#define ReadOpOutput(x)   brule(AnimatorFromUserX.18,x)
+
+#define ModifyDisplayInvariant(x) bcall(MODR:bmodr(AnimatorFromUserX.19,x))
+#define SetDisplayInvariant       bcall(MODR:bmodr(AnimatorFromUserX.19,1))
+#define SetDontDisplayInvariant   bcall(MODR:bmodr(AnimatorFromUserX.19,0))
+#define DisplayInvariantSet       brule(AnimatorFromUserX.19,1)
+#define DontDisplayInvariantSet   brule(AnimatorFromUserX.19,0)
+
+#define ModifyMainMenuOpNames(x)  bcall(MODR:bmodr(AnimatorFromUserX.20,x))
+#define ReadMainMenuOpNames(x)    brule(AnimatorFromUserX.20,x)
+
+#define RecreateMainMenuFlagSet  brule(AnimatorFromUserX.21,1)
+#define SetRecreateMainMenu      bcall(MODR:bmodr(AnimatorFromUserX.21,1))
+#define ClearRecreateMainMenu    bcall(MODR:bmodr(AnimatorFromUserX.21,0))
+
+#define ModifySelectedOp(x)  bcall((ARI~;MODR):bmodr(AnimatorFromUserX.22,x))
+#define ReadSelectedOp(x)    brule(AnimatorFromUserX.22,x)
+
+#define ModifyOpCurrPre(x)  bcall(((SUB~;SUB_seqX)~;MODR):bmodr(AnimatorFromUserX.23,x))
+#define ReadOpCurrPre(x)    brule(AnimatorFromUserX.23,x)
+/*** current precondition with current
+     value of state variables substituted ***/
+
+#define ModifyOpActualPre(x)  bcall(((SUB~;SUB_seqX)~;MODR):bmodr(AnimatorFromUserX.24,x))
+#define ReadOpActualPre(x)    brule(AnimatorFromUserX.24,x)
+/*** current precondition with current value of state variables
+     substituted, actual op parameters substitued, and simplified ***/
+
+#define ModifyOpCalcPre(x)  bcall(((SUB~;SUB_seqX)~;MODR):bmodr(AnimatorFromUserX.25,x))
+#define ReadOpCalcPre(x)    brule(AnimatorFromUserX.25,x)
+/*** calculated precondition with current value of state variables
+     substituted, actual op parameters substitued, and simplified  ***/
+
+#define ModifyOpInputRename(x)  bcall(MODR:bmodr(AnimatorFromUserX.26,x))
+#define ReadOpInputRename(x)    brule(AnimatorFromUserX.26,x)
+
+#define ModifySeenUsedIncluded(x)  bcall((FLAT;MODR):bmodr(AnimatorFromUserX.27,x))
+#define ReadSeenUsedIncluded(x)    brule(AnimatorFromUserX.27,x)
+
+#define ModifyTypeMchLoaded(x)  bcall((FLAT;MODR):bmodr(AnimatorFromUserX.28,x))
+#define ReadTypeMchLoaded(x)    brule(AnimatorFromUserX.28,x)
+
+#define ModifyStateVarsChanged(x)  bcall((FLAT;MODR):bmodr(AnimatorFromUserX.29,x))
+#define ReadStateVarsChanged(x)    brule(AnimatorFromUserX.29,x)
+
+#define SetNoGuardEvaluatesTrueSELECT \
+               bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,1))
+#define SetNoGuardEvaluatesTrueSELECTelse \
+               bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,2))
+#define SetNoGuardEvaluatesTrueCASE \
+               bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,3))
+#define SetNoGuardEvaluatesTrueCASEelse \
+               bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,4))
+#define SetNoGuardEvaluatesTrueIF \
+               bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,5))
+#define SetNoGuardEvaluatesTrueIFelse \
+               bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,6))
+#define SetNoGuardEvaluatesTrueELSIF \
+               bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,7))
+#define SetNoGuardEvaluatesTrueELSIFelse \
+               bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,8))
+#define ClearNoGuardEvaluatesTrue  bcall((FLAT;MODR):bmodr(AnimatorFromUserX.30,0))
+#define NoGuardEvaluatesTrueSELECT       brule(AnimatorFromUserX.30,1)
+#define NoGuardEvaluatesTrueSELECTelse   brule(AnimatorFromUserX.30,2)
+#define NoGuardEvaluatesTrueCASE         brule(AnimatorFromUserX.30,3)
+#define NoGuardEvaluatesTrueCASEelse     brule(AnimatorFromUserX.30,4)
+#define NoGuardEvaluatesTrueIF           brule(AnimatorFromUserX.30,5)
+#define NoGuardEvaluatesTrueIFelse       brule(AnimatorFromUserX.30,6)
+#define NoGuardEvaluatesTrueELSIF        brule(AnimatorFromUserX.30,7)
+#define NoGuardEvaluatesTrueELSIFelse    brule(AnimatorFromUserX.30,8)
+
+#define SetNotStatelessMch  bcall((FLAT;MODR):bmodr(AnimatorFromUserX.31,0))
+#define SetStatelessMch     bcall((FLAT;MODR):bmodr(AnimatorFromUserX.31,1))
+#define IsStatelessMch      brule(AnimatorFromUserX.31,1)
+
+#define ModifyOPERATIONS(x)  bcall((REV;MODR):bmodr(AnimatorFromUserX.32,x))
+#define ReadOPERATIONS(x)    brule(AnimatorFromUserX.32,x)
+
+#define ClearOpSubError   bmodr(ProcessSelectedSubX.1,0)
+#define SetOpSubError     bmodr(ProcessSelectedSubX.1,1)
+#define OpSubErrorIsSet   brule(ProcessSelectedSubX.1,1)
+
+#define SetNotExecution bcall(MODR:bmodr(AnimatorFromUserX.33,0))
+#define SetExecution    bcall(MODR:bmodr(AnimatorFromUserX.33,1))
+#define IsExecution     brule(AnimatorFromUserX.33,1)
+#define IsNotExecution  brule(AnimatorFromUserX.33,0)
+
+#define SetAnimatingVHDLConstruct    bcall(MODR:bmodr(AnimatorFromUserX.34,1))
+#define SetNotAnimatingVHDLConstruct bcall(MODR:bmodr(AnimatorFromUserX.34,0))
+#define AnimatingVHDLConstruct       brule(AnimatorFromUserX.34,1)
+
+#define SetAutoExecution    bcall(MODR:bmodr(AnimatorFromUserX.35,1))
+#define ResetAutoExecution  bcall(MODR:bmodr(AnimatorFromUserX.35,0))
+#define IsAutoExecution     brule(AnimatorFromUserX.35,1)
+
+#define ModifyConsts(x)  bcall(MODR:bmodr(AnimatorFromUserX.36,x))
+#define ReadConsts(x)    brule(AnimatorFromUserX.36,x) 
+
+#define ModifyConstsRename(x)  bcall(MODR:bmodr(AnimatorFromUserX.37,x))
+#define ReadConstsRename(x)    brule(AnimatorFromUserX.37,x) 
+
+#define ResetAssertion  bcall(MODR:bmodr(AnimatorFromUserX.38,0))
+#define SetAssertion    bcall(MODR:bmodr(AnimatorFromUserX.38,1))
+#define AssertionIsSet  brule(AnimatorFromUserX.38,1)
+
+#define ModifyAssertionTripleList(x)  bcall(MODR:bmodr(AnimatorFromUserX.39,x))
+#define ReadAssertionTripleList(x)    brule(AnimatorFromUserX.39,x)
+
+#define ModifySetsConstsEnumElem(x) \
+                                 bcall(MODR:bmodr(AnimatorFromUserX.40,x))
+#define ReadSetsConstsEnumElem(x) \
+                                 brule(AnimatorFromUserX.40,x)
+
+#define ModifyLastOpParams(x) bcall(MODR:bmodr(AnimatorFromUserX.41,x))
+#define ReadLastOpParams(x)   brule(AnimatorFromUserX.41,x)
+
+#define ModifySetsConstsSetToThemselves(x) bcall(MODR:bmodr(AnimatorFromUserX.42,x))
+#define ReadSetsConstsSetToThemselves(x)   brule(AnimatorFromUserX.42,x)
+
+#define ModifyRawSetsConstantsSettings(x) bcall(MODR:bmodr(AnimatorFromUserX.43,x))
+#define ReadRawSetsConstantsSettings(x)   brule(AnimatorFromUserX.43,x)
+
+#define ModifyUnacceptableConstsList(x) bcall((FLAT;MODR):bmodr(AnimatorFromUserX.44,x))
+#define ReadUnacceptableConstsList(x)   brule(AnimatorFromUserX.44,x)
+
+#define ModifyGuardList(x) bcall((FLAT;MODR):bmodr(AnimatorFromUserX.45,x))
+#define ReadGuardList(x)   brule(AnimatorFromUserX.45,x)
+
+
+
+
+#define ModifyExeStepBranchLocVar(x) \
+              bcall((REV;MODR):bmodr(AnimatorExeLoopX.2,x))
+#define ReadExeStepBranchLocVar(x) \
+              brule(AnimatorExeLoopX.2,x)
+
+
+#define PostGetMultiInput(N) \
+        bcall(((FLAT~;ARI;MAP;(SUB~;SUB_seqX)~;MODR;RULE)~;PostGetMultiInputX)~:pgmi$N)
+
+#define GetMultiInput(N,v,x,y,z) \
+    bcall(((REV;MAP;MODR;CATL;WRITE;(SUB~;SUB_seqX)~)~;GetMultiInputX)~:mu$N(v)(x)(y)(z)) & \
+    PostGetMultiInput(N)
+
+#define ModifyAnimateFilename(x) bmodr(InitExeX.1,x)
+#define ReadAnimateFilename(x)   brule(InitExeX.1,x)
+
+#define _FifoWrite_Store(x,y)   bcall(AnimFifoWriteX:__FifoWrite_Store(x,y))
+#define _FifoWrite_NoStore(x)   bcall(AnimFifoWriteX:__FifoWrite_NoStore(x))
+
+
+#define Epilogue_Out(N,x)   bcall(EpilogueX~:ep_out$N(x))
+
+#define Out(N,x)            Epilogue_Out(N,x)
+
+#define Printf(N,x)         bcall(EpilogueX~:ep_bprintf$N(x))
+
+
+/*
+#define OutAssumedFalse(N,x) \
+    Out(N,("\n    >>> % assumed false <<<\n\n",bsrv x berv))
+*/
+
+
+
+THEORY StoAnlFormX IS
+
+#define StoAnlForm \
+  bcall(((MODR)~;StoAnlFormX)~:saf)
+
+  ?;
+#define ModifyStoredAnlForm(x)  bmodr(StoAnlFormX.1,x)
+#define ReadStoredAnlForm(x)    brule(StoAnlFormX.1,x)
+
+  ReadBget(a) &
+  ModifyStoredAnlForm(a)
+ =>
+  saf
+
+END
+
+&
+
+THEORY  ConstructFreshVariableListX IS
+
+/*
+  also in Animator.src/PO...
+
+  fresh variable list constructed for :: construct
+
+  input: ConstructFreshVariableList(v,s)
+    v variable list
+    s set-theoretic expression
+  result
+    (v,x,p) stored in ConstructFreshVariableListX.1
+      v unchanged
+      x fresh variable list none of which appears free in v or s (x1,x2,...)
+      p the predicate x1:s & x2:s & ...
+*/
+
+
+#define BuildFreenessAggregate \
+   bcall(((MAP;ARI;MODR)~;ConstructFreshVariableListWithRenameX)~:aggreg_)
+
+#define ConstructFreshVariableList(v,s) \
+   BuildFreenessAggregate & \
+   bcall(((NEWV~;ConstructFreshVariableListX)~;REV~;ConstructFreshVariableListX):\
+         cfvl1(v)(s)(v | ? | ?))
+
+
+  ?;                     /* for result */
+
+  ?;  /* aggregate of FULL_SETSX, FULL_CONSTANTSX etc */
+#define ReadFreenessAggregate(x)     brule(ConstructFreshVariableListX.2,x)
+#define ModifyFreenessAggregate(x) \
+                bcall(MODR:bmodr(ConstructFreshVariableListX.2,x))
+
+  bcall((ARI;MODR):bmodr(ConstructFreshVariableListX.1,(v,x,p)))
+ =>
+  cfvl4(v)(x,?)(p & ?);
+
+  bcall((ARI;REV;MODR):bmodr(ConstructFreshVariableListX.1,(v,x,(brev(p):s))))
+ =>
+  cfvl4(v)(x,?)(p:s & ?);
+
+  ExpandOpFlagSet &
+  FlagDesugarerError
+ =>
+  cfvl3(v)(s)(a,b | d);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  InformNotAnIdentifierWithOp(o,b) &
+  FlagDesugarerError
+ =>
+  cfvl3(v)(s)(a,b | d);
+
+  DontExpandOpFlagSet &
+  brule(RebuildX.2,o) &
+  InformNotAnIdentifierWithOp(o,b) &
+  FlagDesugarerError
+ =>
+  cfvl3(v)(s)(a,bnewv(b,x) | d);
+
+  bident(b) &
+  cfvl3(v)(s)(a,bnewv(b,x) | d)
+ =>
+  cfvl3(v)(s)(a,b | d);
+
+  ReadFreenessAggregate(F) &
+  b\F &
+  ReadStoredAnlForm(G) &
+  b\G &
+  b\v &
+  b\s &
+  cfvl4(v)(brev(a,b))(brev(d & b:s))
+ =>
+  cfvl3(v)(s)(a,b | d);
+
+  ReadFreenessAggregate(F) &
+  b\F &
+  ReadStoredAnlForm(G) &
+  b\G &
+  b\v &
+  b\s &
+  cfvl4(v)(brev(a,b))(brev(? & d,b:s))
+ =>
+  cfvl3(v)(s)(a,b | ? & d:s);
+
+  bident(c) &
+  cfvl2(v)(s)(a | b,bnewv(c,x) | d)
+ =>
+  cfvl2(v)(s)(a | b,c | d);
+
+  NormaliserErrorFlagged
+ =>
+  cfvl2(v)(s)(a | b,bnewv(c,x) | d);
+
+  DesugarerErrorFlagged
+ =>
+  cfvl2(v)(s)(a | b,bnewv(c,x) | d);
+
+  ReadFreenessAggregate(F) &
+  c\F &
+  ReadStoredAnlForm(G) &
+  c\G &
+  c\v &
+  c\s &
+  cfvl1(v)(s)(a | b,c | d & c:s)
+ =>
+  cfvl2(v)(s)(a | b,c | d);
+
+  ReadFreenessAggregate(F) &
+  c\F &
+  ReadStoredAnlForm(G) &
+  c\G &
+  c\v &
+  c\s &
+  cfvl1(v)(s)(a | b,c | ? & d,c:s)
+ =>
+  cfvl2(v)(s)(a | b,c | ? & d:s);
+
+  cfvl3(v)(s)(b,a | d)
+ =>
+  cfvl1(v)(s)(a | b | d);
+
+  cfvl2(v)(s)(a | c,b | d)
+ =>
+  cfvl1(v)(s)(a,b | c | d)
+
+END
+
+&
+
+THEORY  ConstructFreshVariableListWithRenameX IS
+
+/*
+  also in Animator.src/PO...
+
+  fresh variable list and predicate constructed for : construct
+  and stored in TempX.1
+
+  input: ConstructFreshVariableListWithRename(v,p)
+    v variable list
+    p predicate
+  result
+    (v,x,q) stored in ConstructFreshVariableListWithRenameX.1
+      v unchanged
+      x fresh variable list none of which appears free in v or p (x1,x2,...)
+      q the predicate [v,v0:=x,v]p
+*/
+
+#define ConstructFreshVariableListWithRename(v,p) \
+   BuildFreenessAggregate & \
+   bcall(((NEWV~;ConstructFreshVariableListWithRenameX)~;REV~;ConstructFreshVariableListWithRenameX;FLAT~;ConstructFreshVariableListWithRenameX):\
+           cfvlwr1(v)(p)(v | ? | ?))
+
+
+  ?;                     /* for result */
+
+  aggreg2_(t)(N);
+
+  brule(t.N,a) &
+  ReadFreenessAggregate(b) &
+  ModifyFreenessAggregate((b;a)) &
+  aggreg2_(t)(N+1)
+ =>
+  aggreg2_(t)(N);
+
+  aggreg2_(t)(1)
+ =>
+  aggreg1_(t);
+
+  aggreg_;  /* already built */
+
+  ReadFreenessAggregate(?) &
+  ReadSetsRename((a:b)) &
+  ReadConstsRename((c:d)) &
+  ReadStateVarNames(V) &
+  ReadMchParamRename((g:h)) &
+/***
+HERE((74 --- a|c|V|g))&
+***/
+  aggreg1_ bsmap
+      ((a),
+       (c),
+       (V),
+       (g))
+ =>
+  aggreg_;
+
+
+
+/*
+  bvrb(a) &
+  bvrb(b) &
+*/
+  bcall((ARI;SUB;MODR):bmodr(ConstructFreshVariableListWithRenameX.1,(v,x,[a:=b]p)))
+ =>
+  cfvlwr5(v)(x)(p)(a)(b);
+
+  cfvlwr5(v)(x)(p)(bflat(v,e))(bflat(x,v))
+ =>
+  cfvlwr4(v)(p)(x,?)(e,?);
+
+  bident(b) &
+  cfvlwr3(v)(p)(a,bnewv(b,x) | c)
+ =>
+  cfvlwr3(v)(p)(a,b | c);
+
+  ReadFreenessAggregate(F) &
+  b\F &
+  ReadStoredAnlForm(G) &
+  b\G &
+  b\v &
+  b\p &
+  cfvlwr4(v)(p)(brev(a,b))(brev(c))
+ =>
+  cfvlwr3(v)(p)(a,b | c);
+
+  bident(c) &
+  cfvlwr2(v)(p)(a | b,bnewv(c,x) | d)
+ =>
+  cfvlwr2(v)(p)(a | b,c | d);
+
+  ReadFreenessAggregate(F) &
+/***
+HERE((19 --- c --- F))&
+***/
+  c\F &
+  ReadStoredAnlForm(G) &
+/***
+HERE((20 --- G))&
+***/
+  c\G &
+  c\v &
+  c\p &
+  cfvlwr1(v)(p)(a | b,c | d)
+ =>
+  cfvlwr2(v)(p)(a | b,c | d);
+
+  cfvlwr3(v)(p)(b,a | c,a$0)
+ =>
+  cfvlwr1(v)(p)(a | b | c);
+
+  cfvlwr2(v)(p)(a | c,b | d,b$0)
+ =>
+  cfvlwr1(v)(p)(a,b | c | d)
+
+END
+
+&
+
+THEORY AnimFifoWriteX IS
+
+  FifoWrite_Store(a,b)
+ =>
+  __FifoWrite_Store(a,b);
+
+  IsAutoExecution
+ =>
+  __FifoWrite_Store(a,b);
+
+
+  FifoWrite_NoStore(a)
+ =>
+  __FifoWrite_NoStore(a);
+
+  IsAutoExecution
+ =>
+  __FifoWrite_NoStore(a)
+
+END
+
+&
+
+THEORY UserLibX END &
+
+THEORY UserLibMacrosX IS
+
+  Trace__(x) == bcall(WRITE: bwritef("\n  >>> % <<<\n\n",x));
+
+  Constant__(x) == (brule(SimplifyX.4,v) & v\(x))
+
+END
+
+&
+
+THEORY OpX END &
+
+THEORY UnJokerizedSubOpX END &
+
+THEORY JokerizedSubOpX IS ( a || ( b || c ) ) == ( a || b || c ) END &
+
+THEORY ExpOpX END &
+
+THEORY TypeGivenX END &
+
+THEORY TypeStructuredX END &
+
+THEORY ChoiceX END &
+
+THEORY BitStringRewritesX IS
+
+  /***
+  Processes result of all `Bget(("ANL/",a,".",b,".anl"))'
+  before resulting `ReadBget', `if AnimatingVHDLConstruct'.
+
+  bitstring rewrites of the form:
+    "1101" == { 3->1, 2->1, 1->0, 0->1 }
+  are built up below these rules.
+  if a bitstring has not yet been encountered
+  rules no. 2 & 3 will perform the rewrite and create the rule
+  ***/
+
+  ?;  /* 1. result of BT_BITSTR2SET_M */
+
+  bbitstring(s) &
+/***
+HERE(("BT_BITSTR2SET_M":s))&
+***/
+  FifoWrite_Store((BT_BITSTR2SET_M,s,0),(BitStringRewritesX.1)) &
+  cre_BITSTR2SET(s)
+ =>
+  s == BITSTR2SET_____j_i8__7u_JK(s);
+
+  brule(BitStringRewritesX.1,t) &
+  bcall(RULE:bcrer(BitStringRewritesX,(s == t))) &
+/***
+HERE(("BitStringRewritesX":(s==t)))&
+***/
+  bcall(RULE:bcrer(BitStringRewritesX,(BITSTR2SET_____j_i8__7u_JK(s) == t)))
+ =>
+  cre_BITSTR2SET(s)
+
+END
+
+&
+
+THEORY CheckBitStringRewritesX IS
+
+#define CheckBitStringRewrites(N,x) \
+  bcall((CheckBitStringRewritesX;BitStringRewritesX~;MODR):cbsr$N(x))
+
+  cbsr$N(j);
+
+  AnimatingVHDLConstruct &
+  ReadBget(a) &
+  bmodr(BgetX.1,a)
+ =>
+  cbsr$N(j)
+
+END
+
+&
+
+THEORY OutputFileMacrosX IS
+
+  (bsrv a berv) == a
+
+END
+
+&
+
+THEORY OutputFileX IS
+
+#define OutFile    "TMP/anm.out"
+
+#define ExeFile    "TMP/anm.anm"
+
+
+
+#define ClearOutFile           Connect(OutFile) & bclose
+#define AppendOutFile          Append(OutFile)
+
+#define AppendFileToOutFile(x) bcall(((CATL;SHELL;WRITE)~;OutputFileX)~:aoff(x))
+
+#define DrawLineOutFile        AppendOutFile & \
+                               bcall(WRITE:bprintf(Line)) & \
+                               bclose
+
+
+#define ClearExeFile         Connect(ExeFile) & bclose
+#define AppendExeFile        Append(ExeFile)
+
+#define Epilogue_exe(N,x)     bcall(EpilogueX~:ep_exe$N(x))
+
+#define AppendToExeFile(N,x)  Epilogue_exe(N,x)
+
+
+
+  InformCantExecute(f)
+ =>
+  bshell(f);
+
+  bshell(bcatl("cat ",f," >> ",OutFile )) &
+  AppendOutFile &
+  Printf(N,("\n\n")) &
+  Printf(N,(Line)) &
+  bclose
+ =>
+  aoff(f)
+
+END
+
+&
+
+THEORY SUB_seqX IS
+
+  bsingleton(s)
+ =>
+  ([a:=b]([ s ](p))) == (([ [a:=b](s) ])([a:=b](p)));
+
+  ([a:=b]([ S,s ](p))) == (([ [a:=b](S,s) ])([a:=b](p)));
+
+  bsingleton(s)
+ =>
+  ([a:=b] ( ([ s ]) evl (p) )) == (([ [a:=b](s) ]) evl ([a:=b](p)));
+
+  ([a:=b] ( ([ S,s ]) evl (p) )) == (([ [a:=b](S,s) ]) evl ([a:=b](p)))
+
+END
+
+&
+
+THEORY ModifyBoundVarsX IS 
+
+#define ModifyBoundVars(x) \
+    bcall(((FLAT;REV;MODR)~;ModifyBoundVarsX)~:mbv(x))
+
+/*** note that FLAT *is* required - as the first
+     tactic eg. ModifyBoundVars((bflat(V,v)))    ***/
+
+/***
+HERE(("BoundVars":B))&
+***/
+  bmodr(SimplifyX.4,B)
+ =>
+  mbv1(?)(B);
+
+  mbv1(V)(B,v)
+ =>
+  mbv1(V,v)(B);
+
+  bsearch(v,(B,?),Y) &
+  mbv1(V)(B)
+ =>
+  mbv1(V,v)(B);
+
+  mbv1(brev(V,?))(___default_bv)
+ =>
+  mbv(V)
+
+END
+
+&
+
+THEORY ModifyUnaccConstsX IS 
+
+#define ModifyUnaccConsts(x,y) \
+    bcall(((FLAT;REV;MODR)~;ModifyUnaccConstsX)~:muc(x)(y))
+
+/*** note that FLAT *is* required - as the first
+     tactic eg. ModifyBoundVars((bflat(V,v)))    ***/
+
+/***
+HERE(("UnaccConsts":H:B))&
+***/
+  bmodr(SimplifyX.5,B)
+ =>
+  muc1(H)(?)(B);
+
+  muc1(H)(V)(B,v)
+ =>
+  muc1(H)(V,v)(B);
+
+  bsearch(v,(B,?),Y) &
+  muc1(H)(V)(B)
+ =>
+  muc1(H)(V,v)(B);
+
+  muc1(H)(V)(B)
+ =>
+  muc1(H)(V,?)(B);
+
+  muc1(H)(brev(V,?))(___default_bv)
+ =>
+  muc(H)(V)
+
+END
+
+&
+
+THEORY AdjustUnaccConstForMchParamX IS 
+
+#define AdjustUnaccConstForMchParam \
+  bcall(((MODR)~;AdjustUnaccConstForMchParamX)~:aucfmp)
+
+  ReadUnaccConsts(L) &
+  ModifyUnaccConsts(28,(L,f))
+ =>
+  aucfmp2(f:a);
+
+  aucfmp2(f:f);
+
+  ReadRawParamConstr((P:C)) &
+  bsearch((card(f):NAT1),(C&?),D) &
+  ReadUnaccConsts(L) &
+  ModifyUnaccConsts(27,(L,f))
+ =>
+  aucfmp2(f:a);
+
+  aucfmp2(f:a)
+ =>
+  aucfmp1(f:a);
+
+  aucfmp1(F:A) &
+  aucfmp2(f:a)
+ =>
+  aucfmp1(F,f:A,a);
+
+  aucfmp1(?);
+
+  ReadMchParamRename(R) &
+  aucfmp1(R)
+ =>
+  aucfmp
+
+END
+
+&
+
+THEORY EpilogueBitStringX IS
+
+/***/
+#define EpilogueBitString(x) \
+    bcall(((ARI~;CATL~;RULE~;FLAT;MODR)~;EpilogueBitStringX)~:x)
+/***/
+
+/***
+#define EpilogueBitString(x) \
+    bcall(((ARI~;CATL~;RULE~;FLAT;MODR)~;EpilogueBitStringX)~: \
+(x&HERE(("EpilogueBitString":x))))
+***/
+
+
+  ?;  /* (possibly) processed result */
+
+  bmodr(EpilogueBitStringX.1,x)
+ =>
+  x;
+
+
+  bsearch((0|->'0'),A,B)
+ =>
+  {A} == _interim(0|->'0')({B})("0")(1)(2);         /* start */
+
+  bsearch((0|->'1'),A,B)
+ =>
+  {A} == _interim(0|->'1')({B})("1")(1)(2);         /* start */
+
+
+
+  _interim(X)({A})(s)(N)(M) == ({bflat(A,X)});      /* failure */
+
+
+
+  bsearch((N|->'0'),A,B)
+ =>
+  _interim(X)({A})(s)(N)(M) == _interim(X,N|->'0')({B})(bcatl(0,s))(N+1)(M+1);
+
+  bsearch((N|->'1'),A,B)
+ =>
+  _interim(X)({A})(s)(N)(M) == _interim(X,N|->'1')({B})(bcatl(1,s))(N+1)(M+1);
+
+
+
+  bsearch((N|->'0'),A,(M|->'0'))
+ =>
+  _interim(X)({A})(s)(N)(M) == bcatl(0,0,s);
+
+  bsearch((N|->'0'),A,(M|->'1'))
+ =>
+  _interim(X)({A})(s)(N)(M) == bcatl(1,0,s);
+
+  bsearch((N|->'1'),A,(M|->'0'))
+ =>
+  _interim(X)({A})(s)(N)(M) == bcatl(0,1,s);
+
+  bsearch((N|->'1'),A,(M|->'1'))
+ =>
+  _interim(X)({A})(s)(N)(M) == bcatl(1,1,s);
+
+
+
+  {1|->'0',0|->'0'} == "00";
+
+  {0|->'0',1|->'0'} == "00";
+
+  {1|->'1',0|->'0'} == "10";
+
+  {0|->'0',1|->'1'} == "10";
+
+  {1|->'0',0|->'1'} == "01";
+
+  {0|->'1',1|->'0'} == "01";
+
+  {1|->'1',0|->'1'} == "11";
+
+  {0|->'1',1|->'1'} == "11";
+
+
+  {0|->'0'} == "0";
+
+  {0|->'1'} == "1"
+
+END
+
+&
+
+THEORY EpilogueX IS
+
+  brule(EpilogueBitStringX.1,x) &
+  bcall((OutputFileMacrosX~;WRITE):bprintf(x))
+ =>
+  ep_bprintf1$N;
+
+  bcall((OutputFileMacrosX~;WRITE):bprintf(x))
+ =>
+  ep_bprintf$N(x) ;
+
+  AnimatingVHDLConstruct &
+  EpilogueBitString(x) &
+  ep_bprintf1$N
+ =>
+  ep_bprintf$N(x);
+
+
+
+  brule(EpilogueBitStringX.1,x) &
+  AppendExeFile &
+  bcall((OutputFileMacrosX~;WRITE):bprintf(x)) &
+  bclose
+ =>
+  ep_exe1$N;
+
+  AppendExeFile &
+  bcall((OutputFileMacrosX~;WRITE):bprintf(x)) &
+  bclose
+ =>
+  ep_exe$N(x) ;
+
+  AnimatingVHDLConstruct &
+  EpilogueBitString(x) &
+  ep_exe1$N
+ =>
+  ep_exe$N(x);
+
+
+
+  brule(EpilogueBitStringX.1,x) &
+  Writef((x)) &
+  AppendOutFile &
+  bcall((OutputFileMacrosX~;WRITE):bprintf(x)) &
+  bclose
+ =>
+  ep_out1$N;
+
+  IsAutoExecution &
+  brule(EpilogueBitStringX.1,x) &
+  AppendOutFile &
+  bcall((OutputFileMacrosX~;WRITE):bprintf(x)) &
+  bclose
+ =>
+  ep_out1$N;
+
+  Writef((x)) &
+  AppendOutFile &
+  bcall((OutputFileMacrosX~;WRITE):bprintf(x)) &
+  bclose
+ =>
+  ep_out$N(x) ;
+
+  IsAutoExecution &
+  AppendOutFile &
+  bcall((OutputFileMacrosX~;WRITE):bprintf(x)) &
+  bclose
+ =>
+  ep_out$N(x) ;
+
+  AnimatingVHDLConstruct &
+  EpilogueBitString(x) &
+  ep_out1$N
+ =>
+  ep_out$N(x)
+
+END
+
+&
+
+THEORY PostSimplifyX IS
+
+  max__(a)                           == max({a});
+
+  seq2set(n)(b)                      == (n|->b);
+
+  seq2set(n)(a,b)                    == (seq2set(n+1)(a),n|->b);
+
+  (d >>>+-+<<< (x.e))                == (%(x).(x:d|e));
+
+  ({s} >>++<< (x|p))                 == {x|(x)=s & p} ;
+
+  (s >>+-+<< (x|p))                  == {x|(x:s)&p};
+
+  (POW({l}) \/ addpow(POW({l}),x))   == (POW({l,x}));
+
+  addpow({{}},x)                     == {{x}};
+
+  (PI__(x).({y|p}|q))                ==  (PI(x).([y:=x]p|q));
+
+  (PI__(x).({x|p}|q))                ==  (PI(x).(p|q));
+
+  (SIGMA__(x).({y|p}|q))             ==  (SIGMA(x).([y:=x]p|q));
+
+  (SIGMA__(x).({x|p}|q))             ==  (SIGMA(x).(p|q));
+
+  (Exist__((x).(p);w))               ==  (#(x).(p));
+
+  (All__((x).(p);w))                 ==  (!(x).(p));
+
+  (Set__(x|p;q))                     ==  {x|p};
+
+  (Set__(x).(p;q))                   ==  {x|p};
+
+  (Lam__O((x).(p|v);q))              ==  (%(x).(p|v));
+
+  (Set__Comp(x|p))                   ==  {x|p};
+
+  (a === b)                          == (a=b)
+
+END
+
+&
+
+THEORY AbortExeX IS
+
+#define AbortExe(N) bcall(AbortExeX:ae$N)
+
+  ReadAnimateFilename(f) &
+  Out(N,("\n  Aborted ANIMATE Script %\n\n",f)) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_FINI:0)) &
+  LoadToolkit(1)
+ =>
+  ae$N
+
+END
+
+&
+
+THEORY SimplifyX IS
+
+#define Simplify(N,x)  bcall((((SUB~;SUB_seqX)~;MAP;MODR)~;SimplifyX)~:sfy$N(x))
+
+#define SimplifyComposite(N,x)  bcall((((SUB~;SUB_seqX)~;MAP;MODR)~;SimplifyX)~:sfy_comp$N(x))
+
+  ?;
+#define sfyTac ((AnimLibraryX;LibraryBoolX;CATL)~;SimplifyX)
+
+#define ModifySimplify(x) bmodr(SimplifyX.1,x)
+#define ReadSimplify(x)   brule(SimplifyX.1,x)
+  
+
+  ?; /* 2. ?,? | ?&? - the separator */
+
+  ?; /* 3. */
+
+  ?; /* 4. BoundVars */
+
+  ?; /* 4. UnaccConsts */
+
+
+
+                  /****** composite predicate ******/
+
+  bmodr(SimplifyX.2,(?&?)) &
+  ModifySimplify(?) &
+  bcall(sfyTac:sfy2$N(P)) &      /* simplification done here */
+  sfy3$N
+ =>
+  sfy_comp$N(P);
+
+
+
+                  /****** predicate by predicate ******/
+
+  ReadSimplify(P) &
+  bsearch(?,P,Q) &
+  bcall((PostSimplifyX~;MODR):bmodr(SimplifyX.1,Q))
+ =>
+  sfy3$N;
+
+
+  brule(SimplifyX.2,(? JOK2 ?)) &
+  ReadSimplify(P) &
+  ModifySimplify((P JOK2 p))
+ =>
+  sfy2$N(p);
+
+/***
+ReadBoundVars(B)&HERE(("Simplifying"|(p)))&
+ReadBoundVars(B)&HERE(("BoundVars"|B))&
+***/
+  bcall(sfyTac:sfy2$N(p))       /* simplification done here */
+ =>
+  sfy1$N(p);
+
+/***
+ReadBoundVars(B)&HERE(("Simplifying"|(p)))&
+ReadBoundVars(B)&HERE(("BoundVars"|B))&
+***/
+  bmodr(SimplifyX.2,(?&?)) &
+  ModifySimplify(?) &
+  sfy1$N(p) &
+  sfy3$N
+ =>
+  sfy$N(p);
+
+/***
+ReadBoundVars(B)&HERE(("Simplifying"|(P&p)))&
+ReadBoundVars(B)&HERE(("BoundVars"|B))&
+***/
+  bmodr(SimplifyX.2,(?&?)) &
+  ModifySimplify(?) &
+  sfy1$N bsmap (P&p) &
+  sfy3$N
+ =>
+  sfy$N(P&p);
+
+/***
+ReadBoundVars(B)&HERE(("Simplifying"|(P,p)))&
+ReadBoundVars(B)&HERE(("BoundVars"|B))&
+***/
+  bmodr(SimplifyX.2,(?,?)) &
+  ModifySimplify(?) &
+  sfy1$N bsmap (P,p) &
+  sfy3$N
+ =>
+  sfy$N(P,p)
+  
+END
+
+&
+
+THEORY PreMultiInputX IS
+
+#define PreMultiInput(N,w,x,y,z) bcall((FLAT~;PreMultiInputX~):pmi$N(w,x,y,z))
+
+  /***
+  N
+  w: input type
+  x: dialog prompt
+  y: var list
+  z: props list
+  ***/
+
+  ReadSimplify(e) &
+  GetMultiInput(N,a,b,c,e)
+ =>
+  pmi1$N(a,b,c,d);
+
+  Simplify(N,d) &
+  pmi1$N(a,b,c,d)
+ =>
+  pmi$N(a,b,c,d)
+
+END
+
+&
+
+THEORY CleanAnimatorX IS
+
+#define CleanAnimator bcall(((MAP;RULE;MODR)~;CleanAnimatorX)~:ca)
+
+  bclean(t)
+ =>
+  ca1(t);
+
+  ModifyLastOpParams(?) &
+  SetRecreateMainMenu &
+  ResetAssertion &
+  ResetAutoExecution &
+  ModifyAssertionTripleList(?) &
+  ResetAutoExecution &
+  ClearOutFile &
+  ClearExeFile &
+  ModifyTypeMchLoaded(?) &
+  ModifySetsConstsSetToThemselves(?) &
+  ModifyRawSetsConstantsSettings(?) &
+  ca1 bsmap
+      (UserLibMacrosX,UserLibX,OpX,UnJokerizedSubOpX,JokerizedSubOpX,ExpOpX,TypeGivenX,TypeStructuredX)
+ =>
+  ca
+
+END
+
+&
+
+THEORY PrintMainMenuBSelIfReqdX IS
+
+#define PrintMainMenuBSelIfReqd(N) \
+    bcall(((MAP;WRITE)~;PrintMainMenuBSelIfReqdX)~:pmmbsir$N)
+
+  Printf(N,("\E")) &
+  Printf(N,("%",o))
+ =>
+  pmmbsir1$N(o,m,n);
+
+  Printf(N,("%",o))
+ =>
+  pmmbsir1$N(o,1,n);
+
+  pmmbsir$N;
+
+  RecreateMainMenuFlagSet &
+  ClearRecreateMainMenu &
+  ReadMainMenuOpNames(a) &
+  Connect(".Bsel") &
+  pmmbsir1$N bnmap a &
+  Printf(N,("\E")) &
+  Printf(N,("Undo last operation")) &
+  Printf(N,("\E")) &
+  Printf(N,("Animator Utilities")) &
+  bclose
+ =>
+  pmmbsir$N
+
+END
+
+&
+
+THEORY ProcessUserLibX IS
+
+#define ProcessUserLib(N) \
+    bcall(((CATL;MODR;MAP;RULE;ARI;WRITE)~;ProcessUserLibX)~:pul$N)
+
+  ?;
+#define ModifyNotProcessingINCLUSION  bcall(MODR:bmodr(ProcessUserLibX.1,0))
+#define NotProcessingINCLUSION        brule(ProcessUserLibX.1,0)
+#define ModifyProcessingINCLUSION     bcall(MODR:bmodr(ProcessUserLibX.1,1))
+#define ProcessingINCLUSION           brule(ProcessUserLibX.1,1)
+
+  ?;
+#define ClearUserLibError  bcall(MODR:bmodr(ProcessUserLibX.2,0))
+#define SetUserLibError    bcall(MODR:bmodr(ProcessUserLibX.2,1))
+#define UserLibErrorSet    brule(ProcessUserLibX.2,1)
+
+
+  ReadCurrentConstruct(a.b) &
+  Out(N,(("\nLoaded SRC/%.%.%\n",a,b,thy)))
+ =>
+  pul_chk_err$N;
+
+  UserLibErrorSet
+ =>
+  pul_chk_err$N;
+
+
+  pul_proc_defs$N(M);
+
+  brule(UserLibX.M,r) &
+  bcall((UserLibMacrosX~;MODR):bmodr(UserLibX.M,r)) &
+  pul_proc_defs$N(M+1)
+ =>
+  pul_proc_defs$N(M);
+
+
+  Out(N,(("\n  %: syntax error\n\n    %\n\n  Each DEFINITIONS rule should be a rewrite rule\n",z,x)))
+ =>
+  pul_def$N(z,x);
+
+  bcrer(UserLibMacrosX,(a==b))
+ =>
+  pul_def$N(z,(a==b));
+
+  bcrer(UserLibMacrosX,(h=>(a==b)))
+ =>
+  pul_def$N(z,(h=>(a==b)));
+
+  pul_def$N(z,?);
+
+
+
+  Out(N,(("\n  INCLUSION % should be a string\n",i))) &
+  SetUserLibError
+ =>
+  pul5$N(i);
+
+  pul5$N(?);
+
+  bstring(i) &
+  Bshell(("$BKIT/BLIB/CheckFileExists ",i," .")) &
+  pul1$N(i)
+ =>
+  pul5$N(i);
+
+
+  Out(N,(("\n  %: syntax error\n\n    %\n\n  Should comprise single a THEORY named UserLibX \n  followed by optional DEFINITIONS/INCLUSIONS clauses\n",z,X))) &
+  SetUserLibError
+ =>
+  pul4$N(z)(X);
+
+  ProcessingINCLUSION &
+  Out(N,(("\n  INCLUSION %: syntax error\n\n    %\n\n  Should comprise single a THEORY named UserLibX \n  followed by optional DEFINITIONS/INCLUSIONS clauses\n",z,X))) &
+  SetUserLibError
+ =>
+  pul4$N(z)(X);
+
+  bcrelr(UserLibX,U)
+ =>
+  pul4$N(z)(THEORY UserLibX IS U END);
+
+  ModifyProcessingINCLUSION &
+  pul5$N bsmap I &
+  bcrelr(UserLibX,U)
+ =>
+  pul4$N(z)(THEORY UserLibX IS U END INCLUSIONS I);
+
+  pul_def$N(z) bsmap D &
+  bcrelr(UserLibX,U)
+ =>
+  pul4$N(z)(THEORY UserLibX IS U END DEFINITIONS D);
+
+  ModifyProcessingINCLUSION &
+  pul5$N bsmap I &
+  pul_def$N(z) bsmap D &
+  bcrelr(UserLibX,U)
+ =>
+  pul4$N(z)(THEORY UserLibX IS U END DEFINITIONS D INCLUSIONS I);
+
+  pul4$N(z)(THEORY UserLibX IS U END DEFINITIONS D INCLUSIONS I)
+ =>
+  pul4$N(z)(THEORY UserLibX IS U END INCLUSIONS I DEFINITIONS D);
+
+  ReadBfifoSto(0) &                /* file doesn't parse */
+  Out(N,(("\n  % does not parse - not loaded\n",z))) &
+  SetUserLibError
+ =>
+  pul3$N(z);
+
+  ReadBfifoSto(0) &                /* included file doesn't parse */
+  ProcessingINCLUSION &
+  Out(N,(("\n  INCLUSION % does not parse - not loaded\n",z))) &
+  SetUserLibError
+ =>
+  pul3$N(z);
+
+  NotProcessingINCLUSION &
+  ReadBfifoSto(0) &                /* main file doesn't parse */
+  Out(N,(("\n  % does not parse - not loaded\n",z))) &
+  SetUserLibError
+ =>
+  pul3$N(z);
+
+  ReadBfifoSto(1) &                /* file parses */
+  bget(z,x) &
+  pul4$N(z)(x)
+ =>
+  pul3$N(z);
+
+  Out(N,(("\n  INCLUSION % does not exist\n",z))) &
+  SetUserLibError
+ =>
+  pul2$N(z)(1);                    /* included file not exist */
+
+  NotProcessingINCLUSION &
+  ReadCurrentConstruct(a.b) &
+  Out(N,(("\nNo file SRC/%.%.% - creating template\n",a,b,thy))) &
+  Connect(z) &
+  Printf(N,("/")) &
+  Printf(N,("*\nTwo macros are built-in for use as antecedents in rules of UserLibX:\n\n     Trace__(x)    causes the formula `x' to be printed out\n                    when the rule is applied\n\n  Constant__(x)    prohibits the rule from being applied\n                    when `x' is not a constant\n\nMore may be added to DEFINITIONS below.\n\nOther theory files may be included through the INCLUSIONS clause\n\nFor more information see Top Bar Help Main->Animation\n*")) &
+  Printf(N,("/\n\n\nTHEORY UserLibX IS\n\n  ?\n")) &
+  Printf(N,("\nEND\n\nDEFINITIONS\n\n  ?\n\nINCLUSIONS\n\n  ?\n")) &
+  bclose
+ =>
+  pul2$N(z)(1);                    /* main file not exist */
+
+  FifoWrite_NoStore((BT_FILE_PARSE_NEW_M,z,0)) &
+  pul3$N(z)
+ =>
+  pul2$N(z)(0);                    /* file exists */
+
+  pul1$N(?);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  pul1$N(z);
+
+  bget(".Bcom",x) &
+  pul2$N(z)(x)
+ =>
+  pul1$N(z);
+
+  ReadCurrentConstruct(a.b) &
+  ClearUserLibError &
+  ModifyNotProcessingINCLUSION &
+  Bshell(("$BKIT/BLIB/CheckFileExists SRC/",a,".",b,".thy .")) &
+  pul1$N(bcatl("SRC/",a,".",b,".thy")) &
+  pul_proc_defs$N(1) &
+  pul_chk_err$N
+  =>
+  pul$N
+
+END
+
+&
+
+THEORY GetMultiInputX IS
+
+  /***
+  N
+  v: input type
+  x: dialog prompt
+  y: var list
+  z: props list
+  ***/
+
+  ?; /* 1. dialog prompt (suitable for `bprintf') */
+#define ModifyGetMultiInputDialogPrompt(x)  bmodr(GetMultiInputX.1,x)
+#define ReadGetMultiInputDialogPrompt(x)    brule(GetMultiInputX.1,x)
+
+  ?; /* 2. variable list */
+#define ModifyGetMultiInputVarList(x)  bmodr(GetMultiInputX.2,x)
+#define ReadGetMultiInputVarList(x)    brule(GetMultiInputX.2,x)
+
+  ?; /* 3. list containing suggested values */
+#define ModifyGetMultiInputSuggestEqls(x)  bmodr(GetMultiInputX.3,x)
+#define ReadGetMultiInputSuggestEqls(x)    brule(GetMultiInputX.3,x)
+
+  ?; /* 4. derived list v=v' */
+#define ModifyGetMultiInputVarValList(x)  bmodr(GetMultiInputX.4,x)
+#define ReadGetMultiInputVarValList(x)    brule(GetMultiInputX.4,x)
+
+  ?; /* 5. result of FifoWrite_Store */
+#define MultiInputStore    GetMultiInputX.5
+#define ModifyMultiInput(x)  bcall(MODR:bmodr(MultiInputStore,x))
+#define ReadMultiInput(x)    brule(MultiInputStore,x)
+
+  ?; /* 6. GetMultiInputError */
+#define SetGetMultiInputError    bmodr(GetMultiInputX.6,1)
+#define ClearGetMultiInputError  bmodr(GetMultiInputX.6,0)
+#define GetMultiInputErrorIsSet  brule(GetMultiInputX.6,1)
+
+  ?; /* 7. list containing suggested values */
+#define ModifyGetMultiInputProps(x)  bmodr(GetMultiInputX.7,x)
+#define ReadGetMultiInputProps(x)    brule(GetMultiInputX.7,x)
+
+  ?; /* 8. input type */
+#define mch_param_input_type 1
+#define mch_ctx_input_type   2
+#define op_param_input_type  3
+#define state_var_input_type 4
+#define local_var_input_type 5
+#define ModifyInputType(x)  bmodr(GetMultiInputX.8,x)
+#define ReadInputType(x)    brule(GetMultiInputX.8,x)
+
+  ?; /* 9. result of BT_BITSTR2SET_M */
+
+
+
+#define MultiInputFixSeqEval(N,x) bcall(MultiInputFixSeqEvalX~:mifse$N(x))
+
+
+  ReadBget(L) &
+  ModifyMultiInput(L)
+ =>
+  mu_bitstr2$N;
+
+  mu_bitstr$N;
+
+  AnimatingVHDLConstruct &
+  ReadMultiInput(L) &
+  bmodr(BgetX.1,L) &
+  CheckBitStringRewrites(N,L) &
+  mu_bitstr2$N
+ =>
+  mu_bitstr$N;
+
+  ReadMultiInput(L) &
+  bcall((REV;MODR):bmodr(MultiInputStore,brev(L)))
+ =>
+  mu9$N;
+
+  GetMultiInputErrorIsSet &
+  ReadInputType(a) &
+  ReadGetMultiInputDialogPrompt(c) &
+  ReadGetMultiInputVarList(d) &
+  ReadGetMultiInputProps(e) &
+  mu$(N+1)(a)(c)(d)(e)
+ =>
+  mu9$N;
+
+  mu8$N(1);
+
+  Out(N,(("\n  Invalid input for % - %\n",a,bsrv v berv))) &
+  SetGetMultiInputError
+ =>
+  mu8$N([a:=v](1));
+
+  mu8$N([a:=v](1))
+ =>
+  mu7$N(a<--(v));
+
+  ReadMultiInput(L) &
+  mu7$N bsmap L
+ =>
+  mu6_1$N(K);
+
+  ReadMultiInput(L) &
+  MultiInputFixSeqEval(N,L) &
+  mu6_1$N(L)
+ =>
+  mu6$N;
+
+  ReadMultiInput(0) &           /* operation aborted */
+  ModifySelectedOp(op_abort)
+ =>
+  mu6$N;
+
+  ReadMultiInput(0) &           /* initialisation aborted */
+  ReadSelectedOp(Initialisation(i)) &
+  ReadCurrentConstruct(a.b) &
+  Out(N,("\nInitialisation aborted - can't start animation!\n\n")) &
+  Out(N,((Line))) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_FINI:0)) &
+  LoadToolkit(1)
+ =>
+  mu6$N;
+
+  mu5$N(?);
+
+  Printf(N,("\n6\n%\n%",a,v))      /* multi_input_fld_unknwn */
+ =>
+  mu5$N(a=v);
+
+  ReadInputType(t) &
+  ReadGetMultiInputDialogPrompt(B) &
+  ReadGetMultiInputProps(P) &
+  ReadGetMultiInputVarValList(L) &
+  Connect("TMP/.Bcom") &
+  Printf(N,(B)) &
+  mu5$N bsmap L &
+  Printf(N,("\n")) &
+  bclose &
+/***
+bcall(SHELL:bshell("cat TMP/.Bcom")) &
+***/
+  _FifoWrite_Store((BT_ANM_MULTI_INP_M,t,0),(MultiInputStore)) &
+  mu6$N &
+  mu9$N &
+  mu_bitstr$N
+ =>
+  mu3$N;
+
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=a))
+ =>
+  mu2$N(a);
+
+  ReadRawProps(P) &
+  bsearch((a:NAT),P,Q) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=0))
+ =>
+  mu2$N(a);
+
+  ReadRawProps(P) &
+  bsearch((a:NAT1),P,Q) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=1))
+ =>
+  mu2$N(a);
+
+  brule(TypeStructuredX.J,(a:t)) &
+/*** ib ***/
+  ReadSets(S) &
+  ModifySets((S,a)) &
+/*** ib ***/
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a="deferred"))  /* any structured type */
+ =>
+  mu2$N(a);
+
+  ReadSets(S) &
+  bsearch(a,(S,?),T) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a="deferred"))  /* deferred sets */
+ =>
+  mu2$N(a);
+
+  ReadRawParamConstr((p:c)) &
+  bsearch(a,(p,?),q) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=a))           /* CONST machine parameters */
+ =>
+  mu2$N(a);
+
+  ReadRawParamConstr((p:c)) &
+  bsearch(a,(p,?),q) &
+  bsearch((a:NAT),(c&?),d) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=0))           /* CONST machine parameters */
+ =>
+  mu2$N(a);
+
+  ReadRawParamConstr((p:c)) &
+  bsearch(a,(p,?),q) &
+  bsearch((a:NAT1),(c&?),d) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=1))           /* CONST machine parameters */
+ =>
+  mu2$N(a);
+
+  ReadRawParamConstr((p:c)) &
+  bsearch(a,(p,?),q) &
+  bsearch((card(a):n),(c&?),d) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a="deferred"))  /* SETS machine parameters */
+ =>
+  mu2$N(a);
+
+  ReadInputType(local_var_input_type) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=?))
+ =>
+  mu2$N(a);
+
+  ReadInputType(state_var_input_type) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=?))
+ =>
+  mu2$N(a);
+
+  ReadInputType(op_param_input_type) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=?))
+ =>
+  mu2$N(a);
+
+  ReadGetMultiInputSuggestEqls(E) &
+  bsearch((a=v),E,F) &
+  ReadGetMultiInputVarValList(L) &
+  ModifyGetMultiInputVarValList((L&a=v))
+ =>
+  mu2$N(a);
+
+  mu1$N(x);
+
+  bsingleton(v) &
+  ReadGetMultiInputVarList(A) &
+  bsearch(a,(A,?),B) &
+  ReadGetMultiInputSuggestEqls(E) &
+  ModifyGetMultiInputSuggestEqls((E&a=v))
+ =>
+  mu1$N(a:{v});
+
+  ReadGetMultiInputVarList(A) &
+  bsearch(a,(A,?),B) &
+  ReadGetMultiInputSuggestEqls(E) &
+  ModifyGetMultiInputSuggestEqls((E&a=v))
+ =>
+  mu1$N(v=a);
+
+  ReadGetMultiInputVarList(A) &
+  bsearch(a,(A,?),B) &
+  ReadGetMultiInputSuggestEqls(E) &
+  ModifyGetMultiInputSuggestEqls((E&a=v))
+ =>
+  mu1$N(a=v);
+
+  ModifyInputType(a) &
+  ModifyGetMultiInputDialogPrompt(c) &
+  ModifyGetMultiInputVarList(d) &
+  ModifyGetMultiInputProps(e) &
+  ModifyGetMultiInputSuggestEqls(?) &
+  ModifyGetMultiInputVarValList(?) &
+  ClearGetMultiInputError &
+  mu1$N bsmap e &
+  mu2$N bsmap d &
+  mu3$N
+ =>
+  mu$N(a)(c)(d)(e)
+
+END
+
+&
+
+THEORY MultiInputFixSeqEvalX IS
+
+  ModifyMultiInput(L)
+ =>
+  mifse$N(L);
+
+  ([s]n) == ([s] evl n);
+
+  ([s]n(m)) == ([s] evl n)(m);
+
+  ([s]n(m)(p)) == ([s] evl n)(m)(p);
+
+  ([s]n(m)(p)(q)) == ([s] evl n)(m)(p)(q);
+
+  ([s]n(m)(p)(q)(r)) == ([s] evl n)(m)(p)(q)(r);
+
+  ([s]n(m)(p)(q)(r)(s)) == ([s] evl n)(m)(p)(q)(r)(s);
+
+  ([s]n(m)(p)(q)(r)(s)(t)) == ([s] evl n)(m)(p)(q)(r)(s)(t)
+
+END
+
+&
+
+THEORY PostGetMultiInputSingleEqlsX END &
+
+THEORY PostGetMultiInput_RecollectX IS
+
+#define PostGetMultiInput_SubOne(N,x) \
+      bcall(((ARI;(SUB~;SUB_seqX)~;MODR)~;PostGetMultiInput_SubOneX)~:pgmiso$N(1)(x))
+
+  /***
+  pushes through the sub x through all rules
+  of PostGetMultiInputSingleEqlsX
+  ***/
+
+  pgmiso$N(M)(S);
+
+  brule(PostGetMultiInputSingleEqlsX.M,(a=b)) &
+  bmodr(PostGetMultiInputSingleEqlsX.M,(a=[S]b)) &
+  pgmiso$N(M+1)(S)
+ =>
+  pgmiso$N(M)(S)
+
+END
+
+&
+
+THEORY PostGetMultiInput_SubOneX IS
+
+#define PostGetMultiInput_SubOne(N,x) \
+      bcall(((ARI;(SUB~;SUB_seqX)~;MODR)~;PostGetMultiInput_SubOneX)~:pgmiso$N(1)(x))
+
+  /***
+  pushes through the sub x through all rules
+  of PostGetMultiInputSingleEqlsX
+  ***/
+
+/***
+HERE(("Sub":S))=>
+***/
+  pgmiso$N(M)(S);
+
+  brule(PostGetMultiInputSingleEqlsX.M,(a<--b)) &
+  bmodr(PostGetMultiInputSingleEqlsX.M,(a<--([S]b))) &
+  pgmiso$N(M+1)(S)
+ =>
+  pgmiso$N(M)(S);
+
+  brule(PostGetMultiInputSingleEqlsX.M,(x)) &
+  pgmiso$N(M+1)(a:="deferred")
+ =>
+  pgmiso$N(M)(a:="deferred");
+
+  brule(PostGetMultiInputSingleEqlsX.M,(a<--a)) &
+  bmodr(PostGetMultiInputSingleEqlsX.M,(a<--"deferred")) &
+  pgmiso$N(M+1)(a:="deferred")
+ =>
+  pgmiso$N(M)(a:="deferred")
+
+END
+
+&
+
+THEORY PostGetMultiInputX IS
+
+  /***
+  collect all substituted PostGetMultiInputSingleEqlsX
+  and simplify
+  ***/
+
+  ReadSimplify(J) &
+/***
+HERE((13:J)) &
+***/
+  ModifyMultiInput(J)
+ =>
+  pgmi4$N(I);
+
+/***
+HERE((12:M:I)) &
+***/
+  Simplify(N,I) &
+  pgmi4$N(I)
+ =>
+  pgmi3$N(M)(I);
+
+  bsearch(?,I,J) &
+  pgmi3$N(M)(J)
+ =>
+  pgmi3$N(M)(I);
+
+  brule(PostGetMultiInputSingleEqlsX.M,(a<--b)) &
+  pgmi3$N(M+1)(I,(a<--b))
+ =>
+  pgmi3$N(M)(I);
+
+
+  /***
+  push through substitutions one by one,
+  picking up next substituted value
+  ***/
+
+/***
+PrintTHEORY(PostGetMultiInputSingleEqlsX)&
+***/
+  pgmi3$N(1)(?)
+ =>
+  pgmi2$N(M);
+
+  brule(PostGetMultiInputSingleEqlsX.M,(a<--b)) &
+  PostGetMultiInput_SubOne(N,(a:=b)) &
+  pgmi2$N(M+1)
+ =>
+  pgmi2$N(M);
+
+
+  pgmi1$N(0);             /* operation aborted */
+
+  /***
+  create input in PostGetMultiInputSingleEqlsX
+  ***/
+
+  bcrer(PostGetMultiInputSingleEqlsX,(a<--b))
+ =>
+  pgmi1$N(a<--(b));
+
+  ReadMultiInput(I) &
+/***
+HERE((10:I)) &
+***/
+  bclean(PostGetMultiInputSingleEqlsX) &
+  pgmi1$N bsmap I &
+  pgmi2$N(1)
+ =>
+  pgmi$N;
+
+  ReadMultiInput(?)             /* operation aborted */
+ =>
+  pgmi$N
+
+END
+
+&
+
+THEORY SaveScriptAsInitX IS
+
+#define SaveScriptAsInit(N) \
+    bcall(((ARI;REV;WRITE;CATL;MODR)~;SaveScriptAsInitX)~:ssai00$N)
+
+  ?;  /* 1. */
+#define ModifyInitialisationScript(x) bcall((CATL;MODR):bmodr(SaveScriptAsInitX.1,x))
+#define ReadInitialisationScript(x)   brule(SaveScriptAsInitX.1,x)
+
+  ?; /* 2. */
+
+#define ModifyInitialisationIdent(x) bcall((CATL;MODR):bmodr(SaveScriptAsInitX.2,x))
+#define ReadInitialisationIdent(x)   brule(SaveScriptAsInitX.2,x)
+
+
+
+  Printf(N,(("\n      (% = %)",v,s)))
+ =>
+  ssai_ssv$N(v)(s);
+
+  Printf(N,(("\n      ?",v,s)))
+ =>
+  ssai_ssv$N(___default_val)(___default_val);
+
+  ssai_ssv$N(V)(S) &
+  Printf(N,((",\n      (% = %)",v,s)))
+ =>
+  ssai_ssv$N(V,v)(S,s);
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ssai_ssv$N(C:D)
+ =>
+  ssai_ssv$N(A:B);
+
+
+  Printf(N,(("\n  % = %",a,b)))
+ =>
+  ssai_akf$N(a:b);
+
+  ssai_akf$N(A:B) &
+  Printf(N,((";\n  % = %",a,b)))
+ =>
+  ssai_akf$N(A,a:B,b);
+
+  Printf(N,("\n  ?"))
+ =>
+  ssai_akf$N(___default_val:___default_val);
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ssai_akf$N(C:D)
+ =>
+  ssai_akf$N(A:B);
+
+
+
+  ReadInitialisationScript(f) &
+  ReadCurrentConstruct(a.b) &
+  Out(N,(bcatl("\n  \"",f,"\" already exists\n"))) &
+  Bshell(("$BKIT/BLIB/CreateCom anm ",a)) &
+  Bget(".Bcom") &
+  ssai0$(N+1)
+ =>
+  ssai4$N(0);
+
+  ReadInitialisationScript(F) &
+  ReadCurrentConstruct(a.b) &
+  Out(N,(("\n  Can't connect to %\n",bsrv F berv))) &
+  Bshell(("$BKIT/BLIB/CreateCom anm ",a)) &
+  Bget(".Bcom") &
+  ssai0$(N+1)
+ =>
+  ssai4$N(1);
+
+  ReadInitialisationScript(F) &
+  bconnect(F) &
+  ReadCurrentConstruct(a.b) &
+  ReadInitialisationIdent(i) &
+  ReadMchParamRename((y:z)) &
+  ReadSetsRename((Y:Z)) &
+  ReadConstsRename((e:f)) &
+  ReadEnumSetsRename((w:v)) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  Printf(N,("ANIMATE\n\n  %",a.i.anm)) &
+  Printf(N,("\n\nPARAMETER_VALUES\n")) &
+  ssai_akf$N(y:z) &
+  Printf(N,("\n\nSETS_VALUES\n")) &
+  ssai_akf$N(Y:Z) &
+  Printf(N,("\n\nCONSTANTS_VALUES\n")) &
+  ssai_akf$N(e:f) &
+  Printf(N,("\n\nENUM_SETS_VALUES\n")) &
+  ssai_akf$N(w:v) &
+  Printf(N,(("\n\nOPERATIONS\n\n  _set_state_variables :\n    ("))) &
+  ssai_ssv$N(V)(S) &
+  Printf(N,(("\n    )\n\nEND\n"))) &
+  bclose &
+  SetRecreateMainMenu
+ =>
+  ssai4$N(1);
+
+  ReadBget(a) &
+  ssai4$N(a)
+ =>
+  ssai3$N;
+
+  ReadInitialisationScript(f) &
+  Bshell(("$BKIT/BLIB/CheckFileExists ",f," .")) &
+  Bget(".Bcom") &
+  ssai3$N
+ =>
+  ssai2_chk$N;
+
+  ReadInitialisationScript(f) &
+  ssai4$N(1)
+ =>
+  ssai2_no_chk$N;
+
+  Out(N,bcatl("\n  File name should be an identifier\n")) &
+  ssai0$(N+1)
+ =>
+  ssai1$N;
+
+  ReadData(f) &
+  bident(f) &
+  ReadCurrentConstruct(a.b) &
+  ModifyInitialisationScript(bcatl("SRC/",a,".",f,".anm")) &
+  ModifyInitialisationIdent(f) &
+  ssai2_chk$N
+ =>
+  ssai1$N;
+
+  ReadData(0) &
+  ModifySelectedOp(ini_abort)
+ =>
+  ssai1$N;
+
+  ReadSelection(x.y.anm.1) &
+  ModifyInitialisationScript(bcatl("SRC/",x,".",y,".anm")) &
+  ModifyInitialisationIdent(y) &
+  ssai2_no_chk$N
+ =>
+  ssai02$N;
+
+  ReadSelection(x.y.anm) &
+  ModifyInitialisationScript(bcatl("SRC/",x,".",y,".anm")) &
+  ModifyInitialisationIdent(y) &
+  ssai2_no_chk$N
+ =>
+  ssai02$N;
+
+  ReadSelection(?) &  /* "New Initialisation Script" */
+  ModifySelectedOp(ini_abort)
+ =>
+  ssai02$N;
+
+  ReadSelection(1) &  /* "New save file" */
+  PromptForData((BT_GET_STRING_M,"File name for Initialisation Script","6")) &
+  ssai1$N
+ =>
+  ssai02$N;
+
+  GetSelectionFromList_Prompt(X,"Select Initialisation Script") &
+  ssai02$N
+ =>
+  ssai01$N(X);
+
+  ReadBget(X) &      /* .anm files */
+  ssai01$N(brev(X;"New Initialisation Script"))
+ =>
+  ssai0$N;
+
+  ReadBget(?) &      /* no .anm files */
+  PromptForData((BT_GET_STRING_M,"File name for Initialisation Script","6")) &
+  ssai1$N
+ =>
+  ssai0$N;
+
+  ReadCurrentConstruct(a.b) &
+  SetRecreateMainMenu &
+  Bshell(("$BKIT/BLIB/CreateCom anm ",a)) &
+  Bget(".Bcom") &
+  ssai0$N
+ =>
+  ssai00$N /* ;
+
+  IsStatelessMch
+ =>
+  ssai00$N */
+
+END
+
+&
+
+THEORY DisplaySelectedOpExpX IS
+
+#define DisplaySelectedOpExp(N,x) \
+    bcall((((SUB~;SUB_seqX)~;ARI~;WRITE)~;DisplaySelectedOpExpX)~ : dsoe$N(x))
+
+#define DisplaySelectedOpExpAfterInput(N,x) \
+    bcall((((SUB~;SUB_seqX)~;ARI~;WRITE)~;DisplaySelectedOpExpX)~ : dsoeai$N(x))
+
+  Printf(N,(" \n  \nProcessed:\n  %",o))
+ =>
+  dsoe1$N(o);
+
+  (BEGIN BEGIN s END END) == (BEGIN s END);
+
+  (a || ( b || c)) == (a || b || c);
+
+
+  
+
+  brule(ExpOpX.I,(s(p|e))) &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &                         /* output, pre */
+  ReadOpInputRename(R) &
+  [R](dsoe1$N(v<--PRE p THEN e END))
+ =>
+  dsoeai$N(s(q|T));
+
+  brule(ExpOpX.I,(s(p|e))) &
+  ReadSelectedOp(s(u|?|w|y|z|t)) &                         /* no output, pre */
+  ReadOpInputRename(R) &
+  [R](dsoe1$N(PRE p THEN e END))
+ =>
+  dsoeai$N(s(q|T));
+
+  brule(ExpOpX.I,(s(true|e))) &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &                         /* output, no pre */
+  ReadOpInputRename(R) &
+  [R](dsoe1$N(v<--e))
+ =>
+  dsoeai$N(s(q|T));
+
+  brule(ExpOpX.I,(s(true|e))) &
+  ReadSelectedOp(s(u|?|w|y|z|t)) &                        /* no output, no pre */
+  ReadOpInputRename(R) &
+  [R](dsoe1$N(e))
+ =>
+  dsoeai$N(s(q|T));
+
+  
+  /*** t and T may differ because of ARI ***/
+
+HERE((4))&
+  brule(ExpOpX.I,(a)) &
+  ReadSelectedOp(b) &
+HERE((a))&HERE((b))&___(s(o))
+ =>
+  dsoe$N(s(o));
+
+HERE((3))&
+  brule(ExpOpX.I,(s(a))) &
+  ReadSelectedOp(b) &
+HERE((s(a)))&HERE((b))&___(s(o))
+ =>
+  dsoe$N(s(o));
+
+HERE((2))&
+  brule(ExpOpX.I,a) &
+  ReadSelectedOp(s(b)) &
+HERE((a))&HERE((s(b)))&___(s(o))
+ =>
+  dsoe$N(s(o));
+
+HERE((1))&
+  brule(ExpOpX.I,(s(a))) &
+  ReadSelectedOp(s(b)) &
+HERE((s(a)))&HERE((s(b)))&___(s(o))
+ =>
+  dsoe$N(s(o));
+
+
+
+
+  brule(ExpOpX.I,(s(p|e))) &
+  ReadSelectedOp(s(u|v|w|y|z|T)) &                         /* output, pre */
+  dsoe1$N(v<--PRE p THEN e END)
+ =>
+  dsoe$N(s(q|t));
+
+  brule(ExpOpX.I,(s(true|e))) &
+  ReadSelectedOp(s(u|v|w|y|z|T)) &                         /* output, no pre */
+  dsoe1$N(v<--e)
+ =>
+  dsoe$N(s(q|t));
+
+  brule(ExpOpX.I,(s(p|e))) &
+  ReadSelectedOp(s(u|?|w|y|z|T)) &                         /* no output, pre */
+  dsoe1$N(PRE p THEN e END)
+ =>
+  dsoe$N(s(q|t));
+
+  brule(ExpOpX.I,(s(true|e))) &
+  ReadSelectedOp(s(u|?|w|y|z|T)) &                        /* no output, no pre */
+  dsoe1$N(e)
+ =>
+  dsoe$N(s(q|t));
+
+  brule(ExpOpX.I,(s(q|t)))               /* expanded same as unexpanded */
+ =>
+  dsoe$N(s(q|t))
+
+END
+
+&
+
+THEORY DisplaySelectedOpUnExpX IS
+
+#define DisplaySelectedOpUnExp(N,x) \
+    bcall(((WRITE)~;DisplaySelectedOpUnExpX)~:dsou$N(x))
+
+  ReadSelectedOp(s(u|v|w|y|z|t)) &                 /* output */
+  Printf(N,("  %",(v<--S)))
+ =>
+  dsou$N(S);
+
+  ReadSelectedOp(s(u|?|w|y|z|t)) &                 /* no output */
+  Printf(N,("  %",S))
+ =>
+  dsou$N(S)
+
+END
+
+&
+
+THEORY DisplaySelectedOpAfterInputX IS
+
+#define DisplaySelectedOpAfterInput(N) \
+    bcall((((MODR;(SUB~;SUB_seqX)~;MAP;WRITE)~;DisplaySelectedOpAfterInputX)~):dso$N)
+
+  ?;
+#define ModifyDisplaySelectedOpAfterInputPredonditionTrue  bmodr(DisplaySelectedOpAfterInputX.1,0)
+#define ModifyDisplaySelectedOpAfterInputPredonditionFalse bmodr(DisplaySelectedOpAfterInputX.1,1)
+#define DisplaySelectedOpAfterInputIsFalse     brule(DisplaySelectedOpAfterInputX.1,1)
+
+  _FifoWrite_NoStore((BT_ANM_DSP_3_M,0,0))
+ =>
+  dso3$N;
+
+  DisplaySelectedOpAfterInputIsFalse &
+  _FifoWrite_NoStore((BT_ANM_DSP_3_M,"Precondition is false",0))
+ =>
+  dso3$N;
+
+  Printf(N,("\n  % = %",v,a))
+ =>
+  dso2$N(v:=a);
+
+  Printf(N,("\n  % = %",v,a)) &
+  dso2$N(V:=A)
+ =>
+  dso2$N(V,v:=A,a);
+
+  Printf(N,("\n  %. %",m,p))
+ =>
+  dso1$N(p,m,n);
+
+  btest(n>9) &
+  Printf(N,("\n   %. %",m,p))
+ =>
+  dso1$N(p,m,n);
+
+  btest(m>9) &
+  Printf(N,("\n  %. %",m,p))
+ =>
+  dso1$N(p,m,n);
+
+  Printf(N,("\n  %",p))
+ =>
+  dso1$N(p,1,1);
+
+  ModifyDisplaySelectedOpAfterInputPredonditionFalse &
+  Printf(N,("\n  %. %",m,false))
+ =>
+  dso1$N(false,m,n);
+
+  btest(n>9) &
+  ModifyDisplaySelectedOpAfterInputPredonditionFalse &
+  Printf(N,("\n   %. %",m,false))
+ =>
+  dso1$N(false,m,n);
+
+  btest(m>9) &
+  ModifyDisplaySelectedOpAfterInputPredonditionFalse &
+  Printf(N,("\n  %. %",m,false))
+ =>
+  dso1$N(false,m,n);
+
+  ModifyDisplaySelectedOpAfterInputPredonditionFalse &
+  Printf(N,("\n  %",false))
+ =>
+  dso1$N(false,1,1);
+
+  ReadSelectedOp(x.y.anm) &                       /* script init */
+  Connect(".Bsb1") &
+  Printf(N,("Initialised from SRC/%.%.%",x,y,anm)) &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0))
+ =>
+  dso$N;
+
+  ReadSelectedOp(ra)                              /* restart */
+ =>
+  dso$N;
+
+  ReadSelectedOp(ini) &                           /* save ini state */
+  Connect(".Bsb1") &
+  Printf(N,("Save Initialisation Script")) &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0))
+ =>
+  dso$N;
+
+  ReadSelectedOp(ri) &                            /* restore initial state */
+  Connect(".Bsb1") &
+  Printf(N,("Restore initial state")) &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0))
+ =>
+  dso$N;
+
+  ReadSelectedOp(ssv) &                            /* set state variables */
+  Connect(".Bsb1") &
+  Printf(N,("Set state variables")) &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0))
+ =>
+  dso$N;
+
+  ReadSelectedOp(et)                              /* edit theory file */
+ =>
+  dso$N;
+
+  ReadSelectedOp(op_abort) &                      /* op aborted */
+  Connect(".Bsb1") &
+  Printf(N,("Operation aborted")) &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0))
+ =>
+  dso$N;
+
+  ReadSelectedOp(un) &                            /* undo */
+  Connect(".Bsb1") &
+  Printf(N,("Undo")) &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0))
+ =>
+  dso$N;
+
+  ReadSelectedOp(s(u|v|w|y|z|t)) &                 /* input, pre */
+  ReadOpCurrPre(P) &
+  ReadOpInputRename(R) &
+  ReadOpActualPre(A) &
+  ModifyDisplaySelectedOpAfterInputPredonditionTrue &
+  Connect(".Bsb1") &
+  Printf(N,("% ( % )  =\n",s,u)) &
+  DisplaySelectedOpUnExp(N,(PRE w THEN t END)) &
+  DisplaySelectedOpExp(N,s(w|t)) &
+  bclose &
+  Connect(".Bsb2") &
+  Printf(N,("Precondition\n")) &
+  dso1$N bnmap P &
+  bclose &
+  Connect(".Bsb3") &
+  Printf(N,("Input Paremeters\n")) &
+  dso2$N(R) &
+  Printf(N,("\n\nPrecondition\n")) &
+  dso1$N bnmap ([R]P) &
+  Printf(N,("\n\nFinal Precondition Simplification\n")) &
+  dso1$N bnmap A &
+  bclose &
+  dso3$N
+ =>
+  dso$N;
+
+  ReadSelectedOp(s(?|v|w|y|z|t)) &                 /* no input, pre */
+  ReadOpCurrPre(P) &
+  ReadOpActualPre(A) &
+  ModifyDisplaySelectedOpAfterInputPredonditionTrue &
+  Connect(".Bsb1") &
+  Printf(N,("% =\n",s)) &
+  DisplaySelectedOpUnExp(N,(PRE w THEN t END)) &
+  DisplaySelectedOpExp(N,s(w|t)) &
+  bclose &
+  Connect(".Bsb2") &
+  Printf(N,("Precondition\n")) &
+  dso1$N bnmap P &
+  bclose &
+  Connect(".Bsb3") &
+  Printf(N,("Final Precondition Simplification\n")) &
+  dso1$N bnmap A &
+  bclose &
+  dso3$N
+ =>
+  dso$N;
+
+  ReadSelectedOp(s(?|v|true|y|z|t)) &              /* no input, no pre */
+  ModifyDisplaySelectedOpAfterInputPredonditionTrue &
+  Connect(".Bsb1") &
+  Printf(N,("% =\n",s)) &
+  DisplaySelectedOpUnExp(N,t) &
+  DisplaySelectedOpExp(N,s(true|t)) &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0))
+ =>
+  dso$N;
+
+  AssertionIsSet
+ =>
+  dso$N;
+
+  IsAutoExecution
+ =>
+  dso$N
+
+END
+
+&
+
+THEORY BranchLocVarListX IS
+
+#define ModifyBranchLocVarList(x) bcall(MODR:bmodr(BranchLocVarListX.1,x))
+
+#define AddBranchToList(N,x) \
+  bcall(((MODR)~;BranchLocVarListX)~:abl$N(x))
+
+#define AddLocalVarToList(N,x,y) \
+  bcall(((MODR)~;BranchLocVarListX)~:alvl$N(x,y))
+
+#define AddFalseToList(N) \
+  bcall(((MODR)~;BranchLocVarListX)~:abl$N(false))
+
+  ?;
+#define ReadBranchLocVarList(x)  brule(BranchLocVarListX.1,x)
+#define ModrBranchLocVarList(z)  bmodr(BranchLocVarListX.1,z)
+#define BranchLocVarListIsEmpty  brule(BranchLocVarListX.1,?)
+
+  ReadBranchLocVarList(L) &
+  ModrBranchLocVarList((L,(v=n)))
+ =>
+  alvl$N(v,n);
+
+  ReadBranchLocVarList((L,((V=M)))) &
+  ModrBranchLocVarList((L,((V=M),(v=n))))
+ =>
+  alvl$N(v,n);
+
+  ReadBranchLocVarList((L,(S,(V=M)))) &
+  ModrBranchLocVarList((L,(S,(V=M),(v=n))))
+ =>
+  alvl$N(v,n);
+
+  ReadBranchLocVarList(L) &
+  ModrBranchLocVarList((L,n))
+ =>
+  abl$N(n)
+
+END
+
+&
+
+THEORY ReportOpPerformedX IS
+
+#define ReportOpPerformed(N) \
+    bcall(((WRITE;REV;MAP)~;ReportOpPerformedX)~:rop0$N)
+
+
+  AppendToExeFile(N,((";\n            loc_vars( % )",v)))
+ =>
+  rb2$N(v,m,n);
+
+  bnum(b) &
+  AppendToExeFile(N,((";\n            branch(%)",b)))
+ =>
+  rb2$N(b,m,n);
+
+  AppendToExeFile(N,(("            loc_vars( % )",v)))
+ =>
+  rb2$N(v,2,n);
+
+  bnum(b) &
+  AppendToExeFile(N,(("            branch(%)",b)))
+ =>
+  rb2$N(b,2,n);
+
+  rb2$N(false,m,n);
+
+  rb2$N(?,1,n);
+
+  Out(N,(("\n    Local Variable % set to %\n",v,a)))
+ =>
+  rb1$N(v=a);
+
+  rb1$N(S) &
+  Out(N,(("\n    Local Variable % set to %\n",v,a)))
+ =>
+  rb1$N(S,(v=a));
+
+  bnum(b) &
+  Out(N,(("\n    Branch % selected\n",b)))
+ =>
+  rb1$N(b);
+
+  Out(N,(("\n    >>> Guard is false <<<\n\n")))
+ =>
+  rb1$N(false);
+
+  rb1$N(?);
+
+  ReadBranchLocVarList(L) &
+  rb1$N bsmap L &
+  AppendToExeFile(N,((" :\n        (\n"))) &
+  rb2$N bnmap L &
+  AppendToExeFile(N,(("\n        )")))
+ =>
+  rb$N;
+
+  BranchLocVarListIsEmpty
+ =>
+  rb$N;
+
+
+
+ 
+                     /*** precondition check ***/
+
+  ropp$N;
+
+  DisplaySelectedOpAfterInputIsFalse &
+  Out(N,(("\n  >>> Precondition is false <<<\n")))
+ =>
+  ropp$N;
+
+
+
+
+                    /*** output ***/
+
+
+  AppendToExeFile(N,(";\n\n      { % = % }",f,a))
+ =>
+  ropo1$N(f)(a);
+
+  ropo1$N(F)(A) &
+  AppendToExeFile(N,(";\n\n      { % = % }",f,a))
+ =>
+  ropo1$N(F,f)(A,a);
+
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  ReadOpOutput(O) &
+  ropo1$N(v)(O)
+ =>
+  ropo$N;
+
+  ReadSelectedOp(s(u|?|w|y|z|t))   /* no output */
+ =>
+  ropo$N;
+
+
+
+                     /*** input ***/
+
+   Out(N,((" , %=% )",a,b))) &
+   AppendToExeFile(N,((",%)",b)))
+ =>
+   ropi1$N(a:=b);
+
+   Out(N,((" , %=%",a,b))) &
+   AppendToExeFile(N,((",%",b))) &
+   ropi1$N(A:=B)
+ =>
+   ropi1$N(A,a:=B,b);
+
+   ReadOpInputRename((a:=b)) &
+   Out(N,((" ( %=% )",a,b))) &
+   AppendToExeFile(N,(("(%)",b)))
+ =>
+   ropi$N;
+
+   ReadOpInputRename((A,a:=B,b)) &
+   Out(N,((" ( %=%",a,b))) &
+   AppendToExeFile(N,(("(%",b))) &
+   ropi1$N(A:=B)
+ =>
+   ropi$N;
+
+   ReadSelectedOp(s(?|v|w|y|z|t))   /* no input */
+ =>
+   ropi$N;
+
+
+
+  ReadSelectedOp(a.b.anm) &
+  Out(N,(("\nInitialised from file SRC/%.%.%\n",a,b,anm))) &
+  ReadMchParamRename((y:z)) &
+  ReadSetsRename((Y:Z)) &
+  ReadConstsRename((e:f)) &
+  ReadEnumSetsRename((w:v)) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  AppendToExeFile(N,("\n\nPARAMETER_VALUES\n")) &
+  rop_akf$N(y:z) &
+  AppendToExeFile(N,("\n\nSETS_VALUES\n")) &
+  rop_akf$N(Y:Z) &
+  AppendToExeFile(N,("\n\nCONSTANTS_VALUES\n")) &
+  rop_akf$N(e:f) &
+  AppendToExeFile(N,("\n\nENUM_SETS_VALUES\n")) &
+  rop_akf$N(w:v) &
+  AppendToExeFile(N,(("\n\nOPERATIONS\n\n  _set_state_variables : /"))) &
+  AppendToExeFile(N,(("* from %.%.% *"),a,b,anm)) &
+  AppendToExeFile(N,(("/\n    ("))) &
+  rop_ssv$N(V)(S) &
+  AppendToExeFile(N,(("\n    )")))
+ =>
+  rop$N;
+
+
+  AppendToExeFile(N,(("\n      (% = %)",v,s)))
+ =>
+  rop_ssv$N(v)(s);
+
+  AppendToExeFile(N,(("\n      ?",v,s)))
+ =>
+  rop_ssv$N(___default_val)(___default_val);
+
+  rop_ssv$N(V)(S) &
+  AppendToExeFile(N,((",\n      (% = %)",v,s)))
+ =>
+  rop_ssv$N(V,v)(S,s);
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  rop_ssv$N(C:D)
+ =>
+  rop_ssv$N(A:B);
+
+  ReadSelectedOp(ssv) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  Out(N,(("\nSet State Variables\n"))) &
+  AppendToExeFile(N,((";\n\n  _set_state_variables :\n    ("))) &
+  rop_ssv$N(V)(S) &
+  AppendToExeFile(N,(("\n    )")))
+ =>
+  rop$N;
+
+  ReadSelectedOp(ssv) &
+  IsStatelessMch &
+  Out(N,(("\nNo state variables to set\n")))
+ =>
+  rop$N;
+
+  ReadSelectedOp(ra) &
+  Out(N,(("\nAnimation restarted\n"))) &
+  AppendToExeFile(N,((";\n\n  anim_restarted")))
+ =>
+  rop$N;
+
+  ReadSelectedOp(ri) &
+  Out(N,(("\nInitial state restored\n"))) &
+  AppendToExeFile(N,((";\n\n  init_restored")))
+ =>
+  rop$N;
+
+  ReadSelectedOp(ri) &
+  IsStatelessMch &
+  Out(N,(("\nCan't restore initial state - animating stateless machine!\n"))) &
+  AppendToExeFile(N,((";\n\n  init_restored")))
+ =>
+  rop$N;
+
+  ReadSelectedOp(ini_abort) &
+  Out(N,(("\nSave state aborted\n"))) /* &
+  AppendToExeFile(N,((";\n\n  save_script_ini_aborted"))) */
+ =>
+  rop$N;
+
+  ReadSelectedOp(ini) &
+  ReadInitialisationScript(f) &
+  Out(N,(("\nSaved Script Initialisation %\n",f))) /* &
+  AppendToExeFile(N,((";\n\n  save_script_ini(%)",f))) */
+ =>
+  rop$N;
+
+/*
+  IsStatelessMch &
+  Out(N,(("\nNo state to save\n",f)))
+ =>
+  rop$N;
+*/
+
+  ReadSelectedOp(et)
+ =>
+  rop$N;
+
+  ReadSelectedOp(op_abort) &
+  Out(N,(("\nOperation aborted\n"))) /* &
+  AppendToExeFile(N,((";\n\n  op_aborted"))) */
+ =>
+  rop$N;
+
+  ReadSelectedOp(un) &
+  Out(N,((" \nUndo last operation\n"))) &
+  AppendToExeFile(N,((";\n\n  undo")))
+ =>
+  rop$N;
+
+  ReadSelectedOp(s(u|v|w|y|z|t)) &  /* output */
+  ReadSelectedOp(s(S)) &
+  Out(N,(("%",s))) &
+  AppendToExeFile(N,((";\n\n  % <-- %",v,s))) &
+  ropi$N &                      /* input */
+  Out(N,(("\n"))) &
+  rb$N &
+  ropo$N &                      /* output */
+  ropp$N                        /* precondition check */
+ =>
+  rop$N;
+
+  ReadSelectedOp(s(u|?|w|y|z|t)) &  /* no output */
+  ReadSelectedOp(s(S)) &
+  Out(N,(("%",s))) &
+  AppendToExeFile(N,((";\n\n  %",s))) &
+  ropi$N &                      /* input */
+  Out(N,(("\n"))) &
+  rb$N &
+  ropo$N &                      /* output */
+  ropp$N                        /* precondition check */
+ =>
+  rop$N;
+
+
+
+
+  AppendToExeFile(N,(("\n  % = %",a,b)))
+ =>
+  rop_akf$N(a:b);
+
+  rop_akf$N(A:B) &
+  AppendToExeFile(N,((";\n  % = %",a,b)))
+ =>
+  rop_akf$N(A,a:B,b);
+
+  AppendToExeFile(N,("\n  ?"))
+ =>
+  rop_akf$N(___default_val:___default_val);
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  rop_akf$N(C:D)
+ =>
+  rop_akf$N(A:B);
+
+  ReadSelectedOp(Initialisation(S)) &
+  ReadCurrentConstruct(a.b) &
+  Out(N,(("%\n",Initialisation))) &
+  ReadMchParamRename((y:z)) &
+  ReadSetsRename((Y:Z)) &
+  ReadConstsRename((e:f)) &
+  ReadEnumSetsRename((w:v)) &
+  AppendToExeFile(N,("\n\nPARAMETER_VALUES\n")) &
+  rop_akf$N(y:z) &
+  AppendToExeFile(N,("\n\nSETS_VALUES\n")) &
+  rop_akf$N(Y:Z) &
+  AppendToExeFile(N,("\n\nCONSTANTS_VALUES\n")) &
+  rop_akf$N(e:f) &
+  AppendToExeFile(N,("\n\nENUM_SETS_VALUES\n")) &
+  rop_akf$N(w:v) &
+  AppendToExeFile(N,("\n\nOPERATIONS\n\n  INI_%",a)) &
+  rb$N
+ =>
+  rop$N;
+
+  rop$N
+ =>
+  rop0$N;
+
+  AssertionIsSet
+ =>
+  rop0$N
+
+END
+
+&
+
+THEORY CreStateVarStringsX IS
+
+#define CreStateVarStrings(N) \
+    bcall(((ARI~;MAP;CATL;MODR)~;CreStateVarStringsX)~:csvs$N)
+
+  ?; /* max name length */
+
+
+  ReadStateVarStrings(S) &
+  bsearch(?,S,T) &
+  ModifyStateVarStrings(T)
+ =>
+  csvs5$N;
+
+  ReadStateVarStrings(S) &
+  ModifyStateVarStrings((S,s))
+ =>
+  csvs4$N(s);
+
+  csvs4$N(bcatl(v,""))
+ =>
+  csvs3$N(v)(n);
+
+  csvs4$N(bcatl(v," "))
+ =>
+  csvs3$N(v)(1);
+
+  btest(n>=2) &
+  csvs3$N(bcatl(v,"  "))(n-2)
+ =>
+  csvs3$N(v)(n);
+
+  btest(n>=4) &
+  csvs3$N(bcatl(v,"    "))(n-4)
+ =>
+  csvs3$N(v)(n);
+
+  btest(n>=8) &
+  csvs3$N(bcatl(v,"        "))(n-8)
+ =>
+  csvs3$N(v)(n);
+
+  brule(CreStateVarStringsX.1,n) &
+  csvs3$N(v)(n-blen(v))
+ =>
+  csvs3$N(v);
+
+  csvs2$N(n);
+
+  brule(CreStateVarStringsX.1,m) &
+  btest(n>m) &
+  bmodr(CreStateVarStringsX.1,n)
+ =>
+  csvs2$N(n);
+
+  csvs2$N(blen(v))
+ =>
+  csvs1$N(v);
+
+  ReadStateVarNames(V) &
+  ModifyStateVarStrings(?) &
+  bmodr(CreStateVarStringsX.1,0) &
+  csvs1$N bsmap V &
+  csvs3$N bsmap V &
+  csvs5$N
+ =>
+  csvs$N
+
+END
+
+&
+
+THEORY StoreStateVarsChangedX IS
+
+#define StoreStateVarsChanged(N) \
+    bcall(((MODR)~;StoreStateVarsChangedX)~:ssvc$N)
+
+  ReadStateVarsChanged(T) &
+  ModifyStateVarsChanged((T,s))
+ =>
+  ssvc1$N(h)(v)(s);
+
+  ssvc1$N(v)(v)(s);
+
+  ReadStateVarsChanged(T) &
+  ModifyStateVarsChanged((T,s)) &
+  ssvc1$N(H)(V)(S)
+ =>
+  ssvc1$N(H,h)(V,v)(S,s);
+
+  ssvc1$N(H)(V)(S)
+ =>
+  ssvc1$N(H,v)(V,v)(S,s);
+
+  ssvc$N;   /* initialisation */
+
+  ModifyStateVarsChanged(?) &
+  ReadStateHistory((H,h)) &
+  ReadStateVarNames(v) &
+  ReadCurrValState(s) &
+  ssvc1$N(h)(s)(v)
+ =>
+  ssvc$N;
+
+  AssertionIsSet
+ =>
+  ssvc$N
+
+END
+
+&
+
+THEORY DisplayStateModifyStateHistoryX IS
+
+#define DisplayStateModifyStateHistory(N) \
+    bcall(DisplayStateModifyStateHistoryX~:dsmsh$N)
+
+  Out(N,(("  ")))
+ =>
+  dsmsh2$N(f);
+
+  ReadStateVarsChanged(L) &
+  bsearch(f,L,M) &
+  Out(N,((" *")))
+ =>
+  dsmsh2$N(f);
+
+  dsmsh2$N(b) &
+  Out(N,((f))) &
+  Out(N,((" %\n",d)))
+ =>
+  dsmsh1$N(b)(d)(f);
+  
+  dsmsh1$N(a)(c)(e) &
+  dsmsh2$N(b) &
+  Out(N,((f))) &
+  Out(N,((" %\n",d)))
+ =>
+  dsmsh1$N(a,b)(c,d)(e,f);
+
+  ReadStateHistory(H) &
+  ReadStateVarNames(v) &
+  ReadCurrValState(s) &
+/***
+HERE(("Current State":s))&
+***/
+  ReadStateVarStrings(S) &
+  ModifyStateHistory((H,s)) &
+  Out(N,(("\n% %\n\n",bsrv Current berv,bsrv State berv))) &
+  dsmsh1$N(v)(s)(S)
+ =>
+  dsmsh$N;
+
+  ReadCurrValState(s) &
+  ReadStateHistory((S,s)) &
+  ModifyStateHistory((S,s,s)) &
+  Out(N,(("\n% %\n\n  Unchanged\n",bsrv Current berv,bsrv State berv)))
+ =>
+  dsmsh$N;
+
+  IsStatelessMch
+ =>
+  dsmsh$N;
+
+  AssertionIsSet
+ =>
+  dsmsh$N
+
+END
+
+&
+
+THEORY DisplayOpOutputX IS
+
+#define DisplayOpOutput(N) bcall(DisplayOpOutputX~:doo$N)
+
+  Out(N,(("  %  %\n",v,o)))
+ =>
+  doo1$N(v)(o);
+  
+  doo1$N(V)(O) &
+  Out(N,(("  %  %\n",v,o)))
+ =>
+  doo1$N(V,v)(O,o);
+  
+  doo$N;                               /* not an op */
+
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  ReadOpOutput(O) &
+  Out(N,(("\n%\n\n",bsrv Output berv))) &
+  doo1$N(v)(O)
+ =>
+  doo$N;
+
+  ReadSelectedOp(s(u|?|w|y|z|t))
+ =>
+  doo$N;
+
+  OpSubErrorIsSet
+ =>
+  doo$N;
+
+  AssertionIsSet
+ =>
+  doo$N
+
+END
+
+&
+
+THEORY DisplayInvariantX IS
+
+#define DisplayInvariant(N) \
+          bcall((((SUB~;SUB_seqX)~;MAP;FLAT;MODR)~;DisplayInvariantX)~:di$N)
+
+  ?;
+#define ModrInvariantTrue  bmodr(DisplayInvariantX.1,0)
+#define ModrInvariantFalse bmodr(DisplayInvariantX.1,1)
+#define InvariantIsFalse   brule(DisplayInvariantX.1,1)
+
+  di4$N;
+
+  InvariantIsFalse &
+  Out(N,(("\n  >>> Invariant is false <<<\n"))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Invariant is false",0))
+ =>
+  di4$N;
+
+  ReadSimplify(k) &
+  Out(N,(("    %\n        %\n        %\n",i,j,k)))
+ =>
+  di3$N(i)(j);
+
+  ReadSimplify(false) &
+  ModrInvariantFalse &
+  Out(N,(("    %\n        %\n        %\n",i,j,bsrv false berv)))
+ =>
+  di3$N(i)(j);
+
+/*
+  ReadBoundVars(B) &
+  ReadDeferredSetsConsts(D) &
+  ModifyBoundVars(D) &
+*/
+  Simplify(N,j) &
+/*
+  ModifyBoundVars(B) &
+*/
+  di3$N(i)(j)
+ =>
+  di2$N(i)(j);
+
+/*
+  ReadBoundVars(B) &
+  ReadDeferredSetsConsts(D) &
+  ModifyBoundVars(bflat(D,a)) &
+*/
+  Simplify(N,(@a.j)) &
+/*
+  ModifyBoundVars(B) &
+*/
+  di3$N(i)(@a.j)
+ =>
+  di2$N(i)(@a.j);
+
+  ReadStateVarNames(v) &
+  ReadCurrValState(s) &
+  di2$N(i)([v:=s]i)
+ =>
+  di1$N(i);
+
+  DisplayInvariantSet &
+  ReadInvariant(I) &
+  Out(N,(("\n  %\n\n",bsrv Invariant berv))) &
+  ModrInvariantTrue &
+  di1$N bsmap I &
+  di4$N
+ =>
+  di$N;
+
+  DontDisplayInvariantSet
+ =>
+  di$N;
+
+  IsStatelessMch
+ =>
+  di$N;
+
+  AssertionIsSet
+ =>
+  di$N
+
+END
+
+&
+
+THEORY UndoX IS
+
+#define Undo(N) bcall(UndoX:un$N)
+
+  Out(N,("\n  No operation to undo!\n"))
+ =>
+  un$N;
+
+  ReadStateHistory((h,s,t)) &
+  ModifyStateHistory((h)) &
+  ModifyCurrValState(s)
+ =>
+  un$N
+
+END
+
+&
+
+THEORY RestoreInitialStateX IS
+
+#define RestoreInitialState(N) bcall(RestoreInitialStateX~:rii$N)
+
+  ModifyStateHistory((?,t)) &
+  ModifyCurrValState(t)
+ =>
+  rii1$N(?,t);
+
+  rii1$N(S,t)
+ =>
+  rii1$N(S,t,u);
+
+  rii1$N(?);
+
+  ReadStateHistory(S) &
+  rii1$N(S)
+ =>
+  rii$N;
+
+  IsStatelessMch &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Animating Stateless Machine!",0))
+ =>
+  rii$N
+
+END
+
+&
+
+THEORY SimplifyPredicateX IS
+
+#define SimplifyPredicate(N,x) \
+    bcall((((SUB~;SUB_seqX)~)~;SimplifyPredicateX)~:sp$N(x))
+
+  ReadStateVarNames(S) &
+  ReadCurrValState(V) &
+  SimplifyComposite(N,([S:=V]p))
+ =>
+  sp$N(p)  
+
+END
+
+&
+
+THEORY CheckNoGuardEvaluatesTrueX IS
+
+#define CheckNoGuardEvaluatesTrue(N) \
+    bcall(CheckNoGuardEvaluatesTrueX~:cnget$N)
+
+  cnget_guard$N(?);
+
+  cnget_guard$N(L) &
+  Out(N,(("\n         %",p))) &
+  Out(N,(("\n           simplifies to",p))) &
+  Out(N,(("\n         %\n",q)))
+ =>
+  cnget_guard$N(L,(p|q));
+
+  cnget$N;
+
+  NoGuardEvaluatesTrueELSIF &
+  ReadGuardList(L) &
+  Out(N,(("\n  >>> No guard in IF... ELSIF evaluates to true"))) &
+  cnget_guard$N(L) &
+  Out(N,(("\n  Operation ignored\n")))
+ =>
+  cnget$N;
+
+  NoGuardEvaluatesTrueELSIFelse &
+  ReadGuardList(L) &
+  Out(N,(("\n  >>> No guard in IF... ELSIF ... ELSE evaluates to true"))) &
+  Out(N,(("\n      and guards do not evaluate to false!               <<<\n"))) &
+  cnget_guard$N(L) &
+  Out(N,(("\n  Operation ignored\n")))
+ =>
+  cnget$N;
+
+  NoGuardEvaluatesTrueIF &
+  ReadGuardList(L) &
+  Out(N,(("\n  >>> Guard in IF does not evaluate to true or false <<<\n"))) &
+  cnget_guard$N(L) &
+  Out(N,(("\n  Operation ignored\n")))
+ =>
+  cnget$N;
+
+  NoGuardEvaluatesTrueIFelse &
+  ReadGuardList(L) &
+  Out(N,(("\n  >>> Guard in IF ... ELSE does not evaluate to true or false <<<\n"))) &
+  cnget_guard$N(L) &
+  Out(N,(("\n  Operation ignored\n")))
+ =>
+  cnget$N;
+
+  NoGuardEvaluatesTrueCASEelse &
+  ReadGuardList(L) &
+  Out(N,(("\n  >>> No guard in CASE ... ELSE evaluates to true"))) &
+  Out(N,(("\n      and guards do not evaluate to false!        <<<\n"))) &
+  cnget_guard$N(L) &
+  Out(N,(("\n  Operation ignored\n")))
+ =>
+  cnget$N;
+
+  NoGuardEvaluatesTrueCASE &
+  ReadGuardList(L) &
+  Out(N,(("\n  >>> No guard in CASE evaluates to true <<<\n"))) &
+  cnget_guard$N(L) &
+  Out(N,(("\n  Operation ignored\n")))
+ =>
+  cnget$N;
+
+  NoGuardEvaluatesTrueSELECTelse &
+  ReadGuardList(L) &
+  Out(N,(("\n  >>> No guard in SELECT ... ELSE evaluates to true"))) &
+  Out(N,(("\n      and guards do not evaluate to false!          <<<\n"))) &
+  cnget_guard$N(L) &
+  Out(N,(("\n  Operation ignored\n")))
+ =>
+  cnget$N;
+
+  NoGuardEvaluatesTrueSELECT &
+  ReadGuardList(L) &
+  Out(N,(("\n  >>> No guard in SELECT evaluates to true <<<\n"))) &
+  cnget_guard$N(L) &
+  Out(N,(("\n  Operation ignored\n")))
+ =>
+  cnget$N;
+
+  AssertionIsSet
+ =>
+  cnget$N
+
+END
+
+&
+
+THEORY FreshVarsX IS
+
+  /***
+  for :
+  ***/
+
+#define GetFreshVars(N,w,y) \
+          bcall(((MAP;MODR;ARI)~;FreshVarsX)~:gfvs$N(w)(y))
+#define ModifyFreshVars(x) \
+          bcall(MODR:bmodr(FreshVarsX.1,x))
+#define ReadFreshVars(x) \
+          brule(FreshVarsX.1,x)
+
+  ?;  /* 1. */
+
+  ?; /* 2. Bound vars & new vars */
+
+  ReadFreshVars(V) &
+  bsearch(?,V,W) &
+  ModifyFreshVars(W)
+ =>
+  gfvs2$N;
+
+  gfvs1$N(v$0)
+ =>
+  gfvs1$N(v);
+
+  gfvs1$N(v$(N+1))
+ =>
+  gfvs1$N(v$N);
+
+  brule(FreshVarsX.2,L) &
+  v\L &
+  bmodr(FreshVarsX.2,(L,v)) &
+  ReadFreshVars(V) &
+  ModifyFreshVars((V,v))
+ =>
+  gfvs1$N(v);
+
+  ReadBoundVars(B) &
+  bmodr(FreshVarsX.2,(B,v,S)) &
+  ModifyFreshVars(?) &
+  gfvs1$N bsmap v &
+  gfvs2$N
+ =>
+  gfvs$N(v)(S)
+
+END
+
+&
+
+THEORY FreshVarX IS
+
+  /***
+  for ::
+  ***/
+
+#define GetFreshVar(N,w,y)    bcall(((NEWV)~;FreshVarX)~:gfv$N(bnewv(w,x))(y))
+#define ModifyFreshVar(x)     bcall(MODR:bmodr(FreshVarX.1,x))
+#define ReadFreshVar(x)       brule(FreshVarX.1,x)
+
+  ?;
+
+  gfv$N(bnewv(v,x))(S)
+ =>
+  gfv$N(v)(S);
+
+  ReadBoundVars(B) &
+  v\B &
+  v\S &
+  ModifyFreshVar(v)
+ =>
+  gfv$N(v)(S)
+
+END
+
+&
+
+THEORY InformSubstitutionErrorX IS /* from Toolkit2021 */
+
+#define InformSubstitutionError(N,x) \
+  bcall((MODR;InformSubstitutionErrorX~):(bmodr(InformSubstitutionErrorX.1,N)&___$N(x)))
+
+
+  ?; /* N */
+
+  x;
+
+
+  brule(InformSubstitutionErrorX.1,N) &
+  Out(N,(("\n    Operation % not in scope\n",o)))
+ =>
+  ___onis(o);
+
+
+  bident(o) &
+  ___onis(o)
+ =>
+  (o) == skip;
+
+  bident(o) &
+  ___onis(o)
+ =>
+  (o(i)) == skip;
+
+  bident(o) &
+  ___onis(o)
+ =>
+  (r<--o) == skip;
+
+  bident(o) &
+  ___onis(o)
+ =>
+  (r<--o(i)) == skip;
+
+
+  skip;
+
+
+  bident(o) &
+  onis(o)
+ =>
+  (s ; o) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (o ; s) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (s || o) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (o || s) == s;
+
+
+  bident(o) &
+  onis(o)
+ =>
+  (s ; o(i)) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (o(i) ; s) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (s || o(i)) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (o(i) || s) == s;
+
+
+  bident(o) &
+  onis(o)
+ =>
+  (s ; r<--o) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (r<--o ; s) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (s || r<--o) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (r<--o || s) == s;
+
+
+  bident(o) &
+  onis(o)
+ =>
+  (s ; r<--o(i)) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (r<--o(i) ; s) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (s || r<--o(i)) == s;
+
+  bident(o) &
+  onis(o)
+ =>
+  (r<--o(i) || s) == s;
+
+
+  ([@v.s]p) == ([s]p);
+
+  ([g ==> s]p) == ([s]p);
+
+
+  (s ; skip) == s;
+
+  (skip ; s) == s;
+
+  (s || skip) == s;
+
+  (skip || s) == s;
+
+
+  blident(a)
+ =>
+  (a:=b) == skip
+
+END
+
+&
+
+THEORY ProcessSelectedSubX IS
+
+#define ProcessSelectedSub(N,x) \
+   bcall(((FLAT~;(SUB~;SUB_seqX)~;ARI~;MODR;RULE;WRITE;MAP)~;ProcessSelectedSubX)~: \
+       (pss_ini$N & pss$N(x) & pss_process$N))
+
+  ?;
+/*   defined above
+#define ClearOpSubError   bmodr(ProcessSelectedSubX.1,0)
+#define SetOpSubError     bmodr(ProcessSelectedSubX.1,1)
+#define OpSubErrorIsSet   brule(ProcessSelectedSubX.1,1)
+*/
+
+  ?;
+#define ModifySub(x)   bmodr(ProcessSelectedSubX.2,x)
+#define ReadSub(x)     brule(ProcessSelectedSubX.2,x)
+
+  ?;
+#define ModifySubCurrValState(x)   bmodr(ProcessSelectedSubX.3,x)
+#define ReadSubCurrValState(x)     brule(ProcessSelectedSubX.3,x)
+
+  ?;
+#define ModifySubOutState(x)   bmodr(ProcessSelectedSubX.4,x)
+#define ReadSubOutState(x)     brule(ProcessSelectedSubX.4,x)
+
+  ?;
+#define ModifySubOutVal(x)   bmodr(ProcessSelectedSubX.5,x)
+#define ReadSubOutVal(x)     brule(ProcessSelectedSubX.5,x)
+
+  ?;
+#define SubOpsFifoStore ProcessSelectedSubX.6
+
+  ?;
+#define SubOpsCHOICEStore ProcessSelectedSubX.7
+
+  ?;
+#define ModifyLocalVarGuardTrue   bmodr(ProcessSelectedSubX.8,1)
+#define ModifyLocalVarGuardFalse  bmodr(ProcessSelectedSubX.8,0)
+#define LocalVarGuardIsFalse      brule(ProcessSelectedSubX.8,0)
+
+  ?;
+#define ModifyFirst_redisp_op     bmodr(ProcessSelectedSubX.9,1)
+#define ModifyNotFirst_redisp_op  bmodr(ProcessSelectedSubX.9,0)
+#define First_redisp_op           brule(ProcessSelectedSubX.9,1)
+#define NotFirst_redisp_op        brule(ProcessSelectedSubX.9,0)
+
+
+                       /****** process/fini ******/
+
+
+  /***
+  update CurrValState/OpOutput (if output)
+  ***/
+
+  ReadSubOutVal(o) &                      /* output */
+  ReadSubCurrValState(s) &
+  ModifyOpOutput(o) &
+  ModifyCurrValState(s)
+ =>
+  pss_fini$N;
+
+  ReadSubOutState(?) &                    /* no output */
+  ReadSubCurrValState(s) &
+  ModifyCurrValState(s)
+ =>
+  pss_fini$N;
+
+ 
+
+  /***
+  store result of next substitution
+  in SubCurrValState/SubOutVal (if output)
+  ***/
+
+  ReadSimplify(v) &
+  ModifySubOutVal(v)
+ =>
+  pss_process_out_store$N;
+
+  ReadSimplify(v) &
+  ModifySubCurrValState(v)
+ =>
+  pss_process_store$N;
+
+
+
+  /***
+  process next substitution
+  ***/
+
+  pss_process1$N(___default_val:=___default_val);   /* skip */
+
+/***
+HERE(("next sub - output":(A:=B)))&
+***/
+  ReadSubOutState(T) &                     /* output */
+  ReadSubOutVal(W) &
+  ReadStateVarNames(S) &
+  ReadSubCurrValState(V) &
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  Simplify(N,([S:=V]([C:=[S:=V]D](S)))) &
+  pss_process_store$N &
+  Simplify(N,([T:=W]([C:=[T:=W][S:=V]D](T)))) &
+  pss_process_out_store$N  
+ =>
+  pss_process1$N(A:=B);
+
+/***
+HERE(("next sub - no output":(A:=B)))&
+***/
+  ReadSubOutState(?) &                    /* no output */
+  ReadStateVarNames(S) &
+  ReadSubCurrValState(V) &
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  Simplify(N,([S:=V]([C:=[S:=V]D](S)))) &
+  pss_process_store$N
+ =>
+  pss_process1$N(A:=B);
+
+
+
+  /***
+  job the substitutions
+  ***/
+
+  pss_process1$N(?);
+
+  pss_process1$N(X) &
+  pss_process1$N(S)
+ =>
+  pss_process1$N(X|S);
+
+
+  ReadSub(S) &
+  pss_process1$N(S) &
+  pss_fini$N
+ =>
+  pss_process$N;
+
+
+
+                       /****** invalid substitution ******/
+
+  pss_invalid_sub$N(A:=B)(a:=b)
+ =>
+  pss_invalid_sub$N(A,d:=B,c)(a:=b);
+
+  Out(N,(("\n  >>> Invalid Substitution %:=% || %:=% <<<\n",a,c,a,b))) &
+  SetOpSubError &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Invalid Substitution",0))
+ =>
+  pss_invalid_sub$N(A,a:=B,c)(a:=b);
+
+
+
+                      /****** update substitution ******/
+
+
+  ReadSub((X|A:=B)) &
+  ModifySub((X|A,a:=B,b))
+ =>
+  pss_upd_sub$N(a:=b);
+
+  ReadSub((?|A:=B)) &
+  bsearch(a,(A,?),C) &
+  pss_invalid_sub$N(A:=B)(a:=b)
+ =>
+  pss_upd_sub$N(a:=b);
+
+
+
+
+                           /*** problem! ***/
+
+  Out(N,(("\n  Can't simplify:\n\n  %\n",S))) &
+  InformSubstitutionError(N,S) &
+  Out(N,(("\n"))) &
+  SetOpSubError &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Can't Simplify Substitution",0))
+ =>
+  pss$N(S);
+
+
+
+                             /*** Sub op ***/
+
+  brule(UnJokerizedSubOpX.M,((s)==(S))) &
+/***
+HERE((23:s))&
+HERE((s))&
+HERE((S))&
+***/
+/***
+NEW
+***/
+ReadOpInputRename(R) &
+ReadCompositeRename(C) &
+  pss$N([R][C]S)
+ =>
+  pss$N(s);
+
+  brule(UnJokerizedSubOpX.M,((s(u))==(S))) &
+/***
+HERE((24:s(i)))&
+HERE((s(u)))&
+HERE((S))&
+***/
+/***
+NEW
+***/
+ReadOpInputRename(R) &
+ReadCompositeRename(C) &
+  pss$N([u:=i][R][C]S)
+ =>
+  pss$N(s(i));
+
+  brule(UnJokerizedSubOpX.M,((v<--s)==(S))) &
+/***
+HERE((25:o<--s))&
+HERE((v<--s))&
+HERE((S))&
+***/
+/***
+NEW
+***/
+ReadOpInputRename(R) &
+ReadCompositeRename(C) &
+  pss$N([v:=o][R][C]S)
+ =>
+  pss$N(o<--s);
+
+  brule(UnJokerizedSubOpX.M,((v<--s(u))==(S))) &
+/***
+HERE((26:o<--s(i)))&
+HERE((v<--s(u)))&
+HERE((S))&
+***/
+/***
+NEW
+***/
+ReadOpInputRename(R) &
+ReadCompositeRename(C) &
+  pss$N([v:=o][u:=i][R][C]S)
+ =>
+  pss$N(o<--s(i));
+
+
+                            /*** simple subs ***/
+
+  pss_upd_sub$N(a:=b)
+ =>
+  pss$N(a:=b);
+
+
+
+
+
+                      /****** semi-colon ******/
+  
+  ReadSub(S) &
+  ModifySub((S|___default_val:=___default_val))
+ =>
+  pss_semi_colon$N;
+
+  pss$N(S) &
+  pss_semi_colon$N &
+  pss$N(T)
+ =>
+  pss$N(S;T);
+
+
+                            /*** overwriting ***/
+
+  pss$N(f:=f<+{a|->b})
+ =>
+  pss$N(f(a):=b);
+
+
+
+
+
+                            /*** multiple subs ***/
+  pss$(N+1)(S) &
+  pss$(N+2)(T)
+ =>
+  pss$N(S || T);
+
+
+  pss$(N+1)(A:=B) &
+  pss$(N+2)(a:=b)
+ =>
+  pss$N(A,a:=B,b);
+
+
+
+
+
+                            /*** : ***/
+
+/*
+  ReadFreshVars(w) &
+  pss$N(ANY w WHERE [v:=w]S THEN v:=w END)
+ =>
+  pss_col$(v:S);
+
+  GetFreshVars(N,v,S) &
+  pss_col$(v:S)
+ =>
+  pss$N(v:S);
+*/
+
+  brule(ConstructFreshVariableListWithRenameX.1,(v,x,s)) &
+/***
+HERE((82 --- (v:S) --- (ANY x WHERE s THEN v:=x END)))&
+***/
+  pss$N(ANY x WHERE s THEN v:=x END)
+ =>
+  pss_col$(v:S);
+
+  ConstructFreshVariableListWithRename(v,(v:S)) &
+  pss_col$(v:S)
+ =>
+  pss$N(v:S);
+
+
+
+                            /*** :: ***/
+
+  ReadFreshVar(w) &
+  pss$N(ANY w WHERE w : S THEN v:=w END)
+ =>
+  pss_col_col$(v::S);
+
+  GetFreshVar(N,v,S) &
+  pss_col_col$(v::S)
+ =>
+  pss$N(v::S);
+
+
+
+
+                   /****** redisplay op ANY/CHOICE ******/
+
+
+  Printf(N,("\n  %. %",m,p))
+ =>
+  pss_redisp_op1$N(p,m,n);
+  
+  btest(n>9) &
+  Printf(N,("\n   %. %",m,p))
+ =>
+  pss_redisp_op1$N(p,m,n);
+  
+  btest(m>9) &
+  Printf(N,("\n  %. %",m,p))
+ =>
+  pss_redisp_op1$N(p,m,n);
+  
+  Printf(N,("\n  %",p))
+ =>
+  pss_redisp_op1$N(p,1,1);
+  
+  pss_redisp_op1$N((a=b),m,n)
+ =>  
+  pss_redisp_op1$N((a<--b),m,n);
+  
+/*
+  _FifoWrite_NoStore((BT_ANM_PRCD_M," Precondition simplification complete 1 ",0)) &
+*/
+  ReadOpInputRename(R) &
+  ReadOpActualPre(A) &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  brule(ExpOpX.I,(s(p|e))) &                         /* input, pre */
+  Connect(".Bsb1") &
+  Printf(N,("% ( % )  =\n",s,u)) &
+  DisplaySelectedOpUnExp(N,(PRE w THEN t END)) &
+  DisplaySelectedOpExpAfterInput(N,s(p|e)) &
+  Printf(N,("\n\nInput Paremeters\n")) &
+  bcall((((MODR;(SUB~;SUB_seqX)~;MAP;WRITE)~;DisplaySelectedOpAfterInputX)~):dso2$N(R)) &
+  Printf(N,("\n\nFinal Precondition Simplification\n")) &
+  pss_redisp_op1$N bnmap A &
+  bclose &
+  ModifyNotFirst_redisp_op
+ =>
+  pss_redisp_op$N;
+
+/*
+  _FifoWrite_NoStore((BT_ANM_PRCD_M," Precondition simplification complete 2 ",0)) &
+*/
+  ReadOpActualPre(A) &
+  ReadSelectedOp(s(?|v|w|y|z|t)) &
+  brule(ExpOpX.I,(s(p|e))) &                         /* no input, pre */
+  Connect(".Bsb1") &
+  Printf(N,("% =\n",s)) &
+  DisplaySelectedOpUnExp(N,(PRE w THEN t END)) &
+  DisplaySelectedOpExp(N,s(p|e)) &
+  Printf(N,("\n\nFinal Precondition Simplification\n")) &
+  pss_redisp_op1$N bnmap A &
+  bclose &
+  ModifyNotFirst_redisp_op
+ =>
+  pss_redisp_op$N;
+
+/*
+  _FifoWrite_NoStore((BT_ANM_PRCD_M," Precondition simplification complete 3 ",0)) &
+*/
+  ReadSelectedOp(s(?|v|true|y|z|t)) &
+  brule(ExpOpX.I,(s(true|e))) &                    /* no input, no pre */
+  Connect(".Bsb1") &
+  Printf(N,("% =\n",s)) &
+  DisplaySelectedOpUnExp(N,t) &
+  DisplaySelectedOpExp(N,s(true|e)) &
+  bclose &
+  ModifyNotFirst_redisp_op
+ =>
+  pss_redisp_op$N;
+
+  First_redisp_op &
+  ReadSelectedOp(s(?|v|true|y|z|t)) &
+  brule(ExpOpX.I,(s(true|e))) &                    /* no input, no pre */
+  Connect(".Bsb1") &
+  Printf(N,("% =\n",s)) &
+  DisplaySelectedOpUnExp(N,t) &
+  DisplaySelectedOpExp(N,s(true|e)) &
+  bclose &
+  ModifyNotFirst_redisp_op
+ =>
+  pss_redisp_op$N;
+
+
+
+
+                          /****** ANY ... END ******/
+
+  pssANY9$N(S);
+
+  ReadSelectedOp(Initialisation(i)) &
+  _FifoWrite_NoStore((BT_ANM_OK_CONT_M,0,0))
+ =>
+  pssANY9$N(S);
+
+  _FifoWrite_NoStore((BT_ANM_DSP_2_M,0,0)) &
+  pssANY9$N(S) &
+  pss$(N+1)(S)
+ =>
+  pssANY8$N(S);
+
+  LocalVarGuardIsFalse &
+  SetOpSubError &
+  AddFalseToList(N) &
+  _FifoWrite_NoStore((BT_ANM_DSP_2_M,"  Guard is false  ",0)) &
+  pssANY9$N(S) &
+  pss$(N+1)(S)
+ =>
+  pssANY8$N(S);
+
+  Printf(N,("\n  %. %",m,p))
+ =>
+  pssANY7$N(p,m,n);
+
+  btest(n>9) &
+  Printf(N,("\n   %. %",m,p))
+ =>
+  pssANY7$N(p,m,n);
+
+  btest(m>9) &
+  Printf(N,("\n  %. %",m,p))
+ =>
+  pssANY7$N(p,m,n);
+
+  Printf(N,("\n  %",p))
+ =>
+  pssANY7$N(p,1,1);
+
+  ModifyLocalVarGuardFalse &
+  Printf(N,("\n  %. %",m,false))
+ =>
+  pssANY7$N(false,m,n);
+
+  btest(n>9) &
+  ModifyLocalVarGuardFalse &
+  Printf(N,("\n   %. %",m,false))
+ =>
+  pssANY7$N(false,m,n);
+
+  btest(m>9) &
+  ModifyLocalVarGuardFalse &
+  Printf(N,("\n  %. %",m,false))
+ =>
+  pssANY7$N(false,m,n);
+
+  ModifyLocalVarGuardFalse &
+  Printf(N,("\n  %",false))
+ =>
+  pssANY7$N(false,1,1);
+
+  AddLocalVarToList(N,a,b) &
+  Printf(N,("\n  %",(a=b)))
+ =>
+  pssANY6$N(a<--(b));
+
+  AddLocalVarToList(N,a,b) &
+  Printf(N,("\n  %",(a=b))) &
+  pssANY6$N(I)
+ =>
+  pssANY6$N(I,(a<--(b)));
+
+  ReadSimplify(P) &
+  ReadMultiInput(I) &
+  ModifyLocalVarGuardTrue &
+  Connect(".Bsb2") &
+  Printf(N,("Local Variable\n")) &
+  pssANY6$N(I) &
+  Printf(N,("\n\nGuard\n")) &
+  pss_redisp_op1$N bnmap g &
+  Printf(N,("\n\nFinal Guard Simplification\n")) &
+  pssANY7$N bnmap P &
+  bclose &
+  pssANY8$N(S)
+ =>
+  pssANY5$N(v)(g)(S);
+
+  ReadSimplify(P) &
+  ReadMultiInput(I) &
+  ModifyLocalVarGuardTrue &
+  Connect(".Bsb2") &
+  Printf(N,("Local Variables\n")) &
+  pssANY6$N(I) &
+  Printf(N,("\n\nGuard\n")) &
+  pss_redisp_op1$N bnmap g &
+  Printf(N,("\n\nFinal Guard Simplification\n")) &
+  pssANY7$N bnmap P &
+  bclose &
+  pssANY8$N(S)
+ =>
+  pssANY5$N(V,v)(g)(S);
+
+/***/
+  ReadStateVarNames(V) &
+  ReadSubCurrValState(T) &
+/***/
+  Simplify(N,(/***/ [V:=T] /***/ [A:=B]g)) &
+  pssANY5$N(v)(/***/ [V:=T] /***/ [A:=B]g)([A:=B]S)
+ =>
+  pssANY4$N(v)(g)(S)(A:=B);
+
+  pssANY4$N(v)(g)(S)(A,a:=B,b)
+ =>
+  pssANY3$N(v)(g)(S)(a<--(b))(A:=B);
+
+  pssANY3$N(v)(g)(S)(V)(A,a:=B,b)
+ =>
+  pssANY3$N(v)(g)(S)(V,(a<--(b)))(A:=B);
+
+  ReadMultiInput(V) &
+  pssANY3$N(v)(g)(S)(V)(___default_val:=___default_val)
+ =>
+  pssANY2$N(v)(g)(S);
+
+  ReadMultiInput(?) &           /* operation aborted */
+  SetOpSubError &
+  ModifySelectedOp(op_abort)
+ =>
+  pssANY2$N(v)(g)(S);
+
+  ReadMultiInput(0) &           /* operation aborted */
+  SetOpSubError &
+  ModifySelectedOp(op_abort)
+ =>
+  pssANY2$N(v)(g)(S);
+
+  ReadStateVarNames(V) &
+  ReadSubCurrValState(T) &
+  PreMultiInput(N,local_var_input_type,("Enter Values for Local Variable:"),a,[V:=T]b) &
+  pssANY2$N(a)(b)(S)
+ =>
+  pssANY1$N(a)(b)(S);
+
+  ReadStateVarNames(V) &
+  ReadSubCurrValState(T) &
+  PreMultiInput(N,local_var_input_type,("Enter Values for Local Variables:"),(A,a),[V:=T]b) &
+  pssANY2$N(A,a)(b)(S)
+ =>
+  pssANY1$N(A,a)(b)(S);
+
+  ReadSimplify(P) &
+  pss_redisp_op1$N bnmap P
+ =>
+  pssANY0_1$N;
+
+  pssANY7$N bnmap g
+ =>
+  pssANY0_0$N(g);
+
+  Connect(".Bsb2") &
+  ReadStateVarNames(V) &
+  ReadSubCurrValState(S) &
+  ReadOpInputRename(R) &
+  Printf(N,("Guard\n")) &
+  pssANY0_0$N([R][V:=S]b) &
+  Printf(N,("\n\nInitial Guard Simplification\n")) &
+  Simplify(N,([R][V:=S]b)) &
+  pssANY0_1$N &
+  bclose &
+  pssANY1$N(a)(b)(c)
+ =>
+  pssANY0$N(a)(b)(c);
+
+  ReadBoundVars(B) &
+  ModifyBoundVars(bflat(B,a)) &
+  ReadUnaccConsts(C) &
+  ModifyUnaccConsts(1,bflat(C,a)) &
+  pss_redisp_op$N &
+  pssANY0$N(a)(b)(S) &
+  ModifyBoundVars(B) &
+  ModifyUnaccConsts(2,C)
+ =>
+  pss_fresh1$N(ANY a WHERE b THEN S END);
+
+
+
+
+  bsearch(?,I,J) &
+/***
+HERE(("taking":J)) &
+***/
+  ModifyMultiInput(J)
+ =>
+  pss_exe_any2$N(I);
+
+  bsearch(?,I,J) &
+  ReadExeStepBranchLocVar(L) &
+/***
+HERE(("restoring":J)) &
+***/
+  ModifyExeStepBranchLocVar((L;loc_vars(J)))
+ =>
+  pss_exe_any1$N(I);
+
+/***
+HERE(("all used"))=>
+***/
+  pss_exe_any1$N(?);     /* all local vars used in one go */
+
+  ResetAutoExecution &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  Out(N,(("\n"))) &
+  Out(N,((Line))) &
+  Out(N,("  Error in operation %\n\n  % requires an entry in `loc_vars'\n\n    %\n",s,a,bsrv I berv)) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Error in Animate Script",0)) &
+  AbortExe(N)
+ =>
+  pss_exe_any$N(a)(I)(X);
+
+  ResetAutoExecution &
+  bsearch(?,I,J) &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  Out(N,(("\n"))) &
+  Out(N,((Line))) &
+  Out(N,("  Error in operation %\n\n  % requires an entry in `loc_vars'\n\n    %\n",s,a,bsrv J berv)) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Error in Animate Script",0)) &
+  AbortExe(N)
+ =>
+  pss_exe_any$N(a)(I)(X);
+
+  bsearch((a=b),I,J) &
+  pss_exe_any1$N(J) &
+  pss_exe_any2$N(X,(a<--b))
+ =>
+  pss_exe_any$N(a)(I)(X);
+
+  ResetAutoExecution &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  Out(N,(("\n"))) &
+  Out(N,((Line))) &
+  Out(N,("  Error in operation %\n\n  % requires an entry in `loc_vars'\n\n    %\n",s,a,bsrv I berv)) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Error in Animate Script",0)) &
+  AbortExe(N)
+ =>
+  pss_exe_any$N(A,a)(I)(X);
+
+  ResetAutoExecution &
+  bsearch(?,I,J) &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  Out(N,(("\n"))) &
+  Out(N,((Line))) &
+  Out(N,("  Error in operation %\n\n  % requires an entry in `loc_vars'\n\n    %\n",s,a,bsrv J berv)) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Error in Animate Script",0)) &
+  AbortExe(N)
+ =>
+  pss_exe_any$N(A,a)(I)(X);
+
+  bsearch((a=b),I,J) &
+  pss_exe_any$N(A)(J)(X,(a<--b))
+ =>
+  pss_exe_any$N(A,a)(I)(X);
+
+  IsExecution &
+  ReadAnimateFilename(f) &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  ResetAutoExecution &
+  Out(N,(("\n"))) &
+  Out(N,((Line))) &
+  Out(N,("  Error in Animate Script %\n\n  % requires a `loc_vars' entry for\n\n    %\n",f,s,bsrv a berv)) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Error in Animate Script",0)) &
+  AbortExe(N)
+ =>
+  pss_fresh1$N(ANY a WHERE b THEN S END);
+
+  IsExecution &
+  ReadCurrentConstruct(A.B) &
+  ReadAnimateFilename(f) &
+  ReadSelectedOp(Initialisation(u|v|w|y|z|t)) &
+  ResetAutoExecution &
+  Out(N,(("\n"))) &
+  Out(N,((Line))) &
+  Out(N,("  Error in Animate Script %\n\n  INI_% requires a `loc_vars' entry for\n\n    %\n",f,A,bsrv a berv)) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Error in Animate Script",0)) &
+  AbortExe(N)
+ =>
+  pss_fresh1$N(ANY a WHERE b THEN S END);
+
+  IsExecution &
+  pss_redisp_op$N &
+  ReadExeStepBranchLocVar((Y;loc_vars(I))) &
+/***
+HERE((0:Y))&
+HERE((1:I))&
+***/
+  ModifyExeStepBranchLocVar(Y) &
+  ReadBoundVars(B) &
+  ModifyBoundVars(bflat(B,a)) &
+  ReadUnaccConsts(C) &
+  ModifyUnaccConsts(3,bflat(C,a)) &
+/***
+HERE(("looking at":a:I)) &
+***/
+  pss_exe_any$N(a)(I,?)(?) &
+/*
+ModifyMultiInput(I) &
+*/
+  bcall(((REV;MAP;MODR;CATL;WRITE;(SUB~;SUB_seqX)~)~;GetMultiInputX)~:mu_bitstr$N) &
+  pssANY2$N(a)(b)(S) &
+  ModifyBoundVars(B) &
+  ModifyUnaccConsts(4,C)
+ =>
+  pss_fresh1$N(ANY a WHERE b THEN S END);
+
+
+  ReadFreshVars(w) &
+  (pss_fresh1$N(ANY w WHERE [a:=w]b THEN [a:=w]S END))
+ =>
+  pss_fresh$N(ANY a WHERE b THEN S END);
+
+  GetFreshVars(N,a,(b&S)) &
+  pss_fresh$N(ANY a WHERE b THEN S END)
+ =>
+  pss$N(ANY a WHERE b THEN S END);
+
+/*
+  ReadBoundVars(V) &
+  a\V &
+  pss_fresh1$N(ANY a WHERE b THEN S END)
+ =>
+  pss$N(ANY a WHERE b THEN S END);
+*/
+
+
+  Out(N,("\n    <<< Warning: bound variale clash % <<<\n\n",a)) &
+  pss_fresh1$N(ANY a WHERE b THEN S END)
+ =>
+  pss$N(ANY a WHERE b THEN S END);
+
+  ReadBoundVars(B) &
+  a\B &
+  pss_fresh1$N(ANY a WHERE b THEN S END)
+ =>
+  pss$N(ANY a WHERE b THEN S END);
+
+                          /****** LET ... END ******/
+
+  Printf(N,("\n  %",(a=b)))
+ =>
+  pss_LET7$N(a<--b);
+
+  Printf(N,("\n  %",(a=b))) &
+  pss_LET7$N(I)
+ =>
+  pss_LET7$N(I,(a<--b));
+
+/*
+  ModifyLocalVarGuardTrue &
+*/
+  ReadMultiInput(I) &
+  ReadStateVarNames(V) &
+  ReadSubCurrValState(T) &
+  ReadOpInputRename(R) &
+  pss_redisp_op$N &
+  Connect(".Bsb2") &
+  Printf(N,("LET Local Variables\n")) &
+  pss_LET7$N(I) &
+  Printf(N,("\n\nLET Local Variables Value\n")) &
+  pss_LET7$N([R][V:=T]I) &
+  Printf(N,("\n\nLET Local Variables Simplification\n")) &
+  Simplify(N,([R][V:=T]I)) &
+  pssANY0_1$N &
+  Printf(N,("\n\nLET Guard\n")) &
+  pssANY7$N bnmap g &
+  Printf(N,("\n\nLET Guard Simplification\n")) &
+  Simplify(N,([R][V:=T]g)) &
+  pssANY0_1$N &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_2_M,0,0)) &
+  _FifoWrite_NoStore((BT_ANM_OK_CONT_M,0,0)) &
+  pss$N(S)
+ =>
+  pss_LET6$N(g)(S);
+  
+  bsearch(?,A,C) &
+  bsearch(?,B,D) &
+  Simplify(N,([C:=D]g)) &
+  pss_LET6$N([C:=D]g)([C:=D]S)
+ =>
+  pss_LET5$N(g)(S)(A:=B);
+
+  pss_LET5$N(g)(S)(A,a:=B,b)
+ =>
+  pss_LET4$N(g)(S)((a<--b))(A:=B);
+
+  pss_LET4$N(g)(S)(I)(A,a:=B,b)
+ =>
+  pss_LET4$N(g)(S)(I,(a<--b))(A:=B);
+
+  ReadMultiInput(I) &
+  pss_LET4$N(g)(S)(I)(?:=?)
+ =>
+  pss_LET3$N(g)(S);
+
+  bsearch(?,I,J) &
+  ModifyMultiInput(J) &
+  PostGetMultiInput(N) &
+  pss_LET3$N(g)(S)
+ =>
+  pss_LET2$N(g)(I)(S);
+
+  pss_LET2$N(g)(I,(a<--b))(S)
+ =>
+  pss_LET1$N(g)(a=b)(I)(S);
+
+  pss_LET1$N(g)(P)(I,(a<--b))(S)
+ =>
+  pss_LET1$N(g)(P&a=b)(I)(S);
+
+  ReadBoundVars(B) &
+/*
+  ReadStateVarNames(V) &
+  ReadSubCurrValState(T) &
+  ReadOpInputRename(R) &
+*/
+  ModifyBoundVars(bflat(B,a)) &
+  ReadUnaccConsts(C) &
+  ModifyUnaccConsts(5,bflat(C,a)) &
+/*  pss_LET1$N([R][V:=T]b)([R][V:=T]b)(?)([R][V:=T]S) & */
+  pss_LET1$N(b)(b)(?)(S) &
+  ModifyBoundVars(B) &
+  ModifyUnaccConsts(6,C)
+ =>
+  pss$N(LET a BE b IN S END);
+
+
+
+                              /*** IF ... END ***/
+
+  ReadSimplify(q) &
+  ModifyGuardList((?,(p|q))) &
+  SetNoGuardEvaluatesTrueIF &
+  SetOpSubError
+ =>
+  pssIF$N(p)(S);
+
+  ReadSimplify(false) &
+  pss$(N+1)(skip)
+ =>
+  pssIF$N(p)(S);
+
+  ReadSimplify(true) &
+  pss$(N+1)(S)
+ =>
+  pssIF$N(p)(S);
+
+  SimplifyPredicate(N,p) &
+  pssIF$N(p)(S)
+ =>
+  pss$N(IF p THEN S END);
+
+
+
+                          /****** IF ... ELSE ... END ******/
+
+  ReadSimplify(q) &
+  ModifyGuardList((?,(p|q))) &
+  SetNoGuardEvaluatesTrueIFelse &
+  SetOpSubError
+ =>
+  pssIF_ELSE$N(p)(S)(T);
+
+  ReadSimplify(false) &   /* ELSE */
+  pss$(N+1)(T)
+ =>
+  pssIF_ELSE$N(p)(S)(T);
+
+  ReadSimplify(true) &
+  pss$(N+1)(S)
+ =>
+  pssIF_ELSE$N(p)(S)(T);
+
+  SimplifyPredicate(N,p) &
+  pssIF_ELSE$N(p)(S)(T)
+ =>
+  pss$N(IF p THEN S ELSE T END);
+
+
+
+                          /****** CHOICE ... END ******/
+
+
+  brule(SubOpsCHOICEStore,n) &
+  Printf(N,("%:%",n,a)) &
+  bcall((ARI;MODR):bmodr(SubOpsCHOICEStore,(n+1)))
+ =>
+  pssCHOICE2$N(a);
+
+  brule(SubOpsFifoStore,n) &
+  AddBranchToList(N,n) &
+  brule(ChoiceX.n,S) &
+  pss$(N+1)(S)
+ =>
+  pssCHOICE1$N;
+
+  brule(SubOpsFifoStore,n.1) & /* (display invariant) */
+  AddBranchToList(N,n) &
+  brule(ChoiceX.n,S) &
+  pss$(N+1)(S)
+ =>
+  pssCHOICE1$N;
+
+  brule(SubOpsFifoStore,0) &    /* operation aborted */
+  SetOpSubError &
+  ModifySelectedOp(op_abort)
+ =>
+  pssCHOICE1$N;
+
+  brule(SubOpsFifoStore,0.1) &  /* operation aborted (display invariant) */
+  SetOpSubError &
+  ModifySelectedOp(op_abort)
+ =>
+  pssCHOICE1$N;
+
+  bcrer(ChoiceX,a) &
+  pssCHOICE2$N(a)  
+ =>
+  pssCHOICE$N(a);
+
+  IsExecution &
+  bcrer(ChoiceX,a)
+ =>
+  pssCHOICE$N(a);
+
+  pssCHOICE$N(a) &
+  Printf(N,("\E")) &
+  bcrer(ChoiceX,b) &
+  pssCHOICE2$N(b)  
+ =>
+  pssCHOICE$N(a OR b);
+
+  IsExecution &
+  pssCHOICE$N(a) &
+  bcrer(ChoiceX,b)
+ =>
+  pssCHOICE$N(a OR b);
+
+  pss_redisp_op$N &
+/*** bcall(SHELL:bshell("cat .Bsb1")) & ***/
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0)) &
+/*** bcall(SHELL:bshell("cat .Bsb1")) & ***/
+  SetRecreateMainMenu &
+  bclean(ChoiceX) &
+  Connect(".Bsel") &
+  bmodr(SubOpsCHOICEStore,1) &
+  pssCHOICE$N(X) &
+  bclose &
+  _FifoWrite_Store((BT_GET_CHOICE_M,0,0),(SubOpsFifoStore)) &
+  pssCHOICE1$N
+ =>
+  pss$N(CHOICE X END);
+
+
+  IsExecution &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  ReadAnimateFilename(f) &
+  ResetAutoExecution &
+  Out(N,(("\n"))) &
+  Out(N,((Line))) &
+  Out(N,("  Error in Animate Script %\n\n  % requires a `branch' entry for\n\n    %\n",f,s,CHOICE X END)) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Error in Animate Script",0)) &
+  AbortExe(N)
+ =>
+  pss$N(CHOICE X END);
+
+  IsExecution &
+  ReadCurrentConstruct(A.B) &
+  ReadAnimateFilename(f) &
+  ReadSelectedOp(Initialisation(u|v|w|y|z|t)) &
+  ResetAutoExecution &
+  Out(N,(("\n"))) &
+  Out(N,((Line))) &
+  Out(N,("  Error in Animate Script %\n\n  INI_% requires a `branch' entry for\n\n    %\n",f,A,CHOICE X END)) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Error in Animate Script",0)) &
+  AbortExe(N)
+ =>
+  pss$N(CHOICE X END);
+
+  IsExecution &
+  ReadExeStepBranchLocVar((Y;branch(b))) &
+  ModifyExeStepBranchLocVar(Y) &
+  bmodr(SubOpsFifoStore,b) &
+  bclean(ChoiceX) &
+  pssCHOICE$N(X) &
+  pssCHOICE1$N
+ =>
+  pss$N(CHOICE X END);
+
+
+
+                          /****** CASE ... END ******/
+
+
+  ReadGuardList(L) &
+  ReadSimplify(q) &
+/***
+HERE((p -> q))&
+***/
+  ModifyGuardList((L,(p|q))) &
+  pssCASE1$N(X)
+ =>
+  pssCASE2$N(X;(p|S));
+
+  ReadSimplify(true) &
+  pss$(N+1)(S)
+ =>
+  pssCASE2$N(X;(p|S));
+
+  SetNoGuardEvaluatesTrueCASE &
+  SetOpSubError
+ =>
+  pssCASE1$N(?);
+
+  SimplifyPredicate(N,p) &
+  pssCASE2$N(X;(p|S))
+ =>
+  pssCASE1$N(X;(p|S));
+
+
+  pssCASE1$N(Y;((v=p)|S))
+ =>
+  pssCASE$N(p THEN S)(Y)(v);
+
+  pssCASE$N(X)(Y;((v=p)|S))(v)
+ =>
+  pssCASE$N(X OR p THEN S)(Y)(v);
+
+  ModifyGuardList(?) &
+  pssCASE$N(X)(?)(v)
+ =>
+  pss$N(CASE v OF EITHER X END END);
+
+
+
+                          /****** CASE ... ELSE ... END ******/
+
+
+/*
+  OutAssumedFalse(N,p) &
+  pssCASE_ELSE1$N(X)
+ =>
+  pssCASE_ELSE2$N(p)(X;S);
+
+*/
+
+  pss$(N+1)(S)
+ =>
+  pssCASE_ELSE3$N(S)(?);
+
+  SetNoGuardEvaluatesTrueCASEelse &
+  SetOpSubError
+ =>
+  pssCASE_ELSE3$N(S)(L,(p|q));
+
+  pssCASE_ELSE3$N(S)(L)
+ =>
+  pssCASE_ELSE3$N(S)(L,(p|false));
+
+  ReadGuardList(L) &
+  ReadSimplify(q) &
+/***
+HERE((p -> q))&
+***/
+  ModifyGuardList((L,(p|q))) &
+  pssCASE_ELSE1$N(X)
+ =>
+  pssCASE_ELSE2$N(p)(X;(p|S));
+
+  ReadSimplify(true) &
+  pss$(N+1)(S)
+ =>
+  pssCASE_ELSE2$N(p)(X;(p|S));
+
+  ReadGuardList(L) &
+  pssCASE_ELSE3$N(S)(L) /* check all guards false */
+ =>
+  pssCASE_ELSE1$N(S);   /* ELSE */
+
+  SimplifyPredicate(N,p) &
+  pssCASE_ELSE2$N(p)(X;(p|S))
+ =>
+  pssCASE_ELSE1$N(X;(p|S));
+
+
+  pssCASE_ELSE1$N(Y;((v=p)|S))
+ =>
+  pssCASE_ELSE$N(p THEN S)(Y)(v);
+
+  pssCASE_ELSE$N(X)(Y;((v=p)|S))(v)
+ =>
+  pssCASE_ELSE$N(X OR p THEN S)(Y)(v);
+
+  ModifyGuardList(?) &
+  pssCASE_ELSE$N(X)(S)(v)
+ =>
+  pss$N(CASE v OF EITHER X ELSE S END END);
+
+
+
+                          /****** SELECT ... END ******/
+
+
+  ReadGuardList(L) &
+  ReadSimplify(q) &
+/***
+HERE((p -> q))&
+***/
+  ModifyGuardList((L,(p|q))) &
+  pssSELECT1$N(X)
+ =>
+  pssSELECT2$N(X;(p|S));
+
+  ReadSimplify(true) &
+  pss$(N+1)(S)
+ =>
+  pssSELECT2$N(X;(p|S));
+
+  SetNoGuardEvaluatesTrueSELECT &
+  SetOpSubError
+ =>
+  pssSELECT1$N(?);
+
+  SimplifyPredicate(N,p) &
+  pssSELECT2$N(X;(p|S))
+ =>
+  pssSELECT1$N(X;(p|S));
+
+
+  pssSELECT1$N(Y;(p|S))
+ =>
+  pssSELECT$N(p THEN S)(Y);
+
+  pssSELECT$N(X)(Y;(p|S))
+ =>
+  pssSELECT$N(X WHEN p THEN S)(Y);
+
+  ModifyGuardList(?) &
+  pssSELECT$N(X)(?)
+ =>
+  pss$N(SELECT X END);
+
+
+
+                          /****** SELECT ... ELSE ... END ******/
+
+
+/*
+  OutAssumedFalse(N,p) &
+  pssSELECT_ELSE1$N(X)
+ =>
+  pssSELECT_ELSE2$N(p)(X;S);
+*/
+
+  pss$(N+1)(S)
+ =>
+  pssSELECT_ELSE3$N(S)(?);
+
+  SetNoGuardEvaluatesTrueSELECTelse &
+  SetOpSubError
+ =>
+  pssSELECT_ELSE3$N(S)(L,(p|q));
+
+  pssSELECT_ELSE3$N(S)(L)
+ =>
+  pssSELECT_ELSE3$N(S)(L,(p|false));
+
+  ReadGuardList(L) &
+  ReadSimplify(q) &
+/***
+HERE((p -> q))&
+***/
+  ModifyGuardList((L,(p|q))) &
+  pssSELECT_ELSE1$N(X)
+ =>
+  pssSELECT_ELSE2$N(p)(X;(p|S));
+
+  ReadSimplify(true) &
+  pss$(N+1)(S)
+ =>
+  pssSELECT_ELSE2$N(p)(X;(p|S));
+
+  ReadGuardList(L) &
+  pssSELECT_ELSE3$N(S)(L)   /* check all guards false */
+ =>
+  pssSELECT_ELSE1$N(S);     /* ELSE */
+
+  SimplifyPredicate(N,p) &
+  pssSELECT_ELSE2$N(p)(X;(p|S))
+ =>
+  pssSELECT_ELSE1$N(X;(p|S));
+
+
+  pssSELECT_ELSE1$N(Y;(p|S))
+ =>
+  pssSELECT_ELSE$N(p THEN S)(Y);
+
+  pssSELECT_ELSE$N(X)(Y;(p|S))
+ =>
+  pssSELECT_ELSE$N(X WHEN p THEN S)(Y);
+
+  ModifyGuardList(?) &
+  pssSELECT_ELSE$N(X)(S)
+ =>
+  pss$N(SELECT X ELSE S END);
+
+
+
+                          /****** ... ELSIF ... ******/
+
+
+  ReadGuardList(L) &
+  ReadSimplify(q) &
+/***
+HERE((p -> q))&
+***/
+  ModifyGuardList((L,(p|q))) &
+  pssIF_ELSIF1$N(X)
+ =>
+  pssIF_ELSIF2$N(X;(p|S));
+
+  ReadSimplify(true) &
+  pss$(N+1)(S)
+ =>
+  pssIF_ELSIF2$N(X;(p|S));
+
+  SetNoGuardEvaluatesTrueELSIF &
+  SetOpSubError
+ =>
+  pssIF_ELSIF1$N(?);
+
+  SimplifyPredicate(N,p) &
+  pssIF_ELSIF2$N(X;(p|S))
+ =>
+  pssIF_ELSIF1$N(X;(p|S));
+
+/*
+  ModifyGuardList(?) &
+  pssIF_ELSIF1$N(?;(q|T);(p|S))
+ =>
+  pss$N(IF p THEN S ELSIF q THEN T END);
+*/
+
+  pssIF_ELSIF1$N(W;(p|S))
+ =>
+  pssIF_ELSIF0$N(p THEN S)(W);
+
+  pssIF_ELSIF0$N(X)(W;(q|T))
+ =>
+  pssIF_ELSIF0$N(X ELSIF q THEN T)(W);
+
+  ModifyGuardList(?) &
+  pssIF_ELSIF0$N(p THEN S ELSIF q THEN T)(?)
+ =>
+  pss$N(IF p THEN S ELSIF q THEN T END);
+
+
+                          /****** ... ELSIF ... ELSE ******/
+
+
+  pss$(N+1)(S)
+ =>
+  pssIF_ELSIF_ELSE3$N(S)(?);
+
+  SetNoGuardEvaluatesTrueELSIFelse &
+  SetOpSubError
+ =>
+  pssIF_ELSIF_ELSE3$N(S)(L,(p|q));
+
+  pssIF_ELSIF_ELSE3$N(S)(L)
+ =>
+  pssIF_ELSIF_ELSE3$N(S)(L,(p|false));
+
+  ReadGuardList(L) &
+  ReadSimplify(q) &
+/***
+HERE((p -> q))&
+***/
+  ModifyGuardList((L,(p|q))) &
+  pssIF_ELSIF_ELSE1$N(X)
+ =>
+  pssIF_ELSIF_ELSE2$N(X;(p|S));
+
+  ReadSimplify(true) &
+  pss$(N+1)(S)
+ =>
+  pssIF_ELSIF_ELSE2$N(X;(p|S));
+
+  ReadGuardList(L) &
+  pssIF_ELSIF_ELSE3$N(S)(L)   /* check all guards false */
+ =>
+  pssIF_ELSIF_ELSE1$N(S);     /* ELSE */
+
+  SimplifyPredicate(N,p) &
+  pssIF_ELSIF_ELSE2$N(X;(p|S))
+ =>
+  pssIF_ELSIF_ELSE1$N(X;(p|S));
+
+/*
+  ModifyGuardList(?) &
+  pssIF_ELSIF_ELSE1$N(U;(q|T);(p|S))
+ =>
+  pss$N(IF p THEN S ELSIF q THEN T ELSE U END);
+*/
+  
+  pssIF_ELSIF_ELSE1$N(W;(p|S))
+ =>
+  pssIF_ELSIF_ELSE0$N(p THEN S)(W);
+
+  pssIF_ELSIF_ELSE0$N(X)(W;(q|T))
+ =>
+  pssIF_ELSIF_ELSE0$N(X ELSIF q THEN T)(W);
+
+  ModifyGuardList(?) &
+  pssIF_ELSIF_ELSE0$N(p THEN S ELSIF q THEN T)(U)
+ =>
+  pss$N(IF p THEN S ELSIF q THEN T ELSE U END);
+
+
+
+
+                          /****** VAR ... END ******/
+  ReadBoundVars(B) &
+  ModifyBoundVars(bflat(B,v)) &
+  ReadUnaccConsts(C) &
+  ModifyUnaccConsts(7,bflat(C,v)) &
+  pss$(N+1)(S) &
+  ModifyBoundVars(B) &
+  ModifyUnaccConsts(8,C)
+ =>
+  pss$N(VAR v IN S END);
+
+
+
+                          /****** PRE ... END ******/
+
+  pss$(N+1)(S)
+ =>
+  pss$N(PRE P THEN S END);
+
+
+
+                          /****** BEGIN ... END ******/
+
+  pss$(N+1)(S)
+ =>
+  pss$N(BEGIN S END);
+
+
+
+                          /****** ? (empty INI_) ******/
+
+  pss$N(?);
+
+
+
+                          /****** skip ******/
+
+  pss$N(skip);
+
+
+
+                          /****** OpSubError ******/
+
+  OpSubErrorIsSet
+ =>
+  x;
+
+
+
+                          /****** ini ******/
+  
+  ReadCurrValState(V) &
+  ModifySubCurrValState(V) &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  ModifySubOutState(v) &
+  ModifySubOutVal(v) &
+  ClearOpSubError &
+  ModifyFirst_redisp_op &
+  ModifySub((?|___default_val:=___default_val))
+ =>
+  pss_ini$N
+
+END
+
+&
+
+THEORY SetStateVariablesX IS
+
+#define SetStateVariables(N) \
+    bcall(((WRITE;MODR)~;SetStateVariablesX)~:ssv$N)
+
+  bsearch(?,S,U) &
+  bsearch(?,T,V) &
+  ReadStateVarNames(W) &
+  ModifyCurrValState(([U:=V]W))
+ =>
+  ssv_exe1$N(S:=T);
+
+  ssv_exe1$N(S,a:=T,b)
+ =>
+  ssv_exe$N((a=b))(S:=T);
+
+  ssv_exe$N(L)(S,a:=T,b)
+ =>
+  ssv_exe$N(L,(a=b))(S:=T);
+
+  bsearch(?,L,M) &
+  ModifyCurrValState(M)
+ =>
+  ssv4$N(L);
+
+  ssv4$N(L,v)
+ =>
+  ssv3$N(L)(a<--(v));
+
+  ssv3$N(L,v)(V)
+ =>
+  ssv3$N(L)(V,(a<--(v)));
+
+  ReadMultiInput(V) &
+  ssv3$N(?)(V)
+ =>
+  ssv2$N;
+
+  ReadSelectedOp(op_abort) &
+  Connect(".Bsb1") &
+  Printf(N,("Operation aborted")) &
+  bclose &
+  _FifoWrite_NoStore((BT_ANM_DSP_1_M,0,0))
+ =>
+  ssv2$N;
+
+  ReadStateVarNames(V) &
+  PreMultiInput(N,state_var_input_type,("Enter New State Values:"),V,(L&v=s)) &
+  ssv2$N
+ =>
+  ssv1$N(L)(v)(s);
+
+  ssv1$N(L&v=s)(V)(S)
+ =>
+  ssv1$N(L)(V,v)(S,s);
+
+  ReadStateVarNames(v) &
+  ReadCurrValState(s) &
+  ssv1$N(?)(v)(s)
+ =>
+  ssv$N;
+
+  IsExecution &
+  ReadExeStepBranchLocVar(L) &
+  bsearch(?,L,M) &
+  ssv_exe$N(M)(?:=?)
+ =>
+  ssv$N;
+
+  IsStatelessMch &
+  bcall(MODR:bmodr(GetSelectedOpX.1,1))   /* ModifyLastOpFromUtilities */
+ =>
+  ssv$N
+
+END
+
+&
+
+THEORY ProcessSelectedOpX IS
+
+#define ProcessSelectedOp(N) \
+    bcall(((MODR;RULE)~;ProcessSelectedOpX)~:pso$N)
+
+   ?;  /* F:=A */
+#define ModifyOpInpRename(x)  bcall(MODR:bmodr(ProcessSelectedOpX.1,x))
+#define ReadOpInpRename(x)    brule(ProcessSelectedOpX.1,x)
+
+  ReadSelectedOp(ra) &                /* restart */
+  CleanAnimator &
+  PrintBver &
+  bredo
+ =>
+  pso$N;
+
+  ReadSelectedOp(x.y.anm)             /* script init */
+ =>
+  pso$N;
+
+  ReadSelectedOp(ri) &                /* restore initial state */
+  RestoreInitialState(N)
+ =>
+  pso$N;
+
+  ReadSelectedOp(ini) &               /* save ini state */
+  SaveScriptAsInit(N)
+ =>
+  pso$N;
+
+  ReadSelectedOp(et) &                /* edit theory file */
+  ReadCurrentConstruct(a.b) &
+  bclean(UserLibX) &
+  bclean(UserLibMacrosX) &
+  _FifoWrite_NoStore((BT_EDT_ANM_THY_M,0,0)) &
+  ProcessUserLib(N+1)
+ =>
+  pso$N;
+
+  ReadSelectedOp(op_abort)            /* op aborted */
+ =>
+  pso$N;
+
+  ReadSelectedOp(ssv) &               /* set state variables */
+  SetStateVariables(N)
+ =>
+  pso$N;
+
+  ReadSelectedOp(un) &                /* undo */
+  Undo(N)
+ =>
+  pso$N;
+
+  ReadSelectedOp(s(u|v|w|y|z|t)) &       /* pre */
+  brule(ExpOpX.I,(s(p|e))) &
+  ReadOpInputRename(R) &
+  ReadCompositeRename(C) &
+  ProcessSelectedSub(N,([R][C](PRE p THEN t END)))
+ =>
+  pso$N;
+
+  ReadSelectedOp(s(?|v|w|y|z|t)) &       /* no pre */
+  brule(ExpOpX.I,(s(true|e))) &
+  ReadOpInputRename(R) &
+  ReadCompositeRename(C) &
+  ProcessSelectedSub(N,([R][C]t))  
+ =>
+  pso$N;
+
+  AssertionIsSet
+ =>
+  pso$N
+
+END
+
+&
+
+THEORY StoreLastOpParamsSelectedOpX IS
+
+#define StoreLastOpParamsSelectedOp(N) \
+  bcall(((SUB)~;StoreLastOpParamsSelectedOpX~):slopso$N)
+
+  ReadLastOpParams(L) &
+  ModifyLastOpParams((L;(s(x))))
+/***
+&HERE(("LastOpParams":2:(L;(s(x)))))
+***/
+ =>
+  slopso3$N(s(x));
+
+  ReadLastOpParams(L) &
+  bsearch(s(y),L,M) &
+  ModifyLastOpParams((M;(s(x))))
+/***
+&HERE(("LastOpParams":1:(M;(s(x)))))
+***/
+ =>
+  slopso3$N(s(x));
+
+  bsearch(?,L,M) &
+  ReadSelectedOp(s(x)) &
+  slopso3$N(s(M))
+ =>
+  slopso2$N(L);
+
+  slopso2$N(L&(a=b))
+ =>
+  slopso1$N(a:=b)(L);
+
+  slopso1$N(A:=B)(L&(a=b))
+ =>
+  slopso1$N(A,a:=B,b)(L);
+
+  ReadSelectedOp(x)
+ =>
+  slopso$N;
+
+  ReadSelectedOp(s(u|v|w|y|z|t)) &      /* input */
+  ReadOpInputRename(R) &
+  slopso1$N(R)(?)
+ =>
+  slopso$N;
+
+  ReadSelectedOp(s(?|v|w|y|z|t))        /* no input */
+ =>
+  slopso$N
+
+
+END
+
+&
+
+THEORY GetInputSelectedOpX IS
+
+#define GetInputSelectedOp(N) \
+    bcall(((FLAT;MODR;(SUB~;SUB_seqX)~;WRITE;MAP)~;GetInputSelectedOpX)~:giso$N)
+
+  ?;
+#define ModifyGetInputPredonditionTrue  bmodr(GetInputSelectedOpX.1,0)
+#define ModifyGetInputPredonditionFalse bmodr(GetInputSelectedOpX.1,1)
+#define GetInputPredonditionIsFalse     brule(GetInputSelectedOpX.1,1)
+
+/*
+  ?; /? ??? ?/
+*/
+
+  _FifoWrite_NoStore((BT_ANM_DSP_3_M,0,0))
+ =>
+  dso3$N;
+
+  ReadSimplify(P) &
+  ModifyOpActualPre(P)
+ =>
+  giso11$N;
+
+  ReadOpActualPre(P) &
+  Simplify(N,P) &
+  giso11$N
+ =>
+  giso10$N;
+
+  ReadSelectedOp(op_abort)           /* operation aborted */
+ =>
+  giso10$N;
+
+  ReadCompositeRename(C) &
+  ReadOpInputRename(R) &
+  ReadOpCurrPre(p) &
+  ReadOpCalcPre(q) &
+  ModifyOpActualPre(([R][C]p)) &
+  ModifyOpCalcPre(([R][C]q))
+ =>
+  giso9$N;
+
+/*
+  brule(GetInputSelectedOpX.2,(V=A)) &
+  bmodr(GetInputSelectedOpX.2,(V,v:=A,a))
+ =>
+  giso8$N(v<--(a));
+*/
+
+  ReadOpInputRename((V:=A)) &
+  ModifyOpInputRename((V,v:=A,a))
+ =>
+  giso8$N(v<--(a));
+
+  ReadOpInputRename(?) &
+  ModifyOpInputRename((v:=a))
+ =>
+  giso8$N(v<--(a));
+
+  ReadMultiInput(V) &
+  ModifyOpInputRename(?) &
+  giso8$N bsmap V &
+  giso9$N
+ =>
+  giso7$N;
+
+  ReadSelectedOp(op_abort)           /* operation aborted */
+ =>
+  giso7$N;
+
+  giso6$N;
+
+  GetInputPredonditionIsFalse &
+  Out(N,(("\n  >>> Precondition is false <<<\n\n"))) &
+  _FifoWrite_NoStore((BT_MULTI_ERR_STR_M,"Precondition is false",0))
+ =>
+  giso6$N;
+
+  Printf(N,(" \n  %. %",m,p))
+ =>
+  giso5$N(p,m,n);
+
+  btest(n>9) &
+  Printf(N,(" \n   %. %",m,p))
+ =>
+  giso5$N(p,m,n);
+
+  btest(m>9) &
+  Printf(N,(" \n  %. %",m,p))
+ =>
+  giso5$N(p,m,n);
+
+  Printf(N,(" \n  %",p))
+ =>
+  giso5$N(p,1,1);
+
+  ModifyGetInputPredonditionFalse &
+  Printf(N,(" \n  %. %",m,false))
+ =>
+  giso5$N(false,m,n);
+
+  btest(n>9) &
+  ModifyGetInputPredonditionFalse &
+  Printf(N,(" \n   %. %",m,false))
+ =>
+  giso5$N(false,m,n);
+
+  btest(m>9) &
+  ModifyGetInputPredonditionFalse &
+  Printf(N,(" \n  %. %",m,false))
+ =>
+  giso5$N(false,m,n);
+
+  ModifyGetInputPredonditionFalse &
+  Printf(N,(" \n  %",false))
+ =>
+  giso5$N(false,1,1);
+
+  ReadSimplify(p) &
+  ModifyGetInputPredonditionTrue &
+  giso5$N bnmap p &
+  giso6$N
+ =>
+  giso4$N;
+
+  Simplify(N,p) &
+  giso4$N
+ =>
+  giso3$N(u)(p);
+
+  Printf(N,(" \n  %. %",m,p))
+ =>
+  giso2$N(p,m,n);
+
+  btest(n>9) &
+  Printf(N,(" \n   %. %",m,p))
+ =>
+  giso2$N(p,m,n);
+
+  btest(m>9) &
+  Printf(N,(" \n  %. %",m,p))
+ =>
+  giso2$N(p,m,n);
+
+  Printf(N,(" \n  %",p))
+ =>
+  giso2$N(p,1,1);
+
+  giso2$N bnmap P
+ =>
+  giso1$N(P);
+
+   
+  PreMultiInput(N,op_param_input_type,(("Input parameters for %",s)),u,v)
+ =>
+  giso_pre_multi_inp$N(s)(u)(v);
+
+  ReadLastOpParams(L) &
+  bsearch(s(p),L,M) &
+  PreMultiInput(N,op_param_input_type,(("Input parameters for %",s)),u,bflat(v&p))
+ =>
+  giso_pre_multi_inp$N(s)(u)(v);
+
+  giso$N;                                    /* not an op */
+
+  ReadSelectedOp(s(u|v|w|y|z|t)) &           /* input, pre */
+  ReadCompositeRename(C) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  ReadBoundVars(B) &
+  ModifyBoundVars(bflat(B,u)) &
+  ReadUnaccConsts(U) &
+  ModifyUnaccConsts(9,bflat(U,u)) &
+  ModifyOpCurrPre(([V:=S]w)) &
+  ModifyOpCalcPre(([V:=S]y)) &
+  Connect(".Bsb1") &
+  Printf(N,("% ( % ) =\n",s,u)) &
+  DisplaySelectedOpUnExp(N,(PRE w THEN t END)) &
+  DisplaySelectedOpExp(N,s(w|t)) &
+  bclose &
+  Connect(".Bsb2") &
+  Printf(N,("Precondition\n")) &
+  giso1$N([V:=S]w) &
+  Printf(N,(" \n \nInitial Precondition Simplification\n")) &
+  giso3$N(u)([V:=S][C]w) &
+  bclose &
+  giso_pre_multi_inp$N(s)(u)([V:=S][C]w) &
+  giso7$N &
+  giso10$N &
+  ModifyBoundVars(B) &
+  ModifyUnaccConsts(10,U)
+ =>
+  giso$N;
+
+  ReadSelectedOp(s(?|v|w|y|z|t)) &           /* no input, pre */
+  ReadCompositeRename(C) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  ModifyOpCurrPre(([V:=S][C]w)) &
+  ModifyOpActualPre(([V:=S][C]w)) &
+  ModifyOpCalcPre(([V:=S][C]y)) &
+  ModifyOpInputRename((___default_val:=___default_val)) &
+  giso10$N
+ =>
+  giso$N;
+
+  ReadSelectedOp(s(?|v|true|y|z|t)) &        /* no input, no pre */
+  ModifyOpCurrPre(true) &
+  ModifyOpActualPre(true) &
+  ModifyOpInputRename((___default_val:=___default_val))
+ =>
+  giso$N
+
+END
+
+&
+
+THEORY LoadOwnTypeFileTmpX IS
+
+  /***
+  to get TypeStructuredX for own constants (for setting of context)
+  ***/
+
+#define LoadOwnTypeFileTmp(N,x) bcall(((MAP;RULE)~;LoadOwnTypeFileTmpX)~:lotft$N(x))
+
+  lotft2N(x);
+
+  bcrer(TypeStructuredX,(b:c*d))
+ =>
+  lotft2N(b:c*d);
+
+  bcrer(TypeStructuredX,(b:POW(c)))
+ =>
+  lotft2N(b:POW(c));
+
+  ReadBget((B|C)) &
+  lotft2N bsmap B
+ =>
+  lotft1$N;
+
+  ReadBget((A|B|C)) &
+  lotft2N bsmap B
+ =>
+  lotft1$N;
+
+  Bget(("TYP/",a,".mri.typ")) &
+  lotft1$N
+ =>
+  lotft$N(a.b)
+
+END
+
+&
+
+THEORY LoadTypeFileX IS
+
+#define LoadTypeFile(N,x) bcall(((MAP;RULE)~;LoadTypeFileX)~:ltf$N(x))
+
+  ltf2$N(a,x);
+
+  bcrer(TypeStructuredX,(b:c*d))
+ =>
+  ltf2$N(a,(b:c*d));
+
+  bcrer(TypeStructuredX,(b:POW(c)))
+ =>
+  ltf2$N(a,(b:POW(c)));
+
+  bcrer(TypeGivenX,(a:s))
+ =>
+  ltf2$N(a,given(s));
+
+  ReadBget((B|C)) &
+  ltf2$N(a) bsmap B
+ =>
+  ltf1$N(a);
+
+  ReadBget((A|B|C)) &
+  ltf2$N(a) bsmap B
+ =>
+  ltf1$N(a);
+
+  ReadTypeMchLoaded(A) &
+  ModifyTypeMchLoaded((A,a)) &
+/***
+HERE(("ModifyTypeMchLoaded":A,a)) &
+***/
+  Bget(("TYP/",a,".mri.typ")) &
+  ltf1$N(a)
+ =>
+  ltf$N(a);
+
+  ReadTypeMchLoaded(A) &
+/***
+HERE(("ReadTypeMchLoaded":a:A)) &
+***/
+  bsearch(a,A,B)
+ =>
+  ltf$N(a)
+
+END
+
+&
+
+THEORY CheckDeferredSetsX IS
+
+#define CheckDeferredSets(N) \
+    bcall(((ARI;MODR;MAP)~;CheckDeferredSetsX)~:cds$N)
+
+  ?;
+#define ModifyDeferredSetsReported(x)  bmodr(CheckDeferredSetsX.1,x)
+#define ReadDeferredSetsReported(x)    brule(CheckDeferredSetsX.1,x)
+
+  _FifoWrite_NoStore((BT_ANM_DSP_3_M,0,0))
+ =>
+  dso3$N;
+
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Deferred sets may lead to unrealistic animation!",0))
+ =>
+  cds4$N(S);
+
+  cds4$N(?);
+
+  bsearch((String_TYPE : STRING),S,T) &
+  cds4$N(T)
+ =>
+  cds4$N(S);
+
+  bsearch((Byt_TYPE : BYTE),S,T) &
+  cds4$N(T)
+ =>
+  cds4$N(S);
+
+  bsearch((Uns_TYPE : UNSIGNED),S,T) &
+  cds4$N(T)
+ =>
+  cds4$N(S);
+
+  cds3$N(?);
+
+  Out(N,(("  %    (%)\n",s,m)))
+ =>
+  cds3$N(m:s);
+
+  ReadDeferredSetsReported(L) &
+  Out(N,(("\nDeferred Sets:\n\n"))) &
+  cds3$N bsmap L &
+  Out(N,((Line))) &
+  cds4$N(L)
+ =>
+  cds2$N;
+
+  ReadDeferredSetsReported(?)
+ =>
+  cds2$N;
+
+
+
+  cds1$N(s);
+
+  brule(TypeGivenX.I,(m:s)) &
+  ReadDeferredSetsReported(L) &
+  ModifyDeferredSetsReported((L,(m:s)))
+ =>
+  cds1$N(s);
+
+  ReadDeferredSetsConsts(D) &
+  ModifyDeferredSetsReported(?) &
+  cds1$N bsmap D &
+  cds2$N
+ =>
+  cds$N
+
+END
+
+&
+
+THEORY ProcessSeenThroughIncludesX IS
+
+#define ProcessSeenThroughIncludes(N) \
+    bcall(((REV;ARI;(SUB~;SUB_seqX)~;CATL;MODR;MAP;RULE;NEWV)~;ProcessSeenThroughIncludesX)~:psti_0$N)
+
+#define ProcessSeenThroughIncl(N,x,y,z) \
+   bcall(((MODR;MAP)~;ProcessSeesUsedSelfX)~:psus2_seen_through_incl$N(x)(y)(z))
+
+
+  psti_typ$N(x);
+
+  LoadTypeFile(N,r)
+ =>
+  psti_typ$N(r(s):t:(u,v,w));
+
+  psti_typ$N(r(s):t:(u,v,w))
+ =>
+  psti_typ$N(R.r(s):t:(u,v,w));
+
+
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  LoadTypeFile(N,k) &
+  [l:=s](ProcessSeenThroughIncl(N,D,F,H))
+ =>
+  psti_seen1$N(s);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(?):m:r);n)) &
+  LoadTypeFile(N,k) &
+  ProcessSeenThroughIncl(N,D,F,H)
+ =>
+  psti_seen1$N(?);
+
+  psti_seen$N(?);
+
+  Bget(("ANL/",r,".mch.anl")) &
+  psti_seen1$N(s)
+ =>
+  psti_seen$N(r(s):t:(u,v,w));
+
+  Bget(("ANL/",r,".mch.anl")) &
+  psti_seen1$(s)
+ =>
+  psti_seen$N(R.r(s):t:(u,v,w));
+
+
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  [l:=s](psti_seen$N bsmap A) &
+  [l:=s](psti_seen$N bsmap B) &
+  [l:=s](psti2$(N+1) bsmap b)
+ =>
+  psti3$N(s);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(?):m:r);n)) &
+  psti_seen$N bsmap A &
+  psti_seen$N bsmap B &
+  psti2$(N+1) bsmap b
+ =>
+  psti3$N(?);
+
+
+  psti2$N(?);
+
+  Bget(("ANL/",r,".",mch,".anl")) &
+  psti3$N(s)
+ =>
+  psti2$N(r(s):t:(u,v,w));
+
+  Bget(("ANL/",r,".",mch,".anl")) &
+  psti3$N(s)
+ =>
+  psti2$N(R.r(s):t:(u,v,w));
+
+
+  ReadMchParamRename((I))&ppp(I)=>psti_0$N;
+
+  ReadMchParamRename((I:K)) &
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  [I:=K](psti_seen$N bsmap A) &
+  [I:=K](psti_seen$N bsmap B) &
+  [I:=K](psti2$N bsmap b)
+ =>
+  psti_0$N
+
+END
+
+&
+
+THEORY ProcessIncludesX IS
+
+#define ProcessIncludes(N,x,y) \
+    bcall(((REV;ARI;(SUB~;SUB_seqX)~;CATL;MODR;MAP;RULE;NEWV)~;ProcessIncludesX)~:([x](pi$N(y))))
+
+  ?;
+#define ModifyIncludesDotRename(x)  bmodr(ProcessIncludesX.1,x)
+#define ReadIncludesDotRename(x)    brule(ProcessIncludesX.1,x)
+
+  ?;
+#define ModifyIncludesDotPrefix(x)  bmodr(ProcessIncludesX.2,x)
+#define ReadIncludesDotPrefix(x)    brule(ProcessIncludesX.2,x)
+
+  ?;
+#define ModifyIncludesDotOpRename(x)  bmodr(ProcessIncludesX.3,x)
+#define ReadIncludesDotOpRename(x)    brule(ProcessIncludesX.3,x)
+
+
+  pi_typ$N(x);
+
+  LoadTypeFile(N,r)
+ =>
+  pi_typ$N(r(s):t:(u,v,w));
+
+  pi_typ$N(r(s):t:(u,v,w))
+ =>
+  pi_typ$N(R.r(s):t:(u,v,w));
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  pi$(N+1) bsmap b &
+  LoadTypeFile(N,k) &
+  pi_typ$N bsmap A &
+  pi_typ$N bsmap B
+ =>
+  pi1$N;
+
+  pi$N(?);
+
+  Bget(("ANL/",r,".",mch,".anl")) &
+  CheckBitStringRewrites(N,(r.mch.anl)) &
+  pi1$N
+ =>
+  pi$N(r(s):t:(?,?,?));
+
+  Bget(("ANL/",r,".",mch,".anl")) &
+  CheckBitStringRewrites(N,(r.mch.anl)) &
+  pi1$N
+ =>
+  pi$N(R.r(s):t:(u,v,w))
+
+END
+
+&
+
+THEORY ProcessSeesUsedSelfX IS
+
+#define ProcessSeesUsedSelf(N) \
+    bcall(((CATL;MODR;MAP)~;ProcessSeesUsedSelfX)~:psus$N)
+
+/* defined above 
+#define ProcessSeenThroughIncl(N,x,y,z) \
+   bcall(((CATL;MODR;MAP)~;ProcessSeesUsedSelfX)~:psus2_seen_through_incl$N(x)(y)(z))
+*/
+
+  psus_es$N(x);
+
+  ReadEnumSetsRename((E:M)) &
+  ModifyEnumSetsRename((E,e:M,{n}))
+ =>
+  psus_es$N(e(n));
+
+  ReadEnumSetsRename((E:M)) &
+  bsearch(e,(E,?),F)
+ =>
+  psus_es$N(e(n));
+
+  psus_es$N(e[M]);
+
+  psus_p$N(p);
+
+  ReadConsts(A) &
+  bsearch(p,A,B) &
+  ReadEqualityProps(P) &
+  ModifyEqualityProps((P&p=q))
+ =>
+  psus_p$N(q=p);
+
+  ReadSets(A) &
+  bsearch(p,A,B) &
+  ReadEqualityProps(P) &
+  ModifyEqualityProps((P&p=q))
+ =>
+  psus_p$N(q=p);
+
+  ReadConsts(A) &
+  bsearch(p,A,B) &
+  ReadEqualityProps(P) &
+  ModifyEqualityProps((P&p=q))
+ =>
+  psus_p$N(p=q);
+
+  ReadSets(A) &
+  bsearch(p,A,B) &
+  ReadEqualityProps(P) &
+  ModifyEqualityProps((P&p=q))
+ =>
+  psus_p$N(p=q);
+
+
+
+  ReadConsts(A) &
+  ModifyConsts((A,a))
+ =>
+  psus_c$N(a);
+
+  psus_c$N(a(M));
+
+  psus_c$N(a[M]);
+
+  psus_c$N(?);
+
+  ModifyConsts(P)
+ =>
+  psus_c2$N(P);
+
+  bsearch(?,P,Q) &
+  psus_c2$N(Q)
+ =>
+  psus_c2$N(P);
+
+  ReadConsts(P) &
+  psus_c2$N(P)
+ =>
+  psus_c1$N;
+
+
+
+  ReadSets(A) &
+  ModifySets((A,a))
+ =>
+  psus_s$N(a);
+
+/*
+  ReadSets(A) &
+  ModifySets((A,a))
+ =>
+*/
+  psus_s$N(a(M));
+
+  psus_s$N(a[M]);
+
+  psus_s$N(?);
+
+  ModifySets(P)
+ =>
+  psus_s2$N(P);
+
+  bsearch(?,P,Q) &
+  psus_s2$N(Q)
+ =>
+  psus_s2$N(P);
+
+  ReadSets(P) &
+  psus_s2$N(P)
+ =>
+  psus_s1$N;
+
+
+
+  ModifyRawProps(P)
+ =>
+  psus_rawp2$N(P);
+
+  bsearch(?,P,Q) &
+  psus_rawp2$N(Q)
+ =>
+  psus_rawp2$N(P);
+
+  ReadRawProps(P) &
+  psus_rawp2$N(P)
+ =>
+  psus_rawp1$N;
+
+  ReadRawProps(P) &
+  ModifyRawProps(bflat(P&p))
+ =>
+  psus_rawp$N(p);
+
+  psus_rawp$N(H) &
+  psus_s$N bsmap D &
+  psus_c$N bsmap F &
+  psus_p$N bsmap H &
+  psus_es$N bsmap D
+ =>
+  psus2_seen_through_incl$N(D)(F)(H);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  psus_rawp$N(H) &
+  psus_s$N bsmap D &
+  psus_c$N bsmap F &
+  psus_p$N bsmap H &
+  psus_es$N bsmap D
+ =>
+  psus2$N;
+
+  psus1$N(?);
+
+  Bget(("ANL/",a,".",b,".anl")) &
+  CheckBitStringRewrites(N,(a.mch.anl)) &
+  psus2$N
+ =>
+  psus1$N(a.b);
+
+  ReadCurrentConstruct(a.b) &
+  ModifyRawProps(?) &
+  ModifySets(?) &
+  ModifyConsts(?) &
+  ModifyEnumSetsRename((___default_val:___default_val)) &
+  ReadSeesUsedList(L) &
+  psus1$N bsmap L &
+  Bget(("ANL/",a,".",b,".anl")) &
+  CheckBitStringRewrites(N,(a.mch.anl)) &
+  psus2$N &
+  psus_rawp1$N &
+  psus_s1$N &
+  psus_c1$N
+ =>
+  psus$N
+
+END
+
+&
+
+THEORY StoreExpandedOpX IS
+
+#define StoreExpandedOp(N) bcall(((MODR;ARI)~;StoreExpandedOpX)~:seo$N(1))
+
+  ?; /* for op name - so it doesn't get expanded
+        by JokerizedSubOpX in the case of promoted ops */
+
+  brule(StoreExpandedOpX.1,s) &
+  bcrer(ExpOpX,s(a))
+ =>
+  seo1$N(a);
+
+
+  seo$N(M);
+
+  brule(OpX.M,s(u|v|w|y|z|t)) &                 /* pre */
+  ReadCompositeRename(R) &
+  bmodr(StoreExpandedOpX.1,s) &
+  bcall((JokerizedSubOpX~;ARI~;(SUB~;SUB_seqX)~;StoreExpandedOpX;RULE):
+                                                    seo1$N([R](y|t))) &
+  seo$N(M+1)
+ =>
+  seo$N(M);
+
+  brule(OpX.M,s(u|v|w|true|z|t)) &              /* no pre */
+  ReadCompositeRename(R) &
+/***
+HERE((StoreExpandedOpX -- t))&
+PrintTHEORY(JokerizedSubOpX)&
+***/
+  bmodr(StoreExpandedOpX.1,s) &
+  bcall((JokerizedSubOpX~;ARI~;(SUB~;SUB_seqX)~;StoreExpandedOpX;RULE):
+                                                   seo1$N([R](true|t))) &
+  seo$N(M+1)
+ =>
+  seo$N(M)
+
+END
+
+&
+
+THEORY StoreOperationsX IS
+
+#define StoreOperations(x) bcall(((MAP;RULE)~;StoreOperationsX)~:so(x))
+
+  bcrer(OpX,s(u|v|w|y|z|x))
+ =>
+  so1(s;t;u;v;(w|x);(y|z));
+
+  bcrer(OpX,s(u|v|w|y|z|x))
+ =>
+  so1(s;t;u;v;(w|BEGIN x END);(y|z));
+
+  so1 bsmap a
+ =>
+  so(a);
+
+  so1(s;t;u;v;(w|x);(y|z))  /* single op */
+ =>
+  so(s;t;u;v;(w|x);(y|z))
+
+END
+
+&
+
+THEORY GetDeferredSetsConstsX IS
+
+#define GetDeferredSetsConsts(N) \
+    bcall(((FLAT;SUB;MAP;MODR)~;GetDeferredSetsConstsX)~:gdsc$N)
+
+  ModifyDeferredSetsConsts(D)
+ =>
+  gdsc6$N(D);
+
+  bsearch(___default_val,D,E) &
+  gdsc6$N(E)
+ =>
+  gdsc6$N(D);
+
+  ReadDeferredSetsConsts(D) &
+  gdsc6$N(bflat(D,L))
+ =>
+  gdsc5$N(L);
+
+  gdsc5$N(L)
+ =>
+  gdsc4$N(___default_val)(L);
+
+  gdsc5$N(L,e)
+ =>
+  gdsc4$N({e})(L);
+
+  gdsc4$N(E)(L,e)
+ =>
+  gdsc4$N(E,{e})(L);
+
+  gdsc4$N(E)(L)
+ =>
+  gdsc4$N(E,___default_val)(L);
+
+  ReadEnumSetsRename((E:M)) &
+  gdsc4$N(M)(___default_val)
+ =>
+  gdsc3$N;
+
+  ReadDeferredSetsConsts(D) &
+  bsearch(?,D,E) &
+  ModifyDeferredSetsConsts(E)
+ =>
+  gdsc2$N;
+
+  ReadDeferredSetsConsts(?) &
+  ModifyDeferredSetsConsts(___default_val)
+ =>
+  gdsc2$N;
+
+  gdsc1$N(r:s);
+
+  ReadDeferredSetsConsts(A) &
+  ModifyDeferredSetsConsts((A,r))
+ =>
+  gdsc1$N(r:r);
+
+  gdsc1$N(?:?);
+
+  gdsc1$N(___default_val:___default_val);
+
+  gdsc1$N(R:S)
+ =>
+  gdsc1$N(R,r:S,s);
+
+  gdsc1$N(R:S)
+ =>
+  gdsc1$N(R,?:S,?);
+
+  gdsc1$N(R:S)
+ =>
+  gdsc1$N(R,___default_val:S,___default_val);
+
+  ReadDeferredSetsConsts(A) &
+  ModifyDeferredSetsConsts((A,r)) &
+  gdsc1$N(R:S)
+ =>
+  gdsc1$N(R,r:S,r);
+
+  ModifyDeferredSetsConsts(?) &
+  ReadMchParamRename(P) &
+  gdsc1$N(P) &
+  ReadCompositeRename(R) &
+  ReadSets(S) &
+  ReadConsts(C) &
+  gdsc1$N(S:[R]S) &
+  gdsc1$N(C:[R]C) &
+  gdsc2$N &
+  gdsc3$N
+ =>
+  gdsc$N
+
+END
+
+&
+
+THEORY GetMchParamX IS
+
+#define GetMchParam(N) bcall(((MODR;WRITE;(SUB~;SUB_seqX)~;MAP)~;GetMchParamX)~:gmp$N)
+
+  gmp3$N(V)
+ =>
+  ___gmp3$N(V);
+
+  (a<--"deferred") == (a<--a);
+
+
+
+
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=b)))
+ =>
+  gmp9_1(a:b);
+
+  ReadSetsConstsSetToThemselves(A) &
+  ModifySetsConstsSetToThemselves((A,a)) &
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=a)))
+ =>
+  gmp9_1(a:a);
+
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=b))) &
+  gmp9_1(A:B)
+ =>
+  gmp9_1(A,a:B,b);
+
+  ReadSetsConstsSetToThemselves(L) &
+  ModifySetsConstsSetToThemselves((L,a)) &
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=a))) &
+  gmp9_1(A:B)
+ =>
+  gmp9_1(A,a:B,a);
+
+  ReadMchParamRename(R) &
+  gmp9_1(R)
+ =>
+  gmp9$N;
+
+  ReadMchParamRename((___default_val:___default_val))
+ =>
+  gmp9$N;
+
+
+
+
+  Printf(N,(" \n  %. %",m,p))
+ =>
+  gmp8$N(p,m,n);
+
+  btest(n>9) &
+  Printf(N,(" \n   %. %",m,p))
+ =>
+  gmp8$N(p,m,n);
+
+  btest(m>9) &
+  Printf(N,(" \n  %. %",m,p))
+ =>
+  gmp8$N(p,m,n);
+
+  Printf(N,(" \n  %",p))
+ =>
+  gmp8$N(p,1,1);
+
+  ReadSimplify(P) &
+  gmp8$N bnmap P &  
+  _FifoWrite_NoStore((BT_ANM_PRCD_M,"  Machine parameter input complete  ",0))
+ =>
+  gmp7$N;
+
+  ReadSimplify(P) &
+  bsearch(false,(P,?),Q) &
+  gmp8$N bnmap P &  
+  Out(N,(("\n  >>> Constraints are false! <<<\n"))) &
+  _FifoWrite_NoStore((BT_ANM_PRCD_FALSE_M,"  Machine parameter input complete  ",
+                                                        "Constraints are false!"))
+ =>
+  gmp7$N;
+
+  ReadSimplify(P) &
+  bsearch(false,(P&?),Q) &
+  gmp8$N bnmap P &  
+  Out(N,(("\n  >>> Constraints are false! <<<\n"))) &
+  _FifoWrite_NoStore((BT_ANM_PRCD_FALSE_M,"  Machine parameter input complete  ",
+                                                        "Constraints are false!"))
+ =>
+  gmp7$N;
+
+  Simplify(N,c) &
+  gmp7$N
+ =>
+  gmp6$N(c);
+
+  ReadCurrentConstruct(a.b) &
+  ReadRawParamConstr((p:c)) &
+  ReadMchParamRename((P:Q)) &
+  ReadMultiInput(V) &
+  Connect(".Bsb1") &
+  Printf(N,("% Parameter Values:\n",a)) &
+  gmp1a$N bsmap V &
+  Printf(N,(" \n \nConstraints:\n")) &
+  gmp8$N bnmap c &
+  Printf(N,(" \n \nConstraints Simplification:\n")) &
+  gmp6$N([P:=Q]c) &
+  bclose &
+  AppendFileToOutFile(".Bsb1")
+ =>
+  gmp5$N;
+
+  ModifyMchParamRename((A,a:B,b))
+ =>
+  gmp4$N(a<--(b))(A:B);
+
+  gmp4$N(V)(A,a:B,b)
+ =>
+  gmp4$N(V,(a<--(b)))(A:B);
+
+  gmp4$N(V)(a:b)
+ =>
+  gmp3$N(V,(a<--(b)));
+
+  ModifyMchParamRename((a:b))
+ =>
+  gmp3$N(a<--(b));
+
+  gmp3$N(a<--a)
+ =>
+  gmp3$N(a<--"deferred");
+
+  gmp3$N(V,(a<--a))
+ =>
+  gmp3$N(V,(a<--"deferred"));
+
+  ReadMultiInput(V) &
+  ___gmp3$N(V)
+ =>
+  gmp2$N;
+
+  Printf(N,(" \n  %",(a=b)))
+ =>
+  gmp1a$N(a<--(b));
+
+  ReadRawParamConstr((p:c)) &
+  bsearch(a,(p,?),q) &
+  bsearch((card(a):n),(c&?),d) &
+  Printf(N,(" \n      % IS DEFERRED",a))
+ =>
+  gmp1a$N(a<--a);
+
+  gmp1a$N(p<--p)
+ =>
+  gmp1a$N(p<--"deferred");
+
+  Printf(N,(" \n  %",p))
+ =>
+  gmp1$N(p);
+
+  ReadCurrentConstruct(a.b) &
+  ReadRawParamConstr((p:c)) &
+  Connect(".Bsb1") &
+  Printf(N,("% Parameter Constraints:\n",a)) &
+  gmp1$N bsmap c &
+  bclose  &
+  PreMultiInput(N,mch_param_input_type,(("Parameters for %",a)),p,c) &
+  gmp2$N &
+  gmp5$N &
+  gmp9$N
+ =>
+  gmp$N;
+
+  ReadRawParamConstr((?:?)) &
+  ModifyMchParamRename((___default_val:___default_val))
+ =>
+  gmp$N
+
+END
+
+&
+
+THEORY GetContextX IS
+
+#define GetContext(N) \
+       bcall(((FLAT;MODR;WRITE;(SUB~;SUB_seqX)~;MAP)~;GetContextX)~:gc$N)
+
+  ?; /* PropertiesSimplificationUnacceptableTemp */
+
+  ReadCurrentConstruct(a.b) &
+  PreMultiInput(N,mch_ctx_input_type,(("Context for %",a)),S,E)
+ =>
+  gc_multi_inp$N(S)(E);
+
+  bsearch(?,S,T) &
+  gc_multi_inp$N(T)(E)
+ =>
+  gc_multi_inp$N(S)(E);
+
+
+
+
+  Printf(N,(" \n  %",(a=b)))
+ =>
+  gc1a$N(a<--(b));
+
+/*** ib ***/
+ 
+  ReadConsts(S) &
+  bsearch(p,(S,?),T) &
+  ReadPropertiesSimplificationUnacceptableTemp(W) &
+  ModifyPropertiesSimplificationUnacceptableTemp((W,p)) &
+  Printf(N,(" \n  %",(p=p)))
+ =>
+  gc1a$N(p<--p);
+
+/*** ib ***/
+
+  ReadSets(S) &
+  bsearch(p,(S,?),T) &
+  Printf(N,(" \n      % IS DEFERRED",p))
+ =>
+  gc1a$N(p<--p);
+
+/*** ib **
+  ReadConsts(S) &
+  bsearch(p,(S,?),T) &
+  Printf(N,(" \n      % IS DEFERRED",p))
+ =>
+  gc1a$N(p<--p);
+
+  ReadConsts(S) &
+  bsearch(p,(S,?),T) &
+  ReadRawProps(P) &
+  bsearch((p:NAT),P,Q) & 
+  ReadPropertiesSimplificationUnacceptableTemp(W) &
+  ModifyPropertiesSimplificationUnacceptableTemp((W,p)) &
+  Printf(N,(" \n  %",(p=p)))
+ =>
+  gc1a$N(p<--p);
+
+  ReadConsts(S) &
+  bsearch(p,(S,?),T) &
+  ReadRawProps(P) &
+  bsearch((p:NAT1),P,Q) &
+  ReadPropertiesSimplificationUnacceptableTemp(W) &
+  ModifyPropertiesSimplificationUnacceptableTemp((W,p)) &
+  Printf(N,(" \n  %",(p=p)))
+ =>
+  gc1a$N(p<--p);
+*** ib ***/
+
+  gc1a$N(p<--p)
+ =>
+  gc1a$N(p<--"deferred");
+
+
+
+  Printf(N,(" \n  %",p))
+ =>
+  gc1$N(p);
+
+
+
+  (STRING={x|p}) == (STRING=STRING);
+
+  (INT={x|p}) == (INT=INT);
+
+
+
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=b)))
+ =>
+  gc10_1(a:b);
+
+  ReadSetsConstsSetToThemselves(A) &
+  ModifySetsConstsSetToThemselves((A,a)) &
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=a)))
+ =>
+  gc10_1(a:a);
+
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=b))) &
+  gc10_1(A:B)
+ =>
+  gc10_1(A,a:B,b);
+
+  ReadSetsConstsSetToThemselves(L) &
+  ModifySetsConstsSetToThemselves((L,a)) &
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=a))) &
+  gc10_1(A:B)
+ =>
+  gc10_1(A,a:B,a);
+
+  ReadConstsRename(R) &
+  gc10_1(R)
+ =>
+  gc10$N;
+
+  ReadConstsRename((___default_val:___default_val))
+ =>
+  gc10$N;
+
+
+
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=b)))
+ =>
+  gc9_1(a:b);
+
+  ReadSetsConstsSetToThemselves(A) &
+  ModifySetsConstsSetToThemselves((A,a)) &
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=a)))
+ =>
+  gc9_1(a:a);
+
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=b))) &
+  gc9_1(A:B)
+ =>
+  gc9_1(A,a:B,b);
+
+  ReadSetsConstsSetToThemselves(L) &
+  ModifySetsConstsSetToThemselves((L,a)) &
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=a))) &
+  gc9_1(A:B)
+ =>
+  gc9_1(A,a:B,a);
+
+  ReadSetsRename(R) &
+  gc9_1(R)
+ =>
+  gc9$N;
+
+  ReadSetsRename((___default_val:___default_val))
+ =>
+  gc9$N;
+
+
+  Printf(N,(" \n  %. %",m,p))
+ =>
+  gc8$N(p,m,n);
+
+  btest(n>9) &
+  Printf(N,(" \n   %. %",m,p))
+ =>
+  gc8$N(p,m,n);
+
+  btest(m>9) &
+  Printf(N,(" \n  %. %",m,p))
+ =>
+  gc8$N(p,m,n);
+
+  Printf(N,(" \n  %",p))
+ =>
+  gc8$N(p,1,1);
+
+  ReadSimplify(P) &
+  gc8$N bnmap P &  
+  _FifoWrite_NoStore((BT_ANM_PRCD_M,"  Context input complete  ",0))
+ =>
+  gc7$N;
+
+  ReadSimplify(P) &
+  bsearch(false,(P,?),Q) &
+  gc8$N bnmap P &  
+  Out(N,(("\n  >>> Context is false <<<\n"))) &
+  _FifoWrite_NoStore((BT_ANM_PRCD_FALSE_M,"  Context input complete  ",
+                                                        "Context is false"))
+ =>
+  gc7$N;
+
+  ReadSimplify(P) &
+  bsearch(false,(P&?),Q) &
+  gc8$N bnmap P &  
+  Out(N,(("\n  >>> Context is false <<<\n"))) &
+  _FifoWrite_NoStore((BT_ANM_PRCD_FALSE_M,"  Context input complete  ",
+                                                        "Context is false"))
+ =>
+  gc7$N;
+
+  Simplify(N,c) &
+  Append(".Bsb1") &
+  gc7$N
+ =>
+  gc6$N(c);
+
+
+  ReadUnaccConsts(W) &
+  bsearch(c,W,V) &
+  ModifyUnaccConsts(11,V)
+ =>
+  gc5_temp_rem_UnaccConsts1$N(c);
+
+  gc5_temp_rem_UnaccConsts1$N(?);
+
+  ReadPropertiesSimplificationUnacceptableTemp(W) &
+/***
+HERE(("TempUnacceptable":W))&
+***/
+  gc5_temp_rem_UnaccConsts1$N bsmap W
+ =>
+  gc5_temp_rem_UnaccConsts$N;
+
+  ReadCurrentConstruct(a.b) &
+  ReadRawProps(T) &
+  ReadMchParamRename((A:B)) &
+  ReadSetsRename((P:Q)) &
+  ReadConstsRename((g:h)) &
+  ReadEnumSetsRename((M:K)) &
+  ReadMultiInput(V) &
+  ReadUnaccConsts(J) &
+  Connect(".Bsb1") &
+  Printf(N,("% Context Values:\n",a)) &
+  gc1a$N bsmap V &
+  Printf(N,(" \n \nProperties:\n")) &
+  [M:=K][A:=B](gc8$N bnmap T) &
+  Printf(N,(" \n \nProperties Simplification:\n")) &
+  gc5_temp_rem_UnaccConsts$N &
+  gc6$N([P:=Q][g:=h][M:=K][A:=B]T) &
+  bclose &
+  AppendFileToOutFile(".Bsb1") &
+  ModifyUnaccConsts(12,J)
+ =>
+  gc5$N;
+
+
+/*
+/?  might be enumerated element
+  ReadConstants(C) &
+  bsearch(a,(C,?),D) &
+?/
+  ModifyConstsRename((A,a:B,b))
+ =>
+  gc4$N(a<--(b))(A:B);
+
+  ReadSets(S) &
+  bsearch(a,(S,?),T) &
+  ModifySetsRename((A,a:B,b))
+ =>
+  gc4$N(a<--(b))(A:B);
+
+  gc4$N(V)(A,a:B,b)
+ =>
+  gc4$N(V,(a<--(b)))(A:B);
+*/
+
+
+  gc3_e$N;
+
+  ReadEnumSetsRename((A:B)) &
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ModifyEnumSetsRename((C:D))
+ =>
+  gc3_e$N;
+
+  gc3_c$N;
+
+  ReadConstsRename((A:B)) &
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ModifyConstsRename((C:D))
+ =>
+  gc3_c$N;
+
+  gc3_s$N;
+
+  ReadSetsRename((A:B)) &
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ModifySetsRename((C:D))
+ =>
+  gc3_s$N;
+
+ 
+  ReadConstsRename((A:B)) &
+  ModifyConstsRename((A,a:B,b)) &
+  gc3$N(V)
+ =>
+  gc3$N(V,(a<--(b)));
+
+  ReadSets(S) &
+  bsearch(a,(S,?),T) &
+  ReadSetsRename((A:B)) &
+  ModifySetsRename((A,a:B,b)) &
+  gc3$N(V)
+ =>
+  gc3$N(V,(a<--(b)));
+
+  ReadConstsRename((A:B)) &
+  ModifyConstsRename((A,a:B,b))
+ =>
+  gc3$N(a<--(b));
+
+  ReadSets(S) &
+  bsearch(a,(S,?),T) &
+  ReadSetsRename((A:B)) &
+  ModifySetsRename((A,a:B,b))
+ =>
+  gc3$N(a<--(b));
+
+  gc3$N(a<--a)
+ =>
+  gc3$N(a<--"deferred");
+
+  gc3$N(V,(a<--a))
+ =>
+  gc3$N(V,(a<--"deferred"));
+
+  ReadMultiInput(V) &
+  gc3$N(V)
+ =>
+  gc2$N;
+
+
+  ReadBoundVars(D) &
+  ReadUnaccConsts(U) &
+  ReadCurrentConstruct(a.b) &
+  ReadMchParamRename((A:B)) &
+  ReadEnumSetsRename((M:K)) &
+  ReadSets(S) &
+  ReadConsts(C) &
+  ReadRawProps(P) &
+  ReadEqualityProps(E) &
+  ModifyConstsRename((___default_val:___default_val)) &
+  ModifySetsRename((___default_val:___default_val)) &
+  ModifyBoundVars(bflat(D,S,C)) &
+  ModifyUnaccConsts(13,bflat(U,S,C)) &
+  AdjustUnaccConstForMchParam &
+  Connect(".Bsb1") &
+  Printf(N,("% Context Properties:\n",a)) &
+  gc1$N bsmap P &
+  bclose &
+  [M:=K][A:=B](gc_multi_inp$N(bflat(S,C))(E)) &
+  gc2$N &
+  gc5$N &
+  gc3_s$N &
+  gc3_c$N &
+  gc3_e$N &
+  ModifyBoundVars(D) &
+  ModifyUnaccConsts(14,U) &
+  gc9$N &
+  gc10$N
+ =>
+  gc$N;
+
+  ReadConsts(?) &
+  ReadSets(?) &
+  ModifyConstsRename((___default_val:___default_val)) &
+  ModifySetsRename((___default_val:___default_val))
+ =>
+  gc$N
+
+END
+
+&
+
+THEORY RemDupFromContextX IS
+
+#define RemDupFromContext(N) bcall(((MAP)~;RemDupFromContextX)~:rdfc$N)
+
+
+  rdfc_e1$N;
+
+  ReadEqualityProps(C) &
+  bsearch(?,C,D) &
+  ModifyEqualityProps(D)
+ =>
+  rdfc_e1$N;
+
+  ReadEqualityProps(C) &
+  ModifyEqualityProps((C,c))
+ =>
+  rdfc_e$N(c);
+
+  ReadEqualityProps(C) &
+  bsearch(c,C,D)
+ =>
+  rdfc_e$N(c);
+
+
+  rdfc_p1$N;
+
+  ReadRawProps(C) &
+  bsearch(?,C,D) &
+  ModifyRawProps(D)
+ =>
+  rdfc_p1$N;
+
+  ReadRawProps(C) &
+  ModifyRawProps((C,c))
+ =>
+  rdfc_p$N(c);
+
+  ReadRawProps(C) &
+  bsearch(c,C,D)
+ =>
+  rdfc_p$N(c);
+
+
+  rdfc_s1$N;
+
+  ReadSets(C) &
+  bsearch(?,C,D) &
+  ModifySets(D)
+ =>
+  rdfc_s1$N;
+
+  ReadSets(C) &
+  ModifySets((C,c))
+ =>
+  rdfc_s$N(c);
+
+  ReadSets(C) &
+  bsearch(c,C,D)
+ =>
+  rdfc_s$N(c);
+
+
+  rdfc_c1$N;
+
+  ReadConsts(C) &
+  bsearch(?,C,D) &
+  ModifyConsts(D)
+ =>
+  rdfc_c1$N;
+
+  ReadConsts(C) &
+  ModifyConsts((C,c))
+ =>
+  rdfc_c$N(c);
+
+  ReadConsts(C) &
+  bsearch(c,C,D)
+ =>
+  rdfc_c$N(c);
+
+
+  ReadConsts(C) &
+  ModifyConsts(?) &
+  rdfc_c$N bsmap C &
+  rdfc_c1$N &
+  ReadSets(S) &
+  ModifySets(?) &
+  rdfc_s$N bsmap S &
+  rdfc_s1$N &
+  ReadRawProps(P) &
+  ModifyRawProps(?) &
+  rdfc_p$N bsmap P &
+  rdfc_p1$N &
+  ReadEqualityProps(E) &
+  ModifyEqualityProps(?) &
+  rdfc_e$N bsmap E &
+  rdfc_e1$N
+ =>
+  rdfc$N
+
+END
+
+&
+
+THEORY GetSelectedOpX IS
+
+#define GetSelectedOp(N) bcall(((WRITE;ARI)~;GetSelectedOpX)~:gso$N)
+
+  0; /* LastOpFromUtilities */
+#define ModifyLastOpNotFromUtilities  bcall(MODR:bmodr(GetSelectedOpX.1,0))
+#define ModifyLastOpFromUtilities     bcall(MODR:bmodr(GetSelectedOpX.1,1))
+#define LastOpFromUtilities           brule(GetSelectedOpX.1,1)
+
+
+
+  brule(OpX.M,(s(u|v|w|y|z|t))) &      /* amn op */
+  ModifySelectedOp(s(u|v|w|y|z|t))
+ =>
+  gso2$N(s);
+
+
+
+                                     /******/
+  /*** numbers hardwired into BMotif.c (search for fifo_write_buf, "106" ) ***/
+
+  ModifyLastOpFromUtilities &
+  ModifySelectedOp(ini)              /* save ini state */
+ =>
+  gso2$N(1);
+
+  ModifySelectedOp(ri)               /* restore initial state */
+ =>
+  gso2$N(3);
+
+  ModifySelectedOp(un)               /* undo */
+ =>
+  gso2$N(2);
+
+  ModifySelectedOp(ra)               /* restart */
+ =>
+  gso2$N(4);
+
+  ModifyLastOpFromUtilities &
+  ModifySelectedOp(et)               /* edit theory */
+ =>
+  gso2$N(5);
+
+  ModifySelectedOp(ssv)              /* set state variables */
+ =>
+  gso2$N(6);
+
+  /*** numbers hardwired into BMotif.c (search for fifo_write_buf, "106" ) ***/
+                                     /******/
+
+
+  ReadData(s) &
+  SetDontDisplayInvariant &
+  gso2$N(s)
+ =>
+  gso1$N;
+
+  ReadData(s.1) &
+  SetDisplayInvariant &
+  gso2$N(s)
+ =>
+  gso1$N;
+
+  ReadData(m) &
+  btest(m<=5) &
+  SetDontDisplayInvariant &
+  gso2$N(m)
+ =>
+  gso1$N;
+
+  ReadData(m) &
+  btest(m>100) &
+  SetDisplayInvariant &
+  gso2$N(m-100)
+ =>
+  gso1$N;
+
+
+
+  ReadData(0) &                    /* quit */
+  ReadCurrentConstruct(a.b) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_FINI:0)) &
+  LoadToolkit(1)
+ =>
+  gso1$N;
+
+                 /*** util menu ***/
+
+  _FifoWrite_Store((BT_ANM_GET_OP_M,0,0),(PromptUserX.1)) &     /* main menu */
+  gso1$N
+ =>
+  gso$N;
+
+                 /*** main menu ***/
+
+  LastOpFromUtilities &
+  ModifyLastOpNotFromUtilities &
+  _FifoWrite_Store((BT_ANM_UTILS_M,0,0),(PromptUserX.1)) &     /* utils menu */
+  gso1$N
+ =>
+  gso$N
+
+END
+
+&
+
+THEORY ExeFiniX IS
+
+#define ExeAutoFini(N) bcall(((MODR;MAP)~;ExeFiniX)~:eaf$N)
+#define ExeStepFini(N) bcall(((MODR)~;ExeFiniX)~:esf$N)
+
+  ?;
+
+  proc_assert_fini$N;
+
+  brule(ExeFiniX.1,A) &
+  bsearch(?,A,B) &
+  bmodr(ExeFiniX.1,B)
+ =>
+  proc_assert_fini$N;
+
+  brule(ExeFiniX.1,A) &
+  bmodr(ExeFiniX.1,(A;m;a;b;c))
+ =>
+  proc_assert$N((a,b,c),m,n);
+
+  proc_assert$N((a,b,true),m,n);
+
+  ReadCurrentConstruct(a.b) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_EXE_AUTO_FINI:1)) & /* At least one assertion did not ... */
+  LoadToolkit(1)
+ =>
+  eaf1$N;
+
+  ReadCurrentConstruct(a.b) &
+  brule(ExeFiniX.1,?) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_EXE_AUTO_FINI:0)) & /* All assertions evaluated to true */
+  LoadToolkit(1)
+ =>
+  eaf1$N;
+
+  Writef(("\n\n  Execute Auto complete\n")) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_EXE_AUTO_FINI:2)) & /* No assertions in Animate Script */
+  LoadToolkit(1)
+ =>
+  eaf$N;
+
+  Writef(("\n\n  Execute Auto complete\n")) &
+  ReadAssertionTripleList(L) &
+  bsearch(?,L,M) &
+  bmodr(ExeFiniX.1,?) &
+  proc_assert$N bnmap (M) &
+  proc_assert_fini$N &
+  eaf1$N
+ =>
+  eaf$N;
+
+  Writef(("\n\n  Execute Auto complete\n")) &
+  ReadAssertionTripleList((?&(a,b,c))) &
+  bmodr(ExeFiniX.1,?) &
+  proc_assert$N((a,b,c),1,1) &
+  proc_assert_fini$N &
+  eaf1$N
+ =>
+  eaf$N;
+
+  Writef(("\n\n  Execute Step complete\n")) &
+  ReadCurrentConstruct(a.b) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_EXE_STEP_FINI:0)) &
+  LoadToolkit(1)
+ =>
+  esf$N
+
+END
+
+&
+
+THEORY AnimatorExeLoopX IS
+
+#define AnimatorExeLoop(N) \
+            bcall((((SUB~;SUB_seqX)~;WRITE;ARI;REV;MAP)~;AnimatorExeLoopX)~:ael$N)
+
+  ?;  /* 1. for BT_ANM_GET_EXE_STEP_M */
+
+  ?;  /* 2. ExeStepBranchLocVar */
+
+
+
+  /***
+  no input/output (might be a precondition)
+  ***/
+
+  ReadSimplify(P) &
+  ModifyOpActualPre(P)
+ =>
+  ael5$N(s);
+
+
+
+  ResetAutoExecution &
+  Out(N,(("\n  >>> % - not a valid operation <<<\n",s))) &
+  ModifySelectedOp(op_abort) &
+  AbortExe(N)
+ =>
+  ael3$N(s);
+
+
+
+
+  /***
+  _set_state_variables
+  ***/
+
+  IsExecution &
+  ModifySelectedOp(ssv)
+ =>
+  ael3$N(_set_state_variables);
+
+
+
+  /***
+  Assertion
+  ***/
+
+  ReadSimplify(v) &
+  ReadAssertionTripleList(L) &
+  ModifyAssertionTripleList((L&(a,b,v))) &
+  Out(N,(("%\n\n",bsrv Assertion berv))) &
+  Out(N,(("  {%}\n    %\n    %\n",a,b,v)))
+ =>
+  ael_assert$N(a)(b);
+
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  ReadSelectedOp(s(u|v|w|y|z|t)) &
+  ReadOpOutput(X) &
+  Simplify(N,[v:=X][V:=S]a) &
+  ael_assert$N(a)([v:=X][V:=S]a)
+ =>
+  ael3$N({a});
+
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  ReadSelectedOp(s(u|?|w|y|z|t)) &       /* no output */
+  Simplify(N,[V:=S]a) &
+  ael_assert$N(a)([V:=S]a)
+ =>
+  ael3$N({a});
+
+
+
+
+  brule(AnimatorExeLoopX.1,1) &
+  brule(OpX.M,(s(?|?|w|y|z|t))) &        /* amn op */
+  ModifySelectedOp(s(?|?|w|y|z|t)) &
+  ReadCompositeRename(C) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  ModifyOpInputRename((___default_val:=___default_val)) &
+  ModifyOpCurrPre(([V:=S][C]w)) &
+  ModifyOpCalcPre(([V:=S][C]y)) &
+  Simplify(N,[V:=S]w) &
+  ael5$N(s)
+ =>
+  ael3$N(s);
+
+
+
+  /***
+  input only
+  ***/
+
+  ReadSimplify(P) &
+  ModifyOpActualPre(P)
+ =>
+  ael5$N(s(i));
+
+  ReadOpInputRename(R) &
+  ReadOpCurrPre(p) &
+  ReadOpCalcPre(q) &
+  ModifyOpCalcPre(([R]q)) &
+  Simplify(N,[R]p) &
+  ael5$N(s(i))
+ =>
+  ael4$N(s(i));
+
+  brule(AnimatorExeLoopX.1,1) &
+  brule(OpX.M,(s(u|?|w|y|z|t))) &      /* amn op */
+  ModifySelectedOp(s(u|?|w|y|z|t)) &
+  ReadCompositeRename(C) &
+  ModifyOpInputRename((u:=i)) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  ReadBoundVars(B) &
+  ReadUnaccConsts(U) &
+  ModifyBoundVars(bflat(B,u)) &
+  ModifyUnaccConsts(15,bflat(U,u)) &
+  ModifyOpCurrPre(([V:=S][C]w)) &
+  ModifyOpCalcPre(([V:=S][C]y)) &
+  ael4$N(s(i))
+ =>
+  ael3$N(s(i));
+
+
+  /***
+  output only (might be a precondition)
+  ***/
+
+  ReadSimplify(P) &
+  ModifyOpActualPre(P)
+ =>
+  ael5$N(o<--s);
+
+  brule(AnimatorExeLoopX.1,1) &
+  brule(OpX.M,(s(?|v|w|y|z|t))) &
+  ModifySelectedOp(s(?|v|w|y|z|t)) &
+  ReadCompositeRename(C) &
+  ModifyOpInputRename((___default_val:=___default_val)) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  ModifyOpCurrPre(([V:=S][C]w)) &
+  ModifyOpCalcPre(([V:=S][C]y)) &
+  Simplify(N,[V:=S]w) &
+  ael5$N(o<--s)
+ =>
+  ael3$N(o<--s);
+
+
+
+  /***
+  input and output
+  ***/
+
+  ReadSimplify(P) &
+  ModifyOpActualPre(P)
+ =>
+  ael5$N(o<--s(i));
+
+  ReadOpInputRename(R) &
+  ReadOpCurrPre(p) &
+  ReadOpCalcPre(q) &
+  ModifyOpCalcPre(([R]q)) &
+  Simplify(N,[R]p) &
+  ael5$N(s(i))
+ =>
+  ael4$N(o<--s(i));
+
+  brule(AnimatorExeLoopX.1,1) &
+  brule(OpX.M,(s(u|v|w|y|z|t))) &
+  ReadCompositeRename(C) &
+  ModifySelectedOp(s(u|v|w|y|z|t)) &
+  ModifyOpInputRename((u:=i)) &
+  ReadStateVarNames(V) &
+  ReadCurrValState(S) &
+  ReadBoundVars(B) &
+  ReadUnaccConsts(U) &
+  ModifyBoundVars(bflat(B,u)) &
+  ModifyUnaccConsts(16,bflat(U,u)) &
+  ModifyOpCurrPre(([V:=S][C]w)) &
+  ModifyOpCalcPre(([V:=S][C]y)) &
+  ael4$N({o}<--s(i))
+ =>
+  ael3$N(o<--s(i));
+
+
+  
+  ModifySelectedOp(un)
+ =>
+  ael3$N(undo);
+
+  ael2$N(i);
+
+  brule(AnimatorExeLoopX.1,0) &
+  ReadAnimateFilename(f) &
+  Out(N,("\n  % : Execution Aborted\n",f)) &
+  ReadCurrentConstruct(a.b) &
+  GetJobs(X) &
+  AddJob(X,(a.b:BT_ANM_FINI:0)) &
+  LoadToolkit(1)
+ =>
+  ael2$N(i);
+
+  brule(AnimatorExeLoopX.1,1) &
+  ael3$N(i) &
+  DisplaySelectedOpAfterInput(N) &
+  ClearNoGuardEvaluatesTrue &
+  ProcessSelectedOp(N) &
+  ReportOpPerformed(N) &
+  CheckNoGuardEvaluatesTrue(N) &
+  StoreStateVarsChanged(N) &
+  DisplayOpOutput(N) &
+  DisplayStateModifyStateHistory(N) &
+  DisplayInvariant(N) &
+  ResetAssertion &
+  Out(N,((Line))) &
+  ael$(N+1)
+ =>
+  ael2$N(i);
+
+
+
+  ModifyExeStepBranchLocVar(?) &
+  ael2$N(s)
+ =>
+  ael2_0$N(s);
+
+  SetAssertion &
+  ModifyExeStepBranchLocVar(?) &
+  ael2$N({p})
+ =>
+  ael2_0$N({p});
+
+  ModifyExeStepBranchLocVar(?) &
+  ael2$N(s(i))
+ =>
+  ael2_0$N(s(i));
+
+  ModifyExeStepBranchLocVar(?) &
+  ael2$N(o<--s)
+ =>
+  ael2_0$N(o<--s);
+
+  ModifyExeStepBranchLocVar(?) &
+  ael2$N(o<--s(i))
+ =>
+  ael2_0$N(o<--s(i));
+
+
+  ModifyExeStepBranchLocVar(brev(b;?)) &
+  ael2$N(s)
+ =>
+  ael2_0$N(s : b);
+
+  ModifyExeStepBranchLocVar(brev(b;?)) &
+  ael2$N(s(i))
+ =>
+  ael2_0$N(s(i) : b);
+
+  ModifyExeStepBranchLocVar(brev(b;?)) &
+  ael2$N(o<--s)
+ =>
+  ael2_0$N(o<--s : b);
+
+  ModifyExeStepBranchLocVar(brev(b;?)) &
+  ael2$N(o<--s(i))
+ =>
+  ael2_0$N(o<--s(i) : b);
+
+
+  _FifoWrite_Store((BT_ANM_GET_EXE_STEP_M,i,0),(AnimatorExeLoopX.1)) &
+  ael2_0$N(i) &
+  DisplaySelectedOpAfterInput(N)
+ =>
+  ael1$N(i);
+
+  IsAutoExecution &
+  bcall(MODR:bmodr(AnimatorExeLoopX.1,1)) &
+  ael2_0$N(i) &
+  DisplaySelectedOpAfterInput(N)
+ =>
+  ael1$N(i);
+
+
+
+  ReadOPERATIONS((i)) &
+  ModifyOPERATIONS(?) &
+/* V 5.1.3
+  ReadSetsConstsEnumElem(D) &  ModifyBoundVars(D) &           
+*/
+  ReadUnacceptableConstsList(U) &
+ModifyBoundVars(U) &          /* V 5.1.3 clean it every time */
+  ModifyUnaccConsts(17,U) &
+  ModifyBranchLocVarList(?) &
+  ael1$N(i)
+ =>
+  ael$N;
+
+  ReadOPERATIONS((I;i)) &
+  ModifyOPERATIONS(I) &
+/* V 5.1.3
+  ReadSetsConstsEnumElem(D) &  ModifyBoundVars(D) &   
+*/
+  ReadUnacceptableConstsList(U) &
+ModifyBoundVars(U) &          /* V 5.1.3 clean it every time */
+  ModifyUnaccConsts(18,U) &
+  ModifyBranchLocVarList(?) &
+  ael1$N(i)
+ =>
+  ael$N;
+
+  IsAutoExecution &
+  ReadOPERATIONS((i)) &
+  Writef((".")) &
+  ModifyOPERATIONS(?) &
+/* V 5.1.3
+  ReadSetsConstsEnumElem(D) &  ModifyBoundVars(D) &           
+*/
+  ReadUnacceptableConstsList(U) &
+ModifyBoundVars(U) &          /* V 5.1.3 clean it every time */
+  ModifyUnaccConsts(19,U) &
+  ModifyBranchLocVarList(?) &
+  ael1$N(i)
+ =>
+  ael$N;
+
+  IsAutoExecution &
+  ReadOPERATIONS((I;i)) &
+  Writef((".")) &
+  ModifyOPERATIONS(I) &
+/* V 5.1.3
+  ReadSetsConstsEnumElem(D) &  ModifyBoundVars(D) &           
+*/
+  ReadUnacceptableConstsList(U) &
+ModifyBoundVars(U) &          /* V 5.1.3 clean it every time */
+  ModifyUnaccConsts(20,U) &
+  ModifyBranchLocVarList(?) &
+  ael1$N(i)
+ =>
+  ael$N;
+
+  ReadOPERATIONS(?)
+ =>
+  ael$N
+
+END
+
+&
+
+THEORY ParseScriptX IS
+
+#define ParseScript(N,x,y) \
+      bcall((MAP;(CATL;FLAT~;MODR;REV;NEWV)~;ParseScriptX)~:ps$N(x)(y))
+
+  ?; /* 1. AnimateFilename */
+
+  ?; /* 2. ScriptError */
+#define ClearScriptError bmodr(ParseScriptX.2,0)
+#define SetScriptError   bmodr(ParseScriptX.2,1)
+#define ScriptError      brule(ParseScriptX.2,1)
+
+  ?; /* 3. Script_SETS */
+#define ModifyScript_SETS(x) bmodr(ParseScriptX.3,x)
+#define ReadScript_SETS(x)   brule(ParseScriptX.3,x)
+
+  ?; /* 4. Script_CONSTS */
+#define ModifyScript_CONSTS(x) bmodr(ParseScriptX.4,x)
+#define ReadScript_CONSTS(x)   brule(ParseScriptX.4,x)
+
+  ?; /* 5. Script_PARAMS */
+#define ModifyScript_PARAMS(x) bmodr(ParseScriptX.5,x)
+#define ReadScript_PARAMS(x)   brule(ParseScriptX.5,x)
+
+  ?; /* 6. Script_ENUM_SETS */
+#define ModifyScript_ENUM_SETS(x) bmodr(ParseScriptX.6,x)
+#define ReadScript_ENUM_SETS(x)   brule(ParseScriptX.6,x)
+
+  ?; /* 7. Script_STATE */
+#define ModifyScript_STATE(x) bmodr(ParseScriptX.7,x)
+#define ReadScript_STATE(x)   brule(ParseScriptX.7,x)
+
+  ?; /* 8. Script_OPERATIONS */
+#define ModifyScript_OPERATIONS(x) bmodr(ParseScriptX.8,x)
+#define ReadScript_OPERATIONS(x)   brule(ParseScriptX.8,x)
+
+
+  ResetAutoExecution &
+  Out(N,("\n  Syntax error in ")) &
+  Out(N,(S)) &
+  Out(N,("_VALUES clause\n\n    %\n\n  Each _VALUES clause entry should be of the form\n\n",bsrv x berv)) &
+  Out(N,("    `identifier = value'\n\n  separated by semi-colons\n")) &
+  SetScriptError
+ =>
+  ps_chk_VALUE_entry_error(S)(x);
+
+  ResetAutoExecution &
+  Out(N,("\n  Syntax error in OPERATIONS clause\n\n    %\n\n  Each entry should be one of:\n\n    an operation call (optionally containing a\n    branch/local_vars entry)\n\n    a `_set_state_variables' operation (containing\n    a comma-separated list of equalties or a `?'\n    in the case of stateless machines)\n\n    a predicate\n\n  Each entry should be separated by a semi-colon\n", bsrv x berv)) &
+  SetScriptError
+ =>
+  ps_chk_OPERATIONS_error(x);
+
+
+
+
+  ps_chk_ini_op1(I)(E);
+
+  bsearch((I),(E;?),F) &
+  ResetAutoExecution &
+  Out(N,("\n  Error in OPERATIONS clause - the initialisation:\n\n    %\n\n  may appear once only,\n  as the first OPERATIONS entry\n",bsrv I berv)) &
+  SetScriptError  
+ =>
+  ps_chk_ini_op1(I)(E);
+
+  bsearch((I:p),(E;?),F) &
+  ResetAutoExecution &
+  Out(N,("\n  Error in OPERATIONS clause - the initialisation:\n\n    %\n\n  may appear once only,\n  as the first OPERATIONS entry\n",bsrv I berv)) &
+  SetScriptError  
+ =>
+  ps_chk_ini_op1(I)(E);
+
+  ps_chk_ini_op1(I)(E)
+ =>
+  ps_chk_ini_op(I)(E;e);
+
+
+
+  ResetAutoExecution &
+  Out(N,("\n  Error in OPERATIONS clause:\n\n    %\n\n  The first entry should be the initialisation\n\n    %\n\n  or the operation\n\n    _set_state_variables\n",bsrv e berv,I)) &
+  SetScriptError
+ =>
+  ps_chk_1st_op(I)(E;e);
+
+  ps_chk_1st_op(I)(E;I);
+
+  ps_chk_1st_op(I)(E;I:p);
+
+  ps_chk_1st_op(I)(E;_set_state_variables:p);
+
+
+
+  ps_chk_OPERATIONS_error(e)
+ =>
+  ps_chk_OPERATIONS5$N(e);
+
+  ps_chk_OPERATIONS5$N(loc_vars(v));
+
+  ps_chk_OPERATIONS5$N(branch(n));
+
+  ps_chk_OPERATIONS_error(V)
+ =>
+  ps_chk_OPERATIONS4_1$N(V);
+
+  ps_chk_OPERATIONS4_1$N((a=b));
+
+  ps_chk_OPERATIONS4_1$N(V)
+ =>
+  ps_chk_OPERATIONS4_1$N(V,(a=b));
+
+  ps_chk_OPERATIONS_error(e)
+ =>
+  ps_chk_OPERATIONS4$N(e);
+
+  ps_chk_OPERATIONS5$N(e)
+ =>
+  ps_chk_OPERATIONS4$N(e);
+
+  ps_chk_OPERATIONS4$N(E) &
+  ps_chk_OPERATIONS5$N(e)
+ =>
+  ps_chk_OPERATIONS4$N(E;e);
+
+  ps_chk_OPERATIONS_error(e)
+ =>
+  ps_chk_OPERATIONS3$N(e);
+
+  bident(n)
+ =>
+  ps_chk_OPERATIONS3$N(n);
+
+  bident(n)
+ =>
+  ps_chk_OPERATIONS3$N(n(i));
+
+  bident(n)
+ =>
+  ps_chk_OPERATIONS3$N(o<--n);
+
+  bident(n)
+ =>
+  ps_chk_OPERATIONS3$N(o<--n(i));
+
+  ps_chk_OPERATIONS3$N(e)
+ =>
+  ps_chk_OPERATIONS2$N(e);
+
+  ps_chk_OPERATIONS3$N(e) &
+  ps_chk_OPERATIONS4$N(v)
+ =>
+  ps_chk_OPERATIONS2$N(e:v);
+
+  ps_chk_OPERATIONS4_1$N(v)
+ =>
+  ps_chk_OPERATIONS2$N(_set_state_variables:v);
+
+  ps_chk_OPERATIONS2$N(_set_state_variables:?);
+
+  ps_chk_OPERATIONS2$N({p});
+
+  ps_chk_OPERATIONS_error(e)
+ =>
+  ps_chk_OPERATIONS1$N(e);
+
+  ps_chk_OPERATIONS2$N(e)
+ =>
+  ps_chk_OPERATIONS1$N(e);
+
+  ps_chk_OPERATIONS1$N(E) &
+  ps_chk_OPERATIONS2$N(e)
+ =>
+  ps_chk_OPERATIONS1$N(E;e);
+
+  ReadScript_OPERATIONS(E) &
+  ReadCurrentConstruct(a.b) &
+  ps_chk_OPERATIONS1$N(E) &
+  ps_chk_1st_op(bnewv(INI_,a))(brev(E;?)) &
+  ps_chk_ini_op(bnewv(INI_,a))(brev(E;?))
+ =>
+  ps_chk_OPERATIONS$N;
+
+  ReadScript_OPERATIONS(?)
+ =>
+  ps_chk_OPERATIONS$N;
+
+
+
+
+  ps_chk_VALUE_entry_error(S)(x)
+ =>
+  ps_chk_VALUE_entry(S)(x);
+
+  ps_chk_VALUE_entry_error(S)(x)
+ =>
+  ps_chk_VALUE_entry(S)(L;x);
+
+  ps_chk_VALUE_entry_error(S)(L JOK2 (a=b))
+ =>
+  ps_chk_VALUE_entry(S)(L JOK2 (a=b));
+
+  ps_chk_VALUE_entry_error(S)(L&(a=b))
+ =>
+  ps_chk_VALUE_entry(S)(L&(a=b));
+
+  ps_chk_VALUE_entry_error(S)(L,(a=b))
+ =>
+  ps_chk_VALUE_entry(S)(L,(a=b));
+
+
+  bident(a)
+ =>
+  ps_chk_VALUE_entry(S)(a=b);
+
+  bident(a) &
+  ps_chk_VALUE_entry(S)(L)
+ =>
+  ps_chk_VALUE_entry(S)(L;(a=b));
+
+  ps_chk_VALUE_entry(S)(?);
+
+
+
+  ResetAutoExecution &
+  Out(N,("\n  ANIMATE syntax error\n\n    %\n",bsrv x berv)) &
+  SetScriptError
+ =>
+  ps_chk_syntax$N(x);
+
+  ResetAutoExecution &
+  Out(N,("\n  Bad filename %\n",bsrv a.i berv)) &
+  SetScriptError
+ =>
+  ps_chk_syntax$N(a.i);
+
+  ReadCurrentConstruct(a.b)
+ =>
+  ps_chk_syntax$N(a.i.anm);
+
+  ModifyScript_PARAMS(Y) &
+  ps_chk_VALUE_entry("PARAMETER")(Y) &
+  ps_chk_syntax$N(X)
+ =>
+  ps_chk_syntax$N(X PARAMETER_VALUES Y);
+
+  ModifyScript_CONSTS(Y) &
+  ps_chk_VALUE_entry("CONSTANTS")(Y) &
+  ps_chk_syntax$N(X)
+ =>
+  ps_chk_syntax$N(X CONSTANTS_VALUES Y);
+
+  ModifyScript_SETS(Y) &
+  ps_chk_VALUE_entry("SETS")(Y) &
+  ps_chk_syntax$N(X)
+ =>
+  ps_chk_syntax$N(X SETS_VALUES Y);
+
+  ModifyScript_ENUM_SETS(Y) &
+  ps_chk_VALUE_entry("ENUM_SETS")(Y) &
+  ps_chk_syntax$N(X)
+ =>
+  ps_chk_syntax$N(X ENUM_SETS_VALUES Y);
+
+  ModifyScript_OPERATIONS(Y) &
+  ps_chk_syntax$N(X) &
+  ps_chk_OPERATIONS$N
+ =>
+  ps_chk_syntax$N(X OPERATIONS Y);
+
+  ps_chk_syntax$N(X)
+ =>
+  ps_chk_syntax$N(ANIMATE X END);
+
+
+
+
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ModifyMchParamRename((C:D))
+ =>
+  ps4_PARAMS_rename1$N(A:B);
+
+  ps4_PARAMS_rename1$N(A,a:B,b)
+ =>
+  ps3_PARAMS_rename1$N(a=b)(A:B);
+
+  ps3_PARAMS_rename1$N(V)(A,a:B,b)
+ =>
+  ps3_PARAMS_rename1$N(V;(a=b))(A:B);
+
+  ReadScript_PARAMS(V) &
+  ps3_PARAMS_rename1$N(V)(___default_val:___default_val)
+ =>
+  ps3_PARAMS_rename$N;
+
+  ReadScript_PARAMS(?) &
+  ModifyMchParamRename((___default_val:___default_val))
+ =>
+  ps3_PARAMS_rename$N;
+
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ModifyEnumSetsRename((C:D))
+ =>
+  ps4_ENUM_SETS_rename1$N(A:B);
+
+  ps4_ENUM_SETS_rename1$N(A,a:B,b)
+ =>
+  ps3_ENUM_SETS_rename1$N(a=b)(A:B);
+
+  ps3_ENUM_SETS_rename1$N(V)(A,a:B,b)
+ =>
+  ps3_ENUM_SETS_rename1$N(V;(a=b))(A:B);
+
+  ReadScript_ENUM_SETS(V) &
+  ps3_ENUM_SETS_rename1$N(V)(___default_val:___default_val)
+ =>
+  ps3_ENUM_SETS_rename$N;
+
+  ReadScript_ENUM_SETS(?) &
+  ModifyEnumSetsRename((___default_val:___default_val))
+ =>
+  ps3_ENUM_SETS_rename$N;
+
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ModifyConstsRename((C:D)) &
+  ModifyConsts(C)
+ =>
+  ps4_CONSTS_rename1$N(A:B);
+
+  ps4_CONSTS_rename1$N(A,a:B,b)
+ =>
+  ps3_CONSTS_rename1$N(a=b)(A:B);
+
+  ps3_CONSTS_rename1$N(V)(A,a:B,b)
+ =>
+  ps3_CONSTS_rename1$N(V;(a=b))(A:B);
+
+  ReadScript_CONSTS(V) &
+  ps3_CONSTS_rename1$N(V)(___default_val:___default_val)
+ =>
+  ps3_CONSTS_rename$N;
+
+  ReadScript_CONSTS(?) &
+  ModifyConstsRename((___default_val:___default_val))
+ =>
+  ps3_CONSTS_rename$N;
+
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ModifySetsRename((C:D)) &
+  ModifySets(C)
+ =>
+  ps4_SETS_rename1$N(A:B);
+
+  ps4_SETS_rename1$N(A,a:B,b)
+ =>
+  ps3_SETS_rename1$N(a=b)(A:B);
+
+  ps3_SETS_rename1$N(V)(A,a:B,b)
+ =>
+  ps3_SETS_rename1$N(V;(a=b))(A:B);
+
+  ReadScript_SETS(V) &
+  ps3_SETS_rename1$N(V)(___default_val:___default_val)
+ =>
+  ps3_SETS_rename$N;
+
+  ReadScript_SETS(?) &
+  ModifySetsRename((___default_val:___default_val))
+ =>
+  ps3_SETS_rename$N;
+
+
+
+  ModifyCompositeRename((A:=B)) &
+  ReadInvariant(I) &
+  bcall((SUB~;SUB_seqX)~:[A:=B](ModifyInvariant(I)))
+ =>
+  ps3_comp_rename1$N(A:=B);
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  ps3_comp_rename1$N(C:=D)
+ =>
+  ps3_comp_rename1$N(A:=B);
+
+  ReadMchParamRename((S:T)) &
+  ReadConstsRename((K:L)) &
+  ReadSetsRename((A:B)) &
+  ReadEnumSetsRename((M:P)) &
+  ps3_comp_rename1$N((bflat(S,K,A,M):=bflat(T,L,B,P)))
+ =>
+  ps3_comp_rename$N;
+
+
+/***
+ReadDeferredSetsConsts(D)&HERE(("DeferredSetsConsts":D)) &
+ReadConsts(C)&HERE(("Consts":C)) &
+ReadSets(S)&HERE(("Sets":S)) &
+ReadMchParamRename(R)&HERE(("ReadMchParamRename":R)) &
+ReadConstsRename(W)&HERE(("ReadConstsRename":W)) &
+ReadSetsRename(V)&HERE(("ReadSetsRename":V)) &
+ReadEnumSetsRename(U)&HERE(("EnumSetsRename":U)) &
+ReadCompositeRename(T)&HERE(("CompositeRename":T)) &
+ReadInvariant(I)&HERE(("Invariant":I)) &
+ReadStateVarNames(J)&HERE(("StateVarNames":J)) &
+ReadCurrValState(K)&HERE(("CurrValState":K)) &
+HERE(("ModifyOPERATIONS":E)) &
+***/
+  ModifyOPERATIONS(E)
+ =>
+  ps4$N(E);
+
+
+  ReadCurrentConstruct(a.b) &
+  ReadScript_OPERATIONS(E) &
+  ps3_SETS_rename$N &
+  ps3_CONSTS_rename$N &
+  ps3_ENUM_SETS_rename$N &
+  ps3_PARAMS_rename$N &
+  ps3_comp_rename$N &
+  ps4$N(brev(E))
+ =>
+  ps2$N(I)(ANIMATE X END);
+
+  ps_chk_syntax$N(X) &
+  ps2$N(I)(X)
+ =>
+  ps1$N(I)(X);
+
+  ScriptError
+ =>
+  x;
+
+
+
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=b)))
+ =>
+  ps_post (a=b);
+
+  ReadSetsConstsSetToThemselves(L) &
+  ModifySetsConstsSetToThemselves((L,a)) &
+  ReadRawSetsConstantsSettings(M) &
+  ModifyRawSetsConstantsSettings((M,(a=a)))
+ =>
+  ps_post (a=a);
+
+  ps_post (?);
+
+  ps_post (___default_val=___default_val);
+
+  ReadScript_SETS(S) &
+  ReadScript_CONSTS(C) &
+  ReadScript_PARAMS(P) &
+  ps_post bsmap S &
+  ps_post bsmap C &
+  ps_post bsmap P
+ =>
+  ps_chk_err$N(i);
+
+  ScriptError &
+  ReadCurrentConstruct(a.b) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,bcatl(a,".",i,".anm Script Error"),0))
+ =>
+  ps_chk_err$N(i);
+
+  ReadCurrentConstruct(a.b) &
+  ClearScriptError &
+  ModifyAnimateFilename(f) &
+  ModifyScript_SETS(?) &
+  ModifyScript_CONSTS(?) &
+  ModifyScript_PARAMS(?) &
+  ModifyScript_ENUM_SETS(?) &
+  ModifyScript_STATE(?) &
+  ModifyScript_OPERATIONS(?) &
+  ReadBget(k) &                    /* from afu_exe_step$N / afu5$N */
+  ps1$N(bnewv(INI_,a))(k) &
+  ps_chk_err$N(i)
+ =>
+  ps$N(f)(i)
+
+END
+
+&
+
+THEORY InitExeX IS
+
+#define InitExe(N) bcall(((CATL;FLAT~;MODR;REV;NEWV)~;InitExeX)~:ie$N)
+
+  ?; /* 1. AnimateFilename */
+
+  ?; /* 2. _set_state_variables_1st_op */
+#define Reset_set_state_variables_1st_op bmodr(InitExeX.2,0)
+#define Set_set_state_variables_1st_op   bmodr(InitExeX.2,1)
+#define _set_state_variables_1st_op       brule(InitExeX.2,1)
+
+
+/***
+ReadDeferredSetsConsts(D)&HERE(("DeferredSetsConsts":D)) &
+ReadConsts(C)&HERE(("Consts":C)) &
+ReadSets(S)&HERE(("Sets":S)) &
+ReadMchParamRename(R)&HERE(("ReadMchParamRename":R)) &
+ReadConstsRename(W)&HERE(("ReadConstsRename":W)) &
+ReadSetsRename(V)&HERE(("ReadSetsRename":V)) &
+ReadEnumSetsRename(U)&HERE(("EnumSetsRename":U)) &
+ReadCompositeRename(T)&HERE(("CompositeRename":T)) &
+ReadInvariant(I)&HERE(("Invariant":I)) &
+ReadStateVarNames(J)&HERE(("StateVarNames":J)) &
+ReadCurrValState(K)&HERE(("CurrValState":K))
+=>
+jj;
+***/
+
+  Set_set_state_variables_1st_op
+ =>
+  ie_1st_op$N(O)(I)(_set_state_variables:p);
+
+  ModifyOPERATIONS(O)
+ =>
+  ie_1st_op$N(O)(I)(I);
+
+  ModifyOPERATIONS(O) &
+  ModifyExeStepBranchLocVar(brev(p;?))
+ =>
+  ie_1st_op$N(O)(I)(I:p);
+
+  ReadOPERATIONS(o) &
+  ReadCurrentConstruct(a.b) &
+  ModifyExeStepBranchLocVar(?) &
+  ie_1st_op$N(?)(bnewv(INI_,a))(o)
+ =>
+  ie$N;
+
+  ReadOPERATIONS((O;o)) &
+  ReadCurrentConstruct(a.b) &
+  ModifyExeStepBranchLocVar(?) &
+  ie_1st_op$N(O)(bnewv(INI_,a))(o)
+/***
+&jj
+***/
+ =>
+  ie$N;
+
+  ScriptError &
+  AbortExe(N)
+ =>
+  ie$N
+
+END
+
+&
+
+THEORY AnimatorInteractiveLoopX IS
+
+#define AnimatorInteractiveLoop(N) \
+            bcall(((ARI)~;AnimatorInteractiveLoopX)~:ail$N)
+
+/***
+ReadStateHistory((H)) &ReadCurrValState((V))&HERE((H))&HERE((V))
+=>
+show_history_cur_val;
+***/
+
+/* V 5.1.3
+  ReadSetsConstsEnumElem(D) & ModifyBoundVars(D) &          
+*/
+  ReadUnacceptableConstsList(U) &
+ModifyBoundVars(U) &              /*V 5.1.3 clean it every time */
+  ModifyUnaccConsts(21,U) &
+  ModifyBranchLocVarList(?) &
+  PrintMainMenuBSelIfReqd(N) &         /* if reqd */
+  GetSelectedOp(N) &
+  GetInputSelectedOp(N) &
+  StoreLastOpParamsSelectedOp(N) &
+  DisplaySelectedOpAfterInput(N) &
+  ClearNoGuardEvaluatesTrue &
+  ProcessSelectedOp(N) &
+  ReportOpPerformed(N) &
+  CheckNoGuardEvaluatesTrue(N) &
+  StoreStateVarsChanged(N) &
+  DisplayOpOutput(N) &
+  DisplayStateModifyStateHistory(N) &
+/***
+show_history_cur_val &
+***/
+  DisplayInvariant(N) &
+  ResetAssertion &
+  Out(N,((Line))) &
+  ail$(N+1)
+ =>
+  ail$N
+
+END
+
+&
+
+THEORY CreBound_Unacceptable_ConstantsX IS
+
+#define CreBound_Unacceptable_Constants(N) bcall(((MAP;MODR)~;CreBound_Unacceptable_ConstantsX)~:cbc$N)
+
+  ?;
+#define Bound_Unacceptable_ConstantsOK       brule(CreBound_Unacceptable_ConstantsX.1,1)
+#define SetBound_Unacceptable_ConstantsOK    bmodr(CreBound_Unacceptable_ConstantsX.1,1)
+#define SetBound_Unacceptable_ConstantsNotOK bmodr(CreBound_Unacceptable_ConstantsX.1,0)
+
+
+/***
+ReadUnacceptableConstsList(L) &
+HERE(("UnacceptableConstsList set to:":L))
+=>
+final_info;
+***/
+
+
+  cbc_check$N(a=e)
+ =>
+  cbc_check_enum$N(a,e);
+
+  cbc_check$N(?);
+
+  cbc_check$N(a=b);
+
+  ResetAutoExecution &
+  ReadUnacceptableConstsList(L) &
+  bsearch(b,(L,?),M) &
+  SetBound_Unacceptable_ConstantsNotOK &
+  Out(N,("\n  >>> Bad setting for %: % has already been set <<<\n",a,bsrv b berv))
+ =>
+  cbc_check$N(a=b);
+
+  cbc_check$N(a=a);
+
+  cbc_check_enum$N(a) bsmap E
+ =>
+  cbc_check$N(a={E});
+
+
+  cbc6$N;
+
+  ReadUnacceptableConstsList(L) &
+  bsearch(?,L,M) &
+  ModifyUnacceptableConstsList(M)
+ =>
+  cbc6$N;
+
+  cbc4_enm_raw_settings$N(x);
+
+  cbc5$N bsmap E
+ =>
+  cbc4_enm_raw_settings$N(s={E});
+
+  cbc4_enm_rename$N(x);
+
+  cbc5$N bsmap E
+ =>
+  cbc4_enm_rename$N({E});
+
+  cbc5$N(s);
+
+  ReadUnacceptableConstsList(L) &
+  bsearch(s,L,M) &
+  ModifyUnacceptableConstsList(M)
+ =>
+  cbc5$N(s);
+
+  ReadRawParamConstr((A:B)) &       /* its a SET param - don't remove it */
+  bsearch((card(s):n),(B&?),C)
+ =>
+  cbc5$N(s);
+
+/***** ib - its a set *********/
+  ReadConsts(C) &
+  bsearch(s,(C,?),D) &             
+  ReadRawProps(P) &
+  bsearch((s<:W),(P,?),Q) 
+ =>
+  cbc5$N(s);
+/*****************************/
+
+  ReadSets(S) &
+  bsearch(s,(S,?),T)                /* its a SET - don't remove it */
+ =>
+  cbc5$N(s);
+
+  cbc5$N(?);
+
+/***
+ReadConsts(C)&HERE(("Consts":C)) &
+ReadSets(S)&HERE(("Sets":S)) &
+ReadDeferredSetsConsts(D)&HERE(("DeferredSetsConsts":D)) &
+ReadRawProps(P)&HERE(("RawProps":P)) &
+ReadSetsConstsSetToThemselves(T)&HERE(("SetsConstsSetToThemselves":T))
+=>
+ib_info;
+***/
+
+/***
+ib_info &
+***/
+  ReadSetsConstsEnumElem(L) &
+  ModifyUnacceptableConstsList((L,?)) &
+  ReadSetsConstsSetToThemselves(S) &
+  ReadEnumSetsRename((A:E)) &
+  ReadRawSetsConstantsSettings(R) &
+  cbc5$N bsmap S &
+  cbc4_enm_rename$N bsmap E &
+  cbc4_enm_raw_settings$N bsmap R &
+  cbc6$N
+ =>
+  cbc4$N;
+
+
+
+  cbc3$N;
+
+  ReadSetsConstsEnumElem(L) &
+  bsearch(___default_val,L,M) &
+  ModifySetsConstsEnumElem(M)
+ =>
+  cbc3$N;
+
+  cbc1$N(e=e)
+ =>
+  cbc_enm_rename2$N(e);
+
+  cbc_enm_rename1$N(x);
+
+  cbc_enm_rename2$N bsmap E
+ =>
+  cbc_enm_rename1$N({E});
+
+  ReadSetsConstsEnumElem(L) &
+  ModifySetsConstsEnumElem((L,e))
+ =>
+  cbc2$N(e);
+
+  ReadSetsConstsEnumElem(L) &
+  bsearch(e,L,M) /* &
+  SetBound_ConstantsNotOK &
+  Out(N,("\n  Some message about %\n",e)) */
+ =>
+  cbc2$N(e);
+
+  ReadSetsConstsEnumElem(L) &
+  ModifySetsConstsEnumElem((L,a))
+ =>
+  cbc1$N(a=b);
+
+  ReadSetsConstsEnumElem(L) &
+  bsearch(a,L,M) /* &
+  SetBound_ConstantsNotOK &
+  Out(N,("\n  Bound_Constants error %\n",a)) */
+ =>
+  cbc1$N(a=b);
+
+  ReadSetsConstsEnumElem(L) &
+  ModifySetsConstsEnumElem((L,S)) &
+  cbc2$N bsmap E
+ =>
+  cbc1$N(S={E});
+
+  ReadSetsConstsEnumElem(L) &
+  bsearch(S,L,M) /* &
+  SetBound_ConstantsNotOK &
+  Out(N,("\n  Bound_Constants error: %\n",S)) */
+ =>
+  cbc1$N(S={E});
+
+  cbc1$N(?);
+
+  ModifySetsConstsEnumElem(___default_val) &
+  ReadRawSetsConstantsSettings(L) &
+  ReadEnumSetsRename((A:E)) &
+  cbc1$N bsmap L &
+  cbc_enm_rename1$N bsmap E &
+  cbc3$N &
+  cbc4$N &
+  SetBound_Unacceptable_ConstantsOK &
+  cbc_check$N bsmap L
+/***
+&final_info
+***/
+ =>
+  cbc$N
+
+END
+
+&
+
+THEORY AnimatorFromUserX IS
+
+  ?; /*  1. CurrentConstruct */
+
+  ?; /*  2. SeesUsedList */
+
+  ?; /*  3. Sets */
+
+  ?; /*  4. Props */
+
+  ?; /*  5. StateVarStrings */
+
+  ?; /*  6. CurrValState */
+
+  ?; /*  7. StateVarNames */
+
+  ?; /*  8. StateHistory */
+
+  ?; /*  9. Invariant */
+
+  ?; /* 10. MchParamRename */
+
+  ?; /* 11. SetsRename */
+
+  ?; /* 12. EnumSetsRename */
+
+  ?; /* 13. CompositeRename */
+
+  ?; /* 14. RawParamConstr */
+
+  NAT,SCALAR,INT,INTEGER; /* 15. DeferredSetsConsts */
+
+  ?; /* 16. RawProps */
+
+  ?; /* 17. unused */
+
+  ?; /* 18. OpOutput */
+
+  ?; /* 19. DisplayInvariant/DontDisplayInvariant */
+
+  ?; /* 20. MainMenuOpNames */
+
+  ?; /* 21. RecreateMainMenu */
+
+  ?; /* 22. SelectedOp
+              s(u|v|w|y|z|t) | et | ra  | un  | ri  | ini  | s.x.anm  |  
+                  s: op name
+                  u: input list
+                  v: output list
+                  w: user-stated precondition
+                  y: calculated precondition
+                  z: expanded substitution
+                  t: unexpanded substitution
+              et: edit theory file
+              et: edit theory file
+              ra: restart animation
+              un: undo
+              ri: re-initialise
+              ini: save ini state
+              s.x.anm: the script from which intialised
+              ? aborted save state
+       */
+
+  ?; /* 23. OpCurrPre */
+
+  ?; /* 24. OpActualPre */
+
+  ?; /* 25. OpCalcPre */
+
+  ?; /* 26. OpInputRename */
+
+  ?; /* 27. SeenUsedIncluded */
+
+  ?; /* 28. TypeMchLoaded */
+
+  ?; /* 29. StateVarsChanged */
+
+  ?; /* 30. NoGuardEvaluatesTrue */
+
+  ?; /* 31. StatelessMch */
+
+  ?; /* 32. OPERATIONS */
+
+  ?; /* 33. Execution */
+
+  ?; /* 34. AnimatingVHDLConstruct/NotAnimatingVHDLConstruct */
+
+  ?; /* 35. AutoExecution */
+
+  ?; /* 36. Consts */
+
+  ?; /* 37. ConstsRename */
+
+  ?; /* 38. Assertion */
+
+  ?; /* 39. AssertionTripleList */
+
+  ?; /* 40. SetsConstsEnumElemSetsConsts (all identifiers!) */
+
+  ?; /* 41. LastOpParams */
+
+  ?; /* 42. SetsConstsSetToThemselves */
+
+  ?; /* 43. RawSetsConstantsSettings */
+
+  ?; /* 44. UnacceptableConstsList */
+
+/***
+ReadDeferredSetsConsts(D)&HERE(("DeferredSetsConsts":D)) &
+ReadConsts(C)&HERE(("Consts":C)) &
+ReadSets(S)&HERE(("Sets":S)) &
+ReadMchParamRename(R)&HERE(("ReadMchParamRename":R)) &
+ReadConstsRename(W)&HERE(("ReadConstsRename":W)) &
+ReadSetsRename(V)&HERE(("ReadSetsRename":V)) &
+ReadEnumSetsRename(U)&HERE(("EnumSetsRename":U)) &
+ReadCompositeRename(T)&HERE(("CompositeRename":T))
+=>
+print_anm_database_ext;
+***/
+
+
+      /********** initialise from INI - tidy first **********/
+
+  StoreOperations((Initialisation;?;?;?;(true|BEGIN s END);(true|BEGIN t END))) &
+  ModifySelectedOp(Initialisation(?|?|true|true|BEGIN s END|BEGIN t END))
+/***
+&HERE((s---t))
+***/
+ =>
+  afu3_init$N(X;(p|s);(q|t));
+
+
+  (true|?) == (true|skip);
+
+  (s || ?) == s;
+
+  (? || s) == s;
+
+  (BEGIN BEGIN s END END) == (BEGIN s END);
+
+  (BEGIN s END || t) == (BEGIN s || t END);
+
+  (BEGIN s END || T || t) == (BEGIN s || t END || T);
+
+
+
+
+      /********** initialise for file/non-file cases **********/
+
+
+  ReadUnacceptableConstsList(U) &
+  ModifyUnaccConsts(22,U) &
+  ReadCompositeRename(R) &
+  ReadSelectedOp(S) &
+  bcall((SUB~;SUB_seqX)~:[R](ModifySelectedOp(S))) &
+  ModifyOpInputRename((___default_val:=___default_val)) &
+  ClearNoGuardEvaluatesTrue &
+  ProcessSelectedOp(N) &
+  GetInputSelectedOp(N) &
+  StoreLastOpParamsSelectedOp(N) &
+  DisplaySelectedOpAfterInput(N) &
+  ReportOpPerformed(N) &
+  CheckNoGuardEvaluatesTrue(N) &
+  StoreStateVarsChanged(N) &
+  DisplayOpOutput(N) &
+  DisplayStateModifyStateHistory(N) &
+  DisplayInvariant(N) &
+  ResetAssertion &
+  Out(N,((Line))) &
+  PrintMainMenuBSelIfReqd(N)
+ =>
+  afu_initialise$N;
+
+  IsExecution &
+  ReadUnacceptableConstsList(U) &
+  ModifyUnaccConsts(23,U) &
+  ReadCompositeRename(R) &
+  ReadSelectedOp(S) &
+  bcall((SUB~;SUB_seqX)~:[R](ModifySelectedOp(S))) &
+  ModifyOpInputRename((___default_val:=___default_val)) &
+  ClearNoGuardEvaluatesTrue &
+  ProcessSelectedOp(N) &
+  GetInputSelectedOp(N) &
+  StoreLastOpParamsSelectedOp(N) &
+  DisplaySelectedOpAfterInput(N) &
+  ReportOpPerformed(N) &
+  CheckNoGuardEvaluatesTrue(N) &
+  StoreStateVarsChanged(N) &
+  DisplayOpOutput(N) &
+  DisplayStateModifyStateHistory(N) &
+  DisplayInvariant(N) &
+  ResetAssertion &
+  Out(N,((Line)))
+ =>
+  afu_initialise$N;
+
+  IsExecution &
+  _set_state_variables_1st_op &
+  ResetAssertion
+ =>
+  afu_initialise$N;
+
+
+      /********** fini/rename/sub_op_jok/includes/type for both cases **********/
+
+
+  ReadCurrentConstruct(a.b) &
+  LoadTypeFile(N,a)
+ =>
+  afu_type$N;
+
+
+
+  ReadMchParamRename((F:P)) &
+  ProcessIncludes(N,(F:=P),(i))
+ =>
+  afu_includes1$N(i);
+
+  ReadSeenUsedIncluded(I) &
+  afu_includes1$N bsmap I
+ =>
+  afu_includes$N;
+
+
+
+  afu_sub_op_jok$N(M);
+
+  brule(JokerizedSubOpX.M,o) &
+  JokerizeSubOp(N,M,o) &
+  afu_sub_op_jok$N(M+1)
+ =>
+  afu_sub_op_jok$N(M);
+
+
+
+
+  ModifyCompositeRename(R) &
+  ReadInvariant(I) &
+  bcall((SUB~;SUB_seqX)~:([R](ModifyInvariant(I))))
+ =>
+  afu_rename1$N(R);
+
+  bsearch(___default_val,A,C) &
+  bsearch(___default_val,B,D) &
+  afu_rename1$N(C:=D)
+ =>
+  afu_rename1$N(A:=B);
+
+  ReadCompositeRename(R) &
+  afu_rename1$N(R)
+ =>
+  afu_rename$N;
+
+  ReadMchParamRename((a)) &HERE((a))&
+  ReadConstsRename((b)) &HERE((b))&
+  ReadSetsRename((c)) &HERE((c))&
+  ReadEnumSetsRename((d)) &HERE((d))
+ =>
+  afu_fini$N;
+
+  ReadMchParamRename((S:T)) &
+  ReadConstsRename((K:L)) &
+  ReadSetsRename((A:B)) &
+  ReadEnumSetsRename((M:P)) &
+  ModifyCompositeRename((bflat(S,K,A,M):=bflat(T,L,B,P))) &
+  afu_rename$N &
+  GetDeferredSetsConsts(N)
+ =>
+  afu_fini$N;
+
+          /********** not initialising from file **********/
+  
+  ReadCurrentConstruct(a.b) &
+  GetMchParam(N) &
+  ProcessSeesUsedSelf(N) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  ProcessSeenThroughIncludes(N) &
+  RemDupFromContext(N) &
+  GetContext(N)
+ =>
+  afu10$N;
+
+          /************************************************/
+
+
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_state$N((s=t));
+
+  afu7_info_state$N(S) &
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_state$N(S,(s=t));
+
+  bsearch(___default_val,S,A) &
+  bsearch(___default_val,T,B) &
+  afu7_info_state$N(A:B)
+ =>
+  afu7_info_state$N(S:T);
+
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_enum_sets1$N(s:t);
+
+  afu7_info_enum_sets1$N(S:T) &
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_enum_sets1$N(S,s:T,t);
+
+  Out(N,(("\n    Enumerated Set Values\n"))) &
+  afu7_info_enum_sets1$N(S:T)
+ =>
+  afu7_info_enum_sets$N(S:T);
+
+  afu7_info_enum_sets$N(___default_val:___default_val);
+
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_sets1$N(s:t);
+
+  afu7_info_sets1$N(S:T) &
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_sets1$N(S,s:T,t);
+
+  Out(N,(("\n    Set Values\n"))) &
+  afu7_info_sets1$N(S:T)
+ =>
+  afu7_info_sets$N(S:T);
+
+  afu7_info_sets$N(___default_val:___default_val);
+
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_consts1$N(s:t);
+
+  afu7_info_consts1$N(S:T) &
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_consts1$N(S,s:T,t);
+
+  Out(N,(("\n    Constant Values\n"))) &
+  afu7_info_consts1$N(S:T)
+ =>
+  afu7_info_consts$N(S:T);
+
+  afu7_info_consts$N(___default_val:___default_val);
+
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_mch_param1$N(s:t);
+
+  afu7_info_mch_param1$N(S:T) &
+  Out(N,(("      % = %\n"),s,t))
+ =>
+  afu7_info_mch_param1$N(S,s:T,t);
+
+  Out(N,(("\n    Machine parameter Values\n"))) &
+  afu7_info_mch_param1$N(S:T)
+ =>
+  afu7_info_mch_param$N(S:T);
+
+  afu7_info_mch_param$N(___default_val:___default_val);
+
+  Out(N,(("  Initialisation from SRC/%.%.%:\n",x,y,anm))) &
+  afu7_info_mch_param$N(S:T) &
+  afu7_info_sets_consts$N(K:L) &
+  afu7_info_enum_sets$N(M:P)
+ =>
+  afu6_init_file_info$N(x.y.anm)(S,K,M)(T,L,P);
+
+  bsearch(___default_val,M,A) &
+  bsearch(___default_val,P,B) &
+  afu6_init_file_info$N(x.y.anm)(S,K,A)(T,L,B)
+ =>
+  afu6_init_file_info$N(x.y.anm)(S,K,M)(T,L,P);
+
+  bsearch(___default_val,K,A) &
+  bsearch(___default_val,L,B) &
+  afu6_init_file_info$N(x.y.anm)(S,A,M)(T,B,P)
+ =>
+  afu6_init_file_info$N(x.y.anm)(S,K,M)(T,L,P);
+
+  bsearch(___default_val,S,A) &
+  bsearch(___default_val,T,B) &
+  afu6_init_file_info$N(x.y.anm)(A,K,M)(B,L,P)
+ =>
+  afu6_init_file_info$N(x.y.anm)(S,K,M)(T,L,P);
+
+  Out(N,(("\n  >>> State of machine has changed!"))) &
+  Out(N,(("\n      Use `Animator Utilities-> Set state variables <<<\n"))) &
+  Out(N,((Line))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"State of machine has changed",0))
+ =>
+  afu9_2$N(x)(y);
+
+  afu9_2$N(a)(a);
+
+  bsearch(a,B,C) &
+  afu9_2$N(A)(C)
+ =>
+  afu9_2$N(A,a)(B);
+
+  bsearch(?,A,C) &
+  bsearch(?,B,D) &
+  ReadStateVarNames(d) &
+  ModifyCurrValState(([C:=D]d)) &
+  afu9_2$N(C)(d)
+ =>
+  afu9_1$N(A:=B);
+
+  afu9_1$N(A,s:=B,t)
+ =>
+  afu9$N((s=t))(A:=B);
+
+  afu9$N(S)(A,s:=B,t)
+ =>
+  afu9$N(S,(s=t))(A:=B);
+
+  Out(N,(("\n  Ignoring OPERATIONS clause of Script\n",x,y,anm))) &
+  Out(N,((Line))) &
+  afu_fini$N
+ =>
+  afu8$N(O)(x.y.anm);
+
+  ModifySelectedOp(x.y.anm) &
+  Out(N,(("\n    State Values\n"))) &
+  afu7_info_state$N(v) &
+  afu9$N(v)(?:=?)
+ =>
+  afu8$N(O;_set_state_variables : v)(x.y.anm);
+
+  ModifySelectedOp(x.y.anm) &
+  Out(N,(("\n    State Values\n"))) &
+  afu7_info_state$N(v) &
+  afu9$N(v)(?:=?)
+ =>
+  afu8$N(_set_state_variables : v)(x.y.anm);
+
+  ModifySelectedOp(x.y.anm) &
+  Out(N,((Line)))
+ =>
+  afu8$N(_set_state_variables : ?)(x.y.anm);
+
+  Out(N,(("  Script Initialisation %.%.%:\n",x,y,anm))) &
+  ReadMchParamRename((S:T)) &
+  ReadSetsRename((A:B)) &
+  ReadConstsRename((C:D)) &
+  ReadEnumSetsRename((M:P)) &
+  ReadScript_OPERATIONS(O) &
+  afu7_info_mch_param$N(S:T) &
+  afu7_info_sets$N(A:B) &
+  afu7_info_consts$N(C:D) &
+  afu7_info_enum_sets$N(M:P) &
+  afu8$N(brev(O))(x.y.anm)
+ =>
+  afu7$N(x.y.anm);
+
+  ScriptError &
+  Out(N,(("\n  Can't Initialise from Script %.%.%\n",x,y,anm))) &
+  Out(N,((Line))) &
+  afu10$N
+ =>
+  afu7$N(x.y.anm);
+
+  ReadCurrentConstruct(a.b) &
+  ParseScript(N,Z,y) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  ProcessSeenThroughIncludes(N) &
+  afu7$N(x.y.anm)
+ =>
+  afu6$N(x.y.anm)(Z);
+
+  Out(N,(("\n  Can't connect to %\n",z))) &
+  afu10$N
+ =>
+  afu5$N(s)(z);
+
+  bget(z,A) &
+  ProcessSeesUsedSelf(N) &  /* ModifySets/Consts - renames will be overwritten
+                               except enum sets                               */
+  RemDupFromContext(N) &
+  bmodr(BgetX.1,A) &
+  CheckBitStringRewrites((N+1),A) &
+  afu6$N(s)(A)
+ =>
+  afu5$N(s)(z);
+
+  afu10$N
+ =>
+  afu4$N;
+
+  ReadSelection(x.y.anm) &
+  afu5$N(x.y.anm)(bcatl("SRC/",x,".",y,".anm"))
+ =>
+  afu4$N;
+
+  ReadSelection(x.y.anm.X) &           /* anm_invariant_flag */  
+  afu5$N(x.y.anm)(bcatl("SRC/",x,".",y,".anm"))
+ =>
+  afu4$N;
+
+  ReadConfirm(no) &
+  afu10$N
+ =>
+  afu3$N;
+
+  ReadConfirm(yes) &
+  ReadBget((F)) &
+  GetSelectionFromList_Prompt(F,"Select Script from which to initialise") &
+  afu4$N
+ =>
+  afu3$N;
+
+  ReadBget((F)) &      /* .anm files */
+  PromptConfirm(("  Initialise state from script?  ","The initilialisation may be effected from an ANIMATE Script that has|been previously saved using `Save as ANIMATE Script Initialisation'|or`Save as ANIMATE Scrip Executable'")) &
+  afu3$N
+ =>
+  afu2$N;
+
+  ReadBget((?)) &      /* no .anm files */
+  afu10$N
+ =>
+  afu2$N;
+
+  IsExecution
+ =>
+  afu2$N;
+
+
+  afu3_init$N((X;(p|s);(q|t)))
+ =>
+  afu2_init$N(X;(p|s);(q|t))(?);
+
+  afu3_init$N((X;(p|(h || bnewv(INI_,r)));(q|(i || bnewv(INI_,r)))))
+ =>
+  afu2_init$N(X;(p|h);(q|i))(r(s):t:(?,?,?));
+
+  afu3_init$N((X;(p|(h || bnewv(R,bnewv(INI_,r))));(q|(i || bnewv(R,bnewv(INI_,r))))))
+ =>
+  afu2_init$N(X;(p|h);(q|i))(R.r(s):t:(u,v,w));
+
+  afu2_init$N(X;(p|(h || bnewv(INI_,r)));(q|(i || bnewv(INI_,r))))(B)
+ =>
+  afu2_init$N(X;(p|h);(q|i))(B,(r(s):t:(?,?,?)));
+
+  afu2_init$N(X;(p|(h || bnewv(R,bnewv(INI_,r))));(q|(i || bnewv(R,bnewv(INI_,r)))))(B)
+ =>
+  afu2_init$N(X;(p|h);(q|i))(B,(R.r(s):t:(u,v,w)));
+
+
+  SetNotAnimatingVHDLConstruct
+ =>
+  afu_check_VHDL$N(a.b);
+
+  IsVHDL &
+  SetAnimatingVHDLConstruct
+ =>
+  afu_check_VHDL$N(a.b);
+
+  IsUsrVHDL(a.b) &
+  SetAnimatingVHDLConstruct
+ =>
+  afu_check_VHDL$N(a.b);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  SetNotStatelessMch &
+  afu2_init$N(Initialisation;?;?;?;(true|h);(true|h))(b) &
+  StoreOperations(n) &
+  ModifyMainMenuOpNames(j) &
+  SetRecreateMainMenu &
+  ModifyStateVarNames(d) &
+  CreStateVarStrings(N) &
+  ModifyCurrValState(d) &
+  ModifyStateHistory(?) &
+  ModifyInvariant(f) &
+  ModifyRawParamConstr((l:m)) &
+  ModifySeenUsedIncluded(bflat(A,B,b)) &
+  Bshell(("$BKIT/BLIB/CreateCom anm ",k)) &
+  Bget((".Bcom")) &
+  afu2$N
+ =>
+  afu1$N;
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;?;e;f;g;h;i;W;j;(k(l):m:r);n)) & /* stateless */
+  SetStatelessMch &
+  afu2_init$N(Initialisation;?;?;?;(true|h);(true|h))(b) &
+  StoreOperations(n) &
+  ModifyMainMenuOpNames(j) &
+  SetRecreateMainMenu &
+  ModifyStateVarNames(___default_val) &
+  ModifyCurrValState(___default_val) &
+  ModifyStateHistory(?) &
+  ModifyInvariant(f) &
+  ModifyRawParamConstr((l:m)) &
+  ModifySeenUsedIncluded(bflat(A,B,b)) &
+  Bshell(("$BKIT/BLIB/CreateCom anm ",k)) &
+  Bget((".Bcom")) &
+  afu2$N
+ =>
+  afu1$N;
+
+#define print_anm_database \
+  PrintTHEORY(UserLibMacrosX)& \
+  PrintTHEORY(UserLibX)& \
+  PrintTHEORYUpTo(AnimatorFromUserX,41)& \
+  PrintTHEORY(OpX)& \
+  PrintTHEORYUpTo(PrintMainMenuBSelIfReqdX,2)
+
+
+  ModifyDisplayInvariant(f) &
+  ModifyBoundVars(___default_bv) &
+  ModifyUnaccConsts(24,___default_bv) &
+  Out(N,(("\nAnimating %\n",a))) &
+  CleanAnimator &
+  ModifyCurrentConstruct(a.b) &
+  ExpandMachineOps(a,1) &
+  ModifySeesUsedList(S) &
+  ProcessUserLib(N) &
+  LoadOwnTypeFileTmp(N,a.b) &
+  Out(N,((Line))) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  StoAnlForm &
+  CheckBitStringRewrites(N,(a.b.anl)) &
+  afu1$N &
+  afu_fini$N &
+  afu_includes$N &
+  afu_type$N &
+  CheckDeferredSets(N) &
+  afu_sub_op_jok$N(1) &   /* jokerize sub ops */
+  StoreExpandedOp(N)
+ =>
+  afu_direct1$N(a.b|S|f);
+
+
+  
+   Out(N,(("\n"))) &
+  _FifoWrite_NoStore((BT_MINOR_ERR_M,"Can't start Animation - reinitialising",0)) &
+  ReadCurrentConstruct(a.b) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  afu1$(N+1) &
+  afu_direct_chk$(N+1)
+ =>
+  afu_direct_chk$N;
+
+  Bound_Unacceptable_ConstantsOK &
+  AnimatorInteractiveLoop(N+1)
+ =>
+  afu_direct_chk$N;
+
+
+
+  SetNotExecution &
+  afu_check_VHDL$N(a.b) &
+  afu_direct1$N(a.b|S|f) &
+
+/*** PrintTHEORY(ExpOpX)&            ***/
+/*** PrintTHEORY(OpX)&               ***/
+/*** PrintTHEORY(JokerizedSubOpX)&   ***/
+/*** PrintTHEORY(UnJokerizedSubOpX)& ***/
+
+/***
+print_anm_database&
+***/
+
+/***
+print_anm_database_ext&
+***/
+
+  CreBound_Unacceptable_Constants(N) &
+  afu_initialise$N &
+/***
+print_bound_info &
+***/
+/***
+PrintTHEORY(OpX)&
+PrintTHEORY(JokerizedSubOpX)&
+***/
+  afu_direct_chk$N
+ =>
+  afu_direct$N(a.b|S|f);
+
+
+
+/***
+HERE(("SetsConstsEnumElem"))&
+PrintARule(AnimatorFromUserX.40)&
+HERE(("UnacceptableConstsList"))&
+PrintARule(AnimatorFromUserX.44)&
+HERE(("SetsConstsSetToThemselves"))&
+PrintARule(AnimatorFromUserX.42)&
+HERE(("RawSetsConstantsSettings"))&
+PrintARule(AnimatorFromUserX.43)&
+HERE(("EnumSetsRename"))&
+PrintARule(AnimatorFromUserX.12)
+ =>
+print_bound_info;
+***/
+
+  AbortExe(N)
+ =>
+  afu_exe_step1$N;
+
+  Bound_Unacceptable_ConstantsOK &
+  AnimatorExeLoop(N) &
+  ExeStepFini(N)
+ =>
+  afu_exe_step1$N;
+
+  ModifyDisplayInvariant(f) &
+  ModifyBoundVars(___default_bv) &
+  ModifyUnaccConsts(25,___default_bv) &
+  Out(N,(("\nExecute Step % animation from ",a))) &
+  Out(N,((k))) &
+  Out(N,(("\n"))) &
+  ModifyCurrentConstruct(a.b) &
+  ExpandMachineOps(a,1) &
+  ModifySeesUsedList(S) &
+  ProcessUserLib(N) &
+  Out(N,((Line))) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  StoAnlForm &
+  CheckBitStringRewrites(N,(a.b.anl)) &
+  afu1$N &
+  Bget(k) &
+  CheckBitStringRewrites(N,k) &
+  ParseScript(N,k,i) &
+  InitExe(N) &
+  afu_fini$N &
+  afu_includes$N &
+  afu_type$N &
+  CheckDeferredSets(N) &
+  afu_sub_op_jok$N(1) &   /* jokerize sub ops */
+  StoreExpandedOp(N) &
+  CreBound_Unacceptable_Constants(N) &
+  afu_initialise$N &
+/***
+print_bound_info &
+***/
+  afu_exe_step1$N
+ =>
+  afu_exe_step1$N(a.b|S|f|k|i);
+
+  CleanAnimator &
+  SetExecution &
+  afu_check_VHDL$N(a.b) &
+  afu_exe_step1$N(a.b|S|f|k|i)
+ =>
+  afu_exe_step$N(a.b|S|f|k|i);
+
+
+
+  AbortExe(N)
+ =>
+  afu_exe_auto2$N;
+
+  Bound_Unacceptable_ConstantsOK &
+  AnimatorExeLoop(N) &
+  ExeAutoFini(N)
+ =>
+  afu_exe_auto2$N;
+
+  ModifyDisplayInvariant(f) &
+  ModifyBoundVars(___default_bv) &
+  ModifyUnaccConsts(26,___default_bv) &
+  Out(N,(("\n  Execute Auto % animation from:\n\n    ",a))) &
+  Out(N,((k))) &
+  Out(N,(("\n    ."))) &
+  SetAutoExecution &
+  ModifyCurrentConstruct(a.b) &
+  ExpandMachineOps(a,1) &
+  ModifySeesUsedList(S) &
+  ProcessUserLib(N) &
+  Out(N,((Line))) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  StoAnlForm &
+  CheckBitStringRewrites(N,(a.b.anl)) &
+  afu1$N &
+  Bget(k) &
+  CheckBitStringRewrites(N,k) &
+  ParseScript(N,k,i) &
+  InitExe(N) &
+  afu_fini$N &
+  afu_includes$N &
+  afu_type$N &
+  CheckDeferredSets(N) &
+  afu_sub_op_jok$N(1) &   /* jokerize sub ops */
+  StoreExpandedOp(N) &
+  CreBound_Unacceptable_Constants(N) &
+  afu_initialise$N &
+/***
+print_bound_info &
+***/
+  afu_exe_auto2$N
+ =>
+  afu_exe_auto1$N(a.b|S|f|k|i);
+
+  CleanAnimator &
+  SetExecution &
+  afu_check_VHDL$N(a.b) &
+  afu_exe_auto1$N(a.b|S|f|k|i)
+ =>
+  afu_exe_auto$N(a.b|S|f|k|i);
+
+                                   /* (test_anim.mch |
+                                       ? , Int_TYPE.mch , Scalar_TYPE.mch |
+                                       0 | "SRC/test_anim.sv1.anm" |
+                                       sv1) */
+
+
+  GetJobs(X) &
+  AddJob(X,((a.f.anm):BT_ANM_EMPTY_SCRIPT_M:0)) &
+  LoadToolkit(1)
+ =>
+  afu_empty_exe_script4$N(a.f.anm);
+
+  Printf(N,("\n  % = %",a,a))
+ =>
+  afu_empty_exe_script3(a);
+
+  afu_empty_exe_script3(A) &
+  Printf(N,(";\n  % = %",a,a))
+ =>
+  afu_empty_exe_script3(A,a);
+
+  Printf(N,("\n  ?"))
+ =>
+  afu_empty_exe_script3(?);
+
+
+  Printf(N,("\n  % = %",a,b))
+ =>
+  afu_empty_exe_script_enum1((a=b));
+
+  afu_empty_exe_script_enum1(L) &
+  Printf(N,(";\n  % = %",a,b))
+ =>
+  afu_empty_exe_script_enum1(L,(a=b));
+
+  Printf(N,("\n  ?"))
+ =>
+  afu_empty_exe_script_enum1(?);
+
+  bsearch(?,L,M) &
+  afu_empty_exe_script_enum1(M)
+ =>
+  afu_empty_exe_script_enum1(L);
+  
+  afu_empty_exe_script_enum1(L,(e=f))
+ =>
+  afu_empty_exe_script_enum(e:f)(L);
+
+  afu_empty_exe_script_enum1(L)
+ =>
+  afu_empty_exe_script_enum(___default_val:___default_val)(L);
+
+  afu_empty_exe_script_enum(E:F)(L,(e=f))
+ =>
+  afu_empty_exe_script_enum(E,e:F,f)(L);
+
+  afu_empty_exe_script_enum(E:F)(L)
+ =>
+  afu_empty_exe_script_enum(E,___default_val:F,___default_val)(L);
+
+  ReadConsts(C) &
+  ReadSets(S) &
+  ReadStateVarNames(J) &
+  ReadEnumSetsRename(E) &
+/***
+HERE(("Consts":C)) &
+HERE(("Sets":S)) &
+HERE(("StateVarNames":J)) &
+***/
+  Printf(N,("\n\nSETS_VALUES\n")) &
+  afu_empty_exe_script3(S) &
+  Printf(N,("\n\nCONSTANTS_VALUES\n")) &
+  afu_empty_exe_script3(C) &
+  Printf(N,("\n\nENUM_SETS_VALUES\n")) &
+  afu_empty_exe_script_enum(E)(?) &
+  Printf(N,("\n\nOPERATIONS\n\n  INI_%\n\nEND\n",a))
+ =>
+  afu_empty_exe_script2$N(a);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  afu_empty_exe_script3(l)
+=>
+  afu_empty_exe_script1$N;
+
+  CleanAnimator &
+  SetExecution &
+  ModifyCurrentConstruct(a.b) &
+  ExpandMachineOps(a,1) &
+  ModifySeesUsedList(S) &
+  Connect(("SRC/",a,".",f,".anm")) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  StoAnlForm &
+  CheckBitStringRewrites(N,(a.b.anl)) &
+  Printf(N,("ANIMATE\n\n  %\n\nPARAMETER_VALUES\n",a.f.anm)) &
+  afu_empty_exe_script1$N &
+  afu1$N &
+  ProcessSeesUsedSelf(N) &
+  ModifyMchParamRename((___default_val:___default_val)) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  ProcessSeenThroughIncludes(N) &
+  RemDupFromContext(N) &
+  afu_empty_exe_script2$N(a) &
+  bclose &
+  afu_empty_exe_script4$N(a.f.anm)
+ =>
+  afu_empty_exe_script$N(a.b|S|a.f.anm)
+
+END
+
+&
+
+THEORY test IS
+
+  ModifyCurrValState(aaa)&
+  ModifyStateVarNames(aaa)&
+  ProcessSelectedSub(1,
+    [ii:=12]
+  (
+    IF 3 < ii & ii <= 10 THEN
+      v1 := 1000
+    END ||
+    IF 10 < ii THEN
+      v1 := v1+1
+    ELSE
+      v1 := v1-1
+    END ||
+    IF not(ii = 2) THEN
+      v2 := 44444
+    END
+  )
+);
+
+  Simplify(0,(8:1..45))
+
+END
+
+/***
+
+  OpX is unprocessed;
+  its w component (user-stated) is used to process the sub with:
+      OpInputRename
+      CompositeRename
+      CurrValState
+  all substituted at the time of invocation, since it is
+  also used to display the unprocessed op
+
+  ExpOpX  ( name ( calculated precondition | unexpanded substitution ) has 
+      CompositeRename
+  substituted on creation;
+  it is subsequently expanded via JokerizedSubOpX
+
+  UnJokerizedSubOpX and JokerizedSubOpX have
+      CompositeRename
+      IncludesDotRename
+  substituted on creation;
+
+
+***/

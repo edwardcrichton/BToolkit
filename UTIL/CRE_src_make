@@ -1,0 +1,23 @@
+#! /bin/csh -f
+
+cd ..
+
+echo ""
+echo "  ---------------------------------------------------------------"
+echo "  This script makes Toolkit*.bin"
+echo "  in `pwd`/BKIT/BLIB "
+echo "  ---------------------------------------------------------------"
+echo ""
+
+cd UTIL
+
+source ./set_compile_variables 1
+
+cd ../SRC
+
+make
+
+exit ($status)
+
+
+###################################################################################

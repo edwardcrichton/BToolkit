@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Bit_String">
+  <TITLE>The Rename_Bit_String machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>         Rename_Bit_String(strsize)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>     strsize &lt;= 32
+
+<A NAME="SEES"><B>SEES</B></A>            <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="SETS"><B>SETS</B></A>            Rename_BITS
+
+<A NAME="CONSTANTS"><B>CONSTANTS</B></A>       bnd,bor,bxr
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>
+
+  Rename_BITS = 1..strsize --&gt; <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> &
+ 
+ 
+  bnd = {(FALSE|-&gt;FALSE) |-&gt; FALSE,
+         (FALSE|-&gt;TRUE ) |-&gt; FALSE, 
+         (TRUE|-&gt;FALSE ) |-&gt; FALSE,
+         (TRUE |-&gt;TRUE ) |-&gt; TRUE } &
+
+
+  bor = {(FALSE|-&gt;FALSE) |-&gt; FALSE,
+         (FALSE|-&gt;TRUE ) |-&gt; TRUE, 
+         (TRUE|-&gt;FALSE ) |-&gt; TRUE,
+         (TRUE |-&gt;TRUE ) |-&gt; TRUE } &
+
+  bxr = {(FALSE|-&gt;FALSE) |-&gt; FALSE,
+         (FALSE|-&gt;TRUE ) |-&gt; TRUE, 
+         (TRUE|-&gt;FALSE ) |-&gt; TRUE,
+         (TRUE |-&gt;TRUE ) |-&gt; FALSE }
+
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  ss <--<A NAME="OPNAME!Rename_NO_BITS">Rename_NO_BITS</A> = <B>BEGIN</B> ss := (1..strsize)*{FALSE}  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!Rename_LND_BTS">Rename_LND_BTS</A>(tt,uu) =
+  <B>PRE</B>
+    tt: Rename_BITS &
+    uu: Rename_BITS
+  <B>THEN</B>
+    ss:= ( (tt &gt;&lt; uu);bnd )
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!Rename_LOR_BTS">Rename_LOR_BTS</A>(tt,uu) =
+  <B>PRE</B>
+    tt: Rename_BITS &
+    uu: Rename_BITS
+  <B>THEN</B>
+    ss:= ( (tt &gt;&lt; uu);bor )
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!Rename_LXR_BTS">Rename_LXR_BTS</A>(tt,uu) =
+  <B>PRE</B>
+    tt: Rename_BITS &
+    uu: Rename_BITS
+  <B>THEN</B>
+    ss:= ( (tt &gt;&lt; uu);bxr )
+  <B>END</B>;
+
+
+  ss <-- <A NAME="OPNAME!Rename_VAL_BTS">Rename_VAL_BTS</A>(bb,nn) =
+  <B>PRE</B>
+    bb : Rename_BITS &
+    nn : 1..strsize &
+    bb(nn) : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+  <B>THEN</B>
+    ss := bb(nn)
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!Rename_STO_BTS">Rename_STO_BTS</A>(bb,nn,vv) =
+  <B>PRE</B>
+    bb : Rename_BITS  &
+    nn : 1..strsize &
+    vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+  <B>THEN</B>
+    ss := bb <+ {nn |-> vv}
+  <B>END</B>
+
+  
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:35:38 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

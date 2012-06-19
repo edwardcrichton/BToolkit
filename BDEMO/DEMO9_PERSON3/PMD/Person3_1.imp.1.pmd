@@ -1,0 +1,23 @@
+PROOFMETHOD
+
+  Person3_1.imp.1
+
+IS
+
+  USETAC
+
+    (UsersTheory~),
+    (FwdUsersTheory~;FEQL~)
+
+  END &
+  
+  THEORY UsersTheory IS
+
+    binhyp(x<=m) &
+    btest(m<=M)
+   =>
+    x<=M
+
+  END
+
+END

@@ -1,0 +1,130 @@
+
+#This script typically completes any required configuration of the package foo
+#once foo has been unpacked from its Debian archive (".deb") file.
+#Often, 'postinst' scripts ask the user for input, and/or warn the user that if he
+#accepts default values, he should remember to go back and re-configure that package
+#as the situation warrants. Many 'postinst' scripts then execute any commands necessary
+#to start or restart a service once a new package has been installed or upgraded. 
+
+umask 022
+
+# configure,reconfigure <version>                           - called if everything goes ok
+# abort-upgrade <version>                                   - called if this version is to be put back after a failed upgrade
+# abort-remove in-favour <package> <version>
+# abort-deconfigure in-favour <package> <version> removing
+# conflicting-package <version>
+
+# 1 == first configure, 2 == upgrade configure
+
+echo "postinst $1 $2 $3"
+
+if [ "$1" != "configure" -a "$1" != "reconfigure" -a "$1" != "abort-upgrade" -a "$1" != "1" -a -a "$1" != "2" ] ; then
+
+exit 0
+
+fi
+
+if [ ! -d /usr/local/btoolkit ] ; then
+
+exit 0
+
+fi
+
+VERSION="$BT_VERSION_NUM"
+
+if [ "$2" = "" ] ; then
+
+# this is the latest version that has been installed before
+PREVIOUS=`ls /usr/local/btoolkit -t | grep \"$VERSION\" -v -m 1` || true
+
+else
+
+PREVIOUS="$2"
+
+fi
+
+echo "Configuring $VERSION"
+
+# move/link the latest licence file from
+# the btoolkit installation root to the new BKIT directory
+
+cd /usr/local/btoolkit
+
+
+# this should be the one that has just been installed
+INSTALLED=$VERSION
+
+
+
+# if these licence files do not exist in /usr/local/btoolkit
+# then copy them there from the PREVIOUS BKIT
+# then link each into the INSTALLED BKIT
+
+TOCP="B_licence B_server B_port BHW.licence"
+
+for p in $TOCP
+do
+PREV_LIC="./${PREVIOUS}/BKIT/$p"
+INST_LIC="./${INSTALLED}/BKIT/$p"
+GLOB_LIC="/usr/local/btoolkit/$p"
+
+GOT_PREV=`ls ./${PREVIOUS}/BKIT -t | grep $p` || true
+GOT_INST=`ls ./${INSTALLED}/BKIT -t | grep $p` || true
+GOT_GLOB=`ls -t | grep $p` || true
+
+if [ "$GOT_GLOB" = "" ] && [ "$GOT_PREV" != "" ]; then
+  cp $PREV_LIC $GLOB_LIC 2>/dev/null || true
+  chmod a+r $GLOB_LIC
+fi
+
+if [ "$GOT_INST" = "" ] && [ "$GOT_GLOB" != "" ]; then
+
+echo "Installing licence file $p in $VERSION"
+ln -s $GLOB_LIC $INST_LIC || true
+
+fi
+done
+
+cd /usr/bin
+
+TORM="$BT_EXECUTABLES"
+
+for ex in $TORM
+do
+
+GOT=`ls -t | grep $ex` || true
+
+if [ "$GOT" != "" ] ; then
+rm -f $ex || true
+fi
+
+ln -s /usr/local/btoolkit/$VERSION/Blauncher $ex || true
+
+done
+
+cd /usr/local/bin
+
+for ex in $TORM
+do
+
+GOT=`ls -t | grep $ex` || true
+
+if [ "$GOT" != "" ] ; then
+rm -f $ex || true
+fi
+
+ln -s /usr/local/btoolkit/$VERSION/Blauncher $ex || true
+
+done
+
+
+# desktop and menus
+# for some unknown reason the btoolkit.desktop file has to be
+# renamed and back again for the icon to appear on the menu ...?
+
+mv /usr/share/applications/btoolkit.desktop /usr/share/applications/btoolkit.desktop.off 2>/dev/null || true
+mv /usr/share/applications/btoolkit.desktop.off /usr/share/applications/btoolkit.desktop 2>/dev/null || true
+
+if [ "$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
+        update-menus || true
+fi

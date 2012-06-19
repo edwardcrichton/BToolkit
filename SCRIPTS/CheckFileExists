@@ -1,0 +1,16 @@
+#! /bin/sh
+
+curdir=`pwd`
+if [ -d $2 ]
+then
+  cd $2
+  if [ -r $1 ]
+  then
+    echo 0 > $curdir/.Bcom
+  else
+    echo 1 > $curdir/.Bcom
+  fi
+else
+  echo 1 > $curdir/.Bcom
+fi
+

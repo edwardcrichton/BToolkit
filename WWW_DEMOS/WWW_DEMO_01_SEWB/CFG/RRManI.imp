@@ -1,0 +1,110 @@
+IMPLEMENTATION
+
+  RRManI
+
+REFINES
+
+  RRMan
+
+SEES
+
+  Bool_TYPE
+
+IMPORTS
+
+  Resource_seq_obj(RESOURCE, 2, 2*max_res),
+  Current_Vvar(Resource_SEQOBJ),
+  Backup_Vvar(Resource_SEQOBJ)
+
+INVARIANT
+
+  Current_Vvar : Resource_seqtok &
+  Backup_Vvar : Resource_seqtok &
+  Current_Vvar /= Backup_Vvar &
+  rfree = ran(Resource_seqstruct(Current_Vvar)) &
+  bkup.rfree = ran(Resource_seqstruct(Backup_Vvar)) &
+  Resource_seqmem = card(rfree) + card(bkup.rfree)
+
+INITIALISATION
+
+  VAR bb, cc, bpp, cpp IN
+    bb, cpp <-- Resource_CRE_SEQ_OBJ;
+    Current_STO_VAR(cpp);
+    cc, bpp <-- Resource_CRE_SEQ_OBJ;
+    Backup_STO_VAR(bpp)
+  END
+
+OPERATIONS
+
+ res <-- rec_alloc  =
+   VAR pp, rr, ll IN
+     pp <-- Current_VAL_VAR;
+     ll <-- Resource_LEN_SEQ_OBJ(pp);
+     rr <-- Resource_VAL_SEQ_OBJ(pp, ll);
+     Resource_POP_SEQ_OBJ(pp);
+     res := rr
+   END;
+
+ ans <-- is_any_free =
+   VAR pp, bb IN
+     pp <-- Current_VAL_VAR;
+     bb <-- Resource_EMP_SEQ_OBJ(pp);
+     ans <-- NEG_BOOL(bb)
+   END;
+
+ rec_free(rr)  =
+   VAR pp, bb IN
+     pp <-- Current_VAL_VAR;
+     bb <-- Resource_PSH_SEQ_OBJ(pp, rr)
+   END;
+
+ ans <-- is_free(rr)  =
+   VAR pp, ll, ff, vv IN
+     pp <-- Current_VAL_VAR;
+     ll <-- Resource_LEN_SEQ_OBJ(pp);
+     ff := FALSE;
+     WHILE ff = FALSE & ll /= 0
+     DO
+       vv <-- Resource_VAL_SEQ_OBJ(pp, ll);
+       IF
+         vv = rr
+       THEN
+         ff := TRUE
+       END;
+       ll := ll - 1
+     VARIANT
+       ll
+     INVARIANT
+       ( ff = TRUE =>
+         rr : ran(1..ll <<| Resource_seqstruct(Current_Vvar)) ) &
+       ( ff = FALSE =>
+         not(rr : ran(1..ll <<| Resource_seqstruct(Current_Vvar))) ) &
+       ll : NAT &
+       (ll /= 0 => ll : dom (Resource_seqstruct(Current_Vvar))) &
+       pp = Current_Vvar &
+       ff : BOOL &
+       Current_Vvar : Resource_seqtok &
+       Backup_Vvar : Resource_seqtok &
+       Current_Vvar /= Backup_Vvar &
+       rfree = ran(Resource_seqstruct(Current_Vvar)) &
+       bkup.rfree = ran(Resource_seqstruct(Backup_Vvar)) &
+       Resource_seqmem = card(rfree) + card(bkup.rfree)
+     END;
+     ans := ff
+   END;
+
+ rec_backup  =
+   VAR bb, cpp, bpp IN
+     cpp <-- Current_VAL_VAR;
+     bpp <-- Backup_VAL_VAR;
+     bb <-- Resource_CPY_SEQ_OBJ(cpp, bpp)
+   END;
+
+ rec_restore  =
+   VAR bb, cpp, bpp IN
+     cpp <-- Current_VAL_VAR;
+     bpp <-- Backup_VAL_VAR;
+     bb <-- Resource_CPY_SEQ_OBJ(bpp, cpp)
+   END
+
+END

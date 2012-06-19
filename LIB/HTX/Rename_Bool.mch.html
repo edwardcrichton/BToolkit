@@ -1,0 +1,163 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Bool">
+  <TITLE>The Rename_Bool machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             24/01/01
+***/
+
+/*
+Description: Renamable Parameterised Library variable machine
+             encapsulating a single READWRITE Boolean
+
+History :
+250101 v0.01 : Created from Rename_Bool
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Rename_Bool(init_val)
+
+/*"
+A renamable parameterised encapsulation of a single READWRITE {\em
+BOOLEAN\/} variable, providing the seven operations {\em VAL, STO,
+EQL, NOT, AND, OR\/} and {\em XOR\/}.  The operations are, where
+necessary, specified in terms of the {\em Bool\_TYPE\/} operations.
+
+The specification variable has the name {\em Rename\_bool\/} and
+the single parameter provides its initial value via its declaration.
+
+Because of the restriction in {\em AMN\/} that all machine parameters
+are natural numbers, the number is converted into a boolean value
+through the {\tt n2b} and {\tt n2b} operators of {\em Byt\_TYPE}.
+Typically, the parameter would be provided as {\tt b2n(bl2b(TRUE))}
+or {\tt b2n(bl2b(FALSE))}.
+
+So, for example, importing {\em prefix\_Bool(b2n(bl2b(TRUE)))\/}
+means that the bool variable will appear in the translated code as
+\ \ {\tt prefix\_bool}\ \ and results in the global data declaration:\\[1ex]
+\hspace*{3em}{\tt VAR prefix\_bool : BOOLEAN = TRUE;}\\[1ex]
+Thus the initialisation requires no translation since the above
+declaration achieves the initialisation.
+"*/
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>       init_val : {0,1}
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>         Rename_bool
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>         Rename_bool : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>    Rename_bool := <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2bl</A>(<A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(init_val))
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf Rename\_VAL}\\[1ex]
+Returns the value of the variable without precondition; translated as:\\\ \ \  {\tt vv := prefix\_bool}.
+"*/
+  vv <-- <A NAME="OPNAME!Rename_VAL">Rename_VAL</A> = <B>BEGIN</B> vv := Rename_bool <B>END</B>;
+
+/*"
+{\bf Rename\_STO}\\[1ex]
+Stores a new value in the variable with precondition that the
+parameter should be a {\em BOOL\/}; translated as:\\\ \ \  {\tt prefix\_bool := vv}.
+"*/
+  <A NAME="OPNAME!Rename_STO">Rename_STO</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) = <B>BEGIN</B> Rename_bool:=vv <B>END</B>;
+
+/*"
+{\bf Rename\_SET}\\[1ex]
+Stores {\em TRUE\/} in the variable; translated as:\\\ \ \  {\tt prefix\_bool := TRUE}.
+"*/
+  <A NAME="OPNAME!Rename_SET">Rename_SET</A> = <B>BEGIN</B> Rename_bool:=TRUE <B>END</B>;
+
+/*"
+{\bf Rename\_RESET}\\[1ex]
+Stores {\em FALSE\/} in the variable; translated as:\\\ \ \  {\tt prefix\_bool := FALSE}.
+"*/
+  <A NAME="OPNAME!Rename_RESET">Rename_RESET</A> = <B>BEGIN</B> Rename_bool:=FALSE <B>END</B>;
+
+/*"
+{\bf Rename\_EQL}\\[1ex]
+Returns a boolean indicating whether or not the value stored has the same
+value as the input parameter, with precondition that the
+parameter should be a {\em BOOL\/};
+translated as:\\\ \ \  {\tt vv := prefix\_bool}.
+"*/
+  bb <-- <A NAME="OPNAME!Rename_EQL">Rename_EQL</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) =
+    <B>BEGIN</B>
+      bb := <B>bool</B>( (vv=TRUE & Rename_bool=TRUE ) or (vv=FALSE & Rename_bool=FALSE ) )
+    <B>END</B>;
+
+/*"
+{\bf Rename\_NOT}\\[1ex]
+Performs a logical {\tt NOT} of the variable, storing the result;
+translated as:\\\ \ \  {\tt prefix\_bool := NOT(prefix\_bool)}.
+"*/
+  <A NAME="OPNAME!Rename_NOT">Rename_NOT</A> = <B>BEGIN</B> Rename_bool := <B>bool</B>(Rename_bool=FALSE) <B>END</B>;
+
+/*"
+{\bf Rename\_AND}\\[1ex]
+Changes the variable to be the `logical and' of itself and its input
+parameter, with precondition that the parameter has type {\em BOOL\/};
+translated as:\\\ \ \  {\tt prefix\_bool := (prefix\_bool AND vv)}.
+"*/
+  <A NAME="OPNAME!Rename_AND">Rename_AND</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) = 
+    <B>BEGIN</B> Rename_bool := <B>bool</B>((Rename_bool=TRUE) & (vv=TRUE)) <B>END</B>;
+
+/*"
+{\bf Rename\_OR}\\[1ex]
+Changes the variable to be the `logical or' of itself and its input
+parameter, with precondition that the parameter has type {\em BOOL\/};
+translated as:\\\ \ \  {\tt prefix\_bool := (prefix\_bool OR vv)}.
+"*/
+  <A NAME="OPNAME!Rename_OR">Rename_OR</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) =
+    <B>BEGIN</B> Rename_bool := <B>bool</B>((Rename_bool=TRUE) or (vv=TRUE)) <B>END</B>;
+
+/*"
+{\bf Rename\_XOR}\\[1ex]
+Changes the variable to be the `logical xor' of itself and its input
+parameter, with precondition that the parameter has type {\em BOOL\/};
+translated as:\\\ \ \  {\tt prefix\_bool := (prefix\_bool XOR vv)}.
+"*/
+  <A NAME="OPNAME!Rename_XOR">Rename_XOR</A>(vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>) =
+    <B>BEGIN</B>
+      Rename_bool := <B>bool</B> ( (
+                      ((Rename_bool=TRUE) & (vv=FALSE)) or
+                      ((Rename_bool=FALSE) & (vv=TRUE))
+                             )
+                    )
+     <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:07:21 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

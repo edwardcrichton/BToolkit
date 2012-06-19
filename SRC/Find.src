@@ -1,0 +1,872 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define FindTac ((WRITE;ARI;CATL;SHELL;MAP;MODR~)~;FindX)~
+
+#define Find(x) bcall(FindTac : find_001(x))
+
+#define InformNotAppear(x) Writef(("|      Not found (in analysed constructs)|"))
+
+#define InformNotFound Writef(("|      Not found (in analysed constructs)|"))
+
+#define InformCantReadFile(a) Writef(bcatl("|    &ERROR&||    Can't read file ",a,"|"))
+
+THEORY FindWriteX IS
+
+#define FindWrite(x) bcall(((WRITE)~;FindWriteX)~:fw0(x))
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  fw1;
+
+  bget(".Bcom",x) &
+  Writef((x))
+ =>
+  fw1;
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  fw0(x);
+
+  bconnect(".Bcom") &
+  bprintf("\"") &
+  bprintf(x) &
+  bprintf("\"") &
+  bclose &
+  fw1
+ =>
+  fw0(x)
+
+END
+
+&
+
+THEORY FindX IS
+
+#define  op_names_sto            (FindX.1)
+#define  modr_op_names_sto(x)    bmodr(op_names_sto,x)
+#define  read_op_names_sto(x)    brule(op_names_sto,x)
+
+#define  var_names_sto           (FindX.2)
+#define  modr_var_names_sto(x)   bmodr(var_names_sto,x)
+#define  read_var_names_sto(x)   brule(var_names_sto,x)
+
+#define  set_names_sto           (FindX.3)
+#define  modr_set_names_sto(x)   bmodr(set_names_sto,x)
+#define  read_set_names_sto(x)   brule(set_names_sto,x)
+
+#define  params_sto              (FindX.4)
+#define  modr_params_sto(x)      bmodr(params_sto,x)
+#define  read_params_sto(x)      brule(params_sto,x)
+
+
+#define  set_to_sto              (FindX.5)
+#define  modr_set_to_sto(x)      bmodr(set_to_sto,x)
+#define  read_set_to_sto(x)      brule(set_to_sto,x)
+
+
+#define  inp_params_sto          (FindX.6)
+#define  modr_inp_params_sto(x)  bmodr(inp_params_sto,x)
+#define  read_inp_params_sto(x)  brule(inp_params_sto,x)
+
+
+#define  out_params_sto          (FindX.7)
+#define  modr_out_params_sto(x)  bmodr(out_params_sto,x)
+#define  read_out_params_sto(x)  brule(out_params_sto,x)
+
+
+#define  param_typ_sto          (FindX.8)
+#define  modr_param_typ_sto(f)  bmodr(param_typ_sto,f)
+#define  read_param_typ_sto(f)  brule(param_typ_sto,f)
+
+
+#define  find_mch_sto          (FindX.9)
+#define  modr_find_mch_sto(f)  bmodr(find_mch_sto,f)
+#define  read_find_mch_sto(f)  brule(find_mch_sto,f)
+
+
+#define  find_ref_sto          (FindX.10)
+#define  modr_find_ref_sto(f)  bmodr(find_ref_sto,f)
+#define  read_find_ref_sto(f)  brule(find_ref_sto,f)
+
+
+#define  temp_sto          (FindX.11)
+#define  modr_temp_sto(f)  bmodr(temp_sto,f)
+#define  read_temp_sto(f)  brule(temp_sto,f)
+
+/* not appear flag: FindX.12 */
+
+#define  sought_name          (FindX.13)
+#define  modr_sought_name(f)  bmodr(sought_name,f)
+#define  read_sought_name(f)  brule(sought_name,f)
+
+#define  found_ref          (FindX.14)
+#define  modr_found_ref(f)  bmodr(found_ref,f)
+#define  read_found_ref(f)  brule(found_ref,f)
+
+#define  displayed_list          (FindX.15)
+#define  modr_displayed_list(f)  bmodr(displayed_list,f)
+#define  read_displayed_list(f)  brule(displayed_list,f)
+
+  ?;?;?;?;?; ?;?;?;?;?; ?;?;?;?;?; ?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  modr_found_ref(0)
+ =>
+  find_17;
+
+  read_sought_name(a) &
+  read_found_ref(0) &
+  FindWrite(("|      Does not appear in other constructs|",a))
+ =>
+  find_17;
+
+  brule(FindX.12,1) &
+  bmodr(FindX.12,0) &
+  read_sought_name(a) &
+  read_found_ref(0) &
+  InformNotAppear(a)
+ =>
+  find_17;
+
+  FindWrite(("        %|",m))
+ =>  
+  find_16(m)(x)(a);
+
+  read_found_ref(0) &
+  modr_found_ref(1) &
+  FindWrite(("|      Appears in:|",a)) &
+  FindWrite(("        %|",m))
+ =>  
+  find_16(m)(x)(a);
+
+  brule(FindX.12,1) &
+  bmodr(FindX.12,0) &
+  read_found_ref(0) &
+  modr_found_ref(1) &
+  FindWrite(("|      Appears in:|",a)) &
+  FindWrite(("        %|",m))
+ =>  
+  find_16(m)(x)(a);
+
+  read_displayed_list(L) &
+  bsearch(m,L,M)
+ =>
+  find_16(m)(x)(a);
+
+/*
+  a\x
+ =>
+  find_16(m)(x)(a);
+*/
+
+  InformCantReadFile(z) &
+  PFZ
+ =>
+  find_15(m)(z)(a);
+
+  bget(z,x) &
+  find_16(m)(x)(a)
+ =>
+  find_15(m)(z)(a);
+  
+  find_14(m);
+
+  read_sought_name(a) &
+  IsCfg(m.imp) &
+  find_15(m)(bcatl("ANL/",m,".imp.anl"))(a)
+ =>
+  find_14(m);
+
+  read_sought_name(a) &
+  IsCfg(m.ref) &
+  find_15(m)(bcatl("ANL/",m,".ref.anl"))(a)
+ =>
+  find_14(m);
+
+  read_sought_name(a) &
+  IsCfg(m.mch) &
+  find_15(m)(bcatl("ANL/",m,".mch.anl"))(a)
+ =>
+  find_14(m);
+
+  read_find_ref_sto(M) &
+  modr_found_ref(0) &
+  find_14 bsmap M &
+  find_17
+ =>  
+  find_13;
+
+  read_sought_name(a) &
+  read_find_ref_sto(?) &
+  FindWrite(("|      Does not appear in other constructs|",a))
+ =>  
+  find_13;
+
+  brule(FindX.12,1) &
+  bmodr(FindX.12,0) &
+  read_sought_name(a) &
+  read_find_ref_sto(?) &
+  InformNotAppear(a)
+ =>  
+  find_13;
+
+  find_12(x);
+
+  read_find_ref_sto(A) &
+  modr_find_ref_sto((A,a))
+ =>
+  find_12(a.b.anl);
+
+  read_find_mch_sto(M) &
+  bsearch(a,M,P)
+ =>
+  find_12(a.b.anl);
+
+  find_11(x);
+
+  IsCfg(m.e) &
+  read_find_mch_sto(M) &
+  modr_find_mch_sto((M,m))
+ =>
+  find_11(m(x));
+
+  read_find_mch_sto(M) &
+  bsearch(m,M,P)
+ =>
+  find_11(m(x));
+
+  bget(".BBcom",X) &
+/***
+HERE((".BBcom":X))&
+***/
+  find_12 bsmap X &
+  find_13
+ =>
+  find_10(n);
+
+  btest(n<=8) &
+  brule(FindX.n,X) &
+  find_11 bsmap X &
+  find_10(n+1)
+ =>
+  find_10(n);
+
+  brule(FindX.12,1) & /* NotAppear */
+/*
+  bmodr(FindX.12,0) &
+*/
+  find_10(9)
+ =>
+  find_10(1);
+
+
+
+
+  display_type(x);
+
+  read_param_typ_sto(a:t) &
+  FindWrite(("|      % : %|",a,t))
+  =>
+  display_type(x(a),1,n);
+
+  read_param_typ_sto(S) &
+  bsearch((a:t),S,T) &
+  FindWrite(("|      % : %|",a,a))
+  =>
+  display_type(x(a),1,n);
+
+
+
+
+  read_displayed_list(X) &
+  FindWrite(("        %|",x))
+ =>
+  display_list(x(a),m,n);
+
+  read_displayed_list(X) &
+  FindWrite((":|        %|",x))
+ =>
+  display_list(x(a),1,n);
+
+  read_displayed_list(X) &
+  modr_displayed_list((X,x)) &
+  FindWrite((" %|",x))
+ =>
+  display_list(x(a),1,1);
+
+
+  read_params_sto(x) &
+  Writef(("|      PARAMETER in")) &
+  display_list bnmap x &
+  display_type bnmap x
+ =>
+  display_param;
+
+  read_params_sto(?)
+ =>
+  display_param;
+
+
+  FindWrite(("% : %|               ",v,t))
+ =>
+  display_inp_params_1((v:t),n,m);
+
+  FindWrite(("% : %",v,t))
+ =>
+  display_inp_params_1((v:t),n,n);
+
+  read_inp_params_sto(x) &
+  Writef(("|      Input  - ")) &
+  display_inp_params_1 bnmap x &
+  Writef(("|"))
+ =>
+  display_inp_params;
+
+  read_inp_params_sto(?)
+ =>
+  display_inp_params;
+
+
+  FindWrite(("% : %|               ",v,t))
+ =>
+  display_out_params_1((v:t),n,m);
+
+  FindWrite(("% : %",v,t))
+ =>
+  display_out_params_1((v:t),n,n);
+
+  read_out_params_sto(x) &
+  Writef(("|      Output - ")) &
+  display_out_params_1 bnmap x  &
+  Writef(("|"))
+ =>
+  display_out_params;
+
+  read_out_params_sto(?)
+ =>
+  display_out_params;
+
+
+
+
+
+  FindWrite(("|      Set to % in %",t,x))
+ =>
+  display_set_to_1(x,t);
+
+  read_set_to_sto(x) &
+  display_set_to_1(x) &
+  Writef(("|"))
+ =>
+  display_set_to;
+
+  read_set_to_sto((x;y)) &
+  display_set_to_1 bsmap (x;y) &
+  Writef(("|"))
+ =>
+  display_set_to;
+
+  read_set_to_sto(?) 
+ =>
+  display_set_to;
+
+
+
+  read_set_names_sto(x) &
+  Writef(("|      SET  in")) &
+  display_list bnmap x
+ =>
+  display_set;
+
+  read_set_names_sto(?)
+ =>
+  display_set;
+
+
+
+  display_var_type(x);
+
+  FindWrite(("|      % : %|",a,t))
+  =>
+  display_var_type(x(a:t),1,n);
+
+
+  Writef(("|      VARIABLE/CONSTANT in"))
+ =>
+  determine_VRB_CST3(d)(F)(a);
+
+  bsearch(a,(F,?),G) &
+  Writef(("|      CONSTANT in"))
+ =>
+  determine_VRB_CST3(d)(F)(a);
+
+  bsearch(a,(d,?),e) &
+  Writef(("|      VARIABLE in"))
+ =>
+  determine_VRB_CST3(d)(F)(a);
+
+  InformCantReadFile(z) &
+  PFZ
+ =>
+  determine_VRB_CST2(z)(a);
+
+  bget(z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  determine_VRB_CST3(d)(F)(a)
+ =>
+  determine_VRB_CST2(z)(a);
+
+  determine_VRB_CST1(m)(a);
+
+  IsCfg(m.imp) &
+  determine_VRB_CST2(bcatl("ANL/",m,".imp.anl"))(a)
+ =>
+  determine_VRB_CST1(m)(a);
+
+  IsCfg(m.ref) &
+  determine_VRB_CST2(bcatl("ANL/",m,".ref.anl"))(a)
+ =>
+  determine_VRB_CST1(m)(a);
+
+  IsCfg(m.mch) &
+  determine_VRB_CST2(bcatl("ANL/",m,".mch.anl"))(a)
+ =>
+  determine_VRB_CST1(m)(a);
+
+  read_sought_name(a) &
+  determine_VRB_CST1(x)(a)
+ =>
+  determine_VRB_CST(x(t));
+
+  read_sought_name(a) &
+  determine_VRB_CST1(x)(a)
+ =>
+  determine_VRB_CST(X;x(t));
+
+  read_var_names_sto(x) &
+  determine_VRB_CST(x) &
+  display_list bnmap x &
+  display_var_type bnmap x
+ =>
+  display_var;
+
+  read_var_names_sto(?)
+ =>
+  display_var;
+
+
+
+  read_op_names_sto(x) &
+  Writef(("|      OPERATION in")) &
+  display_list bnmap x
+ =>
+  display_ops;
+
+  read_op_names_sto(?)
+ =>
+  display_ops;
+
+
+
+  FindWrite(("|    %|",a))
+  =>  
+  display_name(a);
+
+
+
+
+  find_sets_set_1(x);
+
+  bsearch((S=T),F,G) &
+  read_set_to_sto(X) &
+  modr_set_to_sto((X;x,T))
+ =>
+  find_sets_set_1(x,F,x(S));
+
+  bsearch((S=T),F,G) &
+  read_set_to_sto(?) &
+  modr_set_to_sto((x,T))
+ =>
+  find_sets_set_1(x,F,x(S));
+
+  read_set_to_sto(W) &
+  modr_set_to_sto((W;x,T))
+ =>
+  find_sets_set_1(x,S=T,x(S));
+
+  read_set_to_sto(?) &
+  modr_set_to_sto((x,t))
+ =>
+  find_sets_set_1(x,S=T,x(S));
+
+  read_set_names_sto(S) &
+  find_sets_set_1(x,s) bsmap S
+ =>
+  find_sets_set_0(x,s);
+
+  read_set_names_sto(?)
+ =>
+  find_sets_set_0(x,s);
+
+  read_param_typ_sto(S) &
+  modr_param_typ_sto((S,(a:t)))
+ =>
+  update_param_typ_sto(a:t);
+
+  rem_param_var(z);
+
+  read_var_names_sto(X) &
+  bsearch(x(a:t),X,Y) &
+  update_param_typ_sto(a:t) &
+  modr_var_names_sto(Y)
+ =>
+  rem_param_var(a,x,a);
+
+  read_var_names_sto(x(a:t)) &
+  update_param_typ_sto(a:t) &
+  modr_var_names_sto(?)
+ =>
+  rem_param_var(a,x,a);
+
+
+
+  rem_param_set(z);
+
+  read_set_names_sto(X) &
+  bsearch(x(a:t),X,Y) &
+  update_param_typ_sto(a:t) &
+  modr_set_names_sto(Y)
+ =>
+  rem_param_set(a,x,a);
+
+  read_set_names_sto(x(a:t)) &
+  update_param_typ_sto(a:t) &
+  modr_set_names_sto(?)
+ =>
+  rem_param_set(a,x,a);
+
+
+
+
+
+  find_param(z);
+
+  read_params_sto(X) &
+  modr_params_sto((X;x(a)))
+ =>
+  find_param(a,x,a);
+
+  read_params_sto(X) &
+  bsearch(x(z),X,Y)                 /* already there */
+ =>
+  find_param(a,x,a);
+
+  read_params_sto(x(z))               /* already there */
+ =>
+  find_param(a,x,a);
+
+  read_params_sto(?) &
+  modr_params_sto(x(a))
+ =>
+  find_param(a,x,a);
+
+
+
+  find_set(z);
+
+  read_set_names_sto(X) &
+  modr_set_names_sto((X;x(a)))
+ =>
+  find_set(a,x,(given(a)));
+
+  read_set_names_sto(X) &
+  bsearch(x(z),X,Y)                      /* already there */
+ =>
+  find_set(a,x,(given(a)));
+
+  read_set_names_sto(x(z))               /* already there */
+ =>
+  find_set(a,x,(given(a)));
+
+  read_set_names_sto(?) &
+  modr_set_names_sto(x(a))
+ =>
+  find_set(a,x,(given(a)));
+
+
+
+  find_var(z);
+
+  read_var_names_sto(X) &
+  modr_var_names_sto((X;x(a:y)))
+ =>
+  find_var(a,x,(a:y));
+
+  read_var_names_sto(X) &
+  bsearch(x(z),X,Y)                      /* already there */
+ =>
+  find_var(a,x,(a:y));
+
+  read_var_names_sto(x(z))               /* already there */
+ =>
+  find_var(a,x,(a:y));
+
+  read_var_names_sto(?) &
+  modr_var_names_sto(x(a:y))
+ =>
+  find_var(a,x,(a:y));
+
+
+
+  bsearch((i:T),R,S) &
+  read_inp_params_sto(X) &
+  modr_inp_params_sto((X,(i:T)))
+ =>
+  find_inp_params(R,i);
+
+  bsearch((i:T),R,S) &
+  read_inp_params_sto(X) &
+  bsearch((i:T),X,Y)
+ =>
+  find_inp_params(R,i);
+
+  bsearch((i:T),R,S) &
+  read_inp_params_sto(?) &
+  modr_inp_params_sto((i:T))
+ =>
+  find_inp_params(R,i);
+
+  bsearch((i:T),R,S) &
+  read_inp_params_sto((i:T))
+ =>
+  find_inp_params(R,i);
+
+
+
+  bsearch((o:T),R,S) &
+  read_out_params_sto(X) &
+  modr_out_params_sto((X,(o:T)))
+ =>
+  find_out_params(R,o);
+
+  bsearch((o:T),R,S) &
+  read_out_params_sto(X) &
+  bsearch((o:T),X,Y)
+ =>
+  find_out_params(R,o);
+
+  bsearch((o:T),R,S) &
+  read_out_params_sto(?) &
+  modr_out_params_sto((o:T))
+ =>
+  find_out_params(R,o);
+
+  bsearch((o:T),R,S) &
+  read_out_params_sto((o:T))
+ =>
+  find_out_params(R,o);
+
+
+
+  find_op_params(x);
+
+  read_temp_sto((x,X)) &
+  bsearch((a(s)==r),X,Y) &
+  find_inp_params(r&?) bsmap (i) &
+  find_out_params(r&?) bsmap (o)
+ =>
+  find_op_params(x(a)(o;i));
+
+  read_temp_sto((x,X)) &
+  bsearch((a(s)==r),X,Y) &
+  find_out_params(r&?) bsmap (o)
+ =>
+  find_op_params(x(a)(o;?));
+
+  read_temp_sto((x,X)) &
+  bsearch((a(s)==r),X,Y) &
+  find_inp_params(r&?) bsmap (i)
+ =>
+  find_op_params(x(a)(?;i));
+
+  find_op_params(x(a)(?;?));
+
+
+
+
+  find_ops(z);
+
+  read_op_names_sto(X) &
+  modr_op_names_sto((X;x(a))) &
+  find_op_params(x(a)(o;i))
+ =>
+  find_ops(a,x,(a(o;i)==(y)));
+
+  read_op_names_sto(X) &
+  bsearch(x(z),X,Y)                     /* already there */
+ =>
+  find_ops(a,x,(a(o;i)==(y)));
+
+  read_op_names_sto(x(z))               /* already there */
+ =>
+  find_ops(a,x,(a(o;i)==(y)));
+
+  read_op_names_sto(?) &
+  modr_op_names_sto(x(a)) &
+  find_op_params(x(a)(o;i))
+ =>
+  find_ops(a,x,(a(o;i)==(y)));
+
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  find_4(a,x)(f);
+
+  bget(f,(s|t)) &
+  find_var(a,x) bsmap s &
+  modr_temp_sto((x,(s;?))) &
+  find_set(a,x) bsmap s &
+  find_param(a,x) bsmap t &
+  rem_param_var(a,x) bsmap t &
+  rem_param_set(a,x) bsmap t &
+  find_sets_set_0(x,s)
+ =>
+  find_4(a,x)(f);
+
+  bget(f,(r|s|t)) &
+  modr_temp_sto((x,(r;?))) &
+  find_ops(a,x) bsmap r &
+  modr_temp_sto((x,(s;?))) &
+  find_var(a,x) bsmap s &
+  find_set(a,x) bsmap s &
+  find_param(a,x) bsmap t &
+  rem_param_var(a,x) bsmap t &
+  rem_param_set(a,x) bsmap t
+ =>
+  find_4(a,x)(f);
+
+  find_3(x);
+
+  IsCfg(x.e) &
+  find_4(a,x)(bcatl("TYP/",x,".mri.typ"))
+ =>
+  find_3(a,x.mri.typ);
+
+
+
+
+  check_found;
+
+  read_op_names_sto(?) &
+  read_var_names_sto(?) &
+  read_set_names_sto(?) &
+  read_params_sto(?) &
+  InformNotFound &
+  bmodr(FindX.12,1)
+ =>
+  check_found;
+
+  find_3(a) bsmap x &
+/*   display_name(a) &   */
+  display_ops &
+  display_param &
+  display_var &
+  display_set &
+  display_set_to &
+  display_inp_params &
+  display_out_params &
+  check_found
+ =>
+  find_2(a)(x);
+
+/*
+  InformNotAppear(a) &
+*/
+  bmodr(FindX.12,1)
+ =>
+  find_2(a)(?);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>  
+  find_1(a);
+
+  bget(".Bcom",x) &
+/***
+HERE((".Bcom":x))&
+***/
+  find_2(a)(x)
+ =>  
+  find_1(a);
+
+  modr_sought_name(a) &
+  modr_displayed_list(?) &
+  modr_op_names_sto(?) &
+  modr_var_names_sto(?) &
+  modr_set_names_sto(?) &
+  modr_params_sto(?) &
+  modr_set_to_sto(?) &
+  modr_inp_params_sto(?) &
+  modr_out_params_sto(?) &
+  modr_param_typ_sto(?) &
+  modr_find_mch_sto(?) &
+  modr_find_ref_sto(?) &
+  modr_temp_sto(?) &
+  bshell(bcatl("$BKIT/BLIB/FindFile ",a)) &
+  find_1(a) &
+  find_10(1) &
+  modr_op_names_sto(?) &
+  modr_var_names_sto(?) &
+  modr_set_names_sto(?) &
+  modr_params_sto(?) &
+  modr_set_to_sto(?) &
+  modr_inp_params_sto(?) &
+  modr_out_params_sto(?) &
+  modr_param_typ_sto(?) &
+  modr_find_mch_sto(?) &
+  modr_find_ref_sto(?) &
+  modr_temp_sto(?)
+ =>
+  find_0(a);
+
+  FindWrite(("|    %:|",x)) &
+  find_0(x)
+ =>
+  find_01(x);
+
+   FifoWrite_NoStore((BT_ERR_M,"Input should be an identifier or identifier list|without repetitions and separated by commas",0))
+ =>
+  find_001(a);
+
+  blident(a) &
+  find_01 bsmap a
+ =>
+  find_001(a)
+
+END

@@ -1,0 +1,40 @@
+#! /bin/sh
+
+###
+### get devdir
+###
+devdir=`pwd`
+
+###
+### make sure directory DECCO exists in $devdir
+###
+if [ ! -d CDE/PASP/DECCO ]
+then
+  mkdir CDE/PASP/DECCO
+fi
+
+###
+### clean DECCO
+###
+rm -f CDE/PASP/DECCO/*
+
+###
+### create link in $HOME DECCO_DEV to $devdir/CDE/PASP
+###
+cd $HOME
+rm -f DECCO_DEV
+ln -s $devdir/CDE/PASP/DECCO DECCO_DEV
+if [ $? = 0 ]
+then
+  printf "\n\n  Created link in `pwd`:\n\n    DECCO_DEV -> $devdir/CDE/PASP/DECCO \n\n"
+else
+  printf "\n  ln -s $devdir DECCO_DEV failed\n\n"
+  exit 1
+fi
+
+###
+### cd back to $devdir abd invoke BToolkit
+###
+cd $devdir
+$BKIT/BToolkit
+

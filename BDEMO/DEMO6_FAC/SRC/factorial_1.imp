@@ -1,0 +1,65 @@
+IMPLEMENTATION
+
+/*"This implementation is a robust implementation of factorial "*/
+
+  factorial_1
+
+REFINES
+
+  factorial
+
+IMPORTS
+
+/*"An integer machine is used "*/
+
+  factorial_Nvar(my_maxint)
+
+SEES
+
+  Bool_TYPE, Scalar_TYPE, Scalar_TYPE_Ops
+
+PROPERTIES
+
+  my_maxint =  MaxScalar
+
+/*" \newpage "*/
+
+OPERATIONS
+
+/*" This implementation returns factorial (if possible). "*/
+
+ ret <-- comp_fac(inp)  = 
+    BEGIN
+      VAR in_range,done,count IN
+        factorial_STO_NVAR(1);
+        count <-- SCL(inp);
+        done <-- EQL(count,0);
+        IF done = FALSE THEN
+          in_range <-- factorial_PRE_MUL_NVAR(count);
+          WHILE in_range = TRUE & done = FALSE DO
+            factorial_MUL_NVAR(count);
+            count <-- DEC(count);
+            done <-- EQL(count,0);
+            in_range <-- factorial_PRE_MUL_NVAR(count)
+          INVARIANT
+            count: NAT &
+            count: 0..my_maxint &
+            factorial_Nvar: 0..my_maxint &
+            (done = TRUE => count = 0) &
+            (done = TRUE => in_range = TRUE) &
+            (done = FALSE => count /= 0) &
+            (in_range = TRUE => math_fac(inp) = math_fac(count) * factorial_Nvar) &
+            (in_range = TRUE => factorial_Nvar * count <= my_maxint)
+          VARIANT
+            count
+          END
+        END;
+        IF done = TRUE THEN
+          ret<--factorial_VAL_NVAR
+        ELSE
+          ret := 0
+        END
+      END
+    END
+
+END

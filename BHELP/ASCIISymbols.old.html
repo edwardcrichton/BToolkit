@@ -1,0 +1,247 @@
+<HEAD>
+<TITLE>ASCII Symbols for AMN</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="ASCII"><HR></A>
+<H1>ASCII Symbols for the Abstract Machine Notation</H1>
+
+<H2>Table of relation types</H2>
+<PRE>
+RELATIONS          Mathematical        Cardinality    Optionality
+  Symbol            type               Domain/Range   Domain/Range
+             
+  &lt;-&gt;              <A HREF="MathsNotation.html#Relations!Relation">relation</A>              many/many  optional/optional  
+
+  +-&gt;              <A HREF="MathsNotation.html#Functions!Partial">partial function</A>      many/one   optional/optional
+
+  --&gt;              <A HREF="MathsNotation.html#Functions!Total">total function</A>        many/one  mandatory/optional
+
+  +-&gt;&gt;             <A HREF="MathsNotation.html#Surjection!Partial">partial surjection</A>    many/one   optional/mandatory
+
+  --&gt;&gt;             <A HREF="MathsNotation.html#Surjection!Total">total surjection</A>      many/one  mandatory/mandatory
+
+  &gt;+&gt;              <A HREF="MathsNotation.html#Injection!Partial">partial injection</A>      one/one   optional/optional
+
+  &gt;-&gt;              <A HREF="MathsNotation.html#Injection!Total">total injection</A>        one/one  mandatory/optional
+
+  &gt;-&gt;&gt;             <A HREF="MathsNotation.html#Functions!Bijection">bijection</A>              one/one  mandatory/mandatory
+</PRE>
+
+<H2>AMN Symbols</H2>
+<PRE>
+  &                <A HREF="MathsNotation.html#Conjunction">logical and</A>, conjunction
+
+  or               <A HREF="MathsNotation.html#Disjunction">logical disjunction</A>
+
+  =&gt;               <A HREF="MathsNotation.html#Implication">logical implication</A>, implies
+
+  &lt;=&gt;              <A HREF="MathsNotation.html#Equivalence">logical equivalence</A>, if and only if
+
+  not              <A HREF="MathsNotation.html#Negation">logical negation</A> 
+
+  !                <A HREF="MathsNotation.html#Quantification!Universal">universal quantification</A>, for all
+
+  #                <A HREF="MathsNotation.html#Quantification!Existential">existential quantification</A>, there exists 
+
+  =                <A HREF="MathsNotation.html#Equals">equality</A>
+
+  /=               <A HREF="MathsNotation.html#Negation!Not_Equals">inequality</A>  
+
+  ==               <A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite rule</A>
+
+  |-&gt;              <A HREF="MathsNotation.html#Ordered_Pair">ordered pair</A>, maplet
+
+  :                <A HREF="MathsNotation.html#Sets!Membership">set membership</A>, belongs to, element of 
+
+  /:               <A HREF="MathsNotation.html#Negation!Not_Set_Member">set non-membership</A>
+
+  &lt;:               <A HREF="MathsNotation.html#Sets!Inclusion">set inclusion</A>, subset of
+
+  /&lt;:              <A HREF="MathsNotation.html#Negation!Not_Set_Inclusion">set non-inclusion</A> 
+
+  *                <A HREF="MathsNotation.html#Cartesian_Product">Cartesian product</A> 
+
+  \/               <A HREF="MathsNotation.html#Sets!Union">set union</A> 
+
+  /\               <A HREF="MathsNotation.html#Sets!Intersection">set intersection</A> 
+
+  -                <A HREF="MathsNotation.html#Sets!Difference">set difference</A> 
+
+  {}               <A HREF="MathsNotation.html#Sets!Empty">empty set</A>, null set
+
+  POW              <A HREF="MathsNotation.html#Sets!Power">powerset</A>
+
+  POW1             <A HREF="MathsNotation.html#Sets!Subsets!Non_empty">set of all non-empty subsets</A> 
+
+  FIN              <A HREF="MathsNotation.html#Sets!Subsets!Finite">set of all finite subsets</A> 
+
+  FIN1             <A HREF="MathsNotation.html#Sets!Subsets!Finite_Non_Empty">set of all non-empty finite subsets</A>
+
+  {E}              <A HREF="MathsNotation.html#Sets!Singleton">singleton set</A>
+
+  {E,F}            <A HREF="MathsNotation.html#Sets!Enumeration">enumerated set</A>        
+
+  union            <A HREF="MathsNotation.html#Sets!Union!Generalised">generalised union</A>
+
+  inter            <A HREF="MathsNotation.html#Sets!Intersection!Generalised">generalised intersection</A> 
+
+  UNION(z).(P | E) <A HREF="MathsNotation.html#Sets!Union!UGeneralised">generalised union</A>
+
+  INTER(z).(P | E) <A HREF="MathsNotation.html#Sets!Intersection!UGeneralised">generalised intersection</A>
+
+  &gt;                <A HREF="MathsNotation.html#Natural_Numbers!Inequality">strict inequality</A>, greater than
+
+  &lt;                <A HREF="MathsNotation.html#Natural_Numbers!Inequality">strict inequality</A>, less than
+   
+  &gt;=               <A HREF="MathsNotation.html#Natural_Numbers!Inequality">inequality</A>, greater than or equal
+
+  &lt;=               <A HREF="MathsNotation.html#Natural_Numbers!Inequality">inequality</A>, less than or equal
+
+  NAT              <A HREF="MathsNotation.html#Natural_Numbers!Set_of">set of natural numbers</A>  
+
+  NAT1             <A HREF="MathsNotation.html#Natural_Numbers!Set_of!Non_zero">set of non-zero natural numbers</A> 
+
+  max              <A HREF="MathsNotation.html#Natural_Numbers!Maximum">maximum</A>
+
+  min              <A HREF="MathsNotation.html#Natural_Numbers!Minimum">minimum</A>
+
+  +                <A HREF="MathsNotation.html#Natural_Numbers!Addition">addition</A>, plus
+
+  -                <A HREF="MathsNotation.html#Natural_Numbers!Difference">difference</A>, minus
+
+  *                <A HREF="MathsNotation.html#Natural_Numbers!Product">product</A>
+
+  /                <A HREF="MathsNotation.html#Natural_Numbers!Division">division</A>
+
+  mod              <A HREF="MathsNotation.html#Natural_Numbers!Remainder">remainder of integer division</A>
+
+  ..               <A HREF="MathsNotation.html#Natural_Numbers!Interval">interval</A>
+
+  card             <A HREF="MathsNotation.html#Sets!Cardinality">set cardinality</A>
+
+  SIGMA            <A HREF="MathsNotation.html#Sets!Summation">summation</A>  
+
+  PI               <A HREF="MathsNotation.html#Sets!Product">product</A>
+
+  dom              <A HREF="MathsNotation.html#Relations!Domain">domain</A> of relation           
+
+  ran              <A HREF="MathsNotation.html#Relations!Codomain">co-domain</A> of relation    
+
+  ;                <A HREF="MathsNotation.html#Relations!Composition">relational composition</A>
+
+  circ             <A HREF="MathsNotation.html#Relations!Composition">relational composition</A>
+
+  id               <A HREF="MathsNotation.html#Relations!Identity">identity relation</A>   
+
+  &lt;|               <A HREF="MathsNotation.html#Relations!Domain_Restriction">domain-restriction</A>
+
+  |&gt;               <A HREF="MathsNotation.html#Relations!Range_Restriction">range-restriction</A>
+
+  &lt;&lt;|              <A HREF="MathsNotation.html#Relations!Anti_Domain_Restriction">anti-domain-restriction</A>
+
+  |&gt;&gt;              <A HREF="MathsNotation.html#Relations!Anti_Range_Restriction">anti-range-restriction</A>
+
+  r~               <A HREF="MathsNotation.html#Relations!Inverse">inverse</A> 
+
+  r[s]             <A HREF="MathsNotation.html#Relations!Image">image</A>    
+
+  &lt;+  +&gt;           <A HREF="MathsNotation.html#Relations!Overriding">overriding</A> 
+
+  &gt;&lt;               <A HREF="MathsNotation.html#Relations!Product,_Direct">direct product</A>
+
+  ||               <A HREF="MathsNotation.html#Relations!Product,_Parallel">parallel product</A>
+
+  iterate(r,n)     <A HREF="MathsNotation.html#Relations!Iteration">iteration</A>     
+
+  closure(r)       <A HREF="MathsNotation.html#Relations!Closure">reflexive transitive closure</A>
+
+  prj1             <A HREF="MathsNotation.html#Relations!Projection">projection</A> 
+
+  prj2             <A HREF="MathsNotation.html#Relations!Projection">projection</A>
+
+  %(z).(P | E)     <A HREF="MathsNotation.html#Quantification!Lambda_Abstraction">lambda abstraction</A>
+
+  f(x)             <A HREF="MathsNotation.html#Functions!Application">function application</A>
+
+  &lt;&gt;               <A HREF="MathsNotation.html#Sequences!Empty">empty sequence</A>
+
+  seq(S)           set of <A HREF="MathsNotation.html#Sequences!Finite">finite sequences</A> over S
+
+  iseq(S)          set of <A HREF="MathsNotation.html#Sequences!Injective">injective sequences</A> over S
+
+  seq1(S)          set of <A HREF="MathsNotation.html#Sequences!Non_empty">non-empty sequences</A> over S
+
+  perm(S)          set of <A HREF="MathsNotation.html#Sequences!Bijective">bijective sequences</A> over S
+
+  ^                <A HREF="MathsNotation.html#Sequences!Concatenation">sequence concatenation</A>
+
+  -&gt;               <A HREF="MathsNotation.html#Sequences!Prepend">prepend</A>   
+
+  &lt;-               <A HREF="MathsNotation.html#Sequences!Append">append</A>
+
+  [E]              <A HREF="MathsNotation.html#Sequences!Singleton">singleton sequence</A>
+
+  [E,F]            <A HREF="MathsNotation.html#Sequences!Enumeration">sequence enumeration</A>
+
+  size             <A HREF="MathsNotation.html#Sequences!Size_of">sequence size</A>
+
+  rev              <A HREF="MathsNotation.html#Sequences!Reverse">sequence reverse</A>
+
+  <TT>/|\</TT>              <A HREF="MathsNotation.html#Sequences!Projection">sequence projection</A> (prefix)
+
+  <TT>\|/</TT>              <A HREF="MathsNotation.html#Sequences!Projection">sequence projection</A> (suffix)
+
+  first            <A HREF="MathsNotation.html#Sequences!First_Element">first sequence element</A>
+
+  last             <A HREF="MathsNotation.html#Sequences!Last_Element">last sequence element</A>
+
+  tail             <A HREF="MathsNotation.html#Sequences!Tail">sequence tail</A>
+
+  front            <A HREF="MathsNotation.html#Sequences!Frint">sequence front</A>
+
+  conc             <A HREF="MathsNotation.html#Concatenation!Generalised">generalised concatenation</A>
+
+  x:=E             <A HREF="MathsNotation.html#Substitutions!Simple">simple substitution</A>
+
+  x,y:=E,F         <A HREF="MathsNotation.html#Substitutions!Simultaneous">simultaneous substitution</A>
+
+  x::E             <A HREF="AMNotation.html#Substitutions!Postconditioned">membership postconditioned substitution</A>
+
+  x: P             <A HREF="AMNotation.html#Substitutions!Postconditioned">general postconditioned substitution</A>
+
+  S ; T            <A HREF="MathsNotation.html#Substitutions!Sequencing">substitution S followed by substitution T</A>
+
+  skip             <A HREF="MathsNotation.html#Substitutions!skip">no-substitution</A>
+
+  oo &lt;-- op(ii)    <A HREF="AMNotation.html#AMN!Operations">parameterised substitution</A> with input ii, output oo
+
+</PRE>
+
+<H2>Generalised Substitution Language</H2>
+<PRE>
+  [S]P             <A HREF="MathsNotation.html#Substitutions!Application">substitution application</A> to a predicate P
+
+  [x:= E]F         simple substitution on expression F
+
+  z\A              <A HREF="MathsNotation.html#Freeness">non-freeness</A> of z in A
+
+  P | S            <A HREF="MathsNotation.html#Substitutions!Preconditioned">pre-conditioning</A> of S by P
+
+  P ==> S          <A HREF="MathsNotation.html#Substitutions!Guarded">guarding</A> of S by P
+
+  S [] T           <A HREF="MathsNotation.html#Substitutions!Choice">choice</A> between S and T
+
+  @z.S             <A HREF="MathsNotation.html#Quantification!Unbounded_Choice">unbounded choice</A>
+
+</PRE>
+
+<P>
+<HR>
+<ADDRESS>A full on-line help listing is available in the <A HREF="Contents.html#CONTENTS">Contents Page</A>
+<BR>Also available in the form of a complete <A HREF=Index.html>Index</A>.
+<HR>
+<IMG SRC="Blogo1.gif" ALIGN=MIDDLE><B> &#169; <A HREF=mailto:b@b-core.com>B-Core (UK) Limited</A></B>,
+Last updated: 96/07/12
+<HR>
+</ADDRESS>
+</BODY>

@@ -1,0 +1,167 @@
+(?)
+;
+(?)
+;
+(BOOL(FALSE,TRUE))
+;
+(BOOL(FALSE,TRUE))
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(CNJ_BOOL,DIS_BOOL,NEG_BOOL,BTS_BOOL)
+;
+(CNJ_BOOL,DIS_BOOL,NEG_BOOL,BTS_BOOL)
+;
+(Bool_TYPE(?):(?):(?))
+;
+(
+(
+ (CNJ_BOOL)
+;
+ (?,Val_Op,Det_Op,(bb <-- CNJ_BOOL(cc,dd)))
+;
+ (cc,dd)
+;
+ (bb)
+;
+ (
+ (cc: BOOL & dd: BOOL)
+ |
+ (
+ (bb:=bool(cc = TRUE & dd = TRUE))
+ )
+ )
+;
+ (
+ (cc: BOOL & dd: BOOL)
+ |
+ (
+ (bb:=bool(cc = TRUE & dd = TRUE))
+ )
+ )
+)
+,
+(
+ (DIS_BOOL)
+;
+ (?,Val_Op,Det_Op,(bb <-- DIS_BOOL(cc,dd)))
+;
+ (cc,dd)
+;
+ (bb)
+;
+ (
+ (cc: BOOL & dd: BOOL)
+ |
+ (
+ (bb:=bool(cc = TRUE or dd = TRUE))
+ )
+ )
+;
+ (
+ (cc: BOOL & dd: BOOL)
+ |
+ (
+ (bb:=bool(cc = TRUE or dd = TRUE))
+ )
+ )
+)
+,
+(
+ (NEG_BOOL)
+;
+ (?,Val_Op,Det_Op,(bb <-- NEG_BOOL(cc)))
+;
+ (cc)
+;
+ (bb)
+;
+ (
+ (cc: BOOL)
+ |
+ (
+ (bb:=bool(cc = FALSE))
+ )
+ )
+;
+ (
+ (cc: BOOL)
+ |
+ (
+ (bb:=bool(cc = FALSE))
+ )
+ )
+)
+,
+(
+ (BTS_BOOL)
+;
+ (?,Val_Op,Det_Op,(vv <-- BTS_BOOL(bb)))
+;
+ (bb)
+;
+ (vv)
+;
+ (
+ (bb: BOOL)
+ |
+ (
+ (IF bb = TRUE THEN
+ vv:=1
+ ELSE
+ vv:=0
+ END)
+ )
+ )
+;
+ (
+ (bb: BOOL)
+ |
+ (
+ (
+ (
+ (bb = TRUE)
+ )
+ ==>
+ (
+ (vv:=1)
+ )
+ )
+ []
+ (
+ (
+ (not(bb = TRUE))
+ )
+ ==>
+ (
+ (vv:=0)
+ )
+ )
+ )
+ )
+)
+)

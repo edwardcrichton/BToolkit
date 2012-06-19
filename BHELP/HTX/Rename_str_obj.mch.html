@@ -1,0 +1,441 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_str_obj">
+  <TITLE>The Rename_str_obj machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>		Rename_str_obj(maxobj,maxmem)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>	maxobj&gt;0
+
+<A NAME="SEES"><B>SEES</B></A>		<A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="String_TYPE.mch.html#MACHINE">String_TYPE</A>, <A HREF="Rename_str_ctx.mch.html#MACHINE">Rename_str_ctx</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>
+
+  Rename_strtok, Rename_strstruct, Rename_strmem
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_strtok <: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A> &
+  Rename_strstruct: Rename_strtok --&gt; <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+  Rename_strmem : NAT
+   
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_strtok, Rename_strstruct, Rename_strmem := {},{}, 0 
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/****************** General query functions *******************/
+
+  bb <-- <A NAME="OPNAME!Rename_MEM_FUL_STR_OBJ">Rename_MEM_FUL_STR_OBJ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(Rename_strmem=maxmem)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_OBJ_FUL_STR_OBJ">Rename_OBJ_FUL_STR_OBJ</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(card(Rename_strtok) = maxobj)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_STR_OBJ">Rename_XST_STR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A>
+  <B>THEN</B>
+    bb:=<B>bool</B>(pp:Rename_strtok)
+  <B>END</B>;
+
+  pp <-- <A NAME="OPNAME!Rename_ANY_STR_OBJ">Rename_ANY_STR_OBJ</A> =
+  <B>BEGIN</B>
+    pp :: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A>
+  <B>END</B>;
+
+
+/*************** Creating and deleting strings ******************/
+
+  <A NAME="OPNAME!Rename_INI_STR_OBJ">Rename_INI_STR_OBJ</A> =
+  <B>BEGIN</B>
+    Rename_strtok, Rename_strstruct, Rename_strmem := {},{}, 0
+  <B>END</B>;
+
+
+  bb,pp <-- <A NAME="OPNAME!Rename_CRE_STR_OBJ">Rename_CRE_STR_OBJ</A> =
+  <B>IF</B> card(Rename_strtok) < maxobj <B>THEN</B>
+      <B>ANY</B> qq <B>WHERE</B>
+        qq: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A> - Rename_strtok
+      <B>THEN</B>
+        Rename_strstruct(qq):=<> ||
+        Rename_strtok := Rename_strtok \/ {qq} ||
+        pp:=qq ||
+        bb:= TRUE
+      <B>END</B>
+  <B>ELSE</B>
+      bb:=FALSE || pp :: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A>
+  <B>END</B>;
+
+
+  bb,pp <-- <A NAME="OPNAME!Rename_NEW_STR_OBJ">Rename_NEW_STR_OBJ</A>(nn) =
+  <B>PRE</B>
+     card(Rename_strtok) &lt; maxobj &
+     nn : <A HREF="String_TYPE.mch.html#SETS">STRING</A> 
+     /* Rename_strmem + size(nn) &lt;= maxmem */
+  <B>THEN</B> 
+     <B>IF</B> Rename_strmem + size(nn) <= maxmem <B>THEN</B>
+       <B>ANY</B> qq <B>WHERE</B>
+         qq: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A> - Rename_strtok
+       <B>THEN</B>
+         Rename_strstruct(qq):=nn ||
+         Rename_strtok := Rename_strtok \/ {qq} ||
+         Rename_strmem := Rename_strmem + size(nn) ||
+         pp:=qq ||
+         bb:=TRUE
+       <B>END</B>
+     <B>ELSE</B>
+       bb := FALSE ||
+       pp :: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A>
+     <B>END</B>
+ <B>END</B>;
+
+
+  <A NAME="OPNAME!Rename_KIL_STR_OBJ">Rename_KIL_STR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_strtok &
+    Rename_strmem &gt;= size(Rename_strstruct(pp))
+  <B>THEN</B>
+    Rename_strstruct :=  {pp} &lt;<| Rename_strstruct ||
+    Rename_strtok := Rename_strtok - {pp} ||
+    Rename_strmem := Rename_strmem - size(Rename_strstruct(pp))
+  <B>END</B>;
+
+
+/*********************** Query operations ***********************/
+
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_STR_OBJ">Rename_VAL_STR_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    ii:dom(Rename_strstruct(pp))
+  <B>THEN</B> 
+    vv:=Rename_strstruct(pp)(ii)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EMP_STR_OBJ">Rename_EMP_STR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_strtok
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_strstruct(pp)=<>)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_IDX_STR_OBJ">Rename_XST_IDX_STR_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp: Rename_strtok &
+    ii: 1..maxmem
+  <B>THEN</B>
+    bb:=<B>bool</B>(ii:1..size(Rename_strstruct(pp)))
+  <B>END</B>;
+
+  nn <-- <A NAME="OPNAME!Rename_LEN_STR_OBJ">Rename_LEN_STR_OBJ</A>(pp)=
+  <B>PRE</B>
+    pp: Rename_strtok
+  <B>THEN</B>
+    nn:=size(Rename_strstruct(pp))
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_SMR_STR_OBJ">Rename_SMR_STR_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+     tt : Rename_strtok &
+     ss : Rename_strtok
+  <B>THEN</B>
+    bb :: <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A> 
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_STR_OBJ">Rename_EQL_STR_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+     tt : Rename_strtok &
+     ss : Rename_strtok
+  <B>THEN</B>
+     bb := <B>bool</B>(Rename_strstruct(tt) = Rename_strstruct(ss))
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_SUB_STR_OBJ">Rename_SUB_STR_OBJ</A>(ss,tt) =
+  <B>PRE</B>
+     tt : Rename_strtok &
+     ss : Rename_strtok
+  <B>THEN</B>
+     bb := <B>bool</B>( Rename_strstruct(ss) &lt;: Rename_strstruct(tt))
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_LIT_STR_OBJ">Rename_EQL_LIT_STR_OBJ</A>(tt,nn) =
+  <B>PRE</B>
+     tt : Rename_strtok &
+     nn : <A HREF="String_TYPE.mch.html#SETS">STRING</A>
+  <B>THEN</B>
+     bb := <B>bool</B>(Rename_strstruct(tt) = nn)
+  <B>END</B>;
+
+
+  ss <-- <A NAME="OPNAME!Rename_XTR_STR_OBJ">Rename_XTR_STR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp : Rename_strtok 
+  <B>THEN</B>
+    ss := Rename_strstruct(pp) 
+  <B>END</B>;
+
+/**************** String operations **************************/
+
+  <A NAME="OPNAME!Rename_CLR_STR_OBJ">Rename_CLR_STR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp: Rename_strtok &
+    Rename_strmem &gt;= size(Rename_strstruct(pp))
+  <B>THEN</B>
+    Rename_strstruct(pp) := <> ||
+    Rename_strmem := (
+     Rename_strmem - size(Rename_strstruct(pp))
+    )
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_PSH_STR_OBJ">Rename_PSH_STR_OBJ</A>(pp,vv) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    vv: <A HREF="String_TYPE.mch.html#SETS">CHAR</A> 
+    /* Rename_strmem&lt;maxmem */
+  <B>THEN</B>
+    <B>IF</B> Rename_strmem<maxmem <B>THEN</B>
+      Rename_strstruct(pp):=Rename_strstruct(pp) &lt;- vv ||
+      Rename_strmem:=Rename_strmem+1 ||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_KEP_STR_OBJ">Rename_KEP_STR_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    ii:0..size(Rename_strstruct(pp)) &
+    Rename_strmem &gt;= size(Rename_strstruct(pp))+ii
+  <B>THEN</B>
+    Rename_strstruct(pp):=Rename_strstruct(pp) /|\ ii ||
+    Rename_strmem:= (
+     Rename_strmem-size(Rename_strstruct(pp))+ii
+    )
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_CUT_STR_OBJ">Rename_CUT_STR_OBJ</A>(pp,ii) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    ii:0..size(Rename_strstruct(pp)) &
+    ii &lt;= Rename_strmem
+  <B>THEN</B>
+    Rename_strstruct(pp):=Rename_strstruct(pp) \|/ ii ||
+    Rename_strmem:=Rename_strmem-ii
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_REV_STR_OBJ">Rename_REV_STR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp:Rename_strtok
+  <B>THEN</B>
+    Rename_strstruct(pp):=rev(Rename_strstruct(pp))
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SWP_STR_OBJ">Rename_SWP_STR_OBJ</A>(pp,ii,jj) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    ii:dom(Rename_strstruct(pp)) &
+    jj:dom(Rename_strstruct(pp))
+  <B>THEN</B>
+    Rename_strstruct(pp):= (
+     Rename_strstruct(pp) &lt;+ (
+        {ii |-&gt; Rename_strstruct(pp)(jj), jj |-&gt; Rename_strstruct(pp)(ii)}
+        )
+     )
+
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_POP_STR_OBJ">Rename_POP_STR_OBJ</A>(pp) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    size(Rename_strstruct(pp))/=0
+  <B>THEN</B>
+    Rename_strstruct(pp):= front(Rename_strstruct(pp)) ||
+    Rename_strmem:=Rename_strmem-1
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_STO_STR_OBJ">Rename_STO_STR_OBJ</A>(pp,ii,vv) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    vv:<A HREF="String_TYPE.mch.html#SETS">CHAR</A> &
+    ii:dom(Rename_strstruct(pp))
+  <B>THEN</B> 
+    Rename_strstruct(pp)(ii):=vv
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_APP_STR_OBJ">Rename_APP_STR_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    qq:Rename_strtok 
+    /* Rename_strmem+size(Rename_strstruct(qq))&lt;=maxmem */
+  <B>THEN</B>
+    <B>IF</B>
+      Rename_strmem+size(Rename_strstruct(qq))&lt;=maxmem
+   <B>THEN</B>
+      Rename_strstruct(pp):= ( 
+       Rename_strstruct(pp)^Rename_strstruct(qq) 
+      ) ||
+      Rename_strmem:= (
+       Rename_strmem+size(Rename_strstruct(qq)) 
+      )||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_CPY_STR_OBJ">Rename_CPY_STR_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    qq:Rename_strtok 
+    /* Rename_strmem- (
+     size(Rename_strstruct(qq))+size(Rename_strstruct(pp)) 
+     ) &lt;=  maxmem */
+   
+  <B>THEN</B>
+    <B>IF</B> Rename_strmem- ( 
+        size(Rename_strstruct(qq))+size(Rename_strstruct(pp))
+         ) &lt;=  maxmem 
+   <B>THEN</B>
+      Rename_strstruct(qq):=Rename_strstruct(pp) ||
+      Rename_strmem:= ( 
+        Rename_strmem- (
+           size(Rename_strstruct(qq))+size(Rename_strstruct(pp))
+        )
+      ) ||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+
+  bb <-- <A NAME="OPNAME!Rename_OVR_STR_OBJ">Rename_OVR_STR_OBJ</A>(pp,qq) =
+  <B>PRE</B>
+    pp:Rename_strtok &
+    qq:Rename_strtok 
+    /* Rename_strmem + (
+    size(Rename_strstruct(qq))-size(Rename_strstruct(pp))
+    ) &lt;= maxmem */
+  <B>THEN</B>
+    <B>IF</B>
+      Rename_strmem+ (
+        size(Rename_strstruct(qq))-size(Rename_strstruct(pp))
+      ) &lt;=  maxmem 
+    <B>THEN</B>
+      Rename_strstruct(pp):= (
+        Rename_strstruct(pp) &lt;+ Rename_strstruct(qq)
+      ) ||
+      Rename_strmem:= (
+         Rename_strmem+ (
+            max({0,(size(Rename_strstruct(qq))-size(Rename_strstruct(pp)))}) 
+         )
+      )||
+      bb:=TRUE
+    <B>ELSE</B>
+      bb:=FALSE
+    <B>END</B>
+  <B>END</B>;
+
+/******************** Persistent Data facilities ***********************/
+
+/***********  save/restore host byte order ***********/
+ 
+  <A NAME="OPNAME!Rename_SAV_STR_OBJ">Rename_SAV_STR_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RST_STR_OBJ">Rename_RST_STR_OBJ</A> =
+  <B>ANY</B>
+    sstrn,sstro,stotstr
+  <B>WHERE</B>
+    sstrn <: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A> &
+    sstro: sstrn --&gt; <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+    stotstr:  NAT 
+  <B>THEN</B>
+    Rename_strstruct := sstro ||
+    Rename_strtok := sstrn ||
+    Rename_strmem := stotstr
+  <B>END</B>;
+
+/***********  save/restore network byte order ***********/
+
+  <A NAME="OPNAME!Rename_SAVN_STR_OBJ">Rename_SAVN_STR_OBJ</A> =
+  <B>BEGIN</B>
+    <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RSTN_STR_OBJ">Rename_RSTN_STR_OBJ</A> =
+  <B>ANY</B>
+    sstrn,sstro,stotstr
+  <B>WHERE</B>
+    sstrn <: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A> &
+    sstro: sstrn --&gt; <A HREF="String_TYPE.mch.html#SETS">STRING</A> &
+    stotstr:  NAT 
+  <B>THEN</B>
+    Rename_strstruct := sstro ||
+    Rename_strtok := sstrn ||
+    Rename_strmem := stotstr
+  <B>END</B>;
+
+
+/**************************** Browsing ********************************/
+
+  nn,pp <-- <A NAME="OPNAME!Rename_FIRST_STR_OBJ">Rename_FIRST_STR_OBJ</A> =  
+  <B>IF</B> not(Rename_strtok = {}) <B>THEN</B>
+     pp :: Rename_strtok || 
+     nn := card(Rename_strtok) 
+  <B>ELSE</B>
+     pp :: <A HREF="Rename_str_ctx.mch.html#SETS">Rename_STROBJ</A> ||
+     nn := 0
+  <B>END</B>;
+
+  nn,qq <-- <A NAME="OPNAME!Rename_NEXT_STR_OBJ">Rename_NEXT_STR_OBJ</A>(mm,pp) = 
+  <B>PRE</B>
+    pp : Rename_strtok &
+    mm : NAT1
+  <B>THEN</B>
+    nn := mm-1 ||
+    qq :: Rename_strtok
+  <B>END</B>
+
+
+
+<B>END</B>
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:37:07 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

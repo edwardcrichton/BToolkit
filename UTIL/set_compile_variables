@@ -1,0 +1,701 @@
+#! /bin/csh -f
+
+source ./set_basic_variables
+
+
+
+##############################################################
+#
+#  set all variables depending on platform
+#
+##############################################################
+
+set variables_set = 0
+
+###################################
+#  for remote parts
+###################################
+
+  if ( $variables_set == "0" ) then
+
+	##############################################################
+	#
+	#  Auto detect flex/lex set up
+	#
+	##############################################################
+
+     set WHEREFLEX=`whereis flex`
+     set WHICHFLEX=`which flex`
+     
+
+	if ( "$WHICHFLEX" == "" || "$WHEREFLEX" == "" ) then
+        	setenv  CC_lex			"lex -n"
+        	setenv  CC_lex_lib		"-ll"
+	else
+        	setenv  CC_lex			"flex -n"
+        	setenv  CC_lex_lib		"-lfl"
+	endif
+
+	##############################################################
+	#
+	#  Auto detect gcc/cc set up
+	#
+	##############################################################
+
+       set WHEREAPGCC=`whereis apgcc | grep /`
+       set WHICHAPGCC=`which apgcc 2>/dev/null`
+       set WHEREGCC=`whereis gcc | grep /`
+       set WHICHGCC=`which gcc 2>/dev/null`
+     
+     if( "$WHICHAPGCC" != "" || "$WHEREAPGCC" != "" ) then
+		setenv  CC_prog			"apgcc"
+	else
+       
+		if( "$WHICHGCC" != "" || "$WHEREGCC" != "" ) then
+			setenv  CC_prog			"gcc"
+		else
+			setenv  CC_prog			"cc"
+		endif
+       
+	endif
+	
+	
+	
+    switch ( $VERSION )
+
+    case SUNOS_VERSION:
+
+        set plat_name = "defaults for SunOS"
+
+	setenv  CC			"$CC_prog -pipe"
+	setenv  CC_opt_non_Motif	"-O4"
+	setenv  CC_opt_Motif		"-O"
+	setenv  CC_X_incl_dir  	        ""
+	setenv  CC_X_link_dir		""
+	setenv  CC_X_link_lib		"-lXm -lXt -lX11"
+	setenv  CC_non_X_incl_dir  	""
+	setenv  CC_non_X_link_dir	""
+	setenv  CC_non_X_link_lib	""
+
+    breaksw
+
+    case SOLARIS_VERSION:
+
+      switch ( $SUB_VERSION )
+
+        case SPARC_SUB_VERSION:
+
+          set plat_name = "defaults for Sparc Solaris"
+
+#	  setenv  CC			"gcc -pedantic -pipe"
+#	  setenv  CC			"gcc -pedantic -pipe -g"
+#	  setenv  CC			"gcc -pedantic"
+	  setenv  CC			"$CC_prog -pedantic -g"
+	  setenv  CC_opt_non_Motif	"-O2"
+          setenv  CC_opt_non_Motif	""
+	  setenv  CC_opt_Motif		"-O"
+	  setenv  CC_opt_Motif		""
+	  setenv  CC_X_incl_dir   	""
+	  setenv  CC_X_incl_dir   	"-I/usr/dt/include -I/usr/dt/share/include -I/usr/openwin/include -I/usr/openwin/share/include"
+	  setenv  CC_X_link_dir		"-L/usr/openwin/lib -L/usr/dt/lib"
+	  setenv  CC_X_link_lib		"-lXm -lXt -lX11 -lgen"
+	  setenv  CC_non_X_incl_dir  	""
+	  setenv  CC_non_X_link_dir	""
+	  setenv  CC_non_X_link_lib	"-lsocket -lnsl"
+
+        breaksw
+
+        case INTEL_SUB_VERSION:
+
+          set plat_name = "defaults for Sparc Intel"
+
+	  setenv  CC			"$CC_prog -pedantic -g"
+	  setenv  CC_opt_non_Motif	"-O2"
+	  setenv  CC_opt_Motif		"-O"
+	  setenv  CC_X_incl_dir   	"-I/usr/dt/include -I/usr/openwin/include"
+	  setenv  CC_X_link_dir		"-L/usr/openwin/lib -L/usr/dt/lib -L/usr/lib"
+	  setenv  CC_X_link_lib		"-lXm -lXt -lX11 -lgen"
+	  setenv  CC_non_X_incl_dir  	""
+	  setenv  CC_non_X_link_dir	""
+	  setenv  CC_non_X_link_lib	"-lsocket -lnsl"
+
+        breaksw
+
+      endsw
+
+    breaksw
+
+    case MAC_VERSION:
+
+     # note: could use lipo to produce architecture independant
+     # executables
+     # for those linked to motif (BMotif, 3To4 ...) use: lipo <i386> <ppc> -create -output <universal>
+     
+        set plat_name = "defaults for Mac OS X $SUB_VERSION"
+	setenv sdk ""
+	if ( -d /Developer/SDKs/MacOSX10.4u.sdk ) then
+	setenv sdk "-isysroot /Developer/SDKs/MacOSX10.4u.sdk -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk"
+	endif
+	
+	switch ( $SUB_VERSION )
+	   case POWERPC_SUB_VERSION:
+	     setenv FLAGS "-g -ggdb -dead_strip" #-arch ppc
+	     setenv OPT "-arch ppc"
+	   breaksw
+	   case INTEL_SUB_VERSION:
+	     # -arch i386 -m64 -malign-double -Wcast-align
+   	     setenv FLAGS "-g -ggdb -dead_strip"
+     	     setenv OPT "-arch i386"
+	   breaksw
+	   default:
+	     setenv FLAGS ""
+	     setenv OPT ""
+	   breaksw
+	endsw
+	#-bind_at_load
+	#-undefined define_a_way
+	#-syslibroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386 -arch ppc -arch i386 
+	setenv  CC			"$CC_prog -trigraphs $FLAGS"
+ 	setenv  CC_opt_non_Motif	"$OPT" #-arch i386 -arch ppc
+	setenv  CC_opt_Motif		"$OPT"
+	setenv  CC_X_incl_dir   	"-I/usr/X11R6/include -I/sw/include"
+	setenv  CC_X_link_dir		"$sdk -framework Carbon -L/usr/X11R6/lib -L/sw/lib"
+ 	setenv  CC_X_link_lib		"/sw/lib/libXm.a -lXt -lX11"  #-lXm
+	setenv  CC_non_X_incl_dir  	""
+	setenv  CC_non_X_link_dir	"$sdk -framework Carbon"
+	setenv  CC_non_X_link_lib	""
+
+    breaksw
+
+    case AIX_VERSION:
+
+        set plat_name = "defaults for Aix"
+
+	setenv  CC			"$CC_prog"
+ 	setenv  CC_opt_non_Motif	"-O2"
+	setenv  CC_opt_Motif		"-O2"
+	setenv  CC_X_incl_dir   	""
+	setenv  CC_X_link_dir		""
+ 	setenv  CC_X_link_lib		"-lXm -lXt -lXext -lX11"
+	setenv  CC_non_X_incl_dir  	""
+	setenv  CC_non_X_link_dir	""
+	setenv  CC_non_X_link_lib	""
+
+    breaksw
+
+    case OSF1_VERSION:
+
+        set plat_name = "defaults for DecAlpha"
+
+        setenv  CC                      "$CC_prog"
+        setenv  CC_opt_non_Motif        "-O2"
+        setenv  CC_opt_Motif            "-O"
+        setenv  CC_X_incl_dir           ""
+        setenv  CC_X_link_dir           ""
+        setenv  CC_X_link_lib           "-lXm -lXt -lX11"
+        setenv  CC_non_X_incl_dir       ""
+        setenv  CC_non_X_link_dir       ""
+        setenv  CC_non_X_link_lib       ""
+
+    breaksw
+
+    case IRIX_VERSION:
+
+        set plat_name = "defaults for Indy"
+
+        setenv  CC                      "$CC_prog"
+        setenv  CC_opt_non_Motif        "-O"
+        setenv  CC_opt_Motif            "-O"
+        setenv  CC_X_incl_dir           ""
+        setenv  CC_X_link_dir           ""
+        setenv  CC_X_link_lib           "-lXm -lXt -lX11"
+        setenv  CC_non_X_incl_dir       ""
+        setenv  CC_non_X_link_dir       ""
+        setenv  CC_non_X_link_lib       ""
+
+    breaksw
+
+    case LINUX_VERSION:
+
+        set plat_name = "defaults for Linux"
+	
+	if ( $PROCESSOR == "intel" ) then
+	
+      		#setenv  CC			"$CC_prog -Doptimize=-O2 -g -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -mtune=generic -Wl,--as-needed -pedantic -pipe -Dlinux -trigraphs"
+		#setenv  CC			"$CC_prog -Dlinux -trigraphs -m32 -g -ggdb -DVERBOSE_FLAG"
+		setenv  CC			"$CC_prog -pedantic -pipe -Dlinux -D_BSD_SOURCE -DPOSIX_SOURCE -g -ggdb -O0 -m32 -trigraphs"
+      	
+      
+    	else if ( $PROCESSOR == "x86_64" ) then
+      		#setenv  CC			"$CC_prog -Doptimize=-O2 -g -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -mtune=generic -Wl,--as-needed -pedantic -pipe -Dlinux -trigraphs"
+		#setenv  CC			"$CC_prog -Dlinux -trigraphs -m64 -g -ggdb -DVERBOSE_FLAG"
+		setenv  CC			"$CC_prog -pedantic -pipe -Dlinux -D_BSD_SOURCE -DPOSIX_SOURCE -g -ggdb -O0 -m64 -trigraphs"
+    	else
+      	
+		setenv  CC			"$CC_prog -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -mtune=generic -Wl,--as-needed -pedantic -pipe -Dlinux -D_BSD_SOURCE -DPOSIX_SOURCE -DVERBOSE_FLAG -O0 -trigraphs"
+	
+    	endif
+	
+
+#	setenv  CC			"gcc -pedantic -pipe -fcommon -Dlinux -D__i486__ -D_ALL_SOURCE  -DNO_MESSAGE_CATALOG  -DFUNCPROTO=15 -DNARROWPROTO"
+#	setenv  CC			"gcc -pedantic -pipe -Dlinux -m486"
+#	setenv  CC			"gcc -Wall -pedantic -pipe -Dlinux -m486"
+	
+	
+# -fstack-protector-all
+	#setenv  CC_opt_non_Motif	"-O3"
+	setenv  CC_opt_non_Motif	"-g -ggdb -O0"
+	#setenv  CC_opt_non_Motif	""
+	#setenv  CC_opt_Motif		"-O3"
+	setenv  CC_opt_Motif		"-g -ggdb -O0"
+	#setenv  CC_opt_Motif		""
+	setenv  CC_X_incl_dir   	"-I/usr/X11R6/include"
+	setenv  CC_X_link_dir		"-L/usr/X11R6/lib"
+#	setenv  CC_X_link_lib		"-lXm -lXpm -lXt -lSM -lICE -lX11 -lXext"
+#	setenv  CC_X_link_lib		"-lXm -lXt -lX11 -lXext -lXp"
+#	setenv  CC_X_link_lib		"-lXm -lXt -lSM -lICE -lX11 -lXext -lXp"
+	setenv  CC_X_link_lib		"-lXm -lXt -lX11"
+#	setenv  CC_X_link_lib		"/usr/X11R6/lib/libXm.a -lXt -lXext -lX11 -lXp"
+	setenv  CC_non_X_incl_dir  	""
+	setenv  CC_non_X_link_dir	""
+	setenv  CC_non_X_link_lib	""
+
+    breaksw
+
+    case CYGWIN_VERSION:
+    case MINGW_VERSION:
+
+        set plat_name = "defaults for Cygwin/Mingw"
+	setenv  CC			"gcc -g -trigraphs -pipe"
+	setenv  CC_opt_non_Motif	"-O0"
+	setenv  CC_opt_Motif		"-O0"
+	setenv  CC_X_incl_dir   	"-I/usr/X11R6/include"
+	setenv  CC_X_link_dir		"-L/usr/X11R6/lib"
+	setenv  CC_X_link_lib		"-lXm -lXt -lX11 -lXext -lXp"
+	#setenv  CC_non_X_incl_dir  	"-Bc:/cygwin/usr/include -Bc:/mysis/1.0/mingw/include"
+	#setenv  CC_non_X_link_dir	"-Lc:/mysis/1.0/mingw/lib -Lc:/cygwin/usr/lib"
+	setenv  CC_non_X_incl_dir  	""
+	setenv  CC_non_X_link_dir	""
+	setenv  CC_non_X_link_lib	""
+        setenv  CC_lex			"flex -n"
+        setenv  CC_lex_lib		"-lfl"
+
+    breaksw
+
+    default:
+
+        set plat_name = "defaults for UNKNOWN PLATFORM"
+
+	setenv  CC			"$CC_prog -pedantic -pipe"
+	setenv  CC_opt_non_Motif	"-O3"
+	setenv  CC_opt_Motif		"-O"
+	setenv  CC_X_incl_dir   	""
+	setenv  CC_X_link_dir		""
+	setenv  CC_X_link_lib		"-lXm -lXt -lX11"
+	setenv  CC_non_X_incl_dir  	""
+	setenv  CC_non_X_link_dir	""
+	setenv  CC_non_X_link_lib	""
+
+    breaksw
+
+  endsw
+
+  endif
+
+alias ErrorBox cat
+
+endif
+
+
+
+
+##############################################################
+#
+#  HOSTIDS or IPADDRESSES basis
+#
+##############################################################
+
+#  for ipaddresses: setenv PROTBASIS IPADDRESSES
+#  for hostids:     setenv PROTBASIS HOSTIDS
+
+setenv PROTBASIS IPADDRESSES
+#  setenv PROTBASIS HOSTIDS
+
+if ( ! $?PROTBASIS ) then
+  echo ""
+  echo ""
+  echo "  PROTBASIS not set"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $PROTBASIS != "IPADDRESSES" && $PROTBASIS != "HOSTIDS" ) then
+  echo ""
+  echo ""
+  echo "  Bad PROTBASIS setting"
+  echo ""
+  exit ( 1 )
+endif
+
+
+
+##############################################################
+#
+# TOOLKIT_VERSION:
+#
+#
+#    COUNT_VERSION
+#
+#         Wach request decrements the count; when 0,
+#         no further requests authorised
+#
+#    WWW_VERSION
+#
+#         As COUNT_VERSION, but in additiom a check
+#         is performed periodically (dictated by `check_iterations'
+#         in BMotif_globals.c) that:
+#
+#          1. No of user configured constructs has not changed
+#          2. length of .anl file of each user construct (up to
+#             (max of `max_num_usr_constr') has not changed
+#
+#    So: WWW_VERSION => COUNT_VERSION
+#
+#
+#    Leave both uncommented for `Normal' release version
+#
+##############################################################
+
+setenv TOOLKIT_VERSION RELEASE_VERSION
+#  setenv TOOLKIT_VERSION COUNT_VERSION
+#  setenv TOOLKIT_VERSION WWW_VERSION
+
+
+if ( $TOOLKIT_VERSION != "COUNT_VERSION" && $TOOLKIT_VERSION != "WWW_VERSION"  && $TOOLKIT_VERSION != "RELEASE_VERSION" )then
+  echo ""
+  echo ""
+  echo "  Bad TOOLKIT_VERSION setting"
+  echo ""
+  exit ( 1 )
+endif
+
+
+##############################################################
+#
+#  BYPASS_FLAG 
+#
+#    to allow BMotifd to run and tested when a
+#    customer's hostid/ipaddress is stored
+#
+##############################################################
+
+setenv BYPASS_FLAG    NO
+#  setenv BYPASS_FLAG    YES
+
+if ( ! $?BYPASS_FLAG ) then
+  echo ""
+  echo ""
+  echo "  BYPASS_FLAG not set"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $BYPASS_FLAG != "NO" && $BYPASS_FLAG != "YES" ) then
+  echo ""
+  echo ""
+  echo "  Bad BYPASS_FLAG setting"
+  echo ""
+  exit ( 1 )
+endif
+
+
+##############################################################
+#
+#  TRACING_FLAG
+#
+#    tracing information printed by 
+#   `ClientServer.c' (BMotif)
+#
+##############################################################
+
+setenv TRACING_FLAG    NO
+#  setenv TRACING_FLAG    VERBOSE
+
+if ( ! $?TRACING_FLAG ) then
+  echo ""
+  echo ""
+  echo "  TRACING_FLAG not set"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $TRACING_FLAG != "NO" && $TRACING_FLAG != "VERBOSE" ) then
+  echo ""
+  echo ""
+  echo "  Bad TRACING_FLAG setting"
+  echo ""
+  exit ( 1 )
+endif
+
+
+
+
+
+##############################################################
+#
+#  FIFO_TRACE_FLAG
+#
+#    tracing information printed by
+#    `ClientServer.c' (BMotif)
+#
+##############################################################
+
+setenv FIFO_TRACE_FLAG    NO
+#  setenv FIFO_TRACE_FLAG    YES
+
+if ( ! $?FIFO_TRACE_FLAG ) then
+  echo ""
+  echo ""
+  echo "  FIFO_TRACE_FLAG not set"
+  echo ""
+  exit ( 1 )
+endif
+
+if ( $FIFO_TRACE_FLAG != "NO" && $FIFO_TRACE_FLAG != "YES" ) then
+  echo ""
+  echo ""
+  echo "  Bad FIFO_TRACE_FLAG setting"
+  echo ""
+  exit ( 1 )
+endif
+
+source ./set_file_variables
+
+#  Creation of `BMotif_help.c'
+#
+#  Spaces between words should be writen as an `_'
+#
+#  blank entries in column 3 whould be writen as `@'
+#
+set Motif_help_menu = ( \
+\
+  BMethod    BMethod                      @          BMethod \
+  BMethod    Abstract_Machine_Notation    @          AMNotation \
+  BMethod    Set_Theory_Notation          @          MathsNotation \
+  BMethod    Constructing_Specifications  @          Structuring \
+  BMethod    ASCII_Representation         @          ASCIISymbols \
+\
+  BToolkit   Getting_Started            @            GettingStarted \
+  BToolkit   BToolkit                   @            BToolkit \
+  BToolkit   Environment_Variables      @            BEnvironment \
+  BToolkit   Bplatform                  @            BPlatform \
+  BToolkit   Installation               @            Installation \
+  BToolkit   System_Library             @            SystemLibrary \
+  BToolkit   Team_Library               @            TeamLibrary \
+\
+  TopBar      Set_Tool_Attributes       Options      Options \
+  TopBar      Edit_Templates            Palette      Palette \
+\
+  ToolBar     Commit_Edits              Commit       Commit \
+  ToolBar     New_Constructs            Introduce    Introduce \
+  ToolBar     Remake_Development        Remake       Remake \
+  ToolBar     Overview_Developments     Overview     Overview \
+  ToolBar     Hypertext_Browse_Developments    Hypertext      Hypertext \
+  ToolBar     Close_Edit_Windows        Close        Close \
+\
+  Utilities   Find_Identifier           @            Find \
+  Utilities   Rename_Construct          @            Rename \
+  Utilities   Remove_Constructs         @            Remove \
+  Utilities   Reset_Constructs          @            Reset \
+  Utilities   Save_Development          @            SaveDevelopment \
+  Utilities   Create_SLIB_Sonstruct     @            CreateSLIB \
+  Utilities   Export_to_TLIB            @            ExportTLIB \
+\
+  General     Commit_Edits              cmt          CommitEdits \
+  General     Editing                   opn,_quit    Editor \
+  General     Mini_Remake               @            MiniRemake \
+  General     Unlock_Development        BUnlock      BUnlock \
+  General     Display_B_Processes       BProcessInfo BProcessInfo \
+\
+  Main        Analyse_Constructs        anl          Analyser \
+  Main        ProofObligations          pog          POGenerator \
+  Main        Animation                 anm          Animator \
+  Main        Status                    sts          Status \
+  Main        Reset_Construct           rst          ResetConstruct \
+\
+  Provers     Automatic_Prooofs         apr,_pmd     AutoProver \
+  Provers     Interactive_Proofs        ipr,_pmd     InterProver \
+  Provers     Remove_proofs             rsl          RemoveLevel \
+  Provers     Print_Proofs              ppf          ProofPrinter \
+  Provers     Show_Unproved_POs         sup          ShowUnproved \
+\
+  Generators  Data_Bases                gbm,_gbo     BaseGen \
+  Generators  Enumerated_sets           enum         Enumerator \
+  Generators  Interactive_Interfaces    itf          Interface \
+\
+  Translator  Translate_to_code         trl          Translator \
+  Translator  Link_code                 lnk          Linker \
+  Translator  Execute_Programs          run          Run \
+\
+  Documents   Mark_Up_Documents         dmu          DocumentMarkUp \
+  Documents   Document_Structure        @            Documents \
+  Documents   Show_Documents            shw          Show \
+  Documents   Print_Documents           prt          Print \
+  )
+#
+#  1st column in list should be same
+#  (not nec. in same order!) as PALETTE_files
+#  2nd column is what appears in the TopBar
+#  menu in the order written
+#
+#  Spaces between words should be writen as an `_'
+#
+set Motif_palette_menu = ( \
+		Machines.pal         Machines \
+		OpsMch.pal           Machine_Ops \
+		Refinements.pal      Refinements \
+		OpsRef.pal           Refinement_Ops \
+		Implementations.pal  Implementations \
+		OpsImp.pal           Implementation_Ops \
+		Bases.pal            Bases \
+		Documents.pal        Documents \
+		Enumerations.pal     Enumerations \
+		Interfaces.pal       Interfaces \
+  )
+
+if ( "$1" != "cre_Motif_help" ) then
+  if ( "xxx" == "xxx$1" ) then
+    echo ""
+    echo ""
+    echo "  Using $plat_name settings:"
+    echo ""
+    echo "  BToolkit version: $BT_VERSION "
+    echo ""
+    echo "  Compiler/Linker/Flags"
+    echo "     C-compiler/options:  $CC"
+    echo "     Optimize non-Motif:  $CC_opt_non_Motif"
+    echo "     Optimize Motif:      $CC_opt_Motif"
+    echo ""
+    echo "  X libraries"
+    echo "     X include dirs:      $CC_X_incl_dir"
+    echo "     X link dirs:         $CC_X_link_dir"
+    echo "     X link libs:         $CC_X_link_lib"
+    echo ""
+    echo "  non-X libraries"
+    echo "     non-X include dirs:  $CC_non_X_incl_dir"
+    echo "     non-X link dirs:     $CC_non_X_link_dir"
+    echo "     non-X link libs:     $CC_non_X_link_lib"
+    echo ""
+    echo "  Lexical generator"
+    echo "     name:                $CC_lex"
+    echo "     library:             $CC_lex_lib"
+    echo ""
+  endif
+
+######################################
+# set CC_add_flags
+######################################
+
+  setenv CC_add_flags ""
+
+  if ( $DBSERVER_VERSION == "YES" ) then
+    setenv CC_add_flags "$CC_add_flags -DBSERVER_VERSION"
+  endif
+
+  if ( $BOOSTER_VERSION == "YES" ) then
+    setenv CC_add_flags "$CC_add_flags -DBOOSTER_VERSION"
+  endif
+
+
+  if ( $TRACING_FLAG == "VERBOSE" ) then
+    setenv CC_add_flags "$CC_add_flags -DVERBOSE_FLAG"
+  endif
+
+  if ( $FIFO_TRACE_FLAG == "YES" ) then
+    setenv CC_add_flags "$CC_add_flags -DFIFO_TRACE_FLAG"
+  endif
+
+  if ( $BYPASS_FLAG == "YES" ) then
+    setenv CC_add_flags "$CC_add_flags -DBYPASS_FLAG"
+  endif
+
+
+
+  if ( ! $?TOOLKIT_VERSION ) then
+    setenv ALL_FLAGS "-D$VERSION -D$SUB_VERSION $CC_add_flags"
+  else
+    setenv ALL_FLAGS "-D$VERSION -D$SUB_VERSION -D$TOOLKIT_VERSION $CC_add_flags"
+  endif
+
+
+
+
+
+  if ( "xxx" == "xxx$1") then
+
+    if ( $PLATFORM == UNKNOWN_PLATFORM ) then
+      echo "  Platform $PLATFORM (from uname) not recognized "
+      echo ""
+    endif
+
+    echo "  Platform:               $PLATFORM "
+    echo ""
+
+    if ( $?TOOLKIT_VERSION ) then
+      echo "  Version:                $TOOLKIT_VERSION "
+      echo ""
+    endif
+
+    if ( "$CC_add_flags" != "" ) then
+      echo "  Flags:                  -D$VERSION -D$SUB_VERSION "
+      echo ""
+      echo "                         $CC_add_flags "
+    else
+      echo "  No flags ( except -D$VERSION -D$SUB_VERSION )"
+    endif
+    echo ""
+    echo ""
+
+
+    if ( -x /usr/demo/SOUND/play ) then
+      /usr/demo/SOUND/play /usr/demo/SOUND/sounds/clink.au
+    endif
+
+  endif
+
+  if ( "xxx" == "xxx$1" ) then
+
+    if ( $?ask ) then
+     #
+    else
+      set ask="yes"
+    endif
+
+    if ( "$ask" != "no" ) then
+
+      echo -n "  Proceed ($BT_VERSION on `uname -n`)? "
+      set answer=$<
+      echo ""
+      if ( $answer != "" && $answer != "y" && $answer != "yes" ) then
+        echo "  Installation aborted"
+        echo ""
+        exit ( 1 )
+      endif
+
+   endif
+
+  else
+
+    if ( "xxx99" != "xxx$1" ) then
+      echo "  set_compile_variables successful: $BT_VERSION on `uname -n` "
+      echo ""
+    endif
+
+  endif
+
+
+else                 # "$1" == "cre_Motif_help"
+  rm -f .Bcom .BBcom
+  echo $Motif_help_menu > .Bcom
+  echo $Motif_palette_menu > .BBcom
+endif

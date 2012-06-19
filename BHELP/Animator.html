@@ -1,0 +1,549 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Animator</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Animator"></A>
+<H1>
+The Animator (anm)</H1>
+The Animator is a tool to demonstrate the state transitions of an <A HREF="AMNotation.html#Abstract_Machines">Abstract
+Machine</A> specification, achieved through its operations which are invoked
+interactively through user-provided input. The operations are displayed
+on screen, together with precondition and guard simplification (where appropriate)
+with operation output and state variables being displayed in a state window;
+the state invariant of the machine may also be optionally displayed (toggled
+in the <A HREF="#AnimatorOperationMenu">Operation Menu</A>).
+
+<P>The animator may also be driven through an <A HREF="#Script">ANIMATE
+Script</A> (in <A HREF="#AnimatorInteractive">Interactive</A>, <A HREF="#ExecutableAnimationStep">Execute
+Step</A> or <A HREF="#AnimationExecutionAuto">Execute Auto</A> mode); the
+Scripts may be automatically created from an interactive session (so that
+they may be replayed against changed AMN) or may be edited from a template
+form. For both Execute modes, assertions on the output of operations, and
+on the state variables may be included in a Script&nbsp; and these are
+evaluated and displayed during execution.
+
+<P>The output of all three modes of driving the animator may be saved -
+in interactive mode through the <A HREF="#AnimatorUtilitiesMenu">Utilities
+Menu</A> and in either executable mode through a dialog which appears at
+the end of the execution. An output file is saved as&nbsp;<TT> fifi.identifier.out
+</TT>and may subsequently be viewed through the&nbsp;<TT> Browse Output
+File </TT>option of the <A HREF="#AnimatorMenu">Animator Menu</A>.
+
+<P>Animation (anm) is invoked from the <A HREF="BToolkit.html#Environments!Main">Main
+Environment</A> for all currently <A HREF="Analyser.html#Analyser">analysed</A>
+specifications, and so all <A HREF="SystemLibrary.html#System_Library">library</A>
+and <A HREF="BToolkit.html#Environments!Generators">generated</A> machines
+may be animated (a good way to familiarize oneself with their functionality!).
+<BR>&nbsp;
+<BR>In this description, <TT>fifi </TT>is assumed to be the name of the
+machine being animated.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+<A NAME="AnimatorMenu"></A>The Animator Menu</H2>
+The animator menu offers six options:
+<UL>
+<LI>
+<TT>Interactive</TT></LI>
+
+<LI>
+<TT>Execute Step</TT></LI>
+
+<LI>
+<TT>Execute Auto</TT></LI>
+
+<LI>
+<TT>Edit ANIMATE Script</TT></LI>
+
+<LI>
+<TT>Browse Output File</TT></LI>
+
+<LI>
+<TT>Clean Animator Files</TT></LI>
+</UL>
+<A HREF="anim_menu.gif"><IMG SRC="anim_menu_icon.gif" ALT="The Animator Menu" HEIGHT=215 WIDTH=221 ALIGN=ABSCENTER></A>
+
+<P><TT><A HREF="#AnimatorInteractive">Interactive</A></TT>, <TT><A HREF="#ExecutableAnimationStep">Execute
+Step</A></TT> and <TT><A HREF="#AnimationExecutionAuto">Execute Auto</A></TT>
+offer three different ways of driving the Animator.
+
+<P><TT>Edit ANIMATE Script</TT> provides a way of editing an <A HREF="#Script">ANIMATE
+Scrip</A> ; an existing script may be edited or a new one be created (with
+template optionally provided from an existing Script); dialog menus are
+automatically provided).
+<BR>&nbsp;
+<BR><TT>Browse Output File </TT>provides a menu of previously saved <A HREF="#AnimatorSaveOutput">State
+Output files</A>&nbsp; (created from the <A HREF="#AnimatorUtilitiesMenu">Utilities
+Menu</A>) which may be selected for browsing.
+
+<P><TT>Clean Animator Files </TT>provides a menu of Script (<TT> .anm </TT>)
+and State Output files (<TT> .out </TT>) which may be removed when no longer
+needed. This option is also avaiable from the <A HREF="#AnimatorUtilitiesMenu">Utilities
+Menu</A>.
+
+<P>
+<HR WIDTH="60%"><A NAME="AnimatorInteractive"></A>
+<H2>
+Interactive Preliminaries</H2>
+
+<H3>
+Animator Theory File</H3>
+On invoking the Animator interactively for the first time, a session window
+appears, with, for example, the display
+<PRE>&nbsp; No file "SRC/fifi.mch.thy" - creating template</PRE>
+indicating that no user-supplied theory is provided to supplement the Animator's
+library of re-write rules, but that a template theory file has been created
+in the <A HREF="BToolkit.html#Development_Environment">SRC</A> directory
+(see <A HREF="#Users_Theory!in_Animator">Providing More Rewrite Rules</A>
+below); when theory is supplied, the display will read
+<PRE>&nbsp; "<TT>SRC/fifi.mch.thy</TT>" loaded</PRE>
+provided the theory files parses, and
+<PRE>&nbsp; "<TT>SRC/fifi.mch.thy</TT>" does not parse - not loaded</PRE>
+otherwise, together with information showing the cause of the error.
+
+<P>
+<HR WIDTH="30%">
+<BR><A NAME="AnimatorInitialise"></A>
+<H3>
+Animator Initialisation Files</H3>
+On using the Animator interactively, if one or more previously <A HREF="#Script">ANIMATE
+Script</A> files is found, the following prompt is displayed:
+<PRE>&nbsp; Initialize state from ANIMATE Script?</PRE>
+If you reply `No', the state of the machine will be initialized according
+to its specification. You will be asked to instantiate any machine parameters
+(which must be natural numbers or enumerated sets). The Animator will then
+calculate the instantiated machine constraints and present them in a simplified
+form. If the machine (or any of its subordinates) contains <A HREF="AMNotation.html#SETS_Clause">sets</A>
+or <A HREF="AMNotation.html#CONSTANTS_Clause">constants</A>&nbsp; a dialog
+will be presented so that they may be set, and, one set they will be represented
+in a simplified form.
+
+<P><I>It is recommended that all abstract sets are instantiated, </I>otherwise
+realistic animation is usually not possible.
+
+<P>A `Yes' answer provides a menu from which the Script may be selected;
+subsequent selection overrides the initialization given in the Abstract
+Machine specification, and instead initializes the state of the Machine
+to that saved on file; with machine parameters and context also being set.
+The initial state is then displayed in the state window.
+<BR>&nbsp;
+<HR WIDTH="30%">
+<H2>
+<A NAME="AnimatorOperationMenu"></A>The Animator Operation Menu</H2>
+Once animation has started, the operations of the machine are displayed
+in a menu together with:
+<UL>
+<LI>
+Undo last operation</LI>
+
+<LI>
+<A HREF="#AnimatorUtilitiesMenu">Animator Utilities</A></LI>
+
+<LI>
+Display Invariant/Don't Display Invariant</LI>
+</UL>
+<A HREF="anim_ops.gif"><IMG SRC="anim_ops_icon.gif" ALT="Animator Operation Menu" BORDER=2 HEIGHT=151 WIDTH=141 ALIGN=CENTER></A><A HREF="anim_ops.gif#">
+See figure<LATEX="\\ \ref{anim_ops.fig}">.</A>
+
+<P>On selection of an operation, its specification is displayed together
+with its stated precondition. If the operation has input parameters, you
+will be asked to instantiate them, and the simplified precondition will
+be displayed:
+
+<P><A HREF="precond_simp.gif#"><IMG SRC="precond_simp_icon.gif" ALT="Precondition Simplification"  ALIGN=CENTER></A><A HREF="precond_simp.gif#">
+See figure<LATEX="\\ \ref{precond_simp.fig}">.</A>
+
+<P>You will also be asked to resolve any nondeterminacy (e.g. in an ANY
+guard). The Animator simplifies, as far as it can, the precondition (or
+guards) of an operation according to the current state of the Machine.
+Whatever the value of the precondition or guard, the specified state change
+is performed, with the value of any output and the final state reported
+in the state window:
+
+<P><A HREF="anim_state.gif#"><IMG SRC="anim_state_icon.gif" ALT="State Display"  ALIGN=CENTER></A><A HREF="anim_state.gif#">
+See figure<LATEX="\\ \ref{anim_state.fig}">.</A>
+
+<P>The `Undo' option allows you to return to the state prior to the action
+of the last operation.
+
+<P><A HREF="#AnimatorUtilitiesMenu">Animator Utilities</A> provides another
+menu of operations.
+
+<P>Display Invariant/Don't Display Invariant provides a toggle to display
+the current state of the <A HREF="AMNotation.html#INVARIANT_Clause">INVARIANT</A>
+of the machine:
+
+<P><A HREF="anim_inv.gif"><IMG SRC="anim_inv_icon.gif" ALT="Invariant Display" BORDER=2 HEIGHT=100 WIDTH=201 ALIGN=CENTER></A><A HREF="anim_inv.gif">
+See figure</A>
+
+<P>The `Quit' option allows you to leave the animation.
+
+<P>
+<HR WIDTH="30%">
+<H2>
+<A NAME="AnimatorUtilitiesMenu"></A>The Animator Utilities Menu</H2>
+The Animator Utilities Menu is accessed from the <A HREF="#AnimatorOperationMenu">Animator
+Operation Menu</A> and offers:
+<UL>
+<LI>
+<TT>Edit theory file</TT></LI>
+
+<LI>
+<TT>Restore initial state</TT></LI>
+
+<LI>
+<TT>Restart animation</TT></LI>
+
+<LI>
+<TT>Set state variables</TT></LI>
+
+<LI>
+<TT>Save output</TT></LI>
+
+<LI>
+<TT>Save as ANIMATE Script Initialisation</TT></LI>
+
+<LI>
+<TT>Save as ANIMATE Script Executable</TT></LI>
+
+<LI>
+<TT>Clean animator files</TT></LI>
+</UL>
+<A HREF="anim_utils.gif"><IMG SRC="anim_utils_icon.gif" ALT="Animator Utilities Menu" BORDER=2 HEIGHT=210 WIDTH=193 ALIGN=ABSCENTER></A>
+<A HREF="anim_utils.gif">See figure</A>
+
+<P><TT><A HREF="#Users_Theory!in_Animator">Edit theory file</A></TT> provides
+a means of adding rules to aid the animator simplification mechanism.
+
+<P><TT>Restore initial state </TT>enables the animation to be restarted
+with the initial state.
+
+<P><TT>Restart animation </TT>causes the animation to be restarted form
+scratch.
+
+<P><TT>Set state variables </TT>enables the current values of the state
+variables to be overwritten.
+
+<P><A NAME="AnimatorSaveOutput"></A><TT>Save output </TT>results in a prompt
+for a filename identifier, with the current output being recorded on that
+file (<TT> SRC/fifi.identifier.out </TT>); it is subsequently possiblt
+to browse output through the main <A HREF="#AnimatorMenu">Animator Menu</A>.
+
+<P><A NAME="AnimatorCreateInitialisationFile"></A><TT>Save as ANIMATE Script
+Initialisation </TT>enables an interactive animator session to be written
+to an <A HREF="#Script">ANIMATE Script</A> in such a way that&nbsp; it
+may be used to <A HREF="#AnimatorInitialise">initialise</A> (machine parameters,
+state variables and context) an Interactive Animator session - a menu of
+such Scripts is automatically provided at the start of each interactive
+session.
+
+<P><A NAME="AnimatorSaveStateExe"></A><TT>Save as ANIMATE Script Executable
+</TT>enables an interactive animator session to be written to an <A HREF="#Script">ANIMATE
+Script</A> and subsequently replayed either in <A HREF="#ExecutableAnimationStep">Step</A>
+or <A HREF="#AnimationExecutionAuto">Auto</A> mode (although it may be
+used in <A HREF="#AnimatorInteractive">Interactive</A> mode - see <A HREF="#ScriptNote">NOTE</A>).
+
+<P><TT>Clean Animator Files </TT>provides a menu of ANIMATE Script (<TT>
+.anm </TT>) and State Output files (<TT> .out </TT>) which may be removed
+when no longer needed. This option is also avaiable from the main <A HREF="#AnimatorMenu">Animator
+Menu</A>.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+<A NAME="Script"></A>The&nbsp; ANIMATE Script</H2>
+An ANIMATE Script has filename `<TT>SRC/fif.identifier.anm</TT>'; its syntax
+is given in a BNF-like syntax as follows: the syntax <TT>exp1 | exp2 </TT>indicates
+<TT>exp1</TT> or <TT>exp2</TT> (choice), and&nbsp; <TT>[| exp |] </TT>indicates
+optionality.
+
+<P>
+<HR WIDTH="10%">
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp; ANIMATE
+
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; machinename.identifier.anm
+
+&nbsp;&nbsp;&nbsp;&nbsp; [|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PARAMETER_VALUES
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp; |&nbsp; value [| ; value |]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SETS_VALUES
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp; |&nbsp; value [| ; value |]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONSTANTS_VALUES
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp; |&nbsp; value [| ; value |]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ENUM_SETS_VALUES
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp; |&nbsp; value [| ; value |]
+</TT>&nbsp;&nbsp;&nbsp;&nbsp; |]
+
+<TT>&nbsp;&nbsp;&nbsp;&nbsp; OPERATIONS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ini_operation [| ; operation |]
+
+&nbsp;&nbsp;&nbsp;&nbsp; END
+
+
+&nbsp;&nbsp;&nbsp;&nbsp; value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp;&nbsp;&nbsp; identifier = expression</TT></PRE>
+
+<PRE><TT>&nbsp;&nbsp;&nbsp;&nbsp; ini_operation&nbsp; ::=&nbsp;&nbsp;&nbsp; INI_op [| : command_list |]&nbsp; |&nbsp; _set_state_variables : ( eql_list )</TT></PRE>
+
+<PRE><TT>&nbsp;&nbsp;&nbsp;&nbsp; INI_op&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp;&nbsp;&nbsp; INI_fifi</TT></PRE>
+
+<PRE><TT>&nbsp;&nbsp;&nbsp;&nbsp; operation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp;&nbsp;&nbsp; ANM_op [| : command_list |]&nbsp; |&nbsp; { predicate }</TT></PRE>
+
+<PRE><TT>&nbsp;&nbsp;&nbsp;&nbsp; AMN_op&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp;&nbsp;&nbsp; [| varlist &lt;-- |] identifier [| ( varlist ) |]</TT></PRE>
+
+<PRE><TT>&nbsp;&nbsp;&nbsp;&nbsp; command_list&nbsp;&nbsp; ::=&nbsp;&nbsp;&nbsp; command [| , command |]</TT></PRE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp; command&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+::=&nbsp;&nbsp;&nbsp; local_vars ( eql_list )&nbsp; |&nbsp; branch ( num
+)</TT>
+
+<P><TT>&nbsp;&nbsp;&nbsp;&nbsp; eql_list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+::=&nbsp;&nbsp;&nbsp; equality [| , equality |]</TT>
+
+<P><TT>&nbsp;&nbsp;&nbsp;&nbsp; equality&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+::=&nbsp;&nbsp;&nbsp; identifier = value</TT>
+
+<P>Note that each of the clauses is optional (but see <A HREF="#ScriptNote">NOTE</A>),
+and that a clause containing<TT> ? </TT>is equivalent to the clause being
+absent.
+<BR>&nbsp;
+<BLOCKQUOTE><A NAME="ScriptNote"></A><U>NOTE</U></BLOCKQUOTE>
+
+<OL>
+<OL>
+<LI>
+If the Script is to be used as an <A HREF="#AnimatorInitialise">Interactive
+Initialisation</A> the<TT> OPERATIONS </TT>clause should contain a single
+_<TT>set_state_variables </TT>entry<TT>, </TT>otherwise the clause will
+be ignored and an initialisation performed.</LI>
+
+<LI>
+Either the<TT> INI_&nbsp; </TT>or the&nbsp; _<TT>set_state_variables </TT>operation
+should appear as the first operation of the<TT> OPERATIONS </TT>clause.</LI>
+
+<LI>
+The<TT> INI_ </TT>operation may not appear other than as the first operation.</LI>
+</OL>
+</OL>
+See also <A HREF="#ExampleScript">Animate Script example</A>.
+
+<P>
+<HR WIDTH="30%">
+<H3>
+<A NAME="AnimatorCreatingExe"></A>Creating an ANIMATION Script</H3>
+A Script may be automatically created from an interactive session through
+the <A HREF="#AnimatorUtilitiesMenu">Utilities Menu</A> . In this case
+assertions for all operations returning output will automatically be created
+(see the <A HREF="#ExampleScript">ANIMATION Script example</A> below).
+
+<P>A new Script may be created through the&nbsp;<TT> Edit ANIMATE Script
+</TT>option of the <A HREF="#AnimatorMenu">Animator Menu</A> when a sub-menu
+will be provided offering the edit of an existing Script or the creation
+of a new one.
+
+<P>A template for a new Script may be achieved in one of two ways:
+<UL>
+<LI>
+As an empty Script</LI>
+
+<BR>All<TT> _VALUES </TT>clause will be created with either<TT> ? </TT>entries,
+or entries of the form<TT> value = ? d</TT>epending on the machine (all
+machine parameters and sets and constants of the machine (or its subordinates)
+will be automatically included in the script.
+<BR>The first operation of the<TT> EXECUTE </TT>clause will be INI_fifi
+<LI>
+As a Script copied from an existing ANIMATION Script</LI>
+
+<BR>Which may then be edited from the <A HREF="#AnimatorMenu">Animator
+Menu</A></UL>
+&nbsp;
+<HR WIDTH="30%">
+<H3>
+<A NAME="ExampleScript"></A>An example ANIMATE script</H3>
+The following Script was created automatically using the <A HREF="#AnimatorUtilitiesMenu">Utilities
+Menu</A> -> <TT>ave as ANIMATE Script Executable </TT>for DEMO9_PERSON3
+following an interactive animation:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ANIMATE</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Person3.demo.anm</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PARAMETER_VALUES</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max_person = 100</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SETS_VALUES</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SCALAR = 0..2147483646;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STRING = STRING;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PERSON = {p1 , p2 , p3 , p4 , p5}</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONSTANTS_VALUES</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ENUM_SETS_VALUES</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BOOL = {FALSE , TRUE};
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHAR = {B_SOH , B_STX , B_ETX , B_EOT , B_ENQ , B_ACK , B_BEL , B_BS , B_HT , B_LF , B_VT , B_FF , B_CR , B_SO , B_SI , B_DLE , B_DC1 , B_DC2 , B_DC3 , B_DC4 , B_NAK , B_SYN , B_ETB , B_CAN , B_EM , B_SUB , B_ESC , B_FS , B_GS , B_RS , B_US , B_SPACE , B_EXCL , B_QUOT , B_HSH , B_DOLL , B_PCT , B_AMP , B_SQUOT , B_OPAR , B_CPAR , B_MUL , B_PLUS , B_COM , B_MINUS , B_DOT , B_DIV , '0' , '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , B_COL , B_SCOL , B_LESS , B_EQL , B_GTR , B_QUERY , B_CADD , 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' , 'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' , 'Y' , 'Z' , B_OBRK , B_SLSH , B_CBRK , B_HAT , B_UNL , B_BSQ , 'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' , 'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' , 'q' , 'r' , 's' , 'u' , 'v' , 'w' , 'x' , 'y' , 'z' , B_OBRC , B_BAR , B_CBRC , B_TLD , B_DEL};
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SEX = {female , male}</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPERATIONS</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INI_Person3;</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rep , new_person &lt;-- Add_person(rupert,91,male) :
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; branch(1);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; loc_vars( pers = p5 )
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; );</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { rep = TRUE };</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { new_person = p5 };</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rep &lt;-- Print_person_details(p5);</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { rep = TRUE };</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rep &lt;-- Remove_person(p5);</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { rep = TRUE }</PRE>
+
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END</PRE>
+&nbsp;
+
+<P>Note that if choices/local variables are nested in the AMN, the commands
+following the<TT> : </TT>must sequentially reflect the route to be taken:
+so, for example:
+
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; op :
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+branch(3);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+branch(2);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+loc_vars( (var1 = 13), (var2 = 77) )
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+)
+
+<P>would ensure that<TT> var1 </TT>and<TT> var2 </TT>were set in:
+<PRE>&nbsp;&nbsp; op =
+&nbsp;&nbsp;&nbsp;&nbsp; CHOICE ... OR ... OR CHOICE ... OR ANY var1,var2 WHERE ... END OR ... END OR ... END</PRE>
+
+<HR WIDTH="30%">
+<H2>
+<A NAME="ExecutableAnimationStep"></A>Executable Animation - Step</H2>
+Replaying an ANIMATE Script in Step mode results in exactly the same state
+output display as if the animator were driven interactively; the machine
+is first initialised (paremeters &amp; context set, and initialised either
+through a<TT> STATE_VALUES </TT>clause or its<TT> INI_ </TT>operation)
+and then each operation is presented as a dialog:
+<BR>&nbsp;
+<BR><A HREF="anim_auto_step.gif"><IMG SRC="anim_auto_step_icon.gif" ALT="EXECUTE - Step" HEIGHT=72 WIDTH=417 ALIGN=ABSCENTER></A>
+
+<P>At the end of animation, the user is invited to optionally save the
+output (as a<TT> .out </TT>file).
+<BR>&nbsp;
+<BR>
+<HR WIDTH="30%">
+<H2>
+<A NAME="AnimationExecutionAuto"></A>Executable Animation - Auto</H2>
+The difference between<TT> Auto </TT>execution and<TT> <A HREF="#ExecutableAnimationStep">Step</A>
+</TT>execution is that the former is processed without output display;
+the display may be viewed after the animation is complete by responding
+to the option to save the output (as a<TT> .out </TT>file).
+
+<P>Additionally one of the following is reported after the execution is
+complete:
+<BR>&nbsp;
+<UL>
+<LI>
+<TT>All assertions evaluated to true</TT></LI>
+
+<LI>
+<TT>At least one assertion did not evaluate to true</TT></LI>
+
+<LI>
+<TT>No assertions in ANIMATE Script</TT></LI>
+</UL>
+
+<HR WIDTH="60%">
+
+<P><A NAME="Users_Theory!in_Animator"></A>
+<H2>
+Providing More Rewrite Rules</H2>
+Simplification of instantiated expressions (outputs, preconditions, guards)
+is made using a simple set of mathematical re-write rules within the Animator.
+If the tool is unable to simplify a particular expression, the user can
+provide appropriate mathematical simplification rules by using the `Edit
+theory file' of the <A HREF="#AnimatorUtilitiesMenu">Utilities Menu</A>.
+The syntax for the animator theory file is:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp; THEORY UserLibX IS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rewrite_rule [ ; rewrite_rule ]
+&nbsp;&nbsp;&nbsp;&nbsp; END
+
+&nbsp;&nbsp;&nbsp;&nbsp; [|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DEFINITIONS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rewrite_rule [ ; rewrite_rule ]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INCLUSIONS
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; incl_file [ , incl_file ]
+&nbsp;&nbsp;&nbsp;&nbsp; |]</PRE>
+The optional DEFINITIONS clause allows macro definitions in the form of
+<A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite rules</A> to be
+applied to the rules of UserLibX before use. If the theory file does not
+exist, it is created by the system with two default macros; a DEFINITIONS
+clause comprising `?' is equivalent to an empty clause.
+
+<P>The optional INCLUSIONS clause allows other animator theory files to
+be loaded (and, of course, the process is recursive). Each inclusion should
+be the name of an animator theory file enclosed in double quotes (for example
+"SRC/fifi.mch,thy"). An INCLUSIONS clause comprising `?' is equivalent
+to an empty clause.
+
+<P>The simplification rules of UserLibX should be expressed as B <A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite
+rules</A> (see section on the <A HREF="BPlatform.html#B-Platform">B_Platform</A>).
+
+<P>For example:
+<OL>
+<LI>
+the rule</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp; <A HREF="BPlatform.html#Guards!bident">bident</A>(x)&nbsp;
+&nbsp;&nbsp; =>&nbsp;
+&nbsp;&nbsp;&nbsp; [l]<A HREF="MathsNotation.html#Sequences!Concatenation">^</A>[x] <A HREF="BPlatform.html#Inference_Rules!Rewrite">==</A> [l,x]</PRE>
+will re-write the expression
+<PRE>&nbsp;&nbsp;&nbsp; [aa,bb,cc]^[dd]</PRE>
+to
+<PRE>&nbsp;&nbsp;&nbsp; [aa,bb,cc,dd]</PRE>
+
+<LI>
+the rule</LI>
+
+<PRE>&nbsp;&nbsp;&nbsp; <A HREF="BPlatform.html#Guards!btest">btest</A>(n>1)&nbsp;
+&nbsp;&nbsp; =>&nbsp;
+&nbsp;&nbsp;&nbsp; fac(n) == fac(n-1)*n</PRE>
+will re-write the expression
+<PRE>&nbsp;&nbsp;&nbsp; fac(7)</PRE>
+to
+<PRE>&nbsp;&nbsp;&nbsp; fac(7-1)*7</PRE>
+</OL>
+
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25  ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

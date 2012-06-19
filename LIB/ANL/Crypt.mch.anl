@@ -1,0 +1,131 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(String_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(CRYPT,CRYPT_CHECK)
+;
+(CRYPT , CRYPT_CHECK)
+;
+(Crypt(?):(?):(?))
+;
+(
+(
+ (CRYPT)
+;
+ (? , Val_Op , NonDet_Op , (ss <-- CRYPT(key)))
+;
+ (key)
+;
+ (ss)
+;
+ (
+ (key : STRING)
+ |
+ (
+ (BEGIN
+ ss :: STRING
+ END)
+ )
+ )
+;
+ (
+ (key : STRING)
+ |
+ (
+ @(ssx).
+ (
+ (
+ (ssx : STRING)
+ )
+ ==>
+ (
+ (ss := ssx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (CRYPT_CHECK)
+;
+ (? , Val_Op , NonDet_Op , (rr <-- CRYPT_CHECK(key , encryption)))
+;
+ (key , encryption)
+;
+ (rr)
+;
+ (
+ (key : STRING & encryption : STRING & size(encryption) > 1)
+ |
+ (
+ (rr :: BOOL)
+ )
+ )
+;
+ (
+ (key : STRING & encryption : STRING & 1 < size(encryption))
+ |
+ (
+ @(rrx).
+ (
+ (
+ (rrx : BOOL)
+ )
+ ==>
+ (
+ (rr := rrx)
+ )
+ )
+ )
+ )
+)
+)

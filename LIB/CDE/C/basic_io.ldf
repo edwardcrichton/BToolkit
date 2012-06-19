@@ -1,0 +1,3 @@
+(strsize)
+|
+(Scalar_TYPE,Int_TYPE,Bool_TYPE,String_TYPE,Bit_TYPE)

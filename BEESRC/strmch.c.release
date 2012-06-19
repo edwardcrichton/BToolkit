@@ -1,0 +1,208 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define digit_str(o)     (((o>=ord('0')) && (o<=ord('9')))!=0)
+                               
+/*  PROGRAMS FOR STRING MACHINE  */
+write_chr(n)
+{register int i,r,v ;
+  v=n;
+  itrn( i , 1 , 4 , {
+    r=v % 128;
+    if( r!=0 ){ putc(r, bstdout) ;};
+    v=v / 128
+ ;});
+}
+
+write_str(s)
+{register int i ;
+  i=1; 
+  while( !(i>len(s)) ){ 
+    write_chr(val(s,i));
+    i=i+1;
+  };
+}
+
+write_err_chr(n)
+{register int i,r,v ;
+  v=n;
+  itrn( i , 1 , 4 , {
+    r=v % 128;
+    if( r!=0 ){ putc(r,stderr) 
+/* putc(r, bstdout) */
+ ;};
+    v=v / 128
+ ;});
+}
+
+write_err_str(s)
+{register int i ;
+  i=1; 
+  while( !(i>len(s)) ){ 
+    write_err_chr(val(s,i));
+    i=i+1;
+  };
+}
+
+crd_strfunc()
+#define crd_str crd_strfunc()
+{register int inp,c ;
+  inp=getchar();
+  while( ((inp<32) || (inp>127)) && (inp!='\n') ){
+    inp=getchar();
+  };
+  if( inp=='\n' ){
+    c=0;
+  } else {
+    c=inp;
+  }
+; return c;
+}
+srd_strfunc()
+#define srd_str srd_strfunc()
+{register int c,i,a,k ;
+  i=0;
+  a=0;
+  k=1;
+  c=crd_str;
+  while( (c!=0) && (i!=4) ){ 
+    a=a+c*k;
+    i=i+1;
+    k=k*128;
+    if( i!=4 ){ 
+      c=crd_str ;
+    };
+  }
+; return a;
+}
+
+read_str(b)
+{register int a ;
+  clr(b);
+  a=srd_str;
+  if( a!=0 ){ psh(b,a) ;};
+  while( a>=128*128*128 ){ 
+    a=srd_str;
+    if( a!=0 ){ psh(b,a) ;} ;
+  } ;
+}
+
+len_str(b)
+{register int l,v,i ;
+  l=len(b);
+  if( l!=0 ){
+    v=val(b,l);
+    l=4*(l-1);
+    itrn( i , 1 , 4 , {
+      if( v % 128!=0 ){
+        l=l+1;
+      };
+      v=v / 128
+   ;});
+  }
+; return l;
+}
+
+val_str(b,i)
+{register int v,j,k ;
+  j=(i-1) / 4 + 1;
+  v=val(b,j);
+  k=(i-1) % 4;
+  while( k!=0 ){
+    v= v / 128;
+    k=k-1;
+  }
+; return v % 128;
+}
+
+mod_str(b,i,w)
+{register int j,v,k,v1,v2,v3,v4 ;
+  j=(i-1) / 4 + 1;
+  v=val(b,j);
+  k=(i-1) % 4 + 1;
+  v1=v % 128;
+  v=v / 128;
+  v2=v % 128;
+  v=v / 128;
+  v3=v % 128;
+  v=v / 128;
+  v4=v % 128;
+  switch( k ){
+    case 1 :{
+      v1=w
+    ;break;}case 2 :{ 
+      v2=w
+    ;break;}case 3 :{
+      v3=w
+    ;break;}case 4 :{
+      v4=w
+    ;break;};
+  };
+  v=v4;
+  v=v*128+v3;
+  v=v*128+v2;
+  v=v*128+v1;
+  str(b,j,v);
+}
+
+psh_str(b,w)
+{register int l ;
+  l=len_str(b);
+  if( l % 4 == 0 ){
+    psh(b,w);
+  } else {
+    mod_str(b,l+1,w);
+  };
+}
+
+#define clr_str(b) clr(b)
+pop_str(b)
+{register int l ;
+  l=len_str(b);
+  if( l % 4 == 1 ){
+    pop(b);
+  } else {
+    mod_str(b,l,0);
+  };
+}
+
+#define itr_str(b,i,v,s)  itrn( i , 1 , len_str(b) , {  v=val_str(b,i); s  ;})
+
+#define xst_str(b,i,v,p,s1,s2)  i=len_str(b);  while( i>0 ){  v=val_str(b,i);  if( p ){  s1;  i=(-i)  ;} else {  i=i-1  ;};};  if( i==0 ){ s2 ;}
+
+#define eql_str(s,t) eql(s,t)
+trans_str(bbuf)
+{register int r,k ;
+  r=0;
+  k=0;
+  while( k<len_str(bbuf) ){
+    k=k+1;
+    r=r*10+(ord(val_str(bbuf,k))-ord('0'));
+  }
+; return r;
+}
+
+#define fst_str(s)  val_str(s,1)
+
+#define lst_str(s)  val_str(s,len_str(s))
+is_num_str(s)
+{register int i,v,is_num_str_res ;
+  xst_str(s,i,v,digit_str(v)==FALSE,is_num_str_res=FALSE,is_num_str_res=TRUE)
+; return is_num_str_res;
+}
+

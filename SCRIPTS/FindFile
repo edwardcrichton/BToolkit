@@ -1,0 +1,35 @@
+#! /bin/sh
+
+curdir=`pwd`
+
+cd TYP
+
+list=`grep -lw $1 *`
+
+cd $curdir
+
+echo $list > .Bcom
+Bcomcts=`cat .Bcom`
+if [ "$Bcomcts" = "" ]
+then
+  echo "?" > .Bcom
+else
+sed s/" "/";"/g .Bcom > .BBcom
+mv -f .BBcom .Bcom
+fi
+
+cd ANL
+
+list=`grep -lw $1 *`
+
+cd $curdir
+
+echo $list > .BBcom
+Bcomcts=`cat .BBcom`
+if [ "$Bcomcts" = "" ]
+then
+  echo "?" > .BBcom
+else
+sed s/" "/";"/g .BBcom > .BBBcom
+mv -f .BBBcom .BBcom
+fi

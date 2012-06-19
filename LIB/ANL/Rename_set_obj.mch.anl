@@ -1,0 +1,1245 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Rename_set_ctx(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_settok , Rename_setstruct , Rename_setord)
+;
+(Rename_settok , Rename_setstruct , Rename_setord)
+;
+(Rename_settok <: Rename_SETOBJ & Rename_setstruct : Rename_settok --> FIN(VALUE) & Rename_setord : Rename_settok --> seq(VALUE) & !rx.(rx : Rename_settok => Rename_setord(rx) : perm(Rename_setstruct(rx))))
+;
+(Rename_settok <: Rename_SETOBJ & Rename_setstruct : Rename_settok --> FIN(VALUE) & Rename_setord : Rename_settok --> seq(VALUE) & !rx.(rx : Rename_settok => Rename_setord(rx) : perm(Rename_setstruct(rx))))
+;
+(?)
+;
+(Rename_settok , Rename_setstruct , Rename_setord := {} , {} , {})
+;
+(Rename_settok , Rename_setstruct , Rename_setord := {} , {} , {})
+;
+(Rename_STS_SET_OBJ,Rename_MEM_FUL_SET_OBJ,Rename_OBJ_FUL_SET_OBJ,Rename_ANY_SET_OBJ,Rename_XST_SET_OBJ,Rename_INI_SET_OBJ,Rename_CRE_SET_OBJ,Rename_KIL_SET_OBJ,Rename_XST_ORD_SET_OBJ,Rename_VAL_SET_OBJ,Rename_CLR_SET_OBJ,Rename_UNION_SET_OBJ,Rename_DIFF_SET_OBJ,Rename_INTER_SET_OBJ,Rename_ENT_SET_OBJ,Rename_RMV_SET_OBJ,Rename_CPY_SET_OBJ,Rename_EMP_SET_OBJ,Rename_CRD_SET_OBJ,Rename_INCL_SET_OBJ,Rename_MBR_SET_OBJ,Rename_SAV_SET_OBJ,Rename_RST_SET_OBJ,Rename_SAVN_SET_OBJ,Rename_RSTN_SET_OBJ,Rename_FIRST_SET_OBJ,Rename_NEXT_SET_OBJ,Rename_OUTPUT_SET_OBJ,Rename_INPUT_SET_OBJ)
+;
+(Rename_STS_SET_OBJ , Rename_MEM_FUL_SET_OBJ , Rename_OBJ_FUL_SET_OBJ , Rename_ANY_SET_OBJ , Rename_XST_SET_OBJ , Rename_INI_SET_OBJ , Rename_CRE_SET_OBJ , Rename_KIL_SET_OBJ , Rename_XST_ORD_SET_OBJ , Rename_VAL_SET_OBJ , Rename_CLR_SET_OBJ , Rename_UNION_SET_OBJ , Rename_DIFF_SET_OBJ , Rename_INTER_SET_OBJ , Rename_ENT_SET_OBJ , Rename_RMV_SET_OBJ , Rename_CPY_SET_OBJ , Rename_EMP_SET_OBJ , Rename_CRD_SET_OBJ , Rename_INCL_SET_OBJ , Rename_MBR_SET_OBJ , Rename_SAV_SET_OBJ , Rename_RST_SET_OBJ , Rename_SAVN_SET_OBJ , Rename_RSTN_SET_OBJ , Rename_FIRST_SET_OBJ , Rename_NEXT_SET_OBJ , Rename_OUTPUT_SET_OBJ , Rename_INPUT_SET_OBJ)
+;
+(Rename_set_obj(VALUE , maxobj , maxmem):(maxobj > 0 & maxmem : NAT & maxobj : NAT & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_STS_SET_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (mm , nn , pp , qq <-- Rename_STS_SET_OBJ))
+;
+ (?)
+;
+ (mm , nn , pp , qq)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ mm :: 0..maxmem ||
+ nn := maxmem ||
+ pp , qq := card(Rename_settok) , maxobj
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ @(mmx).
+ (
+ (
+ (mmx : 0..maxmem)
+ )
+ ==>
+ (
+ (mm := mmx)
+ )
+ )
+ )
+ ||
+ (
+ (nn := maxmem)
+ )
+ )
+ ||
+ (
+ (pp , qq := card(Rename_settok) , maxobj)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_MEM_FUL_SET_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (bb <-- Rename_MEM_FUL_SET_OBJ))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(bbx).
+ (
+ (
+ (bbx : BOOL)
+ )
+ ==>
+ (
+ (bb := bbx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_OBJ_FUL_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_OBJ_FUL_SET_OBJ))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb := bool(card(Rename_settok) = maxobj)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb := bool(card(Rename_settok) = maxobj))
+ )
+ )
+)
+,
+(
+ (Rename_ANY_SET_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (pp <-- Rename_ANY_SET_OBJ))
+;
+ (?)
+;
+ (pp)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ pp :: Rename_SETOBJ
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_SETOBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_XST_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_XST_SET_OBJ(pp)))
+;
+ (pp)
+;
+ (bb)
+;
+ (
+ (pp : Rename_SETOBJ)
+ |
+ (
+ (bb := bool(pp : Rename_settok))
+ )
+ )
+;
+ (
+ (pp : Rename_SETOBJ)
+ |
+ (
+ (bb := bool(pp : Rename_settok))
+ )
+ )
+)
+,
+(
+ (Rename_INI_SET_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_INI_SET_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_settok , Rename_setstruct , Rename_setord := {} , {} , {}
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_settok , Rename_setstruct , Rename_setord := {} , {} , {})
+ )
+ )
+)
+,
+(
+ (Rename_CRE_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , (bb , pp <-- Rename_CRE_SET_OBJ))
+;
+ (?)
+;
+ (bb , pp)
+;
+ (
+ (true)
+ |
+ (
+ (IF card(Rename_settok) < maxobj THEN
+ ANY qq WHERE
+ qq : Rename_SETOBJ-Rename_settok
+ THEN
+ Rename_setstruct(qq) := {} ||
+ Rename_setord(qq) := <> ||
+ Rename_settok := Rename_settok \/ {qq} ||
+ pp := qq ||
+ bb := TRUE
+ END
+ ELSE
+ bb := FALSE ||
+ pp :: Rename_SETOBJ
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (card(Rename_settok) < maxobj)
+ )
+ ==>
+ (
+ @(qq).
+ (
+ (
+ (qq : Rename_SETOBJ-Rename_settok)
+ )
+ ==>
+ (
+ (Rename_setstruct , Rename_setord , Rename_settok , pp , bb := Rename_setstruct <+ {qq |-> {}} , Rename_setord <+ {qq |-> <>} , Rename_settok \/ {qq} , qq , TRUE)
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ (maxobj <= card(Rename_settok))
+ )
+ ==>
+ (
+ (
+ (bb := FALSE)
+ )
+ ||
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_SETOBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_KIL_SET_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_KIL_SET_OBJ(qq))
+;
+ (qq)
+;
+ (?)
+;
+ (
+ (qq : Rename_settok)
+ |
+ (
+ (
+ (
+ (Rename_setstruct := {qq} <<| Rename_setstruct)
+ )
+ ||
+ (
+ (Rename_setord := {qq} <<| Rename_setord)
+ )
+ )
+ ||
+ (
+ (Rename_settok := Rename_settok-{qq})
+ )
+ )
+ )
+;
+ (
+ (qq : Rename_settok)
+ |
+ (
+ (Rename_setstruct , Rename_setord , Rename_settok := {qq} <<| Rename_setstruct , {qq} <<| Rename_setord , Rename_settok-{qq})
+ )
+ )
+)
+,
+(
+ (Rename_XST_ORD_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_XST_ORD_SET_OBJ(pp , ii)))
+;
+ (pp , ii)
+;
+ (bb)
+;
+ (
+ (pp : Rename_settok & ii : NAT)
+ |
+ (
+ (bb := bool(ii : 1..card(Rename_setstruct(pp))))
+ )
+ )
+;
+ (
+ (pp : Rename_settok & ii : NAT)
+ |
+ (
+ (bb := bool(ii : 1..card(Rename_setstruct(pp))))
+ )
+ )
+)
+,
+(
+ (Rename_VAL_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_SET_OBJ(pp , ii)))
+;
+ (pp , ii)
+;
+ (vv)
+;
+ (
+ (pp : Rename_settok & ii : 1..card(Rename_setstruct(pp)))
+ |
+ (
+ (vv := Rename_setord(pp)(ii))
+ )
+ )
+;
+ (
+ (pp : Rename_settok & ii : 1..card(Rename_setstruct(pp)))
+ |
+ (
+ (vv := Rename_setord(pp)(ii))
+ )
+ )
+)
+,
+(
+ (Rename_CLR_SET_OBJ)
+;
+ (? , Mod_Op , Det_Op , Rename_CLR_SET_OBJ(pp))
+;
+ (pp)
+;
+ (?)
+;
+ (
+ (pp : Rename_settok)
+ |
+ (
+ (
+ (Rename_setstruct(pp) := {})
+ )
+ ||
+ (
+ (Rename_setord(pp) := <>)
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_settok)
+ |
+ (
+ (Rename_setstruct , Rename_setord := Rename_setstruct <+ {pp |-> {}} , Rename_setord <+ {pp |-> <>})
+ )
+ )
+)
+,
+(
+ (Rename_UNION_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , (bb <-- Rename_UNION_SET_OBJ(ss , tt)))
+;
+ (ss , tt)
+;
+ (bb)
+;
+ (
+ (ss : Rename_settok & tt : Rename_settok)
+ |
+ (
+ (CHOICE
+ Rename_setstruct(ss) := Rename_setstruct(ss) \/ Rename_setstruct(tt) ||
+ ANY xx WHERE
+ xx : seq(VALUE) &
+ xx : perm(Rename_setstruct(ss) \/ Rename_setstruct(tt))
+ THEN
+ Rename_setord(ss) := xx
+ END ||
+ bb := TRUE
+ OR
+ bb := FALSE
+ END)
+ )
+ )
+;
+ (
+ (ss : Rename_settok & tt : Rename_settok)
+ |
+ (
+ (
+ (
+ (
+ (Rename_setstruct := Rename_setstruct <+ {ss |-> (Rename_setstruct(ss) \/ Rename_setstruct(tt))})
+ )
+ ||
+ (
+ @(xx).
+ (
+ (
+ (xx : seq(VALUE) & xx : perm(Rename_setstruct(ss) \/ Rename_setstruct(tt)))
+ )
+ ==>
+ (
+ (Rename_setord := Rename_setord <+ {ss |-> xx})
+ )
+ )
+ )
+ )
+ ||
+ (
+ (bb := TRUE)
+ )
+ )
+ []
+ (
+ (bb := FALSE)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_DIFF_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_DIFF_SET_OBJ(ss , tt))
+;
+ (ss , tt)
+;
+ (?)
+;
+ (
+ (ss : Rename_settok & tt : Rename_settok)
+ |
+ (
+ (
+ (Rename_setstruct(ss) := Rename_setstruct(ss)-Rename_setstruct(tt))
+ )
+ ||
+ (
+ (ANY xx WHERE
+ xx : seq(VALUE) &
+ xx : perm(Rename_setstruct(ss)-Rename_setstruct(tt))
+ THEN
+ Rename_setord(ss) := xx
+ END)
+ )
+ )
+ )
+;
+ (
+ (ss : Rename_settok & tt : Rename_settok)
+ |
+ (
+ (
+ (Rename_setstruct := Rename_setstruct <+ {ss |-> Rename_setstruct(ss)-Rename_setstruct(tt)})
+ )
+ ||
+ (
+ @(xx).
+ (
+ (
+ (xx : seq(VALUE) & xx : perm(Rename_setstruct(ss)-Rename_setstruct(tt)))
+ )
+ ==>
+ (
+ (Rename_setord := Rename_setord <+ {ss |-> xx})
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_INTER_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_INTER_SET_OBJ(ss , tt))
+;
+ (ss , tt)
+;
+ (?)
+;
+ (
+ (ss : Rename_settok & tt : Rename_settok)
+ |
+ (
+ (
+ (Rename_setstruct(ss) := Rename_setstruct(ss) /\ Rename_setstruct(tt))
+ )
+ ||
+ (
+ (ANY xx WHERE
+ xx : seq(VALUE) &
+ xx : perm(Rename_setstruct(ss) /\ Rename_setstruct(tt))
+ THEN
+ Rename_setord(ss) := xx
+ END)
+ )
+ )
+ )
+;
+ (
+ (ss : Rename_settok & tt : Rename_settok)
+ |
+ (
+ (
+ (Rename_setstruct := Rename_setstruct <+ {ss |-> (Rename_setstruct(ss) /\ Rename_setstruct(tt))})
+ )
+ ||
+ (
+ @(xx).
+ (
+ (
+ (xx : seq(VALUE) & xx : perm(Rename_setstruct(ss) /\ Rename_setstruct(tt)))
+ )
+ ==>
+ (
+ (Rename_setord := Rename_setord <+ {ss |-> xx})
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_ENT_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , (bb <-- Rename_ENT_SET_OBJ(ss , vv)))
+;
+ (ss , vv)
+;
+ (bb)
+;
+ (
+ (ss : Rename_settok & vv : VALUE)
+ |
+ (
+ (CHOICE
+ Rename_setstruct(ss) := Rename_setstruct(ss) \/ {vv} ||
+ ANY xx WHERE
+ xx : seq(VALUE) &
+ xx : perm(Rename_setstruct(ss) \/ {vv})
+ THEN
+ Rename_setord(ss) := xx
+ END ||
+ bb := TRUE
+ OR
+ bb := FALSE
+ END)
+ )
+ )
+;
+ (
+ (ss : Rename_settok & vv : VALUE)
+ |
+ (
+ (
+ (
+ (
+ (Rename_setstruct := Rename_setstruct <+ {ss |-> (Rename_setstruct(ss) \/ {vv})})
+ )
+ ||
+ (
+ @(xx).
+ (
+ (
+ (xx : seq(VALUE) & xx : perm(Rename_setstruct(ss) \/ {vv}))
+ )
+ ==>
+ (
+ (Rename_setord := Rename_setord <+ {ss |-> xx})
+ )
+ )
+ )
+ )
+ ||
+ (
+ (bb := TRUE)
+ )
+ )
+ []
+ (
+ (bb := FALSE)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_RMV_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RMV_SET_OBJ(ss , vv))
+;
+ (ss , vv)
+;
+ (?)
+;
+ (
+ (ss : Rename_settok & vv : VALUE)
+ |
+ (
+ (
+ (Rename_setstruct(ss) := Rename_setstruct(ss)-{vv})
+ )
+ ||
+ (
+ (ANY xx WHERE
+ xx : seq(VALUE) &
+ xx : perm(Rename_setstruct(ss)-{vv})
+ THEN
+ Rename_setord(ss) := xx
+ END)
+ )
+ )
+ )
+;
+ (
+ (ss : Rename_settok & vv : VALUE)
+ |
+ (
+ (
+ (Rename_setstruct := Rename_setstruct <+ {ss |-> Rename_setstruct(ss)-{vv}})
+ )
+ ||
+ (
+ @(xx).
+ (
+ (
+ (xx : seq(VALUE) & xx : perm(Rename_setstruct(ss)-{vv}))
+ )
+ ==>
+ (
+ (Rename_setord := Rename_setord <+ {ss |-> xx})
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_CPY_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , (bb <-- Rename_CPY_SET_OBJ(pp , qq)))
+;
+ (pp , qq)
+;
+ (bb)
+;
+ (
+ (pp : Rename_settok & qq : Rename_settok)
+ |
+ (
+ (CHOICE
+ Rename_setstruct(qq) := Rename_setstruct(pp) ||
+ Rename_setord(qq) := Rename_setord(pp) ||
+ bb := TRUE
+ OR
+ bb := FALSE
+ END)
+ )
+ )
+;
+ (
+ (pp : Rename_settok & qq : Rename_settok)
+ |
+ (
+ (
+ (Rename_setstruct , Rename_setord , bb := Rename_setstruct <+ {qq |-> Rename_setstruct(pp)} , Rename_setord <+ {qq |-> Rename_setord(pp)} , TRUE)
+ )
+ []
+ (
+ (bb := FALSE)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_EMP_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EMP_SET_OBJ(pp)))
+;
+ (pp)
+;
+ (bb)
+;
+ (
+ (pp : Rename_settok)
+ |
+ (
+ (bb := bool(Rename_setstruct(pp) = {}))
+ )
+ )
+;
+ (
+ (pp : Rename_settok)
+ |
+ (
+ (bb := bool(Rename_setstruct(pp) = {}))
+ )
+ )
+)
+,
+(
+ (Rename_CRD_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , (nn <-- Rename_CRD_SET_OBJ(pp)))
+;
+ (pp)
+;
+ (nn)
+;
+ (
+ (pp : Rename_settok)
+ |
+ (
+ (nn := card(Rename_setstruct(pp)))
+ )
+ )
+;
+ (
+ (pp : Rename_settok)
+ |
+ (
+ (nn := card(Rename_setstruct(pp)))
+ )
+ )
+)
+,
+(
+ (Rename_INCL_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_INCL_SET_OBJ(tt , ss)))
+;
+ (tt , ss)
+;
+ (bb)
+;
+ (
+ (ss : Rename_settok & tt : Rename_settok)
+ |
+ (
+ (bb := bool(Rename_setstruct(tt) <: Rename_setstruct(ss)))
+ )
+ )
+;
+ (
+ (ss : Rename_settok & tt : Rename_settok)
+ |
+ (
+ (bb := bool(Rename_setstruct(tt) <: Rename_setstruct(ss)))
+ )
+ )
+)
+,
+(
+ (Rename_MBR_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_MBR_SET_OBJ(ss , vv)))
+;
+ (ss , vv)
+;
+ (bb)
+;
+ (
+ (ss : Rename_settok & vv : VALUE)
+ |
+ (
+ (bb := bool(vv : Rename_setstruct(ss)))
+ )
+ )
+;
+ (
+ (ss : Rename_settok & vv : VALUE)
+ |
+ (
+ (bb := bool(vv : Rename_setstruct(ss)))
+ )
+ )
+)
+,
+(
+ (Rename_SAV_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_SET_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_SET_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY ssetn , sseto , ssetord WHERE
+ ssetn <: Rename_SETOBJ &
+ sseto : ssetn --> FIN(VALUE) &
+ ssetord : ssetn --> seq(VALUE) &
+ !pp.(pp : ssetn => ssetord(pp) : perm(sseto(pp)))
+ THEN
+ Rename_setstruct := sseto ||
+ Rename_settok := ssetn ||
+ Rename_setord := ssetord
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(ssetn , sseto , ssetord).
+ (
+ (
+ (ssetn <: Rename_SETOBJ & sseto : ssetn --> FIN(VALUE) & ssetord : ssetn --> seq(VALUE) & !pp.(pp : ssetn => ssetord(pp) : perm(sseto(pp))))
+ )
+ ==>
+ (
+ (Rename_setstruct , Rename_settok , Rename_setord := sseto , ssetn , ssetord)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_SET_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_SET_OBJ)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (ANY ssetn , sseto , ssetord WHERE
+ ssetn <: Rename_SETOBJ &
+ sseto : ssetn --> FIN(VALUE) &
+ ssetord : ssetn --> seq(VALUE) &
+ !pp.(pp : ssetn => ssetord(pp) : perm(sseto(pp)))
+ THEN
+ Rename_setstruct := sseto ||
+ Rename_settok := ssetn ||
+ Rename_setord := ssetord
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(ssetn , sseto , ssetord).
+ (
+ (
+ (ssetn <: Rename_SETOBJ & sseto : ssetn --> FIN(VALUE) & ssetord : ssetn --> seq(VALUE) & !pp.(pp : ssetn => ssetord(pp) : perm(sseto(pp))))
+ )
+ ==>
+ (
+ (Rename_setstruct , Rename_settok , Rename_setord := sseto , ssetn , ssetord)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_FIRST_SET_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (nn , pp <-- Rename_FIRST_SET_OBJ))
+;
+ (?)
+;
+ (nn , pp)
+;
+ (
+ (true)
+ |
+ (
+ (IF not(Rename_settok = {}) THEN
+ pp :: Rename_settok ||
+ nn := card(Rename_settok)
+ ELSE
+ pp :: Rename_SETOBJ ||
+ nn := 0
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (not(Rename_settok = {}))
+ )
+ ==>
+ (
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_settok)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ ||
+ (
+ (nn := card(Rename_settok))
+ )
+ )
+ )
+ []
+ (
+ (
+ (Rename_settok = {})
+ )
+ ==>
+ (
+ (
+ @(ppx).
+ (
+ (
+ (ppx : Rename_SETOBJ)
+ )
+ ==>
+ (
+ (pp := ppx)
+ )
+ )
+ )
+ ||
+ (
+ (nn := 0)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_NEXT_SET_OBJ)
+;
+ (? , Val_Op , NonDet_Op , (nn , qq <-- Rename_NEXT_SET_OBJ(mm , pp)))
+;
+ (mm , pp)
+;
+ (nn , qq)
+;
+ (
+ (pp : Rename_settok & mm : NAT1)
+ |
+ (
+ (
+ (nn := mm-1)
+ )
+ ||
+ (
+ (qq :: Rename_settok)
+ )
+ )
+ )
+;
+ (
+ (pp : Rename_settok & mm : NAT1)
+ |
+ (
+ (
+ (nn := mm-1)
+ )
+ ||
+ (
+ @(qqx).
+ (
+ (
+ (qqx : Rename_settok)
+ )
+ ==>
+ (
+ (qq := qqx)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_OUTPUT_SET_OBJ)
+;
+ (? , Val_Op , Det_Op , Rename_OUTPUT_SET_OBJ(SS , pp))
+;
+ (SS , pp)
+;
+ (?)
+;
+ (
+ (SS <: VALUE & pp : Rename_settok)
+ |
+ (
+ (skip)
+ )
+ )
+;
+ (
+ (SS <: VALUE & pp : Rename_settok)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_INPUT_SET_OBJ)
+;
+ (? , Mod_Op , NonDet_Op , (bb <-- Rename_INPUT_SET_OBJ(SS , pp , ll)))
+;
+ (SS , pp , ll)
+;
+ (bb)
+;
+ (
+ (SS <: VALUE & pp : Rename_settok & ll : 1..250)
+ |
+ (
+ (CHOICE
+ ANY ss , pss WHERE
+ ss <: VALUE &
+ pss : seq(VALUE) &
+ pss : perm(ss \/ Rename_setstruct(pp))
+ THEN
+ Rename_setstruct(pp) := ss \/ Rename_setstruct(pp) ||
+ Rename_setord(pp) := pss ||
+ bb := TRUE
+ END
+ OR
+ bb := FALSE
+ END)
+ )
+ )
+;
+ (
+ (SS <: VALUE & pp : Rename_settok & ll : 1..250)
+ |
+ (
+ (
+ @(ss , pss).
+ (
+ (
+ (ss <: VALUE & pss : seq(VALUE) & pss : perm(ss \/ Rename_setstruct(pp)))
+ )
+ ==>
+ (
+ (Rename_setstruct , Rename_setord , bb := Rename_setstruct <+ {pp |-> (ss \/ Rename_setstruct(pp))} , Rename_setord <+ {pp |-> pss} , TRUE)
+ )
+ )
+ )
+ []
+ (
+ (bb := FALSE)
+ )
+ )
+ )
+)
+)

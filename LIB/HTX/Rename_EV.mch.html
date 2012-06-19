@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.1.0">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_EV">
+  <TITLE>The Rename_EV machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>           Rename_EV
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="VHDL_PK.mch.html#MACHINE">VHDL_PK</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>         Rename, Rename_event
+/*"
+The variable {\em Rename\/} holds the current value of a source,
+while the variable {\em Rename\_event\/} will indicate whether the
+value of that source has changed
+"*/
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>         Rename: <A HREF="VHDL_PK.mch.html#SETS">std_logic</A> & Rename_event: <A HREF="VHDL_PK.mch.html#SETS">std_logic</A>
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>    <B>BEGIN</B> Rename := '0' || Rename_event := '0' <B>END</B>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf Rename\_chg} is a synchronous event which changes Rename's value.
+"*/
+
+  <A NAME="OPNAME!Rename_chg">Rename_chg</A> =
+  <B>BEGIN</B> 
+    <B>IF</B> Rename = '1' <B>THEN</B>  Rename := '0' <B>ELSE</B>  Rename := '1' <B>END</B> ||
+    Rename_event := '1'
+  <B>END</B>;
+
+/*"
+{\bf Rename\_ack\/} is the event of another agent (a process
+in an architecture) observing (or using) the value of {\em Rename\/}.
+"*/
+
+  <A NAME="OPNAME!Rename_ack">Rename_ack</A> = <B>BEGIN</B> Rename_event := '0' <B>END</B>
+
+<A NAME="DEFINITIONS"><B>DEFINITIONS</B></A>
+
+  Rename_EVENT == (Rename_event = '1')
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Dec  6 14:11:23 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.1.0</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

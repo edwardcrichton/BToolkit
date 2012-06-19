@@ -1,0 +1,16 @@
+#! /bin/csh -f
+
+
+cd ../BHELP/HTX
+set files = `ls *.html`
+
+foreach file ( $files )
+
+  cp $file.save $file
+  rm $file.save
+
+end
+
+echo ""
+echo "  _sed_HELP_replace undone"
+echo ""

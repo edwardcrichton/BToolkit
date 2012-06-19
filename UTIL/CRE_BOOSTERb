@@ -1,0 +1,75 @@
+#! /bin/csh -f
+
+#
+# $HOME/BOOSTER/BOOSTERb created
+#
+
+echo ""
+echo "  ----------------------------------------------------------"
+echo "  This script creates $HOME/BOOSTER/BOOSTER_DEV/BOOSTERb "
+echo "  ----------------------------------------------------------"
+
+######################################
+# set all variables 
+######################################
+
+if ( ! -d $HOME/BOOSTER/BOOSTER_DEV ) then
+  echo ""
+  echo "    Directory $HOME/BOOSTER/BOOSTER_DEV does not exist"
+  echo ""
+  exit ( 1 )
+endif
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+cd ../BEESRC
+
+../UTIL/_copy_B-Core_to_c
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_non_Motif                      \ "
+echo "       -o $HOME/BOOSTER/BOOSTER_DEV/BOOSTERb \ "
+echo "      b.c                                    \ "
+echo "      $ALL_FLAGS                             \ "
+echo "      -DSSTL_FLAG                            \ "
+echo "      $CC_non_X_incl_dir                     \ "
+echo "      $CC_non_X_link_lib"
+$CC \
+    $CC_opt_non_Motif                     \
+    -o $HOME/BOOSTER/BOOSTER_DEV/BOOSTERb \
+    b.c                                   \
+    $ALL_FLAGS                            \
+    -DSSTL_FLAG                           \
+    $CC_non_X_incl_dir                    \
+    $CC_non_X_link_lib
+
+if ($status != "0") then
+  echo ""
+  ../UTIL/_rem_copied_to_c
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+strip $HOME/BOOSTER/BOOSTER_DEV/BOOSTERb
+if ($status != "0") then
+  echo ""
+  ../UTIL/_rem_copied_to_c
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+../UTIL/_rem_copied_to_c
+
+rm -f b.o
+
+echo ""
+echo "  BOOSTERb (malloc) for B-Core created"
+echo "  in $HOME/BOOSTER/BOOSTER_DEV/BOOSTERb "
+echo ""

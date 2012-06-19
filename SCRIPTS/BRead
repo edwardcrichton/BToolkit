@@ -1,0 +1,44 @@
+#! /bin/sh
+
+OS="`uname -s`"
+
+if [ "$OS" == "Darwin" ]
+then
+
+
+MESSAGE="$1"
+if [ "$1xxx" == "xxx" ]
+  then
+    MESSAGE='';
+  fi
+
+RESULT=`/usr/bin/osascript <<EOF
+tell application "System Events"
+    activate
+    button returned of (display dialog "$MESSAGE" with title "B-Toolkit" buttons {"Yes","No"} default button "No" ) is "Yes"
+end tell
+EOF`
+
+if [ "true" == "$RESULT" ]
+then
+  echo yes > .Bcom
+else
+  echo CR > .Bcom
+fi
+
+
+else
+
+  if [ "$1xxx" != "xxx" ]
+  then
+    printf "$1"
+  fi
+
+  read input
+  if [ "$input" = "" ]
+  then
+    echo CR > .Bcom
+  else
+    echo $input > .Bcom
+  fi
+fi

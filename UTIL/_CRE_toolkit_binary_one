@@ -1,0 +1,28 @@
+#! /bin/csh -f
+
+######################################
+# set all variables 
+######################################
+
+cd ../UTIL
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+cd ../SRC
+
+
+  cp Standardize_NonPASP.src Standardize.src
+  cp SetOfRules_NonPASP SetOfRules
+
+
+cd ../UTIL
+
+./_CRE_toolkit_binary_raw
+
+if ( $status == 0 ) then
+  printf "\n  done\n\n"
+endif

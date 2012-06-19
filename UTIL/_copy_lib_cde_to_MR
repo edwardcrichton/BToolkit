@@ -1,0 +1,31 @@
+#! /bin/csh -f
+
+echo ""
+echo "  Copies code files "
+echo ""
+echo "    from: "
+echo "          ~/TOOLKIT/LIB_CDE/C"
+echo "    to:"
+echo "          $MR/LIB/CDE/C"
+echo ""
+echo ""
+
+echo -n "  Proceed? "
+set answer=$<
+echo ""
+if ( $answer != "" && $answer != "y" && $answer != "yes" ) then
+  echo "  Installation aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+
+cd ~/TOOLKIT/LIB_CDE/C
+clean
+cp * $MR/LIB/CDE/C
+echo ""
+echo "  C -> $MR/LIB/CDE/C"
+
+echo ""
+echo ""

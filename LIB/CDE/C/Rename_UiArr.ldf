@@ -1,0 +1,12 @@
+/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             28/01/01
+created from Rename_UiArr_File.ldf
+***/
+
+(VALUE,lb,ub,init_val)
+|
+(Byt_TYPE,Uns_TYPE,Bool_TYPE)

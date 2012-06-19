@@ -1,0 +1,111 @@
+#!/bin/sh
+set -e
+BT_VERSION_NUM="6.03" 
+BT_EXECUTABLES="btool btoolkit btoolkitd btoolkitd_util bunlock" 
+# This script typically modifies links or other files associated with foo,
+# and/or removes files created by the package
+
+# <remove, purge, upgrade, failed-upgrade, abort-install, abort-upgrade, disappear>
+# <version>
+# rpm: 1 == replace, 0 == remove
+
+
+echo "postrm $1 $2 $3"
+
+case "$1" in
+remove|purge|0)
+    
+  BIN="/usr/bin /usr/local/bin"
+  TORM="$BT_EXECUTABLES"
+
+  for b in $BIN
+  do
+
+    for ex in $TORM
+    do
+
+     GOT=`ls -t $b | grep $ex` || true
+
+     if [ "$GOT" != "" ] ; then
+       rm -f $ex || true
+     fi
+    done
+
+  done
+  
+    ;;
+    
+upgrade|1)
+
+  # move my licence files out
+
+  INSTALLED=$BT_VERSION_NUM
+
+  if [ "$2" != "$BT_VERSION_NUM" ] && [ -d ./${INSTALLED}/BKIT ]; then
+
+  TOCP="B_licence B_server B_port BHW.licence"
+
+  for p in $TOCP
+  do
+   INST_LIC="./${INSTALLED}/BKIT/$p"
+   GLOB_LIC="/usr/local/btoolkit/$p"
+
+   GOT_INST=`ls ./${INSTALLED}/BKIT -t | grep $p` || true
+   GOT_GLOB=`ls -t | grep $p` || true
+
+   if [ "$GOT_GLOB" = "" ] && [ "$GOT_INST" != "" ]; then
+   
+     echo "Preserving $p"
+   
+     cp $INST_LIC $GLOB_LIC 2>/dev/null || true
+     chmod a+r $GLOB_LIC || true
+   fi
+
+  done
+  
+  fi
+
+    ;;
+    
+esac
+
+if [ "$1" = purge ]; then
+
+  if [ -d /usr/local/btoolkit ]; then
+
+  FILES=`ls /usr/local/btoolkit`
+
+  echo $FILES
+
+  for f in $FILES
+  do
+
+
+    if [ -d "/usr/local/btoolkit/$f" ]; then
+      echo rm -rf "/usr/local/btoolkit/$f"
+      
+      rm -rf "/usr/local/btoolkit/$f" || true
+    else
+      echo "mv $f to ${HOME}/${f}"
+      mv /usr/local/btoolkit/${f} ${HOME}/${f} || true
+    fi
+
+  done
+
+  fi
+
+fi
+
+
+#if [ "$1" = purge ] && [ -e /usr/share/debconf/confmodule ]; then
+#	. /usr/share/debconf/confmodule || true
+#	db_purge || true
+#fi
+
+if [ -x "`which update-menus 2>/dev/null`" ]; then
+
+ update-menus || true
+
+fi
+
+exit 0

@@ -1,0 +1,55 @@
+(Rename_FUL_NSEQ(bb;?) == (bb : BOOL));
+(Rename_XST_IDX_NSEQ(bb;ii) == (bb : BOOL & ii : NAT));
+(Rename_STO_NSEQ(?;ii , vv) == (ii : NAT & vv : NAT));
+(Rename_CLR_NSEQ(?;?) == ?);
+(Rename_PSH_NSEQ(?;vv) == (vv : NAT));
+(Rename_POP_NSEQ(?;?) == ?);
+(Rename_FST_NSEQ(vv;?) == (vv : NAT));
+(Rename_LST_NSEQ(vv;?) == (vv : NAT));
+(Rename_TAL_NSEQ(?;?) == ?);
+(Rename_KEP_NSEQ(?;ii) == (ii : NAT));
+(Rename_CUT_NSEQ(?;ii) == (ii : NAT));
+(Rename_SWP_NSEQ(?;ii , jj) == (ii : NAT & jj : NAT));
+(Rename_VAL_NSEQ(vv;ii) == (vv : NAT & ii : NAT));
+(Rename_LEN_NSEQ(nn;?) == (nn : NAT));
+(Rename_EMP_NSEQ(bb;?) == (bb : BOOL));
+(Rename_MAX_IDX_NSEQ(vv;ii , jj) == (vv : NAT & ii : NAT & jj : NAT));
+(Rename_MIN_IDX_NSEQ(vv;ii , jj) == (vv : NAT & ii : NAT & jj : NAT));
+(Rename_ADD_NSEQ(?;ii , vv) == (ii : NAT & vv : NAT));
+(Rename_MUL_NSEQ(?;ii , vv) == (ii : NAT & vv : NAT));
+(Rename_SUB_NSEQ(?;ii , vv) == (ii : NAT & vv : NAT));
+(Rename_DIV_NSEQ(?;ii , vv) == (ii : NAT & vv : NAT));
+(Rename_MOD_NSEQ(?;ii , vv) == (ii : NAT & vv : NAT));
+(Rename_EQL_NSEQ(bb;ii , vv) == (bb : BOOL & ii : NAT & vv : NAT));
+(Rename_NEQ_NSEQ(bb;ii , vv) == (bb : BOOL & ii : NAT & vv : NAT));
+(Rename_GTR_NSEQ(bb;ii , vv) == (bb : BOOL & ii : NAT & vv : NAT));
+(Rename_GEQ_NSEQ(bb;ii , vv) == (bb : BOOL & ii : NAT & vv : NAT));
+(Rename_SMR_NSEQ(bb;ii , vv) == (bb : BOOL & ii : NAT & vv : NAT));
+(Rename_LEQ_NSEQ(bb;ii , vv) == (bb : BOOL & ii : NAT & vv : NAT));
+(Rename_SCH_LO_EQL_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_LO_NEQ_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_LO_GEQ_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_LO_GTR_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_LO_LEQ_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_LO_SMR_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_HI_EQL_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_HI_NEQ_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_HI_GEQ_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_HI_GTR_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_HI_LEQ_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SCH_HI_SMR_NSEQ(bb , ii;jj , kk , vv) == (ii : NAT & bb : BOOL & jj : NAT & kk : NAT & vv : NAT));
+(Rename_SRT_ASC_NSEQ(?;ii , jj) == (ii : NAT & jj : NAT));
+(Rename_SRT_DSC_NSEQ(?;ii , jj) == (ii : NAT & jj : NAT));
+(Rename_REV_NSEQ(?;ii , jj) == (ii : NAT & jj : NAT));
+(Rename_RHT_NSEQ(?;ii , jj , nn) == (ii : NAT & jj : NAT & nn : NAT));
+(Rename_LFT_NSEQ(?;ii , jj , nn) == (ii : NAT & jj : NAT & nn : NAT));
+(Rename_SAV_NSEQ(?;?) == ?);
+(Rename_RST_NSEQ(?;?) == ?);
+(Rename_SAVN_NSEQ(?;?) == ?);
+(Rename_RSTN_NSEQ(?;?) == ?)
+|
+(maxint : NAT);
+(maxsize : NAT);
+(Rename_Nseq : POW(NAT*NAT));
+(Rename_Nseq : seq(NAT))|
+(maxint , maxsize)

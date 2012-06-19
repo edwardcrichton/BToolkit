@@ -1,0 +1,137 @@
+Installation Error Codes:
+
+    10261  file problems
+    13521  current date < date of manufacture
+    14251  can't write to .Bcom
+    19227  current date > latest installation date
+
+Execution Error Codes - motif crash:
+
+    110xx  terminated with signal xx
+    117xx  internal Motif error (grep source code!)
+    118xx  underlying base error (chk_rep) xx
+    119xx  underlying base error (chk_rep) 100+xx
+    120xx  underlying base error (chk_rep) 200+xx
+    130xx  Display error xx
+
+Execution Error Codes - installation failure:
+
+    11448  installation date still factory set (1994:12:31)
+
+Execution Error Codes - clock tampering:
+
+    10518  current date < installation date
+
+Execution Error Codes - licence file
+
+    "Licence File Error"  - $BLIC/B.lic not present/readable (bplatform)
+    "Licence File Error!" - $BLIC/B.lic not present/readable (BToolkit)
+    18849  licence file error (tampering - BToolkit)
+    18850  licence file error (tampering - bplatform)
+    18851  licence file error (tampering - bplatform)
+
+Execution Error Codes - authorisation:
+
+    13333  protection mechanism bypassed version!
+
+    13662  not authorised for this platform
+    17330  not authorised for this platform
+
+    15280  initially (via BToolkit), .Bver not contain 4.9
+    15281  #bplatform = 0
+    15282  #bplatform > #BMotif
+    15283  #toolkits running > #BMotif
+    15284  #BMotif = 0
+    15285  number of authorised users exceeds that allowed
+    15289  other authorisation problem (unspecified reason)
+
+Execution Error Codes - BSITECODE:
+
+    12303  code not recognized
+    16228  permanent tape installed, but code does not reflect 1995:11
+    19931  code for this platform has expired
+
+Execution Error Codes - others:
+
+    10256  date of manufacture/date of installation differ
+    12224  bad return code from uname
+    12225  bad return code from gethostbyname
+    12226  bad return code from all of /usr/ucb/hostid, /bin/hostid,
+             /sbin/hostid, /usr/sbin/hostid (each tried in turn)
+    13771  cant execute `/bin/ps -auxww | $BKIT/BLIB/GML'
+    13772  executed `.../ps ...' but output in wrong form (.Bcom)
+    13773  executed `.../ps ...' but output doesn't parse (.Bcom)
+    13812  can't execute /bin/ps     (and running on SunOS)
+    13813  can't execute /usr/ucb/ps (and running on Solaris)
+    13814  can't execute /usr/ucb/ps (and running on OSF1)
+    13815  can't execute /bin/ps (and running on AIX)
+    13816  can't execute /bin/ps (and running on IRIX)
+    13821  /bin/ps  -auxww    (SunOS)   executes, but incorrectly
+    13822  /usr/ucb/ps -auxww (Solaris) executes, but incorrectly
+    13823  /usr/ucb/ps auxww  (OSF1)    executes, but incorrectly
+    13824  /bin/ps auxww  (AIX)         executes, but incorrectly
+    13825  /bin/ps -efl  (IRIX)         executes, but incorrectly
+    13933  cant execute `date '+%y,%m,%d' > .Bcom'
+    13934  cant execute (a Toolkit10) bshell
+    19701  cant connect to .BBcom (containing hostid as pair x,y or 0)
+
+Execution Error Codes - version:
+
+    14076  (other than initially) .Bver does not contain 4.9
+    14095  Release version run in a WWW development
+    141xx  WWW version run in a non-WWW development
+    18011  COUNT max count in development reached
+    18012  WWW no. of user-constructs changed
+    18013  WWW length of user-construct changed
+    18014  WWW version attempt to create new development directory
+
+BToolkitd Error Codes:
+
+    2-xxx  can't open data file for reading (WWW)
+    3-xxx  data file corrupted & can't open backup data file for reading (WWW)
+    4-xxx  data file corrupted & backup data file corrupted (WWW)
+    5-xxx  clock tampering (current time < time data file installed) (WWW)
+    6-xxx  modify time of data file changed since last write (WWW)
+    7-xxx  attempt to (re)install after latest install time
+    8-xxx  attempt to run BToolkitd on non-primary ipaddress
+    9-xxx  attempt to run BToolkitd on non-primary hostid
+   10-xxx  current time less than that of previous (clock put back)
+   11-xxx  time of manufacture less than that of installation (clock put back)
+   12-xxx  number too big to store (should not happen ... )
+   13-xxx  number too big to store (should not happen ... )
+   14-xxx  number too big to store (should not happen ... )
+   15-xxx  cannot perform malloc
+      (in each of the above, xxx represents the remaining count)
+    12224  bad return code from uname
+    12225  bad return code from gethostbyname
+    12226  bad return code from all of /usr/ucb/hostid, /bin/hostid,
+             /sbin/hostid, /usr/sbin/hostid (each tried in turn)
+    13242  expiry time reached for this platform
+    13243  max count reached for this platform
+    13244  number of authorised users exceeds that allowed
+    13245  bad return from `hiip_request'
+    13246  not authorised for this hostid
+    13247  not authorised for this ipaddress
+    13248  WWW B.licence (mutley) used in a non-WWW development
+    13249  pid previously stored no longer matches
+              (inactive pid > 24 hrs has been removed, or BToolkitd restarted)
+    13250  BToolkit Release id and BToolkitd Release id don't match
+    13251  BToolkit Release id and B.licence Release id don't match
+              (reported by BToolkitd)
+    13270  BMotif couldn't perform malloc (InitialiseConstructState_from_malloc)
+    13271  BMotif couldn't perform realloc (ReallocState_from_malloc)
+
+    13298  $BKIT/BHW.licence has now expired
+    13299  $BKIT/BHW.licence does not authorise this platform
+
+    19999  cut < ldt (of .Bpda) (.Bpda has more recent time stamp than cut)
+
+BToolkitd Hardware Licence Error Codes:
+
+    1.xxxxxxxxx      lit < bli (xxxxxxxxx is bli)
+    2.xxxxxxxxx      bli < tom (xxxxxxxxx is bli)
+    3.xxxxxxxxx      cut < bli (xxxxxxxxx is bli)
+    4.xxxxxxxxx.yyy  cut < lat (xxxxxxxxx is cut, yyy is lat-cut )
+    5.xxxxxxxxx.yyy  tos < tom (xxxxxxxxx is tos, yyy is tom-tos )
+
+    

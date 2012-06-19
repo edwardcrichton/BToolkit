@@ -1,0 +1,339 @@
+POW         unr      nrml      11
+POW1        unr      nrml      11
+FIN         unr      nrml      11
+FIN1        unr      nrml      11
+FINI        unr      nrml      11
+FINI1       unr      nrml      11
+UNION       unr      nrml      11
+INTER       unr      nrml      11
+SIGMA       unr      nrml      11
+PI          unr      nrml      11
+union       unr      nrml      11
+inter       unr      nrml      11
+prj1        unr      nrml      11
+prj2        unr      nrml      11
+card        unr      nrml      11
+finite      unr      nrml      11
+infinite    unr      nrml      11
+choice      unr      nrml      11
+<:          bin      blba      -2
+<<:         bin      blba      -2
+/<:         bin      blba      -2
+/<<:        bin      blba      -2
+/:          bin      blba       0
+
+seq         unr      nrml      11
+seq1        unr      nrml      11
+conc        unr      nrml      11
+front       unr      nrml      11
+tail        unr      nrml      11
+first       unr      nrml      11
+last        unr      nrml      11
+size        unr      nrml      11
+iseq        unr      nrml      11
+perm        unr      nrml      11
+rev         unr      nrml      11
+
+SEQ         atm      nrml      0
+SET         atm      nrml      0
+STR         atm      nrml      0
+
+succ        atm      nrml      0
+pred        atm      nrml      0
+plus        atm      nrml      0
+minus       atm      nrml      0
+multiply    atm      nrml      0
+divide      atm      nrml      0
+mod         bin      blba      3
+div         bin      blba      3
+..          bin      nrml      1
+
+
+
+bool        unr      nrml      11
+or          bin      blba      -5
+&&          bin      bbat      -5
+
+
+closure     unr      nrml      11
+iterate     unr      nrml      11
+circ        bin      blba      0
+id          unr      nrml      11
+dom         unr      nrml      11
+cod         unr      nrml      11
+ran         unr      nrml      11
+
+
+
+-->         bin      blba      -1
++->         bin      blba      -1
+>->         bin      blba      -1
+>+>         bin      blba      -1
+-->>        bin      blba      -1
++->>        bin      blba      -1
+>->>        bin      blba      -1
+<->         bin      blba      -1
+
+/0O0/       bin      blba      12
+
+
+END         clo      keyt
+
+0OoBEGINoO0	opn      keyl      11  END
+0OoBEGIN	opn      keyl      11  END
+BEGINoO0	opn      keyl      11  END
+BEGIN		opn      keyl      11  END
+
+0OoIFoO0	opn      keyw      11  END
+0OoIF		opn      keyw      11  END
+IFoO0		opn      keyw      11  END
+IF		opn      keyw      11  END
+
+0OoPREoO0	opn      keyl      11  END
+0OoPRE		opn      keyl      11  END
+PREoO0		opn      keyl      11  END
+PRE		opn      keyl      11  END
+
+0OoCHOICEoO0	opn      keyw      11  END
+0OoCHOICE	opn      keyw      11  END
+CHOICEoO0	opn      keyw      11  END
+CHOICE		opn      keyw      11  END
+
+0OoSELECToO0	opn      keyw      11  END
+0OoSELECT	opn      keyw      11  END
+SELECToO0	opn      keyw      11  END
+SELECT		opn      keyw      11  END
+
+0OoCASEoO0	opn      keyw      11  END
+0OoCASE		opn      keyw      11  END
+CASEoO0		opn      keyw      11  END
+CASE		opn      keyw      11  END
+
+0OoEITHERoO0	opn      keyw      11  END
+0OoEITHER	opn      keyw      11  END
+EITHERoO0	opn      keyw      11  END
+EITHER		opn      keyw      11  END
+
+0OoANYoO0	opn      keyw      11  END
+0OoANY		opn      keyw      11  END
+ANYoO0		opn      keyw      11  END
+ANY		opn      keyw      11  END
+
+0OoVARoO0	opn      keyw      11  END
+0OoVAR		opn      keyw      11  END
+VARoO0		opn      keyw      11  END
+VAR		opn      keyw      11  END
+
+0OoLEToO0	opn      keyw      11  END
+0OoLET		opn      keyw      11  END
+LEToO0		opn      keyw      11  END
+LET		opn      keyw      11  END
+
+0OoWHILEoO0	opn      keyw      11  END
+0OoWHILE	opn      keyw      11  END
+WHILEoO0	opn      keyw      11  END
+WHILE		opn      keyw      11  END
+
+0OoTHENoO0	bin      keyl      -9
+0OoTHEN		bin      keyl      -9
+THENoO0		bin      keyl      -9
+THEN		bin      keyl      -9
+
+0OoDOoO0	bin      keyl      -9
+0OoDO		bin      keyl      -9
+DOoO0		bin      keyl      -9
+DO		bin      keyl      -9
+
+0OoINVARIANToO0	bin      keyl      -9
+0OoINVARIANT	bin      keyl      -9
+INVARIANToO0	bin      keyl      -9
+INVARIANT	bin      keyl      -9
+
+0OoVARIANToO0	bin      keyl      -9
+0OoVARIANT	bin      keyl      -9
+VARIANToO0	bin      keyl      -9
+VARIANT		bin      keyl      -9
+
+0OoOFoO0	bin      keyl      -9
+0OoOF		bin      keyl      -9
+OFoO0		bin      keyl      -9
+OF		bin      keyl      -9
+
+0OoINoO0	bin      keyl      -9
+0OoIN		bin      keyl      -9
+INoO0		bin      keyl      -9
+IN		bin      keyl      -9
+
+0OoORoO0	bin      keyl      -9
+0OoOR		bin      keyl      -9
+ORoO0		bin      keyl      -9
+OR		bin      keyl      -9
+
+0OoWITHoO0	bin      keyw      -9
+0OoWITH		bin      keyw      -9
+WITHoO0		bin      keyw      -9
+WITH		bin      keyw      -9
+
+0OoELSEoO0	bin      keyl      -9
+0OoELSE		bin      keyl      -9
+ELSEoO0		bin      keyl      -9
+ELSE		bin      keyl      -9
+
+0OoBEoO0	bin      keyl      -9
+0OoBE		bin      keyl      -9
+BEoO0		bin      keyl      -9
+BE		bin      keyl      -9
+
+0OoWHEREoO0	bin      keyl      -9
+0OoWHERE	bin      keyl      -9
+WHEREoO0	bin      keyl      -9
+WHERE		bin      keyl      -9
+
+0OoWHENoO0	bin      keyl      -9
+0OoWHEN		bin      keyl      -9
+WHENoO0		bin      keyl      -9
+WHEN		bin      keyl      -9
+
+0OoELSIFoO0	bin      keyl      -9
+0OoELSIF	bin      keyl      -9
+ELSIFoO0	bin      keyl      -9
+ELSIF		bin      keyl      -9
+
+
+70OoampoO07	bin      bbat     -5
+0OoampoO0	bin      bbat     -5
+0Ooamp		bin      bbat     -5
+ampoO0		bin      bbat     -5
+
+70OoscoO07	bin      bbat     -7
+0OoscoO0	bin      bbat     -7
+0Oosc		bin      bbat     -7
+scoO0		bin      bbat     -7
+
+70OocomoO07	bin      bbat     -1
+0OocomoO0	bin      bbat     -1
+0Oocom		bin      bbat     -1
+comoO0		bin      bbat     -1
+
+70OoparoO07	bin      bbat     -7
+0OoparoO0	bin      bbat     -7
+0Oopar		bin      bbat     -7
+paroO0		bin      bbat     -7
+
+
+
+0OoeqoO0	bin      blba     -4
+0Ooeq		bin      blba     -4
+eqoO0		bin      blba     -4
+
+0OoimploO0	bin      blba     -6
+0Ooimpl 	bin      blba     -6
+imploO0		bin      blba     -6
+
+0OoiffoO0	bin      blba     -4
+0Ooiff		bin      blba     -4
+iffoO0		bin      blba     -4
+
+0OooroO0	bin      blba     -5
+0Ooor		bin      blba     -5
+oroO0		bin      blba     -5
+
+
+0OocoleqloO0	bin      nrml     -2
+0Oocoleql	bin      nrml     -2
+coleqloO0	bin      nrml     -2
+
+
+0OosnteroO0	bin      blba	-1
+0Oosnter	bin      blba	-1
+snteroO0	bin      blba	-1
+
+
+IMPLEMENTATION		opn	keyl	11
+IMPLEMENTATIONoO0	opn	keyl	11
+
+REFINEMENT		opn	keyl	11
+REFINEMENToO0		opn	keyl	11
+
+MACHINE			opn	keyl	11
+MACHINEoO0		opn	keyl	11
+ENUMERATION		opn	keyl	11
+ENUMERATIONoO0		opn	keyl	11
+
+INTERFACE		opn	keyl	11
+INTERFACEoO0		opn	keyl	11
+
+SYSTEM			opn	keyl	11
+SYSTEMoO0		opn	keyl	11
+
+GLOBAL			opn	keyl	11
+
+BASE			opn	keyl	11
+BASEoO0			opn	keyl	11
+
+
+REFINES			bin      keyl      -9
+REFINESoO0		bin      keyl      -9
+
+DEFINITIONS		bin      keyl      -9
+DEFINITIONSoO0		bin      keyl      -9
+
+SETS			bin      keyl      -9
+SETSoO0			bin      keyl      -9
+
+CONSTANTS		bin      keyl      -9
+CONSTANTSoO0		bin      keyl      -9
+
+PROPERTIES		bin      keyl      -9
+PROPERTIESoO0		bin      keyl      -9
+
+CONSTRAINTS		bin      keyl      -9
+CONSTRAINTSoO0		bin      keyl      -9
+
+USES			bin      keyl      -9
+USESoO0			bin      keyl      -9
+
+SEES			bin      keyl      -9
+SEESoO0			bin      keyl      -9
+
+EXTENDS			bin      keyl      -9
+EXTENDSoO0		bin      keyl      -9
+
+INCLUDES		bin      keyl      -9
+INCLUDESoO0		bin      keyl      -9
+
+IMPORTS			bin      keyl      -9
+IMPORTSoO0		bin      keyl      -9
+
+PROMOTES		bin      keyl      -9
+PROMOTESoO0		bin      keyl      -9
+
+ASSERTIONS		bin      keyl      -9
+ASSERTIONSoO0		bin      keyl      -9
+
+ASSERTIONS		bin      keyl      -9
+ASSERTIONSoO0		bin      keyl      -9
+
+VARIABLES		bin      keyl      -9
+VARIABLESoO0		bin      keyl      -9
+
+INITIALISATION		bin      keyl      -9
+INITIALISATIONoO0	bin      keyl      -9
+
+OPERATIONS		bin      keyl      -9
+OPERATIONSoO0		bin      keyl      -9
+
+SUPPORTS                bin      keyl      -9
+SUPPORTSoO0             bin      keyl      -9
+
+
+RULES       bin      keyl      -9
+OPTIONAL    bin      keyl      -9
+PARTIAL     bin      keyl      -9
+MANDATORY   bin      keyl      -9
+TOTAL       bin      keyl      -9
+FIELDS      bin      keyl      -9
+ARE         bin      keyl      -9
+
+
+METHODS     bin      keyl      -5

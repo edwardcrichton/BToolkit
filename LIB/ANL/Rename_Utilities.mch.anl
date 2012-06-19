@@ -1,0 +1,170 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(String_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_RestorePreviousData,OBJ_TO_NAT,OBJ_TO_STR)
+;
+(Rename_RestorePreviousData , OBJ_TO_NAT , OBJ_TO_STR)
+;
+(Rename_Utilities(OBJ):(card(OBJ) : NAT1):(?))
+;
+(
+(
+ (Rename_RestorePreviousData)
+;
+ (? , Val_Op , NonDet_Op , (rep <-- Rename_RestorePreviousData(sysname , op)))
+;
+ (sysname , op)
+;
+ (rep)
+;
+ (
+ (sysname : STRING & op : NAT)
+ |
+ (
+ (BEGIN
+ rep :: BOOL
+ END)
+ )
+ )
+;
+ (
+ (sysname : STRING & op : NAT)
+ |
+ (
+ @(repx).
+ (
+ (
+ (repx : BOOL)
+ )
+ ==>
+ (
+ (rep := repx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (OBJ_TO_NAT)
+;
+ (? , Val_Op , NonDet_Op , (nn <-- OBJ_TO_NAT(obj)))
+;
+ (obj)
+;
+ (nn)
+;
+ (
+ (obj : OBJ)
+ |
+ (
+ (BEGIN
+ nn :: NAT
+ END)
+ )
+ )
+;
+ (
+ (obj : OBJ)
+ |
+ (
+ @(nnx).
+ (
+ (
+ (nnx : NAT)
+ )
+ ==>
+ (
+ (nn := nnx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (OBJ_TO_STR)
+;
+ (? , Val_Op , NonDet_Op , (ss <-- OBJ_TO_STR(obj)))
+;
+ (obj)
+;
+ (ss)
+;
+ (
+ (obj : OBJ)
+ |
+ (
+ (BEGIN
+ ss :: STRING
+ END)
+ )
+ )
+;
+ (
+ (obj : OBJ)
+ |
+ (
+ @(ssx).
+ (
+ (
+ (ssx : STRING)
+ )
+ ==>
+ (
+ (ss := ssx)
+ )
+ )
+ )
+ )
+)
+)

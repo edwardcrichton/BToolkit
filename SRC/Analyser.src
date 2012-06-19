@@ -1,0 +1,4231 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define AnalyserDirect_tac \
+		(((MAP;LMAP;FLAT;MODR~;RULE;CATL;SHELL)~;AnalyserDirectX)~)
+
+#define AnalyserDirect(x) \
+		bcall(AnalyserDirect_tac: anal_0(x))
+
+
+/***/
+#define WriteDotAnalyser WriteDot
+/***/
+
+/***
+#define WriteDotAnalyser Bshell("date")
+***/
+
+
+
+/***
+#define HEREAnalyser(x) HERE(x)
+***/
+
+/***/
+#define HEREAnalyser(x) HERE(x) & Bshell("date")
+/***/
+
+
+
+#define  ClearAnalyserError    bcall(MODR:bmodr(AnalyserErrorX.1,0))
+
+#define  FlagAnalyserError     bcall(MODR:bmodr(AnalyserErrorX.1,1))
+
+
+#define  ClearAnalyserAbortError    bcall(MODR:bmodr(AnalyserErrorX.2,0))
+
+#define  FlagAnalyserAbortError     bcall(MODR:bmodr(AnalyserErrorX.2,1))
+
+
+#define InformSeparatorComma \
+    Writef(("\n                  separator should be a comma "))
+
+#define InformNumber(x) \
+    Writef(("\n                  % is a number! ",bsrv x berv))
+
+#define InformShouldBeIdentifier(x) \
+    Writef(("\n                  % should be an identifier ",bsrv x berv))
+
+#define InformSingleLetterIdentifier(x) \
+    Writef(("\n                  % is a single letter (joker!) identifier ",bsrv x berv))
+
+#define InformVarNotInitialised(x) \
+  Writef(("\n    Warning: VARIABLE % is not initialised ",x))
+
+#define InformConstantNotNum(x,y) \
+  Writef(("\n    Warning: CONSTANT % does not evaluate to a number (%) ",x,y))
+
+#define InformConstantParameters(a) \
+  Writef(("\n    CONSTANT % defined in terms of formal parameters ",bsrv a berv))
+
+
+#define InformConstantRecursion(a) \
+  Writef(("\n    Warning: CONSTANT % circularity in definition ",bsrv a berv))
+
+
+
+#define InformReserved(x,v,m) \
+  Writef(("\n    ")) & \
+  Writef((x)) & \
+  Writef((" % is a reserved word for % ",bsrv v berv,m))
+
+
+#define InformReservedShouldBeIdent(x,v) \
+  Writef(("\n    ")) & \
+  Writef((x)) & \
+  Writef((" % should be an identifier ",bsrv v berv))
+
+
+#define InformReservedWord(x,v) \
+  Writef(("\n    ")) & \
+  Writef((x)) & \
+  Writef((" % is a reserved word ",bsrv v berv))
+
+
+#define InformReservedOpShouldBeIdent(o,x,v) \
+  Writef(("\n    ")) & \
+  Writef((x)) & \
+  Writef((" % of operation % should be an identifier ",bsrv v berv,o))
+
+
+#define InformReservedWordOp(o,x,v) \
+  Writef(("\n    ")) & \
+  Writef((x)) & \
+  Writef((" % of operation % is a reserved word ",bsrv v berv,o))
+
+
+#define InformRepetition(x,s) \
+  Writef(("\n    Repetition of % in ",bsrv s berv)) & \
+  Writef((x)) & \
+  Writef((" "))
+
+
+#define InformIntersection(v,o,x,y) \
+  Writef(("\n    Name clash in operation %\n      % appears in ",bsrv o berv,bsrv v berv)) & \
+  Writef((x)) & \
+  Writef((" and ")) & \
+  Writef((y)) & \
+  Writef((" "))
+
+
+#define InformIntersectionInit(v,x,y) \
+  Writef(("\n    Name clash in INITIALISATION\n      % appears in ",bsrv v berv)) & \
+  Writef((x)) & \
+  Writef((" and ")) & \
+  Writef((y)) & \
+  Writef((" "))
+
+
+#define InformLocalSeesVarIntersection(w,x,y,z) \
+  Writef(("\n    WARNING:\n      VAR name clash in operation %\n      % is a VARIABLE of %\n      (SEEN by abstraction %) ",bsrv x berv,bsrv w berv,bsrv z berv,bsrv y berv))
+
+
+#define InformLocalSeesVarIntersectionInit(w,y,z) \
+  Writef(("\n    WARNING:\n      VAR name clash in INITIALISATION\n      % is a VARIABLE of %\n      (SEEN by abstraction %) ",bsrv w berv,bsrv z berv,bsrv y berv))
+
+
+#define InformLocalSeesSetIntersection(w,x,y,z) \
+  Writef(("\n    WARNING:\n      VAR name clash in operation %\n      % is a SET of %\n      (SEEN by abstraction %) ",bsrv x berv,bsrv w berv,bsrv z berv,bsrv y berv))
+
+
+#define InformLocalSeesSetIntersectionInit(w,y,z) \
+  Writef(("\n    WARNING:\n      VAR name clash in INITIALISATION\n      % is a SET of %\n      (SEEN by abstraction %) ",bsrv w berv,bsrv z berv,bsrv y berv))
+
+
+#define InformLocalSeesConstIntersection(w,x,y,z) \
+  Writef(("\n    WARNING:\n      VAR name clash in operation %\n      % is a CONSTANT of %\n      (SEEN by abstraction %) ",bsrv x berv,bsrv w berv,bsrv z berv,bsrv y berv))
+
+
+#define InformLocalSeesConstIntersectionInit(w,y,z) \
+  Writef(("\n    WARNING:\n      VAR name clash in INITIALISATION\n      % is a CONSTANT of %\n      (SEEN by abstraction %) ",bsrv w berv,bsrv z berv,bsrv y berv))
+
+
+#define InformLocalSeesEnumelIntersection(w,x,y,z) \
+  Writef(("\n    WARNING:\n      VAR name clash in operation %\n      % is an ENUMERATED ELEMENT of %\n      (SEEN by abstraction %) ",bsrv x berv,bsrv w berv,bsrv z berv,bsrv y berv))
+
+#define InformSeenNameClash(w,x,y,z) \
+  Writef((" % is a ",bsrv y berv)) & \
+  Writef(z) & \
+  Writef((" of %\n      (SEEN by abstraction %) ",bsrv w berv,bsrv x berv))
+
+
+#define InformLocalSeesEnumelIntersectionInit(w,y,z) \
+  Writef(("\n    WARNING:\n      VAR name clash in INITIALISATION\n      % is an ENUMERATED ELEMENT of %\n      (SEEN by abstraction %) ",bsrv w berv,bsrv z berv,bsrv y berv))
+
+
+#define InformIntersectionNonOp(v,x,y) \
+  Writef(("\n    % appears in ",bsrv v berv)) & \
+  Writef((x)) & \
+  Writef((" and ")) & \
+  Writef((y)) & \
+  Writef((" "))
+
+
+
+#define InformListsDiffer(x,s) \
+  Writef(("\n    ")) & \
+  Writef((s)) & \
+  Writef((" differ: % ",bsrv x berv))
+
+
+
+#define InformAnalyserSyntaxErrorVariables(s) \
+  Writef(("\n\n    VARIABLES\n    Syntax error: % ",bsrv s berv))
+
+#define InformAnalyserSyntaxErrorConstants(s) \
+  Writef(("\n\n    CONSTANTS\n    Syntax error: % ",bsrv s berv))
+
+#define InformAnalyserSyntaxErrorInvariant(s) \
+  Writef(("\n\n    INVARIANT\n    Syntax error: % ",bsrv s berv))
+
+#define InformAnalyserSyntaxErrorProperties(s) \
+  Writef(("\n\n    PROPERTIES\n    Syntax error: % ",bsrv s berv))
+
+#define InformAnalyserSyntaxErrorConstraints(s) \
+  Writef(("\n\n    CONSTRAINTS\n    Syntax error: % ",bsrv s berv))
+
+#define InformAnalyserSyntaxErrorInit(s) \
+  Writef(("\n\n    INITIALISATION\n    AMN Syntax error: % ",bsrv s berv))
+
+
+#define InformAnalyserSyntaxError(o,s) \
+  Writef(("\n\n    Operation %\n    AMN Syntax error % ",o,bsrv s berv))
+
+
+#define InformEnumSetError(s,x) \
+  Writef(("\n    % enumeration error: % ",bsrv s berv,bsrv x berv))
+
+
+#define InformConstraintsRequireParameters(x) \
+  Writef(("\n    CONSTRAINTS require PARAMETERS % ",bsrv x berv,bsrv x berv))
+
+
+
+#define InformPropertiesRequire \
+  Writef(("\n    Warning: PROPERTIES, but no SETS or CONSTANTS ."))
+
+
+
+/*
+#define InformVariablesRequire \
+  Writef(("\n    % VARIABLES require an INVARIANT ",berr))
+*/
+
+
+#define InformEnumSetNotDistinctId(a,b) \
+  Writef(("\n    Enumerated set %\n      %\n    not composed of distinct identifiers/literals ",bsrv a berv,bsrv b berv))
+
+
+
+
+#define InformHeaderClash(a,b) \
+  Writef(("\n    Abstract/Concrete operation headers differ:\n      %\n      % ",bsrv a berv,bsrv b berv))
+
+
+#define ConstantWarning(a) \
+  Writef(("\n    Warning: CONSTANT % not set (at this level) ",a))
+
+#define ConstantWarningSpec(a) \
+  Writef(("\n    Warning: CONSTANT % not set in specification ",a))
+
+
+#define InformElemRepetitionSets(x,y) \
+  Writef(("\n    Repetition of % in SETS % ",bsrv x berv,bsrv y berv))
+
+#define InformSLIBIdentifierTooLong(s,x) \
+  Writef(("\n    SLIB ")) & \
+  Writef((s)) & \
+  Writef((" %\n    Too long (max length 60) ",bsrv x berv))
+
+#define InformSLIBIdentifierTooShort(s,x) \
+  Writef(("\n    SLIB ")) & \
+  Writef((s)) & \
+  Writef((" %\n    is a single letter (joker!) identifier ",bsrv x berv))
+
+#define InformSLIBIdentifierBad(s,x) \
+  Writef(("\n    SLIB ")) & \
+  Writef((s)) & \
+  Writef((" %\n    should be an identifier ",bsrv x berv))
+
+
+#define InformIdentifierTooLong(s,x) \
+  Writef(("\n    ")) & \
+  Writef((s)) & \
+  Writef((" %\n    Too long (max length 60) ",bsrv x berv))
+
+#define InformIdentifierTooShort(s,x) \
+  Writef(("\n    ")) & \
+  Writef((s)) & \
+  Writef((" %\n    is a single letter (joker!) identifier ",bsrv x berv))
+
+#define InformIdentifierBad(s,x) \
+  Writef(("\n    ")) & \
+  Writef((s)) & \
+  Writef((" %\n    should be an identifier ",bsrv x berv))
+
+
+#define InformLocalVarTooLong(s,x) \
+  Writef(("\n    VAR of %:\n",s)) & \
+  Writef(("      %\n    Too long (max length 60) ",bsrv x berv))
+
+#define InformLocalVarTooShort(s,x) \
+  Writef(("\n    VAR of %:\n",s)) & \
+  Writef(("      %\n    is a single letter (joker!) identifier ",bsrv x berv))
+
+#define InformLocalVarBad(s,x) \
+  Writef(("\n    VAR of %:\n",s)) & \
+  Writef(("      %\n    should be an identifier ",bsrv x berv))
+
+
+#define InformEnumElemTooLong(s,x) \
+  Writef(("\n    Enumerated element of %:\n",s)) & \
+  Writef(("      %\n    Too long (max length 60) ",bsrv x berv))
+
+#define InformEnumElemTooShort(s,x) \
+  Writef(("\n    Enumerated element of %:\n",s)) & \
+  Writef(("      %\n    is a single letter (joker!) identifier ",bsrv x berv))
+
+#define InformEnumElemBad(s,x) \
+  Writef(("\n    Enumerated element of %:\n",s)) & \
+  Writef(("      %\n    is neither a identifier nor a literal ",bsrv x berv))
+
+
+#define InformCantAssignFromOp(y,z) \
+  Writef(("\n\n    Operation %\n    Can't assign directly from subordinate operation:\n    % ",y,bsrv z berv))
+
+#define InformCantAssignFromOpInit(z) \
+  Writef(("\n\n    INITIALISATION\n    Can't assign directly from subordinate operation:\n    % ",bsrv z berv))
+
+#define InformParallelOpSameMch(w,x,y,z) \
+  Writef(("\n\n    Substitution error:\n      % and %\n    are operations from the same machine\n      %\n    appearing in parallel in\n      %\n    ",bsrv y berv,bsrv z berv,bsrv x berv,bsrv w berv))
+
+#define InformSubsidSeenNotSeenHere(x,y,z) \
+  Writef(("\n\n    Scope error:\n      subsidiary machine % SEES %\n    but % is not in scope for %\n    ",bsrv x berv,bsrv y berv,y,z))
+
+
+
+#define ModrPromotedOps(x) bcall(MODR:bmodr(LoadNmlFormX.1,(x,?)))
+
+#define ReadPromotedOps(x) brule(LoadNmlFormX.1,x)
+
+
+THEORY AnalyserErrorX IS 0;0 END
+
+&
+
+THEORY OfferAnalyserFailureOptionsX IS
+
+#define OfferAnalyserFailureOptions \
+        bcall(((FLAT;MODR;OfferAnalyserFailureOptionsX)~):oafo0)
+
+
+  GetCurrentConstruct(a.b) &
+  ModifyCurrentJob((a.b:BT_NML:0)) &
+  GetJobs(X) &
+  bsearch((a.b:BT_ANL:0),X,Y) &
+  AddJobs(Y,((a.b:BT_EDT_NML:0)))
+ =>
+  oafo0
+
+END
+
+&
+
+THEORY ReservedWordsX IS
+
+#define ReadReservedWordsList(x) brule(ReservedWordsX.1,x) 
+
+#define CheckReservedWords bcall(((MAP)~;ReservedWordsX)~ : crw_0)
+
+#define CheckReservedWordsEnum(x,y) \
+	bcall(((MAP)~;ReservedWordsX)~ :   crwe_1(x) bsmap y)
+
+#define CheckReservedWordsOpParam(x,y,z) \
+	bcall(((MAP)~;ReservedWordsX)~ :   crwop_1(x,y) bsmap z)
+
+#define CheckReservedWordsLocVar(x,y) \
+	bcall(((MAP)~;ReservedWordsX)~ :   crwlv_1(x) bsmap y)
+
+
+
+  int,char,float,double,struct,/*union,*/long,short,unsigned,auto,
+  extern,register,typedef,static,goto,return,sizeof,break,continue,if,
+  else,for,do,while,switch,case,default,entry,fortran,asm,succ,pred,
+  multiply,divide,minus,plus,bufsize,open,close,fopen,fclose;
+
+  InformReservedOpShouldBeIdent(o,s,v) &
+  FlagAnalyserError
+ =>
+  crwlv_2(s,o,v);
+
+  blident(v) &
+  InformReservedWordOp(o,s,v) &
+  FlagAnalyserError
+ =>
+  crwlv_2(s,o,v);
+
+  ReadReservedWordsList(L) &
+  v\L
+ =>
+  crwlv_2(s,o,v);
+
+  crwlv_2(s,o,?);
+
+  crwlv_2(s,o) bsmap V
+ =>
+  crwlv_1(s,(o:V));
+
+  crwlv_1(s,?);
+
+
+  InformReservedOpShouldBeIdent(o,s,v) &
+  FlagAnalyserError
+ =>
+  crwop_1(o,s,v);
+
+  blident(v) &
+  InformReservedWordOp(o,s,v) &
+  FlagAnalyserError
+ =>
+  crwop_1(o,s,v);
+
+  ReadReservedWordsList(L) &
+  v\L
+ =>
+  crwop_1(o,s,v);
+
+  crwop_1(o,s,?);
+
+
+  InformReservedShouldBeIdent(s,v) &
+  FlagAnalyserError
+ =>
+  crwe_1(s,v);
+
+  blident(v) &
+  InformReservedWord(s,v) &
+  FlagAnalyserError
+ =>
+  crwe_1(s,v);
+
+  ReadReservedWordsList(L) &
+  v\L
+ =>
+  crwe_1(s,v);
+
+  bliteral(v)
+ =>
+  crwe_1(s,v);
+
+  crwe_1(s,?);
+
+
+  InformReservedShouldBeIdent(s,v) &
+  FlagAnalyserError
+ =>
+  crw_1(s,v);
+
+  blident(v) &
+  InformReservedWord(s,v) &
+  FlagAnalyserError
+ =>
+  crw_1(s,v);
+
+  ReadReservedWordsList(L) &
+  v\L
+ =>
+  crw_1(s,v);
+
+  crw_1(s,?);
+
+  brule(ANALYSER_HEADERX.1,(K(L):M:R)) &
+  brule(ANALYSER_OPNAMESX.1,O) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_VARIABLESX.1,V) &
+  WriteDotAnalyser &
+  crw_1("MACHINE PARAMETER") bsmap L &
+  crw_1("OPERATIONS name") bsmap O &
+  crw_1("CONSTANTS name") bsmap C &
+  crw_1("SETS name") bsmap S &
+  crw_1("VARIABLES name") bsmap V
+ =>
+  crw_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY CheckOpNamesClashX IS
+
+#define CheckOpNamesClash(x,y) \
+    bcall(((MAP;RULE;WRITE)~;CheckOpNamesClashX):conc(x)(y))
+
+  bcrer(ANALYSER_MCH_OPNAMES,(m:o))
+ =>
+  conc1(m,o);
+
+  brule(ANALYSER_MCH_OPNAMES.N,(k:o)) &
+  Writef(("\n\n    Operation name clash:\n\n      %\n\n    appears in % and % ",bsrv o berv,bsrv k berv,bsrv m berv)) &
+  FlagAnalyserError
+ =>
+  conc1(m,o);
+
+  ReadPromotedOps(P) &
+  bsearch(o,P,Q)
+ =>
+  conc1(m,o);
+
+  conc1(m,?);
+
+  conc1(m) bsmap O
+ =>
+  conc(m)(O)
+
+END
+
+&
+
+THEORY CheckVariablesInitialisedX IS
+
+#define CheckVariablesInitialised(x,y) \
+  bcall(((MAP;MODR)~;CheckVariablesInitialisedX)~:cvi_0(x)(y))
+
+  ?;
+
+  cvi_1(v);
+
+  brule(CheckVariablesInitialisedX.1,I) &
+  v\I &
+  InformVarNotInitialised(v)
+ =>
+  cvi_1(v);
+
+  cvi_1(?);
+
+  bmodr(CheckVariablesInitialisedX.1,I) &
+  cvi_1 bsmap V &
+  bmodr(CheckVariablesInitialisedX.1,?)
+ =>
+  cvi_0(V)(I);
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY ConstructParamNamesX IS
+
+#define ConstructParamNames \
+	bcall(((MAP;SHELL;CATL;RULE)~;ConstructParamNamesX)~: cpn_0)
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cpn_2;
+
+  bget(".Bcom",(x;y)) &
+  bcrer(ParamNamesX,x) &
+  bcrer(ParamNamesX,y)
+ =>
+  cpn_4;
+
+  bshell(bcatl("echo '",M,"P",i," ; ",M,"PV",i,"' > .Bcom")) &
+  cpn_4
+ =>
+  cpn_3(M,p,i,j);
+
+  bshell(bcatl("echo '",R,M,"P",i," ; ",R,M,"PV",i,"' > .Bcom")) &
+  cpn_4
+ =>
+  cpn_3(R.M,p,i,j);
+
+  cpn_3(M) bnmap P
+ =>
+  cpn_2(M(P));
+
+  cpn_3(R.M) bnmap P
+ =>
+  cpn_2(R.M(P));
+
+
+
+  cpn_2(M(P))
+ =>
+  cpn_ipt_1(M(P):X:Y);
+
+  cpn_2(R.M(P))
+ =>
+  cpn_ipt_1(R.M(P):X:Y);
+
+  cpn_ipt_1(M(?):X:Y);
+
+  cpn_ipt_1(R.M(?):X:Y);
+
+  cpn_ipt_1(?);
+
+/*
+  ReadTopLevelAbstraction(A.mch) &
+  cpn_2(A(P))
+ =>
+  cpn_host_1_1(M(P));
+
+  GetTopLevelAbstraction(Y.ref) &
+  cpn_host_1_1(M(P))
+ =>
+  cpn_host_1(M(P))(Y);
+*/
+
+/*
+  ReadCurrentState(C) &
+  bsearch(Y.mch(X),C,D) &
+*/
+  cpn_2(Y(P))
+ =>
+  cpn_host_1(M(P))(Y);
+
+  cpn_host_1(M(?))(Y);
+
+
+
+  brule(ANALYSER_HEADERX.1,(k(l):m:R)) &
+  brule(ANALYSER_IMPORTSX.1,I) &
+  cpn_host_1(k(l))(R) &
+  cpn_ipt_1 bsmap (I)
+ =>
+  cpn_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckParamNamesX IS
+
+#define CheckParamNames bcall(((ARI)~;CheckParamNamesX)~: cpn_0)
+
+
+  cpn_1(S)(n)(L);
+
+  brule(ParamNamesX.n,p) &
+  GetCurrentConstruct(a.b) &
+  InformReserved(S,p,a) &
+  cpn_1(S)(n+1)(L) &
+  FlagAnalyserError 
+ =>
+  cpn_1(S)(n)(L);
+
+  brule(ParamNamesX.n,p) &
+  p\L &
+  cpn_1(S)(n+1)(L)
+ =>
+  cpn_1(S)(n)(L);
+
+  brule(ANALYSER_VARIABLESX.1,V) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_OPNAMESX.1,O) &
+  cpn_1("VARIABLE")(1)(V) &
+  cpn_1("SET")(1)(S) &
+  cpn_1("CONSTANT")(1)(C) &
+  cpn_1("OPERATION")(1)(O)
+ =>
+  cpn_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CRStoX END &
+
+THEORY CRFiniX IS
+
+  bmodr(CheckUnsetConstantsX.1,x)
+ =>
+  x;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckUnsetConstantsX IS
+
+#define CheckUnsetConstants \
+	bcall(((MAP;RULE)~;CheckUnsetConstantsX)~ : cuc_0)
+
+#define CRewriteTac (\
+CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX; \
+CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX; \
+CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX; \
+CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX; \
+CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX;CRStoX; \
+CRFiniX;ARI~;MODR)
+
+#define CRewrite(x) bcall(CRewriteTac : x)
+
+  ?;
+
+  ConstantWarning(c)
+ =>
+  const_warning(c);
+
+  GetCurrentConstruct(a.mch) &
+  ConstantWarningSpec(c)
+ =>
+  const_warning(c);
+
+  cuc_8(c)(x)(y);                 /* mathematical constants ? */
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  bsearch((c:SCALAR),(P&?),Q) &
+  InformConstantRecursion(c)
+ =>
+  cuc_8(c)(x)(y);
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  bsearch((c:NAT),(P&?),Q) &
+  InformConstantRecursion(c)
+ =>
+  cuc_8(c)(x)(y);
+
+  cuc_8(c)(x)(x);                 /* mathematical constants ? */
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  bsearch((c:SCALAR),(P&?),Q) &
+  const_warning(c)
+ =>
+  cuc_8(c)(x)(x);
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  bsearch((c:NAT),(P&?),Q) &
+  const_warning(c)
+ =>
+  cuc_8(c)(x)(x);
+
+/***
+  GetCurrentConstruct(a.imp) &
+  InformConstantNotNum(c,x)
+ =>
+  cuc_8(c)(x)(x);
+
+  cuc_8(c)(c)(c);                 /? mathematical constants ? ?/
+***/
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  bsearch((c:SCALAR),(P&?),Q) &
+  const_warning(c)
+ =>
+  cuc_8(c)(c)(c);
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  bsearch((c:NAT),(P&?),Q) &
+  const_warning(c)
+ =>
+  cuc_8(c)(c)(c);
+
+  brule(CheckUnsetConstantsX.1,y) &
+  cuc_8(c)(x)(y)
+ =>
+  cuc_7(c)(x);
+
+  InformConstantParameters(c) &
+  FlagAnalyserError
+ =>
+  cuc_6(c)(x);
+
+  brule(ANALYSER_HEADERX.1,(K(L):M:R)) &
+  L\x &
+  WriteDotAnalyser &
+  CRewrite(x) &
+  cuc_7(c)(x)
+ =>
+  cuc_6(c)(x);
+
+  brule(ANALYSER_HEADERX.1,(K(?):M:R)) &
+  WriteDotAnalyser &
+  CRewrite(x) &
+  cuc_7(c)(x)
+ =>
+  cuc_6(c)(x);
+
+  GetCurrentConstruct(a.mch) &
+  WriteDotAnalyser &
+  CRewrite(x) &
+  cuc_7(c)(x)
+ =>
+  cuc_6(c)(x);
+
+  bnum(x)
+ =>
+  cuc_6(c)(x);
+
+  brule(CheckUnsetConstantsX.1,x) &
+  cuc_6(c)(x)
+ =>
+  cuc_5(c);
+
+  CRewrite(c) &
+  cuc_5(c)
+ =>
+  cuc_4(c);
+
+  cuc_3(x);
+
+  bident(c) &
+  cuc_4(c)
+ =>
+  cuc_3(c);
+
+  cuc_3(CHARperWORD);
+
+  cuc_3(UnPack);
+
+  cuc_3(EmptyString);
+
+  cuc_3(STRING);
+
+  cuc_3(CHAR);
+
+/***
+  cuc_3(WORD1);
+  cuc_3(WORD2);
+  cuc_3(WORD3);
+  cuc_3(WORD4);
+  cuc_3(WORD5);
+  cuc_3(WORD6);
+  cuc_3(WORD7);
+  cuc_3(WORD8);
+***/
+
+  cuc_3(maxint);
+
+  brule(ANALYSER_LOCAL_CONSTANTSX.1,C) &
+  cuc_3 bsmap C
+ =>
+  cuc_2;
+
+  cuc_1(x);
+
+  bident(a) &
+  bcrer(CRStoX,(a==b))
+ =>
+  cuc_1(a=b);
+
+  cuc_1 bsmap (a&b)
+ =>
+  cuc_1(a&b);   /* for ANALYSER_SEES_USES_PROPERTIESX */
+
+  cuc_1 bsmap (a,b)
+ =>
+  cuc_1(a,b);   /* for ANALYSER_SEES_USES_PROPERTIESX */
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  brule(ANALYSER_SEES_USES_PROPERTIESX.1,Q) &
+  WriteDotAnalyser &
+  cuc_1 bsmap P &
+  cuc_1 bsmap Q &
+  cuc_2 &
+  bclean(CRStoX)
+ =>
+  cuc_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckForUnsetConstantsX IS
+
+#define chk_unset_cst_tac \
+		((MAP;FLAT;REV;SUB~;ARI~;CATL;SHELL)~;CheckForUnsetConstantsX)~
+
+#define CheckForUnsetConstants \
+		bcall(chk_unset_cst_tac: chk_unset_cst_0)
+
+
+  ?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  bcall((REV;FLAT;MODR): bmodr(CheckForUnsetConstantsX.1,bflat(?&brev(S))))
+ =>
+  get_prop_sub_list_1(S);
+
+  bcall(MODR: bmodr(CheckForUnsetConstantsX.1,?))
+ =>
+  get_prop_sub_list_1(?);
+
+  bsearch(?,S,T) &
+  get_prop_sub_list_1(T)
+ =>
+  get_prop_sub_list_1(S);
+
+  get_prop_sub_list_1(bflat(X&Y))
+ =>
+  get_prop_sub_list_0(?)(X)(Y);
+
+  get_prop_sub_list_0(P)(X)(Y)
+ =>
+  get_prop_sub_list_0(P&p)(X)(Y);
+
+  bident(a) &
+  get_prop_sub_list_0(P)(X)(Y&a=n)
+ =>
+  get_prop_sub_list_0(P&n=a)(X)(Y);
+
+  bident(a) &
+  get_prop_sub_list_0(P)(X)(Y&a=n)
+ =>
+  get_prop_sub_list_0(P&a=n)(X)(Y);
+
+  bident(a) &
+  bnum(n) &
+  get_prop_sub_list_0(P)(X&a=n)(Y)
+ =>
+  get_prop_sub_list_0(P&n=a)(X)(Y);
+
+  bident(a) &
+  bnum(n) &
+  get_prop_sub_list_0(P)(X&a=n)(Y)
+ =>
+  get_prop_sub_list_0(P&a=n)(X)(Y);
+
+
+
+  chk_unset_cst_4(C)(c)(?)(X);
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  bsearch((C:SCALAR),(P&?),Q) &
+  const_warning(C)
+ =>
+  chk_unset_cst_4(C)(c)(?)(X);
+
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  bsearch((C:NAT),(P&?),Q) &
+  const_warning(C)
+ =>
+  chk_unset_cst_4(C)(c)(?)(X);
+
+/*
+  bident(X)
+ =>
+  chk_unset_cst_4(C)(c)(?)(X;fncOUnPack);
+
+  bident(X)
+ =>
+  chk_unset_cst_4(C)(c)(?)(X;VfncUnPack);
+*/
+
+  bident(X)
+ =>
+  chk_unset_cst_4(C)(c)(?)(X;objconv);
+
+  bident(X)
+ =>
+  chk_unset_cst_4(C)(c)(?)(X;conv);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  chk_unset_cst_3(C)(c)(?);
+
+  bget(".Bcom",X) &
+  chk_unset_cst_4(C)(c)(?)(X)
+ =>
+  chk_unset_cst_3(C)(c)(?);
+
+  bshell(bcatl("echo ",C," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  chk_unset_cst_3(C)(c)(?)
+ =>
+  chk_unset_cst_2(C)(c)(?);
+
+  chk_unset_cst_2(CHARperWORD)(c)(?);
+
+  chk_unset_cst_2(UnPack)(c)(?);
+
+  chk_unset_cst_2(EmptyString)(c)(?);
+
+  chk_unset_cst_2(BAnyString)(c)(?);
+
+  chk_unset_cst_2(STRING)(c)(?);
+
+  chk_unset_cst_2(CHAR)(c)(?);
+
+  chk_unset_cst_2(maxint)(c)(?);
+
+  bnum(c)
+ =>
+  chk_unset_cst_2(C)(c)(?);
+
+  chk_unset_cst_2(C)([x:=y]c)(S)
+ =>
+  chk_unset_cst_2(C)(c)(S&(x=y));
+
+  bnum(c)
+ =>
+  chk_unset_cst_2(C)(c)(S);
+
+  brule(CheckForUnsetConstantsX.1,S) &
+  chk_unset_cst_2(c)(c)(S)
+ =>
+  chk_unset_cst_1(c);
+
+  chk_unset_cst_1("");
+
+  chk_unset_cst_0;
+
+  GetCurrentConstruct(a.imp) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_PROPERTIESX.1,P) &
+  get_prop_sub_list_0(bflat(?&P))(?)(?) &
+  chk_unset_cst_1 bsmap C
+ =>
+  chk_unset_cst_0;
+
+  brule(ANALYSER_CONSTANTSX.1,?) 
+ =>
+  chk_unset_cst_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckAbsConcOpHeadersX IS
+
+#define chk_op_hdr_tac  ((ARI)~;CheckAbsConcOpHeadersX)~
+
+#define CheckAbsConcOpHeaders  bcall(chk_op_hdr_tac: chk_op_hdr_0)
+
+
+  InformHeaderClash(c,?) &
+  FlagAnalyserError
+ =>
+  chk_op_hdr_3(c)(o);
+
+  chk_op_hdr_3(?)(?);
+
+  brule(ANALYSER_ABS_OPERATION_HEADERX.I,(o)) &
+  InformHeaderClash(c,o) &
+  FlagAnalyserError  
+ =>
+  chk_op_hdr_3(c)(o);
+
+  brule(ANALYSER_ABS_OPERATION_HEADERX.I,(o(b))) &
+  InformHeaderClash(c,(o(b))) &
+  FlagAnalyserError  
+ =>
+  chk_op_hdr_3(c)(o);
+
+  brule(ANALYSER_ABS_OPERATION_HEADERX.I,(a<--o)) &
+  InformHeaderClash(c,(a<--o)) &
+  FlagAnalyserError  
+ =>
+  chk_op_hdr_3(c)(o);
+
+  brule(ANALYSER_ABS_OPERATION_HEADERX.I,(a<--o(b))) &
+  InformHeaderClash(c,(a<--o(b))) &
+  FlagAnalyserError  
+ =>
+  chk_op_hdr_3(c)(o);
+
+  chk_op_hdr_3(o)(o)
+ =>
+  chk_op_hdr_2(o);
+
+  chk_op_hdr_3(o(b))(o)
+ =>
+  chk_op_hdr_2(o(b));
+
+  chk_op_hdr_3(a<--o)(o)
+ =>
+  chk_op_hdr_2(a<--o);
+
+  chk_op_hdr_3(a<--o(b))(o)
+ =>
+  chk_op_hdr_2(a<--o(b));
+
+  brule(ANALYSER_SEES_USES_OPERATION_HEADERX.I,h)
+ =>
+  chk_op_hdr_2(h);
+
+  brule(ANALYSER_ABS_OPERATION_HEADERX.I,h)
+ =>
+  chk_op_hdr_2(h);
+
+  chk_op_hdr_1(n);
+
+/*  brule(ANALYSER_OPERATION_HEADERX.n,h) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.n,(s|(u|v)|h|z|x)) &
+  chk_op_hdr_2(h) &
+  chk_op_hdr_1(n+1)
+ =>
+  chk_op_hdr_1(n);
+
+  chk_op_hdr_1(1)
+ =>
+  chk_op_hdr_0;
+
+  GetCurrentConstruct(a.mch)
+ =>
+  chk_op_hdr_0;
+
+  GetCurrentConstruct(a.imp) &
+  brule(ANALYSER_HEADERX.1,(a(l):m:?))
+ =>
+  chk_op_hdr_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckPropertiesX IS
+
+#define chk_props_tac    (CheckPropertiesX)~
+
+#define CheckProperties  bcall(chk_props_tac: chk_props_0)
+
+
+  chk_props_0;
+
+  brule(ANALYSER_SETSX.1,?) &
+  brule(ANALYSER_CONSTANTSX.1,?) &
+  InformPropertiesRequire /* &
+  FlagAnalyserError */
+ =>
+  chk_props_0;
+
+  brule(ANALYSER_PROPERTIESX.1,?)
+ =>
+  chk_props_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckSeenInvariantX IS
+
+#define chk_seen_inv_tac ((MAP)~;CheckSeenInvariantX)~
+
+#define CheckSeenInvariant bcall(chk_seen_inv_tac: chk_seen_inv_0)
+
+
+  InformSeesInvariantViolation(i) &
+  FlagAnalyserError  
+ =>
+  chk_seen_inv_1(v,i);
+
+  v\i
+ =>
+  chk_seen_inv_1(v,i);
+
+  chk_seen_inv_0;
+
+  brule(ANALYSER_SEES_VARIABLES.1,v) &
+  brule(ANALYSER_INVARIANTX.1,I) &
+  chk_seen_inv_1(v) bsmap I
+ =>
+  chk_seen_inv_0;
+
+  brule(ANALYSER_SEES_VARIABLES.1,?)
+ =>
+  chk_seen_inv_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckListsSameX IS
+
+#define chk_same_lists_tac \
+		(CheckListsSameX)~
+
+#define CheckListsSameOpNames(a,b,s)  \
+  bcall(((MAP;MODR)~;CheckListsSameX)~: chk_same_opname_lists_0(s)(a)(b))
+
+  ?;
+
+  ?;
+
+  brule(CheckListsSameX.1,A) &
+  brule(CheckListsSameX.2,s) &
+  InformListsDiffer(A,s) &
+  FlagAnalyserError
+ =>
+  chk_same_opname_lists_2;
+
+  brule(CheckListsSameX.1,A) &
+  bsearch(?,A,B) &
+  brule(CheckListsSameX.2,s) &
+  InformListsDiffer(B,s) &
+  FlagAnalyserError
+ =>
+  chk_same_opname_lists_2;
+
+  brule(CheckListsSameX.1,?)
+ =>
+  chk_same_opname_lists_2;
+
+  brule(CheckListsSameX.1,?)
+ =>
+  chk_same_opname_lists_2;
+
+  brule(CheckListsSameX.2,s) &
+  InformListsDiffer(a,s) &
+  FlagAnalyserError
+ =>
+  chk_same_opname_lists_1(a);
+
+  brule(CheckListsSameX.1,A) &
+  bsearch(a,A,B) &
+  bmodr(CheckListsSameX.1,B)
+ =>
+  chk_same_opname_lists_1(a);
+
+  bmodr(CheckListsSameX.1,(A,?)) &
+  bmodr(CheckListsSameX.2,s) &
+  chk_same_opname_lists_1 bsmap B &
+  chk_same_opname_lists_2
+ =>
+  chk_same_opname_lists_0(s)(A)(B);
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+
+THEORY CheckAbstractOpnamesX IS
+
+#define chk_abs_opnames_tac  ((MAP;CATL;RULE)~;CheckAbstractOpnamesX)~
+
+#define CheckAbstractOpnames bcall(chk_abs_opnames_tac: chk_abs_opnames_0)
+
+
+  sto_abs_op_headers_0 bsmap X
+ =>
+  sto_abs_op_headers_0(X);
+
+  bcrer(ANALYSER_ABS_OPERATION_HEADERX,C)
+ =>
+  sto_abs_op_headers_0(s;(X,C);u;v;(w|x);(y|z));
+
+  sto_abs_op_headers_0(?);
+
+
+  
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  CheckListsSameOpNames(j,K,"Abstract/Concrete OPERATIONS name") &
+  sto_abs_op_headers_0(n) 
+ =>
+  chk_abs_opnames_3(K)(Z); 
+
+  Bget(("ANL/",r,".ref.anl")) &
+  chk_abs_opnames_3(J)(r)
+ =>
+  chk_abs_opnames_2(J)(r);
+
+  IsCfg(r.mch) &
+  Bget(("ANL/",r,".mch.anl")) &
+  chk_abs_opnames_3(J)(r)
+ =>
+  chk_abs_opnames_2(J)(r);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  chk_abs_opnames_2(j)(r)
+ =>
+  chk_abs_opnames_1(r);
+
+  GetCurrentConstruct(k.b) &
+  brule(ANALYSER_HEADERX.1,(k(l):m:r)) &
+  Bget(("ANL/",k,".",b,".anl")) &
+  chk_abs_opnames_1(r)
+ =>
+  chk_abs_opnames_0;
+
+  brule(ANALYSER_HEADERX.1,(k(l):m:?))
+ =>
+  chk_abs_opnames_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckInvariantSeparatorX IS
+
+#define CheckInvariantSeparator bcall((MAP;CheckInvariantSeparatorX)~:cs)
+
+  cs2(x);
+
+  InformAnalyserSyntaxErrorInvariant((a,b)) &
+  FlagAnalyserError
+ =>
+  cs2(a,b);
+
+  InformAnalyserSyntaxErrorInvariant((a;b)) &
+  FlagAnalyserError
+ =>
+  cs2(a;b);
+
+  cs2(a)
+ =>
+  cs1(a);
+
+  cs2 bsmap (a&b)
+ =>
+  cs1(a&b);
+
+
+  brule(ANALYSER_INVARIANTX.1,V) &
+  cs1(V)
+ =>
+  cs;
+
+  brule(ANALYSER_INVARIANTX.1,?)
+ =>
+  cs;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckPropertiesSeparatorX IS
+
+#define CheckPropertiesSeparator bcall((MAP;CheckPropertiesSeparatorX)~:cs)
+
+  cs2(x);
+
+  InformAnalyserSyntaxErrorProperties((a,b)) &
+  FlagAnalyserError
+ =>
+  cs1(a,b);
+
+  InformAnalyserSyntaxErrorProperties((a;b)) &
+  FlagAnalyserError
+ =>
+  cs1(a;b);
+
+  cs2(a)
+ =>
+  cs1(a);
+
+  cs2 bsmap (a&b)
+ =>
+  cs1(a&b);
+
+  brule(ANALYSER_PROPERTIESX.1,V) &
+  cs1(V)
+ =>
+  cs;
+
+  brule(ANALYSER_PROPERTIESX.1,?)
+ =>
+  cs;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckConstraintsSeparatorX IS
+
+#define CheckConstraintsSeparator bcall((MAP;CheckConstraintsSeparatorX)~:cs)
+
+  cs2(x);
+
+  InformAnalyserSyntaxErrorConstraints((a,b)) &
+  FlagAnalyserError
+ =>
+  cs1(a,b);
+
+  InformAnalyserSyntaxErrorConstraints((a;b)) &
+  FlagAnalyserError
+ =>
+  cs1(a;b);
+
+  cs2(a)
+ =>
+  cs1(a);
+
+  cs2 bsmap (a&b)
+ =>
+  cs1(a&b);
+
+  brule(ANALYSER_HEADERX.1,(k(l):m:r)) &
+  cs1(m)
+ =>
+  cs;
+
+  brule(ANALYSER_HEADERX.1,(k(l):?:r))
+ =>
+  cs;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckConstantsSeparatorX IS
+
+#define CheckConstantsSeparator bcall((MAP;ARI;CheckConstantsSeparatorX)~:cs)
+
+  cs4(V);
+
+  InformSeparatorComma
+ =>
+  cs4(V JOK2 v);
+
+  cs4(v)
+ =>
+  cs3(v);
+
+  cs4 bsmap (V,v)
+ =>
+  cs3(V,v);
+
+  InformShouldBeIdentifier(v)
+ =>
+  cs2(v)(n);
+
+  InformSingleLetterIdentifier(v)
+ =>
+  cs2(v)(1);
+
+  bnum(v) &
+  InformNumber(v)
+ =>
+  cs2(v)(n);
+
+  cs2(v)(blen(v))
+ =>
+  cs1(v);
+
+  cs1(v JOK2 w);
+
+  bident(v)
+ =>
+  cs1(v);
+
+  brule(ANALYSER_CONSTANTSX.1,V) &
+  InformAnalyserSyntaxErrorConstants(V) &
+  cs1 bsmap (V) &
+  cs3(V) &
+  FlagAnalyserError
+ =>
+  cs;
+
+  brule(ANALYSER_CONSTANTSX.1,?)
+ =>
+  cs;
+
+  brule(ANALYSER_CONSTANTSX.1,V) &
+  blident(V)
+ =>
+  cs;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x;
+
+  AnalyserErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckVariablesSeparatorX IS
+
+#define CheckVariablesSeparator bcall((MAP;ARI;CheckVariablesSeparatorX)~:cs)
+
+  cs4(V);
+
+  InformSeparatorComma
+ =>
+  cs4(V JOK2 v);
+
+  cs4(v)
+ =>
+  cs3(v);
+
+  cs4 bsmap (V,v)
+ =>
+  cs3(V,v);
+
+  InformShouldBeIdentifier(v)
+ =>
+  cs2(v)(n);
+
+  InformSingleLetterIdentifier(v)
+ =>
+  cs2(v)(1);
+
+  bnum(v) &
+  InformNumber(v)
+ =>
+  cs2(v)(n);
+
+  cs2(v)(blen(v))
+ =>
+  cs1(v);
+
+  cs1(v JOK2 w);
+
+  bident(v)
+ =>
+  cs1(v);
+
+  brule(ANALYSER_VARIABLESX.1,V) &
+  InformAnalyserSyntaxErrorVariables(V) &
+  cs1 bsmap (V) &
+  cs3(V) &
+  FlagAnalyserError
+ =>
+  cs;
+
+  brule(ANALYSER_VARIABLESX.1,?)
+ =>
+  cs;
+
+  brule(ANALYSER_VARIABLESX.1,V) &
+  blident(V)
+ =>
+  cs;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckListForRepetitionX IS
+
+#define CheckListForRepetition(t,s) \
+		bcall(((MAP;MODR)~;CheckListForRepetitionX)~: chk_list_repn_0(t)(s))
+
+#define CheckVariableRepetition \
+		CheckListForRepetition(ANALYSER_VARIABLESX,"VARIABLES")
+
+#define CheckOpnamesRepetition \
+		CheckListForRepetition(ANALYSER_OPNAMESX,"OPERATIONS name")
+
+#define CheckSetnamesRepetition \
+		CheckListForRepetition(ANALYSER_SETNAMESX,"SET NAMES")
+
+#define CheckConstantsRepetition \
+		CheckListForRepetition(ANALYSER_CONSTANTSX,"CONSTANTS")
+
+  ?;
+
+  ?;
+
+  ?;
+
+/*
+  chk_list_repn_1(l)(s);
+
+  chk_list_repn_1(L)(s)
+ =>
+  chk_list_repn_1(L,l)(s);
+
+  InformRepetition(s,l) &
+  FlagAnalyserError
+ =>
+  chk_list_repn_1(l,l)(s);
+
+  bsearch(l,L,W) &
+  InformRepetition(s,l) &
+  FlagAnalyserError &
+  chk_list_repn_1(L)(s)
+ =>
+  chk_list_repn_1(L,l)(s);
+*/
+
+  brule(CheckListForRepetitionX.3,L) &
+  bmodr(CheckListForRepetitionX.3,(L,l)) &
+  InformRepetition(s,l) &
+  FlagAnalyserError
+ =>
+  _InformRepetition(s,l);
+
+  brule(CheckListForRepetitionX.3,L) &
+  bsearch(l,L,M) /* already reported */
+ =>
+  _InformRepetition(s,l);
+
+  chk_list_repn_1(t,l);
+
+  brule(t.1,L) &
+  bsearch(l,(L,?),M) & /* it's there once */
+  bsearch(l,(M,?),P) &
+  brule(CheckListForRepetitionX.1,s) &
+  _InformRepetition(s,l)
+ =>
+  chk_list_repn_1(t,l);
+
+  chk_list_repn_1(t,?);
+
+  chk_list_repn_0(t)(s);
+
+  brule(t.1,L) &
+  bmodr(CheckListForRepetitionX.1,s) &
+  WriteDotAnalyser &
+  bmodr(CheckListForRepetitionX.3,?) &
+  chk_list_repn_1(t) bsmap L
+ =>
+  chk_list_repn_0(t)(s);
+
+  brule(t.1,L) &
+  bsearch(?,L,M) &
+/***
+HERE(("new blident"))&
+***/
+  blident(M) &
+  WriteDotAnalyser
+ =>
+  chk_list_repn_0(t)(s);
+
+  brule(t.1,L) &
+/***
+HERE(("new blident"))&
+***/
+  blident(L) &
+  WriteDotAnalyser
+ =>
+  chk_list_repn_0(t)(s);
+
+  brule(t.1,?)
+ =>
+  chk_list_repn_0(t)(s);
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+
+END
+
+&
+
+THEORY CheckConstraintsHaveParametersX IS
+
+#define chk_cstr_prm_tac  (CheckConstraintsHaveParametersX)~
+
+#define CheckConstraintsHaveParameters bcall(chk_cstr_prm_tac: chk_cstr_prm_0)
+
+
+  chk_cstr_prm_0;
+
+  brule(ANALYSER_HEADERX.1,(k(?):m:r)) &
+  InformConstraintsRequireParameters(m) &
+  FlagAnalyserError
+ =>
+  chk_cstr_prm_0;
+
+  brule(ANALYSER_HEADERX.1,(k(?):?:r))
+ =>
+  chk_cstr_prm_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckNameClashX IS
+
+#define chk_nameclsh_tac \
+		((FLAT)~;CheckNameClashX)~
+
+#define CheckNameClash(u,v,x) \
+		bcall(chk_nameclsh_tac: chk_nameclsh_0(x)(u)(v))
+
+
+
+  chk_nameclsh1(x)(U)(V)
+ =>
+  chk_nameclsh1(x)(U)(V,v);
+
+
+
+  bsearch(v,U,W) &
+  InformIntersectionNonOp(v,x,y) &
+  FlagAnalyserError &
+  chk_nameclsh1(x,y)(U)(V)
+ =>
+  chk_nameclsh1(x,y)(U)(V,v);
+
+  chk_nameclsh1(x,y)(U)(?);
+
+
+  bsearch(v,U,W) &
+  InformIntersection(v,o,x,y) &
+  FlagAnalyserError &
+  chk_nameclsh1(o,x,y)(U)(V)
+ =>
+  chk_nameclsh1(o,x,y)(U)(V,v);
+
+  chk_nameclsh1(o,x,y)(U)(?);
+
+
+
+  chk_nameclsh1(x)(u)(v)
+ =>
+  chk_nameclsh1_0(x)(u)(v)(w);
+
+/***
+HERE(("new blident"))&
+***/
+  blident(w)
+ =>
+  chk_nameclsh1_0(x)(u)(v)(w);
+
+  bsearch(?,w,s) &
+  chk_nameclsh1_0(x)(u)(v)(s)
+ =>
+  chk_nameclsh1_0(x)(u)(v)(w);
+
+  chk_nameclsh1_0(x)(bflat(?,u))(bflat(?,v))(bflat(u,v))
+ =>
+  chk_nameclsh_0(x)(u)(v);
+
+  chk_nameclsh_0(x)(u)(?);
+
+  chk_nameclsh_0(x)(?)(v);
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckSeenNameClashX IS
+
+#define CheckSeenNameClash(x,y,z) \
+  bcall(((MODR;MAP)~;CheckSeenNameClashX)~:csnc(x)(y)(z))
+
+  ?;  /* 0 => waring, 1 => error */
+
+  ?;  /* "VARIABLE" etc */
+
+
+  brule(CheckSeenNameClashX.2,s) &
+  Writef(("\n    WARNING:\n      ")) &
+  Writef(s)
+ =>
+  csnc_warn_err_type;
+
+/*  brule(CheckSeenNameClashX.1,1) & */
+  brule(CheckSeenNameClashX.2,s) &
+  FlagAnalyserError &
+  Writef(("\n      ")) &
+  Writef(s)
+ =>
+  csnc_warn_err_type;
+
+
+
+  csnc1(v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_VAR.N,(a:s:v)) &
+  csnc_warn_err_type &
+  InformSeenNameClash(s,a,v,"VARIABLE")
+ =>
+  csnc1(v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_CONSTANTS.N,(a:s:v)) &
+  csnc_warn_err_type &
+  InformSeenNameClash(s,a,v,"CONSTANT")
+ =>
+  csnc1(v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_SETNAMES.N,(a:s:v)) &
+  csnc_warn_err_type &
+  InformSeenNameClash(s,a,v,"SET")
+ =>
+  csnc1(v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_ENUMELEM.N,(a:s:v)) &
+  csnc_warn_err_type &
+  InformSeenNameClash(s,a,v,"ENUMERATED ELEMENT")
+ =>
+  csnc1(v);
+
+  csnc1(?);
+
+  bmodr(CheckSeenNameClashX.1,n) &
+  bmodr(CheckSeenNameClashX.2,s) &
+  csnc1 bsmap z
+ =>
+  csnc(n)(z)(s)
+
+END
+
+&
+
+THEORY CheckOpInputOutputParamsX IS
+
+#define chk_namespace_tac   ((ARI)~;CheckOpInputOutputParamsX)~
+
+#define CheckOpInputOutputParams \
+		bcall(chk_namespace_tac: chk_inp_outp_0(1))
+
+#define CheckClauseNamespaces \
+		bcall(chk_namespace_tac: chk_clau_namesp)
+
+
+
+  brule(ANALYSER_VARIABLESX.1,V) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_OPNAMESX.1,O) &
+  brule(ANALYSER_HEADERX.1,(K(L):M:R)) &
+  brule(ANALYSER_LOCAL_VARIABLESX.1,H) &
+  brule(ANALYSER_LOCAL_CONSTANTSX.1,I) &
+  brule(ANALYSER_LOCAL_SETSX.1,J) &
+  brule(ANALYSER_LOCAL_ENUMELEMX.1,A) &
+  brule(CheckFlattenedEnumSetElementsRepetitionX.1,E) &
+  WriteDotAnalyser &
+  CheckNameClash(V,S,("VARIABLES","SETS")) &
+  CheckNameClash(V,C,("VARIABLES","CONSTANTS")) &
+  CheckNameClash(V,O,("VARIABLES","OPERATIONS name")) &
+  CheckNameClash(S,C,("SETS","CONSTANTS")) &
+  CheckNameClash(S,O,("SETS","OPERATIONS name")) &
+  CheckNameClash(C,O,("CONSTANTS","OPERATIONS name")) &
+  CheckNameClash(L,V,("PARAMETERS","VARIABLES")) &
+  CheckNameClash(L,S,("PARAMETERS","SETS")) &
+  CheckNameClash(L,C,("PARAMETERS","CONSTANTS")) &
+  CheckSeenNameClash(1,H,"VARIABLE") &
+  CheckSeenNameClash(0,J,"SET") &
+  CheckSeenNameClash(0,I,"CONSTANT") &
+  CheckSeenNameClash(0,A,"ENUMERATED ELEMENT")
+ =>
+  chk_clau_namesp;
+
+
+
+
+  brule(ANALYSER_VARIABLESX.1,V) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_OPNAMESX.1,O) &
+  WriteDotAnalyser &
+  CheckNameClash(u,v,(o,"INPUT PARAMETERS","OUTPUT PARAMETERS")) &
+  CheckNameClash(V,v,(o,"OUTPUT PARAMETERS","VARIABLES")) &
+  CheckNameClash(S,v,(o,"OUTPUT PARAMETERS","SETS")) &
+  CheckNameClash(C,v,(o,"OUTPUT PARAMETERS","CONSTANTS")) &
+  CheckNameClash(O,v,(o,"OUTPUT PARAMETERS","OPERATIONS name")) &
+  CheckNameClash(V,u,(o,"INPUT PARAMETERS","VARIABLES")) &
+  CheckNameClash(S,u,(o,"INPUT PARAMETERS","SETS")) &
+  CheckNameClash(C,u,(o,"INPUT PARAMETERS","CONSTANTS")) &
+  CheckNameClash(O,u,(o,"INPUT PARAMETERS","OPERATIONS name")) &
+  CheckReservedWordsOpParam(o,"INPUT PARAMETERS",u) &
+  CheckReservedWordsOpParam(o,"OUTPUT PARAMETERS",v)
+ =>
+  chk_inp_outp_1(o)(u)(v);
+
+  brule(ANALYSER_VARIABLESX.1,V) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_OPNAMESX.1,O) &
+  WriteDotAnalyser &
+  CheckNameClash(V,v,(o,"OUTPUT PARAMETERS","VARIABLES")) &
+  CheckNameClash(S,v,(o,"OUTPUT PARAMETERS","SETS")) &
+  CheckNameClash(C,v,(o,"OUTPUT PARAMETERS","CONSTANTS")) &
+  CheckNameClash(O,v,(o,"OUTPUT PARAMETERS","OPERATIONS name")) &
+  CheckReservedWordsOpParam(o,"OUTPUT PARAMETERS",v)
+ =>
+  chk_inp_outp_1(o)(?)(v);
+
+  brule(ANALYSER_VARIABLESX.1,V) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_OPNAMESX.1,O) &
+  WriteDotAnalyser &
+  CheckNameClash(V,u,(o,"INPUT PARAMETERS","VARIABLES")) &
+  CheckNameClash(S,u,(o,"INPUT PARAMETERS","SETS")) &
+  CheckNameClash(C,u,(o,"INPUT PARAMETERS","CONSTANTS")) &
+  CheckNameClash(O,u,(o,"INPUT PARAMETERS","OPERATIONS name")) &
+  CheckReservedWordsOpParam(o,"INPUT PARAMETERS",u)
+ =>
+  chk_inp_outp_1(o)(u)(?);
+
+  chk_inp_outp_1(o)(?)(?);
+
+  chk_inp_outp_0(n);
+
+/* brule(ANALYSER_OPERATION_INP_OUTPX.n,(o|u|v)) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.n,(o|(u|v)|K|z|x)) &
+  chk_inp_outp_1(o)(u)(v) &
+  chk_inp_outp_0(n+1)
+ =>
+  chk_inp_outp_0(n);
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckFlattenedEnumSetElementsRepetitionX IS
+
+#define chk_fla_enm_tac \
+	((MAP;RULE;MODR;FLAT;ARI)~;CheckFlattenedEnumSetElementsRepetitionX)~
+
+#define CheckFlattenedEnumSetElementsRepetition \
+	bcall(chk_fla_enm_tac: chk_fla_enm_0)
+
+  ?;?;  
+
+  chk_fla_elem(a);
+
+  brule(CheckFlattenedEnumSetElementsRepetitionX.1,E) &
+  bmodr(CheckFlattenedEnumSetElementsRepetitionX.1,(E,b))
+ =>
+  chk_fla_elem(a(b));
+
+  chk_fla_elem(a(b..c));
+
+
+
+  chk_fla_sto(a);
+
+  bcrer(FlatEnumSetX,a(b,?))
+ =>
+  chk_fla_sto(a(b));
+
+  chk_fla_sto(a(b..c));
+
+
+
+  brule(CheckFlattenedEnumSetElementsRepetitionX.2,L) &
+  bsearch(?,L,M) &
+  InformElemRepetitionSets(e,M) &
+  FlagAnalyserError
+ =>
+  chk_fla_enm_4(n)(e);
+
+  brule(FlatEnumSetX.n,a(b)) &
+  chk_fla_enm_4(n+1)(e)
+ =>
+  chk_fla_enm_4(n)(e);
+
+  brule(FlatEnumSetX.n,a(b)) &
+  bsearch(e,b,c) &
+  brule(CheckFlattenedEnumSetElementsRepetitionX.2,L) &
+  bmodr(CheckFlattenedEnumSetElementsRepetitionX.2,(L,a)) &
+  chk_fla_enm_4(n+1)(e)
+ =>
+  chk_fla_enm_4(n)(e);
+
+  bmodr(CheckFlattenedEnumSetElementsRepetitionX.2,?) &
+  chk_fla_enm_4(1)(e) &
+  chk_fla_enm_2(F)
+ =>
+  chk_fla_enm_3(e)(F);
+
+  bsearch(e,F,G) &
+  chk_fla_enm_3(e)(G)
+ =>
+  chk_fla_enm_3(e)(F);
+
+  chk_fla_enm_2(e);
+
+  chk_fla_enm_2(E)
+ =>
+  chk_fla_enm_2(E,e);
+
+  bsearch(e,E,F) &
+  chk_fla_enm_3(e)(F)
+ =>
+  chk_fla_enm_2(E,e);
+
+/***
+HERE(("new blident"))&
+***/
+  blident(E)
+ =>
+  chk_fla_enm_2(E);
+
+  bsearch(?,E,F) &
+  chk_fla_enm_2(F)
+ =>
+  chk_fla_enm_2(E);
+
+  brule(CheckFlattenedEnumSetElementsRepetitionX.1,E) &
+  chk_fla_enm_2(bflat(E))
+ =>
+  chk_fla_enm_1;
+
+  brule(ANALYSER_SETSX.1,S) &
+  WriteDotAnalyser &
+  chk_fla_sto bsmap S &
+  bmodr(CheckFlattenedEnumSetElementsRepetitionX.1,?) &
+  chk_fla_elem bsmap S &
+  chk_fla_enm_1
+ =>
+  chk_fla_enm_0;
+
+  brule(ANALYSER_SETSX.1,?)
+ =>
+  chk_fla_enm_0;
+
+  AnalyserAbortErrorFlagged /* LONG TIME */
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckEnumElemNamespacesX IS
+
+#define chk_enm_nmsp_tac         ((FLAT;ARI)~;CheckEnumElemNamespacesX)~
+
+#define CheckEnumElemNamespaces  bcall(chk_enm_nmsp_tac: chk_enm_nmsp_0)
+
+
+  CheckNameClash(E,u,(o,"INPUT PARAMETERS","ENUMERATED ELEMENTS")) &
+  CheckNameClash(E,v,(o,"OUTPUT PARAMETERS","ENUMERATED ELEMENTS"))
+ =>
+  chk_enm_inp_outp_1(E)(o)(u)(v);
+
+  CheckNameClash(E,v,(o,"OUTPUT PARAMETERS","ENUMERATED ELEMENTS"))
+ =>
+  chk_enm_inp_outp_1(E)(o)(?)(v);
+
+  WriteDotAnalyser &
+  CheckNameClash(E,u,(o,"INPUT PARAMETERS","ENUMERATED ELEMENTS"))
+ =>
+  chk_enm_inp_outp_1(E)(o)(u)(?);
+
+  chk_enm_inp_outp_1(E)(o)(?)(?);
+
+  chk_enm_inp_outp_0(E)(n);
+
+/*  brule(ANALYSER_OPERATION_INP_OUTPX.n,(o|u|v)) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.n,(o|(u|v)|K|z|x)) &
+  chk_enm_inp_outp_1(E)(o)(u)(v) &
+  chk_enm_inp_outp_0(E)(n+1)
+ =>
+  chk_enm_inp_outp_0(E)(n);
+
+  brule(ANALYSER_VARIABLESX.1,V) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_OPNAMESX.1,O) &
+  brule(ANALYSER_HEADERX.1,(K(L):M:R)) &
+  WriteDotAnalyser &
+  CheckNameClash(E,V,("ENUMERATED ELEMENTS","VARIABLES")) &
+  CheckNameClash(E,S,("ENUMERATED ELEMENTS","SETS")) &
+  CheckNameClash(E,C,("ENUMERATED ELEMENTS","CONSTANTS")) &
+  CheckNameClash(E,O,("ENUMERATED ELEMENTS","OPERATIONS name")) &
+  CheckNameClash(E,L,("ENUMERATED ELEMENTS","PARAMETERS")) &
+  chk_enm_inp_outp_0(E)(1) &
+  CheckReservedWordsEnum("ENUMERATED ELEMENT",E)
+ =>
+  chk_enm_nmsp_1(E);
+
+  brule(CheckFlattenedEnumSetElementsRepetitionX.1,E) &
+  chk_enm_nmsp_1(bflat(E))
+ =>
+  chk_enm_nmsp_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY GetSetNamesX IS
+
+#define get_set_nms_tac ((RULE;FLAT)~;GetSetNamesX)~
+
+#define GetSetNames  bcall(get_set_nms_tac: get_set_nms_0)
+
+
+  bcrer(ANALYSER_SETNAMESX,S)
+ =>
+  get_set_nms_2(S);
+
+  bsearch(?,S,T) &
+  get_set_nms_2(T)
+ =>
+  get_set_nms_2(S);
+
+  get_set_nms_2(bflat(X))
+ =>
+  get_set_nms_1(?)(X);
+
+  get_set_nms_1(S)(s,X)
+ =>
+  get_set_nms_1(S,s)(X);
+
+  get_set_nms_1(S)(s,X)
+ =>
+  get_set_nms_1(S,s(a))(X);
+
+  brule(ANALYSER_SETSX.1,x) &
+  get_set_nms_1(bflat(?,x))(?)
+ =>
+  get_set_nms_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY LoadIncludedMchsX IS
+
+#define li_tac  \
+	(FLAT;((SUB;MAP;CATL;FLAT;(SUB;MODR;RULE)~;NEWV~)~;LoadIncludedMchsX)~)
+
+#define LoadIncludedMchs(x) \
+		bcall(li_tac: li_0 bsmap (x))
+
+  ?;  /* 1. */
+#define ModifyLoadIncludedMchsRenamePrefix(x) bmodr(LoadIncludedMchsX.1,x)
+#define ReadLoadIncludedMchsRenamePrefix(x)   brule(LoadIncludedMchsX.1,x)
+
+  ReadLoadIncludedMchsRenamePrefix(R) &
+  bcall((NEWV;RULE):bcrer(ANALYSER_INCLUDED_MCH_OP_OPTYPEX,(bnewv(R,k):s:I)))
+ =>
+  li_4(k,(s;(X,I,J,K);u;v;(w|x);(y|z)));
+
+  ReadLoadIncludedMchsRenamePrefix(?) &
+  bcrer(ANALYSER_INCLUDED_MCH_OP_OPTYPEX,(k:s:I))
+ =>
+  li_4(k,(s;(X,I,J,K);u;v;(w|x);(y|z)));
+
+  li_4(k,n)
+ =>
+  li_3(k)(n);
+
+  li_4(k) bsmap (N,n)
+ =>
+  li_3(k)(N,n);
+
+  li_3(k)(?);
+
+  bcrer(ANALYSER_INCLUDED_OPNAMESX,j) &
+  CheckOpNamesClash(k,j)
+ =>
+  li_2(k)(j);
+
+  a
+ =>
+  [? := ?]a;
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  [T](li_2(k)(j)) &
+  [T](li_3(k)(n))
+ =>
+  li_1(T)(k);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  li_2(k)(j) &
+  li_3(k)(n)
+ =>
+  li_1(?)(k);
+
+  li_0(?);
+
+  WriteDotAnalyser&
+  ModifyLoadIncludedMchsRenamePrefix(?) &
+  Bget(("ANL/",r,".mch.anl")) &
+  li_1(?)(r)
+ =>
+  li_0(r(s):t:(u,v,w));
+
+  WriteDotAnalyser&
+  ModifyLoadIncludedMchsRenamePrefix(R) &
+  Bget(("ANL/",r,".mch.anl")) &
+  li_1(u:=v)(r)
+ =>
+  li_0(R.r(s):t:(u,v,w))
+
+END
+
+&
+
+THEORY LoadSeenUsedMchsX IS
+
+#define lsu_tac  \
+	(FLAT;((MAP;LMAP;CATL;FLAT;(SUB;MODR;RULE)~;NEWV~)~;LoadSeenUsedMchsX)~)
+
+#define LoadSeenUsedMchs(x) \
+		bcall(lsu_tac: lsu_0 bsmap (x))
+
+  ?;
+
+  ?;
+#define ModifyLoadSeenUsedMchsDotRename(x)  bmodr(LoadSeenUsedMchsX.2,x)
+#define ReadLoadSeenUsedMchsDotRename(x)    brule(LoadSeenUsedMchsX.2,x)
+
+
+  ModifyLoadSeenUsedMchsDotRename((L:=M))
+ =>
+  cre_dot_rename1(L)(M);
+
+  ModifyLoadSeenUsedMchsDotRename((aa:=aa))
+ =>
+  cre_dot_rename1(?)(?);
+
+  _cat(R,o) == bnewv(R,o);
+  _cat(R,?) == R;
+
+  cre_dot_rename1(L)(_cat(w) bslmap L)
+ =>
+  cre_dot_rename(w)(L);
+
+  bsearch(?,L,M) &
+  cre_dot_rename(w)(M)
+ =>
+  cre_dot_rename(w)(L);
+
+  ModifyLoadSeenUsedMchsDotRename((aa:=aa))
+ =>
+  cre_dot_rename(?)(L);
+
+
+
+  bcrer(ANALYSER_SEES_VARIABLES,v)
+ =>
+  ls_1(v);
+
+  brule(ANALYSER_SEES_VARIABLES.1,V) &
+  bmodr(ANALYSER_SEES_VARIABLES.1,(bflat(V,v)))
+ =>
+  ls_1(v);
+
+  ls_1(?);
+
+  bmodr(LoadSeenUsedMchsX.1,(R:=S))
+ =>
+  cre_rename_1(R)(S);
+
+  glue(a,b) == bnewv(a,b);
+
+  bmodr(LoadSeenUsedMchsX.1,(aaa:=aaa))
+ =>
+  cre_rename_0(Y)(L);
+
+  cre_rename_1(L)(glue(R) bslmap L)
+ =>
+  cre_rename_0(R.r(s):t:(u,v,w))(L);
+
+  bmodr(LoadSeenUsedMchsX.1,(aaa:=aaa))
+ =>
+  cre_rename_0(Y)(?);
+
+  bsearch(?,L,M) &
+  cre_rename_0(Y)(M)
+ =>
+  cre_rename_0(Y)(L);
+
+  bcrer(T,x)
+ =>
+  lsu_3(T)(x);
+
+  brule(T.1,X) &
+  bmodr(T.1,(bflat(X,x)))
+ =>
+  lsu_3(T)(x);
+
+  brule(T.1,?) &
+  bmodr(T.1,x)
+ =>
+  lsu_3(T)(x);
+
+  rmdim(S) == S;
+
+  rmdim(S[D]) == S;
+
+  brule(LoadSeenUsedMchsX.1,(S)) &
+  lsu_3(T)([S]x)
+ =>
+  lsu_2(T)(x);
+
+  lsu_2(T)(?);
+
+
+
+  ReadLoadSeenUsedMchsDotRename(R) &
+  [R](CheckOpNamesClash(k,j))
+ =>
+  CheckOpNamesClash_0(k,j);
+
+
+
+  
+  ReadLoadSeenUsedMchsDotRename(R) &
+  [R](lsu_2(a)(b))
+ =>
+  lsu_2_0(a)(b);
+
+
+
+  lsu_1_SEES(r)(d);
+
+  brule(ANALYSER_SEES.1,S) &
+  bsearch(r,S,T) &
+  ReadLoadSeenUsedMchsDotRename(R) &
+  [R](ls_1(d))
+ =>
+  lsu_1_SEES(r)(d);
+
+
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  lsu_1(r)(Z)(Y);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  cre_rename_0(Y)(bflat(d,j)) &
+  cre_dot_rename(w)(bflat(d,j,k)) &
+  lsu_2(ANALYSER_SETSX)(rmdim bslmap D) &
+  lsu_2(ANALYSER_CONSTANTSX)(F) &
+  lsu_2_0(ANALYSER_VARIABLESX)(d) &
+  lsu_2_0(ANALYSER_OPNAMESX)(j) &
+  lsu_2_0(ANALYSER_SEES_USES_OPNAMESX)(j) &
+  lsu_2(ANALYSER_SEES_USES_PROPERTIESX)(H) &
+  CheckOpNamesClash_0(k,j) &
+  lsu_1_SEES(r)(d)
+ =>
+  lsu_1(r)(Z)(Y)(w);
+  
+  lsu_0(?);
+
+  WriteDotAnalyser&
+  lsu_1(r)(bcatl("ANL/",r,".mch.anl"))(r(s):t:(u,v,w))(?)
+ =>
+  lsu_0(r(s):t:(u,v,w));
+
+  WriteDotAnalyser&
+  lsu_1(r)(bcatl("ANL/",r,".mch.anl"))(R.r(s):t:(u,v,w))(R)
+ =>
+  lsu_0(R.r(s):t:(u,v,w));
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY LoadAbstractionSeesMchX IS
+
+#define LoadAbstractionSeesMch(x) \
+    bcall(((SUB;ARI;RULE;MAP)~;LoadAbstractionSeesMchX)~:lasm(x))
+
+  bcrer(ANALYSER_ABSTRACTION_SEES_ENUMELEM,(K:r:s))
+ =>
+  lasm7(K,r,s);
+
+  bcrer(ANALYSER_ABSTRACTION_SEES_SETNAMES,(K:r:s))
+ =>
+  lasm6(K,r,s);
+
+  bcrer(ANALYSER_ABSTRACTION_SEES_SETNAMES,(K:r:s)) &
+  lasm7(K,r) bsmap e
+ =>
+  lasm6(K,r,s(e));
+
+  bcrer(ANALYSER_ABSTRACTION_SEES_SETNAMES,(K:r:s))
+ =>
+  lasm6(K,r,s[n]);
+
+  lasm6(K,r,?);
+
+  bcrer(ANALYSER_ABSTRACTION_SEES_CONSTANTS,(K:r:c))
+ =>
+  lasm5(K,r,c);
+
+  lasm5(K,r,?);
+
+  bcrer(ANALYSER_ABSTRACTION_SEES_VAR,(K:r:v))
+ =>
+  lasm4(K,r,v);
+
+  lasm4(K,r,?);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  [T](lasm4(K,r) bsmap d) &
+  [T](lasm5(K,r) bsmap F) &
+  [T](lasm6(K,r) bsmap D)
+ =>
+  lasm3(T)(K,r);
+
+  Bget(("ANL/",r,".mch.anl")) &
+  lasm3(aaa:=aaa)(k,r)
+ =>
+  lasm2(k,(r(s):t:(u,v,w)));
+
+  Bget(("ANL/",r,".mch.anl")) &
+  lasm3(u:=v)(k,r)
+ =>
+  lasm2(k,(R.r(s):t:(u,v,w)));
+
+  lasm2(k,?);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  lasm2(k) bsmap A &
+  lasm2(k) bsmap B
+ =>
+  lasm1(k);
+
+  Bget(("ANL/",m,".ref.anl")) &
+  lasm1(m)
+ =>
+  lasm(m);
+
+  IsCfg(m.mch) &
+  Bget(("ANL/",m,".mch.anl")) &
+  lasm1(m)
+ =>
+  lasm(m);
+
+  lasm(?)
+
+END
+
+&
+
+THEORY LoadNmlFormX IS
+
+#define load_nml_tac      ((MAP;LMAP;CATL;RULE~;MODR)~;LoadNmlFormX)
+
+#define LoadNmlForm(x)    bcall(load_nml_tac: load_nml(x))
+
+
+  ?;
+
+  
+  chk_num_param3(s)(p)(N);
+
+  GetCurrentConstruct(a.mch) &
+  Writef(("\n    Warning:\n    Operation % has a large number of parameters: %\n    This may lead to animation problems .",bsrv s berv,N)) /* &
+  FlagAnalyserError */
+ =>
+  chk_num_param3(s)(p)(N);
+
+  btest(N<25)
+ =>
+  chk_num_param3(s)(p)(N);  /* p is single param - so test > 1 ! */
+
+  chk_num_param3(s)(P)(N+1)
+ =>
+  chk_num_param3(s)(P,p)(N);
+
+  chk_num_param2(s)(n);
+
+  chk_num_param3(s)(o)(0)
+ =>
+  chk_num_param2(s)(o<--n);
+
+  chk_num_param3(s)(i)(0)
+ =>
+  chk_num_param2(s)(n(i));
+
+  chk_num_param3(s)(bflat(o,i))(0)
+ =>
+  chk_num_param2(s)(o<--n(i));
+
+  chk_num_param2(s)(K)
+ =>
+  chk_num_param1(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  chk_num_param1(n)
+ =>
+  chk_num_param(n);
+
+  chk_num_param1 bsmap (N,n)
+ =>
+  chk_num_param(N,n);
+
+  chk_num_param(?);
+
+
+
+  load_nml_opinfo bsmap X
+ =>
+  load_nml_opinfo(X);
+
+/*
+  bcrer(ANALYSER_OPERATION_INP_OUTPX,(s|u|v)) &
+  bcrer(ANALYSER_OPERATION_HEADERX,K) &
+  bcrer(ANALYSER_OPERATION_EXPANDEDX,(s:z)) &
+  bcrer(ANALYSER_OPERATION_UNEXPANDEDX,(s:x))
+*/
+  bcrer(ANALYSER_OPERATION_COMPOSITEX,(s|(u|v)|K|z|x))
+ =>
+  load_nml_opinfo(s;(X,I,J,K);u;v;(w|x);(y|z));
+
+  load_nml_opinfo(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  load_nml_1(Z);
+
+  bcrer(ANALYSER_SETSX,D)
+ =>
+  bcrer_delay(ANALYSER_SETSX,D);
+
+  rmdim(S) == S;
+
+  rmdim(S[D]) == S;
+
+  sto_seen_mch_names(x);
+
+  brule(ANALYSER_SEES.1,M) &
+  bmodr(ANALYSER_SEES.1,(M,m))
+ =>
+  sto_seen_mch_names(m(p):x:y);
+
+
+  brule(ANALYSER_LOCAL_ENUMELEMX.1,E) &
+  bmodr(ANALYSER_LOCAL_ENUMELEMX.1,(E,e))
+ =>
+  cre_loc_enum_elem(e);
+
+  brule(ANALYSER_LOCAL_SETSX.1,S) &
+  bmodr(ANALYSER_LOCAL_SETSX.1,(S,s))
+ =>
+  cre_loc_sets(s);
+
+  brule(ANALYSER_LOCAL_SETSX.1,S) &
+  bmodr(ANALYSER_LOCAL_SETSX.1,(S,s))
+ =>
+  cre_loc_sets(s[n]);
+
+  brule(ANALYSER_LOCAL_SETSX.1,S) &
+  bmodr(ANALYSER_LOCAL_SETSX.1,(S,s)) &
+  cre_loc_enum_elem bsmap a
+ =>
+  cre_loc_sets(s(a));
+
+  cre_loc_sets(?);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+/***
+HERE(((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)))&
+***/
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 0))& ***/
+  ModrPromotedOps(c) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 1))& ***/
+  bcrer_delay(ANALYSER_SETSX,(rmdim bslmap D)) &
+  bcrer(ANALYSER_CONSTANTSX,F) &
+  bcrer(ANALYSER_LOCAL_VARIABLESX,Q) &
+  bcrer(ANALYSER_LOCAL_CONSTANTSX,E) &
+  bcrer(ANALYSER_LOCAL_SETSX,?) &
+  bcrer(ANALYSER_LOCAL_ENUMELEMX,?) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 2))& ***/
+  cre_loc_sets bsmap C &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 3))& ***/
+  bcrer(ANALYSER_PROPERTIESX,H) &
+  bcrer(ANALYSER_VARIABLESX,d) &
+  bcrer(ANALYSER_INITIALISATIONX,i) &
+  bcrer(ANALYSER_INVARIANTX,f) &
+  bcrer(ANALYSER_PROMOTESX,c) &
+  bcrer(ANALYSER_OPNAMESX,j) &
+  bcrer(ANALYSER_HEADERX,(k(l):m:R)) &
+  bcrer(ANALYSER_IMPORTSX,b) &
+/*  bcrer(ANALYSER_OPERATION_EXPANDEDX,(init:i)) & */
+  bcrer(ANALYSER_OPERATION_COMPOSITEX,(init|(?|?)|?|i|?)) &
+  bcrer(ANALYSER_SEES_USES_PROPERTIESX,?) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 4))& ***/
+  CheckVariablesInitialised((Q),(h)) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 5))& ***/
+  load_nml_opinfo(n) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 6))& ***/
+  bcrer(ANALYSER_SEES,?) &
+  sto_seen_mch_names bsmap A &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 7))& ***/
+  LoadSeenUsedMchs(bflat(A,B)) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 8))& ***/
+  LoadAbstractionSeesMch(R) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 9))& ***/
+  LoadIncludedMchs(b) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 10))& ***/
+  GetSetNames &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 11))& ***/
+  CheckOpNamesClash(k,j) &
+/*** HEREAnalyser(("alal_LoadNmlForm" --- 12))& ***/
+  bcall(((MAP;ARI;FLAT);LoadNmlFormX)~:chk_num_param(n))
+ =>
+  load_nml_1(Z);
+
+  WriteDotAnalyser &
+  load_nml_1(bcatl("ANL/",a,".",b,".anl"))
+ =>
+  load_nml(a.b);
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxBEGINX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(BEGIN a END)) &
+  FlagAnalyserError
+ =>
+  (BEGIN a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((BEGIN a END)) &
+  FlagAnalyserError
+ =>
+  (BEGIN a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxPREX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(PRE a END)) &
+  FlagAnalyserError
+ =>
+  (PRE a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((PRE a END)) &
+  FlagAnalyserError
+ =>
+  (PRE a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxIFX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(IF a END)) &
+  FlagAnalyserError
+ =>
+  (IF a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((IF a END)) &
+  FlagAnalyserError
+ =>
+  (IF a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxANYX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(ANY a END)) &
+  FlagAnalyserError
+ =>
+  (ANY a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((ANY a END)) &
+  FlagAnalyserError
+ =>
+  (ANY a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxSELECTX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(SELECT a END)) &
+  FlagAnalyserError
+ =>
+  (SELECT a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((SELECT a END)) &
+  FlagAnalyserError
+ =>
+  (SELECT a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxCASEX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(CASE a END)) &
+  FlagAnalyserError
+ =>
+  (CASE a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((CASE a END)) &
+  FlagAnalyserError
+ =>
+  (CASE a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxEITHERX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(EITHER a END)) &
+  FlagAnalyserError
+ =>
+  (EITHER a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((EITHER a END)) &
+  FlagAnalyserError
+ =>
+  (EITHER a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxCHOICEX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(CHOICE a END)) &
+  FlagAnalyserError
+ =>
+  (CHOICE a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((CHOICE a END)) &
+  FlagAnalyserError
+ =>
+  (CHOICE a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxVARX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(VAR a END)) &
+  FlagAnalyserError
+ =>
+  (VAR a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((VAR a END)) &
+  FlagAnalyserError
+ =>
+  (VAR a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxLETX IS
+
+  x;
+
+  brule(OpSyntaxX.1,o) &
+  InformAnalyserSyntaxError(o,(LET a END)) &
+  FlagAnalyserError
+ =>
+  (LET a END) == ?;
+
+  brule(OpSyntaxX.1,init) &
+  InformAnalyserSyntaxErrorInit((LET a END)) &
+  FlagAnalyserError
+ =>
+  (LET a END) == ?;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY OpSyntaxX IS
+
+#define CheckOpSyntax bcall(((ARI;MODR)~;OpSyntaxX)~: cos_0(1))
+
+#define CheckBEGIN(x) bcall(OpSyntaxBEGINX~: x)
+#define CheckPRE(x) bcall(OpSyntaxPREX~: x)
+#define CheckIF(x) bcall(OpSyntaxIFX~: x)
+#define CheckANY(x) bcall(OpSyntaxANYX~: x)
+#define CheckSELECT(x) bcall(OpSyntaxSELECTX~: x)
+#define CheckCASE(x) bcall(OpSyntaxCASEX~: x)
+#define CheckEITHER(x) bcall(OpSyntaxEITHERX~: x)
+#define CheckCHOICE(x) bcall(OpSyntaxCHOICEX~: x)
+#define CheckLET(x) bcall(OpSyntaxLETX~: x)
+#define CheckVAR(x) bcall(OpSyntaxVARX~: x)
+
+  ?;
+
+  cos_0(N);
+
+/*  brule(ANALYSER_OPERATION_EXPANDEDX.N,(o:s)) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.N,(o|(u|v)|K|s|x)) &
+  WriteDotAnalyser &
+  bmodr(OpSyntaxX.1,o) &
+  CheckBEGIN(s) &
+  CheckVAR(s) &
+  CheckPRE(s) &
+  CheckIF(s) &
+  CheckANY(s) &
+  CheckSELECT(s) &
+  CheckCASE(s) &
+  CheckEITHER(s) &
+  CheckCHOICE(s) &
+  CheckLET(s) &
+  cos_0(N+1)
+ =>
+  cos_0(N);
+
+/*  brule(ANALYSER_OPERATION_EXPANDEDX.N,(o:s)) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.N,(o|(u|v)|K|s|x)) &
+  ReadPromotedOps(P) &
+  bsearch(o,P,Q) &       /* promoted */
+  cos_0(N+1)
+ =>
+  cos_0(N);
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckLengthEnumSetElemsX IS
+
+#define CheckLengthEnumSetElems \
+	bcall(((MAP;ARI;FLAT)~;CheckLengthEnumSetElemsX)~: clese_0)
+
+
+  InformEnumElemBad(s,e) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  clese_3(s)(e)(n);
+
+  InformEnumElemTooShort(s,e) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  clese_3(s)(e)(1);
+
+  bnum(n) &
+  btest(n>1) &
+  InformEnumElemTooLong(s,e) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  clese_3(s)(e)(n);
+
+  bnum(n) &
+  btest(n<60) &
+  btest(n>1)
+ =>
+  clese_3(s)(e)(n);
+
+  clese_3(s)(e)(blen(e))
+ =>
+  clese_2(s,e);
+
+  clese_1(x);
+
+
+  clese_2(s) bsmap e
+ =>
+  clese_literal(s)(e)(?)(L);
+
+  clese_2(s) bsmap e &
+  InformEnumSetNotDistinctId(s,e) &
+  FlagAnalyserError  
+ =>
+  clese_literal(s)(e)(F,f)(L);
+
+  bident(f) &
+  clese_literal(s)(e)(F)(L,f)
+ =>
+  clese_literal(s)(e)(F,f)(L);
+
+  bliteral(f) &
+  clese_literal(s)(e)(F)(L,f)
+ =>
+  clese_literal(s)(e)(F,f)(L);
+
+  bsearch(f,L,M) &
+  clese_2(s) bsmap e &
+  InformEnumSetNotDistinctId(s,e) &
+  FlagAnalyserError  
+ =>
+  clese_literal(s)(e)(F,f)(L);
+
+/***
+HERE((clese_1(s(e))))&
+***/
+  clese_literal(s)(e)(bflat(?,e))(?)
+ =>
+  clese_1(s(e));
+
+  blident(e) /* &
+  clese_2(s) bsmap e */
+ =>
+  clese_1(s(e));
+
+  brule(ANALYSER_SETSX.1,S) &
+  WriteDotAnalyser &
+  clese_1 bsmap S
+ =>
+  clese_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckLengthIdentX IS
+
+#define CheckLengthIdent   bcall(((MAP;ARI)~;CheckLengthIdentX)~: cli_0)
+
+  InformLocalVarBad(o,v) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  cllv_1(o)(v)(n);
+
+  InformLocalVarTooShort(o,v) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  cllv_1(o)(v)(1);
+
+  bnum(n) &
+  btest(n>1) &
+  InformLocalVarTooLong(o,v) &
+  FlagAnalyserError
+ =>
+  cllv_1(o)(v)(n);
+
+  bnum(n) &
+  btest(n<60) &
+  btest(n>1)
+ =>
+  cllv_1(o)(v)(n);
+
+  cllv_1(o)(v)(blen(v))
+ =>
+  cllv_0(o,v);
+
+  InformSLIBIdentifierBad(s,a) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  cli_SLIB_2(s)(a)(n);
+
+  InformSLIBIdentifierTooShort(s,a) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  cli_SLIB_2(s)(a)(1);
+
+  bnum(n) &
+  btest(n>1) &
+  InformSLIBIdentifierTooLong(s,a) &
+  FlagAnalyserError
+ =>
+  cli_SLIB_2(s)(a)(n);
+
+  bnum(n) &
+  btest(n<60) &
+  btest(n>1)
+ =>
+  cli_SLIB_2(s)(a)(n);
+
+  InformIdentifierBad(s,a) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  cli_2(s)(a)(n);
+
+  InformIdentifierTooShort(s,a) &
+  FlagAnalyserAbortError &
+  FlagAnalyserError
+ =>
+  cli_2(s)(a)(1);
+
+  bnum(n) &
+  btest(n>1) &
+  InformIdentifierTooLong(s,a) &
+  FlagAnalyserError
+ =>
+  cli_2(s)(a)(n);
+
+  bnum(n) &
+  btest(n<60) &
+  btest(n>1)
+ =>
+  cli_2(s)(a)(n);
+
+
+
+  cli_SLIB_2(s)(a)(n)
+ =>
+  cli_2_0(s)(a)(n);
+
+  GetCurrentConstruct(x.y) &
+  IsUsrVHDL(x.y) &
+  cli_2(s)(a)(n)
+ =>
+  cli_2_0(s)(a)(n);
+
+  GetCurrentConstruct(x.y) &
+  IsUsr(x.y) &
+  cli_2(s)(a)(n)
+ =>
+  cli_2_0(s)(a)(n);
+
+  cli_1(s,a);
+
+
+
+  bident(a) &
+  cli_2_0(s)(a)(blen(a))
+ =>
+  cli_1(s,a);
+
+/*
+  brule(ANALYSER_OPNAMESX.1,O) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_VARIABLESX.1,V) &
+  cli_1("OPERATIONS name") bsmap O &
+  cli_1("CONSTANTS name") bsmap C &
+  WriteDotAnalyser &
+  cli_1("SETS name") bsmap S &
+  cli_1("VARIABLES name") bsmap V
+ =>
+  cli_0;
+*/
+
+
+/***/
+HERE(("NOT blident" -- L))&
+/***/
+  cli_1(s) bsmap L
+ =>
+  cli_01(s)(L);
+
+  blident(L)
+ =>
+  cli_01(s)(L);
+
+  cli_01(s)(?);
+
+  bsearch(?,L,M) &
+  cli_01(s)(M)
+ =>
+  cli_01(s)(L);
+
+  brule(ANALYSER_OPNAMESX.1,O) &
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  brule(ANALYSER_SETNAMESX.1,S) &
+  brule(ANALYSER_VARIABLESX.1,V) &
+  cli_01("OPERATIONS name")(O) &
+  cli_01("CONSTANTS name")(C) &
+  WriteDotAnalyser &
+  cli_01("SETS name")(S) &
+  cli_01("VARIABLES name")(V)
+ =>
+  cli_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckLocalVARX IS
+
+#define CheckLocalVAR     bcall(((FLAT;MAP;SHELL)~;CheckLocalVARX)~: clv_0)
+
+#define CheckLengthLocalVAR(x) bcall(((MAP;ARI)~;CheckLengthIdentX)~: cllv_0(x))
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+  
+  CheckLengthLocalVAR((o,v))
+ =>
+  cllv_1(o,v);
+
+  cllv_0(o:v);
+
+  GetCurrentConstruct(a.imp) &
+  cllv_1(o) bsmap v
+ =>
+  cllv_0(o:v);
+
+  cllv_0(?);
+
+
+
+  clv_iparam_2(C,o,v);
+
+  bsearch(v,C,D) &
+  InformIntersection(v,o,"LOCAL VARIABLES","INPUT PARAMETERS") &
+  FlagAnalyserError
+ =>
+  clv_iparam_2(C,o,v);
+
+  bsearch(v,C,D) &
+  InformIntersectionInit(v,"LOCAL VARIABLES","INPUT PARAMETERS") &
+  FlagAnalyserError
+ =>
+  clv_iparam_2(C,Init,v);
+
+  clv_iparam_1(o:v);               /* Init doesn't have parameters ... */
+
+/*  brule(ANALYSER_OPERATION_INP_OUTPX.I,(o|U|V)) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.I,(o|(U|X)|K|z|x)) &
+/***
+HERE((clv_iparam_2((U,?),o) bsmap v))&
+***/
+  clv_iparam_2((U,?),o) bsmap v
+ =>
+  clv_iparam_1(o:v);
+
+  clv_iparam_1(?);
+
+
+
+  clv_oparam_2(C,o,v);
+
+  bsearch(v,C,D) &
+  InformIntersection(v,o,"LOCAL VARIABLES","OUTPUT PARAMETERS") &
+  FlagAnalyserError
+ =>
+  clv_oparam_2(C,o,v);
+
+  bsearch(v,C,D) &
+  InformIntersectionInit(v,"LOCAL VARIABLES","OUTPUT PARAMETERS") &
+  FlagAnalyserError
+ =>
+  clv_oparam_2(C,Init,v);
+
+  clv_oparam_1(o:v);               /* Init doesn't have parameters ... */
+
+/*  brule(ANALYSER_OPERATION_INP_OUTPX.I,(o|U|V)) &*/
+  brule(ANALYSER_OPERATION_COMPOSITEX.I,(o|(U|V)|K|z|x)) &
+/***
+HERE((clv_oparam_2((V,?),o) bsmap v))&
+***/
+  clv_oparam_2((V,?),o) bsmap v
+ =>
+  clv_oparam_1(o:v);
+
+  clv_oparam_1(?);
+
+
+
+
+  clv_const_2(C,o,v);
+
+  bsearch(v,C,D) &
+  InformIntersection(v,o,"LOCAL VARIABLES","CONSTANTS") &
+  FlagAnalyserError
+ =>
+  clv_const_2(C,o,v);
+
+  bsearch(v,C,D) &
+  InformIntersectionInit(v,"LOCAL VARIABLES","CONSTANTS") &
+  FlagAnalyserError
+ =>
+  clv_const_2(C,Init,v);
+
+  brule(ANALYSER_CONSTANTSX.1,C) &
+  clv_const_2((C,?),o) bsmap v
+ =>
+  clv_const_1(o:v);
+
+  clv_const_1(?);
+
+
+
+  clv_abs_sees_var_1(o:v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_VAR.N,(a:s:v)) &
+  InformLocalSeesVarIntersection(v,o,a,s)
+ =>
+  clv_abs_sees_var_1(o:v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_VAR.N,(a:s:v)) &
+  InformLocalSeesVarIntersectionInit(v,a,s)
+ =>
+  clv_abs_sees_var_1(Init:v);
+
+  clv_abs_sees_var_1(?);
+
+
+
+  clv_abs_sees_const_1(o:v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_CONSTANTS.N,(a:s:v)) &
+  InformLocalSeesConstIntersection(v,o,a,s)
+ =>
+  clv_abs_sees_const_1(o:v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_CONSTANTS.N,(a:s:v)) &
+  InformLocalSeesConstIntersectionInit(v,a,s)
+ =>
+  clv_abs_sees_const_1(Init:v);
+
+  clv_abs_sees_const_1(?);
+
+
+
+  clv_abs_sees_set_1(o:v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_SETNAMES.N,(a:s:v)) &
+  InformLocalSeesSetIntersection(v,o,a,s)
+ =>
+  clv_abs_sees_set_1(o:v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_SETNAMES.N,(a:s:v)) &
+  InformLocalSeesSetIntersectionInit(v,a,s)
+ =>
+  clv_abs_sees_set_1(Init:v);
+
+  clv_abs_sees_set_1(?);
+
+
+
+  clv_abs_sees_enumel_1(o:v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_ENUMELEM.N,(a:s:v)) &
+  InformLocalSeesEnumelIntersection(v,o,a,s)
+ =>
+  clv_abs_sees_enumel_1(o:v);
+
+  brule(ANALYSER_ABSTRACTION_SEES_ENUMELEM.N,(a:s:v)) &
+  InformLocalSeesEnumelIntersectionInit(v,a,s)
+ =>
+  clv_abs_sees_enumel_1(Init:v);
+
+  clv_abs_sees_enumel_1(?);
+
+
+
+  clv_enum_elems_2(C,o,v);
+
+  bsearch(v,C,D) &
+  InformIntersection(v,o,"LOCAL VARIABLES","ENUMERATED ELEMENTS") &
+  FlagAnalyserError
+ =>
+  clv_enum_elems_2(C,o,v);
+
+  bsearch(v,C,D) &
+  InformIntersectionInit(v,"LOCAL VARIABLES","ENUMERATED ELEMENTS") &
+  FlagAnalyserError
+ =>
+  clv_enum_elems_2(C,Init,v);
+
+  brule(CheckFlattenedEnumSetElementsRepetitionX.1,E) &
+  clv_enum_elems_2(bflat(E,?),o) bsmap v
+ =>
+  clv_enum_elems_1(o:v);
+
+  clv_enum_elems_1(?);
+
+
+
+  InformCantConnect(".Bvar") &
+  PFZ
+ =>
+  clv_0;
+
+  bget(".Bvar",x) &
+/***
+HERE(("LocalVars":x)) &
+***/
+  clv_const_1 bsmap x &
+  clv_iparam_1 bsmap x &
+  clv_oparam_1 bsmap x &
+  clv_abs_sees_var_1 bsmap x &
+  clv_abs_sees_const_1 bsmap x &
+  clv_abs_sees_set_1 bsmap x &
+  clv_abs_sees_enumel_1 bsmap x &
+  clv_enum_elems_1 bsmap x &
+  cllv_0 bsmap x &
+  CheckReservedWordsLocVar("LOCAL VARIABLE",x) &
+  bshell("rm -f .Bvar")
+ =>
+  clv_0;
+
+  AnalyserAbortErrorFlagged
+ =>
+  x
+
+
+END
+
+&
+
+THEORY CheckParallelSameSubMchX IS
+
+#define CheckParallelSameSubMch \
+    bcall(((ARI;MODR)~;CheckParallelSameSubMchX)~:cpssm0)
+
+  ?;
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.I,(m:b:Mod_Op))
+ =>
+  cpssm4(n)(b);
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.I,(m:b:Mod_Op)) &
+  brule(CheckParallelSameSubMchX.1,M) &
+  bsearch(m(c),M,P) &
+  InformParallelOpSameMch(n,m,b,c) &
+  FlagAnalyserError
+ =>
+  cpssm4(n)(b);
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.I,(m:b:Val_Op))
+ =>
+  cpssm4(n)(b);
+
+  cpssm4(n)(skip);
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.I,(m:b:Mod_Op)) &
+  brule(CheckParallelSameSubMchX.1,M) &
+  bmodr(CheckParallelSameSubMchX.1,(M,m(b))) &
+  cpssm4(n)(a)
+ =>
+  cpssm4(n)(a || b);
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.I,(m:b:Mod_Op)) &
+  brule(CheckParallelSameSubMchX.1,M) &
+  bsearch(m(c),M,P) &
+  InformParallelOpSameMch(n,m,b,c) &
+  FlagAnalyserError
+ =>
+  cpssm4(n)(a || b);
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.I,(m:b:Val_Op)) &
+  cpssm4(n)(a)
+ =>
+  cpssm4(n)(a || b);
+
+/***
+HERE(("Parallel sub op checking")) &
+HERE((n:s)) &
+***/
+  bmodr(CheckParallelSameSubMchX.1,?) &
+  cpssm4(n)(s)
+ =>
+  cpssm3(n)(s);
+
+  cpssm3(n)(a) &
+  cpssm3(n)(b)
+ =>
+  cpssm3(n)(a [] b);
+
+
+  cpssm3(n)(a) &
+  cpssm3(n)(b)
+ =>
+  cpssm3(n)(a ; b);
+
+  cpssm3(n)(a||b) &
+  cpssm3(n)(a||c)
+ =>
+  cpssm3(n)(a || (b;c));
+
+  cpssm3(n)(b||a) &
+  cpssm3(n)(c||a)
+ =>
+  cpssm3(n)((b;c) || a);
+
+
+  dist(c)(a)(b) == (b [] (c || a));
+
+  dist(c)(A [] a)(b) == dist(c)(A)(b [] (c || a));
+
+  ((a [] b) || c) == dist(c)(a)(b||c);
+
+  (c || (a [] b)) == dist(c)(a)(b||c);
+
+  cpssm2(n)(a);                /* no || */
+
+  (skip [] a) == a;
+
+  (a [] skip) == a;
+
+  (skip || a) == a;
+
+  (a || skip) == a;
+
+/***
+HERE((n=(a || b)))&
+***/
+  cpssm3(n)(a || b)
+ =>
+  cpssm2(n)(a || b);
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:a:Val_Op))
+ =>
+  (b [] a [] c) == (b [] c);  
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:a:Val_Op))
+ =>
+  (b [] a) == b;  
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:a:Val_Op))
+ =>
+  (a [] b) == b;  
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:a:Val_Op))
+ =>
+  (b || a || c) == (b || c);  
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:a:Val_Op))
+ =>
+  (b || a) == b;  
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:a:Val_Op))
+ =>
+  (a || b) == b;  
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:a:t))
+ =>
+  (a(b)) == a;
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:b:t))
+ =>
+  (a<--b) == b;
+
+  (a || ( b || c ) ) == ( a || b || c );
+
+  (c [] a:b [] d) == (c [] d);
+
+  (c [] a:b) == c;
+
+  (a:b [] c) == c;
+
+  (c || a:b || d) == (c || d);
+
+  (c || a:b) == c;
+
+  (a:b || c) == c;
+
+  (c [] a::b [] d) == (c [] d);
+
+  (c [] a::b) == c;
+
+  (a::b [] c) == c;
+
+  (c || a::b || d) == (c || d);
+
+  (c || a::b) == c;
+
+  (a::b || c) == c;
+
+  (c [] a:=b [] d) == (c [] d);
+
+  (c [] a:=b) == c;
+
+  (a:=b [] c) == c;
+
+  (c || a:=b || d) == (c || d);
+
+  (c || a:=b) == c;
+
+  (a:=b || c) == c;
+
+  (g ==> a) == a;
+
+  (a THEN b) == b;
+
+  (a OR b) == (a [] b);
+
+  (a ELSE b) == (a [] b);
+
+  (a WHEN b THEN c) == (a [] c);
+
+  (CASE a OF EITHER b END END) == b;
+
+  (SELECT a END) == a;
+
+  (LET a BE b IN c END) == c;
+
+  (ANY a WHERE b THEN c END) == c;
+
+  (@a.c) == c;
+
+  (VAR a IN b END) == b;
+
+  (IF a THEN b ELSIF c THEN d END) == (IF a THEN b ELSE IF c THEN d END END);
+
+  (IF a THEN b ELSIF c THEN d ELSE e END) == (IF a THEN b ELSE IF c THEN d ELSE e END END);
+
+  (IF a END) == a;
+
+  (a|b) == b;
+
+  (PRE a THEN b END) == b;
+
+  (CASE a END) == a;
+
+  (CHOICE a END) == a;
+
+  (BEGIN a END) == a;
+
+  cpssm1(N);
+
+/*  brule(ANALYSER_OPERATION_UNEXPANDEDX.N,(n:s)) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.N,(n|(u|v)|K|s|x)) &
+/***
+HERE((n=s))&
+***/
+  WriteDotAnalyser &
+  cpssm2(n)(x) &  /* unexpanded */
+  cpssm1(N+1)
+ =>
+  cpssm1(N);
+
+/*  brule(ANALYSER_OPERATION_UNEXPANDEDX.N,(n:s)) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.N,(n|(u|v)|K|s|x)) &
+  brule(ANALYSER_PROMOTESX.1,P) &
+  bsearch(n,(P,?),Q) &  /* promoted */
+/***
+HERE(("Promoted":n))&
+***/
+  cpssm1(N+1)
+ =>
+  cpssm1(N);
+
+  brule(ANALYSER_IMPORTSX.1,x) &  /* there are inclusions */
+  cpssm1(1)
+ =>
+  cpssm0;
+
+  ReadUsrVHDL(V) &
+  GetCurrentConstruct(a.b) &
+  bsearch(a.b,V,W)
+/***/
+& HERE(("CheckParallelSameSubMch suppressed for VHDL"))
+/***/
+ =>
+  cpssm0;
+
+  brule(ANALYSER_IMPORTSX.1,?)    /* no inclusions */
+ =>
+  cpssm0;
+
+  GetCurrentConstruct(a.imp)     /* no || in imp */
+ =>
+  cpssm0
+
+END
+
+&
+
+
+/*
+THEORY GetOrigMchOpOpTypeX IS
+
+#define GetOrigMchOpOpType \
+    bcall(((MAP;MODR;RULE;NEWV~)~;GetOrigMchOpOpTypeX)~: \
+      (ModifyGetOrigMchOpOpTypeRenamePrefix(?) & gomot))
+
+  ?; /? dot rename prefix ?/
+#define ModifyGetOrigMchOpOpTypeRenamePrefix(x)  bmodr(GetOrigMchOpOpTypeX.1,x)
+#define ReadGetOrigMchOpOpTypeRenamePrefix(x)    brule(GetOrigMchOpOpTypeX.1,x)
+
+  gomot5(?);
+
+  ModifyGetOrigMchOpOpTypeRenamePrefix(?) &
+  gomot(r)
+ =>
+  gomot5(r(s):t:(?,?,?));
+
+  ModifyGetOrigMchOpOpTypeRenamePrefix(R) &
+  gomot(r)
+ =>
+  gomot5(R.r(s):t:(u,v,w));
+
+  bcrer(ANALYSER_INCLUDED_MCH_OP_OPTYPEX,(k:s:I))
+ =>
+  gomot4(k,(s;(X,I,J,K);u;v;(w|x);(y|z)));
+
+  brule(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(m:s:I)) &
+  bmodr(ANALYSER_INCLUDED_MCH_OP_OPTYPEX.J,(k:s:I))
+ =>
+  gomot4(k,(s;(X,I,J,K);u;v;(w|x);(y|z)));
+
+  ReadGetOrigMchOpOpTypeRenamePrefix(R) &
+  gomot4(bnewv(R,k),(bnewv(R,s);(X,I,J,K);u;v;(w|x);(y|z)))
+ =>
+  gomot3(k,(s;(X,I,J,K);u;v;(w|x);(y|z)));
+
+  ReadGetOrigMchOpOpTypeRenamePrefix(?) &
+  gomot4(k,(s;(X,I,J,K);u;v;(w|x);(y|z)))
+ =>
+  gomot3(k,(s;(X,I,J,K);u;v;(w|x);(y|z)));
+
+  gomot3(k,n)
+ =>
+  gomot2(k)(n);
+
+  gomot3(k) bsmap (N,n)
+ =>
+  gomot2(k)(N,n);
+
+  gomot2(k)(?);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  
+  gomot2(k)(n) &
+  gomot5 bsmap b
+ =>
+  gomot1(a);
+
+  Bget(("ANL/",a,".mch.anl")) &
+  gomot1(a)
+ =>
+  gomot(a)
+
+END
+
+&
+*/
+
+
+THEORY CheckOpsNotAssignedX IS
+
+#define CheckOpsNotAssigned bcall(((MODR;ARI)~;CheckOpsNotAssignedX):cona(1))
+
+  ?;
+
+  brule(CheckOpsNotAssignedX.1,o) &
+  InformCantAssignFromOp(o,S) &
+  FlagAnalyserError  
+ =>
+  cona3(S)(a);
+
+  brule(CheckOpsNotAssignedX.1,init) &
+  InformCantAssignFromOpInit(S) &
+  FlagAnalyserError  
+ =>
+  cona3(S)(a);
+
+
+
+  cona2_INCLUDES(S)(a)(N);
+
+  brule(ANALYSER_INCLUDED_OPNAMESX.N,L) &
+  cona2_INCLUDES(S)(a)(N+1)
+ =>
+  cona2_INCLUDES(S)(a)(N);
+
+  brule(ANALYSER_INCLUDED_OPNAMESX.N,L) &
+  bsearch(a,(L,?),M) &
+  cona3(S)(a) &
+  cona2_INCLUDES(S)(a)(N+1)
+ =>
+  cona2_INCLUDES(S)(a)(N);
+
+
+
+  cona2_SEES(S)(a)(N);
+
+  brule(ANALYSER_SEES_USES_OPNAMESX.N,L) &
+  cona2_SEES(S)(a)(N+1)
+ =>
+  cona2_SEES(S)(a)(N);
+
+  brule(ANALYSER_SEES_USES_OPNAMESX.N,L) &
+  bsearch(a,(L,?),M) &
+  cona3(S)(a) &
+  cona2_SEES(S)(a)(N+1)
+ =>
+  cona2_SEES(S)(a)(N);
+
+
+
+  cona2_SEES(S)(a)(1) &
+  cona2_INCLUDES(S)(a)(1)
+ =>
+  cona2(S)(a);
+
+  cona1(S);
+
+  cona2(A:=a)(a)
+ =>
+  cona1(A:=a);
+
+  cona2(A:=r<--a)(a)
+ =>
+  cona1(A:=r<--a);
+
+  cona2(A:=a(p))(a)
+ =>
+  cona1(A:=a(p));
+
+  cona2(A:=r<--a(p))(a)
+ =>
+  cona1(A:=r<--a(p));
+
+  cona1(A:=B) &
+  cona1(a:=b)
+ =>
+  cona1(A,a:=B,b);
+
+  cona1(S)
+ =>
+  cona1(WHILE P DO S VARIANT V INVARIANT I END);
+
+  cona1(S)
+ =>
+  cona1(WHILE P DO S INVARIANT I VARIANT V END);
+
+  cona1(skip);
+
+  cona1(?);
+
+  cona1(b)
+ =>
+  cona1(a==>b);
+
+  cona1(b)
+ =>
+  cona1(@a.b);
+
+  cona1(b)
+ =>
+  cona1(a | b);
+
+  cona1(a) &
+  cona1(b)
+ =>
+  cona1(a [] b);
+
+  cona1(a) &
+  cona1(b)
+ =>
+  cona1(a || b);
+
+  cona1(a) &
+  cona1(b)
+ =>
+  cona1(a ; b);
+
+  cona(N);
+
+/*  brule(ANALYSER_OPERATION_EXPANDEDX.N,(o:s)) & */
+  brule(ANALYSER_OPERATION_COMPOSITEX.N,(o|(u|v)|K|s|x)) &
+  bmodr(CheckOpsNotAssignedX.1,o) &
+  cona1(s) &
+  cona(N+1)
+ =>
+  cona(N)                                      /* ONLY FOR TOP LEVEL MACHINE */
+
+END
+
+&
+
+
+/*
+THEORY LoadRecIptInc_CheckSeenX IS
+
+#define LoadRecIptInc_CheckSeen \
+  bcall(((MODR;CATL;MAP)~;LoadRecIptInc_CheckSeenX)~:lrii)
+
+  ?;
+#define ReadRecIptInc(x)   brule(LoadRecIptInc_CheckSeenX.1,x)
+#define ModifyRecIptInc(x) bmodr(LoadRecIptInc_CheckSeenX.1,x)
+
+  ?;
+#define ReadSeenThroughRecIptInc(x)   brule(LoadRecIptInc_CheckSeenX.2,x)
+#define ModifySeenThroughRecIptInc(x) bmodr(LoadRecIptInc_CheckSeenX.2,x)
+
+
+  ?;
+#define ReadCurrentIptorIncorSeer(x)   brule(LoadRecIptInc_CheckSeenX.3,x)
+#define ModifyCurrentIptorIncorSeer(x) bmodr(LoadRecIptInc_CheckSeenX.3,x)
+
+  lrii_check1(?);
+
+  GetCurrentConstruct(c.d) &
+  InformSubsidSeenNotSeenHere(s,a,c) &
+  FlagAnalyserError
+ =>
+  lrii_check1(a.b(s.t));
+
+  brule(ANALYSER_SEES.1,L) &
+  bsearch(a,L,M)                /? a.b is seen here ?/
+ =>
+  lrii_check1(a.b(S));
+
+  ReadCurrentIptorIncorSeer(I) & /? a.b is imported/included somewhere ?/
+  bsearch(a.b(i),I,J)
+ =>
+  lrii_check1(a.b(S));
+
+  ReadSeenThroughRecIptInc(L) &
+  lrii_check1 bsmap L
+ =>
+  lrii_check;
+
+
+  lrii3(?);
+
+  ReadSeenThroughRecIptInc(L) &
+  ReadCurrentIptorIncorSeer(I) &
+  ModifySeenThroughRecIptInc((L,(p.mch(I))))
+ =>
+  lrii3(p(q):r:c);
+
+  ReadSeenThroughRecIptInc(L) &
+  bsearch(p.mch(I),L,M)
+ =>
+  lrii3(p(q):r:c);
+
+  lrii3(p(q):r:c)
+ =>
+  lrii3(R.p(q):r:c);
+
+
+  lrii2(?);
+
+  Bget(("ANL/",p,".mch.anl")) &
+  lrii1(p.mch)
+ =>
+  lrii2(p(q):r:c);
+
+  lrii2(p(q):r:c)
+ =>
+  lrii2(R.p(q):r:c);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  ReadRecIptInc(M) &
+  ReadCurrentIptorIncorSeer(I) &
+  ModifyRecIptInc((M,(k.T(I)))) &
+  ModifyCurrentIptorIncorSeer(k.T) &
+  lrii3 bsmap A &
+  lrii3 bsmap B &
+  lrii2 bsmap b
+ =>
+  lrii1(k.T);
+
+  GetCurrentConstruct(k.T) &
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  ReadRecIptInc(M) &
+  ReadCurrentIptorIncorSeer(I) &
+  ModifyRecIptInc((M,(k.T(I)))) &
+  ModifyCurrentIptorIncorSeer(k.T) &
+  lrii2 bsmap b
+ =>
+  lrii1(k.T);
+
+  GetCurrentConstruct(a.b) &
+  Bget(("ANL/",a,".",b,".anl")) &
+  lrii1(a.b) &
+  lrii_check
+ =>
+  lrii
+
+END
+
+&
+*/
+
+
+
+THEORY AnalyserDirectX IS
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+
+  GetCurrentConstruct(a.b) &
+  GetJobs(X) &
+  bsearch((a.b:BT_ANL:0),X,Y) &
+  ModifyJobs((Y;(a.b:BT_TYP:0)))
+ =>
+  check_error;
+
+  IsPASPToolkit &
+  GetCurrentConstruct(a.b) &
+  GetJobs(X) &
+  bsearch((a.b:BT_ANL:0),X,Y) &
+  ModifyJobs((Y;(a.b:BT_PASP_SYTX:0)))
+ =>
+  check_error;
+
+  GetCurrentConstruct(a.b) &
+  IsUsrVHDL(a.b) &
+  GetJobs(X) &
+  bsearch((a.b:BT_ANL:0),X,Y) &
+  ModifyJobs((Y;(a.b:BT_VHDL_SYTX:0)))
+ =>
+  check_error;
+
+
+  AnalyserErrorFlagged &
+  GetCurrentConstruct(a.b) &
+  bshell(bcatl("rm -f ANL/",a,".",b,".anl")) &
+  Writef("\n") &
+  OfferAnalyserFailureOptions
+ =>
+  check_error;
+
+
+
+  GetCurrentConstruct(a.b)
+ =>
+  CheckParamIfImp;
+
+  GetCurrentConstruct(a.imp) &
+  ConstructParamNames &
+  CheckParamNames
+ =>
+  CheckParamIfImp;
+
+
+/*** HEREAnalyser(("alal_1":0))& ***/
+  CheckLengthIdent &
+/*** HEREAnalyser(("alal_1":1))& ***/
+  CheckLengthEnumSetElems &
+/*** HEREAnalyser(("alal_1":2))& ***/
+  CheckConstraintsHaveParameters &
+/*** HEREAnalyser(("alal_1":3))& ***/
+  CheckVariableRepetition &
+/*** HEREAnalyser(("alal_1":4))& ***/
+  CheckOpnamesRepetition &
+/*** HEREAnalyser(("alal_1":5))& ***/
+  CheckConstantsRepetition &
+/*** HEREAnalyser(("alal_1":6))& ***/
+  CheckSetnamesRepetition &
+/*** HEREAnalyser(("alal_1":7))& ***/ /* LONG TIME */
+  CheckFlattenedEnumSetElementsRepetition &
+/*** HEREAnalyser(("alal_1":8))& ***/
+  CheckOpInputOutputParams &
+/*** HEREAnalyser(("alal_1":9))& ***/
+  CheckClauseNamespaces &
+/*** HEREAnalyser(("alal_1":10))& ***/
+  CheckAbstractOpnames &
+/*** HEREAnalyser(("alal_1":11))& ***/
+  CheckProperties &
+/*** HEREAnalyser(("alal_1":12))& ***/
+  CheckSeenInvariant &
+/*
+  CheckInvariant &
+*/
+/*** HEREAnalyser(("alal_1":12a))& ***/
+  CheckAbsConcOpHeaders &
+/*
+  CheckForUnsetConstants &
+*/
+/*** HEREAnalyser(("alal_1":13))& ***/
+  CheckUnsetConstants &
+/*** HEREAnalyser(("alal_1":14))& ***/
+  CheckParamIfImp &
+/*** HEREAnalyser(("alal_1":15))& ***/ /* LONG TIME */
+  CheckEnumElemNamespaces &     /* long time here!!! REPETITION OF CheckFlattenedEnumSetElementsRepetition? */
+/*** HEREAnalyser(("alal_1":16))& ***/ /* LONG TIME */
+  CheckOpSyntax &
+/*** HEREAnalyser(("alal_1":17))& ***/ /* LONG TIME */
+  CheckLocalVAR &
+/*** HEREAnalyser(("alal_1":18))& ***/
+  CheckReservedWords &
+/*** HEREAnalyser(("alal_1":19))& ***/
+  CheckVariablesSeparator &
+/*** HEREAnalyser(("alal_1":20))& ***/
+  CheckConstantsSeparator &
+/*** HEREAnalyser(("alal_1":21))& ***/
+  CheckInvariantSeparator &
+/*** HEREAnalyser(("alal_1":22))& ***/
+  CheckPropertiesSeparator &
+/*** HEREAnalyser(("alal_1":23))& ***/
+  CheckConstraintsSeparator &
+/*** HEREAnalyser(("alal_1":24))& ***/ /* LONG TIME */
+  CheckOpsNotAssigned &
+/*** HEREAnalyser(("alal_1":25))& ***/
+  CheckParallelSameSubMch
+/*** &HEREAnalyser(("alal_1":26)) ***/
+ =>
+  anal_1;
+
+  AnalyserErrorFlagged
+ =>
+  anal_1(a.b);
+
+
+  ClearAnalyserError &
+  ClearAnalyserAbortError &
+  SetCurrentConstruct(a.b) &
+/*** HEREAnalyser(("alal_LoadNmlForm"))& ***/
+  LoadNmlForm(a.b) &
+  bmodr(CheckFlattenedEnumSetElementsRepetitionX.1,?) &
+  anal_1 &
+/*
+  LoadRecIptInc_CheckSeen &
+*/
+/***
+PrintTHEORY(ANALYSER_HEADERX)&
+PrintTHEORY(ANALYSER_VARIABLESX)&
+PrintTHEORY(ANALYSER_INVARIANTX)&
+PrintTHEORY(ANALYSER_SETNAMESX)&
+PrintTHEORY(ANALYSER_CONSTANTSX)&
+PrintTHEORY(ANALYSER_LOCAL_VARIABLESX)&
+PrintTHEORY(ANALYSER_LOCAL_CONSTANTSX)&
+PrintTHEORY(ANALYSER_LOCAL_SETSX)&
+PrintTHEORY(ANALYSER_LOCAL_ENUMELEMX)&
+PrintTHEORY(ANALYSER_PROPERTIESX)&
+PrintTHEORY(ANALYSER_IMPORTSX)&
+PrintTHEORY(ANALYSER_INCLUDED_OPNAMESX)&
+PrintTHEORY(ANALYSER_SEES_USES_OPNAMESX)&
+PrintTHEORY(ANALYSER_SEES_USES_OPERATION_HEADERX)&
+PrintTHEORY(ANALYSER_SEES_USES_PROPERTIESX)&
+PrintTHEORY(ANALYSER_INITIALISATIONX)&
+PrintTHEORY(ANALYSER_PROMOTESX)&
+PrintTHEORY(ANALYSER_OPNAMESX)&
+PrintTHEORY(ANALYSER_OPERATION_COMPOSITEX)&
+PrintTHEORY(ANALYSER_SEES)&
+PrintTHEORY(ANALYSER_SEES_VARIABLES)&
+PrintRule(CheckFlattenedEnumSetElementsRepetitionX.1)&
+PrintTHEORY(ANALYSER_SEES)&
+PrintTHEORY(ANALYSER_SEES_VARIABLES)&
+PrintTHEORY(ANALYSER_MCH_OPNAMES)&
+PrintTHEORY(ANALYSER_INCLUDED_MCH_OP_OPTYPEX)&
+PrintTHEORY(ANALYSER_ABSTRACTION_SEES_VAR)&
+PrintTHEORY(ANALYSER_ABSTRACTION_SEES_CONSTANTS)&
+PrintTHEORY(ANALYSER_ABSTRACTION_SEES_SETNAMES)&
+PrintTHEORY(ANALYSER_ABSTRACTION_SEES_ENUMELEM)&
+***/
+/*
+HEREAnalyser(("RecIptInc"))&PrintARule(LoadRecIptInc_CheckSeenX.1)&
+HEREAnalyser(("SeenThroughRecIptInc"))&PrintARule(LoadRecIptInc_CheckSeenX.2)&
+*/
+/***
+promoted_ops_info&
+***/
+  check_error
+ =>
+  anal_0(a.b)
+
+/***
+;ReadPromotedOps(P)&HEREAnalyser((P))=>promoted_ops_info
+***/
+
+END

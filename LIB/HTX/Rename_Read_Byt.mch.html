@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.0.14">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Read_Byt">
+  <TITLE>The Rename_Read_Byt machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit 5.0.14
+  DATE:             31/01/01
+***/
+
+/*
+Description: Library machine intruducing READONLY variable
+
+History :
+310101 v0.05 : Created for DecCo8.
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Rename_Read_Byt
+
+/*"
+A renamable encapsulation of a single READONLY byte variable.
+
+The specification variable has the name {\em Rename\/} and the
+single parameter provides its type.
+
+A single operation {\em READ\/} is provided, with the initialisation
+specified non-determinstically.
+"*/
+
+<A NAME="SEES"><B>SEES</B></A>             <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>        Rename_byt_ro
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>        Rename_byt_ro : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>   Rename_byt_ro :: <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf Rename\_READ}\\[1ex]
+Returns the value of the variable without precondition; translated as:
+\\\ \ \  {\tt vv := Rename\_byt\_ro}.
+"*/
+  vv <-- <A NAME="OPNAME!Rename_READ">Rename_READ</A> = <B>BEGIN</B> vv := Rename_byt_ro || Rename_byt_ro :: <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Tue Feb  6 08:17:49 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.0.14</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

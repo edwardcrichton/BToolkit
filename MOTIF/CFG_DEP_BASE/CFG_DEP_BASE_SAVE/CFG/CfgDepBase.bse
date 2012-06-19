@@ -1,0 +1,131 @@
+/*"
+To provide the software basis for B-Toolkit Configuration
+and Dependency Management - dimensions to be decided later!
+"*/
+SYSTEM         CfgDepBase
+
+SUPPORTS       DummyOpsI
+
+IS
+
+/*"
+{\bf Globals}\\[.5ex]
+Five set buffers and one sequence buffer of {\em Construct\/},
+together with a sequence buffer for the flags:
+"*/
+  GLOBAL
+            gset1:    SET ( Construct ) [ 100 ];
+            gset2:    SET ( Construct ) [ 100 ];
+            gset3:    SET ( Construct ) [ 100 ];
+            gset4:    SET ( Construct ) [ 100 ];
+            gset5:    SET ( Construct ) [ 100 ];
+
+            gseq:     SEQ ( Construct ) [ 100 ];
+
+            flags:    SEQ ( NAT ) [ 75 ]
+  END;
+
+
+/*"
+\newpage
+{\bf Construct}\\[1ex]
+{\em sees\_uses\/}, {\em inc\_ipt\/}, {\em curMRIState\/} and
+{\em cptMRIState\/} will be used only by machines, refinements
+and implementations;\\[1ex]
+{\em abstraction\/} will be used only by refinements and
+implementations to denote their abstraction;\\[1ex]
+{\em curGENState\/} and {\em cptGENState\/} will be used by
+enumerations, bases and interfaces;\\[1ex]
+{\em gen\_by\/} will be used by generated machines/implementations
+to denote the generating construct;
+{\em prf\_level\/} denotes the level of a proof construct:
+"*/
+  BASE
+            Construct
+  MANDATORY
+            name(ID):      STRING [ 30 ];
+            ext:           EXTENSION;
+            type:          TYPE
+  OPTIONAL
+            sees_uses:     SET ( Construct ) [ 20 ];
+            inc_ipt:       SET ( Construct ) [ 20 ];
+
+            abs2conc:      Abs2Conc;
+
+            gen_by:        Construct;
+
+            prf_level:     NAT;
+
+            curMRIState:   MRIState;
+            cptMRIState:   MRIState;
+
+            curGENState:   GENState;
+            cptGENState:   GENState
+  END;
+
+
+
+/*"
+\newpage
+{\bf Abs2Conc}\\[1ex]
+For machines, refinements and implementations; each development
+sequence:\\[1ex]
+\hspace*{2em}  $a.mch \rightarrow b.ref \rightarrow c.ref \rightarrow 
+d.ref \rightarrow e.imp$\\[1ex]
+will share the same {\em Abs2Conc\/} object:
+"*/
+  BASE
+            Abs2Conc
+  MANDATORY
+            a2c:  SEQ ( Construct ) [ 10 ]
+  END;
+
+/*"
+{\bf MRIState}\\[1ex]
+For machines, refinements and implementations, e.g.\\
+\hspace*{2em}  {\em pob\/} = []         $\Rightarrow$ not pogenerated\\
+\hspace*{2em}  {\em pob\/} = [10,5,3,0] $\Rightarrow$ 10 proof obligations, 3 levels of proof\\
+\hspace*{2em}  {\em pp\/}f = \{\}    $\Rightarrow$ no proofs printed\\
+\hspace*{2em}  {\em ppf\/} = \{0,2\} $\Rightarrow$ proofs level 0 and 2 printed:
+"*/
+  BASE
+            MRIState
+  MANDATORY
+            anl:  BOOL;
+            dmu:  BOOL;
+            trl:  BOOL;
+            lnk:  BOOL;
+
+            pob:  SEQ ( NAT ) [ 25 ];
+            ppf:  SET ( NAT ) [ 25 ];
+            ppf_dmu:  SET ( NAT ) [ 25 ]
+  END;
+
+
+/*"
+\newpage
+{\bf GENState}\\[.5ex]
+For enumerations, bases and interfaces; only bases will use {\em gen2\/}:
+"*/
+  BASE
+            GENState
+  MANDATORY
+            gen1: BOOL;
+            gen2: BOOL;
+            gen_dmu: BOOL
+  END;
+  
+  BASE
+            Seqstr
+  MANDATORY
+            seqstr: SEQ ( String ) [ 50 ]
+  END;
+
+
+  BASE
+            String
+  MANDATORY
+            string(ID): STRING [ 75 ]
+  END
+
+END

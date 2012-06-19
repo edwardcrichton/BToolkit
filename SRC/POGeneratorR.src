@@ -1,0 +1,1460 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define POGeneratorRGenTac \
+ ( \
+   CheckAlphaConvR1X; \
+   GEN; \
+   CheckAlphaConvR1X~; \
+   CheckAlphaConvRewritesX~; \
+   CheckAlphaConvR2X \
+ )
+
+#define CheckAlphaConvR(x) \
+  bcall( POGeneratorRGenTac: \
+      ( ( bcall(RULE:bclean(CheckAlphaConvRewritesX)) & cav(x) ) ) )
+
+THEORY CheckAlphaConvRewritesX END &
+
+THEORY CheckAlphaConvR2X IS
+
+  brule(CheckAlphaConvR1X.3,R) &
+  bcall(MODR:bmodr(CheckAlphaConvR1X.1,?)) &
+  bcall(MODR:bmodr(CheckAlphaConvR1X.2,?)) &
+  bcall(MODR:bmodr(CheckAlphaConvR1X.3,?)) &
+  bcall(RULE:bclean(CheckAlphaConvRewritesX)) &
+  bcall((NonSubstitutionRefInvariantLemmaTac,(FwdEqual1X~;FwdContra0X~)):([S]R))
+ =>
+  [S]?_?
+
+END
+
+&
+
+THEORY InterimFileNameX END
+
+&
+
+THEORY WriteInterimX IS
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  wi1(f)(I);
+
+  bconnect(f) &
+  bprintf(" ( % )\n",I) &
+  bclose
+ =>
+  wi1(f)(I);
+
+/*
+bsparemem(m)&HERE((Storing:mem(m)->external[i]))&
+*/
+  bcrelr(InterimFileNameX,(i:bcatl("POB/.I.",i))) &
+  wi1(bcatl("POB/.I.",i))(I)
+ =>
+  wi0(i)(I);
+
+  bsparemem(m) &
+  btest(m>=80) &
+/*
+HERE((Storing:mem(m)->internal[i]))&
+*/
+  bmodr(TmpSubsX.i,I)
+ =>  
+  wi0(i)(I)
+
+END
+
+&
+
+THEORY GetHypSubRulesX IS
+
+#define GetHypSubRules bcall(((MAP;MODR)~;GetHypSubRulesX)~:ghsr0)
+
+  ?;
+
+brule(GetHypSubRulesX.1,(x))&HERE((x))&
+  bmodr(GetHypSubRulesX.1,(aaa:=aaa))
+ =>
+  ghsr2;
+  
+  brule(GetHypSubRulesX.1,(S:=T)) &
+  bsearch(?,S,U) &
+  bsearch(?,T,V) &
+  bvrb(U) &
+  bmodr(GetHypSubRulesX.1,(U:=V))
+ =>
+  ghsr2;
+  
+  brule(GetHypSubRulesX.1,(S:=T)) &
+  bsearch(?,S,U) &
+  bsearch(?,T,V) &
+  blident(U) &
+  bmodr(GetHypSubRulesX.1,(U:=V))
+ =>
+  ghsr2;
+  
+  brule(GetHypSubRulesX.1,(?:=?)) &
+  bmodr(GetHypSubRulesX.1,(aaa:=aaa))
+ =>
+  ghsr2;
+
+  ghsr1(x);
+
+  brule(GetHypSubRulesX.1,(S:=T)) &
+  A\S &
+  bident(A) &
+  bnum(m) &
+  bnum(n) &
+  btest(m>n) &
+  bmodr(GetHypSubRulesX.1,(S,a$n:=T,A$m))
+ =>
+  ghsr1(A$m=a$n);
+
+  brule(GetHypSubRulesX.1,(S:=T)) &
+  A\S &
+  bident(A) &
+  bnum(m) &
+  bnum(n) &
+  btest(n>m) &
+  bmodr(GetHypSubRulesX.1,(S,A$m:=T,a$n))
+ =>
+  ghsr1(A$m=a$n);
+
+  brule(GetHypSubRulesX.1,(S:=T)) &
+  A\S &
+  bident(A) &
+  bmodr(GetHypSubRulesX.1,(S,A:=T,a$1))
+ =>
+  ghsr1(a$1= A);
+
+  brule(GetHypSubRulesX.1,(S:=T)) &
+  A\S &
+  bident(A) &
+  bmodr(GetHypSubRulesX.1,(S,A:=T,a$1))
+ =>
+  ghsr1(A=a$1);
+
+  bmodr(GetHypSubRulesX.1,(aaa:=aaa)) /* no hyp */
+ =>
+  ghsr0;
+
+  bmodr(GetHypSubRulesX.1,(?:=?)) &
+  bgetallhyp(H) &
+  ghsr1 bsmap H &
+  ghsr2
+ =>
+  ghsr0
+
+END
+
+&
+
+THEORY ProcessSubs1X IS
+
+  CheckCompactionSilently &
+/***
+HERE(("ProcessAndCreateLemmas":a))&
+***/
+  ProcessAndCreateLemmas(a)
+ =>
+  ps1(a);
+
+  brule(GetHypSubRulesX.1,S) &
+  bmodr(GetHypSubRulesX.1,?) &
+  ps1([S]a)
+ =>
+  ps(a)
+
+END
+
+&
+
+THEORY ProcessSubsX IS
+
+  GetHypSubRules &
+  bcall(((ARI~;GEN;SUB~;DED;FLAT;MODR)~;ProcessSubs1X)~:ps(bflat(a)))
+ =>
+  a;
+
+/*
+  bcall((SUB~;FLAT;ProcessSubsMacrosX~;MODR) : bmodr(TmpSubsX.i, bflat(I)))
+ =>
+  (__addr(i), I)
+*/
+
+
+  bcall(
+   (
+     ( (SUB~;FLAT)~;RewriteToFalseOrTrueX~ )~;
+     ( StandardizeX )~;
+     ( (CATL;RULE;MODR;WRITE)~;WriteInterimX )~
+   )
+  :
+     wi0(i)(bflat(I))
+   )
+ =>
+  (__addr(i), I)
+
+/*****
+  bcall(
+   (
+     (
+       (
+         (
+           (SUB~;FLAT)~;RewriteToFalseOrTrueX~ )~;
+           (RewriteNonHypLogic1X;FLAT)~;
+           (OnePointRewriteX;SUB)~
+         )~;
+         RewriteNonHypLogic2X~
+      )~;
+     (
+       (CATL;RULE;MODR;WRITE)~;WriteInterimX
+     )~
+   )
+  :
+     wi0(i)(bflat(I))
+   )
+ =>
+  (__addr(i), I)
+*****/
+
+END
+
+&
+
+THEORY AnyX IS
+
+     __Any(x) == !(bflat(x));
+
+     (__Any(x).__Any(y).p) == (__Any(x,y).p)
+
+END
+
+&
+
+THEORY Expansion__subsX IS
+
+/*
+  brule(TmpSubsX.i, I) &
+  GarbageCollect(i) &
+  CheckCompactionSilently
+ =>
+  __subs(i) == I;
+
+  brule(TmpSubsX.j, J) &
+  brule(TmpSubsX.i, I) &
+  GarbageCollect(j) &
+  GarbageCollect(i) &
+  CheckCompactionSilently
+ =>
+  (__subs(j) & __subs(i)) == (J & I)
+*/
+
+
+/*
+HERE((Expanding:internal[i]))&
+*/
+  brule(TmpSubsX.i,I) &
+  GarbageCollect(i) &
+  CheckCompactionSilently
+ =>
+  __subs(i) == I;
+
+/*
+HERE((Expanding:external[i]))&
+*/
+  brule(TmpSubsX.i,?) &
+  brule(InterimFileNameX.S,(i:g)) &
+  bget(g,I) &
+  GarbageCollect(i) &
+  CheckCompactionSilently
+ =>
+  __subs(i) == I;
+
+
+
+/*
+HERE((Expanding:internal[i]&internal[j]))&
+*/
+  brule(TmpSubsX.j,J) &
+  brule(TmpSubsX.i,I) &
+  GarbageCollect(j) &
+  GarbageCollect(i) &
+  CheckCompactionSilently
+ =>
+  (__subs(j) & __subs(i)) == bflat(J & I);
+
+/*
+HERE((Expanding:external[i]&internal[j]))&
+*/
+  brule(TmpSubsX.j,J) &
+  brule(TmpSubsX.i,?) &
+  brule(InterimFileNameX.T,(i:g)) &
+  bget(g,I) &
+  GarbageCollect(j) &
+  GarbageCollect(i) &
+  CheckCompactionSilently
+ =>
+  (__subs(j) & __subs(i)) == bflat(J & I);
+
+/*
+HERE((Expanding:internal[i]&external[j]))&
+*/
+  brule(TmpSubsX.j,?) &
+  brule(TmpSubsX.i,I) &
+  brule(InterimFileNameX.S,(j:f)) &
+  bget(f,J) &
+  GarbageCollect(j) &
+  GarbageCollect(i) &
+  CheckCompactionSilently
+ =>
+  (__subs(j) & __subs(i)) == bflat(J & I);
+
+/*
+HERE((Expanding:external[i]&external[j]))&
+*/
+  brule(TmpSubsX.j,?) &
+  brule(TmpSubsX.i,?) &
+  brule(InterimFileNameX.S,(j:f)) &
+  brule(InterimFileNameX.T,(i:g)) &
+  bget(f,J) &
+  bget(g,I) &
+  GarbageCollect(j) &
+  GarbageCollect(i) &
+  CheckCompactionSilently
+ =>
+  (__subs(j) & __subs(i)) == bflat(J & I)
+
+END
+
+&
+
+THEORY CheckAlphaConvR1X IS
+
+  ?;  /* quantified variable list */
+
+  ?;  /* substitution */
+
+  ?;  /* predicate */
+
+  bcall(RULE:bcrelr(CheckAlphaConvRewritesX,(a==b))) &
+  [S]?_?
+ =>
+  [a:=b][S]?_?;
+
+  bcall(RULE:bcrelr(CheckAlphaConvRewritesX,(a==b))) &
+  [A:=B][S]?_?
+ =>
+  [A,a:=B,b][S]?_?;
+
+  /***
+  no alpha conversion - return
+  ***/
+  brule(CheckAlphaConvR1X.2,S) &
+  brule(CheckAlphaConvR1X.3,R) &
+  bcall(MODR:bmodr(CheckAlphaConvR1X.1,?)) &
+  bcall(MODR:bmodr(CheckAlphaConvR1X.2,?)) &
+  bcall(MODR:bmodr(CheckAlphaConvR1X.3,?)) &
+  bcall(RULE:bclean(CheckAlphaConvRewritesX)) &
+  bcall((NonSubstitutionRefInvariantLemmaTac,(FwdEqual1X~;FwdContra0X~)):([S]R))
+ =>
+  [S]?; 
+
+  /***
+  alpha conversion - proceed
+  ***/
+  brule(CheckAlphaConvR1X.1,X) &
+  brule(CheckAlphaConvR1X.3,R) &
+  [X:=Y][S]?_?
+ =>
+  [X:=Y][S]?;
+
+  bcall(MODR:bmodr(CheckAlphaConvR1X.1,x)) &
+  bcall(MODR:bmodr(CheckAlphaConvR1X.2,S)) &
+  bcall(MODR:bmodr(CheckAlphaConvR1X.3,R)) &
+  (!x.[S]?)
+ =>
+  cav(!x.[S]R)
+
+END
+
+&
+
+THEORY GetVarX IS
+
+#define GetVar(x) bcall(((ARI;FLAT;MODR;MAP)~;GetVarX)~:gv_0(x))
+
+  ?;
+#define ModrVarSto(x) bmodr(GetVarX.1,x)
+#define ReadVarSto(x) brule(GetVarX.1,x)
+
+  ?;
+#define ModrQuantVarSto(x) bmodr(GetVarX.2,x)
+#define ReadQuantVarSto(x) brule(GetVarX.2,x)
+
+
+  ReadVarSto(V) &
+  ModrVarSto((V,v))
+ =>
+  gv_sto(v);
+
+  ReadVarSto(V) &
+  bsearch(v,V,W)
+ =>
+  gv_sto(v);
+
+  ReadQuantVarSto(V) &
+  bsearch(v,V,W)
+ =>
+  gv_sto(v);
+
+
+HERE(("gv":S))
+=>
+gv(S);
+  
+  gv_sto bsmap V
+ =>
+  gv(V:=E);
+
+  gv(skip);
+  
+  gv(S)
+ =>
+  gv(WHILE P DO S VARIANT V INVARIANT I END);
+
+  gv(S)
+ =>
+  gv(WHILE P DO S INVARIANT I VARIANT V END);
+
+  ReadQuantVarSto(V) &
+  ModrQuantVarSto((bflat(V,v))) &
+  gv(s)
+ =>
+  gv(@v.s);
+
+  gv(s)
+ =>
+  gv(g==>s);
+
+  gv(s) &
+  gv(t)
+ =>
+  gv(s[]t);
+
+  gv(s) &
+  gv(t)
+ =>
+  gv(s||t);
+
+  gv(s) &
+  gv(t)
+ =>
+  gv(s;t);
+
+  gv(s)
+ =>
+  gv(p|s);
+
+  ModrVarSto(?) &
+  ModrQuantVarSto(?) &
+  gv(x)
+ =>
+  gv_0(x)
+
+END
+
+&
+
+THEORY CheckSubParallelAlgX IS
+
+#define CheckSubParallelAlg \
+   bcall(((ARI;FLAT;MODR;MAP)~;CheckSubParallelAlgX)~:cspa(1))
+
+  ?;  /* 1. the vars of lhs */
+#define Modr_lh_VarSto(x) bmodr(CheckSubParallelAlgX.1,x)
+#define Read_lh_VarSto(x) brule(CheckSubParallelAlgX.1,x)
+
+  ?;  /* 2. the var culprit(s) */
+#define ModrDupVarSto(x) bmodr(CheckSubParallelAlgX.2,x)
+#define ReadDupVarSto(x) brule(CheckSubParallelAlgX.2,x)
+
+
+/***
+HERE(("Found form (s;t)||u)")) &
+HERE(("Getting vars from":(s;t))) &
+***/
+  ModrDupVarSto(?) &
+  GetVar((s;t)) &
+  sto_lh_vars &
+/***
+HERE(("Getting vars from":u)) &
+***/
+  GetVar(u) &
+  proc_rh_vars &
+  chk_res
+ =>
+  found((s;t)||u);
+
+
+/***
+HERE(("Found form (u||(s;t))")) &
+HERE(("Getting vars from":u)) &
+***/
+  ModrDupVarSto(?) &
+  GetVar(u) &
+  sto_lh_vars &
+/***
+HERE(("Getting vars from":(s;t))) &
+***/
+  GetVar((s;t)) &
+  proc_rh_vars &
+  chk_res
+ =>
+  found(u||(s;t));
+
+
+
+  ReadVarSto(V) &
+  Modr_lh_VarSto(V)
+/***
+&HERE(("Got vars":V))&
+ReadQuantVarSto(Y) &
+HERE(("(Quantified vars)":Y))
+***/
+ =>
+  sto_lh_vars;
+
+
+  ReadVarSto(V) &
+/***
+HERE(("Got vars":V)) &
+ReadQuantVarSto(Y) &
+HERE(("(Quantified vars)":Y)) &
+HERE(("Checking for duplicates")) &
+***/
+  chk_dup bsmap V
+ =>
+  proc_rh_vars;
+
+
+  chk_dup(v);
+
+  Read_lh_VarSto(V) &
+  bsearch(v,V,W) &
+  ReadDupVarSto(D) &
+  ModrDupVarSto((D,v))
+ =>
+  chk_dup(v);
+
+  chk_dup(?);
+
+  Writef(("\n      Bad use of substitution in parallel with algorithm\n\n      The variable % appears in both\n", bsrv v berv))
+ =>
+  chk_res1(v);
+
+  Writef(("\n      Bad use of substitution in parallel with algorithm\n\n        The variables % appear in both\n", bsrv V,v berv))
+ =>
+  chk_res1(V,v);
+
+  ReadDupVarSto(D) &
+  bsearch(?,D,E) &
+  chk_res1(E) &
+  FlagPOGeneratorError
+ =>
+  chk_res;
+
+  ReadDupVarSto(?)
+/***
+&HERE(("NO DUPLICATES"))
+***/
+ =>
+  chk_res
+
+END
+
+&
+
+THEORY RefCalculusX IS
+
+/*
+HERE1((1))&
+*/
+  [(a:=b);S]I
+ =>
+  [a:=b][S]I;
+
+/* 29.11.89 - messy solution to initialised loop problem ... */
+
+  [A;B;WHILE P DO T INVARIANT I VARIANT V END]R
+ =>
+  [A][B][WHILE P DO T INVARIANT I VARIANT V END]R;
+
+  [A;B;C;WHILE P DO T INVARIANT I VARIANT V END]R
+ =>
+  [A][B][C][WHILE P DO T INVARIANT I VARIANT V END]R;
+
+  [A;B;C;D;WHILE P DO T INVARIANT I VARIANT V END]R
+ =>
+  [A][B][C][D][WHILE P DO T INVARIANT I VARIANT V END]R;
+
+  [A;B;C;D;E;WHILE P DO T INVARIANT I VARIANT V END]R
+ =>
+  [A][B][C][D][E][WHILE P DO T INVARIANT I VARIANT V END]R;
+
+  [A;B;C;D;E;F;WHILE P DO T INVARIANT I VARIANT V END]R
+ =>
+  [A][B][C][D][E][F][WHILE P DO T INVARIANT I VARIANT V END]R;
+
+  true;
+
+/*
+HERE2((RC2))&
+*/
+  brule(TmpSubsX.i,I) &
+  I
+ =>
+  __subs(i);
+
+/*
+HERE2((RC3))&
+*/
+  brule(TmpSubsX.i,?) &
+  brule(InterimFileNameX.S,(i:g)) &
+  bget(g,I) &
+  I
+ =>
+  __subs(i);
+
+
+/*
+HERE2((RC4))&
+*/
+  brule(TmpSubsX.j, (__subs(k))) &
+  bmodr(TmpSubsX.i, (__subs(k)))
+ =>
+  (__addr(i), __subs(j));
+
+/*
+HERE2((RC5))&
+*/
+  brule(TmpSubsX.j,?) &
+  brule(InterimFileNameX.S,(j:g)) &
+  bget(g,__subs(k)) &
+  WriteInterim(i,__subs(k))
+ =>
+  (__addr(i), __subs(j));
+
+
+ 
+/*
+HERE2((RC6))=>
+*/
+  ([skip]R == R);
+
+/*
+HERE2((RC7))=>
+*/
+  ([P | S]I == (P & [S]I));
+
+/*
+HERE2((RC8))=>
+*/
+  ([P==>S]I == (P => [S]I));
+
+/*
+HERE2((RC9))=>
+*/
+  ([@x.S]I == __Any(x).[S]I);
+
+/*
+HERE2((RC10))&
+*/
+  blent(TmpSubsX.i) &
+  brule(SubsCntX.j,n) &
+  bcrelr(TmpSubsX,?) &
+  bcrelr(TmpSubsX,?)  &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bmodr(SubsCntX.j, (n+1)) &
+  (__addr(i+1), [S]__subs(j)) &
+  (__addr(i+2), [T]__subs(j))
+ =>
+  [S [] T]__subs(j) == (__subs(i+1) & __subs(i+2));
+
+
+
+
+  bcall(((ARI;FLAT;MODR;MAP)~;CheckSubParallelAlgX)~:found((s;t)||u))
+ =>
+  ((s;t)||u) == (s;(t||u));
+
+  bcall(((ARI;FLAT;MODR;MAP)~;CheckSubParallelAlgX)~:found(u||(s;t)))
+ =>
+  (u||(s;t)) == (s;(t||u));
+
+
+/*
+HERE2((RC12))&
+*/
+  bvrb(a) &
+  bvrb(c)
+ =>
+  [(a:=b || c:=d)]R == [(bflat(a,c):=bflat(b,d))]R;
+
+/*
+HERE2((RC13))&
+*/
+  bvrb(a) &
+  bvrb(c)  
+ =>
+  [e || a:=b || c:=d]R == [e || bflat(a,c):=bflat(b,d)]R;
+
+/*
+HERE2((RC14))&
+*/
+  bvrb(a) &
+  bvrb(c)  
+ =>
+  [a:=b || c:=d || e]R == [bflat(a,c):=bflat(b,d) || e]R;
+
+/*
+HERE2((RC15))=>
+*/
+  ([(a || skip)]R == [a]R);
+
+/*
+HERE2((RC16))=>
+*/
+  ([(skip || a)]R == [a]R);
+
+/*
+HERE2((RC17))=>
+*/
+  ([(a || skip || b)]R == [(a || b)]R);
+
+/*
+HERE2((RC18))=>
+*/
+  ([((a ==> b) || c)]R == [(a ==> (b || c))]R);
+
+/*
+HERE2((RC20))=>
+*/
+  ([(c || (a ==> b))]R == [(a ==> (c || b))]R);
+
+/*
+HERE2((RC21))=>
+*/
+  ([(c || (a ==> b) || d)]R == [(a ==> (c || b || d))]R);
+
+
+
+/*
+HERE2((RC22))&
+*/
+   ConstructAlphaConversion(a,b,c)
+ =>
+   ([((@a.b) || c)]R == [((@?.?) || ?)]R);
+
+/*
+HERE2((RC23))&
+*/
+   ConstructAlphaConversion(a,b,c)
+ =>
+   ([(c || (@a.b))]R == [(? || (@?.?))]R);
+
+/*
+HERE2((RC24))&
+*/
+   ConstructAlphaConversion(a,b,c)
+  =>
+   ([(c || (@a.b) || d)]R == [(? || (@?.?) || d)]R);
+
+/*
+HERE2((RC25))&
+*/
+   a\c => ([(@a.b || c)]R == [(@a.(b || c))]R);
+
+/*
+HERE2((RC26))&
+*/
+   a\c => ([(c || @a.b)]R == [(@a.(c || b))]R);
+
+/*
+HERE2((RC27))&
+*/
+   a\c => ([(c || (@a.b) || d)]R == [((@a.(c || b)) || d)]R);
+
+/*
+HERE2((RC28))&
+*/
+   a\d => ([(c || (@a.b) || d)]R == [(c || (@a.(b || d)))]R);
+
+/*
+HERE2((RC29))=>
+*/
+  ([(@a.(b | c))]R == [((!a.b) | (@a.c))]R);
+
+/*
+HERE2((RC30))=>
+*/
+  ([((b | c) || a)]R == [(b | (c || a))]R);
+
+/*
+HERE2((RC31))=>
+*/
+  ([(a || (b | c))]R == [(b | (a || c))]R);
+
+/*
+HERE2((RC32))=>
+*/
+  ([(c || (a|b) || d)]R == [(a | (c || b || d))]R);
+
+/*
+HERE2((RC33))&
+*/
+  blent(TmpSubsX.i) &
+  brule(SubsCntX.j,n) &
+  bcrelr(TmpSubsX,?) &
+  bcrelr(TmpSubsX,?)  &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bmodr(SubsCntX.j, (n+1)) &
+  (__addr(i+1), [S || T]__subs(j)) &
+  (__addr(i+2), [S || U]__subs(j))
+ =>
+  [S || (T [] U)]__subs(j) == (__subs(i+1) & __subs(i+2));
+
+/*
+HERE2((RC34))&
+*/
+  blent(TmpSubsX.i) &
+  brule(SubsCntX.j,n) &
+  bcrelr(TmpSubsX,?) &
+  bcrelr(TmpSubsX,?)  &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bmodr(SubsCntX.j, (n+1)) &
+  (__addr(i+1), [S || U]__subs(j)) &
+  (__addr(i+2), [T || U]__subs(j))
+ =>
+  [(S [] T) || U]__subs(j) == (__subs(i+1) & __subs(i+2));
+
+/*
+HERE2((RC35))&
+*/
+  blent(TmpSubsX.i) &
+  brule(SubsCntX.j,n) &
+  bcrelr(TmpSubsX,?) &
+  bcrelr(TmpSubsX,?)  &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bmodr(SubsCntX.j, (n+1)) &
+  (__addr(i+1), [S || T || V]__subs(j)) &
+  (__addr(i+2), [S || U || V]__subs(j))
+ =>
+  [S || (T [] U) || V]__subs(j) == (__subs(i+1) & __subs(i+2));
+
+/*
+HERE2((RC36))=>
+*/
+  ((S || (T || U)) == (S || T || U));
+
+/* added by Dave 03.03.92 */
+
+/*
+HERE2((RC37))&
+*/
+  blent(TmpSubsX.i) &
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(SubsCntX,1) &
+  (__addr(i+1), [T]I)
+ =>
+  [S][T]I == [S]__subs(i+1);
+
+/*
+HERE2((RC38))&
+*/
+  blent(TmpSubsX.i) &
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(SubsCntX,1) &
+  (__addr(i+1), [T]I)
+ =>
+  [S;T]I == [S]__subs(i+1);
+
+/*
+HERE2((RC39))=>
+*/
+  ([S;skip]I == [S]I);
+
+/*
+HERE2((RC40))=>
+*/
+  ([skip;S]I == [S]I);
+
+/*
+HERE2((RC41))=>
+*/
+  ([S;skip;T]I == [S;T]I);
+
+/*
+  blent(TmpSubsX.i) &
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(SubsCntX,2) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  (__addr(i+1), I) &
+  (__addr(i+2), ([T]__subs(i+1))) &
+  (__addr(i+3), ([nnnnnnn:=V;T](V<nnnnnnn))) &
+  (__addr(i+4), (P => __subs(i+2) & __subs(i+3))) &
+  (__addr(i+5), (not(P) => R)) &
+  (__addr(i+6), (I => V:NAT & (__subs(i+4) & __subs(i+5)))) & 
+  genbvrb(__subs(i+6),T) 
+ =>
+  [WHILE P DO T INVARIANT I VARIANT V END]R == __subs(i+1);
+*/
+
+/***
+ dave's rule
+***/
+/*
+HERE2((RC42))&
+*/
+  blent(TmpSubsX.i) &
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,(V<nnnnnnn)) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(SubsCntX,2) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  (__addr(i+1), I) &
+  (__addr(i+2), ([T]__subs(i+1))) &
+  (__addr(i+4), ([nnnnnnn:=V;T] __subs(i+3))) &
+  (__addr(i+5), (P => __subs(i+2) & __subs(i+4))) &
+  (__addr(i+6), (not(P) => R)) &
+  (__addr(i+7), (bflat(I&Q) => V:NAT & (__subs(i+5) & __subs(i+6)))) & 
+  genbvrb(__subs(i+7),T)
+ => 
+  [WHILE P DO T INVARIANT Q INVARIANT I VARIANT V END]R == __subs(i+1);
+
+
+
+/***
+  blent(TmpSubsX.i) &
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(SubsCntX,2) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  (__addr(i+1), I) &
+  (__addr(i+2), ([T]__subs(i+1))) &
+  (__addr(i+3), ([nnnnnnn:=V;T](V<nnnnnnn))) &
+  (__addr(i+4), (not(P) => __subs(i+2) & __subs(i+3))) &
+  (__addr(i+5), (P => R)) &
+  (__addr(i+6), (I => V:NAT & (__subs(i+4) & __subs(i+5)))) & 
+  genbvrb(__subs(i+6),T)
+ => 
+  [WHILE not(P) DO T INVARIANT I VARIANT V END]R == __subs(i+1);
+ dave's rule
+***/
+
+/*
+HERE2((RC43))&
+*/
+  blent(TmpSubsX.i) &
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,(V<nnnnnnn)) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(TmpSubsX,?) & 
+  bcrelr(SubsCntX,2) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  bcrelr(SubsCntX,1) &
+  (__addr(i+1), I) &
+  (__addr(i+2), ([T]__subs(i+1))) &
+  (__addr(i+4), ([nnnnnnn:=V;T] __subs(i+3))) &
+  (__addr(i+5), (not(P) => __subs(i+2) & __subs(i+4))) &
+  (__addr(i+6), (P => R)) &
+  (__addr(i+7), (bflat(I&Q) => V:NAT & (__subs(i+5) & __subs(i+6)))) & 
+  genbvrb(__subs(i+7),T)
+ => 
+  [WHILE not(P) DO T INVARIANT Q INVARIANT I VARIANT V END]R == __subs(i+1);
+
+
+
+/*
+HERE2((RC44))&
+*/
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   ([(? || (@?.?) || d)]R == [((@a.(c || b)) || d)]R);
+
+/*
+HERE2((RC45))&
+*/
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   ([(? || (@?.?))]R == [(@a.(c||b))]R);
+
+/*
+HERE2((RC46))&
+*/
+   brule(ConstructAlphaConversionX.1,(@a.(b||c)))
+ =>
+   ([((@?.?) || ?)]R == [(@a.(b||c))]R);
+
+
+
+/********** implication rules **********/
+
+  
+
+/*
+HERE2((RC47))&
+*/
+  [R]I
+ =>
+  [R;skip]I;
+
+/*
+HERE2((RC48))&
+*/
+  [R]I
+ =>
+  [skip;R]I;
+
+/*
+HERE2((RC49))&
+*/
+  [R][S]I
+ =>
+  [R;skip;S]I;
+
+/*
+HERE2((RC50))&
+*/
+  R
+ =>
+  [skip]R;
+
+/*
+HERE2((RC51))&
+*/
+  P &
+  [I]R
+ =>
+  [P | I]R;
+
+/*
+HERE2((RC52))&
+*/
+  (P => [S]R)
+ =>
+  [P==>S]R;
+
+/*
+HERE2((RC53))&
+*/
+  brule(SubsCntX.j,n) &
+  bmodr(SubsCntX.j, (n+1)) &
+  [S]__subs(j) &
+  [T]__subs(j)
+ =>
+  [S [] T]__subs(j);
+
+/*
+HERE2((RC54))&
+*/
+  CheckAlphaConvR(!x.[I]R)
+ =>
+  [@x.I]R;
+
+/***
+  !x.[I]R
+ =>
+  [@x.I]R;
+***/
+
+/*
+HERE2((RC55))&
+*/
+  !x.[I]not([J]not(R))
+ =>
+  [@x.I]not([@x.J]not(R));
+
+/*
+HERE2((RC56))&
+*/
+  bvrb(a) &
+  bvrb(c) &  
+  [bflat(a,c):=bflat(b,d)]R
+ =>
+  [a:=b || c:=d]R;
+
+/*
+HERE2((RC57))&
+*/
+  bvrb(a) &
+  bvrb(c) &  
+  [S || bflat(a,c):=bflat(b,d)]R
+ =>
+  [S || a:=b || c:=d]R;
+
+/*
+HERE2((RC58))&
+*/
+  bvrb(a) &
+  bvrb(c) &  
+  [bflat(a,c):=bflat(b,d) || S]R
+ =>
+  [a:=b || c:=d || S]R;
+
+/*
+HERE2((RC59))&
+*/
+  ([a]R)
+ =>
+  [a || skip]R;
+
+/*
+HERE2((RC60))&
+*/
+  ([a]R)
+ =>
+  [skip || a]R;
+
+/*
+HERE2((RC61))&
+*/
+  ([a || b]R)
+ =>
+  [a || skip || b]R;
+
+/*
+HERE2((RC62))&
+*/
+  (a => [b || c]R)
+ =>
+  [(a ==> b) || c]R;
+
+/*
+HERE2((RC63))&
+*/
+  (a => [c || b]R)
+ =>
+  [c || (a ==> b)]R;
+
+/*
+HERE2((RC64))&
+*/
+  (a => [c || b || d]R)
+ =>
+  [c || (a ==> b) || d]R;
+
+/*
+HERE2((RC65))&
+*/
+  brule(SubsCntX.j,n) &
+  bmodr(SubsCntX.j, (n+1)) &
+  [a || c]__subs(j) &
+  [b || c]__subs(j)
+ => 
+  [(a [] b) || c]__subs(j);
+
+/*
+HERE2((RC66))&
+*/
+  brule(SubsCntX.j,n) &
+  bmodr(SubsCntX.j, (n+1)) &
+  [c || a]__subs(j) &
+  [c || b]__subs(j)
+ =>
+  [c || (a [] b)]__subs(j);
+
+/*
+HERE2((RC67))&
+*/
+  brule(SubsCntX.j,n) &
+  bmodr(SubsCntX.j, (n+1)) &
+  [c || a || d]__subs(j) &
+  [c || b || d]__subs(j)
+ =>
+  [c || (a [] b) || d]__subs(j);
+
+/*
+HERE2((RC68))&
+*/
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   ([(@a.(c || b)) || d]R)
+ =>
+   (x)[? || (@?.?) || d]R;
+
+/*
+HERE2((RC69))&
+*/
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   (!a.[c||b]R)
+ =>
+   (x)[? || (@?.?)]R;
+
+/*
+HERE2((RC70))&
+*/
+   brule(ConstructAlphaConversionX.1,(@a.(b||c))) &
+   (!a.[b||c]R)
+ =>
+   (x)[(@?.?) || ?]R;
+
+/*
+HERE2((RC71))&
+*/
+   ConstructAlphaConversion(a,b,c) &
+   (((@a.b) || c)[(@?.?) || ?]R)
+ =>
+   [(@a.b) || c]R;
+
+/*
+HERE2((RC72))&
+*/
+   ConstructAlphaConversion(a,b,c) &
+   ((c || (@a.b))[? || (@?.?)]R)
+ =>
+   [c || (@a.b)]R;
+
+/*
+HERE2((RC73))&
+*/
+   ConstructAlphaConversion(a,b,c) &
+   ((c || (@a.b) || d)[? || (@?.?) || d]R)
+  =>
+   [c || (@a.b) || d]R;
+
+/*
+HERE2((RC74))&
+*/
+   a\c &
+   (!a.[b||c]R)
+  =>
+   [(@a.b) || c]R;
+
+/*
+HERE2((RC75))&
+*/
+   a\c &
+   (!a.[c||b]R)
+  =>
+   [c || (@a.b)]R;
+
+/*
+HERE2((RC76))&
+*/
+   a\c &
+   ([(@a.(c||b)) || d]R)
+  =>
+   [c || (@a.b) || d]R;
+
+/*
+HERE2((RC77))&
+*/
+   a\d &
+   ([c || (@a.(b||d))]R)
+  =>
+   [c || (@a.b) || d]R;
+
+/*
+HERE2((RC78))&
+*/
+  ([(!a.b) | (@a.c)]R)
+ =>
+  [@a.(b | c)]R;
+
+/*
+HERE2((RC79))&
+*/
+  ([b | (c || a)]R)
+ =>
+  [(b | c) || a]R;
+
+/*
+HERE2((RC80))&
+*/
+  ([b | (a || c)]R)
+ =>
+  [a || (b | c)]R;
+
+/*
+HERE2((RC81))&
+*/
+  ([b | (a || c || d)]R)
+ =>
+  [a || (b|c) || d]R;
+
+/*
+HERE2((RC82))&
+*/
+  ([a || b || c]R)
+ =>
+  [a || (b || c)]R;
+
+/*
+HERE2((RC83))&
+*/
+  bcrelr(TmpSubsX,?) &
+  bcrelr(SubsCntX,1) &
+  (__addr(2), not([S]__subs(1))) &
+  [R]__subs(2)
+ =>
+  [R]not([S]__subs(1));
+
+/*
+HERE2((RC84))&
+*/
+  bcall((genvarX~;RefInvariantLemmaTac): (loop(A,true),T,skip)) 
+ => 
+  genbvrb(A,T);
+
+/***
+  dave
+***/
+
+/*
+HERE2((RC85))&
+*/
+  bcall((genvarX~;NonSubstitutionRefInvariantLemmaTac): (loop(A,true),T,skip)) 
+ => 
+  genbvrb(A,T);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY InitRefCalculusX IS
+
+  bclean_(InterimFileNameX);
+
+  brule(InterimFileNameX.n,x) &
+  bclean(InterimFileNameX)
+ =>
+  bclean_(InterimFileNameX);
+
+/***
+bgetallhyp(H)&HERE(("bgetallhyp":H))&
+HERE((InitRefCalculus:4))&
+HERE((a))&
+HERE((I))&
+***/
+  bcrelr(TmpSubsX,?) &
+  bcrelr(SubsCntX,1) &
+  WriteInterim(1,I) &
+  [a]__subs(1) &
+  bclean(TmpSubsX) &
+  bclean(SubsCntX) &
+  bcall((InitRefCalculusX;RULE):bclean_(InterimFileNameX))
+ =>
+  [a]I;
+
+/***
+bgetallhyp(H)&HERE(("bgetallhyp":H))&
+HERE((InitRefCalculus:3))&
+HERE((c))&
+HERE((a))&
+HERE((I))&
+***/
+  bcrelr(TmpSubsX,?) &
+  bcrelr(SubsCntX,1) &
+  WriteInterim(1,I) &
+  [c]([a]__subs(1)) &
+  bclean(TmpSubsX) &
+  bclean(SubsCntX) &
+  bcall((InitRefCalculusX;RULE):bclean_(InterimFileNameX))
+ =>
+  [c][a]I;
+
+/***
+bgetallhyp(H)&HERE(("bgetallhyp":H))&
+HERE((InitRefCalculus:2))&
+HERE((not([a][b]not(I))))&
+HERE((a))&
+HERE((b))&
+HERE((I))&
+***/
+  bcrelr(TmpSubsX,?) &
+  bcrelr(SubsCntX,1) &
+  WriteInterim(1,not(I)) &
+  not([a][b]__subs(1)) &
+  bclean(TmpSubsX) &
+  bclean(SubsCntX) &
+  bcall((InitRefCalculusX;RULE):bclean_(InterimFileNameX))
+ =>
+  not([a][b]not(I));
+
+/***
+bgetallhyp(H)&HERE(("bgetallhyp":H))&
+HERE((InitRefCalculus:1))&
+HERE((c))&
+HERE((a))&
+HERE((I))&
+***/
+  bcrelr(TmpSubsX,?) &
+  bcrelr(SubsCntX,1) &
+  WriteInterim(1,not(I)) &
+  [c]not([a]__subs(1)) &
+  bclean(TmpSubsX) &
+  bclean(SubsCntX) &
+  bcall((InitRefCalculusX;RULE):bclean_(InterimFileNameX))
+ =>
+  [c]not([a]not(I))
+
+END

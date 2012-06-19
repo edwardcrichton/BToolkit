@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>Committing Edits</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="CommitEdits"></A>
+<H1>
+CommitEdits (cmt)</H1>
+This option may be invoked from all environments, and is selectable from
+the <A HREF="BToolkit.html#Construct">Tool Bar</A> for all constructs;
+it is applicable to constructs whose <A HREF="BToolkit.html#Development_Environment">SRC</A> file differs from the <A HREF="BToolkit.html#Development_Environment">CFG</A>, when the <tt>cmt</tt> button will be decorated :&nbsp;<IMG SRC="button_edited.gif" ALT="Construct edited decoration" HSPACE=5 HEIGHT=20 WIDTH=16 ALIGN=CENTER>
+
+<P>If committing the edits to the system would cause&nbsp;<A NAME="Dependent_Constructs"></A>dependent
+constructs to be reset, a list of dependencies is presented in the Text
+Window, and the user prompted:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed with fifi.mch commit?</PRE>
+A distinction is made between mathematical change and <A HREF="DocumentMarkUp.html#Document_Mark_Up">annotational
+change</A> (see Top Bar Help for DocumentMarkUp), the latter affecting
+only documents which depend on the current construct. When dependent constructs
+are affected, the type of change is reported in the <A HREF="BToolkit.html#Interface!Motif">Display
+Area</A>.
+
+<P>If there are no dependent constructs, or the response to the above prompt
+is `Yes', a check is made that the file parses; if not, the error is reported
+in the <A HREF="BToolkit.html#Interface!Motif">Display Area</A> and the
+commit aborted.
+
+<P>If the commit is successful, the type of the change (mathematical or
+annotational) is reported in the <A HREF="BToolkit.html#Interface!Motif">Display
+Area</A> and the editor will remain open or closed depending on the setting
+of the <A HREF="Options.html#Options!Editor">Editor Option </A>(see Top
+Bar Help for Options).
+
+<P>It is not possible to commit mathematical changes made to library or
+generated constructs; annotation changes will be accepted in the normal
+way.
+
+<P>It is also possible to commit the changes of an edited construct through
+the <A HREF="Editor.html#Editor">Editor, </A><A HREF="Commit.html#Commit">Commit,
+</A><A HREF="Close.html#Close">Close</A>, <A HREF="Remake.html#Remake">Remake</A>,
+<A HREF="Analyser.html#Analyser">Analyser</A>, <A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerator</A>
+and <A HREF="MiniRemake.html#MiniRemake">Mini-Remake tools</A>.
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

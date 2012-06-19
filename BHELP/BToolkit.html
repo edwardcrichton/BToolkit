@@ -1,0 +1,933 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The B-Toolkit</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="B-Toolkit"></A>
+<H1>
+The B-Toolkit</H1>
+The B-Toolkit comprises a suite of fully integrated software tools designed
+to support a rigorous or formal development of software systems using the
+<A HREF="BMethod.html#B-Method">B-Method</A>. The tools are accessed through
+a custom build X Windows Motif Interface, providing full on-line help facilities.
+
+<P>The <A HREF="BMethod.html#B-Method">B-Method</A> uses the notion of
+<A HREF="AMNotation.html#Abstract_Machines">Abstract Machines</A> to specify
+and design software systems. Abstract Machines are specified using the
+<A HREF="AMNotation.html#AMN">Abstract Machine Notation (AMN)</A> which
+is in turn based on the mathematical theory of <A HREF="MathsNotation.html#Substitutions!Generalised">Generalised
+Substitutions</A>.
+
+<P>The Toolkit also provides a development environment automating the management
+of all associated files, ensuring that the entire development, including
+<A HREF="Translator.html#Translator">code</A> and <A HREF="DocumentMarkUp.html#Document_Mark_Up">documentation</A>,
+is always in a consistent state. One aspect of this environment is that
+the effect of change in a single file on the entire system is communicated
+to the user before the decision is made to <A HREF="Commit.html#Commit">commit</A>
+the change to the system (this information may also be ascertained through
+the <TT><A HREF="Status.html#Status">Status</A></TT> tool for machines,
+refinements and implementations).
+
+<P>Currently the Toolkit provides the following tools for supporting software
+development:
+<BR>&nbsp;
+<OL>
+<LI>
+A specification, design and code configuration management system, including
+<A HREF="Remake.html#Remake">integrity and dependency management</A> and
+<A HREF="Editor.html#Editor">source file editing</A> facilities.</LI>
+
+<LI>
+A set of software specification and design <A HREF="Analyser.html#Analyser">analysis</A>
+tools, which includes syntax checkers, type checkers and a specification
+<A HREF="Animator.html#Animator">animator</A>.</LI>
+
+<LI>
+A set of verification tools, which includes a <A HREF="POGenerator.html#Proof_Obligation!Generator">proof-obligation
+generator</A> and <A HREF="AutoProver.html#AutoProver">fully-automatic</A>
+, <A HREF="InterProver.html#InterProver">semi-automatic</A>&nbsp; and <A HREF="BToolProver">fully-interactive
+</A>provers, together with a <A HREF="ProofPrinter.html#ProofPrinter">proof
+printer</A> for displaying proof obligations/proofs.</LI>
+
+<LI>
+A set of coding tools, which includes a <A HREF="Translator.html#Translator">translator</A>,
+<A HREF="Linker.html#Linker">linker</A>, <A HREF="BaseGen.html#Base_Generators">rapid
+prototyping facilities</A> and a reusable specification/code <A HREF="SystemLibrary.html#System_Library">module
+library</A>.</LI>
+
+<LI>
+Facilities to <A HREF="SystemLibrary.html">supplement</A> the reusable
+library.</LI>
+
+<LI>
+A set of <A HREF="BaseGen.html#Base_Generators">generators</A> providing
+facilities to generate: <A HREF="BaseGen.html#Base_Generators">base object</A>
+AMN specification/implementations (the latter implemented on the reusable
+library) from simple declarative descriptions of structured data, <A HREF="Enumerator.html#Enumerator">enumerators</A>
+providing i/o facilities for enumerated sets, and <A HREF="Interface.html#Interface!Generator">interfaces</A>
+(either specification/implementations - again built on the reusable library,
+or alternatively on the X/Motif library ) to provide a run time environment.</LI>
+
+<LI>
+A <A HREF="DocumentMarkUp.html#Document_Mark_Up">documentation tool</A>
+for automatically producing fully cross-referenced and indexed type-set
+documents from source files, together with facilities to display on screen
+or send to a printer.</LI>
+
+<LI>
+A <A HREF="Remake.html#Remake">re-making tool</A> for automatically re-checking
+and re-generating specifications, designs, code and documentation after
+modifications to source files.</LI>
+
+<LI>
+A <A HREF="Hypertext.html#Hypertext">hypertext tool</A> providing, in hypertext
+form, the facility to navigate through an entire development; each hypertext
+construct is automatically built from its <A HREF="AMNotation.html#Abstract_Machines">Abstract
+Machine</A>&nbsp; or <A HREF="Translator.html#Translator">code file</A>,
+allowing constructs external to the development (for example, informal
+requirements) to be hypertext-linked to the formal development.</LI>
+
+<LI>
+An <A HREF="Overview.html#Overview">overview tool</A> providing, in picture
+form, the facility to navigate through an entire development via a Motif
+push- button interface; it provides views of both specification construction
+and design, enabling the user to see a complete picture of the development,
+or to zoom in on a particular aspect of it.</LI>
+</OL>
+Before using the toolkit, the mandatory environment variable <A HREF="BEnvironment.html#Environment">BKIT</A>
+must be correctly set (see the <A HREF="Installation.html#Installation">`B-Toolkit
+Installation Guide'</A>).
+
+<P><A HREF="Options.html">Options</A> may be set to customise the toolkit:
+settings for <A HREF="Options.html#Options!Remake">Remake</A>, <A HREF="Options.html#Options!Construct_Display">Construct
+Display</A>, <A HREF="Options.html#Options!Editor">Editors/Viewers/Shell</A>,
+<A HREF="Options.html#Options!Documents">Documents</A>, <A HREF="Options.html#Options!Translators_Compilers">Translators/Compilers</A>,
+<A HREF="POGenerator.html#Proof_Obligation!NonTrivialAll">Provers</A>,
+<A HREF="Options.html#Options!Interface">Interface</A>, <A HREF="Options.html#Options!Bell">Bell</A>
+, <A HREF="OptionalUtilities">Optional Utilites</A> and <A HREF="Options.html#Options!Teamlib">Teamlib</A>
+may be set together with the facliity to save and restore global settings.
+
+<P>The B-Toolkit is invoked by issuing the command BToolkit (this script
+residing in the <A HREF="BEnvironment.html#Environment">$BKIT</A> directory)
+from a suitable development directory - any directory in which you have
+read-write permission.
+
+<P>
+<HR WIDTH=60%>
+<H2>
+<A NAME="Development_Environment"></A>Development Environment</H2>
+If the toolkit is invoked where there is no existing development environment
+(which will be the case when it is invoked for the first time in a directory),
+the user is asked whether a new environment should be created. If the reply
+is `no' then the Toolkit is exited; if the reply is `yes' a new development
+environment, consisting of a set of development directories and configuration
+files, is created. The following directories are created if they do not
+already exist:
+<UL>
+<LI>
+<TT>SRC</TT></LI>
+
+<BR>for source files
+<LI>
+<TT>CFG</TT></LI>
+
+<BR>for files committed to configuration
+<LI>
+<TT>ANL</TT></LI>
+
+<BR>for the intermediate analysed form
+<LI>
+<TT>TYP</TT></LI>
+
+<BR>for TypeChecker information
+<LI>
+<TT>POB</TT></LI>
+
+<BR>for the proof obligation files
+<LI>
+<TT>HTX</TT></LI>
+
+<BR>for Hypertext files
+<LI>
+<TT>TEX</TT></LI>
+
+<BR>for typeset document files
+<LI>
+<TT>PMD</TT></LI>
+
+<BR>for the proof method files
+<LI>
+<TT>CDE/C</TT></LI>
+
+<BR>for C-program files
+<LI>
+<TT>TMP</TT></LI>
+
+<BR>for temporary files</UL>
+
+<HR WIDTH=60%>
+<H3>
+<A NAME="Interface!Motif"></A>The Motif Interface</H3>
+<A HREF="interface.gif#"><IMG SRC="interface_icon.gif" ALT="Motif Interface"  ALIGN=CENTER></A><A HREF="interface.gif#">
+See figure<LATEX="\\ \ref{mainpanel}">.</A>
+
+<P>The Motif Interface to the B-Toolkit comprises a <A HREF="BToolkit.html#Top_Bar">Top
+Bar</A>, an <A HREF="BToolkit.html#Information_Panel">Information Panel</A>,
+a <A HREF="BToolkit.html#Tool_Bar">Tool Bar</A>, a <A HREF="BToolkit.html#Constructs!Area">Constructs
+Area</A> displaying the constructs and the currently available options,
+and a <A HREF="BToolkit.html#Display_Area">Display Area</A> displaying
+messages from the toolkit.
+
+<P>The Current Directory, Release Information and information on B are
+displayed as push-buttons in the <A HREF="Information_Panel">Information
+Panel</A> (invoking them will popup help windows displaying appropriate
+information). The <A HREF="BToolkit.html#Environments">Environment Label</A>
+is located immediately below the Tool Bar (clicking on it will popup a
+help window describing the current environment).
+
+<P>The&nbsp;<A NAME="Command_Bar"></A>Command Bar is incorporated in the
+top frame of the <A HREF="BToolkit.html#Constructs!Area">Constructs Area</A>;
+clicking on any of the labels will pop up a help window providing a brief
+description of each option (including its applicability).
+
+<P>The relative heights of the <A HREF="BToolkit.html#Constructs!Area">Constructs
+Area</A> and <A HREF="BToolkit.html#Display_Area">Display Area</A> may
+be varied by dragging the pane grip (situated on the right between the
+two windows) up or down.
+
+<P>The interface incorporates many popup windows (for sub-menus, option
+selection, confirmation and so on) each incorporating a `Help' button providing
+a further popup containing help appropriate to that action), in addition
+to the main Help facility on the Top Bar. Selection(s) may be made by clicking
+on the appropriate item(s) and selecting `OK'; alternatively it is possible
+to `double-click' on an item (or the last item in the case where more than
+one is being selected). `Cancel' dismisses the popup window.
+
+<P>The appearance of the toolkit may be customised by editing the <A HREF="BEnvironment.html#Environment!XBMotif">XBMotif</A>
+resources file (you should seek the guidance of your system administrator
+if you wish to do this).
+
+<P>Each of the tools mentioned below in outline is described in more detail
+elsewhere.
+
+<P>
+<HR WIDTH=60%>
+<H3>
+<A NAME="Top_Bar"></A>The Top Bar</H3>
+The Top Bar provides the following facilities:
+<UL>
+<LI>
+<A NAME="Utilities"></A>Utilities</LI>
+
+<UL>
+<LI>
+Release Information (the same as that displayed by the <A HREF="#B_Logo">B-logo</A>)</LI>
+
+<LI>
+Current Directory (displays the current development directory)</LI>
+
+<LI>
+<A HREF="ChangeDirectory.html">Change Directory</A> (change development directory
+without quitting the toolkit)</LI>
+
+<LI>
+<A HREF="SaveDevelopment.html#Save_Development">Save in Remakable Form</A>
+(saves the current state of the development)</LI>
+
+<LI>
+<A HREF="Find.html#Find">Find identifier</A> searches for the occurrence/usage
+of an identifier)</LI>
+
+<LI>
+<A HREF="Options.html#Options!Editor">Shell</A> (opens a shell tool in
+the current directory)</LI>
+
+<LI>
+<A HREF="Options.html#Options!OptionalUtils">Optional Utility</A> (invokes
+an executable set in the <A HREF="Options.html#Options!OptionalUtils">Options</A>)</LI>
+
+<LI>
+Exit (quits the B-Toolkit)</LI>
+
+<LI>
+Help (gives a short description of each of the above utilities)</LI>
+</UL>
+
+<LI>
+<A NAME="TopBar!Introduce"></A><A HREF="Introduce.html#Introduce">Introduce</A></LI>
+
+<UL>
+<LI>
+New</LI>
+
+<UL>
+<LI>
+<A HREF="AMNotation.html#Abstract_Machines">Machine</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#Abstract_Machines">Refinement</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#Abstract_Machines">Refinement of analysed construct</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#Abstract_Machines">Implementation</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#Abstract_Machines">Implementation of analysed
+construct</A></LI>
+
+<LI>
+<A HREF="BaseGen.html#Base_Generators">Base</A></LI>
+
+<LI>
+<A HREF="Enumerator.html#Enumerator">Enumeration</A></LI>
+
+<LI>
+<A HREF="Enumerator.html#Enumerator">Enumeration of analysed machine(s)</A></LI>
+
+<LI>
+<A HREF="Interface.html#Interface!Generator">Interface</A></LI>
+
+<LI>
+<A HREF="Interface.html#Interface!Generator">Interface of implemented machine</A></LI>
+
+<LI>
+<A HREF="Documents.html">Document</A></LI>
+
+<LI>
+<A HREF="Documents.html">Document of configured constructs</A></LI>
+
+<LI>
+Help (gives a short description of each of the above utilities)</LI>
+</UL>
+</UL>
+
+<UL>
+<LI>
+<A HREF="Introduce.html#IntroduceSRC">From SRC</A> (provides a menu of
+SRC constructs)</LI>
+
+<LI>
+<A HREF="Introduce.html#IntroduceSLIB">From SLIB</A> (provides a menu of
+SLIB constructs)</LI>
+
+<LI>
+<A HREF="Introduce.html#IntroduceTLIB">From TLIB</A> (provides a menu of
+TLIB constructs)</LI>
+
+<LI>
+Help (gives a short description of each of the above utilities)</LI>
+</UL>
+
+<LI>
+<A NAME="Construct"></A>Construct</LI>
+
+<UL>
+<LI>
+<A HREF="Close.html">Close All Open Constructs</A></LI>
+
+<LI>
+<A HREF="Commit.html">Commit All Updated Constructs</A></LI>
+
+<LI>
+<A HREF="Commit.html">Commit All Updated Open Constructs</A></LI>
+
+<LI>
+<A HREF="Reset.html">Reset All Constructs</A></LI>
+
+<LI>
+<A HREF="Remove.html">Remove Construct(s)</A></LI>
+
+<LI>
+<A HREF="Remove.html">Remove All Unused LIB Constructs</A></LI>
+
+<LI>
+<A HREF="DocumentMarkUp.html">Remove All Marked-up Documents</A></LI>
+
+<LI>
+<A HREF="Translator.html">Remove All Code</A></LI>
+
+<LI>
+<A HREF="AutoProver.html">Remove All Proofs</A></LI>
+
+<LI>
+<A HREF="Rename.html">Rename Construct</A></LI>
+
+<LI>
+<A HREF="SystemLibrary.html">Create SLIB Construct</A></LI>
+
+<LI>
+<A HREF="SystemLibrary.html">Delete Library Construct from SLIB</A></LI>
+
+<LI>
+Source Control Setup <i>(not yet implemented)</i>
+
+<LI>
+Source Control <i>(not yet implemented)</i>
+
+<LI>
+Help (gives a short description of each of the above utilities)</LI>
+</UL>
+
+<LI>
+<A NAME="TopBar!Remake"><A HREF="Remake.html">
+Remake</A></A> (dependent on the <A HREF="Options.html#Options!Remake">Options
+Remake</A> setting)</LI>
+
+<UL>
+<LI>
+All Constructs</LI>
+
+<LI>
+Construct(s) (provides a menu of constructs to be remade)</LI>
+
+<LI>
+Help (gives a short description of each of the above utilities)</LI>
+</UL>
+
+<LI>
+<A NAME="TopBar!Browse"></A>Browse</LI>
+
+<UL>
+<LI>
+<A HREF="Hypertext.html">Hypertext</A> (provides the Hypertext Constructs
+display in the <A HREF="Options.html#Options!Editor">Hypertext Viewer</A>)</LI>
+
+<LI>
+<A HREF="Overview.html">Overview</A></LI>
+
+<UL>
+<LI>
+<A HREF="Overview.html#Design_Overview">Design</A> (provides a menu of
+top-level design nodes)</LI>
+
+<LI>
+<A HREF="Overview.html#Specification_Overview">Specification</A> (provides
+a menu of top-level specification nodes)</LI>
+
+<LI>
+<A HREF="Overview.html">Construct</A> (provides a menu of constructs)</LI>
+
+<LI>
+Help (gives a short description of each of the above utilities)</LI>
+</UL>
+</UL>
+
+<UL>
+<LI>
+<TT><A HREF="Palette.html#Palette">Palette</A></TT> (provides a menu of
+palettes)</LI>
+
+<UL>
+<LI>
+<A HREF="AMNotation.html#Abstract_Machines">Machines</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#AMN!Operations">Machines Ops</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#AMN!Operations">Refinements</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#AMN!Operations">Refinement Ops</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#AMN!Operations">Implementations</A></LI>
+
+<LI>
+<A HREF="AMNotation.html#AMN!Operations">Implementation Ops</A></LI>
+
+<LI>
+<A HREF="BaseGen.html">Bases</A></LI>
+
+<LI>
+<A HREF="Documents.html">Documents</A></LI>
+
+<LI>
+<A HREF="Enumerator.html">Enumerations</A></LI>
+
+<LI>
+<A HREF="Interface.html">Interfaces</A></LI>
+</UL>
+</UL>
+
+<LI>
+<TT><A HREF="Options.html#Options">Options</A></TT> (provides a menu of
+flags/settings)</LI>
+
+<UL>
+<LI>
+<A HREF="Options.html#Options!Remake">Remake</A></LI>
+
+<UL>
+<LI>
+<A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerator</A> (included/excluded)</LI>
+
+<LI>
+<A HREF="AutoProver.html#AutoProver">AutoProver</A> (included/excluded)</LI>
+
+<LI>
+<A HREF="ProofPrinter.html#ProofPrinter">ProofPrinter</A> (included/excluded)</LI>
+
+<LI>
+<A HREF="DocumentMarkUp.html#Document_Mark_Up">DocumentMarkUp</A> (included/excluded)</LI>
+
+<LI>
+<A HREF="Translator.html#Translator">Translator</A> (included/excluded)</LI>
+
+<LI>
+<A HREF="Linker.html#Linker">Linker</A> (included/excluded)</LI>
+
+<LI>
+<A HREF="Interface.html#Interface!Generator">ITFGenerator</A> (included/excluded)</LI>
+</UL>
+
+<LI>
+<A HREF="Options.html#Options!Construct_Display">Construct Display</A></LI>
+
+<UL>
+<LI>
+Library constructs (show/hide) <I>(not yet implemented)</I>)</LI>
+
+<LI>
+Generated constructs (show/hide) <I>(not yet implemented)</I></LI>
+</UL>
+
+<LI>
+<A HREF="Options.html#Options!Editor">Editor/Viewer/Shell</A></LI>
+
+<UL>
+<LI>
+Commit edits (preserve editor/kill editor)</LI>
+
+<LI>
+Construct Editor (edited text)</LI>
+
+<LI>
+PROOFMETHOD Editor (edited text)</LI>
+
+<LI>
+Hypertext Viewer (edited text)</LI>
+
+<LI>
+Hypertext Display As (html/text)</LI>
+
+<LI>
+Shell (edited text)</LI>
+</UL>
+
+<LI>
+<A HREF="Options.html#Options!Documents">Documents</A></LI>
+
+<UL>
+<LI>
+Labels (on/off)</LI>
+
+<LI>
+Clause cross-references (on/off)</LI>
+
+<LI>
+Construct cross-references (on/off)</LI>
+
+<LI>
+Index (on/off)</LI>
+
+<LI>
+Point size (10/11/12)</LI>
+
+<LI>
+LaTeX Declaration (edited text)</LI>
+
+<LI>
+LaTeX Executable (edited text)</LI>
+
+<LI>
+Dvi Screen Viewer (edited text)</LI>
+
+<LI>
+Dvi Print Script (edited text)</LI>
+</UL>
+
+<LI>
+<A HREF="Options.html#Options!Translators_Compilers">Translators/Compilers</A></LI>
+
+<UL>
+<LI>
+Programming language (C/ANSI C)</LI>
+
+<LI>
+C Compiler/Flags (edited text)</LI>
+
+<LI>
+Non-X Link Libraries (edited text)</LI>
+
+<LI>
+X Link Libraries (edited text)</LI>
+</UL>
+
+<LI>
+Provers</LI>
+
+<UL>
+<LI>
+Max Generated Hypotheses (edited text)</LI>
+
+<LI>
+<A HREF="Options.html#Options!Provers">POGenerator Setting</A></LI>
+
+<LI>
+<A HREF="Options.html#Options!Provers">Global PROOFMETHOD file</A></LI>
+</UL>
+
+<LI>
+<A HREF="Options.html#Options!Interface">Interface</A></LI>
+
+<UL>
+<LI>
+Interface type (Motif/Non-Motif)</LI>
+</UL>
+
+<LI>
+<A HREF="Options.html#Options!Bell">Bell</A></LI>
+
+<UL>
+<LI>
+Ring bell on completion (on/off)</LI>
+</UL>
+
+<LI>
+Source Control <I>(not yet implemented)</I></LI>
+
+<UL>
+<LI>
+Source Control directory (edited text)</LI>
+</UL>
+
+<LI>
+<A HREF="Options.html#Options!SaveAsGlobal">Save Current Options As Global</A></LI>
+
+<LI>
+<A HREF="Options.html#Options!SetFromGlobal">Set Current Options From Global</A></LI>
+
+<LI>
+<A HREF="Options.html#Options!OptionalUtils">Optional Utilities</A></LI>
+
+<UL>
+<LI>
+5 Optional utilities</LI>
+</UL>
+
+</UL>
+
+<LI>
+<TT>Help</TT> (provides a complete menu of all hypertext help available)</LI>
+</UL>
+
+<HR WIDTH="60%">
+<H3>
+<A NAME="EnvironmentPanel"></A>The Environment Panel</H3>
+Each Environment is accessed by clicking on its name:
+<UL>
+<LI>
+<A HREF="#Environments!Main">Main</A></LI>
+
+<LI>
+<A HREF="#Environments!Provers">Provers</A></LI>
+
+<LI>
+<A HREF="#Environments!Generators">Generators</A></LI>
+
+<LI>
+<A HREF="#Environments!Translators">Translators</A></LI>
+
+<LI>
+<A HREF="#Environments!Documents">Documents</A></LI>
+</UL>
+Each environment has a set of commands (tools) that are displayed in bar
+between the <A HREF="#EnvironmentPanel">Environment Panel</A> and the <A HREF="#Constructs!Area">Constructs
+Area</A>; clicking on the label (for example <TT>cmt </TT>will popup a
+help giving a brief description of the tool). All&nbsp; environments contain
+the commands:
+<UL>
+<LI>
+<TT><A HREF="CommitEdits.html#Commit">cmt</A></TT> (commits the edits of
+a currently-open construct)</LI>
+
+<LI>
+<TT><A HREF="Editor.html#Editor">opn -quit-editor</A></TT> (a toggle for
+opening an edit/quitting an edit)</LI>
+</UL>
+
+<H4>
+
+<HR WIDTH="40%"><A NAME="Environments!Main"></A>The Main Environment</H4>
+All <A HREF="BToolkit.html#Constructs!Area">constructs</A> (except proofs,
+documents and ops) are displayed in this environment. Display may be filtered
+by changing the `<A HREF="Options.html#Options!Construct_Display">Construct
+Display</A>' settings through the Top Bar <A HREF="Options.html#Options">Options</A>
+button.
+<UL>
+<LI>
+<TT><A HREF="Analyser.html#Analyser">anl</A></TT> (invoke the Analyser)</LI>
+
+<LI>
+<TT><A HREF="POGenerator.html#Proof_Obligation!Generator">pog</A></TT>
+(invoke the Proof Obligation Generator)</LI>
+
+<LI>
+<TT><A HREF="Animator.html#Animator">anm</A></TT> (invoke the Animator)</LI>
+
+<LI>
+<TT><A HREF="Status.html#Status">sts</A></TT> (display status)</LI>
+
+<LI>
+<TT><A HREF="Reset.html#Reset">rst</A></TT> (reset construct)</LI>
+</UL>
+
+<H4>
+
+<HR WIDTH="40%"><A NAME="Environments!Provers"></A>The Provers Environment</H4>
+Constructs which have been <A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerated</A>,
+together with proof files, are displayed in this environment.
+<UL>
+<LI>
+prv (provides a popup&nbsp; for selecting one of the three provers)</LI>
+
+<UL>
+<LI>
+<A HREF="AutoProver.html">AutoProver</A> (invoke the AutoProver)</LI>
+
+<LI>
+I<A HREF="InterProver.html">nterProver</A> (invoke the InterProver)</LI>
+
+<LI>
+<A HREF="BToolProver.html">BToolProver</A> (invoke the BToolProver)</LI>
+</UL>
+
+<LI>
+<TT><A HREF="InterProver.html#PROOFMETHOD_File">pmd</A></TT> (edit PROOFMETHOD
+file)</LI>
+
+<LI>
+<TT><A HREF="ProofPrinter.html#ProofPrinter">ppf</A></TT> (print proof)</LI>
+
+<LI>
+<TT><A HREF="RemoveLevel.html#RemoveLevel">rpl</A></TT> (revert to a previous
+a proof level)</LI>
+
+<LI>
+<A HREF="ShowUnproved.html">lvl</A> (show&nbsp; proof level statistics)</LI>
+
+<LI>
+<TT>tot</TT> (total number of proof obligations)</LI>
+
+<LI>
+<TT>pob</TT> (number of currently undischarged proof obligations)</LI>
+</UL>
+
+<H4>
+
+<HR WIDTH="40%"><A NAME="Environments!Generators"></A>The Generators Environment</H4>
+<A HREF="BaseGen.html#BASE">Base Object Machine</A>, <A HREF="Enumerator.html#Enumerator">Enumeration</A>,
+<A HREF="BaseGen.html#Base_Generators">Base Object Operation</A> and <A HREF="Interface.html#Interface!Generator">Interface</A>
+constructs are displayed in this environment.
+
+<P>For base/ops objects:
+<BR>&nbsp;
+<UL>
+<LI>
+<TT><A HREF="BaseGen.html#Base_Generators">gbo</A></TT> (generate base
+object operations)</LI>
+
+<LI>
+<TT><A HREF="BaseGen.html#Base_Generators">gbm</A></TT> (generate base
+object machines/implementations)</LI>
+</UL>
+For enumerations:
+<UL>
+<LI>
+<TT><A HREF="Enumerator.html#Enumerator">enm</A></TT> (invoke the enumeration
+specification/code generator tool)</LI>
+</UL>
+For interfaces:
+<UL>
+<LI>
+<TT><A HREF="Interface.html#Interface!Generator">itf</A></TT> (generate
+specification/implementation or Motif interface)</LI>
+<LI><TT>rst (reset the genated object)</TT></LI>
+</UL>
+
+<H4>
+<A NAME="Environments!Translators"></A>The Translators Environment</H4>
+<A HREF="AMNotation.html#IMPLEMENTATION">Implementations</A> that have
+been <A HREF="Analyser.html#Analyser">analysed</A>, and <A HREF="Interface.html#Interface!Generator!Motif">Motif
+interfaces</A> that have been <A HREF="Interface.html#Interface!Generator">generated</A>
+are displayed in this environment.
+<UL>
+<LI>
+<TT><A HREF="Translator.html#Translator">trl</A></TT> (invoke the Translator
+tool)</LI>
+
+<LI>
+<TT><A HREF="Linker.html#Linker">lnk</A></TT> (invoke the Linker )</LI>
+
+<LI>
+<TT><A HREF="Run.html#Run">exe</A></TT> (execute code)</LI>
+<LI>
+<TT>rst (reset the translated object)</TT>
+</LI>
+</UL>
+
+<H4>
+
+<HR WIDTH="40%"><A NAME="Environments!Documents"></A>The Documents Environment</H4>
+All <A HREF="BToolkit.html#Constructs!Area">constructs</A> that are already
+<A HREF="DocumentMarkUp.html#Document_Mark_Up">marked up</A>, or are ready
+for marking up (machines, refinements or implementations currently analysed;
+bases, enumerations or interfaces currently generated; proofs that have
+been constructed) are displayed in this environment.
+
+<P>Display may be filtered by changing the `<A HREF="Options.html#Options!Construct_Display">Construct
+Display</A>' settings through the <A HREF="BToolkit.html#Top_Bar">Top Bar</A>
+<A HREF="Options.html#Options">Options button</A>.
+<BR>&nbsp;
+<UL>
+<LI>
+<A HREF="DocumentMarkUp.html#Document_Mark_Up">dmu</A> (mark-up document)</LI>
+
+<LI>
+<A HREF="Show.html#Show">shw</A> (preview document)</LI>
+
+<BR><A HREF="Print.html#Print">prt</A> (print document)
+
+<LI>
+<TT>rst (reset the marked-up object)</TT>
+</LI>
+
+</UL>
+
+<HR WIDTH="60%">
+<H3>
+The&nbsp;<IMG SRC="B.gif" ALT="Blogo" HSPACE=10 ALIGN=CENTER>&nbsp;<A NAME="B_Logo"></A>Logo</H3>
+Provides a popup giving brief information on:
+<UL>
+<LI>
+The current release</LI>
+
+<LI>
+B-Core</LI>
+
+<LI>
+The term `B'</LI>
+
+<LI>
+The B-Method</LI>
+
+<LI>
+The Abstract Machine Notation (AMN)</LI>
+
+<LI>
+The B-Toolkit</LI>
+
+<LI>
+The B-Platform</LI>
+
+<LI>
+The B-Prover</LI>
+
+<LI>
+The development history of B</LI>
+</UL>
+
+<HR WIDTH=60%>
+<H3>
+<A NAME="Constructs!Area"></A>Constructs Area</H3>
+The term `construct' is used to refer to the different types of Abstract
+Machine (<A HREF="AMNotation.html#Abstract_Machines">machine</A>, <A HREF="AMNotation.html#REFINEMENT">refinement</A>
+or <A HREF="AMNotation.html#IMPLEMENTATION">implementation</A>) and also
+to <A HREF="BaseGen.html#Base_Generators">`system bases'</A>, <A HREF="Enumerator.html#Enumerator">`set
+enumerations'</A>, <A HREF="Interface.html#Interface!Generator">`interfaces'</A>
+or <A HREF="Documents.html#Documents">`documents'</A>. A number of different
+files may be associated with each construct. Construct names are listed
+down the right hand-side of the Constructs Area. Different types of construct
+are displayed in different B-Toolkit <A HREF="BToolkit.html#Environments">environments</A>.
+
+<P><A NAME="Constructs!Colour-coding"></A><U>Command Button Colours</U>
+
+<P>On the left-hand side of the Constructs Area are rows of&nbsp;<A NAME="Command_Buttons"></A>command
+buttons which are used to invoke the various tools on each construct. Active
+buttons are coloured, inactive are grey. The status of each construct is
+manifested by the combination of its command buttons that are active.
+
+<P>A construct which has been <A HREF="Editor.html#Editor">opened for editing</A>
+has its name displayed in inverse vi deo.
+
+<P>Colour-coding is used in the <A HREF="BToolkit.html#Constructs!Area">Constructs
+Area</A> and <A HREF="Overview.html#Overview">Overview Browser</A> to indicate
+the origin of each construct , the default colours being:-
+<UL>
+<LI>
+<B><FONT COLOR="#C42424">Red</FONT></B> for those constructs introduced
+by the user.</LI>
+
+<LI>
+<B><FONT COLOR="#34658A">Blue</FONT></B> for <A HREF="SystemLibrary.html#System_Library">library
+constructs</A>.</LI>
+
+<LI>
+<B><FONT COLOR="#2C8AFF">Green</FONT></B> for those constructs generated
+by tools such as the <A HREF="BaseGen.html#Base_Generators">Base Generators</A>
+and <A HREF="Interface.html#Interface!Generator">Interface Generator</A>.</LI>
+</UL>
+<A NAME="Constructs!Decoration"></A><U>Command Button Decoration</U>
+
+<P>Each button is decorated, usually as:<IMG SRC="button_unedited.gif" ALT="Construct unedited decoration" HSPACE=5 HEIGHT=20 WIDTH=16 ALIGN=CENTER>
+However if a construct has been edited (ie. if its <A HREF="#Development_Environment">SRC</A>
+file differs from that currently configured) the decoration of the button
+changes to:&nbsp;<IMG SRC="button_edited.gif" ALT="Construct edited decoration" HSPACE=5 HEIGHT=20 WIDTH=16 ALIGN=CENTER>
+Note that this decoration is the same whether or not the construct is currently
+open for editing. However if the construct <I>is </I>open and the SRC file
+differs, the<TT> <A HREF="CommitEdits.html#CommitEdits">cmt</A> </TT>button
+will be activated.
+
+<P>
+<HR WIDTH=60%>
+<H3>
+<A NAME="Display_Area"></A>The Display Area</H3>
+The Display Area is used to display messages and general output from the
+various tools.
+
+<P>Most of the main tools, such as the <A HREF="Analyser.html#Analyser">Analyser</A>
+and <A HREF="POGenerator.html#Proof_Obligation!Generator">Proof Obligation
+Generator</A>, popup a subsidiary window to receive their output, and this
+output is copied into the Display Area when the job is complete and the
+window is popped down.
+<BR>&nbsp;
+
+<P>
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25  ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+
+<P>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+</BODY>
+</HTML>

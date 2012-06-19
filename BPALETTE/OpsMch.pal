@@ -1,0 +1,142 @@
+   **************
+       MACHINE
+     OPERATIONS
+   **************
+
+------ NO-OP -------
+
+ skip
+
+
+----- PARALLEL -----
+
+ S || T
+
+
+---- ASSIGNMENTS ---
+
+ xx := E1
+
+ xx :: E
+
+ xx : P
+
+ ff(xx):= E
+
+ bb:= bool(P)
+
+
+--- PRECONDITION ---
+
+ PRE
+     P
+ THEN 
+     S
+ END
+
+-------- IF --------
+
+ IF P THEN
+     S 
+ ELSE
+     T
+ END
+
+ IF P THEN
+     S
+ END
+
+ IF P THEN
+     S
+ ELSIF Q THEN
+     T
+ ELSE
+     U 
+ END
+
+ IF P THEN 
+     S
+ ELSIF Q THEN
+     T
+ END
+
+
+---- LOCAL VARS ----
+
+ ANY xx WHERE
+     P
+ THEN 
+     S 
+ END
+
+ LET xx BE 
+     xx = E
+ IN
+     S
+ END
+
+
+----- BRANCHING -----
+
+ SELECT P THEN
+     S
+ WHEN Q THEN 
+     T...
+ WHEN R THEN 
+     U 
+ END
+
+ SELECT P THEN
+     S
+ WHEN Q THEN
+     T
+ ...
+ WHEN R THEN
+     U
+ ELSE
+     V
+ END
+
+ CHOICE
+     S
+ OR
+     T
+ OR
+     ...
+ OR
+     U
+ END
+
+
+------- CASE -------
+
+ CASE E OF
+     EITHER l THEN
+         S
+     OR m THEN
+         T   ...
+     OR n THEN
+         U
+     ELSE
+         V
+     END
+ END
+
+
+ CASE E OF
+     EITHER l THEN
+         S
+     OR m THEN
+         T
+     ...
+     OR n THEN
+         U
+     END
+ END
+
+--- CONTROL FLOW ---
+
+ Not allowed
+
+------------------
+

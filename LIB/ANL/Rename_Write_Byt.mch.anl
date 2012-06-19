@@ -1,0 +1,85 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_byt_wo)
+;
+(Rename_byt_wo)
+;
+(Rename_byt_wo : BYTE)
+;
+(Rename_byt_wo : BYTE)
+;
+(?)
+;
+(Rename_byt_wo :: BYTE)
+;
+(@Rename_byt_wox.(Rename_byt_wox : BYTE ==> Rename_byt_wo := Rename_byt_wox))
+;
+(Rename_WRITE)
+;
+(Rename_WRITE)
+;
+(Rename_Write_Byt(?):(?):(?))
+;
+(
+(
+ (Rename_WRITE)
+;
+ (? , Mod_Op , Det_Op , Rename_WRITE(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (BEGIN
+ Rename_byt_wo := vv
+ END)
+ )
+ )
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (Rename_byt_wo := vv)
+ )
+ )
+)
+)

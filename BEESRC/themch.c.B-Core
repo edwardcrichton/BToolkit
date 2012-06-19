@@ -1,0 +1,539 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+extern int tru[];
+extern int tna[];
+extern int tnm[];
+extern int ttc[];
+extern int tft[];
+extern int ttmb[];
+extern int tdir[];
+extern int max_the;
+int the;
+int tttm;
+int ttdi;
+                    
+/*  PROGRAMS FOR THEORY MACHINE  */
+
+#define basic_ini_the    the=0; tttm=0; ttdi=0
+
+#define rul_the(t)  tru[t]
+
+#define nam_the(t)  tna[t]
+
+#define num_the(t)  tnm[t]
+
+#define tac_the(t)  ttc[t]
+
+#define fwd_tac_the(t) tft[t]
+
+#define nbr_the        ttdi
+
+#define nbr_rul_the(t) len(rul_the(t))
+
+#define itr_the(t,s)           stp=stp+1; stack[stp-1]=1; while( stack[stp-1]<=ttdi ){ t=tdir[stack[stp-1]]; s; stack[stp-1]=stack[stp-1]+1 ;}
+                               
+
+#define val_the(n)             tdir[n]
+
+#define xst_the(t,p,s1,s2)     stp=stp+2; stack[stp-1]=1; stack[stp-2]=ttdi+1; while( stack[stp-1]!=stack[stp-2] ){ t=tdir[stack[stp-1]]; if( p ){ s1; stack[stp-2]=stack[stp-1] ;} else { stack[stp-1]=stack[stp-1]+1 ;} ;}; if( stack[stp-1]==ttdi+1 ){ s2 ;}; stp=stp-2
+                                 
+mak_thefunc()
+#define mak_the mak_thefunc()
+{register int t ;
+  if( tttm!=0 ){
+    t=ttmb[tttm];
+    tttm=tttm-1;
+  } else if( the<max_the ){
+    the=the+1;
+    t=the;
+  } else {
+#ifdef BTOOL_FLAG
+    fprintf ( bstdout, "      TOO MANY THEORIES (Press CR to exit)\n");
+    {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+#else
+    fprintf ( bstdout, "      bplatform: Too many theories\n\n");
+#endif /* BTOOL_FLAG */
+    exit___(1);
+  };
+  ttdi=ttdi+1;
+  tdir[ttdi]=t;
+  num_the(t)=ttdi
+; return t;
+}
+
+sup_the(t)
+{register int k ;
+  tttm=tttm+1;
+  ttmb[tttm]=t;
+  itrn( k , num_the(t)+1 , ttdi , {
+    num_the(tdir[k])=num_the(tdir[k])-1;
+    tdir[k-1]=tdir[k]
+ ;});
+  ttdi=ttdi-1;
+}
+
+mod_num_the(t,n)
+{register int k ;
+  itrn( k , num_the(t)+1 , ttdi , {
+    num_the(tdir[k])=num_the(tdir[k])-1;
+    tdir[k-1]=tdir[k]
+ ;});
+  nitrn( k , ttdi-1 , n , {
+    num_the(tdir[k])=num_the(tdir[k])+1;
+    tdir[k+1]=tdir[k]
+ ;});
+  tdir[n]=t;
+  num_the(t)=n;
+}
+
+mod_tac_the(t,ta)
+{
+  kil(tac_the(t));
+  tac_the(t)=ta;
+}
+
+#define has_fwd_tac_the(t) ((fwd_tac_the(t)!=0)!=0)
+mod_fwd_tac_the(t,ta)
+{
+  if( has_fwd_tac_the(t)==TRUE ){
+    kil(fwd_tac_the(t));
+  };
+  fwd_tac_the(t)=ta;
+}
+
+cre_the(n)
+{register int t,cre_the_res ;
+  xst_the(t,nam_the(t)==n,cre_the_res=t,t=mak_the;
+                                    nam_the(t)=n;                        
+                                    rul_the(t)=cre(50);
+                                    tac_the(t)=cre_frm(n);
+                                    fwd_tac_the(t)=0;
+                                    cre_the_res=t)
+; return cre_the_res;
+}
+
+kil_the(t)
+{register int i,r ;
+  itr(rul_the(t),i,r,kil_rul(r));
+  kil(rul_the(t));
+  kil(tac_the(t));
+  sup_the(t);
+}
+
+test_rul_the(r,rr,frm)
+{register int test_rul_the_res ;
+  if( r!=rr ){
+    clr_chk_frm;
+    test_rul_the_res=chk_frm(cns_rul(rr),frm);
+  } else {
+    test_rul_the_res=FALSE;
+  }
+; return test_rul_the_res;
+}
+
+match_rul_the(r,t,frm)
+{register int i,rr,match_rul_the_res ;
+  xst(rul_the(t),i,rr,
+      test_rul_the(r,rr,frm)==TRUE,
+      match_rul_the_res=rr,
+      match_rul_the_res=0)
+; return match_rul_the_res;
+}
+
+add_rul_the(f,t,tp)
+{register int d,r ;
+  d=rul_the(t);
+  r=cre_rul(f,t,len(d)+1,tp);
+  psh(d,r);
+  kil(f)
+; return r;
+}
+
+rem_rul_the(t,n)
+{register int d,r,j,rr,i,rrr ;
+  d=rul_the(t);
+  r=val(d,n);
+  if( def_lsb_rul(r)==TRUE ){
+    itr(lsb_rul(r),j,rr,rem_rul_the(the_rul(rr),num_rul(rr)));
+  };
+  kil_rul(r);
+  rem(d,n);
+  itr(d,i,rrr,mod_num_rul(rrr,i));
+}
+
+#define val_rul_the(t,n)  val(rul_the(t),n)
+rem_sub_rul_the(t,n)
+{register int r,i,l ;
+  r=val_rul_the(t,n);
+  if( def_lsb_rul(r)==TRUE ){
+    itr(lsb_rul(r),i,l,rem_rul_the(the_rul(l),num_rul(l)));
+    rem_lsb_rul(r);
+  };
+}
+
+rem_prv_rul_the(t,n)
+{
+  mod_pvd_rul(val_rul_the(t,n),bef_rul);
+  rem_sub_rul_the(t,n);
+}
+
+mod_rul_the(th,n,t)
+{register int r,a,i,v ;
+  r=val_rul_the(th,n);
+  a=ant_rul(r);
+  itr(a,i,v,kil(v));
+  kil(a);
+  kil(cns_rul(r));
+  if( val_tree(t,root_tree(t))==IMP_sym ){
+    ant_rul(r)=dec_tree(t,left_node_tree(t,root_tree(t)),AND_sym);
+    cns_rul(r)=cre_cop_tree(t,right_node_tree(t,root_tree(t)));
+  } else {
+    ant_rul(r)=cre(0);
+    cns_rul(r)=cre_cop_tree(t,root_tree(t));
+};
+  kil(t);
+}
+
+read_mod_rul_the(t,n,f)
+{register int 
+/* f, */
+r ;
+  r=val_rul_the(t,n);
+  
+/* f=read_frm; */
+  mod_rul_the(t,n,f);
+  if( pvd_rul(r)==now_rul ){
+    rem_prv_rul_the(t,n);
+  };
+  fprintf ( bstdout, "\n");
+  write_ver_rul(val_rul_the(t,n));
+  fprintf ( bstdout, "\n");
+}
+
+mod_num_rul_the(t,n,m)
+{register int d,k,i,r ;
+  d=rul_the(t);
+  r=val(d,n);
+  itrn( k , n+1 , len(d) , {
+    str(d,k-1,val(d,k))
+ ;});
+  nitrn( k , len(d)-1 , m , {
+    str(d,k+1,val(d,k))
+ ;});
+  str(d,m,r);
+  itr(d,i,r,mod_num_rul(r,i));
+}
+
+#define rem_last_rul_the(t) rem_rul_the(t,len(rul_the(t)))
+boot_thefunc()
+#define boot_the boot_thefunc()
+{register int th,w,p,n,o,g,t,f,l0,l1,l2,l3,l4,l5,l6,l7,l8,
+    r1,r2,r21,r3,r31,r4,r41,r5,r51,r6,r61,r7,r71,r8,r81,
+    f0,f1,f2,f3,f4,f5,f6,f7,f8,ru ;
+    
+  
+  th=cre_the(BOT_sym);
+  
+  w=cre_frm(ERR_sym);
+  g=cre_frm(GHO_sym);
+  l0=cons_frm(g,WRI_sym,w);
+  p=cre_frm(ord('P'));
+  f0=cons_frm(l0,IMP_sym,p);
+  ru=add_rul_the(f0,th,nrm_rul);
+  
+  
+  n=cre_frm(ord('N'));
+  l1=cons_frm(n,DIV_sym,n);
+  r1=cons_frm(g,THE_sym,n);
+  f1=cons_frm(l1,IMP_sym,r1);
+  ru=add_rul_the(f1,th,nrm_rul);
+  
+  
+  t=cre_frm(ord('T'));
+  l2=cons_frm(n,DIV_sym,t);
+  r2=cons_frm(n,TAC_sym,t);
+  r21=cons_frm(g,THE_sym,r2);
+  f2=cons_frm(l2,IMP_sym,r21);
+  ru=add_rul_the(f2,th,nrm_rul);
+  
+  
+  f=cre_frm(ord('F'));
+  l3=cons_frm(n,MIN_sym,f);
+  r3=cons_frm(n,FTA_sym,f);
+  r31=cons_frm(g,THE_sym,r3);
+  f3=cons_frm(l3,IMP_sym,r31);
+  ru=add_rul_the(f3,th,nrm_rul);
+  
+  
+  o=cre_frm(ord('O'));
+  l4=cons_frm(n,PLS_sym,o);
+  r4=cons_frm(n,ISS_sym,o);
+  r41=cons_frm(g,THE_sym,r4);
+  f4=cons_frm(l4,IMP_sym,r41);
+  ru=add_rul_the(f4,th,nrm_rul);
+  
+    
+  l5=cons_frm(l2,AND_sym,l3);
+  r5=cons_frm(r2,FTA_sym,f);
+  r51=cons_frm(g,THE_sym,r5);
+  f5=cons_frm(l5,IMP_sym,r51);
+  ru=add_rul_the(f5,th,nrm_rul);
+  
+  
+  l6=cons_frm(l2,AND_sym,l4);
+  r6=cons_frm(r4,TAC_sym,t);
+  r61=cons_frm(g,THE_sym,r6);
+  f6=cons_frm(l6,IMP_sym,r61);
+  ru=add_rul_the(f6,th,nrm_rul);
+  
+  
+  l7=cons_frm(l3,AND_sym,l4);
+  r7=cons_frm(r4,FTA_sym,f);
+  r71=cons_frm(g,THE_sym,r7);
+  f7=cons_frm(l7,IMP_sym,r71);
+  ru=add_rul_the(f7,th,nrm_rul);
+  
+  
+  l8=cons_frm(l5,AND_sym,l4);
+  r8=cons_frm(r6,FTA_sym,f);
+  r81=cons_frm(g,THE_sym,r8);
+  f8=cons_frm(l8,IMP_sym,r81);
+  ru=add_rul_the(f8,th,nrm_rul);
+  
+  kil(w);
+  kil(p);
+  kil(n);
+  kil(o);
+  kil(g);
+  kil(t);
+  kil(f);
+  kil(l0);
+  kil(l1);
+  kil(l2);
+  kil(l3);
+  kil(l4);
+  kil(l5);
+  kil(l6);
+  kil(l7);
+  kil(l8);
+  kil(r1);
+  kil(r2);
+  kil(r21);
+  kil(r3);
+  kil(r31);
+  kil(r4);
+  kil(r41);
+  kil(r5);
+  kil(r51);
+  kil(r6);
+  kil(r61);
+  kil(r7);
+  kil(r71);
+  kil(r8);
+  kil(r81);
+}
+
+ini_thefunc()
+#define ini_the ini_thefunc()
+{
+  basic_ini_the;
+  boot_the;
+}
+
+                               
+/*  THEORY I/O  */
+                               
+
+#define write_nam_the(t)  write_stri_sym(nam_the(t))                    
+  
+lst_rul_the(t)
+{register int i,r,l ;
+  fprintf ( bstdout, "THEORY ");
+  write_nam_the(t);
+  l=len(rul_the(t));
+  if ( l ) {
+    fprintf ( bstdout, " IS");
+    fprintf ( bstdout, "\n");
+    fprintf ( bstdout, "\n");
+    itr(rul_the(t),i,r,write_hor_rul(r);if( i < l ){ fprintf ( bstdout, ";") ;}; fprintf ( bstdout, "\n"));
+  }
+  fprintf ( bstdout, "\n");
+  fprintf ( bstdout, "END");
+}
+
+lst_short_rul_the(t)
+{register int i,r ;
+  itr(rul_the(t),i,r,write_hor_short_rul(r); fprintf ( bstdout, "\n"));
+}
+
+read_rul_the(t,f)
+{register int 
+/* f, */
+r ;
+  
+/* f=read_frm; */
+  r=add_rul_the(f,t,nrm_rul);
+  fprintf ( bstdout, "\n");
+  fprintf ( bstdout, "      RULE: ");
+  write_nat(num_rul(r));
+  fprintf ( bstdout, "\n"); 
+  fprintf ( bstdout, "\n");
+  write_ver_rul(r);
+  fprintf ( bstdout, "\n");
+}
+
+read_thefunc()
+#define read_the read_thefunc()
+{register int st,s,b,n,tt,read_the_res ;
+  b=TRUE;
+  st=cre(1);
+  fprintf ( bstdout, "Theory Selection: ");
+  read_str(st);
+  if( len_str(st)==1 ){
+    if( fst_str(st)==ord('0') ){
+      b=FALSE;
+      n=0;
+    } else if( fst_str(st)==ord('m') ){
+      b=FALSE;
+      n=(-1);
+    } else if( fst_str(st)==ord('n') ){
+      b=FALSE;
+      n=(-2);
+    };
+  };
+  if( b==TRUE ){
+    if( is_num_str(st)==FALSE ){
+      s=cre_sym(st,atm,nrml,0);
+      if( lexi_sym(s)!=atm ){
+        read_the_res=read_the;
+      } else {
+        read_the_res=cre_the(s);
+      };
+    } else {
+      xst_the(tt,num_the(tt)==trans_str(st),read_the_res=tt,read_the_res=read_the);
+    };
+  } else {
+    read_the_res=n;
+  };
+  kil(st)
+; return read_the_res;
+}
+
+#define write_ext_nam_the(t)  write_ext_stri_sym(nam_the(t))
+write_the(t)
+{register int r,i,b ;
+  if( num_the(t)<10 ){
+    fprintf ( bstdout, "   ");
+  } else {
+    fprintf ( bstdout, "  ");
+  };
+  xst(rul_the(t),i,r,is_inverted_rul(r)==TRUE,b=TRUE,b=FALSE);
+  if( b==TRUE ){
+    write_srv_res;
+  };
+  write_nat(num_the(t));
+  if( b==TRUE ){
+    write_erv_res;
+  };
+  fprintf ( bstdout, ": ");
+  write_nam_the(t);
+  fprintf ( bstdout, " ");
+  fprintf ( bstdout, "(");
+  write_nat(nbr_rul_the(t));
+  fprintf ( bstdout, ")");
+  fprintf ( bstdout, "\n");
+}
+
+lst_all_thefunc()
+#define lst_all_the lst_all_thefunc()
+{register int t ;
+  if( nbr_the==0 ){
+    fprintf ( bstdout, "      No Theory\n");
+  } else {
+    itr_the(t,write_the(t));
+  };
+}
+
+is_vis_the(t)
+{register int is_vis_the_res,i,v ;
+  if( nrml_stri_sym(nam_the(t))==TRUE ){
+    is_vis_the_res=((lst_str(stri_sym(nam_the(t)))!=ord('X'))!=0);
+    if( is_vis_the_res==TRUE ){
+      if( nbr_rul_the(t)==0 ){
+        xst_str(stri_sym(nam_the(t)),i,v,upper_sym(v)==FALSE,
+        is_vis_the_res=FALSE,is_vis_the_res=TRUE);
+      };
+    };
+  } else {
+    is_vis_the_res=((nam_the(t)!='X')!=0);
+    if( is_vis_the_res==TRUE ){
+      if( nbr_rul_the(t)==0 ){
+        is_vis_the_res=upper_sym(nam_the(t));
+      };
+    };
+  }
+; return is_vis_the_res;
+}
+
+nbr_vis_thefunc()
+#define nbr_vis_the nbr_vis_thefunc()
+{register int t,n ;
+  n=0;
+  itr_the(t,if( is_vis_the(t)==TRUE ){ n=n+1;})
+; return n;
+}
+
+short_lst_all_thefunc()
+#define short_lst_all_the short_lst_all_thefunc()
+{register int t ;
+  if( nbr_vis_the==0 ){
+    fprintf ( bstdout, "      No Visible Theory\n");
+  } else {
+    itr_the(t,if( is_vis_the(t)==TRUE ){ write_the(t);});
+  };
+}
+
+mve_the(t)
+{register int m ;
+  fprintf ( bstdout, "      New Position: ");
+  m=read_nat;
+  if( (m>=1) && (m<=nbr_the)  ){
+    mod_num_the(t,m);
+  } else if( m>nbr_the ){
+    mod_num_the(t,nbr_the);
+  } else {
+    fprintf ( bstdout, "      Sorry Wrong Position (Should be Positive\n)");
+  };
+}
+
+sta_thefunc()
+#define sta_the sta_thefunc()
+{
+  fprintf ( bstdout,"      Max Number of Theories:        ");
+  fprintf ( bstdout,"%8d\n",max_the);
+  fprintf ( bstdout,"      Number of Used Theories:       ");
+  fprintf ( bstdout,"%8d\n",the);
+  fprintf ( bstdout,"      Number of Dead Theories:       ");
+  fprintf ( bstdout,"%8d\n",tttm);
+  fprintf ( bstdout,"      Number of Live Theories:       ");
+  fprintf ( bstdout,"%8d\n\n",the-tttm);
+}
+
+      
+  

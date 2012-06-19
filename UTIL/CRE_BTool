@@ -1,0 +1,163 @@
+#! /bin/csh -f
+
+#
+# BTool (malloc) created
+#
+
+set curdir = `pwd`
+cd ../BEESRC
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script creates a Motif-interfaced interactive BTool (malloc)"
+echo "  as $BKIT/BTool, "
+echo "  and copies SYMBOL into "
+echo "  $BKIT/BPLAT "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+cd ../BEESRC
+
+if ( ! -d ../BKIT ) then
+  mkdir ../BKIT
+endif
+
+if ( ! -d ../BKIT/BPLAT ) then
+  mkdir ../BKIT/BPLAT
+endif
+
+../UTIL/_copy_motif_to_c
+
+################################
+# compile BTool
+################################
+
+echo ""
+echo "  ----------------------------------------------------------------------"
+echo "  Compiling bmotif.o"
+echo ""
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_Motif \ "
+echo "      -c bmotif.c \ "
+echo "      -DBTOOL_FLAG -DBTOOLM_FLAG \ "
+echo "      $ALL_FLAGS \ "
+echo "      $CC_X_incl_dir "
+$CC \
+    $CC_opt_Motif \
+     -c bmotif.c \
+     -DBTOOL_FLAG -DBTOOLM_FLAG -DBTOOLM_BKIT_FLAG \
+     $ALL_FLAGS \
+     $CC_X_incl_dir
+
+if ($status != "0") then
+  echo ""
+  ../UTIL/_rem_copied_to_c
+  rm *.o
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+echo ""
+echo "  ----------------------------------------------------------------------"
+echo "   Linking BTool"
+echo ""
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_Motif \ "
+echo "      -c ../C/BToolkitlm_globals.c \ "
+echo "      -DBTOOL_FLAG -DBTOOLM_FLAG \ "
+echo "      $ALL_FLAGS \ "
+echo "      $CC_X_incl_dir "
+$CC \
+    $CC_opt_Motif \
+     -c ../C/BToolkitlm_globals.c \
+     -DBTOOL_FLAG -DBTOOLM_FLAG -DBTOOLM_BKIT_FLAG \
+     $ALL_FLAGS \
+     $CC_X_incl_dir
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_Motif \ "
+echo "      -c ../C/cuserid.c \ "
+echo "      -DBTOOL_FLAG -DBTOOLM_FLAG \ "
+echo "      $ALL_FLAGS \ "
+echo "      $CC_X_incl_dir "
+$CC \
+    $CC_opt_Motif \
+     -c ../C/cuserid.c \
+     -DBTOOL_FLAG -DBTOOLM_FLAG -DBTOOLM_BKIT_FLAG \
+     $ALL_FLAGS \
+     $CC_X_incl_dir
+
+echo ""
+echo "  $CC  \ "
+echo "      $CC_opt_Motif \ "
+echo "      -o BTool \ "
+echo "      -DBTOOL_FLAG -DBTOOLM_FLAG -DBTOOLM_BKIT_FLAG \ "
+echo "      $ALL_FLAGS \ "
+echo "      bmotif.o \ "
+echo "      BToolkitlm_globals.o \ "
+echo "      cuserid.o \ "
+echo "      $CC_X_incl_dir  \ "
+echo "      $CC_X_link_dir  \ "
+echo "      $CC_X_link_lib  \ "
+echo "      $CC_non_X_link_lib  "
+
+$CC \
+    $CC_opt_Motif \
+     -o BTool \
+     -DBTOOL_FLAG -DBTOOLM_FLAG -DBTOOLM_BKIT_FLAG \
+     $ALL_FLAGS \
+     bmotif.o \
+     BToolkitlm_globals.o \
+     cuserid.o \
+     $CC_X_incl_dir \
+     $CC_X_link_dir \
+     $CC_X_link_lib \
+     $CC_non_X_link_lib
+
+if ($status != "0") then
+  echo ""
+  ../UTIL/_rem_copied_to_c
+  rm *.o
+  echo "  Aborted"
+  echo ""
+  exit ( 1 )
+endif
+
+../UTIL/_rem_copied_to_c
+
+rm *.o
+
+
+if ( ! -d $BKIT/BPLAT ) then
+  mkdir $BKIT/BPLAT
+endif
+
+cp BTool $BKIT
+rm -f BTool > /dev/null
+
+rm -f $BKIT/BPLAT/SYMBOL
+cp SYMBOL $BKIT/BPLAT
+chmod a+r $BKIT/BPLAT/SYMBOL
+
+echo ""
+echo " Motif-interfaced interactive b created in"
+echo "  $BKIT/BTool "
+echo "  SYMBOL -> $BKIT/BPLAT "
+echo ""

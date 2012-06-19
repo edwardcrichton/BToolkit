@@ -1,0 +1,38 @@
+#! /bin/csh -f
+
+#  MAKE_BToolkit_packages_from_built
+
+#
+#  After the remote system has been built and
+#  tested, this script creates a debian package file
+#  then uses 'alien' to produce an rpm package
+
+source ./MAKE_BToolkit_debian_from_built
+
+#source ./set_basic_variables
+#set binding=""
+#set arch="i386"
+
+#cd ../../RELEASE
+
+#set filename=btoolkit$binding"_"$BT_VERSION_NUM"-1_"$arch
+
+set nonomatch
+
+# remove any previous rpms
+
+set rpms=`find . -name "btoolkit${binding}-${BT_VERSION_NUM}-"*".${arch}.rpm"`
+
+foreach file ( $rpms )
+
+  echo "rm ${file}"
+  rm -f $file
+  
+end
+
+echo "building rpm"
+fakeroot alien --scripts -k -v -r "${filename}.deb"
+
+ls -lrt
+
+

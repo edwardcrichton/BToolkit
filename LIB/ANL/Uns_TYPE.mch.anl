@@ -1,0 +1,461 @@
+(
+ (?)
+ ;
+ (
+ (
+ (MinUns == n2u(0)),
+ (MaxUns == n2u(65535))
+ )
+ |
+ (
+ (MinUns == n2u(0)),
+ (MaxUns == n2u(65535))
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(UNSIGNED)
+;
+(UNSIGNED)
+;
+(n2u , u2n)
+;
+(n2u , u2n)
+;
+(n2u : 0..65535 >->> UNSIGNED & u2n : UNSIGNED >->> 0..65535 & card(UNSIGNED) : NAT1)
+;
+(n2u : 0..65535 >->> UNSIGNED & u2n : UNSIGNED >->> 0..65535 & card(UNSIGNED) : NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(ULE,UGE,ULT,UGT,UEQ,UNE,UADD,USUB,UMUL,UDIV,UMOD,UINC,UDEC,ULEFT,URIGHT)
+;
+(ULE , UGE , ULT , UGT , UEQ , UNE , UADD , USUB , UMUL , UDIV , UMOD , UINC , UDEC , ULEFT , URIGHT)
+;
+(Uns_TYPE(?):(?):(?))
+;
+(
+(
+ (ULE)
+;
+ (? , Val_Op , Det_Op , (rr <-- ULE(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr := bool(aa <= bb)
+ END)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (rr := bool(aa <= bb))
+ )
+ )
+)
+,
+(
+ (UGE)
+;
+ (? , Val_Op , Det_Op , (rr <-- UGE(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr := bool(aa >= bb)
+ END)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (rr := bool(bb <= aa))
+ )
+ )
+)
+,
+(
+ (ULT)
+;
+ (? , Val_Op , Det_Op , (rr <-- ULT(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr := bool(aa < bb)
+ END)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (rr := bool(aa < bb))
+ )
+ )
+)
+,
+(
+ (UGT)
+;
+ (? , Val_Op , Det_Op , (rr <-- UGT(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr := bool(aa > bb)
+ END)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (rr := bool(bb < aa))
+ )
+ )
+)
+,
+(
+ (UEQ)
+;
+ (? , Val_Op , Det_Op , (rr <-- UEQ(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr := bool(aa = bb)
+ END)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (rr := bool(aa = bb))
+ )
+ )
+)
+,
+(
+ (UNE)
+;
+ (? , Val_Op , Det_Op , (rr <-- UNE(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (BEGIN
+ rr := bool(aa /= bb)
+ END)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED)
+ |
+ (
+ (rr := bool(not(aa = bb)))
+ )
+ )
+)
+,
+(
+ (UADD)
+;
+ (? , Val_Op , Det_Op , (rr <-- UADD(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & aa+bb : UNSIGNED)
+ |
+ (
+ (rr := aa+bb)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & aa+bb : UNSIGNED)
+ |
+ (
+ (rr := aa+bb)
+ )
+ )
+)
+,
+(
+ (USUB)
+;
+ (? , Val_Op , Det_Op , (rr <-- USUB(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & aa-bb : UNSIGNED)
+ |
+ (
+ (rr := aa-bb)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & aa-bb : UNSIGNED)
+ |
+ (
+ (rr := aa-bb)
+ )
+ )
+)
+,
+(
+ (UMUL)
+;
+ (? , Val_Op , Det_Op , (rr <-- UMUL(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & aa*bb : UNSIGNED)
+ |
+ (
+ (rr := aa*bb)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & aa*bb : UNSIGNED)
+ |
+ (
+ (rr := aa*bb)
+ )
+ )
+)
+,
+(
+ (UDIV)
+;
+ (? , Val_Op , Det_Op , (rr <-- UDIV(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & bb /= n2u(0) & aa/bb : UNSIGNED)
+ |
+ (
+ (rr := aa/bb)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & not(bb = n2u(0)) & aa/bb : UNSIGNED)
+ |
+ (
+ (rr := aa/bb)
+ )
+ )
+)
+,
+(
+ (UMOD)
+;
+ (? , Val_Op , Det_Op , (rr <-- UMOD(aa , bb)))
+;
+ (aa , bb)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & bb /= n2u(0) & aa mod bb : UNSIGNED)
+ |
+ (
+ (rr := aa mod bb)
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & bb : UNSIGNED & not(bb = n2u(0)) & aa mod bb : UNSIGNED)
+ |
+ (
+ (rr := aa mod bb)
+ )
+ )
+)
+,
+(
+ (UINC)
+;
+ (? , Val_Op , Det_Op , (rr <-- UINC(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & aa+n2u(1) : UNSIGNED)
+ |
+ (
+ (rr := aa+n2u(1))
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & aa+n2u(1) : UNSIGNED)
+ |
+ (
+ (rr := aa+n2u(1))
+ )
+ )
+)
+,
+(
+ (UDEC)
+;
+ (? , Val_Op , Det_Op , (rr <-- UDEC(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & aa-n2u(1) : UNSIGNED)
+ |
+ (
+ (rr := aa-n2u(1))
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & aa-n2u(1) : UNSIGNED)
+ |
+ (
+ (rr := aa-n2u(1))
+ )
+ )
+)
+,
+(
+ (ULEFT)
+;
+ (? , Val_Op , Det_Op , (rr <-- ULEFT(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & aa*n2u(2) : UNSIGNED)
+ |
+ (
+ (rr := aa*n2u(2))
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & aa*n2u(2) : UNSIGNED)
+ |
+ (
+ (rr := aa*n2u(2))
+ )
+ )
+)
+,
+(
+ (URIGHT)
+;
+ (? , Val_Op , Det_Op , (rr <-- URIGHT(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa : UNSIGNED & aa/n2u(2) : UNSIGNED)
+ |
+ (
+ (rr := aa/n2u(2))
+ )
+ )
+;
+ (
+ (aa : UNSIGNED & aa/n2u(2) : UNSIGNED)
+ |
+ (
+ (rr := aa/n2u(2))
+ )
+ )
+)
+)

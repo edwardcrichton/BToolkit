@@ -1,0 +1,4159 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define InformCantGenerateForTypeM(n,i,T) \
+  Writef(("\n\n    Can't generate interface for `%'\n    Parameter `%' has non-SLIB type `%' ",bsrv n berv,bsrv i berv,bsrv T berv)) 
+
+THEORY PrtMotifX IS
+
+#define PrintMotiftac ((ARI~;MODR;WRITE;MAP;CATL;SHELL)~;PrtMotifX)~
+
+#define PrintMotif(x,y) bcall(PrintMotiftac: prt_M(x)(y))
+
+  ?;  /* 1. type store:  ?,nat_type___,enum_type___(SET),... */
+
+  1;  /* 2. next _CB num */
+
+  ?;  /* 3. , list of (a,b,c,d): a: enum set name, b: op name,
+                              c: param posn (stating at 0), d: _CB num */
+
+  ?; /* 4. 1 => inp param, 2 => out param */
+
+  ?; /* 5. curr op name */
+
+  ?; /* 6.  curr param name */
+
+  ?; /* 7. inp types :
+          ?,add_nn(nn_in: nat_type___),add_nn(an_str_in: string_type___),... */
+
+  ?; /* 8. out types */
+
+  ?; /* 9. ops required */
+#define OpRequired(z) brule(PrtMotifX.9,Z) & bsearch(z,Z,Y)
+#define ReadOpsRequired(x)   brule(PrtMotifX.9,x)
+
+  ?; /* 10. parameter types of mch being processed */
+#define ModrParamTypesStoM(x)  bmodr(PrtMotifX.10,x)
+#define ReadParamTypesStoM(x) brule(PrtMotifX.10,x)
+
+  ?; /* 11. formal parameters of mch being processed */
+#define ModrFormalParamTypesStoM(x)  bmodr(PrtMotifX.11,x)
+#define ReadFormalParamTypesStoM(x) brule(PrtMotifX.11,x)
+
+  ?; /* 12. parameter values of mch being processed (?;(max1=2);(sss=SET) */
+#define ModrParamValuesStoM(x)  bmodr(PrtMotifX.12,x)
+#define ReadParamValuesStoM(x) brule(PrtMotifX.12,x)
+
+  ?; /* 13. 0=>ANSIC 1=>non_ANSIC */
+#define ANSIC_CIOM_set brule(PrtMotifX.13,0)
+
+  ?; /* 14. C Compiler/Flags */
+
+  ?; /* 15. Non-X Link Libraries */
+
+  ?; /* 16. X Link Libraries */
+
+  ?; /* 17. 0=>Motif 1=>Non-Motif */
+
+  ?; /* 18. num for  __Enum____ (NOT USED)  */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  ReadIOLIBStore(Z) &
+  ModrIOLIBStore((Z,T))
+ =>
+  update_IOLIBStore(T);
+
+  ReadIOLIBStore(Z) &
+  bsearch(T,Z,Y)
+ =>
+  update_IOLIBStore(T);
+
+
+  print_type;
+
+  brule(PrtMotifX.1,T) &
+  bsearch(?,T,S) &
+  bprintf("%",S)
+ =>
+  print_type;
+
+  bmodr(PrtMotifX.1,?)
+ =>
+  clear_type;
+
+  brule(PrtMotifX.4,2) &
+  brule(PrtMotifX.5,o) &
+  brule(PrtMotifX.6,p) &
+  brule(PrtMotifX.8,S) &
+  bmodr(PrtMotifX.8,(S,o(p:t)))
+ =>
+  update_type_sto(t);
+
+  brule(PrtMotifX.4,1) &
+  brule(PrtMotifX.5,o) &
+  brule(PrtMotifX.6,p) &
+  brule(PrtMotifX.7,S) &
+  bmodr(PrtMotifX.7,(S,o(p:t)))
+ =>
+  update_type_sto(t);
+
+  brule(PrtMotifX.1,T) &
+  bmodr(PrtMotifX.1,(T,t)) &
+  update_type_sto(t)
+ =>
+  update_type(t);
+
+  brule(PrtMotifX.1,T) &
+  bmodr(PrtMotifX.1,(T,enum_type___)) &
+  update_type_sto(enum_type___(S))
+ =>
+  update_type(enum_type___(S));
+
+
+  bprintf("\n#define %PV% (%)\n",a,m,v)
+ =>
+  prt_act_params1(a,v,m,n);
+
+
+  bprintf("\n#define %PV% {\"%\"}",a,m,v)
+ =>
+  prt_act_params4(a,(f=v),m,n);  /* v = SCALAR */
+
+  bnum(v) &
+  bprintf("\n#define %PV% (%)",a,m,v)
+ =>
+  prt_act_params4(a,(f=v),m,n);
+
+  ReadParamTypesStoM(T) &
+  bsearch((f:NAT),T,U) &
+  bprintf("\n#define %PV% (%)",a,m,v)
+ =>
+  prt_act_params4(a,(f=v),m,n);
+
+
+
+  ReadParamValuesStoM(S) &
+  prt_act_params4(a) bnmap S
+ =>
+  prt_act_params3(a);
+
+  ReadParamValuesStoM(S) &
+  ModrParamValuesStoM((S;(f=a)))
+ => 
+  prt_act_params2(f,a);
+
+  ReadParamValuesStoM(?) &
+  ModrParamValuesStoM((f=a))
+ => 
+  prt_act_params2(f,a);
+
+  prt_act_params2(f,a)
+ =>
+  prt_act_params1(m)(f)(a);
+
+  prt_act_params1(m)(F)(A) &
+  prt_act_params2(f,a)
+ =>
+  prt_act_params1(m)(F,f)(A,a);
+
+  ReadFormalParamTypesStoM(F) &
+  ReadActualParamsStore(A) &
+  prt_act_params1(m)(F)(A) &
+  prt_act_params3(m) &
+  bprintf("\n")
+ =>
+  prt_act_params1(m);
+
+
+
+  ModrFormalParamTypesStoM(c) &
+  ModrParamTypesStoM((b;?))
+ =>
+  sto_param_typesM1(b|c);
+
+  ModrFormalParamTypesStoM(c) &
+  ModrParamTypesStoM((b;?))
+ =>
+  sto_param_typesM1(a|b|c);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  sto_param_typesM(Z);
+
+  bget(Z,x) &
+  sto_param_typesM1(x)
+ =>
+  sto_param_typesM(Z);
+
+
+
+  
+  ModrActualParamsStore(p) &    /* temp */
+  ModrParamValuesStoM(?) &
+  sto_param_typesM(bcatl("TYP/",m,".mri.typ")) &
+  prt_act_params1(m)
+ =>
+  prt_act_params_ipt1(m(p));
+
+  prt_act_params_ipt1(?);
+
+  ReadImportedCIOList(S) &
+  ReadActualParamsStore(A) &
+  prt_act_params_ipt1 bsmap S &
+  ModrActualParamsStore(A)      /* restore */
+ =>
+  prt_act_params_ipt;
+
+
+
+  GetCurrentConstruct(a.itf) &
+  ModrParamValuesStoM(?) &
+  sto_param_typesM(bcatl("TYP/",a,".mri.typ")) &
+  prt_act_params1(a) &
+  prt_act_params_ipt
+ =>
+  prt_act_params;
+
+  ReadActualParamsStore(?)
+ =>
+  prt_act_params;
+
+  GetCurrentConstruct(a.itf) &
+  bprintf("#include \"%.g\"\n",a) &
+  bprintf("#include \"%.g\"\n",file_dump)
+ =>
+  prt_include_g_1(?);
+
+  bprintf("#include \"%.g\"\n",s) &
+  prt_include_g_1(S)
+ =>
+  prt_include_g_1(S,s.mch);
+
+  ReadSeenNotImportedStore(S) &
+  bprintf("\n") &
+  prt_include_g_1(S)
+ =>
+  prt_include_g;
+
+  GetCurrentConstruct(a.itf) &
+  bprintf("#include \"%.h\"\n",a) &
+  bprintf("#include \"%.h\"\n",file_dump)
+ =>
+  prt_include_h_1(?);
+
+  bprintf("#include \"%.h\"\n",s) &
+  prt_include_h_1(S)
+ =>
+  prt_include_h_1(S,s.mch);
+
+  ReadSeenNotImportedStore(S) &
+  bprintf("\n") &
+  prt_include_h_1(S)
+ =>
+  prt_include_h;
+
+  bprintf("\"  % = \"",p)
+ =>
+  prt_M_0_3(p);
+
+  prt_M_0_3(p) &
+  bprintf(",")
+ =>
+  prt_M_0_2(p,m,n);
+
+  prt_M_0_3(p)
+ =>
+  prt_M_0_2(p,n,n);
+
+  prt_M_0_1(o(p;q)==t);  /* out;in */
+
+  OpRequired(o) &
+  bprintf("\nchar * %_inames___ []  = {",o) &
+  prt_M_0_2 bnmap q &
+  bprintf("};")
+ =>
+  prt_M_0_1(o(p;q)==t);  /* out;in */
+
+  prt_M_0_1(o(p;?)==t);  /* out;in */
+
+  prt_M_0_1(?);
+
+  GetCurrentConstruct(s.itf) &
+  ReadOpTypesStore(S) &
+  bprintf("#include <Xm/XmAll.h>\n") &
+  bprintf("#include <stdio.h>\n") &
+  bprintf("#include <stdlib.h>\n") &
+  prt_act_params &
+/*
+  bprintf("\n#include \"%.g\"\n",s) &
+*/
+  prt_include_g &
+  prt_include_h &
+  bprintf("\nDisplay *display___;\nWidget top_level___, main_form___, prog_label___, B_prog_icon___, monolog_frame___, monolog_text___, done_but___;\n") &
+  bprintf("XtAppContext app___;\n") &
+  bprintf("XmString xstr___;\n") &
+  bprintf("XmStringCharSet charset___ = (XmStringCharSet) XmSTRING_DEFAULT_CHARSET;\n") &
+  bprintf("int mc_int___,wait_flag___,sec_visit___,sel_one___;\n") &
+  bprintf("int nx___, ny___, pnx___, pny___;\n") &
+  bprintf("FILE * Bcom___;\n") &
+  bprintf("char buf___ [ 2000 ];\n") &
+  bprintf("Pixmap B_framed_pixmap_gray95___;\n") &
+  bprintf("int c_arr___ [ 1001 ];\n") &
+  bprintf("void DisplayMWText___ ();\n") &
+  bprintf("void AppNumToBuf___ ();\n") &
+  prt_M_0_1 bsmap S &
+  prt_M_01
+ =>
+  prt_M_0;
+
+
+
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("BLK_M ( int n___ )\n") &
+  bprintf("#else\n") &
+  bprintf("BLK_M ( n___ )\n") &
+  bprintf("int n___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_022_hdr;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("NWL_M ( int n___ )\n") &
+  bprintf("#else\n") &
+  bprintf("NWL_M ( n___ )\n") &
+  bprintf("int n___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_021_hdr;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("PUT_NAT_M ( int n___ )\n") &
+  bprintf("#else\n") &
+  bprintf("PUT_NAT_M ( n___ )\n") &
+  bprintf("int n___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_02_hdr;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("PUT_INT_M ( int n___ )\n") &
+  bprintf("#else\n") &
+  bprintf("PUT_INT_M ( n___ )\n") &
+  bprintf("int n___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_023_hdr;
+
+  prt_M_021_hdr &
+  bprintf("{\n") &
+  bprintf("  int i___ = 1;\n" ) &
+  bprintf("  while( i___ <= n___ ) {\n" ) &
+  bprintf("    DisplayMWText___ ( \"\\n\" );\n" ) &
+  bprintf("    i___ = i___ + 1;\n" ) &
+  bprintf("  }\n") &
+  bprintf("}\n") &
+  prt_M_022_hdr &
+  bprintf("{\n") &
+  bprintf("  int i___ = 1;\n" ) &
+  bprintf("  while( i___ <= n___ ) {\n" ) &
+  bprintf("    DisplayMWText___ ( \" \" );\n" ) &
+  bprintf("    i___ = i___ + 1;\n" ) &
+  bprintf("  }\n") &
+  bprintf("}\n") &
+  prt_M_02_hdr &
+  bprintf("{\n") &
+  bprintf("  buf___ [ 0 ] = '\0';\n") &
+  bprintf("  AppNumToBuf___ ( n___ );\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n") &
+  bprintf("}\n") &
+  prt_M_023_hdr &
+  bprintf("{\n") &
+  bprintf("  buf___ [ 1 ] = '\0';\n") &
+  bprintf("  if ( n___ < 0 ) {\n") &
+  bprintf("    buf___ [ 0 ] = '-';\n") &
+  bprintf("    AppNumToBuf___ ( n___ * -1 );\n") &
+  bprintf("  }\n") &
+  bprintf("  else {\n") &
+  bprintf("    buf___ [ 0 ] = '+';\n") &
+  bprintf("    AppNumToBuf___ ( n___ );\n") &
+  bprintf("  }\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_02;
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("PUT_CHR_M ( int c___ )\n") &
+  bprintf("#else\n") &
+  bprintf("PUT_CHR_M ( c___ )\n") &
+  bprintf("int c___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_03_hdr;
+
+  prt_M_03_hdr &
+  bprintf("{\n") &
+  bprintf("  buf___ [ 0 ] = ( char ) c___ ;\n") &
+  bprintf("  buf___ [ 1 ] = '\0';\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_03;
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("PUT_STR_M ( int * s___ )\n") &
+  bprintf("#else\n") &
+  bprintf("PUT_STR_M ( s___ )\n") &
+  bprintf("int * s___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_04_hdr;
+
+  prt_M_04_hdr &
+  bprintf("{\n") &
+  bprintf("  DisplayMWText___ ( ( char * ) s___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_04;
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("PUT_BOOL_M ( int b___ )\n") &
+  bprintf("#else\n") &
+  bprintf("PUT_BOOL_M ( b___ )\n") &
+  bprintf("int b___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_05_hdr;
+
+  prt_M_05_hdr &
+  bprintf("{\n") &
+  bprintf("  if   ( b___ )  DisplayMWText___ ( \"TRUE\" );\n") &
+  bprintf("  else           DisplayMWText___ ( \"FALSE\" );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_05;
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("PUT_BTS_M ( int b___ )\n") &
+  bprintf("#else\n") &
+  bprintf("PUT_BTS_M ( b___ )\n") &
+  bprintf("int b___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_06_hdr;
+
+  prt_M_06_hdr &
+  bprintf("{\n") &
+  bprintf("  void AppBitsToBuf___ ();\n") &
+  bprintf("  buf___ [ 0 ] = '\0';\n") &
+  bprintf("  AppBitsToBuf___ ( b___ );\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_06;
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("GET_PROMPT_BOOL_M ( int * r___, char * s___ )\n") &
+  bprintf("#else\n") &
+  bprintf("GET_PROMPT_BOOL_M ( r___, s___ )\n") &
+  bprintf("int * r___;\n") &
+  bprintf("char * s___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_011_hdr;
+
+  prt_M_011_hdr &
+  bprintf("{\n") &
+  bprintf("  int n___, x___, y___;\n") &
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  cat_prompt_enm___ ( s___, 5, \"BOOL(FALSE,TRUE)\" );\n") &
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  nat_Bcom___ ( * r___ );\n") &
+  bprintf("  nat_Bcom___ ( x___ );\n") &
+  bprintf("  nat_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_011;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("GET_PROMPT_CHR_M ( int * c___, char * s___ )\n") &
+  bprintf("#else\n") &
+  bprintf("GET_PROMPT_CHR_M ( c___, s___ )\n") &
+  bprintf("int * c___;\n") &
+  bprintf("char * s___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_010_hdr;
+
+  prt_M_010_hdr &
+  bprintf("{\n") &
+  bprintf("  int n___, x___, y___;\n") &
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  cat_prompt___ ( s___, 3, 0 );\n") &
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  chr_Bcom___ ( * c___ );\n") &
+  bprintf("  nat_Bcom___ ( x___ );\n") &
+  bprintf("  nat_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_010;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("GET_PROMPT_BTS_M ( int * s___, char * t___ )\n") &
+  bprintf("#else\n") &
+  bprintf("GET_PROMPT_BTS_M ( s___, t___ )\n") &
+  bprintf("int * s___;\n") &
+  bprintf("char * t___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_09_hdr;
+
+  prt_M_09_hdr &
+  bprintf("{\n") &
+  bprintf("  int n___, x___, y___;\n") &
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  cat_prompt___ ( t___, 4, 0 );\n") &
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  bts_Bcom___ ( * s___ );\n") &
+  bprintf("  nat_Bcom___ ( x___ );\n") &
+  bprintf("  nat_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_09;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("GET_PROMPT_STR_M ( char * s___, char * t___ )\n") &
+  bprintf("#else\n") &
+  bprintf("GET_PROMPT_STR_M ( s___, t___ )\n") &
+  bprintf("char * s___;\n") &
+  bprintf("char * t___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_08_hdr;
+
+  prt_M_08_hdr &
+  bprintf("{\n") &
+  bprintf("  int i___, n___, x___, y___;\n") &
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  cat_prompt___ ( t___, 2, 0 );\n") &
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  str_Bcom___ ( s___ );\n") &
+  bprintf("  nat_Bcom___ ( x___ );\n") &
+  bprintf("  nat_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_08;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("GET_PROMPT_ITGR_M ( int * r___, char * s___, int  d___ )\n") &
+  bprintf("#else\n") &
+  bprintf("GET_PROMPT_ITGR_M ( r___, s___, d___ )\n") &
+  bprintf("int * r___;\n") &
+  bprintf("char * s___;\n") &
+  bprintf("int d___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_07a_hdr;
+
+  prt_M_07a_hdr &
+  bprintf("{\n") &
+  bprintf("  int pm___, n___, x___, y___;\n") &
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  cat_prompt___ ( s___, 1, d___ );\n") &
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  int_Bcom___ ( * r___ );\n") &
+  bprintf("  int_Bcom___ ( x___ );\n") &
+  bprintf("  int_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_07a;
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("GET_PROMPT_NBR_M ( int * r___, char * s___, int  d___ )\n") &
+  bprintf("#else\n") &
+  bprintf("GET_PROMPT_NBR_M ( r___, s___, d___ )\n") &
+  bprintf("int * r___;\n") &
+  bprintf("char * s___;\n") &
+  bprintf("int d___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_07_hdr;
+
+  prt_M_07_hdr &
+  bprintf("{\n") &
+  bprintf("  int n___, x___, y___;\n") &
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  cat_prompt___ ( s___, 1, d___ );\n") &
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  nat_Bcom___ ( * r___ );\n") &
+  bprintf("  nat_Bcom___ ( x___ );\n") &
+  bprintf("  nat_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_07;
+
+
+  bprintf("\n\n#define open_Bcom___ \\\n") &
+  bprintf("  Bcom___ = fopen ( \".Bcom\", \"r\" ); \\\n" ) &
+  bprintf("  if ( Bcom___  == NULL ) { \\\n") &
+  bprintf("    printf ( \"  \\n\\nMotif Interface:\\n\\n  Couldn't open .Bcom for reading\\n\\n\" ); \\\n") &
+  bprintf("    exit ( 1 ); \\\n") &
+  bprintf("  }\n") &
+  bprintf("\n#define close_Bcom___ fclose ( Bcom___ )\n") &
+  bprintf("\n#define upd_pos___(x___,y___) \\") &
+  bprintf("\n  if ( x___ > nx___ + 15 || \\\n") &
+  bprintf("       x___ < nx___ - 15 || \\\n") &
+  bprintf("       y___ > ny___ + 15 || \\\n") &
+  bprintf("       y___ < ny___ - 15    ) { \\\n") &
+  bprintf("    pnx___ = nx___; \\\n") &
+  bprintf("    pny___ = ny___; \\\n") &
+  bprintf("    nx___ = x___; \\\n") &
+  bprintf("    ny___ = y___; \\\n") &
+  bprintf("  }\n") &
+
+  bprintf("\n#define ini_prompt___(n1,n2) \\\n") &
+  bprintf("  strcpy ( buf___, \"$BKIT/BLIB/BPrompt \" ); \\\n") &
+  bprintf("  AppNumToBuf___ ( n1 ); \\\n") &
+  bprintf("  strcat ( buf___, \" \" ); \\\n") &
+  bprintf("  AppNumToBuf___ ( n2 )\n") &
+
+  bprintf("\n#define cat_prompt___(s1,n1,n2) \\\n") &
+  bprintf("  strcat ( buf___, \" \\\"\" ); \\\n") &
+  bprintf("  strcat ( buf___, s1 ); \\\n") &
+  bprintf("  strcat ( buf___, \"\\\" \" ); \\\n") &
+  bprintf("  AppNumToBuf___ ( n1 ); \\\n") &
+  bprintf("  strcat ( buf___, \" \" ); \\\n") &
+  bprintf("  AppNumToBuf___ ( n2 )\n") &
+
+  bprintf("\n#define cat_prompt_enm___(s1,n1,s2) \\\n") &
+  bprintf("  strcat ( buf___, \" \\\"\" ); \\\n") &
+  bprintf("  strcat ( buf___, s1 ); \\\n") &
+  bprintf("  strcat ( buf___, \"\\\" \" ); \\\n") &
+  bprintf("  AppNumToBuf___ ( n1 ); \\\n") &
+  bprintf("  strcat ( buf___, \" \" ); \\\n") &
+  bprintf("  strcat ( buf___, \" \\\"\" ); \\\n") &
+  bprintf("  strcat ( buf___, s2 ); \\\n") &
+  bprintf("  strcat ( buf___, \"\\\" \" );\n") &
+  bprintf("\n#define nonws_Bcom___ \\\n") &
+  bprintf("  n___ = getc ( Bcom___ ); \\\n") &
+  bprintf("  while ( ( n___ == ' ' ) || ( n___ == '\t' ) ) n___ = getc ( Bcom___ ) \n") &
+  bprintf("\n#define nat_Bcom___(n) \\\n") &
+  bprintf("  nonws_Bcom___; \\\n") &
+  bprintf("  n = 0; \\\n") &
+  bprintf("  while ( n___ != ( char ) 17 && n___ != EOF ) { \\\n") &
+  bprintf("    n = ( 10 * n ) + n___ - '0'; \\\n") &
+  bprintf("    n___ = getc ( Bcom___ ); \\\n") &
+  bprintf("  }\n") &
+  bprintf("\n#define int_Bcom___(n) \\\n") &
+  bprintf("  nonws_Bcom___; \\\n") &
+  bprintf("  n = 0; \\\n") &
+  bprintf("  pm___ = n___; \\\n") &
+  bprintf("  if ( n___ != EOF ) n___ = getc ( Bcom___ ); \\\n") &
+  bprintf("  while ( n___ != ( char ) 17 && n___ != EOF ) { \\\n") &
+  bprintf("    n = ( 10 * n ) + n___ - '0'; \\\n") &
+  bprintf("    n___ = getc ( Bcom___ ); \\\n") &
+  bprintf("  } \\\n") &
+  bprintf("  if ( pm___ == '-' ) n = -n\n") &
+  bprintf("\n#define str_Bcom___(s) \\\n") &
+  bprintf("  nonws_Bcom___; \\\n") &
+  bprintf("  i___ = 0; \\\n") &
+  bprintf("  while ( n___ != ( char ) 17 && n___ != EOF ) { \\\n") &
+  bprintf("    s [ i___ ] = ( char ) n___; \\\n") &
+  bprintf("    i___++; \\\n") &
+  bprintf("    n___ = getc ( Bcom___ ); \\\n") &
+  bprintf("  } \\\n") &
+  bprintf("  s [ i___ ] = '\\0'\n") &
+  bprintf("\n#define chr_Bcom___(c) \\\n") &
+  bprintf("  c = ( char ) getc ( Bcom___ ) ; \\\n") &
+  bprintf("  n___ = getc ( Bcom___ )\n") &
+  bprintf("\n#define bts_Bcom___(n) \\\n") &
+  bprintf("  nonws_Bcom___; \\\n") &
+  bprintf("  n = 0; \\\n") &
+  bprintf("  while ( n___ != ( char ) 17 && n___ != EOF ) { \\\n") &
+  bprintf("    n = ( 2 * n ) + n___ - '0'; \\\n") &
+  bprintf("    n___ = getc ( Bcom___ ); \\\n") &
+  bprintf("  }\n") &
+  prt_M_02 &
+  prt_M_03 &
+  prt_M_04 &
+  prt_M_05 &
+  prt_M_06 &
+  prt_M_07 &
+  prt_M_07a &
+  prt_M_08 &
+  prt_M_09 &
+  prt_M_010 &
+  prt_M_011
+ =>
+  prt_M_01;
+
+
+
+  prt_M_1_2(o,m,n);
+
+  bprintf("%\n",n)
+ =>
+  prt_M_1_2(o,n,n);
+
+  bprintf("\"%\",",o)
+ =>
+  prt_M_1_1(o,m,n);
+
+  bprintf("\"%\"",o)
+ =>
+  prt_M_1_1(o,n,n);
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("AppCharToBuf___ ( char c___ )\n") &
+  bprintf("#else\n") &
+  bprintf("AppCharToBuf___ ( c___ )\n") &
+  bprintf("char c___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_1_2_hdr;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("AppNumToBuf___ ( int n___ )\n") &
+  bprintf("#else\n") &
+  bprintf("AppNumToBuf___ ( n___ )\n") &
+  bprintf("int n___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_1_1_hdr;
+
+  bprintf("\n\nchar *opnames___ [] = { ") &
+  prt_M_1_1 bnmap (o) &
+  bprintf(" };\n") &
+  bprintf("#define opnames_tot___ ") &
+  prt_M_1_2 bnmap (o) &
+  bprintf("\nchar sel_tog___ [ opnames_tot___ + 1 ];\n") &
+  bprintf("\n\nchar *num__________ [] = {\n") &
+  bprintf("  \"0\",\n") &
+  bprintf("  \"1\",\n") &
+  bprintf("  \"2\",\n") &
+  bprintf("  \"3\",\n") &
+  bprintf("  \"4\",\n") &
+  bprintf("  \"5\",\n") &
+  bprintf("  \"6\",\n") &
+  bprintf("  \"7\",\n") &
+  bprintf("  \"8\",\n") &
+  bprintf("  \"9\"\n") &
+  bprintf("};\n") &
+  prt_M_1_1_hdr &
+  bprintf("{\n") &
+  bprintf("  if ( n___ < 0 ) {\n") &
+  bprintf("    strcat ( buf___, \"-\" );\n") &
+  bprintf("    n___ = n___ * (-1);\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( n___ > 9 ) {\n") &
+  bprintf("    AppNumToBuf___ ( n___ / 10 );\n") &
+  bprintf("    strcat ( buf___, num__________ [ n___ \% 10 ] );\n") &
+  bprintf("  }\n") &
+  bprintf("  else {\n") &
+  bprintf("    strcat ( buf___, num__________ [ n___ ] );\n") &
+  bprintf("  }\n") &
+  bprintf("}\n\n") &
+  bprintf("void\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("AppBitsToBuf___ ( int n___ )\n") &
+  bprintf("#else\n") &
+  bprintf("AppBitsToBuf___ ( n___ )\n") &
+  bprintf("int n___;\n") &
+  bprintf("#endif\n") &
+  bprintf("{\n") &
+  bprintf("  int i___ = 32;\n") &
+  bprintf("  while( i___ > 0 ) {\n") &
+  bprintf("    strcat ( buf___, num__________ [ ( ( ( n___ >> ( i___ - 1 ) ) \% 2 ) + 2 ) \% 2 ] );\n") &
+  bprintf("      i___ = i___ - 1;\n") &
+  bprintf("  }\n") &
+  bprintf("}\n\n")&
+  prt_M_1_2_hdr &
+  bprintf("{\n") &
+  bprintf("  int l___ = strlen ( buf___ );\n") &
+  bprintf("  buf___ [ l___++ ] = c___;\n" ) &
+  bprintf("  buf___ [ l___ ] = '\\0';\n" ) &
+  bprintf("}\n")
+ =>
+  prt_M_1(o);
+
+  bsearch(?,o,p) &
+  prt_M_1(p)
+ =>
+  prt_M_1(o);  /* op names */
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("Popup_Err_CB ( Widget err___ )\n") &
+  bprintf("#else\n") &
+  bprintf("Popup_Err_CB ( err___ )\n") &
+  bprintf("Widget err___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_1_hdr;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("Popup_Err ( char * text___ )\n") &
+  bprintf("#else\n") &
+  bprintf("Popup_Err ( text___ )\n") &
+  bprintf("char * text___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_1_hdr1;
+
+  prt_M_1_hdr &
+  bprintf("{\n") &
+  bprintf("  XtPopdown ( XtParent ( err___ ) );\n") &
+  bprintf("  XmUpdateDisplay ( XtParent ( err___ ) );\n") &
+  bprintf("}\n") &
+  prt_M_1_hdr1 &
+  bprintf("{\n") &
+  bprintf("  static Widget err___;\n") &
+  bprintf("  if ( ! err___ ) {\n") &
+  bprintf("    err___ = XmCreateErrorDialog ( top_level___, \"WarningDialog\", NULL, 0 );\n") &
+  bprintf("    XtVaSetValues ( err___,\n") &
+  bprintf("        XmNmarginWidth,            10,\n") &
+  bprintf("        XmNmarginHeight,           5,\n") &
+  bprintf("        XmNdefaultPosition,        False,  \n") &
+  bprintf("        XmNdialogStyle,            XmDIALOG_APPLICATION_MODAL,\n") &
+  bprintf("        NULL );\n") &
+  bprintf("    XtUnmanageChild ( XmMessageBoxGetChild ( err___, XmDIALOG_CANCEL_BUTTON ) );\n") &
+  bprintf("    XtUnmanageChild ( XmMessageBoxGetChild ( err___, XmDIALOG_HELP_BUTTON ) );\n") &
+  bprintf("    XtAddCallback ( err___, XmNokCallback, ( XtCallbackProc ) Popup_Err_CB, ( XtPointer ) NULL );\n") &
+  bprintf("  }\n") &
+  bprintf("  xstr___ = XmStringCreateLtoR ( ( char * ) text___, charset___ );\n") &
+  bprintf("  XtVaSetValues ( err___, XmNmessageString, xstr___, NULL );\n") &
+  bprintf("  XmStringFree ( xstr___ );\n") &
+  bprintf("  XtVaSetValues ( err___, XmNx, 135, XmNy, 195, NULL );\n") &
+  bprintf("  XtManageChild ( err___ );\n") &
+  bprintf("  XtPopup ( XtParent ( err___ ) , XtGrabNone ); \n") &
+  bprintf("  XBell ( display___, 10 );\n") &
+  bprintf("}\n\n") &
+  bprintf("#define nat_type___     1\n") &
+  bprintf("#define char_type___    2\n") &
+  bprintf("#define string_type___  3\n") &
+  bprintf("#define fstring_type___ 4\n") &
+  bprintf("#define bool_type___    5\n") &
+  bprintf("#define enum_type___    6\n") &
+  bprintf("#define bit_type___     7\n") &
+  bprintf("#define int_type___     9\n") &
+  bprintf("#define other_type___  10\n")
+ =>
+  prt_M_2;
+
+
+/***
+  out
+***/
+
+/*** nothing found *
+
+  brule(PrtMotifX.5,n) &
+  InformCantGenerateForTypeM(n,i,T) &
+  SetCIONoMiniRemakeFlag &
+  SetCIOError
+ =>
+  prt_out_types_4_2(i,T)(?);
+
+**  Accept ANYTHING    ******/
+
+  brule(PrtMotifX.5,n) &
+  WarningDefaultForPOW(n,i,T) &
+  update_type(nat_type___) &
+  bprintf("\"Abstract Token ((%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_2(i,(T))(v);
+
+/*** default for POW ***/
+
+  brule(PrtMotifX.5,n) &
+  WarningDefaultForPOW(n,i,T) &
+  update_type(nat_type___) &
+  bprintf("\"Abstract Token (POW(%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_2(i,POW(T))(?);
+
+/*** default for seq ***/
+
+  brule(PrtMotifX.5,n) &
+  WarningDefaultForPOW(n,i,T) &
+  update_type(nat_type___) &
+  bprintf("\"Abstract Token (seq(%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_2(i,seq(T))(?);
+
+/*** POW(SET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"Token (POW(%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_2(i,T)(U;(x=y));
+
+/*** POW\/POW ***/
+
+  prt_out_types_4_2(i,POW(T))(U)
+ =>
+  prt_out_types_4_2(i,POW(T))(U;u);
+  
+/*** POW(SET)\/POW(SET)  ***/
+
+  bident(x) &
+  bsearch(POW(T),y,z) &
+  update_type(nat_type___) &
+  bprintf("\"Token (POW(%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_2(i,POW(T))(U;(x=y));
+
+/*** POW(PARAMSET)\/POW(PARAMSET)  ***/
+
+  bident(x) &
+  bsearch(POW(T),y,z) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_type(nat_type___) &
+  bprintf("\"Token (POW(%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_2(i,T)(U;(x=y));
+
+
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  prt_out_types_4_2(i,POW(T))(U)
+ =>
+  prt_out_types_4_1(i,POW(T));
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  prt_out_types_4_2(i,seq(T))(U)
+ =>
+  prt_out_types_4_1(i,seq(T));
+
+/** accept ANYTHING  ***/
+  
+  ReadImpTypeStore(U) &
+  prt_out_types_4_2(i,(T))(U)
+ =>
+  prt_out_types_4_1(i,(T));
+
+
+/*** (SET*SET) ***/
+
+  bident(T) &
+  bident(S) &
+  ReadImpTypeStore(U) &
+  bsearch((u=(S*T)),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"Token ((%*%)/NAT) in %: \"",S,T,i)
+ =>
+  prt_out_types_4_1(i,(S*T));
+
+
+/*** POW(SET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"Token (POW(%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_1(i,POW(T));
+
+  ReadImpTypeStore(U) &
+  bsearch((POW(POW(NAT*BOOL))=u),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"Token (POW(%)/NAT) in %: \"",BOOL,i)
+ =>
+  prt_out_types_4_1(i,POW(POW(NAT*BOOL)));
+
+/*** (PARAMSET*PARAMSET) ***/
+
+  bident(T) &
+  bident(S) &
+  ReadImpTypeStore(U) &
+  bsearch((u=(S*T)),U,V) &
+  bident(u) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  bsearch(S,P,Q) &
+  update_type(nat_type___) &
+  bprintf("\"Token ((%*%)/NAT) in %: \"",S,T,i)
+ =>
+  prt_out_types_4_1(i,(S*T));
+
+/*** POW(PARAMSET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_type(nat_type___) &
+  bprintf("\"Token (POW(%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_1(i,POW(T));
+
+/*** seq ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((seq(T)=u),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"Token (seq(%)/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_1(i,seq(T));
+
+  ReadImpTypeStore(U) &
+  bsearch((seq(POW(NAT*BOOL))=u),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"Token (seq(%)/NAT) in %: \"",BOOL,i)
+ =>
+  prt_out_types_4_1(i,seq(POW(NAT*BOOL)));
+
+/*** ABSOBJ set ***/
+
+  bident(T) &
+  update_IOLIBStore(T) &
+  update_type(nat_type___) &
+  bprintf("\"Token (%/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_1(i,T);
+
+/*** deferred set ***/
+
+  bident(T) &
+  ReadSetPropsStore(Y) &
+  bsearch((given(T)),Y,Z) &
+  update_type(nat_type___) &
+  bprintf("\"Token (%/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_1(i,T);
+
+/*** deferred set - check ImpSeenPropsStore next ***/
+
+  bident(T) &
+  ReadImpSeenPropsStore(U) &
+  bsearch((T=seq(CHAR)),U,V) &
+  update_type(string_type___) &
+  bprintf("\"Value (STRING) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,T);
+
+  bident(T) &
+  ReadImpSeenPropsStore(U) &
+  bsearch((T=POW(NAT*CHAR)),U,V) &
+  update_type(string_type___) &
+  bprintf("\"Value (STRING) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,T);
+
+/*** deferred set - check ImpTypeStore first ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((T=seq(CHAR)),U,V) &
+  update_type(string_type___) &
+  bprintf("\"Value (STRING) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,T);
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((T=POW(NAT*CHAR)),U,V) &
+  update_type(string_type___) &
+  bprintf("\"Value (STRING) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,T);
+
+/*** machine parameters found ***/
+
+  bident(T) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_type(nat_type___) &
+  bprintf("\"Value (%/NAT) in %: \"",T,i)
+ =>
+  prt_out_types_4_1(i,T);
+
+
+
+
+/*** enumeration found ***/
+
+  bident(T) &
+  ReadSetsStore(E) &
+  bsearch((T(W)),E,F) &
+  bcall((MODR;CreOpsX)~:update_EnumStore(T(W))) &
+  update_type(enum_type___(T)) &
+  bprintf("\"Value (%) in %: \"",T,i)
+ =>
+  prt_out_types_4_1(i,T);
+
+/*** dimensioned set ***/
+
+  bident(T) &
+  ReadSetsStore(E) &
+  bsearch((T[W]),E,F) &
+/* HERE((133:T[W]))& */
+  bnum(W)&
+  update_type(string_type___) &
+  bprintf("\"String (%[%]) in %: \"",T,W,i)
+ =>
+  prt_out_types_4_1(i,T);
+
+/*** basic_io stuff ***/
+
+  update_type(bit_type___) &
+  bprintf("\"Value (BITSEQ) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,BITSEQ);
+
+  update_type(bit_type___) &
+  bprintf("\"Value (BITS) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,BITS);
+
+  update_type(string_type___) &
+  bprintf("\"Value (STRING) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,STRING);
+
+  update_type(fstring_type___) &
+  bprintf("\"Value (STRING/WORD(%)) in %: \"",k,i)
+ =>
+  prt_out_types_4_1(i,STRING(k));
+
+  update_type(char_type___) &
+  bprintf("\"Value (CHAR) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,CHAR);
+
+  update_type(nat_type___) &
+  bprintf("\"Value (NAT) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,NAT);
+
+  update_type(int_type___) &
+  bprintf("\"Value (INT) in %: \"",i)
+ =>
+  prt_out_types_4_1(i,INTEGER);
+
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:t),T,S) &
+  prt_out_types_4_1(i,t)
+ =>
+  prt_out_types_4(i);
+
+
+/* BITS */
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*BOOL)),T,S) &
+  prt_out_types_4_1(i,BITS)
+ =>
+  prt_out_types_4(i);
+
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:0..255),T,S) &
+  prt_out_types_4_1(i,CHAR)
+ =>
+  prt_out_types_4(i);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:W),T,S) &
+  ReadSetPropsStore(U) &
+  bsearch( (given(W[k])),U,R) &
+  prt_out_types_4_1(i,STRING(k))
+ =>
+  prt_out_types_4(i);
+
+/* BITSEQ */
+
+/***
+VERY TEMPORARY until Ib fixes TypeChecker ...
+***/
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*NAT)),T,S) &
+  ReadImpTypeStore(U) &
+  bsearch((BITSEQ = POW(NAT*NAT)),U,V) &
+  prt_out_types_4_1(i,BITSEQ)
+ =>
+  prt_out_types_4(i);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*NAT)),T,S) &
+  ReadSetPropsStore(U) &
+  bsearch((BITSEQ = POW(NAT*NAT)),U,V) &
+  prt_out_types_4_1(i,BITSEQ)
+ =>
+  prt_out_types_4(i);
+
+/* STRING */
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:seq(CHAR)),T,S) &
+  prt_out_types_4_1(i,STRING)
+ =>
+  prt_out_types_4(i);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*CHAR)),T,S) &
+  prt_out_types_4_1(i,STRING)
+ =>
+  prt_out_types_4(i);
+
+
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:seq(NAT)),T,S) &
+  ReadImpTypeStore(U) &
+  bsearch((u=seq(NAT)),U,V) &
+  bident(u) &
+  prt_out_types_4_1(i,seq(NAT))
+ =>
+  prt_out_types_4(i);
+
+  bmodr(PrtMotifX.6,i) &
+  prt_out_types_4(i) &
+  bprintf(",")
+ =>
+  prt_out_types_3(i,m,n);
+
+  bmodr(PrtMotifX.6,i) &
+  prt_out_types_4(i)
+ =>
+  prt_out_types_3(i,n,n);
+
+  prt_out_types_3 bnmap (p)
+ =>
+  prt_out_types_2(p);
+
+  bsearch(?,p,q) &
+  prt_out_types_2(q)
+ =>
+  prt_out_types_2(p);
+
+  prt_out_types_tot(q,m,n);
+
+  bprintf("%\n",n)
+ =>
+  prt_out_types_tot(q,n,n);
+
+  prt_out_types_1(o(p;q)==t);  /* out;in */
+
+  OpRequired(o) &
+  clear_type &
+  ModrCurrTypeStore((t&?)) &
+  bmodr(PrtMotifX.4,2) &
+  bmodr(PrtMotifX.5,o) &
+  bprintf("\n#define %_otot___ ",o) &
+  prt_out_types_tot bnmap p &
+  bprintf("\nchar * %_out___ [] = {",o) &
+  prt_out_types_2(p) &
+  bprintf("};\n") &
+  bprintf("\nint %_out_type___ [] = {",o) &
+  print_type &
+  bprintf("};\n")
+ =>
+  prt_out_types_1(o(p;q)==t);  /* out;in */
+
+  prt_out_types_1(o(?;q)==t);  /* out;in */
+
+  prt_out_types_1(?);
+
+
+
+/***
+  inp
+***/
+
+/*** nothing found 
+
+  brule(PrtMotifX.5,n) &
+  InformCantGenerateForTypeM(n,i,T) &
+  SetCIONoMiniRemakeFlag &
+  SetCIOError
+ =>
+  prt_inp_types_4_2(i,T)(?);
+
+**  Accept ANYTHING  ***/
+
+  brule(PrtMotifX.5,n) &
+  WarningDefaultForPOW(n,i,T) &
+  update_type(nat_type___) &
+  bprintf("\"% (Abstract Token (%)/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_2(i,(T))(v);
+
+
+/*** default for POW ***/
+
+  brule(PrtMotifX.5,n) &
+  WarningDefaultForPOW(n,i,T) &
+  update_type(nat_type___) &
+  bprintf("\"% (Abstract Token POW(%)/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_2(i,POW(T))(?);
+
+/*** default for seq ***/
+
+  brule(PrtMotifX.5,n) &
+  WarningDefaultForseq(n,i,T) &
+  update_type(nat_type___) &
+  bprintf("\"% (Abstract Token seq(%)/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_2(i,POW(NAT*T))(?);
+
+/*** POW(SET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"% (POW(%)/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_2(i,POW(T))(U;(x=y));
+
+/*** POW\/POW ***/
+
+  prt_inp_types_4_2(i,POW(T))(U)
+ =>
+  prt_inp_types_4_2(i,POW(T))(U;u);
+  
+/*** POW(SET)\/POW(SET)  ***/
+
+  bident(x) &
+  bsearch(POW(T),y,z) &
+  update_type(nat_type___) &
+  bprintf("\"% (POW(%)/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_2(i,POW(T))(U;(x=y));
+
+/*** POW(PARAMSET)\/POW(PARAMSET)  ***/
+
+  bident(x) &
+  bsearch(POW(T),y,z) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_type(nat_type___) &
+  bprintf("\"% (POW(%)/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_2(i,POW(T))(U;(x=y));
+
+  bident(T) &
+
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  prt_inp_types_4_2(i,POW(NAT*T))(U)
+ =>
+  prt_inp_types_4_1(i,POW(NAT*T));
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  prt_inp_types_4_2(i,POW(T))(U)
+ =>
+  prt_inp_types_4_1(i,POW(T));
+
+/**** accept ANYTHING ****/
+
+  ReadImpTypeStore(U) &
+  prt_inp_types_4_2(i,(T))(U)
+ =>
+  prt_inp_types_4_1(i,(T));
+
+/*** SET * SET ***/
+
+  bident(S) &
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=(S*T)),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"% ((%*%)/NAT): \"",i,S,T)
+ =>
+  prt_inp_types_4_1(i,(S*T));
+
+/*** POW(SET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"% (POW(%)/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_1(i,POW(T));
+
+  ReadImpTypeStore(U) &
+  bsearch((POW(POW(NAT*BOOL))=u),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"% (POW(%)/NAT): \"",i,BOOL)
+ =>
+  prt_inp_types_4_1(i,POW(POW(NAT*BOOL)));
+
+/*** (PARAMSET*PARAMSET) ***/
+
+  bident(T) &
+  bident(S) &
+  ReadImpTypeStore(U) &
+  bsearch((u=(S*T)),U,V) &
+  bident(u) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  bsearch(S,P,Q) &
+  update_type(nat_type___) &
+  bprintf("\"% ((%*%)/NAT) : \"",i,S,T)
+ =>
+  prt_inp_types_4_1(i,(S*T));
+
+/*** POW(PARAMSET) ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((u=POW(T)),U,V) &
+  bident(u) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_type(nat_type___) &
+  bprintf("\"% (POW(%)/NAT) : \"",i,T)
+ =>
+  prt_inp_types_4_1(i,POW(T));
+
+/*** seq ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((seq(T)=u),U,V) &
+  bident(u) &
+  update_type(nat_type___) &
+  bprintf("\"% (seq(%)/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_1(i,seq(T));
+
+  ReadImpTypeStore(U) &
+  bsearch((seq(POW(NAT*BOOL))=u),U,V) &
+  bident(u) &
+  update_type(bool_type___) &
+  bprintf("\"% (seq(%)/NAT): \"",i,BOOL)
+ =>
+  prt_inp_types_4_1(i,seq(POW(NAT*BOOL)));
+
+/*** ABSOBJ set ***/
+
+  bident(T) &
+  update_IOLIBStore(T) &
+  update_type(nat_type___) &
+  bprintf("\"% (%/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_1(i,T);
+
+/*** deferred set ***/
+
+  bident(T) &
+  ReadSetPropsStore(Y) &
+  bsearch((given(T)),Y,Z) &
+  update_type(nat_type___) &
+  bprintf("\"% (%/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_1(i,T);
+
+/*** deferred set - check ImpSeenPropsStore next ***/
+
+  bident(T) &
+  ReadImpSeenPropsStore(U) &
+  bsearch((T=seq(CHAR)),U,V) &
+  update_type(string_type___) &
+  bprintf("\"% (STRING): \"",i)
+ =>
+  prt_inp_types_4_1(i,T);
+
+  bident(T) &
+  ReadImpSeenPropsStore(U) &
+  bsearch((T=POW(NAT*CHAR)),U,V) &
+  update_type(string_type___) &
+  bprintf("\"% (STRING): \"",i)
+ =>
+  prt_inp_types_4_1(i,T);
+
+/*** deferred set - check ImpTypeStore first ***/
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((T=seq(CHAR)),U,V) &
+  update_type(string_type___) &
+  bprintf("\"% (STRING): \"",i)
+ =>
+  prt_inp_types_4_1(i,T);
+
+  bident(T) &
+  ReadImpTypeStore(U) &
+  bsearch((T=POW(NAT*CHAR)),U,V) &
+  update_type(string_type___) &
+  bprintf("\"% (STRING): \"",i)
+ =>
+  prt_inp_types_4_1(i,T);
+
+/*** machine parameters found ***/
+
+  bident(T) &
+  ReadParamsStore(P) &
+  bsearch(T,P,Q) &
+  update_type(nat_type___) &
+  bprintf("\"% (%/NAT): \"",i,T)
+ =>
+  prt_inp_types_4_1(i,T);
+
+/*** enumeration found ***/
+
+  bident(T) &
+  ReadSetsStore(E) &
+  bsearch((T(W)),E,F) &
+  bcall((MODR;CreOpsX)~:update_EnumStore(T(W))) &
+  update_type(enum_type___(T)) &
+  bprintf("\"% (%): \"",i,T)
+ =>
+  prt_inp_types_4_1(i,T);
+
+/*** dimensioned set ***/
+
+  bident(T) &
+  ReadSetsStore(E) &
+  bsearch((T[W]),E,F) &
+/* HERE((134:T[W]))& */
+  bnum(W)&
+  update_type(string_type___) &
+  bprintf("\"% (%[%]): \"",i,T,W)
+ =>
+  prt_inp_types_4_1(i,T);
+
+/*** basic_io stuff ***/
+
+  update_type(bit_type___) &
+  bprintf("\"% (BITSEQ/(0,1's)): \"",i)
+ =>
+  prt_inp_types_4_1(i,BITSEQ);
+
+  update_type(bit_type___) &
+  bprintf("\"% (BITS/(0,1's)): \"",i)
+ =>
+  prt_inp_types_4_1(i,BITS);
+
+  update_type(string_type___) &
+  bprintf("\"% (STRING): \"",i)
+ =>
+  prt_inp_types_4_1(i,STRING);
+
+  update_type(fstring_type___) &
+  bprintf("\"% (STRING/WORD(%)): \"",i,k)
+ =>
+  prt_inp_types_4_1(i,STRING(k));
+
+  update_type(char_type___) &
+  bprintf("\"Value (CHAR) for %: \"",i)
+ =>
+  prt_inp_types_4_1(i,CHAR);
+
+  update_type(nat_type___) &
+  bprintf("\"% (NAT): \"",i)
+ =>
+  prt_inp_types_4_1(i,NAT);
+
+  update_type(int_type___) &
+  bprintf("\"% (INT): \"",i)
+ =>
+  prt_inp_types_4_1(i,INTEGER);
+
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:t),T,S) &
+  prt_inp_types_4_1(i,t)
+ =>
+  prt_inp_types_4(i);
+
+/* BITS */
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*BOOL)),T,S) &
+  prt_inp_types_4_1(i,BITS)
+ =>
+  prt_inp_types_4(i);
+
+
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:0..255),T,S) &
+  prt_inp_types_4_1(i,CHAR)
+ =>
+  prt_inp_types_4(i);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:W),T,S) &
+  ReadSetPropsStore(U) &
+  bsearch( (given(W[k])),U,R) &
+  prt_inp_types_4_1(i,STRING(k))
+ =>
+  prt_inp_types_4(i);
+
+/* BITSEQ */
+
+/***
+VERY TEMPORARY until Ib fixes TypeChecker ...
+***/
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*NAT)),T,S) &
+  ReadImpTypeStore(U) &
+  bsearch((BITSEQ = POW(NAT*NAT)),U,V) &
+  prt_inp_types_4_1(i,BITSEQ)
+ =>
+  prt_inp_types_4(i);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*NAT)),T,S) &
+  ReadSetPropsStore(U) &
+  bsearch((BITSEQ = POW(NAT*NAT)),U,V) &
+  prt_inp_types_4_1(i,BITSEQ)
+ =>
+  prt_inp_types_4(i);
+
+/* STRING */
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:seq(CHAR)),T,S) &
+  prt_inp_types_4_1(i,STRING)
+ =>
+  prt_inp_types_4(i);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:POW(NAT*CHAR)),T,S) &
+  prt_inp_types_4_1(i,STRING)
+ =>
+  prt_inp_types_4(i);
+
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:seq(NAT)),T,S) &
+  ReadImpTypeStore(U) &
+  bsearch((u=seq(NAT)),U,V) &
+  bident(u) &
+  prt_inp_types_4_1(i,seq(NAT))
+ =>
+  prt_inp_types_4(i);
+
+  bmodr(PrtMotifX.6,i) &
+  prt_inp_types_4(i) &
+  bprintf(",")
+ =>
+  prt_inp_types_3(i,m,n);
+
+  bmodr(PrtMotifX.6,i) &
+  prt_inp_types_4(i)
+ =>
+  prt_inp_types_3(i,n,n);
+
+  prt_inp_types_3 bnmap (p)
+ =>
+  prt_inp_types_2(p);
+
+  bsearch(?,p,q) &
+  prt_inp_types_2(q)
+ =>
+  prt_inp_types_2(p);
+
+  prt_inp_types_tot(q,m,n);
+
+  bprintf("%\n",n)
+ =>
+  prt_inp_types_tot(q,n,n);
+
+  prt_inp_types_1(o(p;q)==t);  /* out;in */
+
+  OpRequired(o) &
+  clear_type &
+  ModrCurrTypeStore((t&?)) &
+  bmodr(PrtMotifX.4,1) &
+  bmodr(PrtMotifX.5,o) &
+  bprintf("\n#define %_itot___ ",o) &
+  prt_inp_types_tot bnmap q &
+  bprintf("\nchar * %_inp___ [] = {",o) &
+  prt_inp_types_2(q) &
+  bprintf("};\n") &
+  bprintf("\nint %_inp_type___ [] = {",o) &
+  print_type &
+  bprintf("};\n")
+ =>
+  prt_inp_types_1(o(p;q)==t);  /* out;in */
+
+  prt_inp_types_1(o(p;?)==t);  /* out;in */
+
+  prt_inp_types_1(?);
+
+  ReadOpTypesStore(S) &
+  prt_inp_types_1 bsmap S &
+  prt_out_types_1 bsmap S
+ =>
+  prt_op_types_0;
+
+
+  bprintf("\nint\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("check_bit___ ( char * str___ )\n") &
+  bprintf("#else\n") &
+  bprintf("check_bit___ ( str___ )\n") &
+  bprintf("char * str___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_3a_hdr;
+
+  prt_M_3a_hdr &
+  bprintf("{\n") &
+  bprintf("  int l___ = strlen ( str___ );\n") &
+  bprintf("  int ok___ = 1;\n") &
+  bprintf("  int  i___ = 0;\n") &
+  bprintf("  if ( l___ == 0 ) {\n") &
+  bprintf("    strcpy ( buf___, \"Empty input field!\" );\n") &
+  bprintf("    Popup_Err ( buf___ );\n") &
+  bprintf("    return ( 0 );\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( l___ > 32 ) {\n") &
+  bprintf("    strcpy ( buf___, \"Bit string too long (max 32)!\" );\n") &
+  bprintf("    Popup_Err ( buf___ );\n") &
+  bprintf("    return ( 0 );\n") &
+  bprintf("  }\n") &
+  bprintf("  while ( i___ < l___ && ok___ ) {\n") &
+  bprintf("    if ( str___ [ i___ ] != '0' && str___ [ i___ ] != '1' ) {\n") &
+  bprintf("      ok___ = 0;\n") &
+  bprintf("    }\n") &
+  bprintf("    i___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( ! ok___ ) {\n") &
+  bprintf("    strcpy ( buf___, \"\\\"\" );\n") &
+  bprintf("    strcat ( buf___, str___ );\n") &
+  bprintf("    strcat ( buf___, \"\\\" is not bit string\" );\n") &
+  bprintf("    Popup_Err ( buf___ );\n") &
+  bprintf("  }\n") &
+  bprintf("  return ( ok___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_3a;
+
+  bprintf("\nvoid\nIni_nx_ny___ ()\n{\n") &
+  bprintf("  Dimension tw___;\n") &
+  bprintf("  XtVaGetValues ( top_level___, \n") &
+  bprintf("      XmNx,         &pnx___,\n") &
+  bprintf("      XmNy,         &pny___,\n") &
+  bprintf("      XmNwidth,     &tw___,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  pnx___ = pnx___ + tw___;\n") &
+  bprintf("  nx___ = pnx___;\n") &
+  bprintf("  ny___ = pny___;\n") &
+  bprintf("}\n")
+ =>
+  prt_M_3b;
+
+  bprintf("\nint\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("check_chr___ ( char * str___ )\n") &
+  bprintf("#else\n") &
+  bprintf("check_chr___ ( str___ )\n") &
+  bprintf("char * str___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_3c_hdr;
+
+  prt_M_3c_hdr &
+  bprintf("{\n") &
+  bprintf("  int l___ = strlen ( str___ );\n") &
+  bprintf("  int ok___ = 1;\n") &
+  bprintf("  if ( l___ != 1                   ||\n") &
+  bprintf("       str___ [ 0 ] < ( char ) 32  || \n") &
+  bprintf("       str___ [ 0 ] > ( char ) 126    ) ok___ = 0;\n") &
+  bprintf("  if ( ! ok___ ) {\n") &
+  bprintf("    strcpy ( buf___, \"\\\"\" );\n") &
+  bprintf("    strcat ( buf___, str___ );\n") &
+  bprintf("    strcat ( buf___, \"\\\" is not a (single) character\" );\n") &
+  bprintf("    Popup_Err ( buf___ );\n") &
+  bprintf("  }\n") &
+  bprintf("  return ( ok___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_3c;
+
+  bprintf("\nint\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("check_int___ ( char * str___ )\n") &
+  bprintf("#else\n") &
+  bprintf("check_int___ ( str___ )\n") &
+  bprintf("char * str___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_3_0_hdr;
+
+  prt_M_3_0_hdr &
+  bprintf("{\n") &
+  bprintf("  int l___ = strlen ( str___ );\n") &
+  bprintf("  int ok___ = 1;\n") &
+  bprintf("  int  i___ = 1;\n") &
+  bprintf("  if ( l___ == 0 ) {\n") &
+  bprintf("    strcpy ( buf___, \"Empty input field!\" );\n") &
+  bprintf("    Popup_Err ( buf___ );\n") &
+  bprintf("    return ( 0 );\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( ( str___ [ 0 ] != '-' ) && ( str___ [ 0 ] != '+' ) ) {\n") &
+  bprintf("    ok___ = 0;\n") &
+  bprintf("  }\n") &
+  bprintf("  while ( i___ < l___ && ok___ ) {\n") &
+  bprintf("    if ( str___ [ i___ ] < '0' || str___ [ i___ ] > '9' ) {\n") &
+  bprintf("      ok___ = 0;\n") &
+  bprintf("    }\n") &
+  bprintf("    i___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( ok___ ) {\n") &
+  bprintf("    if ( l___ > 10 ) {\n") &
+  bprintf("      ok___ = 0;\n") &
+  bprintf("    }\n") &
+  bprintf("    else if ( l___ == 10 ) {\n") &
+  bprintf("      unsigned j___ = 0;\n") &
+  bprintf("      for ( i___ = 0 ; i___ < 10 ; i___++ ) {\n") &
+  bprintf("        j___ = ( 10 * j___ ) + str___ [ i___ ] - '0';\n") &
+  bprintf("      }\n") &
+  bprintf("      if ( str___ [ 0 ] == '-' ) {\n") &
+  bprintf("        if ( j___ - 1 > 2147483646 ) {\n") &
+  bprintf("          ok___ = 0;\n") &
+  bprintf("        }\n") &
+  bprintf("      }\n") &
+  bprintf("      else {\n") &
+  bprintf("        if ( j___ > 2147483646 ) {\n") &
+  bprintf("          ok___ = 0;\n") &
+  bprintf("        }\n") &
+  bprintf("      }\n") &
+  bprintf("    }\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( ! ok___ ) {\n") &
+  bprintf("    strcpy ( buf___, \"\\\"\" );\n") &
+  bprintf("    strcat ( buf___, str___ );\n") &
+  bprintf("    strcat ( buf___, \"\\\" is not an integer in the range -2147483647 to +2147483646 - re-enter as +nnn/-nnn\" );\n") &
+  bprintf("    Popup_Err ( buf___ );\n") &
+  bprintf("  }\n") &
+  bprintf("  return ( ok___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_3_0;
+
+
+  bprintf("\nint\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("check_nat___ ( char * str___ )\n") &
+  bprintf("#else\n") &
+  bprintf("check_nat___ ( str___ )\n") &
+  bprintf("char * str___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_3_hdr;
+
+  prt_M_3_hdr &
+  bprintf("{\n") &
+  bprintf("  int l___ = strlen ( str___ );\n") &
+  bprintf("  int ok___ = 1;\n") &
+  bprintf("  int  i___ = 0;\n") &
+  bprintf("  if ( l___ == 0 ) {\n") &
+  bprintf("    strcpy ( buf___, \"Empty input field!\" );\n") &
+  bprintf("    Popup_Err ( buf___ );\n") &
+  bprintf("    return ( 0 );\n") &
+  bprintf("  }\n") &
+  bprintf("  while ( i___ < l___ && ok___ ) {\n") &
+  bprintf("    if ( str___ [ i___ ] < '0' || str___ [ i___ ] > '9' ) {\n") &
+  bprintf("      ok___ = 0;\n") &
+  bprintf("    }\n") &
+  bprintf("    i___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( ok___ ) {\n") &
+  bprintf("    if ( l___ > 10 ) {\n") &
+  bprintf("      ok___ = 0;\n") &
+  bprintf("    }\n") &
+  bprintf("    else if ( l___ == 10 ) {\n") &
+  bprintf("      unsigned j___ = 0;\n") &
+  bprintf("      for ( i___ = 0 ; i___ < 10 ; i___++ ) {\n") &
+  bprintf("        j___ = ( 10 * j___ ) + str___ [ i___ ] - '0';\n") &
+  bprintf("      }\n") &
+  bprintf("      if ( j___ > 2147483646 ) {\n") &
+  bprintf("        ok___ = 0;\n") &
+  bprintf("      }\n") &
+  bprintf("    }\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( ! ok___ ) {\n") &
+  bprintf("    strcpy ( buf___, \"\\\"\" );\n") &
+  bprintf("    strcat ( buf___, str___ );\n") &
+  bprintf("    strcat ( buf___, \"\\\" is not a number (0..2147483646)\" );\n") &
+  bprintf("    Popup_Err ( buf___ );\n") &
+  bprintf("  }\n") &
+  bprintf("  return ( ok___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_3;
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("\nGET_SET_TOK_M ( char * * s___, int m___, int * o___  )\n") &
+  bprintf("#else\n") &
+  bprintf("\nGET_SET_TOK_M ( s___, m___, o___ )\n") &
+  bprintf("char * * s___;\n") &
+  bprintf("int m___;\n") &
+  bprintf("int * o___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_get_set_tok_hdr;
+
+  prt_get_set_tok_hdr &
+  bprintf("{\n") &
+  bprintf("  char t___ [ 250 ];\n") &
+  bprintf("  int i___,j___,n___,x___,y___;\n") &
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  for ( i___ = 0 ; i___ < m___ ; i___++ ) {\n") &
+  bprintf("    sprintf ( t___, \"  \%s value # \%d: \", s___ [ 0 ], i___ + 1 );\n") &
+  bprintf("    cat_prompt___ ( t___, 1, 2147483646 );\n") &
+  bprintf("  }\n") &
+/***
+  bprintf("printf ( \"buf___ |\%s|\\n\", buf___ );\n") &
+***/
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  for ( i___ = 0 ; i___ < m___ ; i___++ ) {\n") &
+  bprintf("    nat_Bcom___ ( j___ );\n") &
+  bprintf("    o___ [ i___ ] = j___;\n") &
+  bprintf("  }\n") &
+  bprintf("  nat_Bcom___ ( x___ );\n") &
+  bprintf("  nat_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_4_7;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("\nGET_SET_ACT_TOK_M ( char * * s___, int m___, int * o___  )\n") &
+  bprintf("#else\n") &
+  bprintf("\nGET_SET_ACT_TOK_M ( s___, m___, o___ )\n") &
+  bprintf("char * * s___;\n") &
+  bprintf("int m___;\n") &
+  bprintf("int * o___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_get_set_act_tok_hdr;
+
+
+  prt_get_set_act_tok_hdr &
+  bprintf("{\n") &
+  bprintf("  char enm_buf___ [ 1000 ];\n") &
+  bprintf("  char t___ [ 250 ];\n") &
+  bprintf("  char u___ [ 250 ];\n") &
+  bprintf("  int i___,j___,n___,x___,y___;\n") &
+  bprintf("  i___ = 1;\n") &
+  bprintf("  while ( s___ [ i___ ] [ 0 ] != '_' ) {\n") &
+  bprintf("    i___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  j___ = 0;\n") &
+  bprintf("  while ( s___ [ i___ ] [ j___ ] != '\\0' ) {\n") &
+  bprintf("    enm_buf___ [ j___ ] = s___ [ i___ ] [ j___ ];\n") &
+  bprintf("    if ( j___ ) u___ [ j___ - 1 ] = s___ [ i___ ] [ j___ ];\n") &
+  bprintf("    j___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  u___ [ j___ ] = '\\0';\n") &
+  bprintf("  enm_buf___ [ j___ ] = '(';\n") &
+  bprintf("  enm_buf___ [ j___ + 1 ] = '\\0';\n") &
+  bprintf("  i___ = 1;\n") &
+  bprintf("  while ( s___ [ i___ ] [ 0 ] != '_' ) {\n") &
+  bprintf("    if ( i___ != 1 ) strcat ( enm_buf___, \",\" );\n") &
+  bprintf("    strcat ( enm_buf___, s___ [ i___ ] );\n") &
+  bprintf("    i___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  strcat ( enm_buf___, \")\" );\n") &
+/***
+  bprintf("printf ( \"enm_buf___ |\%s|\\n\", enm_buf___ );\n") &
+***/
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  for ( i___ = 0 ; i___ < m___ ; i___++ ) {\n") &
+  bprintf("    sprintf ( t___, \"  \%s value # \%d: \", u___, i___ + 1 );\n") &
+  bprintf("    cat_prompt_enm___ ( t___, 5, enm_buf___ );\n") &
+  bprintf("  }\n") &
+/***
+  bprintf("printf ( \"buf___ |\%s|\\n\", buf___ );\n") &
+***/
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  for ( i___ = 0 ; i___ < m___ ; i___++ ) {\n") &
+  bprintf("    nat_Bcom___ ( j___ );\n") &
+  bprintf("    o___ [ i___ ] = j___;\n") &
+  bprintf("  }\n") &
+  bprintf("  nat_Bcom___ ( x___ );\n") &
+  bprintf("  nat_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_4_6;
+
+
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("\nGET_ACT_TOK_M ( char * * s___, int * o___ , char * p___ )\n") &
+  bprintf("#else\n") &
+  bprintf("\nGET_ACT_TOK_M ( s___, o___, p___ )\n") &
+  bprintf("char * * s___;\n") &
+  bprintf("int * o___;\n") &
+  bprintf("char * p___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_get_act_tok_hdr;
+
+
+  prt_get_act_tok_hdr &
+  bprintf("{\n") &
+  bprintf("  char enm_buf___ [ 1000 ];\n") &
+  bprintf("  int i___,j___,n___,x___,y___;\n") &
+  bprintf("  i___ = 1;\n") &
+  bprintf("  while ( s___ [ i___ ] [ 0 ] != '_' ) {\n") &
+  bprintf("    i___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  j___ = 0;\n") &
+  bprintf("  while ( s___ [ i___ ] [ j___ ] != '\\0' ) {\n") &
+  bprintf("    enm_buf___ [ j___ ] = s___ [ i___ ] [ j___ ];\n") &
+  bprintf("    j___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  enm_buf___ [ j___ ] = '(';\n") &
+  bprintf("  enm_buf___ [ j___ + 1 ] = '\\0';\n") &
+  bprintf("  i___ = 1;\n") &
+  bprintf("  while ( s___ [ i___ ] [ 0 ] != '_' ) {\n") &
+  bprintf("    if ( i___ != 1 ) strcat ( enm_buf___, \",\" );\n") &
+  bprintf("    strcat ( enm_buf___, s___ [ i___ ] );\n") &
+  bprintf("    i___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  strcat ( enm_buf___, \")\" );\n") &
+/***
+  bprintf("printf ( \"enm_buf___ |\%s|\\n\", enm_buf___ );\n") &
+***/
+  bprintf("  ini_prompt___ ( nx___, ny___ );\n") &
+  bprintf("  cat_prompt_enm___ ( p___, 5, enm_buf___ );\n") &
+/***
+  bprintf("printf ( \"buf___ |\%s|\\n\", buf___ );\n") &
+***/
+  bprintf("  system ( buf___ );\n") &
+  bprintf("  open_Bcom___;\n") &
+  bprintf("  nat_Bcom___ ( * o___ );\n") &
+  bprintf("  nat_Bcom___ ( x___ );\n") &
+  bprintf("  nat_Bcom___ ( y___ );\n") &
+  bprintf("  close_Bcom___;\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_4_5;
+
+
+
+
+  prt_M_4_4(e,m,n);
+
+  bprintf("%\n",n)
+ =>
+  prt_M_4_4(e,n,n);
+
+  bprintf("\"%\"",e)
+ =>
+  prt_M_4_3(e);
+
+  prt_M_4_3(e) &
+  bprintf(",")
+ =>
+  prt_M_4_2(e,m,n);
+
+  prt_M_4_3(e)
+ =>
+  prt_M_4_2(e,n,n);
+
+  prt_M_4_1(x);
+
+  bprintf("\nchar * %___ [] = {",S) &
+  prt_M_4_2 bnmap E &
+  bprintf("};\n") &
+  bprintf("\n#define tot_%___ ",S) &
+  prt_M_4_4 bnmap E
+ =>
+  prt_M_4_1(S(E));
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("\nPUT_ACT_TOK_M ( char * * s___, int o___ )\n") &
+  bprintf("#else\n") &
+  bprintf("\nPUT_ACT_TOK_M ( s___, o___ )\n") &
+  bprintf("char * * s___;\n") &
+  bprintf("int o___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_put_act_tok_hdr;
+
+  ReadEnumStore(S) &
+  prt_M_4_1 bsmap S &
+  prt_put_act_tok_hdr &
+  bprintf("{\n") &
+  bprintf("  if   ( ! strlen ( s___ [ 0 ] ) ) {\n") &
+  bprintf("    DisplayMWText___ ( s___ [ o___ ] );\n") &
+  bprintf("  }\n") &
+  bprintf("  else {\n") &
+  bprintf("    buf___ [ 0 ] = '\0';\n") &
+  bprintf("    if ( ( strcmp ( s___ [ 0 ], \"SCALAR\" ) != 0 )        &&\n         ( strcmp ( s___ [ 0 ], \"0..2147483646\" ) != 0 )    ) {\n") &
+  bprintf("      strcat ( buf___, s___ [ 0 ] );\n") &
+  bprintf("      strcat ( buf___, \".\" );\n") &
+  bprintf("    }\n") &
+  bprintf("    AppNumToBuf___ ( o___ );\n") &
+  bprintf("    DisplayMWText___ ( buf___ );\n") &
+  bprintf("  }\n") &
+  bprintf("}\n")
+ =>
+  prt_M_4;
+
+  prt_M_5_1(o);
+
+  OpRequired(o) &
+  bprintf("\nstatic Widget %_text___ [ %_itot___ ];\n",o,o) &
+  bprintf("\nchar %_param___ [ %_itot___ ] [ 255 ];\n",o,o)
+ =>
+  prt_M_5_1(o);
+  
+
+  ReadOpTypesStore(S) &
+  bsearch((o(p;?)==t),S,T)     /* no input */
+ =>
+  prt_M_5_1(o);
+
+  prt_M_5_1 bsmap (o)
+ =>
+  prt_M_5(o);
+
+  bsearch(?,o,p) &
+  prt_M_5(p)
+ =>
+  prt_M_5(o);  /* op names */
+
+
+  prt_M_6_6(x);
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("%_CB% ( Widget parent___, int client_d___ )\n",a,d) &
+  bprintf("#else\n") &
+  bprintf("%_CB% ( parent___, client_d___ )\n",a,d) &
+  bprintf("Widget parent___;\n") &
+  bprintf("int client_d___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_6_6_hdr(a,d);
+
+  prt_M_6_6(a,b,c,d);
+
+  brule(CIOParseX.1,O) & /* reqd ops */
+  bsearch(b,(O,?),P ) &
+  prt_M_6_6_hdr(a,d) &
+  bprintf("{\n") &
+  bprintf("  strcpy ( %_param___ [ % ], %___ [ client_d___ ] );\n",b,c,a) &
+  bprintf("}\n")
+ =>
+  prt_M_6_6(a,b,c,d);
+
+  brule(PrtMotifX.3,L) &
+  prt_M_6_6 bsmap L
+ =>
+  prt_M_6_5;
+
+  prt_M_6_3(x);
+
+  brule(PrtMotifX.2,n) &
+  bmodr(PrtMotifX.2,(n+1)) &
+  brule(PrtMotifX.3,L) &
+  bmodr(PrtMotifX.3,(L,(t,o,(m-1),n)))
+ =>
+  prt_M_6_4(o,i,m,t);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:t),T,S) &
+  bident(t) &
+  ReadSetsStore(E) &
+  bsearch((t(W)),E,F) &
+  prt_M_6_4(o,i,m,t)
+ =>
+  prt_M_6_3(o,i,m,n);
+
+  ReadCurrTypeStore(T) &
+  bsearch((i:t),T,S) &
+  bident(t) &
+  ReadSetsStore(E) &
+  bsearch((t[W]),E,F) &                 /* dimensioned set */
+  bnum(W)  
+/* &HERE((110:t[W])) */
+ =>
+  prt_M_6_3(o,i,m,n);
+
+  ModrCurrTypeStore((t&?)) &
+  prt_M_6_3(o) bnmap q
+ =>
+  prt_M_6_2(o(p;q)==t);  /* out;in */
+
+  prt_M_6_2(o(p;?)==t);  /* out;in */
+
+  prt_M_6_2(?);
+
+  ReadOpTypesStore(S) &
+  prt_M_6_2 bsmap S &
+  prt_M_6_5
+ =>
+  prt_M_6;
+
+  bprintf("    XmStringFree ( %___ );\n",e)
+ =>
+  prt_M_7_6(e);
+
+  bliteral(e) &
+  brule(LitTransX.n,(e:s)) &
+  bprintf("    XmStringFree ( Ch_") &
+  bprintf(s) &
+  bprintf("___ );\n")
+ =>
+  prt_M_7_6(e);
+
+  bprintf("      XmVaPUSHBUTTON, %___, NULL, NULL, NULL,\n",e)
+ =>
+  prt_M_7_5(e);
+
+  bliteral(e) &
+  brule(LitTransX.n,(e:s)) &
+  bprintf("      XmVaPUSHBUTTON, Ch_") &
+  bprintf(s) &
+  bprintf("___, NULL, NULL, NULL,\n")
+ =>
+  prt_M_7_5(e);
+
+  bprintf("  %___ = XmStringCreateSimple (\"%\");\n",e,e)
+ =>
+  prt_M_7_4(e);
+
+  bliteral(e) &
+  brule(LitTransX.n,(e:s)) & 
+  bprintf("  Ch_") &  
+  bprintf(s) &
+  bprintf("___ = XmStringCreateSimple (\"") & 
+  bprintf(s) &
+  bprintf("\");\n")
+ =>
+  prt_M_7_4(e);
+
+  bprintf("%___",e)
+ =>
+  prt_M_7_3(e);
+
+  bliteral(e) &
+  brule(LitTransX.n,(e:s)) & 
+  bprintf("Ch_") &
+  bprintf(s) &
+  bprintf("___")
+ =>
+  prt_M_7_3(e);
+
+  prt_M_7_3(e) &
+  bprintf(",")
+ =>
+  prt_M_7_2(e,m,n);
+
+  prt_M_7_3(e)
+ =>
+  prt_M_7_2(e,n,n);
+
+  prt_M_7_1(x);
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_%_PDown___ ( XtPointer cb___, Widget parent___ )\n",S) &
+  bprintf("#else\n") &
+  bprintf("cre_%_PDown___ ( cb___, parent___ )\n",S) &
+  bprintf("XtPointer cb___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_7_1_hdr(S);
+
+  prt_M_7_1_hdr(S) &
+  bprintf("{\n") &
+  bprintf("  XmString ppt___,") &
+  prt_M_7_2 bnmap E &
+  bprintf(";\n") &
+  bprintf("  Widget popup_%M___;\n",S) &
+  bprintf("  ppt___ = XmStringCreateSimple ( \"\" );\n") &
+  prt_M_7_4 bsmap E &
+  bprintf("  popup_%M___ = XmVaCreateSimpleOptionMenu ( parent___, \"ItfDialog\",\n",S,S) &
+  bprintf("      ppt___, 0,\n") &
+  bprintf("      0, ( XtCallbackProc ) cb___,\n") &
+  prt_M_7_5 bsmap E &
+  bprintf("      NULL);\n") &
+  bprintf("    XmStringFree ( ppt___ );\n") &
+  prt_M_7_6 bsmap E &
+
+  bprintf("  return ( popup_%M___ );\n",S) &
+  bprintf("}\n")
+ =>
+  prt_M_7_1(S(E));
+
+  ReadEnumStore(S) &
+  prt_M_7_1 bsmap S
+ =>
+  prt_M_7;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("DisplayMWText___ ( char * mtext___ )\n") &
+  bprintf("#else\n") &
+  bprintf("DisplayMWText___ ( mtext___ )\n") &
+  bprintf("char * mtext___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_8_hdr;
+
+  bprintf("cre_pixmap___ ()\n") &
+  bprintf("{\n") &
+  bprintf("  FILE * Bxpm;\n") &
+  bprintf("  B_framed_pixmap_gray95___ = XmGetPixmap ( XtScreen ( top_level___ ), \"../../B.xpm\",\n") &
+  bprintf("      BlackPixelOfScreen ( XtScreen ( top_level___ ) ),\n") &
+  bprintf("      WhitePixelOfScreen ( XtScreen ( top_level___ ) ) );\n") &
+  bprintf("  if ( B_framed_pixmap_gray95___ != XmUNSPECIFIED_PIXMAP ) return;\n") &
+  bprintf("  B_framed_pixmap_gray95___ = XmGetPixmap ( XtScreen ( top_level___ ), \"./B.xpm\",\n") &
+  bprintf("      BlackPixelOfScreen ( XtScreen ( top_level___ ) ),\n") &
+  bprintf("      WhitePixelOfScreen ( XtScreen ( top_level___ ) ) );\n") &
+  bprintf("  if ( B_framed_pixmap_gray95___ != XmUNSPECIFIED_PIXMAP ) return;\n") &
+  bprintf("  Bxpm = fopen ( \"B.xpm\", \"w\" );\n") &
+  bprintf("  if ( Bxpm == NULL ) {\n") &
+  bprintf("    printf ( \"\\n  Can't open \\\"B.xpm\\\" for writing\\n\\n\" );\n") &
+  bprintf("      exit ( 1 );\n") &
+  bprintf("  }\n") &
+  bprintf("  fprintf ( Bxpm, \"/\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"* XPM *\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"/\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"static char * B_pxm[] = {\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\"32 28 5 1\\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\"   c black\\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\".  c gray95\\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\"X  c white\\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\"o  c #d1b499\\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\"O  c #6dacff\\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\"                                \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .XXXXXXXXXXXXXXXXXXXXXXXXXXXXX \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X                 ........... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOO .......... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOO ......... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOO ......... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOO .......... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo            ........... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo ...................... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo ...................... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo            ........... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOO .......... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOO ......... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOOO ........ \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOOO ......... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X oooo OOOOOOOOOOO .......... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .X                 ........... \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\" .XXXXXXXXXXXXXXXXXXXXXXXXXXXXX \\\",\\n\" );\n") &
+  bprintf("  fprintf ( Bxpm, \"\\\"                                \\\"};\\n\" );\n") &
+  bprintf("  fclose ( Bxpm );\n") &
+/***
+  bprintf("system ( \"cat B.xpm\" );\n") &
+***/
+  bprintf("  B_framed_pixmap_gray95___ = XmGetPixmap ( XtScreen ( top_level___ ), \"./B.xpm\",\n") &
+  bprintf("      BlackPixelOfScreen ( XtScreen ( top_level___ ) ),\n") &
+  bprintf("      WhitePixelOfScreen ( XtScreen ( top_level___ ) ) );\n") &
+/*
+  bprintf("  unlink ( \"B.xpm\" );\n") &
+*/
+  bprintf("  if ( B_framed_pixmap_gray95___ == XmUNSPECIFIED_PIXMAP ) {\n") &
+  bprintf("    printf(\"\\n  Warning - can't create (B.xpm) pixmap\\n\" );\n") &
+  bprintf("  }\n")
+ =>
+  prt_M_8_hdr2_and_body;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_B_logo___ ( Widget parent___, int t_off___, int r_off___ )\n",S) &
+  bprintf("#else\n") &
+  bprintf("cre_B_logo___ ( parent___, t_off___, r_off___ )\n",S) &
+  bprintf("Widget parent___;\n") &
+  bprintf("int t_off___;\n") &
+  bprintf("int r_off___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_8_hdr2a;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_dialog_form___ ( char * class___, Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_dialog_form___ ( class___, parent___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_8_hdr3;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_sep___  ( char * class___, Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_sep___  ( class___, parent___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_8_hdr4;
+
+  prt_M_8_hdr &
+  bprintf("{\n") &
+  bprintf("  static XmTextPosition monolog_text_posn___;\n") &
+  bprintf("  XmTextInsert ( monolog_text___, monolog_text_posn___, mtext___ );\n") &
+  bprintf("  monolog_text_posn___ = monolog_text_posn___ + strlen ( mtext___ );\n") &
+  bprintf("  XmTextShowPosition ( monolog_text___, monolog_text_posn___ );\n") &
+  bprintf("  XmUpdateDisplay ( monolog_text___);\n") &
+  bprintf("}\n") &
+  bprintf("\nvoid\n") &
+  bprintf("ResetWaitFlag___ ()\n") &
+  bprintf("{\n") &
+  bprintf("  wait_flag___ = 0;\n") &
+  bprintf("}\n") &
+
+
+  bprintf("\nvoid\n") &
+  prt_M_8_hdr2_and_body &
+  bprintf("}\n") &
+
+  prt_M_8_hdr2a &
+  bprintf("{\n") &
+  bprintf("  Widget B_logo___;\n") &
+  bprintf("  B_logo___ =  XtVaCreateManagedWidget ( \"ItfDialog\",\n") &
+  bprintf("      xmLabelWidgetClass,             parent___,\n") &
+  bprintf("      XmNlabelType,                   XmPIXMAP,\n") &
+  bprintf("      XmNlabelPixmap,                 B_framed_pixmap_gray95___,\n") &
+  bprintf("      XmNtopAttachment,               XmATTACH_FORM,\n") &
+  bprintf("      XmNtopOffset,                   t_off___,\n") &
+  bprintf("      XmNrightAttachment,             XmATTACH_FORM,\n") &
+  bprintf("      XmNrightOffset,                 r_off___,\n") &
+  bprintf("      XmNshadowType,                  XmSHADOW_ETCHED_IN,\n") &
+  bprintf("      XmNshadowThickness,             0,\n") &
+  bprintf("      XmNmarginWidth,                 0,\n") &
+  bprintf("      XmNmarginHeight,                0,\n") &
+  bprintf("      XmNtraversalOn,                 False,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( B_logo___ );\n") &
+  bprintf("}\n") &
+
+
+  prt_M_8_hdr3 &
+  bprintf("{\n") &
+  bprintf("  Widget dialog_form___ = XtVaCreateWidget ( class___,\n") &
+  bprintf("      xmFormWidgetClass,         parent___,\n") &
+  bprintf("      XmNdefaultPosition,        False,  \n") &
+  bprintf("      NULL);\n") &
+  bprintf("  return ( dialog_form___ );\n") &
+  bprintf("}\n") &
+  prt_M_8_hdr4 &
+  bprintf("{\n") &
+  bprintf("  Widget sep___ = XtVaCreateManagedWidget ( class___,\n") &
+  bprintf("      xmSeparatorGadgetClass,  parent___,\n") &
+  bprintf("      XmNleftAttachment,       XmATTACH_FORM,\n") &
+  bprintf("      XmNrightAttachment,      XmATTACH_FORM,\n") &
+  bprintf("      XmNbottomAttachment,     XmATTACH_FORM,\n") &
+  bprintf("      XmNbottomOffset,         48,\n") &
+  bprintf("      NULL);\n") &
+  bprintf("  return ( sep___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_8;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_ok_form___ ( char * class___, Widget parent___, Widget top_w___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_ok_form___ ( class___, parent___, top_w___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("Widget top_w___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_9_hdr;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_ok___ ( Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_ok___ ( parent___ )\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_9_hdr1;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_cancel___ ( Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_cancel___ ( parent___ )\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_9_hdr2;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_label___ ( char * class___, Widget parent___, char * buffer___, int l_off___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_label___ ( class___, parent___, buffer___, l_off___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("char * buffer___;\n") &
+  bprintf("int l_off___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_9_hdr4;
+
+  prt_M_9_hdr &
+  bprintf("{\n") &
+  bprintf("  Widget ok_form___ = XtVaCreateWidget ( class___,\n") &
+  bprintf("      xmFormWidgetClass,       parent___,\n") &
+  bprintf("      XmNleftAttachment,       XmATTACH_FORM,\n") &
+  bprintf("      XmNrightAttachment,      XmATTACH_FORM,\n") &
+  bprintf("      XmNtopAttachment,        XmATTACH_WIDGET,\n") &
+  bprintf("      XmNtopWidget,            top_w___,\n") &
+  bprintf("      XmNtopOffset,            5,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( ok_form___ );\n") &
+  bprintf("}\n") &
+  prt_M_9_hdr1 &
+  bprintf("{\n") &
+  bprintf("  Widget ok___ = XtVaCreateManagedWidget ( \"OK\", \n") &
+  bprintf("      xmPushButtonGadgetClass, parent___,\n") &
+  bprintf("      XmNtopAttachment,        XmATTACH_FORM,\n") &
+  bprintf("      XmNleftAttachment,       XmATTACH_FORM,\n") &
+  bprintf("      XmNleftOffset,           12,\n") &
+  bprintf("      XmNheight,               25,\n") &
+  bprintf("      XmNwidth,                57,\n") &
+/*
+  bprintf("      XmNshowAsDefault,        True,\n") &
+*/
+  bprintf("      XmNdefaultButtonShadowThickness,        1,\n") &
+  bprintf("      XmNhighlightThickness,   1,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( ok___ );\n") &
+  bprintf("}\n") &
+  prt_M_9_hdr2 &
+  bprintf("{\n") &
+  bprintf("  Widget cancel___ = XtVaCreateManagedWidget ( \"Cancel\", \n") &
+  bprintf("      xmPushButtonGadgetClass, parent___,\n") &
+  bprintf("      XmNtopAttachment,        XmATTACH_FORM,\n") &
+  bprintf("      XmNtopOffset,            5,\n") &
+  bprintf("      XmNrightAttachment,      XmATTACH_FORM,\n") &
+  bprintf("      XmNrightOffset,          12,\n") &
+  bprintf("      XmNheight,               25,\n") &
+  bprintf("      XmNwidth,                57,\n") &
+  bprintf("      XmNdefaultButtonShadowThickness,        1,\n") &
+  bprintf("      XmNhighlightThickness,   1,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( cancel___ );\n") &
+  bprintf("}\n") &
+  prt_M_9_hdr4 &
+  bprintf("{\n") &
+  bprintf("  Widget label___;\n") &
+  bprintf("  xstr___ = XmStringCreateLtoR ( buffer___ , charset___ );\n") &
+  bprintf("  label___ = XtVaCreateWidget ( class___, \n") &
+  bprintf("      xmLabelWidgetClass,        parent___,\n") &
+  bprintf("      XmNlabelString,            xstr___,\n") &
+  bprintf("      XmNtopAttachment,          XmATTACH_FORM,\n") &
+  bprintf("      XmNtopOffset,              10,\n") &
+  bprintf("      XmNleftAttachment,         XmATTACH_FORM,\n") &
+  bprintf("      XmNleftOffset,             l_off___,\n") &
+  bprintf("      XmNtraversalOn,            False,\n") &
+  bprintf("      NULL);\n") &
+  bprintf("  XmStringFree ( xstr___ );\n") &
+  bprintf("  return ( label___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_9;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_scroll___ ( char * class___, Widget parent___, Widget bottom_w___, int height___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_scroll___ ( class___, parent___, bottom_w___, height___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("Widget bottom_w___;\n") &
+  bprintf("int height___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_10_hdr;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_rb___ ( char * class___, Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_rb___ ( class___, parent___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_10_hdr1;
+
+  prt_M_10_hdr &
+  bprintf("{\n") &
+  bprintf("  Widget scroll___ = XtVaCreateWidget ( class___,\n") &
+  bprintf("      xmScrolledWindowWidgetClass,    parent___,\n") &
+  bprintf("      XmNtopAttachment,               XmATTACH_FORM,\n") &
+  bprintf("      XmNtopOffset,                   40,\n") &
+  bprintf("      XmNrightAttachment,             XmATTACH_FORM,\n") &
+  bprintf("      XmNrightOffset,                 10,\n") &
+  bprintf("      XmNleftAttachment,              XmATTACH_FORM,\n") &
+  bprintf("      XmNleftOffset,                  10,\n") &
+  bprintf("      XmNbottomAttachment,            XmATTACH_WIDGET,\n") &
+  bprintf("      XmNbottomWidget,                bottom_w___,\n") &
+  bprintf("      XmNbottomOffset,                10,\n") &
+  bprintf("      XmNscrollBarDisplayPolicy,      XmAS_NEEDED,\n") &
+  bprintf("      XmNscrollingPolicy,             XmAUTOMATIC,\n") &
+  bprintf("      XmNheight,                      height___,\n") &
+  bprintf("      XmNborderWidth,                 0,\n") &
+  bprintf("      XmNshadowThickness,             0,\n") &
+  bprintf("      XmNspacing,                     0,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( scroll___ );\n") &
+  bprintf("}\n") &
+  prt_M_10_hdr1 &
+  bprintf("{\n") &
+  bprintf("  Widget rb___ = XmCreateRadioBox( parent___, class___, NULL, 0);\n") &
+  bprintf("  XtVaSetValues ( rb___, XmNspacing, 0, NULL );\n") &
+  bprintf("  return ( rb___ );\n") &
+  bprintf("}\n") &
+  prt_M_10_1 &
+  prt_M_10_2
+ =>
+  prt_M_10;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("\ncre_right_rc___ ( char * class___, Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("\ncre_right_rc___ ( class___, parent___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_10_2_hdr;
+
+  prt_M_10_2_hdr &
+  bprintf("{\n") &
+  bprintf("  Widget rc___ = XtVaCreateManagedWidget ( class___,\n") &
+  bprintf("      xmRowColumnWidgetClass,         parent___,\n") &
+  bprintf("      XmNtopAttachment,               XmATTACH_FORM,\n") &
+  bprintf("      XmNbottomAttachment,            XmATTACH_FORM,\n") &
+  bprintf("      XmNrightAttachment,             XmATTACH_FORM,\n") &
+  bprintf("      XmNleftAttachment,              XmATTACH_POSITION,\n") &
+  bprintf("      XmNleftPosition,                1,\n") &
+  bprintf("      XmNisHomogeneous,               False,\n") &
+  bprintf("      XmNspacing,                     0,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( rc___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_10_2;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_left_rc___ ( char * class___, Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_left_rc___ ( class___, parent___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_10_1_hdr;
+
+  prt_M_10_1_hdr &
+  bprintf("{\n") &
+  bprintf("  Widget rc___ = XtVaCreateManagedWidget ( class___,\n") &
+  bprintf("      xmRowColumnWidgetClass,         parent___,\n") &
+  bprintf("      XmNtopAttachment,               XmATTACH_FORM,\n") &
+  bprintf("      XmNtopOffset,                   7,\n") &
+  bprintf("      XmNbottomAttachment,            XmATTACH_FORM,\n") &
+  bprintf("      XmNleftAttachment,              XmATTACH_FORM,\n") &
+  bprintf("      XmNrightAttachment,             XmATTACH_POSITION,\n") &
+  bprintf("      XmNrightPosition,               1,\n") &
+  bprintf("      XmNrightOffset,                 3,\n") &
+  bprintf("      XmNisAligned,                   True,\n") &
+  bprintf("      XmNentryAlignment,              XmALIGNMENT_END,\n") &
+  bprintf("      XmNspacing,                     10,\n") &
+  bprintf("      XmNtraversalOn,                 False,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( rc___ );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_10_1;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_form___ ( char * class___, Widget parent___, Widget bottom_w___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_form___ ( class___, parent___, bottom_w___ )\n") &
+  bprintf("char * class___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("Widget bottom_w___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_11_hdr;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_inp___lab ( char * buffer___, Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_inp___lab ( buffer___, parent___ )\n") &
+  bprintf("char * buffer___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_11_hdr1;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("Popup_Dialog_Text_CB___ ( Widget text_w___, XtPointer client_d___ )\n") &
+  bprintf("#else\n") &
+  bprintf("Popup_Dialog_Text_CB___  ( text_w___, client_d___ )\n") &
+  bprintf("Widget text_w___;\n") &
+  bprintf("XtPointer client_d___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_11_hdr1a;
+
+  bprintf("\nWidget\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("cre_text___ ( char * class1___, char * class2___, Widget parent___ )\n") &
+  bprintf("#else\n") &
+  bprintf("cre_text___ ( class1___, class2___, parent___ )\n") &
+  bprintf("char * class1___;\n") &
+  bprintf("char * class2___;\n") &
+  bprintf("Widget parent___;\n") &
+  bprintf("#endif\n")
+  =>
+  prt_M_11_hdr2;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("Popup_Dialog_CB___ ( Widget button___ )\n") &
+  bprintf("#else\n") &
+  bprintf("Popup_Dialog_CB___ ( button___ )\n") &
+  bprintf("Widget button___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_11_hdr3;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("Cancel_CB___ ( Widget button___ )\n") &
+  bprintf("#else\n") &
+  bprintf("Cancel_CB___ ( button___ )\n") &
+  bprintf("Widget button___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_11_hdr4;
+
+  prt_M_11_hdr &
+  bprintf("{\n") &
+  bprintf("  Widget form = XtVaCreateWidget ( class___,\n") &
+  bprintf("      xmFormWidgetClass,           parent___,\n") &
+  bprintf("      XmNtopAttachment,               XmATTACH_FORM,\n") &
+  bprintf("      XmNtopOffset,                   40,\n") &
+  bprintf("      XmNrightAttachment,             XmATTACH_FORM,\n") &
+  bprintf("      XmNrightOffset,                 10,\n") &
+  bprintf("      XmNleftAttachment,              XmATTACH_FORM,\n") &
+  bprintf("      XmNleftOffset,                  10,\n") &
+  bprintf("      XmNbottomAttachment,            XmATTACH_WIDGET,\n") &
+  bprintf("      XmNbottomWidget,                bottom_w___,\n") &
+  bprintf("      XmNbottomOffset,                10,\n") &
+  bprintf("      XmNfractionBase,                2,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( form );\n") &
+  bprintf("}\n") &
+
+  prt_M_11_hdr1 &
+  bprintf("{\n") &
+  bprintf("  Widget pt____lab = XtVaCreateManagedWidget ( buffer___,\n") &
+  bprintf("      xmLabelGadgetClass,             parent___,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  return ( pt____lab );\n") &
+  bprintf("}\n") &
+
+  prt_M_11_hdr1a &
+  bprintf("{\n") &
+  bprintf("  XmProcessTraversal ( text_w___, XmTRAVERSE_NEXT_TAB_GROUP );\n") &
+  bprintf("}\n") &
+
+  prt_M_11_hdr2 &
+  bprintf("{\n") &
+
+  bprintf("  Widget text_form___ = XtVaCreateManagedWidget ( class1___,\n") &
+  bprintf("      xmFormWidgetClass,              parent___,\n") &
+  bprintf("      NULL );\n") &
+
+  bprintf("  Widget text___ = XtVaCreateManagedWidget ( class2___,\n") &
+  bprintf("      xmTextFieldWidgetClass,         text_form___,\n") &
+  bprintf("      XmNtopAttachment,               XmATTACH_FORM,\n") &
+  bprintf("      XmNbottomAttachment,            XmATTACH_FORM,\n") &
+  bprintf("      XmNrightAttachment,             XmATTACH_FORM,\n") &
+  bprintf("      XmNleftAttachment,              XmATTACH_FORM,\n") &
+  bprintf("      XmNtopOffset,                   5,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  XtAddCallback ( text___, XmNactivateCallback, ( XtCallbackProc ) Popup_Dialog_Text_CB___, ( XtPointer ) NULL );\n") &
+  bprintf("  return ( text___ );\n") &
+  bprintf("}\n") &
+
+  prt_M_11_hdr3 &
+  bprintf("{\n") &
+  bprintf("  void OpsSwitch___ ();\n") &
+  bprintf("  Widget dialog___ = XtParent ( XtParent ( XtParent ( button___ ) ) );\n") &
+  bprintf("  int i___ = 0;\n") &
+  bprintf("  XtPopdown ( dialog___ );\n") &
+  bprintf("  XmUpdateDisplay ( dialog___ );\n") &
+  bprintf("  while ( ! sel_tog___ [ i___ ] ) {\n") &
+  bprintf("    i___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  OpsSwitch___ ( i___ );\n") &
+  bprintf("}\n") &
+  prt_M_11_hdr4 &
+  bprintf("{\n") &
+  bprintf("  void Ops_Popup___ ();\n") &
+  bprintf("  Dimension x___, y___;\n") &
+  bprintf("  Widget dialog___ = XtParent ( XtParent ( XtParent ( button___ ) ) );\n") &
+  bprintf("  XtVaGetValues ( dialog___, XmNx, &x___,  XmNy, &y___, NULL );\n") &
+  bprintf("  upd_pos___ ( x___, y___ );\n") &
+  bprintf("  XtPopdown ( dialog___ );\n") &
+  bprintf("  XmUpdateDisplay ( dialog___ );\n") &
+  bprintf("  Ops_Popup___ ();\n") &
+  bprintf("}\n")
+ =>
+  prt_M_11;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("ToggleBox_CB___ ( Widget widget___, XtPointer client_d___ )\n") &
+  bprintf("#else\n") &
+  bprintf("ToggleBox_CB___ ( widget___, client_d___ )\n") &
+  bprintf("Widget widget___;\n") &
+  bprintf("XtPointer client_d___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_12_hdr;
+
+  prt_M_12_hdr &
+  bprintf("{\n") &
+  bprintf("  static int dbl_clck___ = 0;\n") &
+  bprintf("  static XtIntervalId id___;\n") &
+  bprintf("  int i___ = * ( int * ) client_d___;\n") &
+  bprintf("  if ( sel_tog___ [ i___ ] ) {\n") &
+  bprintf("    sel_tog___ [ i___ ] = 0;\n") &
+  bprintf("  }\n") &
+  bprintf("  else {\n") &
+  bprintf("    sel_tog___ [ i___ ] = 1;\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( sel_one___ ) {\n") &
+  bprintf("    if ( sec_visit___ ) {\n") &
+  bprintf("      sec_visit___ = 0;\n") &
+  bprintf("    }\n") &
+  bprintf("    else {\n") &
+  bprintf("      sec_visit___ = 1;\n") &
+  bprintf("    }\n") &
+  bprintf("    if ( sec_visit___ ) {\n") &
+  bprintf("      if ( ! wait_flag___ )  {\n") &
+  bprintf("        wait_flag___ = 1;\n") &
+  bprintf("        id___ = XtAppAddTimeOut ( app___, mc_int___, ResetWaitFlag___, ( XtPointer ) NULL );\n") &
+  bprintf("      }\n") &
+  bprintf("      else {\n") &
+  bprintf("        XtRemoveTimeOut ( id___ );\n") &
+  bprintf("        wait_flag___ = 0;\n") &
+  bprintf("        dbl_clck___ = 1;\n") &
+  bprintf("      }\n") &
+  bprintf("    }\n") &
+  bprintf("    if ( dbl_clck___ ) {\n") &
+  bprintf("      dbl_clck___ = 0;\n") &
+  bprintf("      sel_tog___ [ i___ ] = 1;\n") &
+  bprintf("      Popup_Dialog_CB___ ( XtParent ( XtParent ( widget___ ) ) );\n") &
+  bprintf("    }\n") &
+  bprintf("  }\n") &
+  bprintf("  else {\n") &
+  bprintf("    if ( ! wait_flag___ )  {\n") &
+  bprintf("      wait_flag___ = 1;\n") &
+  bprintf("      id___ = XtAppAddTimeOut ( app___, mc_int___, ResetWaitFlag___, ( XtPointer ) NULL );\n") &
+  bprintf("    }\n") &
+  bprintf("    else {\n") &
+  bprintf("      XtRemoveTimeOut ( id___ );\n") &
+  bprintf("      wait_flag___ = 0;\n") &
+  bprintf("      dbl_clck___ = 1;\n") &
+  bprintf("    }\n") &
+  bprintf("    if ( dbl_clck___ ) {\n") &
+  bprintf("      dbl_clck___ = 0;\n") &
+  bprintf("      sel_tog___ [ i___ ] = 1;\n") &
+  bprintf("      Popup_Dialog_CB___ ( XtParent ( XtParent ( widget___ ) ) );\n") &
+  bprintf("    }\n") &
+  bprintf("  }\n") &
+  bprintf("}\n")
+ =>
+  prt_M_12;
+
+  bprintf("\nvoid\n") &
+  bprintf("Ops_Popup___ ()\n") &
+  bprintf("{\n") &
+  bprintf("  static Widget dialog___, dialog_form___, sep___, ok_form___, ok___, label___, rb_scroll___, rb___;\n") &
+  bprintf("  static int height___;\n") &
+  bprintf("  int i___;\n") &
+  bprintf("  if ( ! dialog___ ) {\n") &
+  bprintf("    dialog___ =  XmCreateDialogShell ( top_level___, \"ItfDialog\", NULL, 0 );\n") &
+  bprintf("    dialog_form___ = cre_dialog_form___ ( \"ItfDialog\", dialog___ );\n") &
+  bprintf("    sep___ = cre_sep___ ( \"ItfDialog\", dialog_form___ );\n") &
+  bprintf("    ok_form___ = cre_ok_form___ ( \"ButtonLabel\", dialog_form___, sep___ );\n") &
+  bprintf("    ok___ = cre_ok___ ( ok_form___ );\n") &
+  bprintf("    XtAddCallback ( ok___, XmNactivateCallback,\n") &
+  bprintf("                          ( XtCallbackProc ) Popup_Dialog_CB___, ( XtPointer ) NULL );\n") &
+  bprintf("    label___ = cre_label___ ( \"OpName\", dialog_form___, \"% Operations\", 20 );\n",a) &
+  bprintf("    B_prog_icon___ = cre_B_logo___ ( dialog_form___, 5, 10 );\n") &
+  bprintf("    height___ = 25 * opnames_tot___;\n") &
+  bprintf("    if ( height___ > 600 ) {\n") &
+  bprintf("      height___ = 600;\n") &
+  bprintf("    }\n") &
+  bprintf("    rb_scroll___ = cre_scroll___ ( \"ItfDialog\", dialog_form___, sep___, height___ );\n") &
+  bprintf("    XtVaSetValues ( rb_scroll___,  XmNwidth, 250, NULL );\n") &
+  bprintf("    rb___ = cre_rb___ ( \"ItfDialog\", rb_scroll___ );\n") &
+  bprintf("    {\n") &
+  bprintf("      Widget but;\n") &
+  bprintf("      but = XtVaCreateManagedWidget (opnames___ [ 0 ],\n") &
+  bprintf("          xmToggleButtonGadgetClass,     rb___,\n") &
+  bprintf("          XmNspacing,                    2,\n") &
+  bprintf("          NULL );\n") &
+  bprintf("      XtAddCallback ( but, XmNvalueChangedCallback,\n") &
+  bprintf("          ( XtCallbackProc ) ToggleBox_CB___, ( XtPointer ) & c_arr___ [ 0 ] );\n") &
+  bprintf("      XmToggleButtonSetState ( but, TRUE, FALSE );\n") &
+  bprintf("      sel_tog___ [ 0 ] = 1;\n") &
+  bprintf("      for ( i___ = 1; i___ < opnames_tot___; i___++ ) {\n") &
+  bprintf("        but = XtVaCreateManagedWidget (opnames___ [ i___ ],\n") &
+  bprintf("            xmToggleButtonGadgetClass,     rb___,\n") &
+  bprintf("            XmNspacing,                    2,\n") &
+  bprintf("            NULL );\n") &
+  bprintf("        XtAddCallback ( but, XmNvalueChangedCallback,\n") &
+  bprintf("            ( XtCallbackProc ) ToggleBox_CB___, ( XtPointer ) & c_arr___ [ i___ ] );\n") &
+  bprintf("        sel_tog___ [ i___ ] = 0;\n") &
+  bprintf("      }\n") &
+  bprintf("      Ini_nx_ny___ ();\n") &
+  bprintf("      XtVaSetValues ( dialog_form___, \n") &
+  bprintf("          XmNx,         nx___,\n") &
+  bprintf("          XmNy,         ny___,\n") &
+  bprintf("          NULL );\n") &
+  bprintf("    }\n") &
+  bprintf("    sel_one___ = 1;\n") &
+  bprintf("    sec_visit___ = 1;\n") &
+  bprintf("    XtManageChild ( label___ );\n") &
+  bprintf("    XtManageChild ( rb_scroll___ );\n") &
+  bprintf("    XtManageChild ( rb___ );\n") &
+  bprintf("    XtManageChild ( ok_form___ );\n") &
+  bprintf("    XtManageChild ( dialog_form___ );\n") &
+  bprintf("  }\n") &
+  bprintf("  XtPopup ( dialog___, XtGrabNone );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_13(a);  /* mch name */
+
+
+
+  bprintf("  DisplayMWText___ ( %_out___ [ % ] );\n",o,m-1) &
+  bprintf("  PUT_NAT_M ( out%___ );\n",m-1) &
+  bprintf("  DisplayMWText___ ( \"\\n\" );\n")
+ =>
+  prt_M_14_7(o,p,m,n);
+
+  brule(PrtMotifX.8,S) &
+  bsearch(o(p:int_type___),S,T) &
+  bprintf("  DisplayMWText___ ( %_out___ [ % ] );\n",o,m-1) &
+  bprintf("  PUT_INT_M ( out%___ );\n",m-1) &
+  bprintf("  DisplayMWText___ ( \"\\n\" );\n")
+ =>
+  prt_M_14_7(o,p,m,n);
+
+  brule(PrtMotifX.8,S) &
+  bsearch(o(p:bit_type___),S,T) &
+  bprintf("  strcpy ( buf___, %_out___ [ % ] );\n",o,m-1) &
+  bprintf("  AppBitsToBuf___ ( out%___ );\n",m-1) &
+  bprintf("  strcat ( buf___, \"\\n\" );\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n")
+ =>
+  prt_M_14_7(o,p,m,n);
+
+  brule(PrtMotifX.8,S) &
+  bsearch(o(p:char_type___),S,T) &
+  bprintf("  strcpy ( buf___, %_out___ [ % ] );\n",o,m-1) &
+  bprintf("  AppCharToBuf___ ( ( char ) out%___ );\n",m-1) &
+  bprintf("  strcat ( buf___, \"\\n\" );\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n")
+ =>
+  prt_M_14_7(o,p,m,n);
+
+  brule(PrtMotifX.8,S) &
+  bsearch(o(p:string_type___),S,T) &
+  bprintf("  strcpy ( buf___, %_out___ [ % ] );\n",o,m-1) &
+  bprintf("  strcat ( buf___, ( char * ) out%___ );\n",m-1) &
+  bprintf("  strcat ( buf___, \"\\n\" );\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n")
+ =>
+  prt_M_14_7(o,p,m,n);
+
+  brule(PrtMotifX.8,S) &
+  bsearch(o(p:enum_type___(E)),S,T) &
+  bprintf("  strcpy ( buf___, %_out___ [ % ] );\n",o,m-1) &
+  bprintf("  strcat ( buf___, %___ [ out%___ - 1 ] );\n",E,m-1) &
+  bprintf("  strcat ( buf___, \"\\n\" );\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n")
+ =>
+  prt_M_14_7(o,p,m,n);
+
+  brule(PrtMotifX.8,S) &
+  bsearch(o(p:enum_type___(BOOL)),S,T) &
+  bprintf("  strcpy ( buf___, %_out___ [ % ] );\n",o,m-1) &
+  bprintf("  strcat ( buf___, %___ [ out%___ ] );\n",BOOL,m-1) & /* no -1 */
+  bprintf("  strcat ( buf___, \"\\n\" );\n") &
+  bprintf("  DisplayMWText___ ( buf___ );\n")
+ =>
+  prt_M_14_7(o,p,m,n);
+
+  bprintf("inp%___",m-1)
+ =>
+  prt_M_14_6_1(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:bit_type___),S,T) &
+  bprintf("(int)inp%___",m-1)
+ =>
+  prt_M_14_6_1(o,p,m,n);
+
+  prt_M_14_6_1(o,p,m,n) &
+  bprintf(",")
+ =>
+  prt_M_14_6(o,p,m,n);
+
+  prt_M_14_6_1(o,p,n,n)
+ =>
+  prt_M_14_6(o,p,n,n);
+
+  bprintf("&out%___",m-1)
+ =>
+  prt_M_14_5_1(o,p,m,n);
+
+  brule(PrtMotifX.8,S) &
+  bsearch(o(p:string_type___),S,T) &
+  bprintf("out%___",m-1)
+ =>
+  prt_M_14_5_1(o,p,m,n);
+
+  prt_M_14_5_1(o,p,m,n) &
+  bprintf(",")
+ =>
+  prt_M_14_5(o,p,m,n);
+
+  prt_M_14_5_1(o,p,n,n)
+ =>
+  prt_M_14_5(o,p,n,n);
+
+  bprintf("  inp%___ = 0;\n",m-1) &
+  bprintf("  for ( i___ = 0 ; i___ < strlen ( %_param___ [ % ] ) ; i___++ ) {\n",o,m-1) &
+  bprintf("    inp%___ = ( 10 * inp%___ ) + %_param___ [ % ] [ i___ ] - '0';\n",m-1,m-1,o,m-1) &
+  bprintf("  }\n")
+ =>
+  prt_M_14_4(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:int_type___),S,T) &
+  bprintf("  inp%___ = 0;\n",m-1) &
+  bprintf("  for ( i___ = 1 ; i___ < strlen ( %_param___ [ % ] ) ; i___++ ) {\n",o,m-1) &
+  bprintf("    inp%___ = ( 10 * inp%___ ) + %_param___ [ % ] [ i___ ] - '0';\n",m-1,m-1,o,m-1) &
+  bprintf("  }\n") &
+  bprintf("  if ( %_param___ [ % ] [ 0 ] == '-' ) inp%___ = -inp%___;\n",o,m-1,m-1,m-1)
+ =>
+  prt_M_14_4(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:bit_type___),S,T) &
+  bprintf("  inp%___ = 0;\n",m-1) &
+  bprintf("  for ( i___ = 0 ; i___ < strlen ( %_param___ [ % ] ) ; i___++ ) {\n",o,m-1) &
+  bprintf("    inp%___ = (2 * inp%___) + %_param___ [ % ] [ i___ ] - '0';\n",m-1,m-1,o,m-1) &
+  bprintf("  }\n")
+ =>
+  prt_M_14_4(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:char_type___),S,T) &
+  bprintf("  inp%___ = ( char ) %_param___ [ % ] [ 0 ];\n",m-1,o,m-1)
+ =>
+  prt_M_14_4(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:string_type___),S,T) &
+  bprintf("  strcpy ( ( char * ) inp%___, %_param___ [ % ] );\n",m-1,o,m-1)
+ =>
+  prt_M_14_4(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:enum_type___(E)),S,T) &
+  bprintf("  inp%___ = 0;\n",m-1) &
+  bprintf("  while ( strcmp ( %_param___ [ % ], %___ [ inp%___ ] ) != 0 ) {\n",o,m-1,E,m-1) &
+  bprintf("    inp%___ ++;\n",m-1) &
+  bprintf("  }\n") &
+  bprintf("  inp%___ ++;\n",m-1)
+ =>
+  prt_M_14_4(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:enum_type___(BOOL)),S,T) &
+  bprintf("  inp%___ = 0;\n",m-1) &
+  bprintf("  while ( strcmp ( %_param___ [ % ], %___ [ inp%___ ] ) != 0 ) {\n",o,m-1,BOOL,m-1) &
+  bprintf("    inp%___ ++;\n",m-1) &
+  bprintf("  }\n")                     /* dont inc */
+ =>
+  prt_M_14_4(o,p,m,n);
+
+  bprintf("  int inp%___;\n",m-1)
+ =>
+  prt_M_14_3(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:bit_type___),S,T) &
+  bprintf("  unsigned int inp%___;\n",m-1)
+ =>
+  prt_M_14_3(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:char_type___),S,T) &
+  bprintf("  char inp%___;\n",m-1)
+ =>
+  prt_M_14_3(o,p,m,n);
+
+  brule(PrtMotifX.7,S) &
+  bsearch(o(p:string_type___),S,T) &
+  bprintf("  int inp%___ [ 255 ];\n",m-1)
+ =>
+  prt_M_14_3(o,p,m,n);
+
+  bprintf("  int out%___;\n",m-1)
+ =>
+  prt_M_14_2(o,p,m,n);
+
+  bprintf("  int i___ = 0;\n") &
+  bprintf("  if ( i___ == 1 ) i___ = 0;\n")
+ =>
+  prt_M_14_1_i(o);
+
+  brule(PrtMotifX.8,S) &
+  bsearch(o(p:string_type___),S,T) &
+  bprintf("  int out%___ [ 255 ];\n",m-1)
+ =>
+  prt_M_14_2(o,p,m,n);
+
+  prt_M_14_1(o(p;q)==t);  /* out;in */
+
+  OpRequired(o) &
+  bprintf("\nvoid\n") &
+  bprintf("%___ ()\n",o) &
+  bprintf("{\n") &
+  prt_M_14_2(o) bnmap p &
+  prt_M_14_3(o) bnmap q &
+  prt_M_14_1_i(o) &
+  prt_M_14_4(o) bnmap q &
+  bprintf("  % (",o) &
+  prt_M_14_5(o) bnmap p &
+  bprintf(",") &
+  prt_M_14_6(o) bnmap q &
+  bprintf(");\n") &  
+  prt_M_14_7(o) bnmap p &
+  bprintf("  Ops_Popup___ ();\n") &
+  bprintf("}\n")
+ =>
+  prt_M_14_1(o(p;q)==t);  /* out;in */
+
+  OpRequired(o) &
+  bprintf("\nvoid\n") &
+  bprintf("%___ ()\n",o) &
+  bprintf("{\n") &
+  prt_M_14_3(o) bnmap q &
+  prt_M_14_1_i(o) &
+  prt_M_14_4(o) bnmap q &
+  bprintf("  % (",o) &
+  prt_M_14_6(o) bnmap q &
+  bprintf(");\n") &  
+  bprintf("  DisplayMWText___ ( \"No values returned\\n\" );\n") &
+  bprintf("  Ops_Popup___ ();\n") &
+  bprintf("}\n")
+ =>
+  prt_M_14_1(o(?;q)==t);  /* ?;in */
+
+  OpRequired(o) &
+  bprintf("\nvoid\n") &
+  bprintf("%___ ()\n",o) &
+  bprintf("{\n") &
+  prt_M_14_2(o) bnmap p &
+  bprintf("  % (",o) &
+  prt_M_14_5(o) bnmap p &
+  bprintf(");\n") &  
+  prt_M_14_7(o) bnmap p &
+  bprintf("  Ops_Popup___ ();\n") &
+  bprintf("}\n")
+ =>
+  prt_M_14_1(o(p;?)==t);  /* out;? */
+
+  OpRequired(o) &
+  bprintf("\nvoid\n") &
+  bprintf("%___ ()\n",o) &
+  bprintf("{\n") &
+  bprintf("  % (",o) &
+  bprintf(");\n") &  
+  bprintf("  DisplayMWText___ ( \"No values returned\\n\" );\n") &
+  bprintf("  Ops_Popup___ ();\n") &
+  bprintf("}\n")
+ =>
+  prt_M_14_1(o(?;?)==t);  /* ?;? */
+
+  prt_M_14_1(?);
+
+  ReadOpTypesStore(S) &
+  prt_M_14_1 bsmap S
+ =>
+  prt_M_14;
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("%_D_CB___ ( Widget button___ )\n",o) &
+  bprintf("#else\n") &
+  bprintf("%_D_CB___ ( button___ )\n",o) &
+  bprintf("Widget button___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_15_hdr(o);
+
+  prt_M_15_hdr(o) &
+  bprintf("{\n") &
+  bprintf("  Widget dialog___ = XtParent ( XtParent ( XtParent ( button___ ) ) );\n") &
+  bprintf("  int ok___ = 1;\n") &
+  bprintf("  int j___;\n") &
+  bprintf("  Dimension x___, y___;\n") &
+  bprintf("  for ( j___ = 0 ; j___ < %_itot___ ; j___++ ) {\n",o) &
+  bprintf("    if ( %_inp_type___ [ j___ ] != enum_type___ ) {\n",o) &
+  bprintf("      char * text___;\n") &
+  bprintf("      text___ = XmTextFieldGetString ( %_text___ [ j___ ] );\n",o) &
+  bprintf("      strcpy ( %_param___ [ j___ ], text___ );\n",o) &
+  bprintf("      XtFree ( text___ );\n") &
+  bprintf("    }\n") &
+  bprintf("  }\n") &
+  bprintf("  j___ = 0;\n") &
+  bprintf("  while ( j___ < %_itot___ && ok___ ) {\n",o) &
+  bprintf("    if ( %_inp_type___ [ j___ ] == nat_type___ ) {\n",o) &
+  bprintf("      ok___ = check_nat___ ( %_param___ [ j___ ] );\n",o) &
+  bprintf("    }\n") &
+  bprintf("    else if ( %_inp_type___ [ j___ ] == int_type___ ) {\n",o) &
+  bprintf("      ok___ = check_int___ ( %_param___ [ j___ ] );\n",o) &
+  bprintf("    }\n") &
+  bprintf("    else if ( %_inp_type___ [ j___ ] == bit_type___ ) {\n",o) &
+  bprintf("      ok___ = check_bit___ ( %_param___ [ j___ ] );\n",o) &
+  bprintf("    }\n") &
+  bprintf("    else if ( %_inp_type___ [ j___ ] == char_type___ ) {\n",o) &
+  bprintf("      ok___ = check_chr___ ( %_param___ [ j___ ] );\n",o) &
+  bprintf("    }\n") &
+  bprintf("    j___++;\n") &
+  bprintf("  }\n") &
+  bprintf("  if ( ok___ ) {\n") &
+  bprintf("    XtVaGetValues ( dialog___, XmNx, &x___,  XmNy, &y___, NULL );\n") &
+  bprintf("    upd_pos___ ( x___, y___ );\n") &
+  bprintf("    XtPopdown ( dialog___ );\n") &
+  bprintf("    XmUpdateDisplay ( dialog___ );\n") &
+  bprintf("    strcpy ( buf___, \"\\n%:\\n\" );\n",o) &
+  bprintf("    DisplayMWText___ ( buf___ );\n") &
+  bprintf("    for ( j___ = 0 ; j___ < %_itot___ ; j___++ ) {\n",o) &
+  bprintf("      strcpy ( buf___, %_inames___ [ j___ ] );\n",o) &
+  bprintf("      strcat ( buf___, %_param___ [ j___ ] );\n",o) &
+  bprintf("      strcat ( buf___, \"\\n\" );\n") &
+  bprintf("      DisplayMWText___ ( buf___ );\n") &
+  bprintf("    }\n") &
+  bprintf("    %___ ();\n",o) &
+  bprintf("  }\n") &
+  bprintf("}\n")
+ =>
+  prt_M_114_1(o);
+
+
+  ReadOpTypesStore(S) &
+  bsearch((o(p;?)==t),S,T)     /* no input */
+ =>
+  prt_M_114_1(o);
+
+  prt_M_114_1 bsmap o
+ =>
+  prt_M_114(o);  /* op names */
+
+  prt_M_115_3(x);
+
+  bprintf("      case %:\n",m) &
+  bprintf("        %_text___ [ i___ ] =\n",o) &
+  bprintf("           cre_%_PDown___ ( ( XtPointer ) %_CB%, right_rc___ );\n",S,S,n) &
+  bprintf("        XtManageChild ( %_text___ [ i___ ] );\n",o) &
+  bprintf("        strcpy ( %_param___ [ i___ ], %___ [ 0 ] );\n",o,S) &
+  bprintf("        break;\n")
+ =>
+  prt_M_115_3(o,(S,o,m,n));
+  
+  brule(PrtMotifX.3,L) &
+  prt_M_115_3(o) bsmap L
+ =>
+  prt_M_115_2(o);
+
+  bprintf("\nvoid\n") &
+  bprintf("%_D___ ()\n",o) &
+  bprintf("{\n") &
+  bprintf("  static Widget dialog___, dialog_form___, sep___, ok_form___, ok___, cancel___, label___, B_icon___, form___, left_rc___, right_rc___;\n",o) &
+  bprintf("  int i___;\n") &
+  bprintf("  if ( ! dialog___ ) {\n") &
+  bprintf("    dialog___ =  XmCreateDialogShell ( top_level___, \"ItfDialog\", NULL, 0 );\n") &
+  bprintf("    dialog_form___ = cre_dialog_form___ ( \"ItfDialog\", dialog___ ); \n") &
+  bprintf("    XtVaSetValues ( dialog_form___, XmNx, nx___,  XmNy, ny___, NULL );\n") &
+  bprintf("    sep___ = cre_sep___ ( \"ItfDialog\", dialog_form___ );\n") &
+  bprintf("    ok_form___ = cre_ok_form___ ( \"ButtonLabel\", dialog_form___, sep___ );\n") &
+  bprintf("    ok___ = cre_ok___ ( ok_form___ );\n") &
+  bprintf("    XtAddCallback ( ok___, XmNactivateCallback, ( XtCallbackProc ) %_D_CB___, ( XtPointer ) NULL );\n",o) &
+  bprintf("    cancel___ = cre_cancel___ ( ok_form___ );\n") &
+  bprintf("    XtAddCallback ( cancel___, XmNactivateCallback, ( XtCallbackProc ) Cancel_CB___, ( XtPointer ) NULL );\n") &
+  bprintf("    label___ = cre_label___ ( \"OpName\", dialog_form___, \"%\", 10 );\n",o) &
+  bprintf("    B_icon___ = cre_B_logo___ ( dialog_form___, 5, 10 );\n") &
+  bprintf("    form___ = cre_form___ ( \"ItfDialog\", dialog_form___, sep___ );\n") &
+  bprintf("    left_rc___ = cre_left_rc___ ( \"ItfDialog\", form___ );\n") &
+  bprintf("    right_rc___ = cre_right_rc___ ( \"ItfDialog\", form___ );\n") &
+  bprintf("    for ( i___ = 0 ; i___ < %_itot___ ; i___++ ) {\n",o) &
+  bprintf("      cre_inp___lab ( %_inp___ [ i___ ], left_rc___ );\n",o) &
+  bprintf("      switch ( i___ ) {\n") &
+  prt_M_115_2(o) &
+  bprintf("      default:\n") &
+  bprintf("        %_text___ [ i___ ] = cre_text___ ( \"ItfDialog\", \"InputText\", right_rc___ );\n",o) &
+  bprintf("        break;\n") &
+  bprintf("      }\n") &
+  bprintf("    }\n") &
+  bprintf("    XtManageChild ( form___ );\n") &
+  bprintf("    XtManageChild ( label___ );\n") &
+  bprintf("    XtManageChild ( ok_form___ );\n") &
+  bprintf("    XtVaSetValues ( dialog_form___, \n") &
+  bprintf("        XmNx,         nx___,\n") &
+  bprintf("        XmNy,         ny___,\n") &
+  bprintf("        NULL );\n") &
+  bprintf("    XtManageChild ( dialog_form___ );\n") &
+  bprintf("  }\n") &
+  bprintf("  XtPopup ( dialog___, XtGrabNone );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_115_1(o);
+
+
+  ReadOpTypesStore(S) &
+  bsearch((o(p;?)==t),S,T) &     /* no input */
+  bprintf("\nvoid\n") &
+  bprintf("%_D___ ()\n",o) &
+  bprintf("{\n") &
+  bprintf("  strcpy ( buf___, \"\\n%:\\n\");\n",o) &
+  bprintf("  DisplayMWText___ ( buf___ );\n") &
+  bprintf("  %___ ();\n",o) &
+  bprintf("}\n")
+ =>
+  prt_M_115_1(o);
+
+  prt_M_115_1 bsmap o
+ =>
+  prt_M_115(o);  /* op names */
+
+  bprintf("  case %:\n",m-1) &
+  bprintf("    %_D___  ();\n",o) &
+  bprintf("    break;\n")
+ =>
+  prt_M_116_1(o,m,n);
+
+  bprintf("\nvoid\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("OpsSwitch___ ( int op_num___ )\n") &
+  bprintf("#else\n") &
+  bprintf("OpsSwitch___ ( op_num___ )\n") &
+  bprintf("int op_num___;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_116_hdr(o);
+
+  prt_M_116_hdr(o) &
+  bprintf("{\n") &
+  bprintf("  switch ( op_num___ ) {\n") &
+  prt_M_116_1 bnmap o &
+  bprintf("  }\n") &
+  bprintf("}\n")
+ =>
+  prt_M_116(o);  /* op names */
+
+  bprintf("\nint\n") &
+  bprintf("#ifdef _BT_ANSIC\n") &
+  bprintf("main ( int argc, char * * argv )\n") &
+  bprintf("#else\n") &
+  bprintf("main ( argc, argv )\n") &
+  bprintf("int argc;\n") &
+  bprintf("char * * argv;\n") &
+  bprintf("#endif\n")
+ =>
+  prt_M_117_hdr;
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  prt_M_117;
+
+  bget(".Bcom",x) &
+  GetCurrentConstruct(s.itf) &
+  bprintf("\nvoid\n") &
+  bprintf("done_but_CB___ ()\n") &
+  bprintf("{\n") &
+  bprintf("  exit ( 0 );\n") &
+  bprintf("}\n") &
+  prt_M_117_hdr &
+  bprintf("{\n") &
+
+/*
+  bprintf("  pnx___ = 514; pny___ = 1; nx___ = 514; ny___ = 1;\n") &
+*/
+  bprintf("  XtToolkitInitialize ();\n") &
+  bprintf("  app___ = XtCreateApplicationContext ();\n") &
+  bprintf("  XtSetLanguageProc ( NULL, NULL, NULL );\n") &
+  bprintf("  display___ = XtOpenDisplay ( app___, NULL, argv[0], \"XBMotif\",NULL, 0, &argc, argv );\n") &
+  bprintf("  if ( ! display___ ) { XtWarning ( \"          Can't open display, exiting  \" ); exit ( 1 ); }\n") &
+  bprintf("  XtDisplayInitialize ( app___, display___, argv[0], \"XBMotif\", NULL, 0, &argc, argv );\n") &
+  bprintf("  top_level___ = XtAppCreateShell ( argv[0], \"XBMotif\", applicationShellWidgetClass, display___, NULL, 0 );\n") &
+  bprintf("  XmRepTypeInstallTearOffModelConverter ();\n") &
+
+  bprintf("  cre_pixmap___ ();\n") &
+  bprintf("  {\n") &
+  bprintf("    int i___;\n") &
+  bprintf("    for ( i___ = 0 ; i___ < 1000 ; i___++ ) {\n") &
+  bprintf("      c_arr___ [ i___ ] = i___;\n") &
+  bprintf("    }\n") &
+  bprintf("  }\n") &
+
+  bprintf("  main_form___ = XtVaCreateWidget ( \"Interface\",\n") &
+  bprintf("      xmFormWidgetClass,          top_level___,\n") &
+  bprintf("      NULL );\n") &
+
+
+  bprintf("  xstr___ =  XmStringCreateLtoR ( %, charset___ );\n",x) &
+
+  bprintf("  B_prog_icon___ = cre_B_logo___ ( main_form___, 10, 10 );\n") &
+
+  bprintf("  prog_label___ = XtVaCreateWidget ( \"Label\", \n") &
+  bprintf("      xmLabelWidgetClass,          main_form___,\n") &
+  bprintf("      XmNtopAttachment,            XmATTACH_FORM,\n") &
+  bprintf("      XmNtopOffset,                15,\n") &
+  bprintf("      XmNleftAttachment,           XmATTACH_FORM,\n") &
+  bprintf("      XmNrightAttachment,          XmATTACH_WIDGET,\n") &
+  bprintf("      XmNrightWidget,              B_prog_icon___,\n") &
+  bprintf("      XmNlabelString,              xstr___,\n") &
+  bprintf("      XmNtraversalOn,              False,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  XmStringFree ( xstr___ );\n") &
+
+
+  bprintf("  xstr___ = XmStringCreateLtoR ( \"Done\", charset___ );\n") &
+  bprintf("  done_but___ =  XtVaCreateWidget ( \"ButtonLabel\",\n") &
+  bprintf("      xmPushButtonWidgetClass,      main_form___,\n") &
+  bprintf("      XmNbottomAttachment,          XmATTACH_FORM,\n") &
+  bprintf("      XmNbottomOffset,              10,\n") &
+  bprintf("      XmNleftAttachment,            XmATTACH_FORM,\n") &
+  bprintf("      XmNleftOffset,                15,\n") &
+  bprintf("      XmNlabelString,               xstr___,\n") &
+  bprintf("      XmNmarginWidth,               5,\n") &
+  bprintf("      XmNmarginHeight,              5,\n") &
+  bprintf("      XmNdefaultButtonShadowThickness,        1,\n") &
+  bprintf("      XmNhighlightThickness,        1,\n") &
+  bprintf("      NULL );\n") &
+  bprintf("  XmStringFree ( xstr___ );\n") &
+  bprintf("  XtAddCallback ( done_but___, XmNactivateCallback, ( XtCallbackProc ) done_but_CB___, ( XtPointer ) NULL );\n") &
+  bprintf("  monolog_frame___ = XtVaCreateWidget ( \"Frame\", \n") &
+  bprintf("      xmFrameWidgetClass,           main_form___,\n") &
+  bprintf("      XmNtopAttachment,             XmATTACH_WIDGET,\n") &
+  bprintf("      XmNtopWidget,                 prog_label___,\n") &
+  bprintf("      XmNtopOffset,                 15,\n") &
+  bprintf("      XmNleftAttachment,            XmATTACH_FORM,\n") &
+  bprintf("      XmNleftOffset,                10,\n") &
+  bprintf("      XmNrightAttachment,           XmATTACH_FORM,\n") &
+  bprintf("      XmNrightOffset,               10,\n") &
+  bprintf("      XmNbottomAttachment,          XmATTACH_WIDGET,\n") &
+  bprintf("      XmNbottomWidget,              done_but___,\n") &
+  bprintf("      XmNbottomOffset,              10,\n") &
+  bprintf("      XmNshadowType,                XmSHADOW_ETCHED_IN,\n") &
+  bprintf("      XmNmarginWidth,               15,\n") &
+  bprintf("      XmNmarginHeight,              15,\n") &
+  bprintf("      XmNtraversalOn,               False,\n") &
+  bprintf("      NULL );\n")
+ =>
+  prt_M_117;
+
+  bshell("echo \" > .Bcom") &
+  bshell("cat .Bmvr >> .Bcom") &
+  bshell("echo \" >> .Bcom")
+ =>
+  prt_M_117_Bver;
+
+  prt_INI_1(?);
+
+  bprintf("  INI_% ();\n",s) &
+  prt_INI_1(S)
+ =>
+  prt_INI_1(S,s.mch);
+
+  GetCurrentConstruct(s.itf) &
+  ReadSeenNotImportedStore(S) &
+  bprintf("  INI_% ();\n",s) &
+  bprintf("  INI_file_dump ();\n") &
+  prt_INI_1(S)
+ =>
+  prt_INI;
+
+
+
+  bprintf("  {\n") &
+  bprintf("    Arg args [ 15 ];\n") &
+  bprintf("    int n = 0;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNrows,                  45                ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNcolumns,               60                ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNeditable,              False             ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNeditMode,              XmMULTI_LINE_EDIT ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNcursorPositionVisible, False             ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNscrollHorizontal,      False             ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNwordWrap,              True              ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNmarginWidth,           5                 ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNmarginHeight,          5                 ); n++;\n") &
+  bprintf("    XtSetArg ( args [ n ], XmNtraversalOn,           False            ); n++;\n") &
+  bprintf("    monolog_text___ = XmCreateScrolledText ( monolog_frame___, \"Canvas\", args, n );\n") &
+  bprintf("  }\n") &
+  bprintf("  mc_int___ = XtGetMultiClickTime ( XtDisplay ( top_level___ ) );\n") &
+  bprintf("  XtManageChild ( prog_label___ );\n") &
+  bprintf("  XtManageChild ( done_but___ );\n") &
+  bprintf("  XtManageChild ( monolog_text___ );\n") &
+  bprintf("  XtManageChild ( monolog_frame___ );\n") &
+  bprintf("  XtManageChild ( main_form___ );\n") &
+  bprintf("  XtRealizeWidget ( top_level___ );\n") &
+  prt_INI &
+  bprintf("  Ops_Popup___ ();\n") &
+  bprintf("  DisplayMWText___ ( \"Program output:\\n\");\n") &
+  bprintf("  XtAppMainLoop ( app___ );\n") &
+  bprintf("  return ( 0 );\n") &
+  bprintf("}\n")
+ =>
+  prt_M_118;
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  conn(f);
+
+  bconnect(f)
+ =>
+  conn(f);
+
+  conn(bcatl("CDE/C/C.c")) &
+  prt_M_0 &
+  prt_M_1(o) &
+  prt_M_2 &
+  prt_op_types_0 &
+  WriteDot &
+  prt_M_3_0 &
+  prt_M_3 &
+  prt_M_3a &
+  prt_M_3c &
+  prt_M_3b &
+  prt_M_4 &
+  prt_M_4_5 &
+  prt_M_4_6 &
+  prt_M_4_7 &
+  prt_M_5(o) &
+  prt_M_6 &
+  WriteDot &
+  prt_M_7 &
+  prt_M_8 &
+  prt_M_9 &
+  prt_M_10 &
+  prt_M_11 &
+  WriteDot &
+  prt_M_12 &
+  prt_M_13(a) &
+  prt_M_14 &
+  prt_M_114(o) &
+  prt_M_115(o) &
+  WriteDot &
+  prt_M_116(o) &
+  prt_M_117_Bver &
+  prt_M_117 &
+  prt_M_118 &
+  WriteDot &
+  bclose
+ =>
+  prt_M(a)(o)  /* (mch name)(op names) */
+
+END
+
+&
+
+THEORY LitTransX IS
+
+ '0':"0"; '1':"1"; '2':"2"; '3':"3"; '4':"4"; 
+ '5':"5"; '6':"6"; '7':"7"; '8':"8"; '9':"9";   
+
+
+ 'A':"A"; 'B':"B"; 'C':"C"; 'D':"D"; 'E':"E"; 'F':"F"; 
+ 'G':"G"; 'H':"H"; 'I':"I"; 'J':"J"; 'K':"K"; 'L':"L"; 
+ 'M':"M"; 'N':"N"; 'O':"O"; 'P':"P"; 'Q':"Q"; 'R':"R"; 
+ 'S':"S"; 'T':"T"; 'U':"U"; 'V':"V"; 'W':"W"; 'X':"X"; 'Y':"Y"; 'Z':"Z"; 
+
+ 'a':"a"; 'b':"b"; 'c':"c"; 'd':"d"; 'e':"e"; 'f':"f"; 
+ 'g':"g"; 'h':"h"; 'i':"i"; 'j':"j"; 'k':"k"; 'l':"l"; 
+ 'm':"m"; 'n':"n"; 'o':"o"; 'p':"p"; 'q':"q"; 'r':"r"; 
+ 's':"s"; 't':"t"; 'u':"u"; 'v':"v"; 'w':"w"; 'x':"x"; 'y':"y"; 'z':"z"
+
+END
+
+&
+
+THEORY CIOGenerateMX IS
+
+#define CIOM_tac         ((REV;FLAT~;CATL;MODR;RULE;MAP)~;CIOGenerateMX)~
+
+#define CIOGenerateM      bcall(CIOM_tac: CIO_00)
+
+  GetBotRef(m.mch) &
+  bmodr(PrtMotifX.9,(n,?)) &
+  bcall(cre_ops_tac:
+    ( save_sets(m)(n)(bcatl("ANL/",m,".mch.anl")) &
+     load_imp_typ_file_0 &
+      load_seen_not_impM_0 &
+      load_rec_ipt_0 &
+      load_ImpSeenPropsStore00 &
+      load_MchSeenImpPropsStore00 &
+      cre_ops_1(m)(n)(bcatl("TYP/",m,".mri.typ")) &
+      introduce_force_0
+    )  ) &
+/***
+PrintTHEORY(TypeConfusionRewritesX)&
+print_type_info &
+***/
+  CIO_TypeConfusionIntoOpTypesSto &
+  PrintMotif(m,n)
+ =>
+  CIO_4(m)(n); /* m mch name, n ops list (no ? ) */
+
+  CIOErrorFlagged &
+  OfferCIOFailureOptionsM
+ =>
+  CIO_4(m)(n);
+
+  bsearch(?,X,Y) &
+  CIO_4(m)(Y)
+ =>
+  CIO_3(m)(N)(?)(X);
+
+  GetCurrentConstruct(x.itf) &
+  InformNotOperationName(x,o) &
+  SetCIOError
+ =>
+  CIO_3(m)(N)(O,o)(X);
+
+  bsearch(o,N,P) &
+  CIO_3(m)(P)(O)(X,o)
+ =>
+  CIO_3(m)(N)(O,o)(X);
+
+  brule(CIOParseX.1,O) &
+  CIO_3(m)(bflat(?,n))(bflat(?,brev(O)))(?)
+ =>
+  CIO_2(m)(n);
+
+  CIOErrorFlagged
+ =>
+  CIO_2(m)(n);
+
+  brule(CIOParseX.1,?) &
+  CIO_4(m)(n)
+ =>
+  CIO_2(m)(n);
+
+  Writef(("\n    % has no operations\n",m)) &
+  SetCIONoMiniRemakeFlag &
+  SetCIOError
+ =>
+  CIO_2(m)(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  CIO_1(m)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  bmodr(CIOParseX.2,d) &       
+  StoreOpheaders(n) &
+  StoreParams(l) &
+  CheckParams &
+  CIO_2(k)(j)
+ =>
+  CIO_1(k)(Z);
+
+  ClearCIOError &
+  CIO_1(m)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  CIO_0(m);
+
+  GetCurrentConstruct(x.itf) &
+  CIO_0(x)
+ =>
+  CIO_00;
+
+  CIOErrorFlagged
+ =>
+  CIO_00
+
+END
+
+&
+
+THEORY LinkOpNamesX END &  /* COPIED FROM Translators.src */
+
+THEORY CheckOverlapOpNamesX IS
+
+#define CheckOverlapOpNames(x) \
+       bcall(((MAP;CATL;RULE;WRITE;MODR)~;CheckOverlapOpNamesX):coon0(x))
+
+  ?; /* current imp promotes list */
+
+  bcrer(LinkOpNamesX,(k:o))
+ =>
+  coon4(k,o);
+
+  brule(LinkOpNamesX.N,(l:o)) &
+  Writef(("\n\n  Link Error - operation % appears in\n\n    % and %\n",bsrv o berv,bsrv l berv,bsrv k berv)) &
+  bmodr(LNKErrorX.1,1) /* SetLNKError */
+ =>
+  coon4(k,o);
+
+  coon4(k,o);
+
+  brule(CheckOverlapOpNamesX.1,P) &
+  bsearch(o,P,Q)
+/***
+&HERE((o:" is promoted"))
+***/
+ =>
+  coon4(k,o);
+
+  coon4(k,?);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  bmodr(CheckOverlapOpNamesX.1,(c,?)) &
+  coon4(P) bsmap j
+ =>
+  coon3(P)(Z);
+
+  ReadBotRef(r.s) &
+  coon3(a)(bcatl("ANL/",r,".",s,".anl"))
+ =>
+  coon2(a.mch);
+
+  coon1(x);
+
+  GetBotRef(a.mch) &
+  coon2(a.mch)
+ =>
+  coon1(a.mch);
+
+  coon1 bsmap O
+ =>
+  coon0(O)
+
+END
+
+&
+
+THEORY CIOFromUserMX IS
+
+  ?;?;?;?;
+
+  ?;
+
+#define ReadLinkList(x) brule(CIOFromUserMX.5,x)
+#define ModrLinkList(x) bmodr(CIOFromUserMX.5,x)
+
+  GetCurrentConstruct(s.itf) &
+  Writef(("\n\n  Generated executable interface code\n  Execute in the Translators Environment\n")) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,((s.itf:BT_CIOM:(s,file_dump)))) &
+  AddGen(s.itf)
+ =>
+  check_errorM;
+
+  CIOErrorFlagged &
+  Writef(("\n\n  Interface failed (Programming Language Flag: C)\n"))
+/***
+&print_CIOM_info
+***/
+ =>
+  check_errorM;
+
+  CIOErrorFlagged &
+  ANSIC_CIOM_set &
+  Writef(("\n\n  Interface failed (Programming Language Flag: ANSI C)\n"))
+/***
+&print_CIOM_info
+***/
+ =>
+  check_errorM;
+
+  CIOErrorFlagged &
+  CIOMiniRemakeFlagSet &
+  OfferCIOFailureOptionsM
+ =>
+  check_errorM;
+
+
+  SetCIOError
+ =>
+  check_link1(1);
+
+  check_link1(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  check_link;
+
+  bget(".Bcom",x) &
+  check_link1(x)
+ =>
+  check_link;
+
+  /***
+  LinkCFile:
+	$1 	name (eg, Bool_TYPE)
+	$2	0=>Translators.src 1=>CIOM.src
+	$3 	compiler string
+	$4 	Non-X Link Libraries
+	$5 	X Link Libraries
+	$6 	0=>ANSIC 1=>non_ANSIC
+	$7 	0=>Motif 1=>Non-Motif
+  ***/
+  GetCurrentConstruct(a.itf) &
+  SetCIONoMiniRemakeFlag &
+  brule(PrtMotifX.14,A) &
+  brule(PrtMotifX.15,B) &
+  brule(PrtMotifX.16,C) &
+  brule(PrtMotifX.13,D) &
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/LinkCFile ",a, " 1 ",A," ",B," ",C," ",D," 0")) &
+  check_link
+ =>
+  link_2;
+
+  ReadLinkList(L) &
+  bprintf("%.o ",file_dump) &
+  ModrLinkList((L,file_dump))
+ =>
+  link_file_dump;
+
+  ReadLinkListStore(L) &
+  bsearch(file_dump.mch,L,M)
+ =>
+  link_file_dump;
+
+  ReadLinkList(L) &
+  bprintf("%.o ",a) &
+  ModrLinkList((L,a))
+ =>
+  link_1(a.mch);
+
+  link_1(?);
+
+
+
+  ReadLinkList(L) &
+  bprintf("%.o ",m) &
+  ModrLinkList((L,m)) &
+  link_ldf_chk_PASPldf_0(m)
+ =>
+  link_ldf_chk_PASPldf_2(m:f:a);
+
+  ReadLinkList(L) &
+  bsearch(m,L,M) &
+  link_ldf_chk_PASPldf_0(m)
+ =>
+  link_ldf_chk_PASPldf_2(m:f:a);
+
+  link_ldf_chk_PASPldf_2(?);
+
+  link_ldf_chk_PASPldf_1(f);
+
+  bget(f,(x|y)) &
+  link_ldf_chk_PASPldf_2 bsmap y
+ =>
+  link_ldf_chk_PASPldf_1(f);
+
+
+  link_ldf_chk_PASPldf_1(bcatl("CDE/PASP/",m,".ldf"))
+ =>
+  link_ldf_chk_PASPldf_0(m);
+
+  ReadLinkList(L) &
+  bprintf("%.o ",m) &
+  ModrLinkList((L,m)) &
+  link_ldf1(m)
+ =>
+  link_ldf3(m);
+
+  ReadLinkList(L) &
+  bsearch(m,L,M) &
+  link_ldf1(m)
+ =>
+  link_ldf3(m);
+
+  link_ldf3(m)
+ =>
+  link_ldf3(m(p));
+
+  link_ldf3(?);
+
+  link_ldf2(m)(f);
+
+  bget(f,(x|y)) &
+  link_ldf3 bsmap y
+ =>
+  link_ldf2(m)(f);
+
+  link_ldf2(m)(bcatl("CDE/C/",m,".ldf")) &
+  link_ldf_chk_PASPldf_0(m)
+ =>
+  link_ldf1(m);
+
+  link_ldf1(?);
+
+  ReadLinkList(L) &
+  link_ldf1 bsmap L
+ =>
+  link_ldf;
+
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  link;
+
+  bconnect(".Bcom") &
+  GetCurrentConstruct(a.itf) &
+  ReadLinkListStore(L) &
+  bprintf("C.c ") &
+  link_1(a.mch) &
+  link_1 bsmap L &
+  link_file_dump &
+  link_ldf &
+  link_2
+ =>
+  link;
+
+  CIOErrorFlagged &
+  SetCIONoMiniRemakeFlag
+ =>
+  link;
+
+  ReadLinkListStore(L) &
+  CheckOverlapOpNames(L) &
+  link
+ =>
+  link0;
+
+  CIOErrorFlagged
+ =>
+  link0;
+
+  InformCantConnect(".Bplf") &
+  PFZ
+ =>
+  load_Bplf;
+
+  bget(".Bplf",(z;x;a;b;c)) &
+  bmodr(PrtMotifX.17,z) &    /* Interface_Option     */
+  bmodr(PrtMotifX.13,x) &    /* Prog_Language_Option */
+  bmodr(PrtMotifX.14,a) &    /* cc_compiler_str_num  */
+  bmodr(PrtMotifX.15,b) &    /* cc_link_lib_str_num  */
+  bmodr(PrtMotifX.16,c)      /* cc_Xlink_lib_str_num */
+ =>
+  load_Bplf;
+
+
+/***
+HERE(((a.mch|c.d|e|f|g)))&
+***/
+  load_Bplf &
+  SetMotifItf &
+  ClearCIOError &
+  SetCIOMiniRemakeFlag &
+  Writef(("\n  Generating Motif INTERFACE % ",a)) &
+  WriteDot &
+  SetCurrentConstruct(a.itf) &
+  SetConstructImp(c.d) &
+  ModrRecImportedStore(e) &
+  ModrSeenNotImportedStore(f) &
+  CheckSeenNotImportedAgainst_SLIB_ldf(a,c) &
+  ModrLinkListStore(g) &
+  bcall(MODR:bmodr(CIOErrorX.2,(a.mch|c.d|e|f))) &
+  CIOParse &
+  ClearScalarFlag &
+  CIOGenerateM &
+  link0 &
+  check_errorM
+/***
+&print_database
+***/
+/***
+&print_type_info
+***/
+ =>
+  cio_2M_2(a.mch|c.d|e|f|g);
+
+
+
+  /*** ensure basic_io imported or seen ***/
+
+  cio_2M_2(a.mch|c.d|e|f,basic_io.mch|g)
+ =>
+  cio_2M_1(a.mch|c.d|e|f|g);
+
+  bsearch(basic_io.mch,f,F) &
+  cio_2M_2(a.mch|c.d|e|f|g)
+ =>
+  cio_2M_1(a.mch|c.d|e|f|g);
+
+  bsearch(basic_io.mch,e,E) &
+  cio_2M_2(a.mch|c.d|e|f|g)
+ =>
+  cio_2M_1(a.mch|c.d|e|f|g);
+
+
+ /*** ensure basic_io in link list ***/
+
+  cio_2M_1(a.mch|c.d|e|f|g,basic_io.mch)
+ =>
+  cio_2M(a.mch|c.d|e|f|g);
+
+  bsearch(basic_io.mch,g,G) &
+  cio_2M_1(a.mch|c.d|e|f|g)
+ =>
+  cio_2M(a.mch|c.d|e|f|g)
+
+
+ /* (a.mch | c.imp | imported | seen not imported | output from GetLinkList) */
+
+/*
+  cio_2M(aaa.mch | aaa_1.imp | ?,nn_Nvar.mch,pp_Vvar.mch | ?,String_TYPE.mch |  ?,nn_Nvar.mch,...)
+*/
+
+END

@@ -1,0 +1,96 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#include "save_restore_BTool_bin.c"
+
+max_toolfunc()
+#define max_tool max_toolfunc()
+{
+  sta_sym;
+  sta_the;
+  sta_rul;
+  sta_gol;
+  sta_nod;
+  sta_tac;
+  sta_hyp; 
+  sta_seq;
+}
+
+max0_toolfunc()
+#define max0_tool max0_toolfunc()
+{
+  fprintf ( bstdout, "\n");
+  sta_sym;
+  sta_the;
+  sta_rul;
+  sta_gol;
+  sta_nod;
+  sta_tac;
+  sta_hyp; 
+  sta0_seq  ;
+}
+
+restore_alloc ( nnn )
+{
+  while ( max_mem < nnn ) {
+    max_mem += alloc_topup;
+  }
+  mmts = ( int * ) realloc ( mmts, ( ( max_mem + 5 ) * sizeof ( int ) ) );
+  if ( mmts == NULL ) {
+     printf ( "\n  malloc failure\n" );
+     exit ( 1 );
+  }
+}
+
+save_BTool_toolfunc()
+#define save_tool save_BTool_toolfunc()
+{
+  register int i;
+/***
+printf ( "tolmch - save_comp_tool: vad(%d+1)=%d max_mem=%d\n",
+                                                      vnbs, vad(vnbs+1), max_mem );
+***/
+  save_BTool_bin_file ();
+  close_save_fil;
+}
+
+save_comp_BTool_toolfunc()
+#define save_comp_tool save_comp_BTool_toolfunc()
+{
+  register int i ;
+/***
+printf ( "tolmch -  save_comp_BTool_toolfunc: vad(%d+1)=%d max_mem=%d\n",
+                                                      vnbs, vad(vnbs+1), max_mem );
+***/
+  if ( open_save_comp_fil==TRUE ) {
+    save_BTool_bin_file ();
+    close_save_fil;
+  }
+}
+
+restore_BTool_toolfunc()
+#define restore_tool restore_BTool_toolfunc()
+{
+  restore_BTool_bin_file ();
+  close_restore_fil;
+
+/***
+printf ( "tolmch - restore_comp_tool: vad(%d+1)=%d max_mem=%d\n",
+                                                      vnbs, vad(vnbs+1), max_mem );
+***/
+}

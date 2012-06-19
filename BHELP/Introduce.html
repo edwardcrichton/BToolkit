@@ -1,0 +1,150 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Introduce Tool</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Introduce"></A>
+<H1>
+The Introduce Tool</H1>
+This option is invoked from the <A HREF="BToolkit.html#TopBar!Introduce">TopBar
+Introduce</A> pull-down
+and provides the usual method of introducing a new construct into a development.
+
+<P>The name of each <A HREF="BToolkit.html#Constructs!Area">construct</A>
+should not already be in use (irrespective of the type of the construct);
+the only exception to this is for an <A HREF="Interface.html#Interface!Generator">interface</A>,
+which shares the name of the specification it interfaces.
+
+<P>There is a restriction on the length of the name of a&nbsp;<A NAME="Constructs!Name_length"></A>construct:
+the maximum length is 20 characters (12 for base constructs) excluding
+the extension.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+Introduce New Construct</H2>
+This facility enables the introduction of a new construct in template form
+(e.g. with appropriate keywords included in the construct) into the development;
+the construct name is prompted for, and the construct created in the user's
+<A HREF="BToolkit.html#Development_Environment">SRC</A> directory and <A HREF="Editor.html#Editor">opened
+for editing</A>:
+
+<P>This option provides a sub-menu of twelve options; the following seven:
+<UL>
+<LI>
+Machine</LI>
+
+<LI>
+Refinement</LI>
+
+<LI>
+Implementation</LI>
+
+<LI>
+Base</LI>
+
+<LI>
+Enumeration</LI>
+
+<LI>
+Interface</LI>
+
+<LI>
+Document</LI>
+</UL>
+each causes a file containing appropriate keywords to be created in <A HREF="BToolkit.html#Development_Environment">SRC</A>.
+
+<P>The remaining five:
+<UL>
+<LI>
+Refinement of analysed construct</LI>
+
+<LI>
+Implementation of analysed construct</LI>
+
+<LI>
+Enumeration of analysed machine(s)</LI>
+
+<LI>
+Interface of implemented machine</LI>
+
+<LI>
+Document of configured constructs</LI>
+</UL>
+cause the toolkit to prompt for the appropriate construct(s) required,
+after which a file containing as much information as possible (e.g. all
+operation names with skeleton operations in the first two cases) be created
+in <A HREF="BToolkit.html#Development_Environment">SRC</A>.
+
+<P>
+<HR WIDTH="60%"><A NAME="IntroduceSRC"></A>
+<H2>
+Introduce construct(s) from SRC</H2>
+This option produces a menu of constructs currently in the user's <A HREF="BToolkit.html#Development_Environment">SRC</A>
+directory (constructs whose name is already in use will not be offered).
+
+<P>If the construct parses, it will be committed to the <A HREF="BToolkit.html#Development_Environment">CFG</A>
+directory; if it does not parse, an appropriate parsing error message is
+given in the <A HREF="BToolkit.html#Interface!Motif">Display Area</A> and
+the construct is opened for editing.
+
+<P>After successful introduction, the construct will appear in red the
+<A HREF="BToolkit.html#Constructs!Area">Constructs Area</A> of the appropriate
+<A HREF="BToolkit.html#Environments">Environment Window(s</A>).
+
+<P>
+<HR WIDTH="60%"><A NAME="IntroduceSLIB"></A>
+<H2>
+Introduce construct from SLIB</H2>
+If a construct is introduced from the <A HREF="SystemLibrary.html#System_Library">system library</A>
+the library specification will be copied into the development <A HREF="BToolkit.html#Development_Environment">CFG</A>
+directory and the construct will appear in <A HREF="BToolkit.html#Constructs!Colour-coding">blue</A>
+in the <A HREF="BToolkit.html#Constructs!Area">Constructs Area</A> of the
+appropriate <A HREF="BToolkit.html#Environments">Environment Window(s</A>).
+
+<P>In the case of a renamable SLIB machine, the user will first be prompted
+for the rename prefix (the length of the renamed construct should not exceed
+20 characters).
+
+<P>Since library machines, like generated machines, are guaranteed to be
+syntactically correct and well-typed, related <A HREF="Analyser.html#Analysed_Form">analysed
+forms</A> and <A HREF="Analyser.html#Type_File">type information files</A>
+are also copied to the <A HREF="BToolkit.html#Development_Environment">ANL</A>
+and <A HREF="BToolkit.html#Development_Environment">TYP</A> directories.
+The status of these constructs is reflected in the various B-Toolkit environments
+by the <A HREF="BToolkit.html#Command_Buttons">command buttons</A> that
+are active.
+
+<P>Further, when a library construct is introduced, its matching code (renamed,
+if necessary) is also compiled and copied to the <A HREF="BToolkit.html#Development_Environment">CDE/C</A>
+directory.
+
+<P>The mathematical content of these library machines may NOT be changed
+and committed to the system (i.e. they are `read-only' in that sense).
+It is, however, possible to commit annotation changes.
+<BR>&nbsp;
+<BR>&nbsp;
+
+<P>
+<HR WIDTH="60%">
+<CENTER>&nbsp;</CENTER>
+
+<CENTER>&nbsp;</CENTER>
+
+<CENTER></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

@@ -1,0 +1,180 @@
+
+                     PERSON3 DEMONSTRATION
+                     ---------------------
+
+    This demonstration is similar to that of PERSON1;
+    however, it illustrates the use the BASE generator
+    in the data and algorithmic design of a simple software module,
+    and in particular the use of passing tokens over the interface
+    (rather than employing key search operations illustrated in the
+    PERSON2 demonstration, which is less efficient). The presentation
+    of information is done using a `print' operation, the
+    effect of which cannot be illustrated through the Animation.
+    The interface generator is used to produce running code, 
+    and documentation tool to provide a final document.
+
+
+The Demonstration
+
+1.  Start the development
+
+    Enter the PERSON3 directory and run the B-Toolkit to create a new
+    development directory.
+
+2.  Introduce from SRC & Analyse
+
+    Introduce `Person3.mch' from SRC and analyse (anl); the `Scalar_TYPE',
+    `Bool_TYPE'and `String_TYPE' SLIB machines are introduced.
+
+3.  Animate
+
+    Animate `Person3.mch' (anm) to check its functionality.
+
+4.  Introduce Base Object Description from SRC & Open
+
+    Introduce `Person3Base.bse' from SRC and, enter the Generators
+    Environment and open for inspection. 
+    It describes a single BASE object class, called `personbase',
+    comprising 3 MANDATORY fields: `name', `age' and `sex'. 
+    Note the SUPPORTS clause - this ensures that all operations
+    not required are automatically `filtered out'.
+
+5.  Introduce Implementation from SRC & Open
+
+    Return to the Main Environment, Introduce `Person3_1.imp' from SRC
+    and open for inspection. 
+    The following operations are required from `Person3Base':
+
+        save_Person3Base
+        restore_Person3Base
+        make_personbase
+        kill_personbase
+        vld_personbase
+        print_BaseObj_personbase
+        mod_name
+
+6.  Generate the Base Operation Headers
+
+    Go to the Generators Environment.  First generate the operation
+    list (gbo); open PersonBase3.ops to verify that all operations
+    not required are commented out.
+
+7.  Generate the Base Operation Machines
+
+    Now generate the machines of Person3Base.bse (gbm).
+    The following SLIB constructs are introduced:
+
+        basic_io
+        Person3Base_str_obj
+        personbase_ffnc_obj
+        file_dump
+        Bool_TYPE
+        Scalar_TYPE
+        Bit_TYPE
+
+8.  Inspect Structure of Implementation
+
+    After the generated machines have been analysed, return to the
+    Main environment and open `Person3BaseI.imp' for inspection; note
+    how each operation is built on the SLIB object machines.
+
+9.  Analyse Implementation
+
+    Close all files and analyse `Person3_1.imp'.
+
+10. Set Interface Option
+
+    Check Options and set Interface Option to `Non-Motif'
+
+11. Introduce New Interface
+
+    The development is now complete. In order to test it, we may
+    Introduce a New Interface of `Person3.mch'.
+
+12. Generate Interface
+
+    Edit `Person3.itf' (to provide a suitable value for` max_person'),
+    commit edits and enter the Generators Environment to generate
+    the interface; the constructs:
+
+        Person3Io.mch
+        Person3Io_1.imp
+        Person3Itf.mch
+        Person3ItfI.imp
+        Person3EnumItf.enm
+
+    are generated, and the SLIB construct `ITF_token_io.mch' is
+    introduced. The enumeration is first generated, all generated
+    machines analysed, all implementations translated and, finally,
+    `Person3ItfI' linked to produce running code which may be executed.
+    Alternatively, a Motif interface may be produced by setting
+    the `Interface' toggle under `Options' to `Motif'. This
+    might require that you have a Motif Development Pack (not
+    part of the B-Toolkit).
+
+13. Browse Design
+
+    Examine the design structure using Browse -> Overview -> Design
+    to see the role that the B-Toolkit's SLIB machines play. Dismiss
+
+14. Introduce New Document
+
+    Return to the Main Menu and Introduce a new Document of all
+    configured constructs; edit, set the required
+    Document flags (using the Options menu), mark-up and print from
+    the `Document' environment.
+
+
+
+
+Exercise 1
+
+Write a specification House (in the manner of Person3) which
+includes the set HOUSE, the variable house (the latter
+a subset of the former) and the variable house_rooms
+indicating the number of rooms a house contains.  Parameterise the
+specification with max_house.
+
+Specify an operation Add_house to add a house to the database,
+taking the number of rooms as a parameter, and Get_rooms
+to return the number of rooms of a house in the database.
+
+Analyse, POGenerate and Autoprove this specification. 
+
+
+Exercise 2
+
+Construct a specification Person_House which INCLUDES
+Person and House and introduces a new variable {\em
+person_house, an association between people and houses such that a
+person may be associated with only one house, but containing only
+people and houses present in the  database.  The specification should
+be parameterised by max_person and max_house.
+
+    o PROMOTE both operations from House and the
+      operation Add_person.
+
+    o Specify an operation Connect_person_house which takes a person
+      and a house as input, and updates the person_house variable.
+
+    o Specify an operation Get_person_house_details which returns the
+      same information as Get_person_details together with a boolean
+      indicating whether or not the person is associated with a house.
+
+Analyse, POGenerate and Autoprove this specification. 
+
+
+Exercise 3
+
+Build an implementation for Person_House using the Base Object
+generator (introduce PerHseBase.bse containing two base objects
+personbase and housebase, the latter containing one
+mandatory field rooms with the former being an extension of
+the base of Person3Base.bse such that ...). 
+
+
+Exercise 4
+
+Amend Person_House such that the (glueing) invariant ensures
+that each house has no more people associated with it than it has
+rooms. Re-specify and re-implement

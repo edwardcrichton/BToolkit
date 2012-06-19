@@ -1,0 +1,39 @@
+REFINEMENT
+
+  MaxSoFar_1
+
+REFINES
+
+  MaxOfSet
+
+VARIABLES
+
+  maxnum
+
+INVARIANT
+/*"
+The state is here represented by a single number {\em maxnum\/},
+which always holds the maximum value of them abstract set {\em numset\/}.
+
+The operations are now simplified as we now only have to find an 
+algorithm for finding the maximum of two numbers.
+"*/
+
+
+  maxnum : NAT & 
+
+  maxnum = max({0} \/ numset) 
+  
+
+INITIALISATION
+
+  maxnum := 0
+
+OPERATIONS
+
+  enter(new) = 
+     PRE new : NAT1 THEN  maxnum := max({maxnum,new}) END;
+
+  mx <-- maximum = BEGIN mx := maxnum + 1 END
+
+END

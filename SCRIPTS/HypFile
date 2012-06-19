@@ -1,0 +1,15 @@
+#! /bin/sh
+
+if [ "$BHYPEDIT" ]
+then
+  $BHYPEDIT $1&
+else
+  platform=`cat .Bpla`
+  if [ $platform = "Solaris" ]
+  then
+    textedit -geometry 220x650 $1&
+  else
+    xedit -geometry 220x650 $1&
+  fi
+fi
+echo $! > .Bed

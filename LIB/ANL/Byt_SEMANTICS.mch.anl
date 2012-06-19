@@ -1,0 +1,61 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Byt_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(!byt.(byt : BYTE => byt = byt) & !nat.(nat : NAT & nat <= 255 => n2b(nat) = n2b(nat)) & b2bl(n2b(0)) = FALSE & !byt.(byt : BYTE & not(byt = n2b(0)) => b2bl(byt) = TRUE) & bl2b(FALSE) = n2b(0) & bl2b(TRUE) = n2b(1))
+;
+(!byt.(byt : BYTE => byt = byt) & !nat.(nat : NAT & nat <= 255 => n2b(nat) = n2b(nat)) & b2bl(n2b(0)) = FALSE & !byt.(byt : BYTE & not(byt = n2b(0)) => b2bl(byt) = TRUE) & bl2b(FALSE) = n2b(0) & bl2b(TRUE) = n2b(1))
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Byt_SEMANTICS(?):(?):(?))
+;
+(
+?
+)

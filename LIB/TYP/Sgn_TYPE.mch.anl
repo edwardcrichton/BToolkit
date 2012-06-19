@@ -1,0 +1,393 @@
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(SIGNED)
+;
+(SIGNED)
+;
+(MinSgn,MaxSgn,n2ps,n2ns,ps2n,ns2n)
+;
+(MinSgn,MaxSgn,n2ps,n2ns,ps2n,ns2n)
+;
+(?+?: SIGNED*SIGNED +-> SIGNED & ?-?: SIGNED*SIGNED +-> SIGNED & ?*?: SIGNED*SIGNED +-> SIGNED & ?/?: SIGNED*SIGNED +-> SIGNED & ? mod ?: SIGNED*SIGNED +-> SIGNED & n2ps: 0..32767 >-> SIGNED & n2ns: 1..32768 >-> SIGNED & ps2n = n2ps~ & ns2n = n2ns~ & MinSgn = n2ns(32768) & MaxSgn = n2ps(32767) & card(SIGNED): NAT1)
+;
+(?+?: SIGNED*SIGNED +-> SIGNED & ?-?: SIGNED*SIGNED +-> SIGNED & ?*?: SIGNED*SIGNED +-> SIGNED & ?/?: SIGNED*SIGNED +-> SIGNED & ? mod ?: SIGNED*SIGNED +-> SIGNED & n2ps: 0..32767 >-> SIGNED & n2ns: 1..32768 >-> SIGNED & ps2n = n2ps~ & ns2n = n2ns~ & MinSgn = n2ns(32768) & MaxSgn = n2ps(32767) & card(SIGNED): NAT1)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(SLE,SGE,SLT,SGT,SEQ,SNE,SADD,SSUB,SMUL,SDIV,SMOD,SINC,SDEC)
+;
+(SLE,SGE,SLT,SGT,SEQ,SNE,SADD,SSUB,SMUL,SDIV,SMOD,SINC,SDEC)
+;
+(Sgn_TYPE(?):(?):(?))
+;
+(
+(
+ (SLE)
+;
+ (?,Val_Op,Det_Op,(rr <-- SLE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa<=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (rr:=bool(aa<=bb))
+ )
+ )
+)
+,
+(
+ (SGE)
+;
+ (?,Val_Op,Det_Op,(rr <-- SGE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa>=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (rr:=bool(bb<=aa))
+ )
+ )
+)
+,
+(
+ (SLT)
+;
+ (?,Val_Op,Det_Op,(rr <-- SLT(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa<bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (rr:=bool(aa<bb))
+ )
+ )
+)
+,
+(
+ (SGT)
+;
+ (?,Val_Op,Det_Op,(rr <-- SGT(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa>bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (rr:=bool(bb<aa))
+ )
+ )
+)
+,
+(
+ (SEQ)
+;
+ (?,Val_Op,Det_Op,(rr <-- SEQ(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa = bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (rr:=bool(aa = bb))
+ )
+ )
+)
+,
+(
+ (SNE)
+;
+ (?,Val_Op,Det_Op,(rr <-- SNE(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (BEGIN
+ rr:=bool(aa/=bb)
+ END)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED)
+ |
+ (
+ (rr:=bool(not(aa = bb)))
+ )
+ )
+)
+,
+(
+ (SADD)
+;
+ (?,Val_Op,Det_Op,(rr <-- SADD(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED & aa+bb: SIGNED)
+ |
+ (
+ (rr:=aa+bb)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED & aa+bb: SIGNED)
+ |
+ (
+ (rr:=aa+bb)
+ )
+ )
+)
+,
+(
+ (SSUB)
+;
+ (?,Val_Op,Det_Op,(rr <-- SSUB(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED & aa-bb: SIGNED)
+ |
+ (
+ (rr:=aa-bb)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED & aa-bb: SIGNED)
+ |
+ (
+ (rr:=aa-bb)
+ )
+ )
+)
+,
+(
+ (SMUL)
+;
+ (?,Val_Op,Det_Op,(rr <-- SMUL(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED & aa*bb: SIGNED)
+ |
+ (
+ (rr:=aa*bb)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED & aa*bb: SIGNED)
+ |
+ (
+ (rr:=aa*bb)
+ )
+ )
+)
+,
+(
+ (SDIV)
+;
+ (?,Val_Op,Det_Op,(rr <-- SDIV(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED & bb/=n2ps(0) & aa/bb: SIGNED)
+ |
+ (
+ (rr:=aa/bb)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED & not(bb = n2ps(0)) & aa/bb: SIGNED)
+ |
+ (
+ (rr:=aa/bb)
+ )
+ )
+)
+,
+(
+ (SMOD)
+;
+ (?,Val_Op,Det_Op,(rr <-- SMOD(aa,bb)))
+;
+ (aa,bb)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & bb: SIGNED & bb>n2ps(0) & aa mod bb: SIGNED)
+ |
+ (
+ (rr:=aa mod bb)
+ )
+ )
+;
+ (
+ (aa: SIGNED & bb: SIGNED & n2ps(0)<bb & aa mod bb: SIGNED)
+ |
+ (
+ (rr:=aa mod bb)
+ )
+ )
+)
+,
+(
+ (SINC)
+;
+ (?,Val_Op,Det_Op,(rr <-- SINC(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & aa+n2ps(1): SIGNED)
+ |
+ (
+ (rr:=aa+n2ps(1))
+ )
+ )
+;
+ (
+ (aa: SIGNED & aa+n2ps(1): SIGNED)
+ |
+ (
+ (rr:=aa+n2ps(1))
+ )
+ )
+)
+,
+(
+ (SDEC)
+;
+ (?,Val_Op,Det_Op,(rr <-- SDEC(aa)))
+;
+ (aa)
+;
+ (rr)
+;
+ (
+ (aa: SIGNED & aa-n2ps(1): SIGNED)
+ |
+ (
+ (rr:=aa-n2ps(1))
+ )
+ )
+;
+ (
+ (aa: SIGNED & aa-n2ps(1): SIGNED)
+ |
+ (
+ (rr:=aa-n2ps(1))
+ )
+ )
+)
+)

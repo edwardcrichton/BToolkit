@@ -1,0 +1,449 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_Vfnc)
+;
+(Rename_Vfnc)
+;
+(Rename_Vfnc : 1..maxfld +-> VALUE)
+;
+(Rename_Vfnc : 1..maxfld +-> VALUE)
+;
+(?)
+;
+(Rename_Vfnc := {})
+;
+(Rename_Vfnc := {})
+;
+(Rename_TST_FLD_FNC,Rename_DEF_FNC,Rename_FREE_FNC,Rename_STO_FNC,Rename_RMV_FNC,Rename_VAL_FNC,Rename_EQL_FNC,Rename_NEQ_FNC,Rename_SAV_FNC,Rename_RST_FNC,Rename_SAVN_FNC,Rename_RSTN_FNC)
+;
+(Rename_TST_FLD_FNC , Rename_DEF_FNC , Rename_FREE_FNC , Rename_STO_FNC , Rename_RMV_FNC , Rename_VAL_FNC , Rename_EQL_FNC , Rename_NEQ_FNC , Rename_SAV_FNC , Rename_RST_FNC , Rename_SAVN_FNC , Rename_RSTN_FNC)
+;
+(Rename_Vfnc(VALUE , maxfld):(card(VALUE) : NAT1 & maxfld : NAT):(?))
+;
+(
+(
+ (Rename_TST_FLD_FNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_TST_FLD_FNC(ff)))
+;
+ (ff)
+;
+ (bb)
+;
+ (
+ (ff : NAT)
+ |
+ (
+ (bb := bool(ff : 1..maxfld))
+ )
+ )
+;
+ (
+ (ff : NAT)
+ |
+ (
+ (bb := bool(ff : 1..maxfld))
+ )
+ )
+)
+,
+(
+ (Rename_DEF_FNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_DEF_FNC(ff)))
+;
+ (ff)
+;
+ (bb)
+;
+ (
+ (ff : 1..maxfld)
+ |
+ (
+ (bb := bool(ff : dom(Rename_Vfnc)))
+ )
+ )
+;
+ (
+ (ff : 1..maxfld)
+ |
+ (
+ (bb := bool(ff : dom(Rename_Vfnc)))
+ )
+ )
+)
+,
+(
+ (Rename_FREE_FNC)
+;
+ (? , Val_Op , NonDet_Op , (bb , dd <-- Rename_FREE_FNC))
+;
+ (?)
+;
+ (bb , dd)
+;
+ (
+ (true)
+ |
+ (
+ (IF (1..maxfld)-dom(Rename_Vfnc) /= {} THEN
+ bb := TRUE ||
+ dd :: (1..maxfld)-dom(Rename_Vfnc)
+ ELSE
+ bb := FALSE ||
+ dd :: 1..maxfld
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (
+ (
+ (not((1..maxfld)-dom(Rename_Vfnc) = {}))
+ )
+ ==>
+ (
+ (
+ (bb := TRUE)
+ )
+ ||
+ (
+ @(ddx).
+ (
+ (
+ (ddx : (1..maxfld)-dom(Rename_Vfnc))
+ )
+ ==>
+ (
+ (dd := ddx)
+ )
+ )
+ )
+ )
+ )
+ []
+ (
+ (
+ ((1..maxfld)-dom(Rename_Vfnc) = {})
+ )
+ ==>
+ (
+ (
+ (bb := FALSE)
+ )
+ ||
+ (
+ @(ddx).
+ (
+ (
+ (ddx : 1..maxfld)
+ )
+ ==>
+ (
+ (dd := ddx)
+ )
+ )
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_STO_FNC)
+;
+ (? , Mod_Op , Det_Op , Rename_STO_FNC(ff , vv))
+;
+ (ff , vv)
+;
+ (?)
+;
+ (
+ (ff : 1..maxfld & vv : VALUE)
+ |
+ (
+ (Rename_Vfnc(ff) := vv)
+ )
+ )
+;
+ (
+ (ff : 1..maxfld & vv : VALUE)
+ |
+ (
+ (Rename_Vfnc := Rename_Vfnc <+ {ff |-> vv})
+ )
+ )
+)
+,
+(
+ (Rename_RMV_FNC)
+;
+ (? , Mod_Op , Det_Op , Rename_RMV_FNC(ff))
+;
+ (ff)
+;
+ (?)
+;
+ (
+ (ff : dom(Rename_Vfnc))
+ |
+ (
+ (Rename_Vfnc := {ff} <<| Rename_Vfnc)
+ )
+ )
+;
+ (
+ (ff : dom(Rename_Vfnc))
+ |
+ (
+ (Rename_Vfnc := {ff} <<| Rename_Vfnc)
+ )
+ )
+)
+,
+(
+ (Rename_VAL_FNC)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL_FNC(ff)))
+;
+ (ff)
+;
+ (vv)
+;
+ (
+ (ff : dom(Rename_Vfnc))
+ |
+ (
+ (vv := Rename_Vfnc(ff))
+ )
+ )
+;
+ (
+ (ff : dom(Rename_Vfnc))
+ |
+ (
+ (vv := Rename_Vfnc(ff))
+ )
+ )
+)
+,
+(
+ (Rename_EQL_FNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL_FNC(ff , vv)))
+;
+ (ff , vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE & ff : dom(Rename_Vfnc))
+ |
+ (
+ (bb := bool(Rename_Vfnc(ff) = vv))
+ )
+ )
+;
+ (
+ (vv : VALUE & ff : dom(Rename_Vfnc))
+ |
+ (
+ (bb := bool(Rename_Vfnc(ff) = vv))
+ )
+ )
+)
+,
+(
+ (Rename_NEQ_FNC)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_NEQ_FNC(ff , vv)))
+;
+ (ff , vv)
+;
+ (bb)
+;
+ (
+ (vv : VALUE & ff : dom(Rename_Vfnc))
+ |
+ (
+ (bb := bool(Rename_Vfnc(ff) /= vv))
+ )
+ )
+;
+ (
+ (vv : VALUE & ff : dom(Rename_Vfnc))
+ |
+ (
+ (bb := bool(not(Rename_Vfnc(ff) = vv)))
+ )
+ )
+)
+,
+(
+ (Rename_SAV_FNC)
+;
+ (? , Val_Op , Det_Op , Rename_SAV_FNC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RST_FNC)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RST_FNC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Vfnc :: 1..maxfld +-> VALUE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Vfncx).
+ (
+ (
+ (Rename_Vfncx : 1..maxfld +-> VALUE)
+ )
+ ==>
+ (
+ (Rename_Vfnc := Rename_Vfncx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_SAVN_FNC)
+;
+ (? , Val_Op , Det_Op , Rename_SAVN_FNC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ skip
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (skip)
+ )
+ )
+)
+,
+(
+ (Rename_RSTN_FNC)
+;
+ (? , Mod_Op , NonDet_Op , Rename_RSTN_FNC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_Vfnc :: 1..maxfld +-> VALUE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ @(Rename_Vfncx).
+ (
+ (
+ (Rename_Vfncx : 1..maxfld +-> VALUE)
+ )
+ ==>
+ (
+ (Rename_Vfnc := Rename_Vfncx)
+ )
+ )
+ )
+ )
+)
+)

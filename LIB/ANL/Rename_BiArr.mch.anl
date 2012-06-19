@@ -1,0 +1,170 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Byt_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename)
+;
+(Rename)
+;
+(Rename : lb..ub --> VALUE)
+;
+(Rename : lb..ub --> VALUE)
+;
+(?)
+;
+(ANY Rename_init WHERE
+ Rename_init : lb..ub --> VALUE &
+ ran(Rename_init) = {init_val}
+ THEN
+ Rename := Rename_init
+ END)
+;
+(@Rename_init.(Rename_init : lb..ub --> VALUE & ran(Rename_init) = {init_val} ==> Rename := Rename_init))
+;
+(Rename_IDX,Rename_VAL,Rename_STO,Rename_EQ)
+;
+(Rename_IDX , Rename_VAL , Rename_STO , Rename_EQ)
+;
+(Rename_BiArr(VALUE , lb , ub , init_val):(lb >= 0 & ub <= 255 & init_val : VALUE & ub : NAT & lb : NAT & card(VALUE) : NAT1):(?))
+;
+(
+(
+ (Rename_IDX)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_IDX(idx)))
+;
+ (idx)
+;
+ (bb)
+;
+ (
+ (idx : BYTE)
+ |
+ (
+ (BEGIN
+ bb := bool(b2n(idx) : lb..ub)
+ END)
+ )
+ )
+;
+ (
+ (idx : BYTE)
+ |
+ (
+ (bb := bool(idx : n2b[lb..ub]))
+ )
+ )
+)
+,
+(
+ (Rename_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL(idx)))
+;
+ (idx)
+;
+ (vv)
+;
+ (
+ (idx : BYTE & b2n(idx) : dom(Rename))
+ |
+ (
+ (vv := Rename(b2n(idx)))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx : n2b[dom(Rename)])
+ |
+ (
+ (vv := Rename(b2n(idx)))
+ )
+ )
+)
+,
+(
+ (Rename_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_STO(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : BYTE & vv : VALUE & b2n(idx) : lb..ub)
+ |
+ (
+ (Rename(b2n(idx)) := vv)
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : VALUE & idx : n2b[lb..ub])
+ |
+ (
+ (Rename := Rename <+ {b2n(idx) |-> vv})
+ )
+ )
+)
+,
+(
+ (Rename_EQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQ(idx , vv)))
+;
+ (idx , vv)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & vv : VALUE & b2n(idx) : dom(Rename))
+ |
+ (
+ (bb := bool(Rename(b2n(idx)) = vv))
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : VALUE & idx : n2b[dom(Rename)])
+ |
+ (
+ (bb := bool(Rename(b2n(idx)) = vv))
+ )
+ )
+)
+)

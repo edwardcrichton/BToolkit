@@ -1,0 +1,59 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(std_number_PK(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(std_logic_vector,Vec2Nat)
+;
+(std_logic_vector,Vec2Nat)
+;
+(std_logic_vector = %nn.(nn: 1..15 | 0..nn-1 --> {0,1}) & Vec2Nat: 0..15 +-> {0,1} +-> NAT & dom(Vec2Nat) = UNION(nn).(nn: 0..15 | 0..nn-1 --> {0,1}) & !vec.(vec: dom(Vec2Nat) => Vec2Nat(vec) = SIGMA(nn).(nn: dom(vec) | vec(nn)*exp(2,nn))))
+;
+(std_logic_vector = %nn.(nn: 1..15 | 0..nn-1 --> {0,1}) & Vec2Nat: 0..15 +-> {0,1} +-> NAT & dom(Vec2Nat) = UNION(nn).(nn: 0..15 | 0..nn-1 --> {0,1}) & !vec.(vec: dom(Vec2Nat) => Vec2Nat(vec) = SIGMA(nn).(nn: dom(vec) | vec(nn)*exp(2,nn))))
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(std_logic_vector_PK(?):(?):(?))
+;
+(
+?
+)

@@ -1,0 +1,314 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_bool)
+;
+(Rename_bool)
+;
+(Rename_bool : BOOL)
+;
+(Rename_bool : BOOL)
+;
+(?)
+;
+(Rename_bool :: BOOL)
+;
+(@Rename_boolx.(Rename_boolx : BOOL ==> Rename_bool := Rename_boolx))
+;
+(Rename_VAL,Rename_STO,Rename_SET,Rename_RESET,Rename_EQL,Rename_NOT,Rename_AND,Rename_OR,Rename_XOR)
+;
+(Rename_VAL , Rename_STO , Rename_SET , Rename_RESET , Rename_EQL , Rename_NOT , Rename_AND , Rename_OR , Rename_XOR)
+;
+(Rename_Bool_File(?):(?):(?))
+;
+(
+(
+ (Rename_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_VAL))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv := Rename_bool
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (vv := Rename_bool)
+ )
+ )
+)
+,
+(
+ (Rename_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_STO(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (BEGIN
+ Rename_bool := vv
+ END)
+ )
+ )
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (Rename_bool := vv)
+ )
+ )
+)
+,
+(
+ (Rename_SET)
+;
+ (? , Mod_Op , Det_Op , Rename_SET)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_bool := TRUE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_bool := TRUE)
+ )
+ )
+)
+,
+(
+ (Rename_RESET)
+;
+ (? , Mod_Op , Det_Op , Rename_RESET)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_bool := FALSE
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_bool := FALSE)
+ )
+ )
+)
+,
+(
+ (Rename_EQL)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_EQL(vv)))
+;
+ (vv)
+;
+ (bb)
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (BEGIN
+ bb := bool(vv = TRUE &
+ Rename_bool = TRUE or (vv = FALSE &
+ Rename_bool = FALSE))
+ END)
+ )
+ )
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (bb := bool(vv = TRUE & Rename_bool = TRUE or (vv = FALSE & Rename_bool = FALSE)))
+ )
+ )
+)
+,
+(
+ (Rename_NOT)
+;
+ (? , Mod_Op , Det_Op , Rename_NOT)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_bool := bool(Rename_bool = FALSE)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_bool := bool(Rename_bool = FALSE))
+ )
+ )
+)
+,
+(
+ (Rename_AND)
+;
+ (? , Mod_Op , Det_Op , Rename_AND(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (BEGIN
+ Rename_bool := bool(Rename_bool = TRUE &
+ vv = TRUE)
+ END)
+ )
+ )
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (Rename_bool := bool(Rename_bool = TRUE & vv = TRUE))
+ )
+ )
+)
+,
+(
+ (Rename_OR)
+;
+ (? , Mod_Op , Det_Op , Rename_OR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (BEGIN
+ Rename_bool := bool(Rename_bool = TRUE or vv = TRUE)
+ END)
+ )
+ )
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (Rename_bool := bool(Rename_bool = TRUE or vv = TRUE))
+ )
+ )
+)
+,
+(
+ (Rename_XOR)
+;
+ (? , Mod_Op , Det_Op , Rename_XOR(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (BEGIN
+ Rename_bool := bool(Rename_bool = TRUE &
+ vv = FALSE or (Rename_bool = FALSE &
+ vv = TRUE))
+ END)
+ )
+ )
+;
+ (
+ (vv : BOOL)
+ |
+ (
+ (Rename_bool := bool(Rename_bool = TRUE & vv = FALSE or (Rename_bool = FALSE & vv = TRUE)))
+ )
+ )
+)
+)

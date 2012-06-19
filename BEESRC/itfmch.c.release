@@ -1,0 +1,851 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define HERE(x)   fprintf ( bstdout, "%s\n",x);
+screen_doc_rulfunc()
+#define screen_doc_rul screen_doc_rulfunc()
+{
+  fprintf ( bstdout, "   1: Menu                 10: Move Rule\n");
+  fprintf ( bstdout, "   2: List Rule            11: Remove Rule\n");
+  fprintf ( bstdout, "   3: On/Off               12: Shell\n");
+  fprintf ( bstdout, "   4: Recursive Quit       13: Reload (Source)\n");
+  fprintf ( bstdout, "   5: Change Rule          16: Remove Proof\n");
+  fprintf ( bstdout, "   8: Prove Rule           17: Statistics\n");
+}
+
+doc_rulfunc()
+#define doc_rul doc_rulfunc()
+{
+  open_win;
+  screen_doc_rul;
+  clos_win;
+}
+
+act_rul_the(t,n)
+{register int c,nn,r,m,f ;
+  if( is_win==TRUE ){ 
+/*****
+    doc_rul;  
+*****/;
+  }
+
+/*****
+  fprintf ( bstdout, "\n");
+*****/
+  nn=n;
+  r=val_rul_the(t,nn);
+  if( len(cns_rul(r))>200 ){
+/*****
+    fprintf ( bstdout, "      This rule is big\n")
+*****/;
+  } else {
+/*****
+    write_ver_rul(r);
+    fprintf ( bstdout, "\n")
+*****/;
+  }
+
+/*****
+  fprintf ( bstdout, "\n");
+  fprintf ( bstdout, "Rule ");
+  write_nam_the(t);
+  fprintf ( bstdout, ".");
+  write_nat(nn);
+  fprintf ( bstdout, ": ");
+*****/
+  c=read_nat;
+  f=NO;
+  while( (c>=1) && (c<=17) && (f==NO) ){
+    if( c!=4 ){ 
+/*****
+      fprintf ( bstdout, "\n") 
+*****/;
+    };
+    switch( c ){
+      case 1 :{
+/*****
+        screen_doc_rul
+*****/
+/*****
+      ;break;}case 4 :{
+        f=YES;
+        mod_ret_sys(TRUE)
+      ;break;}case 13 :{
+        if( (val_rec_sys==FALSE) && (val_loaded_sys==TRUE) ){
+          fprintf ( bstdout, "      RELOADING. OK? ");
+          if( yes_no==YES ){
+            f=YES;
+            mod_ret_sys(TRUE);
+            mod_reload_sys(TRUE);
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }
+      ;break;}case 2 :{
+        write_ver_rul(r);
+        fprintf ( bstdout, "\n")
+      ;break;}case 3 :{
+        if( val_sts_rul(r)==on_rul ){
+          mod_sts_rul(r,off_rul);
+          fprintf ( bstdout, "      Rule is Off\n");
+        } else {
+          mod_sts_rul(r,on_rul);
+          fprintf ( bstdout, "      Rule is On\n");
+        }
+      ;break;}case 5 :{
+        if( val_rec_sys==FALSE ){
+          if( typ_rul(r)!=lem_rul ){
+            fprintf ( bstdout, "      MODIFYING RULE OK? ");
+            if( yes_no==YES ){
+              fprintf ( bstdout, "\n");
+              {register int f ;
+                f=read_frm;
+                read_mod_rul_the(t,nn,f);
+              };
+            };
+          } else {
+            fprintf ( bstdout, "     Sorry this is a Lemma\n");
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }
+      ;break;}case 6 :{
+        {}
+      ;break;}case 7 :{
+        {}
+*****/
+      ;break;}case 8 :{
+        if( val_rec_sys==FALSE ){
+          if( pvd_rul(r)==now_rul ){
+/*****
+            fprintf ( bstdout, "      Already Proved\n")
+*****/;
+          } else {
+/*****
+HERE("PrvRule:")
+*****/
+            do_prf(t,nn,TRUE);
+            if( val_ret_sys==TRUE ){
+              f=YES;
+            } else if( is_win==TRUE ){ 
+/*****
+              doc_rul
+*****/;
+            };
+          };
+        } else {
+/*****
+          fprintf ( bstdout, "      Sorry Impossible Now\n")
+*****/;
+        }
+
+/*****
+      ;break;}case 9 :{
+        {}
+      ;break;}case 10 :{
+        if( val_rec_sys==FALSE ){
+          fprintf ( bstdout, "      New position: ");
+          m=read_nat;
+          if( (m>=1) && (m<=nbr_rul_the(t)) ){  
+            mod_num_rul_the(t,nn,m);
+            nn=m;
+          } else if( m>nbr_rul_the(t) ){
+            mod_num_rul_the(t,nn,nbr_rul_the(t));
+            nn=nbr_rul_the(t);
+          } else {
+            fprintf ( bstdout, "      Sorry Wrong Position (should be Positive)\n");
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        };
+      ;break;}case 11 :{
+        if( val_rec_sys==FALSE ){
+          if( typ_rul(r)!=nrm_rul ){
+            fprintf ( bstdout, "      Sorry this is a Lemma");
+            fprintf ( bstdout, " or");
+            fprintf ( bstdout, " an Auto-Rule\n");
+          } else {
+            fprintf ( bstdout, "      REMOVING RULE OK? ");
+            f=yes_no;
+            if( f==YES ){
+              rem_rul_the(t,nn);
+            };
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        };
+      ;break;}case 12 :{
+        sys_shl;
+      ;break;}case 14 :{
+        {}
+      ;break;}case 15 :{
+        {}
+      ;break;}case 16 :{
+        if( val_rec_sys==FALSE ){
+          if( pvd_rul(r)!=now_rul ){
+            fprintf ( bstdout, "      No proof\n");
+          } else {
+            fprintf ( bstdout, "      REMOVING PROOF  OK? ");
+            if( yes_no==YES ){
+              rem_prv_rul_the(t,n);
+};
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }   
+      ;break;}case 17 :{
+        max_tool
+*****/
+      ;break;};
+    };
+    if( f==NO ){
+/*****
+      fprintf ( bstdout, "\n");
+*****/
+      r=val_rul_the(t,nn);
+/*****
+      fprintf ( bstdout, "Rule ");
+      write_nam_the(t);
+      fprintf ( bstdout, ".");
+      write_nat(nn);
+      fprintf ( bstdout, ": ");
+*****/
+      c=read_nat;
+    };
+  };
+}
+
+screen_doc_thefunc()
+#define screen_doc_the screen_doc_thefunc()
+{
+  fprintf ( bstdout, "   1: Menu                 11: Remove Last Rule\n");
+  fprintf ( bstdout, "   2: List Rules (screen)  12: Shell\n");
+  fprintf ( bstdout, "   3: Rule Selection       13: Reload (Source)\n");
+  fprintf ( bstdout, "   4: Recursive Quit       16: Remove Theory\n");
+  fprintf ( bstdout, "   5: New Rule             17: Statistics\n");
+  fprintf ( bstdout, "   7: List Rules (file)    18: Proof on File (on/off)\n");
+  fprintf ( bstdout, "   8: Exec (File Input)    19: Change Tactic\n");
+  fprintf ( bstdout, "   9: Exec (Direct Input)  20: Prove Lemmas\n");
+  fprintf ( bstdout, "  10: *** While Proving    21: Change proof quota\n");
+}
+
+doc_thefunc()
+#define doc_the doc_thefunc()
+{
+  open_win;
+  screen_doc_the;
+  clos_win;
+}
+
+sel_rul_the(t)
+{register int n,k,k0,k1,s ;
+  s=cre(4);
+  if( (is_win==TRUE) ){
+    open_win;
+    k=1;
+    k0=1;
+    if( nbr_rul_the(t)>10 ){
+      k1=7;
+    } else {
+      k1=9;
+    };
+    while( (k<=nbr_rul_the(t)) && (k<=k0+k1) ){
+      k=k+1;
+    };
+    clos_win;
+  };
+  read_str(s);
+  if( len_str(s)==0 ){
+    n=(-3);
+  } else if( (len_str(s)==1) && (fst_str(s)==ord('m')) ){
+    n=(-2);
+  } else if( (len_str(s)==1) && (fst_str(s)==ord('n')) ){
+    n=(-4);
+  } else if( is_num_str(s)==TRUE ){
+    n=(trans_str(s));
+  } else {
+    n=(-3);
+  };
+  while( n!=0 ){
+    if( (n==-4) && (is_win==TRUE) ){
+/*****
+       reset_trm;
+*****/
+    } else if( (n==-2) && (is_win==TRUE) ){
+      if( k>nbr_rul_the(t) ){
+        k=1;
+        k0=1;
+      } else {
+        k0=k;
+      };
+      open_win;
+      if( nbr_rul_the(t)>9 ){
+        k1=7;
+      } else {
+        k1=9;
+      };
+      while( (k <= nbr_rul_the(t)) && (k<=k0+k1) ){
+        k=k+1;
+      };
+      clos_win;
+} else if( (n>=1) && (n<=nbr_rul_the(t)) ){
+/*****
+HERE("RulSelected:")
+*****/
+      act_rul_the(t,n);
+      if( (is_win==TRUE) && (val_ret_sys==FALSE) ){
+        open_win;
+        k=1;
+        k0=1;
+        if( nbr_rul_the(t)>9 ){
+          k1=7;
+        } else {
+          k1=9;
+        };
+        while( (k<=nbr_rul_the(t)) && (k<=k0+k1) ){
+          k=k+1;
+        };
+        clos_win;
+      };
+      if( val_ret_sys==FALSE ){;
+      };
+    };
+    if( val_ret_sys==TRUE ){
+      n=0;
+    } else {
+/*****
+      fprintf ( bstdout, "Rule Selection: ");
+*****/
+/*****
+HERE("SelRulDown:")
+*****/
+      read_str(s);
+      if( len_str(s)==0 ){
+        n=(-3);
+      } else if( (len_str(s)==1) && (fst_str(s)==ord('m')) ){
+        n=(-2);
+      } else if( (len_str(s)==1) && (fst_str(s)==ord('n')) ){
+        n=(-4);
+      } else if( is_num_str(s)==TRUE ){
+        n=(trans_str(s));
+      } else {
+        n=(-3);
+      };
+    };
+  };
+  kil(s);
+}
+
+sys_the(t)
+{register int c,f,r,ff ;
+  c=read_nat;
+  f=NO;
+  while( (c!=0) && (f==NO) ){
+    if( (c!=3) && (c!=20) && (c!=4) && (c<=21) ){ ;
+    };
+    if( ((c>=30) && (c<=39)) || ((c>=300) && (c<=399)) || ((c>=3000) && (c<=3999)) ){;
+    } else if( c>21 ){
+      {};
+    } else {
+    switch( c ){
+      case 3 :{
+/*****
+HERE("SelRul:")
+*****/
+        sel_rul_the(t);
+        if( val_ret_sys==TRUE ){
+          f=YES ;
+        } else if( is_win==TRUE ){ 
+          doc_the;
+        }
+      ;break;}case 5 :{
+/*****
+HERE("AddRul:")
+*****/
+        {register int f ;
+          f=read_frm;
+          read_rul_the(t,f);
+/*****
+HERE("RulAdded:")
+*****/;
+        }
+      ;break;}case 6 :{
+        {}
+      ;break;}case 8 :{
+        if( val_rec_sys==FALSE ){
+          exec_file_prf(t);
+          if( val_ret_sys==TRUE ){
+            f=YES;
+          } else if( is_win==TRUE ){
+            doc_the;
+          };
+        }
+/*****
+      ;break;}case 9 :{
+        if( val_rec_sys==FALSE ){
+          exec_dir_prf(t);
+          if( val_ret_sys==TRUE ){
+            f=YES;
+          } else if( is_win==TRUE ){
+            doc_the;
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }
+     ;break;}case 10 :{
+        {
+          switch_aster_prf;
+          if( val_aster_prf==TRUE ){
+             fprintf ( bstdout, "      *** are on now \n");
+          } else {
+             fprintf ( bstdout, "      *** are off now \n");
+          };
+        }
+      ;break;}case 11 :{
+        if( val_rec_sys==FALSE ){
+          if( len(rul_the(t))!=0 ){
+            r=lst(rul_the(t));
+            if( typ_rul(r)!=nrm_rul ){
+              fprintf ( bstdout, "      Sorry this is a Lemma || an Auto-Rule\n");
+            } else {
+              write_ver_rul(r);
+              fprintf ( bstdout, "\n");
+              fprintf ( bstdout, "\n");
+              fprintf ( bstdout, "      REMOVING RULE. OK? ");
+              ff=yes_no;
+              if( ff==YES ){
+                rem_rul_the(t,len(rul_the(t)));
+                fprintf ( bstdout, "\n");
+                if( nbr_rul_the(t)==0 ){
+                  fprintf ( bstdout, "      No rule\n");
+} else {
+                  lst_short_rul_the(t);
+};
+              };
+            };
+          } else {
+            fprintf ( bstdout, "      No rule to remove\n");
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }          
+      ;break;}case 12 :{
+        sys_shl
+      ;break;}case 13 :{
+        if( (val_rec_sys==FALSE) && (val_loaded_sys==TRUE) ){
+          fprintf ( bstdout, "      RELOADING. OK? ");
+          if( yes_no==YES ){
+            f=YES;
+            mod_ret_sys(TRUE);
+            mod_reload_sys(TRUE);
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }
+      ;break;}case 14 :{
+        if( val_rec_sys==FALSE ){
+          mve_the(t);
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        };
+      ;break;}case 15 :{
+        {}
+      ;break;}case 16 :{
+        if( val_rec_sys==FALSE ){
+          fprintf ( bstdout, "      REMOVING THEORY. OK? ");
+          f=yes_no;
+          if( f==YES ){
+            {register int i,r,b ;
+              xst(rul_the(t),i,r,typ_rul(r)!=nrm_rul,b=TRUE,b=FALSE);
+              if( b==TRUE ){
+                fprintf ( bstdout, "\n");
+                fprintf ( bstdout, "      Sorry Theory Contains Lemmas");
+                fprintf ( bstdout, " or");
+                fprintf ( bstdout, " Auto-Rules\n");
+                f=NO;
+              } else {
+                kil_the(t);
+              };
+            };
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }
+      ;break;}case 17 :{
+        max_tool
+      ;break;}case 18 :{
+        if( val_print_ext_prf_the==FALSE ){
+          if( mod_prf_write_name_fil==TRUE ){
+            mod_print_ext_prf_the(TRUE);
+            mod_first_prf_the(TRUE);
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      Proofs Printed on File ");
+            write_prf_name_fil;
+            fprintf ( bstdout, "\n");
+          } else {
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      Proofs Printed on Screen\n");
+          };
+        } else {
+          fprintf ( bstdout, "      Your Proofs NOW AVAILABLE on File ");
+          write_prf_name_fil;
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "      Proofs Back on Screen? ");
+          if( yes_no==NO ){
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      If You Use File ");
+            write_prf_name_fil;
+            fprintf ( bstdout, " Your Proofs Will Be OVERWRITTEN\n");
+            fprintf ( bstdout, "\n");
+            if( mod_prf_write_name_fil==TRUE ){
+              mod_print_ext_prf_the(TRUE);
+              mod_first_prf_the(TRUE);
+              fprintf ( bstdout, "\n");
+              fprintf ( bstdout, "       Proofs Printed on File ");
+              write_prf_name_fil;
+              fprintf ( bstdout, "\n");
+            } else {
+              mod_print_ext_prf_the(FALSE);
+              fprintf ( bstdout, "\n");
+              fprintf ( bstdout, "      Proofs Printed Back on Screen\n");
+            };
+          } else {
+            mod_print_ext_prf_the(FALSE);
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      Proofs Printed Back on Screen\n");
+          };
+        }
+      ;break;}case 19 :{
+        if( val_rec_sys==FALSE ){
+          fprintf ( bstdout, "Current Normal Tactic:\n");
+          fprintf ( bstdout, "\n");
+          reset_res(0);
+          write_frm_res(tac_the(t),0);
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "\n");
+          fprintf ( bstdout, "Another Normal Tactic? ");
+          if( yes_no==YES ){
+            fprintf ( bstdout, "\n");
+            mod_tac_the(t,read_frm);
+          };
+          if( has_fwd_tac_the(t)==TRUE ){
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "Current Forward Tactic:\n");
+            fprintf ( bstdout, "\n");
+            reset_res(0);
+            write_frm_res(fwd_tac_the(t),0);
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "Another Forward Tactic? ");
+            if( yes_no==YES ){
+              fprintf ( bstdout, "\n");
+              mod_fwd_tac_the(t,read_frm);
+            };
+          } else {
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "New Forward Tactic? ");
+            if( yes_no==YES ){
+              fprintf ( bstdout, "\n");
+              mod_fwd_tac_the(t,read_frm);
+            };
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }
+*****/
+      ;break;}case 20 :{
+        if( val_rec_sys==FALSE ){
+          itr_lem_the_prf(t);
+          if( is_win==TRUE ){
+            doc_the;
+          };
+        } else {
+          fprintf ( bstdout, "      Sorry Impossible Now\n");
+        }
+      ;break;}case 21 :{
+        quota_prf
+      ;break;};
+    };
+};
+    if( f==NO ){
+/*****
+      fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "Theory ");
+      write_nat(num_the(t));
+      fprintf ( bstdout, " ");
+      write_nam_the(t);
+      fprintf ( bstdout, ": ");
+*****/
+      c=read_nat;
+    };
+  };
+}
+
+screen_doc_all_thefunc()
+#define screen_doc_all_the screen_doc_all_thefunc()
+{
+/*****
+  fprintf ( bstdout, "   1: Menu                 7: Clear\n");
+  fprintf ( bstdout, "   2: List Vis. Theory     8: Statistics\n");
+  fprintf ( bstdout, "   3: Theory Selection     9: List All Theories\n");
+  fprintf ( bstdout, "   4: Save (Binary)       10: List Symbols\n");
+  fprintf ( bstdout, "   5: Load (Binary)       12: Shell\n");
+  fprintf ( bstdout, "   6: Load (Source)       13: Reload (Source)\n");
+*****/;
+}
+
+doc_all_thefunc()
+#define doc_all_the doc_all_thefunc()
+{
+  open_win;
+  screen_doc_all_the;
+  clos_win;
+}
+
+sel_thefunc()
+#define sel_the sel_thefunc()
+{register int t,k,k1,n ;
+/*****
+  fprintf ( bstdout, "\n");
+  if( is_win==TRUE ){
+    open_win;
+    k=1;
+    if( nbr_vis_the>=11 ){
+      fprintf ( bstdout, "   m: MORE THEORIES\n");
+      fprintf ( bstdout, "   n: LIST THEORIES (file)\n");
+      k1=8;
+    } else {
+      k1=10;
+    };
+    n=0;
+    while( (k <= nbr_the) && (n<k1) ){
+      if( is_vis_the(val_the(k))==TRUE ){ 
+        write_the(val_the(k));
+        n=n+1;
+      };
+      k=k+1;
+    };
+    clos_win;
+  };
+*****/
+  t=read_the;
+  while( t!=0 ){
+    if( t==-2  ){
+      if( is_win==TRUE ){
+/*****
+        fprintf ( bstdout, "\n");
+        fprintf ( bstdout, "      Theories Displayed on File  b.s\n");
+        fprintf ( bstdout, "\n");
+        redirect_trm("b.s");
+        short_lst_all_the;
+        reset_trm
+*****/;
+      };
+    } else if( t==-1 ){
+      if( is_win==TRUE ){
+        if( k>nbr_the ){
+          k=1;
+};
+        open_win;
+        if( nbr_vis_the>=11 ){
+/*****
+          fprintf ( bstdout, "   m: MORE THEORIES\n");
+          fprintf ( bstdout, "   n: LIST THEORIES (file)\n");
+*****/
+          k1=8;
+        } else {
+          k1=10;
+        };
+        n=0;
+        while( (k <= nbr_the) && (n<k1) ){
+          if( is_vis_the(val_the(k))==TRUE ){ 
+            write_the(val_the(k));
+            n=n+1;
+          };
+          k=k+1;
+        };
+        clos_win;
+      };
+    } else {
+      sys_the(t);
+      if( val_ret_sys==FALSE ){
+        fprintf ( bstdout, "\n");
+        if( is_win==TRUE ){
+          open_win;
+          k=1;
+          if( nbr_vis_the>=11 ){
+/*****
+            fprintf ( bstdout, "   m: MORE THEORIES\n");
+            fprintf ( bstdout, "   n: LIST THEORIES (file)\n");
+*****/
+            k1=8;
+          } else {
+            k1=10;
+          };
+          n=0;
+          while( (k <= nbr_the) && (n<k1) ){
+            if( is_vis_the(val_the(k))==TRUE ){ 
+              write_the(val_the(k));
+              n=n+1;
+            };
+            k=k+1;
+          };
+          clos_win;
+        };
+      };
+    };
+    if( val_ret_sys==TRUE ){
+      t=0;
+    } else {
+      t=read_the;
+    };
+  }  ;
+}
+
+sys_all_thefunc()
+#define sys_all_the sys_all_thefunc()
+{register int c,f,t ;
+  f=NO;
+  c=read_nat;
+  while( f==NO ){
+    if( ((c>=30) && (c<=39)) || ((c>=300) && (c<=399)) || ((c>=3000) && (c<=3999)) ){;
+    } else {
+    switch( c ){
+      case 0 :{
+        if( val_rec_sys==FALSE ){
+          f=yes_no;
+        } else {
+          f=YES;
+        }
+      ;break;}case 3 :{
+/*****
+HERE("ThySel:")
+*****/
+        sel_the; 
+        if( val_ret_sys==TRUE ){
+          mod_ret_sys(FALSE);
+          while( val_reload_sys==TRUE ){
+            mod_reload_sys(FALSE);
+            re_ini;
+            relod_prf;
+            xst_the(t,num_the(t)==val_theo_sys,{
+              if( nbr_rul_the(t)>=val_rul_sys ){
+                do_prf(t,val_rul_sys,TRUE);
+              };
+            },{});
+          };
+        }
+
+/*****
+        fprintf ( bstdout, "\n");
+        if( nbr_vis_the>20 ){
+          fprintf ( bstdout, "      More than 20 Visible Theories\n");
+        } else {
+          short_lst_all_the;
+        };
+        if( is_win==TRUE ){ 
+          doc_all_the;
+        }
+*****/
+      ;break;}case 4 :{
+/*****
+HERE("SaveBin:")
+*****/
+        if( val_rec_sys==FALSE ){
+          cmp_seq(25);
+          save_tool;
+        }
+      ;break;}case 5 :{
+/*****
+HERE("LoadBin:")
+*****/
+        if( val_rec_sys==FALSE ){
+          restore_tool;
+}
+      ;break;}case 6 :{
+/*****
+HERE("LoadSrc:")
+*****/
+        if( val_rec_sys==FALSE ){
+          lod_prf;
+}
+      ;break;};
+    };
+};
+    if( f==NO ){
+      c=read_nat;
+};
+  };
+}
+
+SignalMotif(n)
+int n;
+{register int c ;
+  FILE * Bfile;
+  if ( Bpim_ps_no == 0 ) {
+    Bfile = fopen( ".Bpim", "r" );
+    if ( Bfile == NULL ) {
+      exit ( 1 );
+    };
+    c = getc ( Bfile );
+    while( c != EOF && c != '\n' ){
+      Bpim_ps_no = ( Bpim_ps_no * 10 ) + c - '0';
+      c = getc ( Bfile );
+    };
+    fclose ( Bfile );
+  }
+
+  if ( n == SIGUSR2 ) { /* from seqmch */
+    Bfile = fopen( ".Bses", "w" );
+    fprintf ( Bfile, "999" );
+    fclose ( Bfile );
+    {register int z,s,t,h,x ;  
+      Bfile = fopen( ".Bcom", "w" );
+      z=0;
+      t=0;
+      x=0;
+      itrn( s , 1 , vnbs , {
+        h=res_seq(s);
+        z=z+h;
+        t=t+len(s);
+        if( h!=0 ){
+          x=x+1;
+        };
+});
+      fprintf ( Bfile, "\n     ==============================================\n\n" );
+      fprintf ( Bfile, "      Memory Size:                   " );
+      fprintf ( Bfile, "%8d words\n\n", max_mem );
+      fprintf ( Bfile, "      Memory Used:                   " );
+      fprintf ( Bfile, "%8d words\n", vad ( vnbs+1 ) - z );
+  
+      fprintf ( Bfile, "\n");
+      fprintf ( Bfile, "      SPARE MEMORY:                  " );
+      fprintf ( Bfile, "%8d words\n\n", max_mem - vad( vnbs+1 ) + z );
+      fprintf ( Bfile, "     ==============================================\n\n" );
+      fprintf ( Bfile, "\n  Capacity of bplatform reached\n\n  See TopBar Help BToolkit->Installation\n  for details of how to increase capacity\n\n" );
+      fclose ( Bfile );
+    };
+    kill ( Bpim_ps_no, SIGUSR2 );
+/*  kill  */
+    exit ( 1 );
+  };  /* end if ( n == SIGUSR2 ) */
+
+  if ( n == SIGKILL ) { /* from codmch */
+    kill ( Bpim_ps_no, SIGKILL );
+  }
+}

@@ -1,0 +1,131 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>The Editor</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Editor"></A>
+<H1>
+The Editor</H1>
+The `opn/clo' option may be invoked from all environments selectable from
+the <A HREF="BToolkit.html#EnvironmentPanel">EnvironmentPanel</A>, and
+for all constructs. It represents a toggle for opening/closing (quitting
+from) a construct edit; if the <A HREF="BToolkit.html#Constructs!Area">construct</A>
+is currently open, the option label is printed in inverse video.
+
+<P>
+<HR WIDTH="60%">
+<H2>
+Open Editor</H2>
+A copy of the <A HREF="BToolkit.html#Development_Environment">CFG</A> file
+is first made in the <A HREF="BToolkit.html#Development_Environment">SRC</A>
+directory; if a file of that name currently exists in SRC, and differs
+from that in CFG, the following options are offered:
+<UL>
+<LI>
+<TT>Open SRC file</TT></LI>
+
+<BR>opens the SRC file, when edits may subsequently be committed in the
+usual way.
+<BR>&nbsp;
+<BR>&nbsp;
+<LI>
+<TT>Open CFG file</TT></LI>
+
+<BR>opens the CFG file and in so-doing overwrites the edited SRC file (which
+is thus lost); edits may subsequently be committed in the usual way.
+<BR>&nbsp;
+<BR>&nbsp;
+<LI>
+<TT>Show difference</TT></LI>
+
+<BR>displays the UNIX diff between the two files.
+
+<P>
+<HR WIDTH="60%"></UL>
+The editor setting is made though the <A HREF="Options.html#Options!Editor!Construct_Editor">Construct
+Editor</A> setting of the <A HREF="Options.html#Options">Options</A>.
+<H2>
+Quit Editor</H2>
+If the currently-edited <A HREF="BToolkit.html#Development_Environment">SRC</A>
+file is the same as the <A HREF="BToolkit.html#Development_Environment">CFG</A>
+file, the following prompt is displayed:
+<PRE>&nbsp; Quit editor requested, but no changes saved!
+
+&nbsp; `Cancel' if you want to save any changes ...</PRE>
+to ensure that any edits made which have not been saved are not unintentionally
+lost. The `OK' option causes the edit to be killed, with no commit therefore
+being necessary.
+
+<P>However, if there is a difference between the <A HREF="BToolkit.html#Development_Environment">SRC</A>
+and <A HREF="BToolkit.html#Development_Environment">CFG</A> files (i.e.
+the edited file differs from that which is currently committed), the following
+choice is offered:
+<UL>
+<LI>
+<TT>Commit edits</TT></LI>
+
+<BR>updates the CFG directory, and in so doing causes any processing of
+the construct to be lost; further, processing of any dependent constructs
+is also lost (but you will be warned in this case before the commit is
+actually made). If the difference is annotational, the processing lost
+is restricted to marked-up documents.
+<BR>&nbsp;
+<LI>
+<TT>Discard edits</TT></LI>
+
+<BR>removes the edited SRC file from the file system.
+<BR>&nbsp;
+<LI>
+<TT>Save in SRC</TT></LI>
+
+<BR>does not commit the edited file, but leaves it in the SRC directory
+for later use.
+<BR>&nbsp;
+<LI>
+<TT>Show difference</TT></LI>
+
+<BR>displays the UNIX diff between the SRC and CFG files.</UL>
+It is also possible to commit the changes of an edited construct through
+the <A HREF="Close.html#Close">Close</A>, <A HREF="CommitEdits.html#CommitEdits">CommitEdits</A>,
+<A HREF="Commit.html#Commit">Commit</A>, <A HREF="Remake.html#Remake">Remake</A>,
+<A HREF="Analyser.html#Analyser">Analyser</A>, <A HREF="POGenerator.html#POGenerator">POGenerator</A>
+and <A HREF="MiniRemake.html#MiniRemake">Mini-Remake</A> tools.
+
+<P><U>NOTE</U>
+
+<P>If the editor is closed by the user, this will be dected by the BToolkit
+and the option label will indicate that the construct is now closed (ie.
+it will be printed in normal video); an information popup will confirm
+that the closure of the editor has been detected. Any edits made will,
+of course, remain in the&nbsp; <A HREF="BToolkit.html#Development_Environment">SRC</A>
+directory, and the construct <A HREF="BToolkit.html#Constructs!Decoration">button
+decoration</A> will indicate if there is any difference between that file
+and the one currently configured in <A HREF="BToolkit.html#Development_Environment">CFG</A>;
+if the two files differ edits may be committed without opening the construct
+through<TT> <A HREF="Commit.html#Commit">Commit All Updated Constructs</A>
+</TT>invoked from the<TT> <A HREF="BToolkit.html#Construct">TopBar Constructs</A>
+pull-down.</TT><TT></TT>
+
+<P>
+<HR WIDTH="60%">
+<CENTER>&nbsp;</CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+
+<P>&nbsp;
+<BR>&nbsp;
+<BR>&nbsp;
+</BODY>
+</HTML>

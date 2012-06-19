@@ -1,0 +1,1340 @@
+<HTML>
+<HEAD>
+<TITLE>The System Library</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="System_Library"><HR></A>
+<H1>The System Library (SLIB)</H1>
+
+The B-Toolkit is supplied with a set of reusable machines
+which encapsulate basic state and data-structures,
+and provide basic abstract types.
+
+<P> These library machines are described here.  The text of the
+machines is 
+<A HREF="HTX/ConstructsSummary.html#">presented separately</A>. 
+
+<P><BR><HR WIDTH="60%"><P>
+
+<H2>The Role of the System Library</H2>
+
+Static and persistent data of an implementation must be held by an
+imported machine. Ultimately, the bottom level implementation must
+import a Library machine if static or persistent data is required
+(i.e. if you are implementing a state-machine).
+
+<P> A library machine is used simply by <A
+HREF="Structuring.html#IMPORTS_Clause!Using">importing</A> or <A
+HREF="Structuring.html#SEES_Clause!Using">seeing</A> the machine in
+the construct you are writing. When a predefined machine is imported
+into an implementation, actual parameters must be supplied. However
+when seeing an existing machine no parameters should be supplied.
+
+
+<P> Each library machine is formally specified, and the readable
+formal specification is available in the development environment after
+the machine has been committed.
+
+<P> The manipulation of an object can be performed outside the
+state-machine to which the object belongs, using the TYPE machines of
+the Library.
+
+<P> Simple i/o can be performed using the i/o machines.
+
+<P> Persistence of data can be achieved using the file i/o machines.
+
+<P><BR><HR WIDTH="60%"><P>
+
+<A NAME=Renaming_Library_Machines><H2>Naming of Library Machines and their Operations</H2></A>
+
+<P> The naming of library machines and their operations follows a uniform
+scheme.
+
+<P> Library machines with state have to be renamed when they are
+imported into a development. These machines and their operations,
+therefore, all have names starting with <TT>Rename</TT>, which is
+automatically replaced by a new prefix supplied in the importing
+machine at the time that the library machine is committed from the
+library.
+
+<P> The TYPE machines in the library have no state, and need not be
+renamed. They can be cited in a SEES clause wherever they are
+required.
+
+<P> Operations in library machines are named according to 
+a uniform pattern described in the text below.
+
+<P><BR><HR WIDTH="60%"><P>
+
+<A NAME=Library_Machines><H2>Library Machines</H2></A>
+
+<P> Library Machines are organised into five groups as follows.
+
+<MENU>
+<LI> <A HREF="SystemLibrary.html#Library_Machines!Multiple_Objects_Machines">Multiple Objects Machines</A>
+<LI> <A HREF="SystemLibrary.html#Library_Machines!Programming_Concepts_Machines">Programming Concepts Machines</A>
+<LI> <A HREF="SystemLibrary.html#Library_Machines!Mathematical_Concepts_Machines">Mathematical Concepts Machines</A>
+<LI> <A HREF="SystemLibrary.html#Library_Machines!Input_Output_Machines">Input Output Machines</A>
+<LI> <A HREF="SystemLibrary.html#Library_Machines!Type_Machines">Type Machines</A>
+</MENU>
+
+
+<P><BR><HR WIDTH="60%"><P>
+
+<A NAME=Library_Machines!Multiple_Objects_Machines><H2>Multiple Objects Machines</H2></A>
+
+A Multiple Object Machine is a repository for 
+structured objects. In this sub-library we have:
+<UL>
+<LI> <A HREF="SystemLibrary.html#Rename_set_obj">Rename_set_obj</A>, a machine for collections of Sets 
+<LI> <A HREF="SystemLibrary.html#Rename_seq_obj">Rename_seq_obj</A>, a machine for collections of Sequences.
+<LI> <A HREF="SystemLibrary.html#Rename_str_obj">Rename_str_obj</A>, a machine for collections of Strings of Bytes.
+<LI> <A HREF="SystemLibrary.html#Rename_fnc_obj">Rename_fnc_obj</A>, a machine for collections of Functions over Natural Numbers.
+<LI> <A HREF="SystemLibrary.html#Rename_ffnc_obj">Rename_ffnc_obj</A>, a machine for collections of Functions over Natural Numbers with multiple field operations.
+</UL>
+
+In most applications of B to software development, the Multiple Objects
+Machines are used for representing the main part of the information
+which an application maintains.  Composite object structures which are
+suitable for representing complex information structures can also be
+constructed.  
+
+<P> For example, by using combinations of the Multiple Objects
+Machines we can construct a suitable representation for files of
+records with different field types.  Types can be
+simple types (
+<A HREF="HTX/Scalar_TYPE.mch.html#SETS">SCALAR</A>, 
+<A HREF="HTX/Bool_TYPE.mch.html#SETS">BOOL</A>,
+<A HREF="HTX/Bit_TYPE.mch.html#SETS">BITS</A>) 
+or more complex (Sets of Strings,
+Sequences of Sets of Strings, Sets of Sequences of BITS etc).  Such
+constructions gives the formal B design language the equivalent power
+of a modern high level programming notation.
+
+<P>
+When importing a Multiple Object Machine it must be instantiated with
+respect to the size of store which will be pre-allocated for storing
+its objects, and with respect to the type of elements which actually
+will populate the structured objects.  A multiple object machine can
+store a number of objects of the required type (e.g. sequences of BOOL,
+sets of SCALARS, sets of SEQOBJ). 
+
+<P> Composite object structures can be constructed. For example a
+`Sequences of Sets of SCALARS' is constructed by using a Set Object
+machine instantiated with 
+<A HREF="HTX/Scalar_TYPE.mch.html#SETS">SCALAR</A> in combination with a Sequence Object
+machine instantiated with 
+<A HREF="HTX/Rename_set_obj.mch.html#SETS">SETOBJ</A>.
+
+<P> When providing a design using a machine as a repository then elements
+of <I>different</I> types can be stored within the <I>same</I>
+machine; e.g. a sequence object machine instantiated with `BOOL or
+SCALAR' (written <TT>BOOL \/ SCALAR</TT>) can store Boolean values as well
+as scalar values (positive integers) within the same sequence.
+ 
+<P> All Multiple Objects Machines offer the following facilities:
+<UL>
+
+<LI> Initialisation (INI):
+This operation resets the repository to its initial empty state.
+
+<LI> Creation (CRE) and killing (KIL) of objects:
+On creation of a new object a unique token will be allocated
+to denote the created object (e.g SEQOBJ are the tokens allocated for Sequence Objects).
+If the creation has been successful this token will be returned on creation,
+and required as input for any operation concerning this object (e.g. killing).
+
+<LI> Capacity Enquiries (MEM_FUL, OBJ_FUL):
+All these operations can be used to determine whether the
+capacity of the repository has been reached.
+
+<LI> Token Enquiries (ANY, XST):
+ANY returns a token of proper type (e.g. the Sequence Machine's ANY
+operation returns
+a SEQOBJ token). The XST operation can be used to determine whether
+a token denotes an object which actually exists.
+
+<LI> Persistent storage (SAV, RST):  
+The save operation (SAV) saves the current state of the
+object machine onto permanent storage, while the restore
+operation (RST) restores the object machine to a previously saved
+state.
+
+<P> Note that when saving several structures on the same file then the
+restores <I>must</I> be performed in the same order as the saves were
+performed; different dump files can be used by using <B>file_io</B>
+operations.
+
+<P> <LI> Browsing facilities (FIRST, NEXT): 
+A browse through all stored objects is initiated by using the FIRST
+operation, which will return an object (if any) and a cursor for
+continuing the browse by using NEXT. When the cursor reaches `1' the
+last object has been retrieved.
+</UL>
+
+<H3><A NAME=Rename_set_obj>Machine</A> <A HREF="HTX/Rename_set_obj.mch.html">Rename_set_obj</A></H3>
+
+The general multiple object operations, which are
+described above, are provided:
+<UL>
+<LI> Initialisation (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_INI_SET_OBJ">INI</A>).
+<LI> Creation (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_CRE_SET_OBJ">CRE</A>) and killing (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_KIL_SET_OBJ">KIL</A>) of sets;
+on creation the created set will be empty.
+<LI> Capacity Enquiries (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_MEM_FUL_SET_OBJ">MEM_FUL</A>, <A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_OBJ_FUL_SET_OBJ">OBJ_FUL</A>)
+<LI> Set token Enquiries (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_ANY_SET_OBJ">ANY</A>, <A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_XST_SET_OBJ">XST</A>). 
+<LI> Persistent Set storage facilities (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_SAV_SET_OBJ">SAV</A>, <A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_RST_SET_OBJ">RST</A>).
+<LI> Sets Browsing facilities (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_FIRST_SET_OBJ">FIRST</A>, <A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_NEXT_SET_OBJ">NEXT</A>).
+</UL>
+
+In addition, this machine offers special operations for set
+manipulation and enquiring about the stored sets:
+<UL>
+<LI> Operations for changing existing sets: 
+(<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_CPY_SET_OBJ">CPY</A>, 
+<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_CLR_SET_OBJ">CLR</A>)
+CPY copies one set to another set; CLR removes all elements from a set. 
+<LI> Operations for enlarging sets: 
+(<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_ENT_SET_OBJ">ENT</A>, 
+<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_UNION_SET_OBJ">UNION</A>)
+ENT enters a new element into a set; UNION extends a set by all the
+members of another set. 
+<LI> Operations for reducing sets: 
+(<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_RMV_SET_OBJ">RMV</A>, 
+<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_DIFF_SET_OBJ">DIFF</A>, 
+<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_INTER_SET_OBJ">INTER</A>)
+RMV removes an element from a set; DIFF removes all elements which are
+also present in another set; INTER keeps only the elements which are
+present in another set. 
+<LI> Enquiring about size of sets: (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_EMP_SET_OBJ">EMP</A>, <A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_CRD_SET_OBJ">CRD</A>)
+EMP returns TRUE if the set interrogated is empty; CRD gives the
+cardinality of a set. 
+<LI> Facilities for inspecting a particular set: (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_XST_ORD_SET_OBJ">XST_ORD</A>, <A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_VAL_SET_OBJ">VAL</A>)
+All elements in all sets can be accessed by using their ordinal
+number.
+XST_ORD will indicate whether a particular number is a valid ordinal
+number. VAL will return the value of an element in the set, given its
+ordinal number. 
+<LI> Operations for determining set properties: (<A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_MBR_SET_OBJ">MBR</A>, <A HREF="HTX/Rename_set_obj.mch.html#OPNAME!Rename_INCL_SET_OBJ">INCL</A>) 
+MBR will indicate whether a particular element is a member
+of a set; INCL will indicate whether one set is included in another.
+</UL>
+
+
+<H3><A NAME=Rename_seq_obj>Machine</A> <A HREF="HTX/Rename_seq_obj.mch.html#">Rename_seq_obj</A></H3>
+
+
+The general multiple object operations, which are
+described above, are provided:
+<UL>
+<LI> Initialisation (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_INI_SEQ_OBJ">INI</A>).
+<LI> Creation (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_CRE_SEQ_OBJ">CRE</A>) and killing (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_KIL_SEQ_OBJ">KIL</A>) of sequences.
+On creation the created sequence will be empty.
+<LI> Capacity Enquiries (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_MEM_FUL_SEQ_OBJ">MEM_FUL</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_OBJ_FUL_SEQ_OBJ">OBJ_FUL</A>)
+<LI> Sequence token Enquiries (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_ANY_SEQ_OBJ">ANY</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_XST_SEQ_OBJ">XST</A>). 
+<LI> Persistent Set storage facilities (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_SAV_SEQ_OBJ">SAV</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_RST_SEQ_OBJ">RST</A>).
+<LI> Sequence Browsing facilities (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_FIRST_SEQ_OBJ">FIRST</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_NEXT_SEQ_OBJ">NEXT</A>).
+</UL>
+
+In addition, this machine offers special operations for manipulation
+of sequences, and enquiring about stored sequences:
+<UL>
+<LI> Operations for changing existing sequences: (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_CPY_SEQ_OBJ">CPY</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_CLR_SEQ_OBJ">CLR</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_OVR_SEQ_OBJ">OVR</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_STO_SEQ_OBJ">STO</A>) 
+CPY copies one sequence to another sequence; CLR resets a sequence to
+the empty sequence; OVR over-writes a 
+sequence with another sequence; STO over-writes a particular location
+in the sequence.
+<LI> Operations for re-ordering an existing sequence: (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_SWA_SEQ_OBJ">SWA</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_REV_SEQ_OBJ">REV</A>)
+SWA swaps two elements in a sequence; REV reverses an entire sequence. 
+<LI> Operations for enlarging sequences: (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_PSH_SEQ_OBJ">PSH</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_APP_SEQ_OBJ">APP</A>)
+PSH pushes an element onto the end of a sequence; APP extends a
+sequence with another sequence. 
+<LI> Operations for reducing sequences: (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_KEP_SEQ_OBJ">KEP</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_CUT_SEQ_OBJ">CUT</A>)
+KEP keeps an initial part of a sequence; CUT cuts an initial part of a
+sequence away. 
+<LI> Enquiring about a sequence: (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_EMP_SEQ_OBJ">EMP</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_LEN_SEQ_OBJ">LEN</A>)
+EMP returns TRUE if a sequence is empty; LEN gives the length of a sequence.
+<LI> Facilities for inspecting a particular sequence: (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_POP_SEQ_OBJ">POP</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_XST_IDX_SEQ_OBJ">XST_IDX</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_VAL_SEQ_OBJ">VAL</A>)
+POP returns the most recently pushed element; an element in a sequence can be accessed by using its index in its
+sequence; XST_IDX will indicate whether a particular number 
+is a valid index; VAL will return the value of an
+element in the sequence given its index.
+<LI> Operations for determining sequence properties: (<A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_MBR_SEQ_OBJ">MBR</A>, <A HREF="HTX/Rename_seq_obj.mch.html#OPNAME!Rename_EQL_SEQ_OBJ">EQL</A>)
+MBR will indicate whether a particular element is a member
+of a sequence.
+EQL will indicate whether two sequences are identical.
+</UL>
+
+
+
+
+<H3><A NAME=Rename_str_obj>Machine</A> <A HREF="HTX/Rename_str_obj.mch.html">Rename_str_obj</A></H3>
+
+The String Machine is a repository for sequences of bytes
+(seq(0..255)). It is often used for storing text strings.
+The facilities for strings offered in the library and the
+the B translators enable strings to be treated as
+simple objects, which can be transferred from one machine
+to another using operation which will transfers the
+entire structured string object. (Also available in the form of a Fixed 
+Function Machine)
+
+
+<P> The general multiple object operations, which are
+described above, are provided:
+<UL>
+<LI> Initialisation (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_INI_STR_OBJ">INI</A>).
+<LI> Creation (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_CRE_STR_OBJ">CRE</A>) and killing (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_KIL_STR_OBJ">KIL</A>) of strings;
+on creation the created string will be empty.
+<LI> Capacity Enquiries (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_MEM_FUL_STR_OBJ">MEM_FUL</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_OBJ_FUL_STR_OBJ">OBJ_FUL</A>)
+<LI> String token Enquiries (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_ANY_STR_OBJ">ANY</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_XST_STR_OBJ">XST</A>). 
+<LI> Persistent String storage facilities (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_SAV_STR_OBJ">SAV</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_RST_STR_OBJ">RST</A>).
+<LI> String Browsing facilities (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_FIRST_STR_OBJ">FIRST</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_NEXT_STR_OBJ">NEXT</A>).
+</UL>
+
+In addition, this machine offers special operations
+for manipulation of strings, and enquiring about 
+stored strings:
+<UL>
+<LI> An additional operation for creating a particular string: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_NEW_STR_OBJ">NEW</A>) 
+NEW will create a new string with a particular contents, which 
+either literally occurs in the design text, or, is the contents of 
+a string which is a result of an input 
+operation, or, is the contents of a string extracted
+elsewhere.
+<LI> An additional operation for extracting string contents: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_XTR_STR_OBJ">XTR</A>)
+<LI> Operations for changing existing strings: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_CPY_STR_OBJ">CPY</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_CLR_STR_OBJ">CLR</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_OVR_STR_OBJ">OVR</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_STO_STR_OBJ">STO</A>) 
+CPY copies one string to another string; CLR sets a string to the
+empty string; OVR over-writes a string with another string; STO
+over-writes a particular location in the string.
+<LI> Operations for re-ordering an existing string: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_SWA_STR_OBJ">SWA</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_REV_STR_OBJ">REV</A>)
+SWA swaps two bytes in a string; REV
+reverses an entire string. 
+<LI> Operations for enlarging strings: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_PSH_STR_OBJ">PSH</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_APP_STR_OBJ">APP</A>)
+PSH pushes a byte onto the end of a string; APP
+extends a string with another string.
+<LI> Operations for reducing strings: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_KEP_STR_OBJ">KEP</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_CUT_STR_OBJ">CUT</A>)
+KEP keeps an initial part of a string; CUT cuts an
+initial part of a string away.
+<LI> Enquiring about size of strings: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_EMP_STR_OBJ">EMP</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_LEN_STR_OBJ">LEN</A>)
+EMP returns TRUE if a string is empty; LEN
+gives the length of a string.
+<LI> Facilities for inspecting a particular strings: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_POP_STR_OBJ">POP</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_XST_IDX_STR_OBJ">XST_IDX</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_VAL_STR_OBJ">VAL</A>)
+POP returns the most recently pushed byte; a byte in a string can be accessed by using its index in its
+string. XST_IDX will indicate whether a particular number 
+is a valid index. VAL will return the value of a
+byte in the string, given its index.
+<LI> Operations for determining string properties: (<A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_SMR_STR_OBJ">SMR</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_EQL_STR_OBJ">EQL</A>, <A HREF="HTX/Rename_str_obj.mch.html#OPNAME!Rename_EQL_LIT_STR_OBJ">EQL_LIT</A>) 
+SMR will indicate whether one string is lexicographically smaller than
+another string. EQL will indicate whether two store strings are identical.
+EQL_LIT will indicate whether a stored string is identical to
+another literal string (not stored in by this machine).
+</UL>
+
+
+
+
+<H3><A NAME=Rename_fnc_obj>Machine</A> <A HREF="HTX/Rename_fnc_obj.mch.html">Rename_fnc_obj</A></H3>
+
+This machine stores partial Functions over an
+initial interval of Natural Numbers.  The interval (its fields)  will be
+determined when
+the machine is instantiated.
+
+
+<P> The general multiple object operations, which are
+described above, are provided:
+<UL>
+<LI> Initialisation (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_INI_FNC_OBJ">INI</A>).
+<LI> Creation (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_CRE_FNC_OBJ">CRE</A>) and killing (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_KIL_FNC_OBJ">KIL</A>) of objects.
+On creation the created object will be empty.
+<LI> Capacity Enquiries (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_FUL_FNC_OBJ">FUL</A>)
+<LI> Function token Enquiries (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_ANY_FNC_OBJ">ANY</A>, <A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_XST_FNC_OBJ">XST</A>). 
+<LI> Persistent String storage facilities (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_SAV_FNC_OBJ">SAV</A>, <A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_RST_FNC_OBJ">RST</A>).
+<LI> Object Browsing facilities (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_FIRST_FNC_OBJ">FIRST</A>, <A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_NEXT_FNC_OBJ">NEXT</A>).
+</UL>
+
+In addition, this machine offers special operations
+for manipulation of functions, and enquiring about 
+stored functions:
+<UL>
+<LI> Enquiry operations: (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_TST_FLD_FNC_OBJ">TST_FLD</A>, <A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_DEF_FNC_FNC_OBJ">DEF_FNC</A>)
+TST_FLD will indicate whether a given number input is a field
+of the function. DEF_FNC will indicate whether a function
+has been given a value for a particular field number.
+<LI> Operations for changing a function: (<A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_STO_FNC_OBJ">STO</A>, <A HREF="HTX/Rename_fnc_obj.mch.html#OPNAME!Rename_RMV_FNC_OBJ">RMV</A>)
+STO assigns a value to a particular field of a particular function;
+RMV removes a field from  a function - the function
+will then be undefined for this field.
+</UL>
+
+
+
+<H3><A NAME=Rename_ffnc_obj>Machine</A> <A HREF="HTX/Rename_ffnc_obj.mch.html">Rename_ffnc_obj</A></H3>
+
+This machine stores partial Functions over an
+initial interval of Natural Numbers. The interval (its fields)  will be
+determined when
+the machine is instantiated. 
+The general multiple object operations, which are
+described above, are provided:
+<UL>
+<LI> Initialisation (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_INI_FNC_OBJ">INI</A>).
+<LI> Creation (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_CRE_FNC_OBJ">CRE</A>) and killing (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_KIL_FNC_OBJ">KIL</A>) of objects.
+The created function will be empty.
+<LI> Capacity Enquiries (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_FUL_FNC_OBJ">FUL</A>)
+<LI> Function token Enquiries (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_ANY_FNC_OBJ">ANY</A>, <A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_XST_FNC_OBJ">XST</A>). 
+<LI> Persistent Object storage facilities (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_SAV_FNC_OBJ">SAV</A>, <A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_RST_FNC_OBJ">RST</A>).
+<LI> Object Browsing facilities (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_FIRST_FNC_OBJ">FIRST</A>, <A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_NEXT_FNC_OBJ">NEXT</A>).
+</UL>
+
+This machine also offers the operations
+for manipulation of functions, and enquiring about 
+stored functions as are available for the
+standard Function Object Machine:
+<UL>
+<LI> Enquiry operations: (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_TST_FLD_FNC_OBJ">TST_FLD</A>, <A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_DEF_FNC_OBJ">DEF_FNC</A>)
+TST_FLD will indicate whether a given number is a field
+of a function. DEF_FNC will indicate whether a function
+has been given a value for a particular field number.
+<LI> Operations for changing a function: (STO, RMV)
+STO assigns a value to a particular field of a particular function;
+RMV removes a field from  a function - the function
+will then be undefined for this field.
+</UL>
+
+In addition, special operations for multiple field manipulation
+are provided:
+<UL>
+<LI> Moving several field values from one function to another: (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_MOV_FFNC_OBJ">MOV_FFNC</A>)
+MOV_FFNC will over-write the field values of one function with
+field values from another function.
+<LI> Overwriting several field values: (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_OVR_FFNC_OBJ">OVR_FFNC</A>) 
+OVR_FFNC will overwrite several fields in a function with
+the packed version of a sequence of bytes (String).
+<LI> Extracting multiple field values: (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_XTR_FFNC_OBJ">XTR_FFNC</A>) 
+XTR_FFNC will extract several field values - converted into
+a sequence of bytes stored at a word boundary.
+<LI> Testing multiple fields: (<A HREF="HTX/Rename_ffnc_obj.mch.html#OPNAME!Rename_EQL_FFNC_OBJ">EQL_FFNC</A>) 
+This tests whether the contents of sequence of bytes is equal
+to the sequence of bytes stored in multiple fields of a function.
+</UL>
+
+<P><BR><HR WIDTH="60%"><P>
+
+<A NAME=Library_Machines!Programming_Concepts_Machines><H2>Programming Concepts Machines</H2></A>
+
+These machine offer an extension of the basic data
+structures of <B>variable</B> and <B>array</B> which are
+available in most languages. We have:
+<UL>
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Vvar">Rename_Vvar</A>, a Variable of any type.
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Nvar">Rename_Nvar</A>, a Natural Number Variable.
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Varr">Rename_Varr</A>, an Array of any type.
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Narr">Rename_Narr</A>, an Array of Natural Numbers.
+</UL> 
+
+These machines are commonly used to record transitory
+information within an application, or used as `anchors'
+for information stored in the Multiple Object Machines.
+
+<P> Variables can be instantiated to any type, e.g a
+variable of type BOOL can hold a boolean value, and
+a variable of type SEQOBJ (an anchor) can hold an token denoting
+a sequence within the Sequence Object Machine.
+
+<P> When providing a design using a machine as a repository, then
+elements of <I>different</I> types can be stored within the
+<I>same</I> machine. For example instantiating a machine with <TT><A
+HREF="HTX/Bool_TYPE.mch.html#!SETS">BOOL</A> \/ <A
+HREF="HTX/Scalar_TYPE.mch.html#SETS">SCALAR</A></TT> will enable a
+machine to have both boolean values as well as scalar values within a
+single structure.
+
+<P> All Programming Concepts Machines offer the following facilities:
+<UL>
+<LI> Getting a value (VAL)
+VAL will return the value of a variable, or in the case of
+an array  the value of a particular location.
+<LI> Storing a value (STO)
+STO will assign a new value to a variable or in the case of
+an array to a particular location within the array.
+<LI> Testing for values (EQL, NEQ)
+EQL and NEQ will test the contents of a variable (or
+a particular location within an array~) against another value.
+<LI> Persistent storage facilities (SAV, RES)
+SAV will save the current value of an object onto permanent
+storage; RES will restore the value of an object to
+a value previously saved.
+</UL>
+
+<P> Note that when saving several structures on the same file then the restores
+<I>must</I> be performed in the same order as the saves were performed; different dump files can be used by using <B> file_io</B> operations.
+
+<P> Also note that these primitive operations appear as `procedure calls'
+within the algorithms of a B implementation; however in the generated
+implementation (the C-Code) all the simple operations from the
+Programming Concepts Machines are `in-lined' (no procedure calls are
+involved).
+
+
+<H3><A NAME=Rename_Vvar>Machine</A> <A HREF="HTX/Rename_Vvar.mch.html">Rename_Vvar</A></H3>
+
+This Variable machine offers all the facilities described above,
+and can be instantiated to any type (<A
+HREF="HTX/Scalar_TYPE.mch.html#SETS">SCALAR</A>, <A
+HREF="HTX/Bool_TYPE.mch.html#SETS">BOOL</A>, <A
+HREF="HTX/Bits_TYPE.mch.html#SETS">BITS</A>, <A
+HREF="HTX/Rename_set_obj.mch.html#SETS">SETOBJ</A>, etc.)
+
+We have:
+<UL>
+<LI> Getting a value 
+(<A HREF="HTX/Rename_Vvar.mch.html#OPNAME!Rename_VAL_VAR">VAL</A>)
+<LI> Storing a value 
+(<A HREF="HTX/Rename_Vvar.mch.html#OPNAME!Rename_STO_VAR">STO</A>)
+<LI> Testing for values 
+(<A HREF="HTX/Rename_Vvar.mch.html#OPNAME!Rename_EQL_VAR">EQL</A>, 
+<A HREF="HTX/Rename_Vvar.mch.html#OPNAME!Rename_NEQ_VAR">NEQ</A>)
+<LI> Persistent storage facilities 
+(<A HREF="HTX/Rename_Vvar.mch.html#OPNAME!Rename_SAV_VAR">SAV</A>, 
+<A HREF="HTX/Rename_Vvar.mch.html#OPNAME!Rename_RES_VAR">RES</A>)
+</UL>
+
+
+<H3><A NAME=Rename_Nvar>Machine</A> 
+<A HREF="HTX/Rename_Nvar.mch.html">Rename_Nvar</A></H3>
+
+This Variable machine, can hold only Numbers, and offers all the facilities available
+for a Programming Concepts Machine:
+<UL>
+<LI> Getting a value 
+(<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_VAL_NVAR">VAL</A>)
+<LI> Storing a value 
+(<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_STO_NVAR">STO</A>)
+<LI> Testing for values 
+(<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_EQL_NVAR">EQL</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_NEQ_NVAR">NEQ</A>)
+<LI> Persistent storage facilities 
+(<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_SAV_NVAR">SAV</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_RES_NVAR">RES</A>)
+</UL>
+
+In addition the following operations are provided:
+<UL>
+<LI> Arithmetic operations 
+(<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_INC_NVAR">INC</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_DEC_NVAR">DEC</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_ADD_NVAR">ADD</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_MUL_NVAR">MUL</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_SUB_NVAR">SUB</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_DIV_NVAR">DIV</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_MOD_NVAR">MOD</A>)
+A variable can be modified by: INCrementing it, DECrementing it,
+ADDing to it, MULtiplying it by a number, SUBtracting
+a value from it, DIViding it with a number, or replacing it
+with a MODulo value.
+<LI> Ordering Queries 
+(<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_GTR_NVAR">GTR</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_GEQ_NVAR">GEQ</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_SMR_NVAR">SMR</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_LEQ_NVAR">LEQ</A>)
+A variable can be tested to determine whether it is GreaTeR
+then a particular number, Greater or EQual to a number, SMalleR
+than a number, or, Less than or EQual to a number.
+<LI> Conditional retrieval (<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_MIN_NVAR">MIN</A>, 
+<A HREF="HTX/Rename_Nvar.mch.html#OPNAME!Rename_MAX_NVAR">MAX</A>)
+MIN will retrieve the smaller of two values, while MAX
+will retrieve the larger of two values.
+</UL>
+
+
+
+<H3><A NAME=Rename_Varr>Machine</A> <A HREF="HTX/Rename_Varr.mch.html">Rename_Varr</A></H3>
+
+This Array machine can be used to store several values of any type.
+The type is determined by instantiation.
+
+<P> This machine offers all the facilities available
+for a Programming Concepts Machine:
+<UL>
+<LI> Getting a value (<A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_VAL_ARR">VAL</A>)
+Getting the value under a particular index of the array.
+<LI> Storing a value (<A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_STO_ARR">STO</A>)
+Storing a value in a particular location of the array.
+<LI> Testing for values (<A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_EQL_ARR">EQL</A>, <A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_NEQ_ARR">NEQ</A>)
+Testing the value stored under a particular index.
+<LI> Persistent storage facilities (<A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_SAV_ARR">SAV</A>, <A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_RES_ARR">RES</A>)
+</UL>
+
+In addition the following operations are provided:
+<UL>
+<LI> Index testing (<A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_TST_IDX_ARR">TST_IDX</A>)
+TST_IDX will indicate whether a particular index is a
+valid index.
+<LI> Search operations (<A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_SCH_LO_EQL_ARR">SCH_LO_EQL</A>, <A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_SCH_LO_NEQ_ARR">SCH_LO_NEQ</A>, <A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_SCH_HI_EQL_ARR">SCH_HI_EQL</A>, <A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_SCH_HI_NEQ_ARR">SCH_HI_NEQ</A>)
+These operation will return the lowest (or highest) array index which
+is equal (or not equal) to a particular given value.
+<LI> Array manipulations (<A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_REV_ARR">REV</A>, <A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_RHT_ARR">RHT</A>, <A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_LFT_ARR">LFT</A>, <A HREF="HTX/Rename_Varr.mch.html#OPNAME!Rename_SWP_ARR">SWP</A>)
+REV will reverse the array; RHT and LFT will shift the values in an
+array either to the right (to higher indices) or left (to lower
+indices); SWP will swap two values in an array.
+</UL>
+
+
+
+<H3><A NAME=Rename_Narr>Machine</A> <A HREF="HTX/Rename_Narr.mch.html">Rename_Narr</A></H3>
+
+This Array machine can be used to store several Numbers.
+
+<P> This machine offers all the facilities available
+for a Programming Concepts Machine:
+<UL>
+<LI> Getting a value 
+(<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_VAL_NARR">VAL</A>)
+Getting the value under a particular index of the array.
+<LI> Storing a value (<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_STO_NARR">STO</A>)
+Storing a value in a particular location of the array.
+<LI> Testing for values (<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_EQL_NARR">EQL</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_NEQ_NARR">NEQ</A>)
+Testing the value stored under a particular index.
+<LI> Persistent storage facilities (<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SAV_NARR">SAV</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_RES_NARR">RES</A>)
+</UL>
+
+In addition the following operations are provided:
+<UL>
+<LI> Arithmetic operations 
+(<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_ADD_NARR">ADD</A>, 
+<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_MUL_NARR">MUL</A>, 
+<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SUB_NARR">SUB</A>, 
+<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_DIV_NARR">DIV</A>, 
+<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_MOD_NARR">MOD</A>)
+An array location can be modified by: INCrementing it, DECrementing it,
+ADDing to it, MULtiplying it by a number, SUBtracting
+a value from it, DIViding it with a number, or replacing it
+with a MODulo value.
+<LI> Ordering Queries 
+(<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_GTR_NARR">GTR</A>, 
+<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_GEQ_NARR">GEQ</A>, 
+<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SMR_NARR">SMR</A>, 
+<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_LEQ_NARR">LEQ</A>)
+An array location can be tested to determine whether it is GreaTeR
+than a particular number, Greater or EQual to a number, SMalleR
+than a number or Less than or EQual to a number.
+<LI> Conditional retrieval 
+(<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_MIN_IDX_NARR">MIN</A>, 
+<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_MAX_IDX_NARR">MAX</A>)
+MIN will retrieve an array index, for which the array holds a
+minimum value, while MAX
+will retrieve an an array index, for which the array holds a
+maximum value.
+</UL>
+
+
+In addition the following operations are provided:
+<UL>
+<LI> Index testing (<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_TST_IDX_NARR">TST_IDX</A>)
+TST_IDX will indicate whether a particular index is a
+valid index.
+<LI> Search operations (<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_LO_EQL_NARR">SCH_LO_EQL</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_LO_NEQ_NARR">SCH_LO_NEQ</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_HI_EQL_NARR">SCH_HI_EQL</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_HI_NEQ_NARR">SCH_HI_NEQ</A>)
+These operation will return the lowest (or highest) array index which
+is equal (or not equal) to a particular given value.
+<LI> Additional Search operations
+(<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_LO_GEQ_NARR">SCH_LO_GEQ</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_LO_GTR_NARR">SCH_LO_GTR</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_LO_LEQ_NARR">SCH_LO_LEQ</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_LO_SMR_NARR">SCH_LO_SMR</A>,
+ <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_HI_GEQ_NARR">SCH_HI_GEQ</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_HI_GTR_NARR">SCH_HI_GTR</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_HI_LEQ_NARR">SCH_HI_LEQ</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SCH_HI_SMR_NARR">SCH_HI_SMR</A>)
+These operation will return the lowest (or highest) array index which
+is relates in a particular way (greater or equal, greater, less or equal, or, smaller) to a  given value.
+<LI> Array manipulations (<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_REV_NARR">REV</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_RHT_NARR">RHT</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_LFT_NARR">LFT</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SWP_NARR">SWP</A>)
+REW will reverse the array; RHT and LFT will shift the values in an
+array either to the right (to higher indices) or left (to lower
+indices); SWP will swap two values in an array.
+<LI> Additional Array manipulations (<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SRT_NARR">SRT</A>_<A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_ASC_NARR">ASC</A>, <A HREF="HTX/Rename_Narr.mch.html#OPNAME!Rename_SRT_DSC_NARR">SRT_DSC</A>)
+Sort the array to contain either ascending values or
+descending values.
+</UL>
+
+<P><BR><HR WIDTH="30%"><P>
+
+<A NAME=Library_Machines!Socket_Machines><H2>Client-Server Machines</H2></A>
+
+<A NAME=Rename_Server><H3><A NAME=Rename_Client>Machine</A></A> <A HREF="HTX/Rename_Client.mch.html">Rename_Client</A> / <A HREF="HTX/Rename_Server.mch.html">Rename_Server</A></H3>
+
+These two machines are used as a pair to establish a Socket (TCP/IP) Client-Server
+Connection.
+
+<P>For the Client machine:
+
+<UL>
+<LI> An operation to initialise the socket: <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_INIT">Rename_INIT</A>
+<LI> Operations on the socket: <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_CONNECT">Rename_CONNECT</A>, <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_WRITE">Rename_WRITE</A>, <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_READ">Rename_READ</A> and <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_CLOSE">Rename_CLOSE</A>
+<LI> Operations to read from the input buffer: <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_GET_TOK">Rename_GET_TOK</A>, <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_GET_STR">Rename_GET_STR</A> and <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_GET_FIL">Rename_GET_FIL</A>
+<LI> Operations to write from the output buffer: <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_PUT_TOK">Rename_PUT_TOK</A> and <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_PUT_STR">Rename_PUT_STR</A>
+<LI> Operations to get and set the buffer input pointer: <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_SET_IN_PTR">Rename_SET_IN_PTR</A> and <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_GET_IN_PTR">Rename_GET_IN_PTR</A>
+<LI> Operations to get and set the buffer output pointer: <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_SET_OUT_PTR">Rename_SET_OUT_PTR</A> and <A HREF="HTX/Rename_Client.mch.html#OPNAME!Rename_GET_OUT_PTR">Rename_GET_OUT_PTR</A>
+</UL>
+
+<P>For the Server machine:
+
+<UL>
+<LI> An operation to initialise the socket: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_INIT">Rename_INIT</A>
+<LI> Operations on the socket: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_ACCEPT">Rename_ACCEPT</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_WRITE">Rename_WRITE</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_READ">Rename_READ</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_CLOSE">Rename_CLOSE</A>
+<LI> Operations to read from the input buffer: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_GET_TOK">Rename_GET_TOK</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_GET_STR">Rename_GET_STR</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_PUT_FIL">Rename_PUT_FIL</A>
+<LI> Operations to write from the output buffer: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_PUT_TOK">Rename_PUT_TOK</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_PUT_STR">Rename_PUT_STR</A>
+<LI> Operations to get and set the buffer input pointer: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SET_IN_PTR">Rename_SET_IN_PTR</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_GET_IN_PTR">Rename_GET_IN_PTR</A>
+<LI> Operations to get and set the buffer output pointer: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SET_OUT_PTR">Rename_SET_OUT_PTR</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_GET_OUT_PTR">Rename_GET_OUT_PTR</A>
+<LI> Operations for buffer saving & restoring: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SAV_BUF">Rename_SAV_BUF</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_RST_BUF">Rename_RST_BUF</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_NXT_BUF">Rename_NXT_BUF</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SAV_RMV">Rename_SAV_RMV</A>
+</UL>
+
+<P><BR><HR WIDTH="60%"><P>
+
+<A NAME=Library_Machines!Mathematical_Concepts_Machines><H2>Mathematical Concepts Machines</H2></A>
+
+The Mathematical Concepts Machines allow the programmer to
+design using higher level concepts, which are likely to
+match more closely the concepts used in a set theoretical
+specification, hence making the design step more reliable.
+
+We have:
+<UL>
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_set">Rename_set</A>, a Set machine.
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Vseq">Rename_Vseq</A>, a Sequence machine for a sequence of any type.
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Nseq">Rename_Nseq</A>, a Sequence machine for a sequence of Numbers.
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Vfnc">Rename_Vfnc</A>, a Function machine of a particular range type.
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Nfnc">Rename_Nfnc</A>, a Function machine for a Natural Number function.
+<LI> <A HREF="SystemLibrary.html#OPNAME!Rename_Vffnc">Rename_Vffnc</A>, an Extended Function machine.
+</UL>
+
+The Mathematical Concepts Machines are either used for
+storing transitory information or for `anchors' to
+information stored within a Multiple Object Machine.
+
+When importing Mathematical Concepts Machine its type and
+its capacity must be given by instantiation.
+
+When providing a design using a machine as
+a repository then elements of <I> different</I> types can be
+stored within the <I> same</I> machine. For example instantiating
+a machine with <TT>BOOL \/ SCALAR</TT> will enable a machine
+to have both boolean values as well as scalar values
+within a single structure.
+
+A Mathematical Concepts Machine offers the following common facilities:
+<UL>
+<LI> Getting a value (VAL)
+The VAL operation returns a particular value within the structure.
+<LI> Persistent Storage facilities (SAV, RES)
+For saving onto and restoring from permanent storage.
+<B> Note</B>When saving several structures on the same file then the
+`restores' <I> must</I> be performed in the same order as the `saves'
+were performed; different dump files can be used by using <B>
+file_io</B> operations.
+</UL>
+
+
+
+<H3><A NAME=Rename_set>Machine</A> <A HREF="HTX/Rename_set.mch.html">Rename_set</A></H3>
+
+A set machine provides access to a single set structure.
+
+It offers the common operation for  Mathematical Concepts Machine:
+<UL>
+<LI>  Getting a value (<A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_VAL_SET">VAL</A>) with a particular ordinal number.
+<LI> Persistent Storage facilities (<A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_SAV_SET">SAV</A>, <A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_RST_SET">RST</A>)
+</UL>
+
+In addition it offers:
+<UL>
+<LI> Familiar Set Operations: (<A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_ENT_SET">ENT</A>, <A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_RMV_SET">RMV</A>, <A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_CLR_SET">CLR</A>)
+ENT enters a new element into the set; RMV removes an element from
+the set; CLR clears the set
+<LI> Familiar Set Enquiries: (<A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_MBR_SET">MBR</A>, <A
+HREF="HTX/Rename_set.mch.html#OPNAME!Rename_EMP_SET">EMP</A>, <A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_CRD_SET">CRD</A>)
+MBR is used for testing set membership; EMP tests whether a set is 
+empty; CRD gives the cardinality of a set.
+<LI> Additional Enquiries (<A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_FUL_SET">FUL</A>, <A HREF="HTX/Rename_set.mch.html#OPNAME!Rename_XST_IDX_SET">XST_IDX</A>)
+FUL indicates whether a set is full; XST_IDX indicates whether
+a particular number is a valid ordinal.
+</UL>
+
+
+
+<H3><A NAME=Rename_Vseq>Machine</A> <A HREF="HTX/Rename_Vseq.mch.html">Rename_Vseq</A></H3>
+
+
+This sequence machine provides access to a single sequence. The
+type of the elements of the sequence can be determined through instantiation.
+
+It offers the common operations for  Mathematical Concepts Machine:
+<UL>
+<LI>  Getting a value (<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_VAL_SEQ">VAL</A>) with a particular ordinal number.
+<LI> Persistent Storage facilities (<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_SAV_SEQ">SAV</A>, <A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_RST_SEQ">RST</A>)
+</UL>
+
+In addition it offers:
+<UL>
+<LI> Familiar Sequence Operations: 
+(<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_CLR_SEQ">CLR</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_PSH_SEQ">PSH</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_POP_SEQ">POP</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_FST_SEQ">FST</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_LST_SEQ">LST</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_TAL_SEQ">TAL</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_STO_SEQ">ST0</A>)
+CLR clears the sequence; PSH pushes an element onto the sequence;
+POP gets the element most recently pushed; FST gets the first element;
+LST gets the last element; TAL modifies the sequence by removing
+the most recently pushed element; STO stores an element into the sequence.
+<LI> Some Sequence Enquiries: 
+(<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_EMP_SEQ">EMP</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_LEN_SEQ">LEN</A>)
+EMP test whether the sequence is empty; LEN gives the length of
+the sequence.
+<LI> Some Sequence Tests: 
+(<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_EQL_SEQ">NEQ</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_NEQ_SEQ">NEQ</A>) 
+EQL tests whether a particular value is at a particular index; NEQ
+tests whether a particular value is not at a particular index.
+<LI> Additional Enquiries:
+(<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_FUL_SEQ">FUL</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_XST_IDX_SEQ">XST_IDX</A>) 
+FUL indicates whether a sequence is full; XST_IDX indicates whether
+a particular number is a valid index.
+<LI> Searching Operations:
+(<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_SCH_LO_EQL_SEQ">SCH_LO_EQL</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_SCH_LO_NEQ_SEQ">SCH_LO_NEQ</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_SCH_HI_EQL_SEQ">SCH_HI_EQL</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_SCH_HI_NEQ_SEQ">SCH_HI_NEQ</A>)  
+The searching operation search for the lowest (or highest) index in the
+sequence which is equal (or not equal) to a particular value.
+<LI> Sequence manipulation operations:
+(<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_KEP_SEQ">KEP</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_CUT_SEQ">CUT</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_SWP_SEQ">SWP</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_REV_SEQ">REV</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_RHT_SEQ">RHT</A>,
+<A HREF="HTX/Rename_Vseq.mch.html#OPNAME!Rename_LFT_SEQ">LFT</A>)  
+KEP keeps the beginning of a sequence; CUT cuts the beginning
+of a sequence away; SWP swaps two values in the sequence;
+REV reverses the entire sequence; RHT shifts some elements in the sequence
+to the right (up); LFT shifts some elements in the sequence
+to the left (down).
+</UL>
+
+
+
+<H3><A NAME=Rename_Nseq>Machine</A> <A HREF="HTX/Rename_Nseq.mch.html">Rename_Nseq</A></H3>
+
+
+This sequence machine provides access to a single sequence of numbers.
+
+It offers the common operations for  Mathematical Concepts Machine:
+<UL>
+<LI>  Getting a value 
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_VAL_SEQ">VAL</A>)(VAL) with a particular ordinal number.
+<LI> Persistent Storage facilities 
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SAV_NSEQ">SAV</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_RST_NSEQ">RST</A>) 
+</UL>
+
+It offers the common sequence operation:
+<UL>
+<LI> Familiar Sequence Operations:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_CLR_NSEQ">CLR</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_PSH_NSEQ">PSH</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_POP_NSEQ">POP</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_FST_NSEQ">FST</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_LST_NSEQ">LST</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_TAL_NSEQ">TAL</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_STO_NSEQ">STO</A>) 
+CLR clears the sequence; PSH pushes an element onto the sequence;
+POP gets the element most recently pushed; FST gets the first element;
+LST gets the last element; TAL modifies the sequence by removing
+the most recently pushed element; STO stores an element into the sequence.
+<LI> Some Sequence Enquiries:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_EMP_NSEQ">EMP</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_LEN_NSEQ">LEN</A>)  
+EMP test whether the sequence is empty; LEN gives the length of
+the sequence.
+<LI> Some Sequence Tests: 
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_EQL_NSEQ">EQL</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_NEQ_NSEQ">NEQ</A>)  
+EQL tests whether a particular value is at a particular index; NEQ
+tests whether a particular value is not at a particular index.
+<LI> Additional Enquiries:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_FUL_NSEQ">FUL</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_XST_IDX_NSEQ">XST_IDX</A>)  
+FUL indicates whether a sequence is full; XST_IDX indicates whether
+a particular number is a valid index.
+<LI> Searching Operations:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_LO_EQL_NSEQ">SCH_LO_EQL</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_LO_NEQ_NSEQ">SCH_LO_NEQ</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_HI_EQL_NSEQ">SCH_HI_EQL</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_HI_NEQ_NSEQ">SCH_HI_NEQ</A>) 
+The searching operation search for the lowest (or highest) index in the
+sequence which is equal (or not equal) to a particular value.
+<LI> Sequence manipulation operations: 
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_KEP_NSEQ">KEP</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_CUT_NSEQ">CUT</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SWP_NSEQ">SWP</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_REV_NSEQ">REV</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_RHT_NSEQ">RHT</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_LFT_NSEQ">LFT</A>) 
+KEP keeps the beginning of a sequence; CUT cuts the beginning
+of a sequence away; SWP swaps two values in the sequence;
+REV reverses the entire sequence; RHT shifts some elements in the sequence
+to the right (up); LFT shifts some elements in the sequence
+to the left (down).
+</UL>
+
+
+In addition the Number Sequence Machine offers:
+<UL>
+<LI> Extracting Values:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_MAX_IDX_NSEQ">MAX_IDX</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_MIN_IDX_NSEQ">MIN_IDX</A>) 
+These operation extract the maximum (or minimum) value within a particular range.
+<LI> Arithmetic Operations:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_ADD_NSEQ">ADD</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_MUL_NSEQ">MUL</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SUB_NSEQ">SUB</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_DIV_NSEQ">DIV</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_MOD_NSEQ">MOD</A>) 
+These operations modify a particular location within the sequence.
+<LI> Test Operations:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_GTR_NSEQ">GTR</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_GEQ_NSEQ">GEQ</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SMR_NSEQ">SMR</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_LEQ_NSEQ">LEQ</A>) 
+These operations test a particular location within the sequence against
+a given value.
+<LI> Searching Operations:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_LO_GEQ_NSEQ">SCH_LO_GEQ</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_LO_GTR_NSEQ">SCH_LO_GTR</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_LO_LEQ_NSEQ">SCH_LO_LEQ</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_LO_SMR_NSEQ">SCH_LO_SMR</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_CH_HI_GEQ_NSEQ">CH_HI_GEQ</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_HI_GTR_NSEQ">SCH_HI_GTR</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_HI_LEQ_NSEQ">SCH_HI_LEQ</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SCH_HI_SMR_NSEQ">SCH_HI_SMR</A>)
+These operations search for the lowest index (or highest index) in
+which a value satisfying a particular condition can be found. 
+<LI>  Sequence manipulations:
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SRT_AS_NSEQ">SRT_AS</A>,
+<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SRT_DSC_NSEQ">SRT_DSC</A>) 
+Sort the sequence to contains either ascending or descending
+values.
+</UL>
+
+
+<H3><A NAME=Rename_Vfnc>Machine</A> <A HREF="HTX/Rename_Vfnc.mch.html">Rename_Vfnc</A></H3>
+
+
+This function machine provides access to a single partial function over
+numbers (mapping). The type of
+elements which the function returns can be determined through instantiation.
+
+It offers the common operations for Mathematical Concepts Machine:
+<UL>
+<LI>  Getting a value  by applying the function 
+(<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_VAL_FNC">VAL</A>) .
+<LI> Persistent Storage facilities 
+(<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_SAV_FNC">SAV</A>
+<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_RES_FNC">RES</A>) 
+</UL>
+
+In addition it offers:
+<UL>
+<LI> Changing the function:
+(<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_STO_FNC">STO</A>
+<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_RMV_FNC">RMV</A>)
+STO gives the function a new value for a particular field number; RMV
+removes a field number from the domain of the function.
+<LI> Testing function values: 
+(<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_EQL_FNC">EQL</A>
+<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_NEQ_FNC">NEQ</A>)
+These tests for a particular value in a particular field.
+in the function.
+<LI> Enquiries:
+(<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_TST_FLD_FNC">TST_FLD</A>,
+<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_DEF_FNC">DEF</A>
+<A HREF="HTX/Rename_Vfnc.mch.html#OPNAME!Rename_FREE_FNC">FREE</A>)
+TST_FLD indicates whether a given number is
+a valid field number; DEF tests whether a  given number
+is within the domain of the function; FREE return a field
+number for which no value has yet been given.
+</UL>
+
+
+
+<H3><A NAME=Rename_Nfnc>Machine</A> <A HREF="HTX/Rename_Nfnc.mch.html">Rename_Nfnc</A></H3>
+
+
+
+This function machine provides access to a single partial function over
+numbers (mapping). The function will return numbers.
+
+It offers the common operations for  Mathematical Concepts Machine:
+<UL>
+<LI>  Getting a value  by applying the function 
+(<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_VAL_NFNC">VAL</A>).
+<LI> Persistent Storage facilities 
+(<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_SAV_NFNC">SAV</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_RES_NFNC">RES</A>) 
+</UL>
+
+It offers:
+<UL>
+<LI> Changing the function:  
+(<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_STO_NFNC">STO</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_RMV_NFNC">RMV</A>) 
+STO gives the function a new value for a particular field number; RMV
+removes a number from the domain of the function.
+<LI> Arithmetic operations: 
+(<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_ADD_NFNC">ADD</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_MUL_NFNC">MUL</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_SUB_NFNC">SUB</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_DIV_NFNC">DIV</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_MOD_NFNC">MOD</A>)
+These operation modifies the value of the function for a particular
+field number.
+<LI> Testing function values: 
+(<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_EQL_NFNC">EQL</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_NEQ_NFNC">NEQ</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_GTR_NFNC">GTR</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_GEQ_NFNC">GEQ</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_SMR_NFNC">SMR</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_LEQ_NFNC">LEQ</A>) 
+These tests for a given value in a particular field
+in the function.
+<LI> Enquiries: 
+(<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_TST_FLD_NFNC">TST_FLD</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_DEF_NFNC">DEF</A>,
+<A HREF="HTX/Rename_Nfnc.mch.html#OPNAME!Rename_FREE_NFNC">FREE</A>) 
+TST_FLD indicates whether a particular number is
+a valid field number; DEF tests whether a  particular number
+is within the domain of the function; FREE return a field
+number for which no value has yet been given.
+</UL>
+
+
+
+<H3><A NAME=Rename_Vffnc>Machine</A> <A HREF="HTX/Rename_Vffnc.mch.html">Rename_Vffnc</A></H3>
+
+This function machine provides access to a single partial function over
+numbers (mapping). The type of
+elements which the function returns can be determined through instantiation.
+
+It offers the common operations for  Mathematical Concepts Machine:
+<UL>
+<LI>  Getting a value  by applying the function 
+(<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_VAL_FNC">VAL</A>).
+<LI> Persistent Storage facilities 
+(<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_SAV_FNC">SAV</A>,
+<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_RES_FNC">RES</A>) 
+</UL>
+
+It offers the additional operations:
+<UL>
+<LI> Changing the function: 
+(<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_STO_FNC">STO</A>,
+<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_RMV_FNC">RMV</A>)
+STO gives the function a new value fro a particular field number; RMV
+removes a number from the domain of the function.
+<LI> Testing function values: 
+(<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_EQL_FNC">EQL</A>,
+<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_NEQ_FNC">NEQ</A>) 
+These tests for a given value in a particular field.
+in the function.
+<LI> Enquiries: 
+(<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_TST_FLD_FNC">TST_FLD</A>,
+<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_DEF_FNC">DEF</A>
+<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_FREE_FNC">FREE</A>) 
+TST_FLD indicates whether a particular number is
+a valid field number; DEF tests whether a  particular number
+is within the domain of the function; FREE return a field
+number for which no value has yet been given.
+</UL>
+
+Some special operation for manipulation
+of segments of fields:
+<UL>
+<LI> Moving segments of values: 
+(<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_MOV_FFNC">MOV</A>) 
+This operation moves the values stored in a seqment of
+fields to another segment of fields.
+<LI> String Operations:
+(<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_OVR_FFNC">OVR</A>,
+<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_XTR_FFNC">XTR</A>) 
+OVR over-writes a number of function fields with a packed
+string; XTR extracts a string from a number of function fields.
+<LI> String Testing:
+(<A HREF="HTX/Rename_Vffnc.mch.html#OPNAME!Rename_EQL_FFNC">EQL</A>)
+Tests whether a particular string is equal to a string packed 
+in a number of fields.
+</UL>
+
+
+<P><BR><HR WIDTH="60%"><P>
+
+<A NAME=Library_Machines!Input_Output_Machines><H2>Input Output Machines</H2></A>
+
+The Input Output Machines offers an application some simple
+input and output facilities:
+<UL>
+<LI> <A HREF="SystemLibrary.html#basic_io">basic_io</A>, for basic terminal IO.
+<LI> <A HREF="SystemLibrary.html#Rename_token_io">Rename_token_io</A>, for more terminal IO.
+<LI> <A HREF="SystemLibrary.html#Rename_File_io">Rename_File_io</A>, for general file IO.
+<LI> <A HREF="SystemLibrary.html#file_dump">file_dump</A>, for persistent storage.
+</UL>
+
+
+<H3><A NAME=basic_io>Machine</A> <A HREF="HTX/basic_io.mch.html">basic_io</A></H3>
+
+This machine provides operations for writing to the terminal
+display and reading from the keyboard:
+<UL>
+<LI> Spacing operations: 
+(<A HREF="HTX/basic_io.mch.html#OPNAME!NWL">NWL</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!BLK">BLK</A>) 
+<LI> Writing and reading numbers: 
+(<A HREF="HTX/basic_io.mch.html#OPNAME!GET_NBR">GET_NBR</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!GET_PROMPT_NBR">GET_PROMPT_NBR</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!PUT_NBR">PUT_NBR</A>)  
+An interval to which the numbers must  belong is specified.
+<LI> Writing and reading B numbers: 
+(<A HREF="HTX/basic_io.mch.html#OPNAME!GET_NAT">GET_NAT</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!GET_PROMPT_NAT">GET_PROMPT_NAT</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!PUT_NAT">PUT_NAT</A>) 
+<LI> Writing and reading boolean values: 
+(<A HREF="HTX/basic_io.mch.html#OPNAME!GET_BOOL">GET_BOOL</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!GET_PROMPT_BOOL">GET_PROMPT_BOOL</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!PUT_BOOL">PUT_BOOL</A>)  
+<LI> Writing and reading binary values: 
+(<A HREF="HTX/basic_io.mch.html#OPNAME!GET_BTS">GET_BTS</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!GET_PROMPT_BTS">GET_PROMPT_BTS</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!PUT_BTS">PUT_BTS</A>)  
+<LI> Writing and reading strings:  
+(<A HREF="HTX/basic_io.mch.html#OPNAME!GET_STR">GET_STR</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!GET_PROMPT_STR">GET_PROMPT_STR</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!PUT_STR">PUT_STR</A>) 
+<LI> Writing and reading characters: 
+(<A HREF="HTX/basic_io.mch.html#OPNAME!GET_CHR">GET_CHR</A>,
+<A HREF="HTX/basic_io.mch.html#OPNAME!PUT_CHR">PUT_CHR</A>) 
+</UL>
+
+
+<H3><A NAME=Rename_token_io>Machine</A> <A HREF="HTX/Rename_token_io.mch.html">Rename_token_io</A></H3>
+
+This IO facility allows for a value of any elementary type
+to be read from the keyboard and written to the screen.
+<B> Note</B>This includes SEQOBJ, SETOBJ etc., since all these
+are represented as a single machine word) 
+
+We have:
+(<A HREF="HTX/Rename_token_io.mch.html#OPNAME!Rename_GET_TOK">Rename_GET_TOK</A>,
+<A HREF="HTX/Rename_token_io.mch.html#OPNAME!Rename_GET_PROMPT_TOK">Rename_GET_PROMPT_TOK</A>,
+<A HREF="HTX/Rename_token_io.mch.html#OPNAME!Rename_PUT_TOK">Rename_PUT_TOK</A>) 
+
+
+<P><BR><HR WIDTH="30%"><P>
+
+<A NAME=Library_Machines!File_Machines><H2>File Machines</H2></A>
+
+<H3><A NAME=Rename_File_io>Machine</A> <A HREF="HTX/Rename_File_io.mch.html">Rename_File_io</A></H3>
+
+A new file can be introduced by importing an instance of
+the file_io machine. 
+
+This new file can be opened for writing/appending by <I> Rename_OPEN_READ</I>/
+<I> Rename_OPEN_APPEND</I>.
+All subsequent `saves' will now be written to that file.
+
+The  file can be opened for reading by <I> Rename_OPEN_WRITE</I>.
+All subsequent `restores' will now be read from that file.
+
+<I> Rename_CLOSE</I> will close the file.
+
+A file should always be closed to ensure that all written
+information is properly recorded.
+
+<H3><A NAME=file_dump>Machine</A> <A HREF="HTX/file_dump.mch.html">file_dump</A></H3>
+
+This machine provides the default dump file (TMP.file), which is
+known by all object machines. Unless otherwise specified this
+file can be used for `saving' and `restoring'.
+
+<I> open_write_dump_file</I> will open the dump file for saving.
+<I> open_read_dump_file</I> will open the dump file for  restoring.
+<I> close_dump_file</I> will close the dumpfile.
+
+A file should always be closed to ensure that all written
+information is properly recorded.
+
+<H3><A NAME=Rename_file_dump>Machine</A> <A HREF="HTX/Rename_file_dump.mch.html">Rename_file_dump</A></H3>
+
+This machine provides the renamble dump file (Rename.dump).
+
+<I> Rename_open_write_dump_file</I> will open the dump file for saving.
+<I> Rename_open_read_dump_file</I> will open the dump file for  restoring.
+<I> Rename_close_dump_file</I> will close the dumpfile.
+
+A file should always be closed to ensure that all written
+information is properly recorded.
+
+<P><BR><HR WIDTH="60%"><P>
+
+<A NAME=Library_Machines!Type_Machines><H2>Type Machines</H2></A>
+
+The following machines allow for the manipulation
+of local variables introduced in an algorithm within
+an implementation. 
+
+A value might be retrieved from the state of an object machine into
+a local variable,
+and then modified using the operation provided by the
+Type Operation Machines before stored into an object
+machine.
+
+
+<H3><A NAME=Bool_TYPE>Machine</A> <A HREF="HTX/Bool_TYPE.mch.html">Bool_TYPE</A> / <A HREF="HTX/Bool_TYPE_Ops.mch.html">Bool_TYPE_Ops</A></H3>
+
+Introduce the type BOOL which consists only of
+the values TRUE and FALSE.
+
+The Bool machines provide the familiar boolean operations:
+<UL>
+<LI> Conjunction (and): <A HREF="HTX/Bool_TYPE_Ops.mch.html#OPNAME!CNJ_BOOL">CNJ</A>
+<LI> Disjunction (or): <A HREF="HTX/Bool_TYPE_Ops.mch.html#OPNAME!DISCNJ_BOOL">DIS</A> 
+<LI> Negation (not): <A HREF="HTX/Bool_TYPE_Ops.mch.html#OPNAME!NEGCNJ_BOOL">NEG</A> 
+<LI> Bit conversion: <A HREF="HTX/Bool_TYPE_Ops.mch.html#OPNAME!BTS_BOOL">BTS_BOOL</A> 
+This operation returns 1 for input <A HREF="HTX/Bool_TYPE.mch.html#TRUE">TRUE</A> and 0 for 
+<A HREF="HTX/Bool_TYPE.mch.html#FALSE">FALSE</A> input .
+</UL>
+
+
+<H3><A NAME=String_TYPE>Machine</A> <A HREF="HTX/String_TYPE.mch.html">String_TYPE</A> / <A HREF="HTX/String_TYPE_Ops.mch.html">String_TYP_Ops</A></H3>
+
+These machines introduce the types CHAR and STRING.
+
+The operation <A HREF="HTX/String_TYPE_Ops.mch.html#OPNAME!CPY_STR">CPY_STR</A> must be used for assigning a value of type string to a local variable; the operations 
+<A HREF="HTX/String_TYPE_Ops.mch.html">ASSIGN_ANY_STR</A>,
+<A HREF="HTX/String_TYPE_Ops.mch.html">EN_STR</A>,
+<A HREF="HTX/String_TYPE_Ops.mch.html">VAL_ITH_CHAR</A> and
+<A HREF="HTX/String_TYPE_Ops.mch.html">HAR_TO_NAT</A> are also provided.
+
+
+<H3><A NAME=Scalar_TYPE>Machine</A> <A HREF="HTX/Scalar_TYPE.mch.html">Scalar_TYPE</A> / <A HREF="HTX/Scalar_TYPE_Ops.mch.html">Scalar_TYPE_Ops</A></H3>
+
+This machines introduce the type of SCALAR (= 0..2147483646).
+
+The following operations are provided:
+<UL>
+<LI> Assigning a Scalar <A HREF="HTX/Scalar_TYPE.mch.html#OPNAME!SCL">SCL</A> 
+<LI> Arithmetic Operations 
+(<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!INC">INC</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!DEC">DEC</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!ADD">ADD</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!MUL">MUL</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!SUB">SUB</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!DIV">DIV</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!MOD">MOD</A>, 
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!RND">RND</A>)  
+<LI> Testing operations:
+(<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!EQL">EQL</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!NEQ">NEQ</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!GTR">GTR</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!GEQ">GEQ</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!SMR">SMR</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!LEQ">LEQ</A>,
+<A HREF="HTX/Scalar_TYPE_Ops.mch.html#OPNAME!EQZ">EQZ</A>)
+EQZ tests for zero.
+</UL>
+
+Note that the normal syntax available in programming
+languages can be used within an algorithm of a
+B implementation. e.g `<TT> :=</TT>' for assignment, `<TT> +</TT>' for ADD,
+`<TT> =</TT>' for EQL. However, if this syntax is used then
+no checks will be made by the B-Toolkit for
+over-flow.
+
+
+<H3><A NAME=Int_TYPE>Machine</A> <A HREF="HTX/Int_TYPE.mch.html">Int_TYPE</A> / <A HREF="HTX/Int_TYPE_Ops.mch.html">Int_TYPE_Ops</A></H3>
+
+This machines introduce the type of INT (=- 2147483647 to +2147483646).
+
+The following operations are provided:
+<UL>
+<LI> Assigning an INT <A HREF="HTX/Int_TYPE.mch.html#OPNAME!SCL">SCL</A> 
+<LI> Arithmetic Operations 
+(<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!INCI">INCI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!DECI">DECI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!ADDI">ADDI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!MULI">MULI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!SUBI">SUBI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!DIVI">DIVI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!MODI">MODI</A>)  
+<LI> Testing operations:
+(<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!EQLI">EQLI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!NEQI">NEQI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!GTRI">GTRI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!GEQI">GEQI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!SMRI">SMRI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!LEQI">LEQI</A>,
+<A HREF="HTX/Int_TYPE_Ops.mch.html#OPNAME!EQZI">EQZI</A>)
+EQZI tests for zero.
+</UL>
+
+Note that the normal syntax available in programming
+languages can be used within an algorithm of a
+B implementation. e.g `<TT> :=</TT>' for assignment, `<TT> +</TT>' for ADDI,
+`<TT> =</TT>' for EQLI. However, if this syntax is used then
+no checks will be made by the B-Toolkit for
+over-flow.
+
+
+<H3><A NAME=Bit_TYPE>Machine</A> <A HREF="HTX/Bit_TYPE.mch.html">Bit_TYPE</A> / <A HREF="HTX/Bit_TYPE_Ops.mch.html">Bit_TYPE_Ops</A></H3>
+
+This machine introduces the type of BITS as a set
+of sequences of length 32. The most significant
+bit position is 1, the least significant position
+is 32. We have:
+<UL>
+<LI> Bit operations: 
+(<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!VAL_BTS">VAL</A>,
+<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!STO_BTS">STO</A>)  
+VAL returns the value of a bit; STO stores a new bit.
+<LI> Shifts: 
+(<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!LFT_BTS">LFT</A>,
+<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!RHT_BTS">RHT</A>)
+LFT shifts left; RHT shifts right (no wrap-around).
+<LI> Bit-wise Logical Operations: 
+(<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!CPL_BTS">CPL</A>,
+<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!LND_BTS">LND</A>,
+<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!LOR_BTS">LOR</A>,
+<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!LXR_BTS">LXR</A>)
+CPL negates all bits; LND performs a bit-wise `and';
+LOR performs  bit-wise `or';  LXR performs bit-wise
+`exclusive or'.
+<LI> Masking Operations:
+(<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!MSK_BTS">MSK</A>,
+<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!VMS_BTS">VMS</A>,
+<A HREF="HTX/Bit_TYPE_Ops.mch.html#OPNAME!MMS_BTS">MMS</A>) 
+MSK generates a mask of 1's; VMS performs a masking and returns
+the resulting value; MMS merges a pattern with another pattern using
+a mask. 
+</UL>
+
+<P>
+<HR WIDTH="60%">
+<P>
+<P><CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

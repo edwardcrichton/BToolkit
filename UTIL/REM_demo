@@ -1,0 +1,35 @@
+#! /bin/csh -f
+
+#
+# Install in $BKIT
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  ------------------------------------------"
+echo "  This script recursively removes BDEMO  "
+echo "  ------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+cd ../BKIT
+
+if ( -d BDEMO ) then
+  rm -fr BDEMO
+endif
+
+echo ""
+echo "  Done "
+echo ""

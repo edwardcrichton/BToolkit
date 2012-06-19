@@ -1,0 +1,881 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+char name_fil[1001];
+char name_load_fil[1001];
+char name_prf_fil[1001];
+char sys_fil[1001];
+FILE *input_fil;
+FILE *pinput_fil;
+
+
+/***
+  defined in `unistd.h'
+#define R_OK    4
+/?  test for read permission  ?/
+
+#define W_OK    2
+/?  test for write permission  ?/
+
+#define X_OK    1
+/?  test for execute (search) permission  ?/
+
+#define F_OK    0
+/?  test for presence of file  ?/
+***/
+
+void
+mod_name_fil_from_btoolkit(ss)
+char * ss;
+{
+  strcpy ( name_fil, ss );
+}
+ 
+mod_str_read_name_fil(s)
+{register int l,j,i,v,mod_str_read_name_fil_res ;
+  l=len_str(s);
+  j=(-1);
+  itr_str(s,i,v,if ( (i!=1) && (i!=l) ) {
+                  j=j+1;
+                  name_fil[j]=v
+               ;});
+  if ( j==(-1) ) {
+    mod_str_read_name_fil_res=FALSE;
+  } else {
+    j=j+1;
+    name_fil[j]='\0';
+    mod_str_read_name_fil_res=TRUE;
+  }
+; return mod_str_read_name_fil_res;
+}
+
+/*
+mod_read_name_fil(t) 
+/?  called by exec_file_prf  ?/
+{register int i,still,mod_read_name_fil_res,c ;
+  still=TRUE;
+  while( still==TRUE ) { 
+    i=(-1);
+    if ( val_batch_sys == FALSE ) {
+      fprintf ( bstdout, "      Input File (0 to quit, 1 to rmv last rule): ");
+};
+    c=getchar();
+    if ( c=='0' ) {
+      mod_read_name_fil_res=FALSE;
+      still=FALSE;
+      {register int c ; c=0; while( c!='\n' ) { c = getchar() ;} ;};
+    } else {
+      while( (c!='\n') || (i>=100) ) {
+        if ( (c>=32) && (c<=126) ) {
+          i=i+1;
+          name_fil[i]=c;
+        };
+        if ( i<100 ) {
+          c=getchar();
+        };
+      };
+      if ( i==(-1) ) {
+        mod_read_name_fil_res=FALSE;
+        if ( val_batch_sys == FALSE ) {
+          fprintf ( bstdout, "      Can't Read That File\n");
+        } else {
+          fprintf(stderr,"\nCan't Read That Input File\n");
+        };
+      } else if ( i<100 ) {
+        i=i+1;
+        name_fil[i]='\0';
+        if ( strcmp(name_fil,"1")==0 ) {
+          if ( len(rul_the(t))!=0 ) {
+            {register int r ;
+              r=lst(rul_the(t));
+              if ( typ_rul(r)!=nrm_rul ) {
+                fprintf ( bstdout, "\n");
+                fprintf ( bstdout, "      Sorry This is a Lemma || an Auto-Rule\n");
+              } else {
+                fprintf ( bstdout, "\n");
+                fprintf ( bstdout, "      REMOVING LAST RULE. OK? ");
+                if ( yes_no==YES ) {
+                  rem_rul_the(t,len(rul_the(t)));
+                  fprintf ( bstdout, "\n");
+                  if ( nbr_rul_the(t)==0 ) {
+                    fprintf ( bstdout, "      No rule\n");
+} else {
+                    lst_short_rul_the(t);
+};
+                };
+              };
+            };
+          } else {
+            fprintf ( bstdout, "\n");
+            fprintf ( bstdout, "      No Rule to Remove\n");
+          };
+          fprintf ( bstdout, "\n");
+        } else {
+          mod_read_name_fil_res=TRUE;
+          still=FALSE;
+        };
+      } else {
+        mod_read_name_fil_res=FALSE;
+        if ( val_batch_sys == FALSE ) {
+          fprintf ( bstdout, "      Can't Read That File\n");
+        } else {
+          fprintf(stderr,"\nCan't Read That Input File\n");
+        };
+      };
+      if ( val_batch_sys == TRUE ) {
+        still=FALSE;
+      };
+    };
+  }
+; return mod_read_name_fil_res;
+}
+*/
+
+
+
+mod_read_name_fil(t) 
+/*  called by exec_file_prf  */
+{
+  strcpy ( name_fil, str_buf );
+  return TRUE;
+}
+
+/*  SAVE AND RESTORE FILE HANDLER  */
+                   
+char name_save_fil[1001];
+char name_dir_save_fil[1001];
+FILE *save_fil;
+char name_restore_fil[1001];
+FILE *restore_fil;
+
+#define write_save_fil(v)  putw(v,save_fil)
+
+#define close_save_fil     fclose(save_fil)
+prepare_name_dir_save_filfunc()
+#define prepare_name_dir_save_fil prepare_name_dir_save_filfunc()
+{register int res,u,l ;
+  res=FALSE;
+  strcpy(name_dir_save_fil,name_save_fil);
+  u=strlen(name_save_fil)-1;
+  l=(-1);
+  while( u!=l ) {
+    if ( name_dir_save_fil[u]=='/' ) {
+      name_dir_save_fil[u]='\0';
+      l=u;
+      res=TRUE;
+    } else {
+      u=u-1;
+    };
+  }
+; return res;
+}
+
+/*
+open_save_filfunc()
+#define open_save_fil open_save_filfunc()
+{register int i,still,open_save_fil_res,c ;
+  still=TRUE;
+  while( still==TRUE ) { 
+    i=(-1);
+    fprintf ( bstdout, "      File (0 to quit): ");
+    c=getchar();
+    if ( c=='0' ) {
+      open_save_fil_res=FALSE;
+      still=FALSE;
+      {register int c ; c=0; while( c!='\n' ) { c = getchar() ;} ;};
+    } else {
+      while( (c!='\n') || (i>=200) ) {
+        if ( (c>=32) && (c<=126) ) {
+          i=i+1;
+          name_save_fil[i]=c;
+        };
+        if ( i<200 ) {
+          c=getchar();
+        };
+      };
+      i=i+1;
+      name_save_fil[i]='\0';
+      if ( i<5 ) {
+        fprintf ( bstdout, "\n      Bad File Name (Should Be Non-empty And Suffixed With .bin)\n\n");
+      } else if ( (name_save_fil[i-1]!='n') || (name_save_fil[i-2]!='i') || (name_save_fil[i-3]!='b') || (name_save_fil[i-4]!='.') ) {
+        fprintf ( bstdout, "\n      Bad File Name (Should Be Suffixed With .bin)\n\n");
+      } else if ( prepare_name_dir_save_fil==TRUE ) {
+        if ( !(access(name_dir_save_fil,W_OK) >= 0) ) {
+          fprintf ( bstdout, "      Can't Write On That File\n");
+        } else {
+          save_fil=fopen(name_save_fil,"w");
+          if ( save_fil == NULL ) {
+            fprintf ( bstdout, "      Can't Write On That File\n");
+          } else {
+            open_save_fil_res=TRUE;
+            still=FALSE;
+          };
+        };
+      } else {
+        save_fil=fopen(name_save_fil,"w");
+        if ( save_fil == NULL ) {
+          fprintf ( bstdout, "      Can't Write On That File\n");
+        } else {
+          open_save_fil_res=TRUE;
+          still=FALSE;
+        };
+      };
+    };
+  }
+; return open_save_fil_res;
+}
+*/
+
+open_save_comp_filfunc()
+#define open_save_comp_fil open_save_comp_filfunc()
+{register int open_save_comp_fil_res ;
+  open_save_comp_fil_res=FALSE;
+  if ( prepare_name_dir_save_fil==TRUE ) {
+    if ( !(access(name_dir_save_fil,W_OK) >= 0) ) {
+      fprintf ( bstdout, "      Can't Write On That File\n");
+    } else {
+      save_fil=fopen(name_save_fil,"w");
+      if ( save_fil == NULL ) {
+        fprintf ( bstdout, "      Can't Write On That File\n");
+      } else {
+        open_save_comp_fil_res=TRUE;
+};
+    };
+  } else {
+    save_fil=fopen(name_save_fil,"w");
+    if ( save_fil == NULL ) {
+      fprintf ( bstdout, "      Can't Write On That File\n");
+    } else {
+      open_save_comp_fil_res=TRUE;
+};
+  }
+; return open_save_comp_fil_res;
+}
+
+#define read_restore_fil   getw(restore_fil)
+
+#define close_restore_fil  fclose(restore_fil)
+
+/*
+open_restore_filfunc()
+#define open_restore_fil open_restore_filfunc()
+{register int i,still,open_restore_fil_res,c ;
+  still=TRUE;
+  while( still==TRUE ) { 
+    i=(-1);
+    if ( val_batch_sys == FALSE ) {
+      fprintf ( bstdout, "      Input File (0 to quit): ");
+};
+    c=getchar();
+    if ( c=='0' ) {
+      open_restore_fil_res=FALSE;
+      still=FALSE;
+      {register int c ; c=0; while( c!='\n' ) { c = getchar() ;} ;};
+    } else {
+      while( (c!='\n') || (i>=200) ) {
+        if ( (c>=32) && (c<=126) ) {
+          i=i+1;
+          name_restore_fil[i]=c;
+        };
+        if ( i<200 ) {
+          c=getchar();
+        };
+      };
+      i=i+1;
+      name_restore_fil[i]='\0';
+      if ( i<5 ) {
+        open_restore_fil_res=FALSE;
+        if ( val_batch_sys == FALSE ) {
+          fprintf ( bstdout, "\n      Bad File Name (Should Be Non-empty And Suffixed With .bin)\n\n");
+        } else {
+          fprintf(stderr,"\nBad Rule Base File Name (Should Be Non-empty And Suffixed With .bin)\n");
+        };
+      } else if ( (name_restore_fil[i-1]!='n') || (name_restore_fil[i-2]!='i') || (name_restore_fil[i-3]!='b') || (name_restore_fil[i-4]!='.') ) {
+        open_restore_fil_res=FALSE;
+        if ( val_batch_sys == FALSE ) {
+          fprintf ( bstdout, "\n      Bad Rule Base File Name (Should Be Suffixed With .bin)\n\n");
+        } else {
+          fprintf(stderr,"\nBad Rule Base File Name (Should Be Suffixed With .bin)\n");
+        };
+      } else if ( !(access(name_restore_fil,R_OK) >= 0)  ) {
+      if ( !(access(name_restore_fil,R_OK) >= 0)  ) {
+        open_restore_fil_res=FALSE;
+        if ( val_batch_sys == FALSE ) {
+          DisplayCurrWinText ( "\n  Can't Read That Rule Base File\n");
+        } else {
+          fprintf(stderr,"\nCan't Read That Rule Base File\n");
+        };
+      } else {
+        restore_fil=fopen(name_restore_fil,"r");
+        if ( restore_fil == NULL ) {
+          open_restore_fil_res=FALSE;
+          if ( val_batch_sys == FALSE ) {
+            DisplayCurrWinText ( "\n  Can't Read That Rule Base File\n");
+          } else {
+            fprintf(stderr,"\nCan't Read That Rule Base File\n");
+          };
+        } else {
+          open_restore_fil_res=TRUE;
+          still=FALSE;
+        };
+      };
+      if ( val_batch_sys == TRUE ) {
+        still=FALSE;
+      };
+    };
+  }
+; return open_restore_fil_res;
+}
+*/
+
+open_restore_batch_filfunc()
+#define open_restore_batch_fil open_restore_batch_filfunc()
+{register int i,open_restore_fil_res,c ;
+  i=strlen(name_restore_fil);
+  if ( i<5 ) {
+    open_restore_fil_res=FALSE;
+    fprintf(stderr,"\nBad Rule Base File Name (Should Be Non-empty And Suffixed With .bin)\n");
+  } else if ( (name_restore_fil[i-1]!='n') || (name_restore_fil[i-2]!='i') || (name_restore_fil[i-3]!='b') || (name_restore_fil[i-4]!='.') ) {
+    open_restore_fil_res=FALSE;
+    fprintf(stderr,"\nBad Rule Base File Name (Should Be Suffixed With .bin)\n");
+  } else if ( !(access(name_restore_fil,R_OK) >= 0)  ) {
+    open_restore_fil_res=FALSE;
+    fprintf(stderr,"\nCan't Read That Rule Base File\n");
+  } else {
+    restore_fil=fopen(name_restore_fil,"r");
+    if ( restore_fil == NULL ) {
+      open_restore_fil_res=FALSE;
+      fprintf(stderr,"\nCan't Read That Rule Base File\n");
+    } else {
+      open_restore_fil_res=TRUE;
+};
+  }
+; return open_restore_fil_res;
+}
+
+
+mod_lod_read_name_filfunc()
+#define mod_lod_read_name_fil mod_lod_read_name_filfunc()
+{register int i,still,bad,mod_lod_read_name_fil_res,c ;
+  return TRUE;
+}
+
+mod_prf_write_name_filfunc()
+#define mod_prf_write_name_fil mod_prf_write_name_filfunc()
+{register int i,still,mod_prf_write_name_fil_res,c ;
+  still=TRUE;
+  while( still==TRUE ) { 
+    i=(-1);
+    fprintf ( bstdout, "      File (0 to quit): ");
+    c=getchar();
+    if ( c=='0' ) {
+      mod_prf_write_name_fil_res=FALSE;
+      still=FALSE;
+      {register int c ; c=0; while( c!='\n' ) { c = getchar() ;} ;};
+    } else {
+      while( (c!='\n') || (i>=200) ) {
+        if ( (c>=32) && (c<=126) ) {
+          i=i+1;
+          name_prf_fil[i]=c;
+        };
+        if ( i<200 ) {
+          c=getchar();
+        };
+      };
+      if ( i==(-1) ) {
+        fprintf ( bstdout, "      Can't Write On That File\n");
+      } else if ( i<200 ) {
+        i=i+1;
+        name_prf_fil[i]='\0';
+        mod_prf_write_name_fil_res=TRUE;
+        still=FALSE;
+      } else {
+        fprintf ( bstdout, "      Can't Write On That File\n");
+      };
+    };
+  }
+; return mod_prf_write_name_fil_res;
+}
+
+write_prf_name_filfunc()
+#define write_prf_name_fil write_prf_name_filfunc()
+/*
+{register int i,j ;
+  i=0;
+  j=100;
+  while( i!=j ) {
+    if ( name_prf_fil[i]!='\0' ) {
+      putc(name_prf_fil[i], bstdout);
+      i=i+1;
+    } else {
+      i=j;
+    };
+  };
+}
+*/
+{
+  strcat ( str_buf, name_prf_fil );
+}
+
+cre_sym_filfunc()
+#define cre_sym_fil cre_sym_filfunc()
+ 
+/*  called by exec_file_prf  */
+{register int st,i,cre_sym_fil_res ;
+  st=cre(4);
+  i=0;
+  psh_str(st,SMPQUO_sym);
+  while( name_fil[i]!='\0' ) {
+    psh_str(st,ord(name_fil[i]));
+    i=i+1;
+  };
+  psh_str(st,SMPQUO_sym);
+  cre_sym_fil_res=cre_sym(st,atm,nrml,0);
+  kil(st)
+; return cre_sym_fil_res;
+}
+
+/* 
+trans_name_filfunc()
+#define trans_name_fil trans_name_filfunc()
+{register int fic,i ;
+  fic=cre_fic_err;
+  i=0;
+  while( i<=100 ) {
+    if ( name_fil[i]=='\0' ) {
+      i=101;
+    } else {
+      psh_fic_err(fic,ord(name_fil[i]));
+      i=i+1;
+    };
+  }
+; return fic;
+};
+ */
+close_input_filfunc()
+#define close_input_fil close_input_filfunc()
+{
+  fclose(input_fil);
+}
+
+
+void
+WriteBErr ( ss, tt, uu )
+char * ss;
+char * tt;
+char * uu;
+{
+  FILE * Berr;
+  Berr = fopen ( ".Berr", "w" );
+  if ( Berr != NULL ) {
+    fprintf ( Berr, "\n    %s%s%s\n", ss, tt, uu );
+    fclose ( Berr );
+  }
+}
+
+expand_file ( file_in, file_out )
+char * file_in;
+char * file_out;
+{
+  char bbuf [ 250 ];
+  char * env_val;
+  int i, j;
+  i = 1;
+  j = 0;
+  while ( file_in [ i ] != '/' ) {
+    bbuf [ j ] = file_in [ i ];
+    i++;
+    j++;
+  };
+  bbuf [ j ] = '\0';
+  env_val = getenv ( bbuf );
+  if ( env_val ==  NULL ) {
+    strcpy( file_out, file_in );
+  }
+  else {
+    strcpy ( bbuf, env_val );
+    i = strlen ( bbuf );
+    bbuf [ i ] = '/';
+    i++;
+    j = j + 2;
+    while ( file_in [ j ] != '\0' ) {
+      bbuf [ i ] = file_in [ j ];
+      i++;
+      j++;
+    };
+    bbuf [ i ] = '\0';
+    strcpy( file_out, bbuf );
+  }
+}
+
+int
+cpp_ ( file_in, file_out )
+char * file_in;
+char * file_out;
+{
+  char bbuf [ 250 ];
+  FILE * fi;
+  FILE * fo;
+  int nl, nl_a, c, inannot;
+  inannot = 0;
+  if ( file_in [ 0 ] == '$' ) {
+    expand_file ( file_in, bbuf );
+  }
+  else {
+    strcpy ( bbuf, file_in );
+  };
+  /***
+  printf ( "--->>>%s<<<---\n", bbuf );
+  ***/
+  fi = fopen ( bbuf, "r" );
+  if ( fi == NULL ) {
+    WriteBErr ( "Can't open ", bbuf, " for reading" );
+    return ( 1 );
+  }
+  fo = fopen ( file_out, "w" );
+  if ( fo == NULL ) {
+    WriteBErr ( "Can't open ", file_out, " for writitng" );
+    return ( 1 );
+  };
+  nl = 1;
+  c = getc ( fi );
+  while ( c != EOF ) {
+    if ( c == '/' ) {
+      c = getc ( fi );
+      if ( c == '*' ) {
+
+
+        /***
+        in annot
+        ***/
+        inannot = 1;
+        nl_a = 0;
+        c = getc ( fi );
+        while ( ( c != EOF ) && inannot ) {
+          if ( c == '*' ) {
+            c = getc ( fi );
+            if      ( c == '/' )  inannot = 0;
+            else if ( c == '\n' ) { putc ( c, fo ); nl_a++; }
+            else if ( c == '*' )  ungetc ( '*', fi );
+          }
+          else if ( c == '\n' ) { putc ( c, fo );; nl_a++; }
+          if ( ( c != EOF ) && inannot ) c = getc ( fi );
+        };
+        if ( ! inannot ) nl = nl + nl_a;
+
+
+      }
+      else if ( c == '/' ) {
+        putc ( '/', fo );
+        ungetc ( '/', fi );
+      }
+      else {
+        if ( c == '\n' ) nl++;
+        putc ( '/', fo );
+        putc ( c, fo );
+      }
+    }
+    else {
+      if ( c == '\n' ) nl++;
+      putc ( c, fo );
+    };
+    if ( c != EOF ) {
+      c = getc ( fi );
+    }
+  };
+  fclose ( fi );
+  fclose ( fo );
+  if ( inannot ) {
+    fo = fopen ( ".Berr", "w" );
+    if ( fo != NULL ) {
+      fprintf ( fo, "\n\n      %s: missing */ (to match /* at line %d)\n\n", file_in, nl );
+      fclose ( fo );
+    };
+    return ( 1 );
+  }
+  else {
+    return ( 0 );
+  }
+}
+
+
+
+#define get_input_fil getc(input_fil)
+
+
+/********
+#ifndef BTOOLKIT_FLAG
+********/
+
+reset_input_fil(b)
+{register int i,c,reset_input_fil_res,first ;
+
+/***
+printf ( "\n\n\nBTOOLKIT_FLAG is NOT defined ( 1 )\n\n\n" );
+***/
+
+  reset_input_fil_res=TRUE;
+  if ( b==1 ) {
+    if ( val_batch_sys == FALSE ) {
+      if ( cpp_ ( name_fil, "tmpb" ) != 0 ) {
+        reset_input_fil_res=FALSE;
+      }
+      else {
+        input_fil=fopen("tmpb","r");
+      }
+    }
+    else {
+      if ( cpp_ ( name_fil, "tmpb" ) != 0 ) {
+        reset_input_fil_res=FALSE;
+      }
+      else {
+       input_fil=fopen("tmpb","r");
+      }
+    }
+  } /* if ( b==1 ) */
+
+  else {
+    pinput_fil=fopen("tmpb","w");
+    c = getchar();  
+    if ( b==2 ) {
+      while( c!='`' ) {
+        putc(c,pinput_fil);
+        c = getchar();  
+      }
+      {register int c ; c=0; while( c!='\n' ) { c = getchar() ;} ;};
+    }
+    else { /* if ( b==2 ) */
+      first=TRUE;
+      while( c!='\n' ) {
+        if ( c != '`' ) {
+          putc(c,pinput_fil);
+          first=FALSE;
+        }
+        c = getchar();  
+      }
+      if ( first==TRUE ) {
+        fprintf(pinput_fil,"CR");
+      }
+    }
+    fclose(pinput_fil);
+    input_fil=fopen("tmpb","r");
+  } /* else if ( b==1 ) */
+  return reset_input_fil_res;
+}
+
+/********
+
+#else /? BTOOLKIT_FLAG ?/
+
+reset_input_fil(b)
+{register int i,c,reset_input_fil_res,first ;
+
+/???
+printf ( "\n\n\nBTOOLKIT_FLAG is defined ( 1 )\n\n\n" );
+???/
+
+  reset_input_fil_res=TRUE;
+  if( b==1 ){
+
+#ifdef SOLARIS_VERSION
+    strcpy(sys_fil,"/usr/ccs/lib/cpp_NOTUSED ");
+#else
+    strcpy(sys_fil,"/lib/cpp_NOTUSED ");
+#endif /? SOLARIS_VERSION ?/
+
+
+/? fprintf ( bstdout,  "1: cpp for %s\n", name_fil ); ?/
+    strcat(sys_fil,name_fil);
+    strcat(sys_fil," > tmpb");
+    if( val_batch_sys == FALSE ){
+      
+/? fprintf ( bstdout, "\n");
+      fprintf ( bstdout, "      MACRO-GENERATION\n");
+      fprintf ( bstdout, "\n"); ?/
+      if( system(sys_fil)!=0 ){
+        reset_input_fil_res=FALSE;
+      } else {
+        input_fil=fopen("tmpb","r");
+        
+/? fprintf ( bstdout, "      PARSING\n") ?/;
+      };
+    } else {
+      if( system(sys_fil)!=0 ){
+        reset_input_fil_res=FALSE;
+      } else {
+       input_fil=fopen("tmpb","r");
+};
+    };
+  } else {
+    
+/? input_fil=fopen(TERMINAL,"r"); ?/
+    pinput_fil=fopen("tmpb","w");
+    c = getchar();  
+/? c=get_input_fil; ?/
+    if( b==2 ){
+      while( c!='`' ){
+        putc(c,pinput_fil);
+        c = getchar();  
+/? c=get_input_fil ?/;
+      };
+      {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+    } else {
+      first=TRUE;
+      while( c!='\n' ){
+        if( c != '`' ){
+          putc(c,pinput_fil);
+          first=FALSE;
+};
+        c = getchar();  
+/? c=get_input_fil ?/;
+      }
+      if( first==TRUE ){
+        fprintf(pinput_fil,"CR");
+      };
+    };
+    fclose(pinput_fil);
+    
+/? fclose(input_fil); ?/
+    input_fil=fopen("tmpb","r");
+  }
+; return reset_input_fil_res;
+}
+
+#endif /? BTOOLKIT_FLAG ?/
+
+********/
+
+
+
+/********
+#ifndef BTOOLKIT_FLAG
+
+reset_load_input_fil(b)
+{register int i,c,reset_input_fil_res ;
+  reset_input_fil_res=TRUE;
+/? fprintf ( bstdout,  "2: cpp for %s\n", name_load_fil ); ?/
+
+/???
+printf ( "\n\n\nBTOOLKIT_FLAG is NOT defined ( 2 )\n\n\n" );
+???/
+
+#ifdef SOLARIS_VERSION
+    strcpy(sys_fil,"/usr/ccs/lib/cpp_NOTUSED ");
+#else
+    strcpy(sys_fil,"/lib/cpp_NOTUSED ");
+#endif /? SOLARIS_VERSION ?/
+
+  strcat(sys_fil,name_load_fil);
+  strcat(sys_fil," > tmpb");
+  if( val_batch_sys == FALSE ){
+    
+/? fprintf ( bstdout, "\n");
+    fprintf ( bstdout, "      MACRO-GENERATION\n");
+    fprintf ( bstdout, "\n"); ?/
+    if( system(sys_fil)!=0 ){
+      reset_input_fil_res=FALSE;
+    } else {
+      input_fil=fopen("tmpb","r");
+      
+/? fprintf ( bstdout, "      PARSING\n") ?/;
+    };
+  } else {
+    if( system(sys_fil)!=0 ){
+      reset_input_fil_res=FALSE;
+    } else {
+      input_fil=fopen("tmpb","r");
+};
+  };
+  mod_loaded_sys(TRUE)
+; return reset_input_fil_res;
+}
+
+#else /? so BTOOLKIT_FLAG ... ?/
+********/
+
+reset_load_input_fil(b)
+{register int i,c,reset_input_fil_res ;
+/***
+fprintf ( bstdout,  "reset_load_input_fil: no cpp for %s\n", name_load_fil );
+***/
+
+/***
+printf ( "\n\n\nBTOOLKIT_FLAG is NOT defined ( 2 )\n\n\n" );
+***/
+
+  reset_input_fil_res=TRUE;
+  if ( val_batch_sys == FALSE ) {
+    if ( cpp_ ( name_load_fil, "tmpb" ) != 0 ) {
+      reset_input_fil_res=FALSE;
+    }
+    else {
+      input_fil=fopen("tmpb","r");
+    }
+  }
+  else { /* if ( val_batch_sys == FALSE ) */
+    if ( cpp_ ( name_load_fil, "tmpb" ) != 0 ) {
+      reset_input_fil_res=FALSE;
+    }
+    else {
+      input_fil=fopen("tmpb","r");
+    }
+  }
+  mod_loaded_sys(TRUE);
+  return reset_input_fil_res;
+}
+
+/********
+#endif /? BTOOLKIT_FLAG ?/
+********/
+
+
+/************** below used for B-Core making Toolkit15 - use cpp ********************/
+
+reset_load_input_fil_Toolkit15(b)
+{register int i,c,reset_input_fil_res ;
+  reset_input_fil_res=TRUE;
+
+/***
+fprintf ( bstdout,  "reset_load_input_fil_Toolkit15: cpp for %s\n", name_load_fil );
+***/
+
+#ifdef SOLARIS_VERSION
+    strcpy(sys_fil,"/usr/ccs/lib/cpp ");
+#else
+    strcpy(sys_fil,"/lib/cpp ");
+#endif /* SOLARIS_VERSION */
+
+  strcat(sys_fil,name_load_fil);
+  strcat(sys_fil," > tmpb");
+  if( val_batch_sys == FALSE ){
+    if( system(sys_fil)!=0 ){
+      reset_input_fil_res=FALSE;
+    } else {
+      input_fil=fopen("tmpb","r");
+    }
+  } else {
+    if( system(sys_fil)!=0 ){
+      reset_input_fil_res=FALSE;
+    } else {
+      input_fil=fopen("tmpb","r");
+    }
+  }
+  mod_loaded_sys(TRUE);
+  return reset_input_fil_res;
+}
+

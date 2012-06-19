@@ -1,0 +1,305 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.51">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_BiSeq">
+  <TITLE>The Rename_BiSeq machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+V1.0
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+***/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>           Rename_BiSeq(VALUE,maxlen)
+
+/*"
+
+A parameterised renamable encapsulation of a machine which can hold a
+sequence; the total length of the sequence must not exceed {\em
+128\/}.
+
+The values to be stored appear as the {\em VALUE\/} parameter which
+may be instantiated to any valid PASP type; the {\em maxlen\/}
+parameter indicates the maximum length that the sequence may reach.
+
+This PASP library construct comprises this specification together with
+the PASP module {\em Rename\_BiSeq.param\/}, which is also renamed and
+introduced into a development at the same time as the specification;
+it is built on two record modules, {\em Rename\_B\_BiRcd.param\/} and
+{\em Rename\_V\_BiRcd.param\/} (the former comprising two fields to
+implement a linked list, and the latter comprising one field to hold
+the sequence values), and two byte modules, {\em Rename\_I\/} and
+{\em Rename\_T\/} (the former holding the initial sequence object
+and the latter the length of the sequence).
+
+From then on the library module is treated in exactly the same way as
+a PASP code module directly translated form an AMN implementation. The
+concrete variables are all provided through the above four modules.
+Attributes of these variables may be set in the {\em map\/} file in the
+usual way.
+"*/
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>       maxlen &gt; 0 & maxlen &lt; 128
+
+<A NAME="SEES"><B>SEES</B></A>              <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Byt_TYPE.mch.html#MACHINE">Byt_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>         Rename_seq
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_seq : seq(VALUE) &
+  size(Rename_seq) &lt;= maxlen
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>    Rename_seq := <> 
+
+/*"
+\newpage
+"*/
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/*"
+{\bf Rename\_BiSeq\_FULL}\\[1ex]
+Returns a boolean indicating whether or not the sequence is full:
+"*/
+
+  bb <-- <A NAME="OPNAME!Rename_BiSeq_FULL">Rename_BiSeq_FULL</A> =
+    <B>BEGIN</B> bb := <B>bool</B>(size(Rename_seq) = maxlen) <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_IDX}\\[1ex]
+Returns a boolean indicating whether or not the index input is a
+valid sequence index:
+"*/
+
+  bb <-- <A NAME="OPNAME!Rename_BiSeq_IDX">Rename_BiSeq_IDX</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>BEGIN</B> bb := <B>bool</B>(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 1..size(Rename_seq)) <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_LEN}\\[1ex]
+Returns the length of the sequence: 
+"*/
+
+  ll <-- <A NAME="OPNAME!Rename_BiSeq_LEN">Rename_BiSeq_LEN</A> = <B>BEGIN</B> ll := <A HREF="Byt_TYPE.mch.html#CONSTANTS">n2b</A>(size(Rename_seq)) <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_FRST}\\[1ex]
+Returns the first element of the sequence, with precondition that the sequence
+is non-empty: 
+"*/
+
+  vv <-- <A NAME="OPNAME!Rename_BiSeq_FRST">Rename_BiSeq_FRST</A> =
+    <B>PRE</B> size(Rename_seq) &gt; 0 <B>THEN</B>
+      vv := Rename_seq(1)
+    <B>END</B>;
+
+/*"
+\newpage
+{\bf Rename\_BiSeq\_LAST}\\[1ex]
+Returns the last element of the sequence, with precondition that the sequence
+is non-empty: 
+"*/
+
+  vv <-- <A NAME="OPNAME!Rename_BiSeq_LAST">Rename_BiSeq_LAST</A> =
+    <B>PRE</B> size(Rename_seq) &gt; 0 <B>THEN</B>
+      vv := Rename_seq(size(Rename_seq))
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_VAL}\\[1ex]
+Returns the value of the {\em idx\/} element of the sequence, with
+precondition that {\em idx\/} is valid:
+"*/
+
+  vv <-- <A NAME="OPNAME!Rename_BiSeq_VAL">Rename_BiSeq_VAL</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 1..size(Rename_seq) <B>THEN</B>
+      vv := Rename_seq(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx))
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_CLR}\\[1ex]
+Empties the sequence:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_CLR">Rename_BiSeq_CLR</A> = <B>BEGIN</B> Rename_seq := <> <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_FILL}\\[1ex]
+Creates a sequence of length {\em len\/}, storing {\em vv\/} in
+each index; the sequence must initially be empty:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_FILL">Rename_BiSeq_FILL</A>(len : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : VALUE) =
+    <B>PRE</B>
+      Rename_seq = <> &
+      <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(len) : 1 .. maxlen       /* Dave */
+    <B>THEN</B>
+       Rename_seq : (
+         Rename_seq : seq(VALUE) &
+         size(Rename_seq) = <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(len) &
+         ran(Rename_seq) = {vv}
+       )
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_STO}\\[1ex]
+The operation to store a value at an {\em idx\/}, with precondition
+that the {\em idx\/} is valid:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_STO">Rename_BiSeq_STO</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : VALUE) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 1..size(Rename_seq) <B>THEN</B>
+      Rename_seq(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)) := vv
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_INS}\\[1ex]
+The operation to store a value at an {\em idx\/}; all elements to the
+right of this value are shifted to the right; the precondition is that
+there the sequence must not be full, and {\em idx\/} must be valid and
+not the equal to $1$ (it is not possible to ``insert'' at the
+first location):
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_INS">Rename_BiSeq_INS</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & vv : VALUE) =
+    <B>PRE</B>
+      size(Rename_seq) &lt; maxlen &
+      <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 2..size(Rename_seq)
+    <B>THEN</B>
+      Rename_seq :=
+        (Rename_seq /|\ (<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) - 1)) ^
+        [ vv ] ^
+        (Rename_seq \|/ (<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) - 1))
+    <B>END</B>;
+
+
+/*"
+\newpage
+{\bf Rename\_BiSeq\_SWP}\\[1ex]
+The operation to swap two elements of the sequence; both {\em idx1\/}
+and {\em idx2\/} must both be valid:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_SWP">Rename_BiSeq_SWP</A>(idx1 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A> & idx2 : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B>
+      <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx1) : 1..size(Rename_seq) &
+      <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) : 1..size(Rename_seq)
+   <B>THEN</B>
+      Rename_seq := Rename_seq &lt;+ (
+        {<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx1) |-&gt;  Rename_seq(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2)), <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx2) |-&gt;  Rename_seq(<A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx1))}
+     )
+    <B>END</B>;
+
+
+/*"
+{\bf Rename\_BiSeq\_PUSH}\\[1ex]
+The operation to insert an element at the beginning of the sequence;
+the sequence must not be full:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_PUSH">Rename_BiSeq_PUSH</A>(vv : VALUE) =
+    <B>PRE</B> size(Rename_seq) < maxlen <B>THEN</B>
+      Rename_seq := vv -&gt; Rename_seq
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_APP}\\[1ex]
+The operation to insert an element at the end of the sequence;
+the sequence must not be full:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_APP">Rename_BiSeq_APP</A>(vv : VALUE) =
+    <B>PRE</B> size(Rename_seq) < maxlen <B>THEN</B>
+      Rename_seq := Rename_seq &lt;- vv
+    <B>END</B>;
+
+
+/*"
+\newpage
+{\bf Rename\_BiSeq\_POP}\\[1ex]
+The operation to remove the element at the beginning of the sequence;
+the sequence must not be empty:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_POP">Rename_BiSeq_POP</A> =
+    <B>PRE</B> size(Rename_seq) &gt; 0 <B>THEN</B>
+      Rename_seq := tail(Rename_seq)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_FRONT}\\[1ex]
+The operation to remove the element at the end of the sequence;
+the sequence must not be empty:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_FRONT">Rename_BiSeq_FRONT</A> =
+    <B>PRE</B> size(Rename_seq) &gt; 0 <B>THEN</B>
+      Rename_seq := front(Rename_seq)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_DEL}\\[1ex]
+The operation to delete the element at {\em idx\/}, which must
+be valid:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_DEL">Rename_BiSeq_DEL</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B>
+      size(Rename_seq) &gt; 0 &
+      <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 1..size(Rename_seq)
+    <B>THEN</B>
+      Rename_seq :=
+        Rename_seq /|\ <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) - 1 ^ Rename_seq \|/ <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)
+    <B>END</B>;
+
+/*"
+\newpage
+{\bf Rename\_BiSeq\_RTN}\\[1ex]
+The operation to retain the first {\em idx\/} elements of the
+sequence; {\em idx\/}  must be valid:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_RTN">Rename_BiSeq_RTN</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 0..size(Rename_seq) <B>THEN</B>
+        Rename_seq := Rename_seq /|\ <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)
+    <B>END</B>;
+
+/*"
+{\bf Rename\_BiSeq\_RMV}\\[1ex]
+The operation to remove the first {\em idx\/} elements of the
+sequence; {\em idx\/}  must be valid:
+"*/
+
+  <A NAME="OPNAME!Rename_BiSeq_RMV">Rename_BiSeq_RMV</A>(idx : <A HREF="Byt_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx) : 0..size(Rename_seq) <B>THEN</B>
+        Rename_seq := Rename_seq \|/ <A HREF="Byt_TYPE.mch.html#CONSTANTS">b2n</A>(idx)
+    <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Tue Jul 13 15:14:13 1999
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Beta 4.51</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

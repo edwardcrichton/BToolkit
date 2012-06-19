@@ -1,0 +1,10 @@
+INTERFACE     RRRMan
+
+OPERATIONS
+
+  allocate,
+  deallocate,
+  backup,
+  restore
+
+END

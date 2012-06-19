@@ -1,0 +1,221 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Release 5.0.14">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_UiArrO">
+  <TITLE>The Rename_UiArrO machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE>/***
+HISTORY:
+ 
+v0.01
+  VERSION:          B-Toolkit Beta 4.16
+  DATE:             03/06/98
+v0.03
+  VERSION:          B-Toolkit Beta 4.51
+  DATE:             06/07/99
+***/
+
+/*
+Description: Machine adapted from the object sequence.  This array sequences has many
+simplifications.  Each array has a fixed length.  There is a seperation of concerns.
+Array object are for storage primarily.  It is assumed that those wishing to 
+undertake arithmetic manipulation of index contents or comparsons of index values
+will use the individual array machines.
+ Operations FULL, XST, INI, CRE, VAL, NXT, EQL, STO, NXT_STO, CPY, FILL
+
+
+History :
+080597 v0.01 : Created.
+130597 v0.02 : Member operation removed - possibility of reading unwritten
+ 	       locations.
+040898 v0.02 : Changed SEES from `Bool_TYPE, Byt_TYPE, Uns_TYPE' to
+               `Bool_TYPE, PASP_TYPE' (the same as the .imp)
+060799 v0.03 : Changes to facilitate proof of Rename_UiArrOI.imp
+               Removed VARIABLE Rename_UiAO_arr (redundant)
+               Removed card(Rename_ARROBJ) = maxobj
+               Added card(Rename_UiAO_arrtok) &lt; maxobj to INVARIANT
+               Changed all Rename_UiAO_arrtok = Rename_ARROBJ -&gt;
+                                         card(Rename_UiAO_arrtok) = maxobj, etc.
+               Changed Rename_UiAO_FIL to be deterministic (using *)
+               Changed constraints to : maxobj*ub&lt;=65535 (was 32768)
+               Removed constant Rename_lb so that all occurrences
+                                         of u2n(Rename_lb) simplify to 1
+               Added PROPERTY that Rename_ARROBJ is BYTE (since this fact
+               could not be inferred from this spec)
+*/
+
+<A NAME="MACHINE"><B>MACHINE</B></A>             Rename_UiArrO(maxobj,ub)	
+/* `maxobj' - max no. objects,  no. of storage locations. */	
+
+<A NAME="SEES"><B>SEES</B></A>                <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="PASP_TYPE.mch.html#MACHINE">PASP_TYPE</A>
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>         maxobj: 1..255 & ub&gt;0 & maxobj*ub&lt;=65535
+
+<A NAME="SETS"><B>SETS</B></A>                Rename_ARROBJ
+
+<A NAME="PROPERTIES"><B>PROPERTIES</B></A>          Rename_ARROBJ = <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>
+
+  Rename_UiAO_arrtok,	 /* array identifiers (tokens). */
+  Rename_UiAO_arrstruct, /* structure consisting of each array and its token. */
+  Rename_UiAO_nxt	 /* array pointer structure. */
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_UiAO_arrtok &lt;: Rename_ARROBJ &
+  card(Rename_UiAO_arrtok) &lt;= maxobj &
+  Rename_UiAO_arrstruct: Rename_UiAO_arrtok --&gt; (1..ub +-&gt; <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A>) &
+  Rename_UiAO_nxt :  Rename_UiAO_arrtok --&gt; /* NAT */ 1..ub
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>
+
+  Rename_UiAO_arrtok, Rename_UiAO_arrstruct, Rename_UiAO_nxt := {},{},{}
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+/******************  General query functions *********************/
+
+
+  /* Are all the tokens used up. */
+  bb <-- <A NAME="OPNAME!Rename_UiAO_OBJ_FUL">Rename_UiAO_OBJ_FUL</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(card(Rename_UiAO_arrtok) = maxobj)
+  <B>END</B>;
+
+  /* Does the array `pp' exist? */
+  bb <-- <A NAME="OPNAME!Rename_UiAO_XST">Rename_UiAO_XST</A>(pp : Rename_ARROBJ) =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(pp:Rename_UiAO_arrtok)
+  <B>END</B>;
+
+
+/******************  Creating and deleting sequences **************/
+
+
+  /* Reset all pointers. */
+  <A NAME="OPNAME!Rename_UiAO_INI">Rename_UiAO_INI</A> =
+  <B>BEGIN</B>
+    Rename_UiAO_arrtok, Rename_UiAO_arrstruct,  Rename_UiAO_nxt := {},{},{}
+  <B>END</B>;
+
+  /* Create an array structure. */
+  bb,pp <-- <A NAME="OPNAME!Rename_UiAO_CRE">Rename_UiAO_CRE</A> =
+    <B>IF</B> card(Rename_UiAO_arrtok) < maxobj <B>THEN</B>
+        <B>ANY</B> qq <B>WHERE</B>
+          qq: Rename_ARROBJ - Rename_UiAO_arrtok
+        <B>THEN</B>
+          Rename_UiAO_arrstruct(qq):= {} ||	/* EMPTY MAP */
+          Rename_UiAO_nxt(qq) := 1 ||
+          Rename_UiAO_arrtok := Rename_UiAO_arrtok \/ {qq} ||
+          pp:=qq ||
+          bb := TRUE
+        <B>END</B>
+    <B>ELSE</B>
+        bb:= FALSE || pp :: Rename_ARROBJ
+    <B>END</B>;
+
+/* No need to kill one array kill all with INI. */
+
+/******************  Query functions for individual sequences **********/
+
+  /* View contents of location. */
+  vv <-- <A NAME="OPNAME!Rename_UiAO_VAL">Rename_UiAO_VAL</A>(pp : Rename_ARROBJ & ii : <A HREF="PASP_TYPE.mch.html#SETS">UNSIGNED</A>) =
+    <B>PRE</B>
+      pp:Rename_UiAO_arrtok &
+      <A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii):dom(Rename_UiAO_arrstruct(pp))
+    <B>THEN</B> 
+      vv:=Rename_UiAO_arrstruct(pp)(<A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii))
+    <B>END</B>;
+
+
+  /* Next available storage location in `pp'. */
+  nn <-- <A NAME="OPNAME!Rename_UiAO_NXT">Rename_UiAO_NXT</A>(pp : Rename_ARROBJ) =
+    <B>PRE</B> pp : Rename_UiAO_arrtok <B>THEN</B>
+      nn := <A HREF="PASP_TYPE.mch.html#CONSTANTS">n2u</A>(Rename_UiAO_nxt(pp))
+    <B>END</B>;
+
+
+  /* Are two array contents equal (ignoring next points). */
+  bb <-- <A NAME="OPNAME!Rename_UiAO_EQL">Rename_UiAO_EQL</A>(ss : Rename_ARROBJ & tt : Rename_ARROBJ) =
+    <B>PRE</B>
+       tt : Rename_UiAO_arrtok &
+       ss : Rename_UiAO_arrtok
+    <B>THEN</B>
+       bb := <B>bool</B>(Rename_UiAO_arrstruct(tt) = Rename_UiAO_arrstruct(ss))
+    <B>END</B>;
+
+/******************   Sequence Operations ***********************/
+
+ /* Store vv in array pp at location ii and set next location to ii+1 */
+ <A NAME="OPNAME!Rename_UiAO_STO">Rename_UiAO_STO</A>(pp : Rename_ARROBJ & ii : <A HREF="PASP_TYPE.mch.html#SETS">UNSIGNED</A> & vv : <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A>) =
+   <B>PRE</B>
+     pp : Rename_UiAO_arrtok &
+     <A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii) : 1..ub
+   <B>THEN</B> 
+     Rename_UiAO_arrstruct(pp)(<A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii)) := vv ||
+
+     <B>IF</B> <A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii) < ub <B>THEN</B>
+       Rename_UiAO_nxt(pp) := <A HREF="PASP_TYPE.mch.html#CONSTANTS">u2n</A>(ii) + 1 /* Next available position recorded. */
+     <B>ELSE</B> 
+       Rename_UiAO_nxt(pp) := 1	 /* Wraps around. */
+     <B>END</B>
+   <B>END</B>;
+
+
+ /* Store vv in array pp at `next' location and inc next location. */
+  <A NAME="OPNAME!Rename_UiAO_STO_NXT">Rename_UiAO_STO_NXT</A>(pp : Rename_ARROBJ & vv :<A HREF="PASP_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> pp: Rename_UiAO_arrtok <B>THEN</B>
+      Rename_UiAO_arrstruct(pp)(Rename_UiAO_nxt(pp)) := vv ||
+      <B>IF</B> Rename_UiAO_nxt(pp) < ub <B>THEN</B>
+        Rename_UiAO_nxt(pp) := Rename_UiAO_nxt(pp) + 1 /* Next available position recorded.*/
+      <B>ELSE</B> 
+        Rename_UiAO_nxt(pp) := 1		    /* Wraps around. */
+      <B>END</B>
+    <B>END</B>;
+
+
+  /* Copy array pp to array qq. */
+  <A NAME="OPNAME!Rename_UiAO_CPY">Rename_UiAO_CPY</A>(pp : Rename_ARROBJ & qq : Rename_ARROBJ) =
+    <B>PRE</B>
+      pp:Rename_UiAO_arrtok &
+      qq:Rename_UiAO_arrtok 
+    <B>THEN</B>
+      Rename_UiAO_arrstruct(qq):=Rename_UiAO_arrstruct(pp)
+    <B>END</B>;
+
+
+/* fill store. */
+  <A NAME="OPNAME!Rename_UiAO_FILL">Rename_UiAO_FILL</A>(pp : Rename_ARROBJ & vv : <A HREF="PASP_TYPE.mch.html#SETS">BYTE</A>) =
+    <B>PRE</B> pp:Rename_UiAO_arrtok <B>THEN</B>
+      Rename_UiAO_arrstruct(pp) := (1..ub) * {vv}  ||
+      Rename_UiAO_nxt(pp):= 1		/* wraps around. */
+    <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Contents.html">Help Contents Page</A>
+<DD><A HREF="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Thu Jan 18 10:08:26 2001
+<BR>
+<IMG SRC="/se/btoolkit/TOOLKIT/MASTER_RELEASE/CURRENT/BKIT/BHELP/B.gif" VSPACE=5><BR>B-Toolkit Release 5.0.14</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,168 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define FlagPASPError       bcall(MODR:bmodr(PASPCheckSyntaxX.1,1))
+#define PASPErrorFlagged    brule(PASPCheckSyntaxX.1,1)
+ 
+#define PASP_curr_construct  PASPCheckSyntaxX.3
+#define p_SEES               PASPCheckSyntaxX.4
+#define p_USES               PASPCheckSyntaxX.5
+#define p_INCLUDES           PASPCheckSyntaxX.6
+#define p_VARIABLES          PASPCheckSyntaxX.7
+#define p_OWN_OPNAMES        PASPCheckSyntaxX.8
+
+THEORY OPSX END &
+
+
+THEORY PASPCheckInnerVARX IS
+
+#define PASPCheckInnerVAR \
+    bcall(((MAP;ARI;MODR)~;PASPCheckInnerVARX)~:civ(1))
+
+  ?;
+
+  civ2(S);
+
+  brule(PASPCheckInnerVARX.1,n) &
+  Writef(("\n\n      PASP warning for operation %:\n      local VAR decaration\n        %\n      must be at outermost level if PASP translating ..",n,v))
+ =>
+  (VAR v IN S END) == ?;
+
+  civ2(S)
+ =>
+  civ1(S);
+
+  civ2(S)
+ =>
+  civ1(VAR v IN S END);
+
+  civ(N);
+
+  brule(PASP_curr_construct,a.imp) &
+  brule(OPSX.N,(s;t;u;v;(w|x);(y|z))) &
+  bmodr(PASPCheckInnerVARX.1,s) &
+  civ1(x)  
+ =>
+  civ(N)
+
+END
+
+&
+
+THEORY PASPCheckLocalGlobalVarX IS
+
+#define PASPCheckLocalGlobalVar \
+    bcall(((MAP;ARI)~;PASPCheckLocalGlobalVarX)~:cv(1))
+
+
+  Writef(("\n\n    Operation %\n\n      Local var % clashes with global var\n\n      ",bsrv n berv,bsrv v berv)) &
+  FlagPASPError 
+ =>
+  cv2(n,v);
+
+  brule(p_VARIABLES,W) &
+  v\W
+ =>
+  cv2(n,v);
+
+  cv1(n)(S);
+
+  cv2(n) bsmap V
+ =>
+  cv1(n)(@V.S);
+
+  brule(p_VARIABLES,W) &
+  V\W
+ =>
+  cv1(n)(@V.S);
+
+  cv(N);
+
+  brule(OPSX.N,(s;t;u;v;(w|x);(y|z))) &
+  cv1(s)(z)  
+ =>
+  cv(N);
+
+  brule(p_VARIABLES,?)
+ =>
+  cv(N)
+
+END
+
+&
+
+THEORY PASPCheckSyntaxX IS
+
+#define PASPSyntaxDirect(x) \
+   bcall(((WRITE;MODR;CATL;NEWV;MAP;RULE);PASPCheckSyntaxX)~:cs(x))
+
+
+  ?;?;?;?;?;?;?;?;
+
+  WriteDot &
+  GetJobs(X) &
+  bsearch((a.b:BT_PASP_SYTX:0),X,Y) &
+  ModifyJobs((Y;(a.b:BT_TYP:0)))
+ =>
+  chk_err(a.b);
+
+  PASPErrorFlagged &
+  ModifyCurrentJob((a.b:BT_NML:0)) &
+  GetJobs(X) &
+  bsearch((a.b:BT_PASP_SYTX:0),X,Y) &
+  AddJobs(Y,((a.b:BT_EDT_NML:0)))
+ =>
+  chk_err(a.b);
+
+
+
+
+  bcrer(OPSX,n)
+ =>
+  cs2(n);
+
+  cs2 bsmap (N,n)
+ =>
+  cs2(N,n);
+
+  
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  cs1(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  bmodr(p_SEES,A) &
+  bmodr(p_USES,B) &
+  bmodr(p_INCLUDES,b) &
+  bmodr(p_VARIABLES,d) &
+  bmodr(p_OWN_OPNAMES,W) &
+  cs2(n) &
+  PASPCheckLocalGlobalVar &
+  PASPCheckInnerVAR
+ =>
+  cs1(Z);
+  
+  Writef("\n    PASP checking .") &
+  bmodr(PASP_curr_construct,a.b) &
+  cs1(bcatl("ANL/",a,".",b,".anl")) &
+  chk_err(a.b)
+ =>
+  cs(a.b)
+
+END

@@ -1,0 +1,530 @@
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Byt_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_seq)
+;
+(Rename_seq)
+;
+(Rename_seq: seq(VALUE) & size(Rename_seq)<=maxlen)
+;
+(Rename_seq: seq(VALUE) & size(Rename_seq)<=maxlen)
+;
+(?)
+;
+(Rename_seq:=<>)
+;
+(Rename_seq:=<>)
+;
+(Rename_BiSeq_FULL,Rename_BiSeq_IDX,Rename_BiSeq_LEN,Rename_BiSeq_FRST,Rename_BiSeq_LAST,Rename_BiSeq_VAL,Rename_BiSeq_CLR,Rename_BiSeq_FILL,Rename_BiSeq_STO,Rename_BiSeq_INS,Rename_BiSeq_SWP,Rename_BiSeq_PUSH,Rename_BiSeq_APP,Rename_BiSeq_POP,Rename_BiSeq_FRONT,Rename_BiSeq_DEL,Rename_BiSeq_RTN,Rename_BiSeq_RMV)
+;
+(Rename_BiSeq_FULL,Rename_BiSeq_IDX,Rename_BiSeq_LEN,Rename_BiSeq_FRST,Rename_BiSeq_LAST,Rename_BiSeq_VAL,Rename_BiSeq_CLR,Rename_BiSeq_FILL,Rename_BiSeq_STO,Rename_BiSeq_INS,Rename_BiSeq_SWP,Rename_BiSeq_PUSH,Rename_BiSeq_APP,Rename_BiSeq_POP,Rename_BiSeq_FRONT,Rename_BiSeq_DEL,Rename_BiSeq_RTN,Rename_BiSeq_RMV)
+;
+(Rename_BiSeq(VALUE,maxlen):(maxlen>0 & maxlen<128 & maxlen: NAT & card(VALUE): NAT1):(?))
+;
+(
+(
+ (Rename_BiSeq_FULL)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_BiSeq_FULL))
+;
+ (?)
+;
+ (bb)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ bb:=bool(size(Rename_seq) = maxlen)
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (bb:=bool(size(Rename_seq) = maxlen))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_IDX)
+;
+ (?,Val_Op,Det_Op,(bb <-- Rename_BiSeq_IDX(idx)))
+;
+ (idx)
+;
+ (bb)
+;
+ (
+ (idx: BYTE)
+ |
+ (
+ (BEGIN
+ bb:=bool(b2n(idx): 1..size(Rename_seq))
+ END)
+ )
+ )
+;
+ (
+ (idx: BYTE)
+ |
+ (
+ (bb:=bool(b2n(idx): 1..size(Rename_seq)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_LEN)
+;
+ (?,Val_Op,Det_Op,(ll <-- Rename_BiSeq_LEN))
+;
+ (?)
+;
+ (ll)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ ll:=n2b(size(Rename_seq))
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (ll:=n2b(size(Rename_seq)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_FRST)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_BiSeq_FRST))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (size(Rename_seq)>0)
+ |
+ (
+ (vv:=Rename_seq(1))
+ )
+ )
+;
+ (
+ (0<size(Rename_seq))
+ |
+ (
+ (vv:=Rename_seq(1))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_LAST)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_BiSeq_LAST))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (size(Rename_seq)>0)
+ |
+ (
+ (vv:=Rename_seq(size(Rename_seq)))
+ )
+ )
+;
+ (
+ (0<size(Rename_seq))
+ |
+ (
+ (vv:=Rename_seq(size(Rename_seq)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_VAL)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_BiSeq_VAL(idx)))
+;
+ (idx)
+;
+ (vv)
+;
+ (
+ (idx: BYTE & b2n(idx): 1..size(Rename_seq))
+ |
+ (
+ (vv:=Rename_seq(b2n(idx)))
+ )
+ )
+;
+ (
+ (idx: BYTE & b2n(idx): 1..size(Rename_seq))
+ |
+ (
+ (vv:=Rename_seq(b2n(idx)))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_CLR)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_CLR)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ Rename_seq:=<>
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (Rename_seq:=<>)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_FILL)
+;
+ (?,Val_Op,NonDet_Op,Rename_BiSeq_FILL(len,vv))
+;
+ (len,vv)
+;
+ (?)
+;
+ (
+ (len: BYTE & vv: VALUE & Rename_seq = <> & b2n(len): 1..127)
+ |
+ (
+ (Rename_seq: (Rename_seq: seq(VALUE) & card(Rename_seq) = b2n(len) & ran(Rename_seq) = {vv}))
+ )
+ )
+;
+ (
+ (len: BYTE & vv: VALUE & Rename_seq = <> & b2n(len): 1..127)
+ |
+ (
+ @(Rename_seqx).
+ (
+ (
+ (Rename_seqx: seq(VALUE) & card(Rename_seqx) = b2n(len) & ran(Rename_seqx) = {vv})
+ )
+ ==>
+ (
+ (Rename_seq:=Rename_seqx)
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_STO)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_STO(idx,vv))
+;
+ (idx,vv)
+;
+ (?)
+;
+ (
+ (idx: BYTE & vv: VALUE & b2n(idx): 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq(b2n(idx)):=vv)
+ )
+ )
+;
+ (
+ (idx: BYTE & vv: VALUE & b2n(idx): 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq<+{b2n(idx)|->vv})
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_INS)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_INS(idx,vv))
+;
+ (idx,vv)
+;
+ (?)
+;
+ (
+ (idx: BYTE & vv: VALUE & size(Rename_seq)<maxlen & b2n(idx): 2..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq/|\b2n(idx)-1^[vv]^(Rename_seq\|/b2n(idx)-1))
+ )
+ )
+;
+ (
+ (idx: BYTE & vv: VALUE & size(Rename_seq)<maxlen & b2n(idx): 2..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq/|\b2n(idx)-1^[vv]^(Rename_seq\|/b2n(idx)-1))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_SWP)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_SWP(idx1,idx2))
+;
+ (idx1,idx2)
+;
+ (?)
+;
+ (
+ (idx1: BYTE & idx2: BYTE & b2n(idx1): 1..size(Rename_seq) & b2n(idx2): 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq<+{b2n(idx1)|->Rename_seq(b2n(idx2)),b2n(idx2)|->Rename_seq(b2n(idx1))})
+ )
+ )
+;
+ (
+ (idx1: BYTE & idx2: BYTE & b2n(idx1): 1..size(Rename_seq) & b2n(idx2): 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq<+{b2n(idx1)|->Rename_seq(b2n(idx2)),b2n(idx2)|->Rename_seq(b2n(idx1))})
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_PUSH)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_PUSH(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: VALUE & size(Rename_seq)<maxlen)
+ |
+ (
+ (Rename_seq:=vv->Rename_seq)
+ )
+ )
+;
+ (
+ (vv: VALUE & size(Rename_seq)<maxlen)
+ |
+ (
+ (Rename_seq:=vv->Rename_seq)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_APP)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_APP(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: VALUE & size(Rename_seq)<maxlen)
+ |
+ (
+ (Rename_seq:=Rename_seq<-vv)
+ )
+ )
+;
+ (
+ (vv: VALUE & size(Rename_seq)<maxlen)
+ |
+ (
+ (Rename_seq:=Rename_seq<-vv)
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_POP)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_POP)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (size(Rename_seq)>0)
+ |
+ (
+ (Rename_seq:=tail(Rename_seq))
+ )
+ )
+;
+ (
+ (0<size(Rename_seq))
+ |
+ (
+ (Rename_seq:=tail(Rename_seq))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_FRONT)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_FRONT)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (size(Rename_seq)>0)
+ |
+ (
+ (Rename_seq:=front(Rename_seq))
+ )
+ )
+;
+ (
+ (0<size(Rename_seq))
+ |
+ (
+ (Rename_seq:=front(Rename_seq))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_DEL)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_DEL(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx: BYTE & size(Rename_seq)>0 & b2n(idx): 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq/|\b2n(idx)-1^Rename_seq\|/b2n(idx))
+ )
+ )
+;
+ (
+ (idx: BYTE & 0<size(Rename_seq) & b2n(idx): 1..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq/|\b2n(idx)-1^Rename_seq\|/b2n(idx))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_RTN)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_RTN(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx: BYTE & b2n(idx): 0..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq/|\b2n(idx))
+ )
+ )
+;
+ (
+ (idx: BYTE & b2n(idx): 0..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq/|\b2n(idx))
+ )
+ )
+)
+,
+(
+ (Rename_BiSeq_RMV)
+;
+ (?,Mod_Op,Det_Op,Rename_BiSeq_RMV(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx: BYTE & b2n(idx): 0..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq\|/b2n(idx))
+ )
+ )
+;
+ (
+ (idx: BYTE & b2n(idx): 0..size(Rename_seq))
+ |
+ (
+ (Rename_seq:=Rename_seq\|/b2n(idx))
+ )
+ )
+)
+)

@@ -1,0 +1,7 @@
+THEORY Initialisation IS
+0
+END
+&
+THEORY enter IS
+1
+END

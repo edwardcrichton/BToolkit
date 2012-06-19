@@ -1,0 +1,146 @@
+#! /bin/sh
+
+btoolkitdir=`pwd`
+
+for dir in BKIT BKIT/BPLAT BKIT/BLIB BKIT/BHELP
+do
+  if [ ! -d $dir ]
+  then
+    mkdir $dir
+    if [ $? != 0 ]
+    then
+      echo ""
+      echo "  Can't create `pwd`/$dir "
+      echo ""
+      echo "  Installation aborted "
+      echo ""
+      exit
+    fi
+  fi
+done
+
+echo ""
+echo "         ----------------------------------------------"
+echo ""
+echo "        Script for installation of BTool Release 4.0 Beta"
+echo ""
+echo "         ----------------------------------------------"
+echo ""
+
+echo "        Installing BTool Release 4.0 Beta in:"
+echo "            $btoolkitdir/BKIT"
+echo ""
+
+if [ -r btool.tar.gz ]
+then
+  echo "        Uncompressing ..."
+  if [ -r gunzip ]
+  then
+    chmod +x ./gunzip
+    ./gunzip btool.tar.gz
+    sta=$?
+  else
+    gunzip btool.tar.gz
+    sta=$?
+  fi
+  if [ $sta != 0 ]
+  then
+    echo ""
+    echo "  Problem with 'gunzip btool.tar.gz' - installation aborted"
+    echo ""
+    exit
+  fi
+fi
+
+if [ -r btool.tar ]
+then
+  echo "        Building ..."
+  echo ""
+  tar xvf btool.tar
+  if [ $? != 0 ]
+  then
+    echo ""
+    echo "  Problem with 'tar xvf btool.tar' - installation aborted"
+    echo ""
+    exit
+  fi
+  rm btool.tar
+else
+  if [ ! -d BKIT ]
+  then
+    echo "        btool.tar not found - installation aborted"
+    echo ""
+    exit
+  fi
+fi
+
+echo "" > READ_ME_BTool
+echo "                          ---------------" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "                               B-Tool" >> READ_ME_BTool
+echo "                          Release 4.0 Beta" >> READ_ME_BTool
+echo "                            Information" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "                          ---------------" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo '  All BTool users should set the BKIT environment variable: ' >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "       setenv BKIT $btoolkitdir/BKIT" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo '  To execute: ' >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "       $btoolkitdir/BKIT/BTool" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "  See the BTool Manual for full details of invocation " >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "                          ---------------" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "  The BToolkit licence daemon must be started before the BTool " >> READ_ME_BTool
+echo "  will run: " >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "     $btoolkitdir/BKIT/BToolkitd $btoolkitdir/BKIT " >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "  However the licence file \"B.licence\" should first be copied into " >> READ_ME_BTool
+echo "  the BKIT directory (without it the daemon will not start): " >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "      cp B.licence $btoolkitdir/BKIT " >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "  The licence file is usually despatched separately - see the" >> READ_ME_BTool
+echo "  installation documentation." >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "                          ---------------" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "  Full details of the licence daemon are contained in the on-line help;" >> READ_ME_BTool
+echo "  it may be viewed outside the B-Toolkit through an appropriate browser: " >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "      netscape $btoolkitdir/BKIT/BHELP/BToolkitd.html& " >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "                          ---------------" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "  An example script to run the BTool with a menu window is provided: " >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "       $btoolkitdir/BKIT/BToolM" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+echo "                          ---------------" >> READ_ME_BTool
+echo "" >> READ_ME_BTool
+
+echo ""
+echo "--  Installation complete."
+echo ""
+echo ""
+cat READ_ME_BTool
+echo ""
+echo "  The above information is contained in the file:"
+echo ""
+echo "    $btoolkitdir/READ_ME_BTool"
+echo ""
+echo ""

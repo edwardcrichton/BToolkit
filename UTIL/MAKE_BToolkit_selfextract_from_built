@@ -1,0 +1,50 @@
+#!/bin/csh -f
+
+#  MAKE_BToolkit_selfextract_from_built
+
+#  Make a self extracting shell script
+#  from the debian style directory and scripts
+
+set HERE=`pwd`
+
+source ./set_debian_variables
+
+cd $release/../$filename
+
+set CL = ( \
+	DEBIAN.tar \
+	DEBIAN.tar.gz \
+        files.tar \
+        files.tar.gz \
+	tarball.tar \
+        )
+
+  foreach file ( $CL )
+
+    if ( -e $file ) then
+      rm -Rf $file
+    endif
+  end
+
+echo "packaging install scripts ..."
+fakeroot tar cf DEBIAN.tar DEBIAN
+echo "compressing ..."
+gzip -9 DEBIAN.tar
+echo "packaging files ..."
+fakeroot tar cf files.tar usr
+echo "compressing ..."
+gzip -6 files.tar
+echo "making tar ball ..."
+fakeroot tar cf tarball.tar DEBIAN.tar.gz files.tar.gz
+rm -f DEBIAN.tar files.tar
+
+cat ${HERE}/selfextract/self.sh tarball.tar > ../${filename}.sh
+
+chmod ug+x ../${filename}.sh
+
+rm DEBIAN.tar.gz files.tar.gz tarball.tar
+
+cd ${HERE}/..
+cd $release/..
+
+ls -lrt

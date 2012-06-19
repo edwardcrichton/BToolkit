@@ -1,0 +1,347 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>Options</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="Options"></A>
+<H1>
+Options</H1>
+The Options menu is available on the <A HREF="BToolkit.html#Top_Bar">Top
+Bar</A>, and allows the user to customize various aspects of the B-Toolkit.
+Each option may be either `toggled' or set using an editor; both are achieved
+by clicking on the current setting. The Options settings are categorized:
+<UL>
+<LI>
+<A HREF="#Options!Remake">Remake</A></LI>
+
+<LI>
+<A HREF="#Options!Construct_Display">Construct Display <tt>(not yet implemented)</tt></A></LI>
+
+<LI>
+<A HREF="#Options!Editor">Editors/Viewers/Shell</A></LI>
+
+<LI>
+<A HREF="#Options!Documents">Documents</A></LI>
+
+<LI>
+<A HREF="#Options!Translators_Compilers">Translators/Compilers</A></LI>
+
+<LI>
+<A HREF="#Options!Provers">Provers</A></LI>
+
+<LI>
+<A HREF="#Options!Interface">Interface</A></LI>
+
+<LI>
+<A HREF="#Options!Bell">Bell</A></LI>
+
+<LI>
+Source Control <tt>(not yet implemented)</tt></LI>
+
+<LI>
+<A HREF="#Options!SaveAsGlobal">Save Current Options As Global</A></LI>
+
+<LI>
+<A HREF="#Options!SetFromGlobal">Set Current Options From Global</A></LI>
+
+<LI>
+<A HREF="#Options!OptionalUtils">Optional Utilities</A></LI>
+
+<LI>
+Help (providing help on each of the above)</LI>
+</UL>
+<A NAME="BToolkitrc"></A>
+<BR>Default settings for variables are given below; however a developer's
+preferred settings may be saved to the file <TT>.BToolkitrc</TT> in his/her
+top level directory when these defaults will be overridden.
+
+<P>
+<HR WIDTH="60%">
+
+<A NAME="Options!SaveAsGlobal"></A>
+<P>The current Options settings may be saved to <TT>.BToolkitrc</TT> by
+invoking:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Save Current Options As Global</PRE>
+from the Options menu.
+
+<P>Note that these initial settings only play a part when a new development
+directory is created - once set in a particular development directory,
+they are saved and re-installed each time the B-Toolkit is invoked in that
+directory.
+
+<A NAME="Options!SetFromGlobal"></A>
+<P>The default options may be restored from <TT>.BToolkitrc</TT> by invoking:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Restore Default Options From Global</PRE>
+from the Options menu. In this case the settings in the current directory
+will be lost.
+
+<P>
+<HR WIDTH=60%>
+<H3>
+<A NAME="Options!Remake"></A>Remake</H3>
+When a system <A HREF="Remake.html#Remake">Remake</A> has been activated
+(through the <A HREF="BToolkit.html#Tool_Bar">Tool Bar</A>) the extent
+of the Remake is determined by the current settings of the Remake Options.
+Each of the following tools may be `included' in or `excluded' from a Remake
+through the option setting:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerator
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AutoProver.html#AutoProver">AutoProver
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="ProofPrinter.html#ProofPrinter">ProofPrinter
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="DocumentMarkUp.html#Document_Mark_Up">DocumentMarkUp
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="Translator.html#Translator">Translator
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="Linker.html#Linker">Linker
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="Interface.html#Interface!Generator">ITFGenerator</A></PRE>
+The initial setting is `included' for each tool.
+
+<P>
+<HR WIDTH=60%>
+<H3>
+<A NAME="Options!Construct_Display"></A>Construct Display (not yet implemented)</H3>
+In large developments, it may be desirable to `hide' library and/or generated
+constructs from being displayed in the <A HREF="BToolkit.html#Interface!Motif">Constructs
+Area.</A> (Even though a construct is not displayed, it is still, of course,
+present in the development.) This may be achieved through toggling the
+`show'/`hide' option setting:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Library constructs
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Generated constructs</PRE>
+The initial setting is `show' for both.
+
+<P>Note that this option is applicable only to the Main and Documents Environments.
+
+<P>
+<HR WIDTH=60%>
+<H3>
+<A NAME="Options!Editor"></A>Editors/Viewers/Shell</H3>
+Five options may be set:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Editor!CommitEdits">Commit Edits
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Editor!Construct_Editor">Construct Editor
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Editor!PMD_Editor">PROOFMETHOD Editor
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Editor!HypertextViewer">Hypertext Viewer
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Editor!HypertextDisplay">Display Hypertext As
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Editor!Shell">Shell</A></PRE>
+
+<H4>
+<A NAME="Options!Editor!CommitEdits"></A>Commit Edits</H4>
+When an edited construct has been committed, the editor is either dismissed
+or retained according to the `kill editor'/`preserve editor'. The initial
+setting is `kill editor'.
+<H4>
+<A NAME="Options!Editor!Construct_Editor"></A>Construct Editor</H4>
+This describes the <A HREF="Editor.html#Editor">editor</A> to be invoked
+when editing AMN constructs, theory files and so on. The default for SunOs
+is
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xedit -geometry 550x564+550+300</PRE>
+and for Solaris
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; textedit -Wp 501 401 -Ws 632 500</PRE>
+
+<H4>
+<A NAME="Options!Editor!PMD_Editor"></A>PROOFMETHOD Editor</H4>
+This describes the <A HREF="Editor.html#Editor">editor</A> to be invoked
+when editing a <A HREF="InterProver.html#PROOFMETHOD_File">PROOFMETHOD</A>.
+Normally, the difference between this setting and that of the Construct
+Editor is one of geometry .
+<H4>
+<A NAME="Options!Editor!HypertextViewer"></A>Hypertext Viewer</H4>
+This describes the html browser to use when viewing the on-line help or
+the automatically generated <A HREF="Hypertext.html">Hypertext</A> documents.
+Initially it is not set.
+<H4>
+<A NAME="Options!Editor!HypertextDisplay"></A>Hypertext Display As</H4>
+This value may be toggled between <TT>html</TT> and <TT>text</TT>; the
+latter should be used when no Hypertext Viewer is available, and the viewer
+should then be to a text editor, when the on-line help may be viewed in
+plain ASCII format (although the <A HREF="Hypertext.html">Hypertext</A>
+documents will not be available for viewing).
+<H4>
+<A NAME="Options!Editor!Shell"></A>Shell</H4>
+Provides for a shell setting, for example:
+<BLOCKQUOTE><TT>dtterm -ls -sb -sl 1500 -geometry 75x35+100+250</TT></BLOCKQUOTE>
+
+<HR WIDTH=60%>
+<H3>
+<A NAME="Options!Documents"></A>Documents</H3>
+These options determine the output from the <A HREF="DocumentMarkUp.html#Document_Mark_Up">DocumentMarkUp</A>
+tool, and set the viewing/printing options:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Documents!Labels">Labels
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Documents!ClauseXRef">Clause cross-references
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Documents!ConstructXRef">Construct cross-references
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Documents!Index">Index
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Documents!Point">Point size
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Documents!Declaration">LaTeX Declaration
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!Documents!Executable">LaTeX Executable
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!DviView">Dvi Screen Viewer
+</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#Options!DviPrint">Dvi Print Script</A></PRE>
+
+<H4>
+<A NAME="Options!Documents!Labels"></A>Labels</H4>
+When this option is set to `on', a `\label' is created in the tex file
+for each newly introduced variable, set, constant and operation name as
+it is being marked up, allowing the user to use `\ref' and `\pageref' inside
+annotations for <A HREF="AMNotation.html#MACHINE">MACHINES</A>, <A HREF="AMNotation.html#REFINEMENT">REFINEMENTS</A>
+and <A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATIONS</A>. The initial
+setting is `on'.
+<H4>
+<A NAME="Options!Documents!ClauseXRef"></A>Clause cross-references</H4>
+When this option is set to `on' cross references to set, constant and operation
+names (if any) will automatically be produced at the end of the the <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A>,
+<A HREF="AMNotation.html#INVARIANT_Clause">INVARIANT</A>, <A HREF="AMNotation.html#ASSERTIONS_Clause">ASSERTIONS</A>
+and <A HREF="AMNotation.html#INITIALISATION_Clause">INITIALISATION</A>
+clauses, and following each operation of a <A HREF="AMNotation.html#MACHINE">MACHINE</A>,
+<A HREF="AMNotation.html#REFINEMENT">REFINEMENT</A> and <A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>.
+The initial setting is `on'.
+<H4>
+<A NAME="Options!Documents!ConstructXRef"></A>Construct cross-references</H4>
+When set to set to `on' a construct cross reference to all variable, set,
+constant and operation names (if any) is produced at the end of each <A HREF="AMNotation.html#MACHINE">MACHINE</A>,
+<A HREF="AMNotation.html#REFINEMENT">REFINEMENT</A> and <A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>.
+The initial setting is `on'.
+<H4>
+<A NAME="Options!Documents!Index"></A>Index</H4>
+When this option is set to `on', an index is automatically produced at
+the end of each <A HREF="Documents.html#Documents">DOCUMENT</A>, giving
+page references to all occurrences of variable, set, constant and operation
+names (if any). The initial setting is `on'.
+<H4>
+<A NAME="Options!Documents!Point"></A>Point size</H4>
+May be set (toggled) to `10', `11' or `12'. The initial setting is `10'.
+For more information, see <A HREF="DocumentMarkUp.html#Document_Mark_Up">DocumentMarkUp</A>&nbsp;<LATEX="(page\ \pageref{Document_Mark_Up})">.
+<H4>
+<A NAME="Options!Documents!Declaration"></A>LaTeX Declaration</H4>
+An <A HREF="DocumentMarkUp.html#Prologue">annotation</A> appearing between the document name and the CONTENTS clause of a DOCUMENT, providing the Latex declaration.
+<H4>
+<A NAME="Options!Documents!Executable"></A>LaTeX Executable</H4>
+The default invocation of<tt> latex </tt> may be overidden by
+<A HREF="DocumentMarkUp.html#Executable">this setting</A>.
+<H4>
+<A NAME="Options!DviView"></A>Dvi Screen Viewer</H4>
+&lt; This describes the command to be used for <A HREF="Show.html">displaying</A>
+marked-up documents on the screen, for example:-
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xdvi -s 4 -epsfgrey</PRE>
+
+<H4>
+<A NAME="Options!DviPrint"></A>Dvi Print Script</H4>
+This describes the command to be used for <A HREF="Print.html">printing</A>
+marked-up documents on the screen, for example:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /usr/local/bin/printdvi</PRE>
+where the contents of the file `printdvi' might be: &lt;
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #! /bin/sh
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dvi2ps $1 > $1.ps
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lpr -Phplaser $1.ps
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rm -f *.ps *.aux *.dvi *.log *.toc
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lpq -Phplaser</PRE>
+
+<HR WIDTH=60%>
+<H3>
+<A NAME="Options!Translators_Compilers"></A>Translators/Compilers</H3>
+Four options may be set:
+<BLOCKQUOTE><A HREF="#Options!Programming_Language">Programming Language</A>
+<BR><A HREF="#Options!C_Compiler_Flags">C Compiler/Flags</A>
+<BR><A HREF="#Options!Non_X_Link">Non-X Link Libraries</A>
+<BR><A HREF="#Options!X_Link">X Link Libraries</A></BLOCKQUOTE>
+
+<H4>
+<A NAME="Options!Programming_Language"></A>Programming Language</H4>
+The language may currently be set to `C' or `ANSI C'. The initial setting
+is `C'.
+<H4>
+<A NAME="Options!C_Compiler_Flags"></A>C Compiler/Flags</H4>
+This setting describes the C compiler to use with the <A HREF="Translator.html#Translator">translators</A>
+of the B-Toolkit, and to add additional options, such as for debugging
+(although, of course, you will never need that!). For example:-
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gcc -pedantic -ansi -g -pipe </PRE>
+If the `-I' flag (add directory for include files) is to be used, it may
+be included in this setting, for example:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gcc -pedantic -ansi -g -I$MOTIFHOME/include</PRE>
+or, for Linux Red Hat 5.2:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gcc -ansi -g -pipe -Dlinux -m486 -I/usr/X11R6/include -L/usr/X11R6/lib</PRE>
+or, for Solaris 7:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gcc -ansi -g -pipe -I/usr/dt/include -I/usr/openwin/include -L/usr/dt/lib -L/usr/openwin/lib</PRE>
+The default is <TT>cc</TT>.
+<H3>
+<A NAME="Options!Non_X_Link"></A>Non-X Link Libraries</H3>
+This setting describes libraries to be linked when generating non-X executables.
+It will not normally be required, but to include the C mathematical library,
+it could be set:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -lm</PRE>
+
+<H3>
+<A NAME="Options!X_Link"></A>X Link Libraries</H3>
+This setting describes libraries to be linked when generating a <A HREF="Interface.html#Interface!Generator!Motif">Motif
+Interface</A> to an <A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>.
+For X11R5, the settings should be
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -lXm -lXt -lX11</PRE>
+and for X11R6
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -lXm -lXt -lSM -lICE -lX11</PRE>
+or, for Linux Red Hat 5.2:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -lXm -lXt -lX11 -lXext -lXp</PRE>
+or, for Solaris 7:
+<PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -lXm -lXt -lX11 -lgen</PRE>
+
+<HR WIDTH=60%>
+<H3>
+<A NAME="Options!Provers"></A>Provers</H3>
+Three options may be set:
+<BLOCKQUOTE><A HREF="#Options!Documents!MaxGenHyp">Max Generated Hypotheses</A>
+<BR><A HREF="#Options!Documents!POSetting">POGenerator Setting</A>
+<BR><A HREF="#Options!Documents!GlobalPMD">Global PROOFMETHOD file</A></BLOCKQUOTE>
+
+<H4>
+<A NAME="Options!Documents!MaxGenHyp"></A>Max Generated Hypotheses</H4>
+The maximum number of generated hypothses in one <A HREF="BPlatform.html#Tactic!DED">DED</A> (forward
+proof step) may be set; large (>250) settings may compromise efficiency.
+<BR>&nbsp;
+<H4>
+<A NAME="Options!Documents!POSetting"></A>POGenerator Setting</H4>
+The setting may be set to one of two values:
+<BLOCKQUOTE>generate all obligations
+<BR>generate non-trivial obligations
+<BR>&nbsp;</BLOCKQUOTE>
+The latter is the default setting.
+<BR>&nbsp;
+<H4>
+<A NAME="Options!Documents!GlobalPMD"></A>Global PROOFMETHOD file</H4>
+This may be optionally set to either the relative/full path to the <A HREF="InterProver.html#GlobalPMD">Global
+PROOFMETHOD</A>.
+
+<P>
+<HR WIDTH="60%">
+<H3>
+<A NAME="Options!Interface"></A>Interface</H3>
+Motif and non-Motif interfaces may be generated (see <A HREF="Interface.html#Interface!Generator">Interface</A>&nbsp;<LATEX=",\ page\ \pageref{Interface!Generator},\ ">for
+an explanation). The initial setting is `Motif'.
+
+<P>
+<HR WIDTH=60%>
+<H3>
+<A NAME="Options!Bell"></A>Bell</H3>
+This vale may be toggled between `on' and `off'; the former sounds the
+bell when the B-Toolkit starts up and when jobs are completed, warnings
+issued, etc..
+
+<P>
+<HR WIDTH=60%>
+<H3>
+<A NAME="Options!OptionalUtils"></A>Optional Utilities</H3>
+Five optional utilities may be set; each may contain an executable (containing
+an absolute or relative path) which is invoked through the <A HREF="BToolkit.html#Utilities">TopBar
+Utils</A> Optional Utility pull down. For example, setting a script to
+<TT>$BKIT/BProcessInfo </TT>would result in all B processes running on
+the platform to be displayed in the shell window.
+
+<HR WIDTH="60%">
+<BR>&nbsp;
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

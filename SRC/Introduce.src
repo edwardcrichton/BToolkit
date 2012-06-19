@@ -1,0 +1,4546 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define introTac \
+    (ARI;((FLAT;ARI;WRITE;CATL~;MODR;SHELL;MAP;NEWV)~;IntroduceFromUserX)~)
+
+#define VHDLintroTac \
+    (ARI;((FLAT;ARI;WRITE;CATL~;MODR;SHELL;MAP;NEWV)~;IntroduceVHDLSLIBFromUserX)~)
+
+
+
+/*
+#define IntroduceSLIBConstructForce(x) \
+                bcall(introTac:intr_SLIB_force_0(x))
+*/
+
+#define IntroduceSLIBConstructForce(x) \
+    bcall(((CATL;NEWV;SHELL;FLAT;MAP;MODR;ARI;WRITE)~;IntroSLIBX)~: \
+        in_slib_ini0(x))
+
+
+#define IntroduceVHDLSLIBConstructForce(x) \
+                bcall(VHDLintroTac:iv_slib(x))
+
+
+
+
+#define introTLIBTac ((ARI;WRITE;CATL;SHELL;MAP;MODR;REV~)~;IntroduceTLIBX)~
+
+#define IntroduceTLIBConstructMotif  bcall(introTLIBTac:itrT_M)
+
+
+
+#define introTLIBForceTac \
+	((ARI;REV;MAP;CATL;WRITE;MODR;SHELL)~;NewIntroduceTLIBX)~
+
+#define IntroduceTLIBConstructForce(x,y) \
+		bcall(introTLIBForceTac : itlf_00(x)(y))
+
+#define IntroduceTLIBConstructForceEnv(x) \
+		bcall(introTLIBForceTac : itl_00(x))
+
+#define IntroduceTLIBConstructForceFromDirect(r) \
+		bcall(introTLIBForceTac : itl_00(r))
+
+
+
+#define IntroduceNEW  bcall(introTac:introduceNEW)
+
+#define IntroduceNEW_CM_CFG_VHDL(x) \
+                     bcall(introTac:introduceNEW2_Motif_CM_CFG((x)))
+
+#define IntroduceNEW_ENM_VHDL(x) \
+                     bcall(introTac:introduceNEW2_Motif((x).enm_vhdl))
+
+#define IntroduceNEW_MCH_VHDL(x) \
+                     bcall(introTac:introduceNEW2_Motif((x).mch_vhdl))
+
+#define IntroduceNEW_REF_VHDL(x) \
+                     bcall(introTac:introduceNEW2_Motif((x).ref_vhdl))
+
+#define IntroduceNEW_IMP_VHDL(x) \
+                     bcall(introTac:introduceNEW2_Motif((x).imp_vhdl))
+
+#define IntroduceNEW_MCH(x)      bcall(introTac:introduceNEW2_Motif((x).mch))
+
+#define IntroduceNEW_REF(x)      bcall(introTac:introduceNEW2_Motif((x).ref))
+
+#define IntroduceNEW_REF_ANL(x)  bcall(introTac:IntroduceAnl(x,ref))
+
+#define IntroduceNEW_IMP(x)      bcall(introTac:introduceNEW2_Motif((x).imp))
+
+#define IntroduceNEW_IMP_ANL(x)  bcall(introTac:IntroduceAnl(x,imp))
+
+#define IntroduceNEW_BASE(x)     bcall(introTac:introduceNEW2_Motif((x).bse))
+
+#define IntroduceNEW_ENUM(x)     bcall(introTac:introduceNEW2_Motif((x).enm))
+
+#define IntroduceNEW_ENUM_ANL(x) bcall(introTac:IntroduceEnmAnl(x))
+
+#define IntroduceNEW_ITF(x)      bcall(introTac:introduceNEW2_Motif((x).itf))
+
+#define IntroduceNEW_ITF_ANL(x)  bcall(introTac:IntroduceITFanl(x))
+
+#define IntroduceNEW_DOC(x)      bcall(introTac:introduceNEW2_Motif((x).doc))
+
+#define IntroduceNEW_DOC_CFG(x)  bcall(introTac:introduceDOCcfg(x))
+
+
+
+#define IntroduceSRCConstructMotif(x)   bcall(introTac:intr_SRC_M(x))
+
+#define IntroduceSRCConstructForce(x)  bcall(introTac:intr_SRC_force_0(x))
+
+#define IntroduceSRCConstructDirectSingle(x) \
+                    bcall(introTac:intr_SRC_5(1,x,1,1))
+
+
+
+#define InformNoTLIBChoice  \
+	Writef("\n  No TLIB constructs available\n")
+
+#define InformTEAMLIBCFGNotExist   Writef("\n\n  Directory $BTEAMLIB/CFG does not exist\n")
+
+#define InformTEAMLIBANLNotExist   Writef("\n\n  Directory $BTEAMLIB/ANL does not exist\n")
+
+#define InformTEAMLIBTYPNotExist   Writef("\n\n  Directory $BTEAMLIB/TYP does not exist\n")
+
+#define InformTEAMLIBCDENotExist   Writef("\n\n  Directory $BTEAMLIB/CDE/C does not exist\n")
+
+#define InformTEAMLIBBpdaNotExist  Writef("\n\n  File $BTEAMLIB/.Bpda does not exist\n")
+
+#define InformTEAMLIBLocked        Writef("\n\n  Directory $BTEAMLIB is currently locked\n")
+
+
+#define InformBaseNameTooLong(x) \
+ Writef(bcatl("\n    Base name &",x,"&\n      Too long (max length 30)\n"))
+
+
+#define InformDomainNameLength(x) \
+ Writef(bcatl("\n    Domain name &",x,"& should be of length 2\n"))
+
+
+
+
+#define ClearIntroTLIBError      bmodr(NewIntroduceTLIBX.1,0)
+#define FlagIntroTLIBError       bmodr(NewIntroduceTLIBX.1,1)
+
+#define IntroTLIBErrorFlagged    brule(NewIntroduceTLIBX.1,1)
+
+#define InformNonZeroInteger(x,y)  Writef(bcatl("\n\n    Actual parameter error\n\n      &",x,"& should be a non-zero integer instantiating ",y,"\n"))
+
+#define InformBadParameterValue  Writef("\n      Bad value\n")
+
+#define InformParamDiscrepancy(x,y) Writef(bcatl("\n\n    Formal/Actual parameter discrepancy:\n\n      &",y,"&\n\n      &",x,"&\n"))
+
+
+
+THEORY OfferIntroduceFailureOptionsX IS
+
+#define OfferIntroduceFailureOptions\
+   bcall((((WRITE;ARI;MODR)~;OfferIntroduceFailureOptionsX)~):oifo)
+
+
+  oifo
+
+END
+
+&
+
+THEORY IntroduceEnmAnlX IS
+
+#define intr_enm_anl_tac   ((CATL;SHELL;MAP;WRITE;MODR;ARI)~;IntroduceEnmAnlX)~
+
+#define IntroduceEnmAnl(x)    bcall(intr_enm_anl_tac: intr_enm_anl_0(x))
+
+
+#define EnumNameStore             (IntroduceEnmAnlX.1)
+#define ModrEnumNameStore(x)      bmodr(EnumNameStore,x)
+#define ReadEnumNameStore(x)      brule(EnumNameStore,x)
+
+#define EnumSetsStore             (IntroduceEnmAnlX.2)
+#define ModrEnumSetsStore(x)      bmodr(EnumSetsStore,x)
+#define ReadEnumSetsStore(x)      brule(EnumSetsStore,x)
+
+#define SeesStore                 (IntroduceEnmAnlX.3)
+#define ModrSeesStore(x)          bmodr(SeesStore,x)
+#define ReadSeesStore(x)          brule(SeesStore,x)
+
+
+  ?;?;?;
+
+  bprintf("; %",s)
+ =>
+  prt_enm_sets(s,M,N);
+
+  bprintf("%",s)
+ =>
+  prt_enm_sets(s,1,N);
+
+
+
+  bprintf(", %",s)
+ =>
+  prt_enm_sees(s.t,M,N);
+
+  bprintf("%",s)
+ =>
+  prt_enm_sees(s.t,1,N);
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  intr_enm_anl_10(m)(Y)(f);
+
+  bconnect(f) &
+  ReadSeesStore(S) &
+  ReadEnumSetsStore(E) &
+  bprintf("ENUMERATION       %\n\n",m) &
+  bprintf("SEES              ") &
+  prt_enm_sees bnmap S &
+  bprintf("\n\nSETS              ") &
+  prt_enm_sets bnmap E &
+  bprintf("\n\nEND\n") &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(m.enm:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(m.enm) &
+  AddUsr(m.enm) &
+  Writef(bcatl("\n  Introduced ",m,".enm\n"))
+ =>
+  intr_enm_anl_10(m)(Y)(f);
+
+  ReadEnumNameStore(m) &
+  intr_enm_anl_10(m)(Y)(bcatl("CFG/",m,".enm"))
+ =>
+  intr_enm_anl_9(Y);
+
+  bsearch(?,X,Y) &
+  intr_enm_anl_9(Y)
+ =>
+  intr_enm_anl_9(X);
+
+  ReadEnumSetsStore(X) &
+  intr_enm_anl_9(X)
+ =>
+  intr_enm_anl_8;
+
+  ModrEnumSetsStore(X)
+ =>
+  intr_enm_anl_7_2(X);
+
+  bsearch(?,X,Y) &
+  intr_enm_anl_7_2(Y)
+ =>
+  intr_enm_anl_7_2(X);
+
+  ReadEnumSetsStore(X) &
+  intr_enm_anl_7_2(X)
+ =>
+  intr_enm_anl_7_1;
+
+  intr_enm_anl_7(S);
+
+  ReadEnumSetsStore(X) &
+  ModrEnumSetsStore((X,S))
+ =>
+  intr_enm_anl_7(S(E));
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  intr_enm_anl_6(k)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  intr_enm_anl_7 bsmap D &
+  intr_enm_anl_7_1
+ =>
+  intr_enm_anl_6(k)(Z);
+
+  intr_enm_anl_5(x);
+
+  intr_enm_anl_6(m)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  intr_enm_anl_5(m.mch);
+
+
+
+
+  
+  ReadSeesStore(L) &
+  intr_enm_anl_5 bsmap L &
+  intr_enm_anl_8
+ =>
+  intr_enm_anl_2_4(e)(1);
+
+
+
+  IsCfg(e.t) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Name ",e," is already used"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_enm_anl_2_4(e)(1);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(e,".mch exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_enm_anl_2_4(e)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  intr_enm_anl_2_3(e);
+
+  bget(".Bcom",x) &
+  intr_enm_anl_2_4(e)(x)
+ =>
+  intr_enm_anl_2_3(e);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",e,".",mch," SRC")) &
+  intr_enm_anl_2_3(e)
+ =>
+  intr_enm_anl_2_2(e)(n)(1);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(e,".enm exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_enm_anl_2_2(e)(n)(0);
+
+  btest(n>60) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Construct name ",e," too long (max length 60)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_enm_anl_2_2(e)(n)(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  intr_enm_anl_2_1(e)(n);
+
+  bget(".Bcom",x) &
+  intr_enm_anl_2_2(e)(n)(x)
+ =>
+  intr_enm_anl_2_1(e)(n);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("",e," should be an identifier"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_enm_anl_2(e);
+
+  bident(e) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",e,".",enm," SRC")) &
+  intr_enm_anl_2_1(e)(blen(e))
+ =>
+  intr_enm_anl_2(e);
+
+  ReadData(e) &
+  ModrEnumNameStore(e) &
+  intr_enm_anl_2(e)
+ =>
+  intr_enm_anl_1;
+
+  bsearch(?,X,Y) &
+  ModrEnumNameStore(?) &
+  ModrEnumSetsStore(?) &
+  ModrSeesStore(Y) &
+  PromptForData((BT_GET_STRING_M,"ENUMERATION name","1")) &
+  intr_enm_anl_1
+ =>
+  intr_enm_anl_0(X)
+
+END
+
+
+&
+
+THEORY PrintUseErrorX IS
+
+ Writef(bcatl("\n\n  ",a," contains an USES clause\n\n  It cannot be refined\n")) 
+=>
+ pue(ref,a.b)(J;A;B;C;D;E;F;G;H;x;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n); 
+
+ Writef(bcatl("\n\n  ",a," contains an USES clause\n\n  It cannot be refined\n"))
+=>
+ pue(imp,a.b)(J;A;B;C;D;E;F;G;H;x;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+ bcall(((MAP;WRITE;MODR~;CATL;SHELL;ARI)~;IntroduceAnlX)~: ia4b(t,a.b)(J;A;?;C;D;E;F;G;H;x;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n))
+=>
+ pue(t,a.b)(J;A;?;C;D;E;F;G;H;x;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n) /* USE list is second entry of .anl file */
+
+END
+
+&
+
+THEORY PrintSeesX IS
+
+ bprintf("%, ",r)
+=>
+ ps2((r(s):t:(u,v,w)),m,n);
+
+ bprintf("%, ",R.r)
+=>
+ ps2((R.r(s):t:(u,v,w)),m,n);
+
+ bprintf("%\n\n",r)
+=>
+ ps2((r(s):t:(u,v,w)),n,n);
+
+ bprintf("%\n\n",R.r)
+=>
+ ps2((R.r(s):t:(u,v,w)),n,n);
+
+ bprintf("SEES              ") &
+ ps2 bnmap a
+=>
+ ps1(a);
+ 
+ bprintf("SEES              %\n\n",r)     /* only one entry in SEES list */
+=>
+ ps1(r(s):t:(u,v,w));
+
+ bprintf("SEES              %\n\n",R.r)   /* only one entry in SEES list */
+=>
+ ps1(R.r(s):t:(u,v,w));
+
+ ps1(A)
+=>
+ ps(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);  /* SEES list is in first entry of .anl file */
+
+
+ ps(J;?;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)   /* if no SEES clause in abstract construct */
+
+END
+
+&
+
+THEORY PrintOpHeadersX IS
+
+ bprintf("  % = ?;\n\n",t)
+ =>
+ ph1((s;(X,t);u;v;(w | x);(y | z)),m,n);  
+
+ bprintf("  % = ?\n\n",t)
+ =>
+ ph1((s;(X,t);u;v;(w | x);(y | z)),n,n);  
+
+ ph1 bnmap a                         /* if if construct has > 1 op */
+ => 
+ ph0(c;a);                           /* last entry of .anl file contains ops */
+
+ bprintf("  % = ?\n\n",t)            /* if construct has only 1 opn */
+ =>
+ ph0(c;(s;(X,t);u;v;(w | x);(y | z)));/* last entry of .anl file contains ops */
+                  
+ bprintf(" ?\n\n")                   /* construct has no opn */
+ =>
+ ph0(c;?)                            /* last entry of .anl file contains ops */
+                  
+END
+
+&
+
+THEORY CreateCFGFileX IS
+
+#define CreateCFGFile(x,s,y)\
+ bcall((((MAP;ARI;CATL;WRITE;MODR)~;CreateCFGFileX)~): ccfgf5(x)(s)(y))
+
+  InformCantConnect(z) &
+  PFZ
+ => 
+  ccfgf6(c.d)(a.b)(y)(z);
+
+  bconnect(z) &
+  bprintf("IMPLEMENTATION    %\n\n",c) &
+  bprintf("REFINES           %\n\n",a) & 
+  bcall((PrintSeesX;MAP;WRITE)~: ps(y)) &
+  bprintf("IMPORTS           ?\n\n") &
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n") &
+  bcall((PrintOpHeadersX;MAP;WRITE)~: ph0(y)) & 
+  bprintf("END\n")
+ =>
+  ccfgf6(c.imp)(a.b)(y)(z);
+
+  bconnect(z) &
+  bprintf("REFINEMENT        %\n\n",c) &
+  bprintf("REFINES           %\n\n",a) & 
+  bcall((PrintSeesX;MAP;WRITE)~: ps(y)) &
+  bprintf("VARIABLES         ?\n\n") & 
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n") &
+  bcall((PrintOpHeadersX;MAP;WRITE)~: ph0(y)) & 
+  bprintf("END\n")
+ =>
+  ccfgf6(c.ref)(a.b)(y)(z);
+
+  ccfgf6(c.d)(a.b)(y)(bcatl("CFG/",c,".",d))
+ =>
+  ccfgf5(c.d)(a.b)(y)
+
+END
+
+&
+
+THEORY IntroduceAnlX IS
+
+#define IntroduceAnl(x,y) \
+	bcall(((MAP;WRITE;MODR~;CATL;SHELL;ARI)~;IntroduceAnlX)~:ia3(x)(y))
+
+
+/*
+  x is ref or imp
+*/
+
+  ?;   /* suggested name */
+
+  ?;  /* FifoWrite_Store */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  CreateCFGFile(A.x,a.b,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.x:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(A.x) &
+  AddUsr(A.x) &
+  Writef(bcatl("\n  Introduced ",A,".",x,"\n"))
+ =>
+  ia9(x)(A)(a.b)(1)(y);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,"_EV")) &
+  CreateCFGFile(A.x,a.b,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.x:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(A.x) &
+  AddUsrVHDL(A.x) &
+  Writef(bcatl("\n  Introduced VHDL Event ",a,".",x,"\n"))
+ =>
+  ia9(x)(A)(a.b)(1)(y);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,"_PK")) &
+  CreateCFGFile(A.x,a.b,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.x:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(A.x) &
+  AddUsrVHDL(A.x) &
+  Writef(bcatl("\n  Introduced VHDL Package ",a,".",x,"\n"))
+ =>
+  ia9(x)(A)(a.b)(1)(y);
+
+  IsUsrVHDL(a.enm) &
+  brule(IntroduceAnlX.2,(P,"_EN")) &
+  CreateCFGFile(A.enm,a.enm,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.enm:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(A.enm) &
+  AddUsrVHDL(A.enm) &
+  Writef(bcatl("\n  Introduced VHDL Enumeration ",a,".",enm,"\n"))
+ =>
+  ia9(x)(A)(a.enm)(1)(y);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,"_CM")) &
+  CreateCFGFile(A.x,a.b,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.x:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(A.x) &
+  AddUsrVHDL(A.x) &
+  Writef(bcatl("\n  Introduced VHDL Compound Module ",a,".",x,"\n"))
+ =>
+  ia9(x)(A)(a.b)(1)(y);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,"_SM")) &
+  CreateCFGFile(A.x,a.b,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.x:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(A.x) &
+  AddUsrVHDL(A.x) &
+  Writef(bcatl("\n  Introduced VHDL Simple Module ",a,".",x,"\n"))
+ =>
+  ia9(x)(A)(a.b)(1)(y);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,"_SG")) &
+  CreateCFGFile(A.x,a.b,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.x:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(A.x) &
+  AddUsrVHDL(A.x) &
+  Writef(bcatl("\n  Introduced VHDL Signal ",a,".",x,"\n"))
+ =>
+  ia9(x)(A)(a.b)(1)(y);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,"_CP")) &
+  CreateCFGFile(A.x,a.b,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.x:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(A.x) &
+  AddUsrVHDL(A.x) &
+  Writef(bcatl("\n  Introduced VHDL Clocked Process ",a,".",x,"\n"))
+ =>
+  ia9(x)(A)(a.b)(1)(y);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,"_PR")) &
+  CreateCFGFile(A.x,a.b,y) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(A.x:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(A.x) &
+  AddUsrVHDL(A.x) &
+  Writef(bcatl("\n  Introduced VHDL Process ",a,".",x,"\n"))
+ =>
+  ia9(x)(A)(a.b)(1)(y);
+
+  ia9(x)(A)(a.b)(1)(y)
+ =>
+  ia8(x)(A)(a.b)(1)(y);
+
+  IsUsrVHDL(a.b) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceAnlX.2)) &
+  ia9(x)(A)(a.b)(1)(y)
+ =>
+  ia8(x)(A)(a.b)(1)(y);
+
+  IsCfg(A.Y) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Name ",A," is already used"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  ia8(x)(A)(a.b)(1)(y);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(A,".",x," exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  ia8(x)(A)(a.b)(0)(y);              
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  ia7(x)(A)(a.b)(y);
+
+  bget(".Bcom",n) &
+  ia8(x)(A)(a.b)(n)(y)
+ =>
+  ia7(x)(A)(a.b)(y);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("",A," should be an identifier"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  ia6(x)(A)(a.b)(y);
+
+  bident(A) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",A,".",x," SRC")) &
+  ia7(x)(A)(a.b)(y)
+ =>
+  ia6(x)(A)(a.b)(y);
+
+  ReadData(A) &
+  ia6(x)(A)(a.b)(y)
+ =>
+  ia5(0)(x)(a.b)(y);
+
+  ia6(x)(A)(a.b)(y)
+ =>
+  ia5_1(x)(A)(a.b)(y)(n);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("Construct name ",A," too long (max length 60)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  ia5_1(x)(A)(a.b)(y)(n);
+
+  bident(A) &
+  btest(n<60) &
+  ia6(x)(A)(a.b)(y)
+ =>
+  ia5_1(x)(A)(a.b)(y)(n);
+
+  ReadData(A) &
+  ia5_1(x)(A)(a.b)(y)(blen(A))
+ =>
+  ia5(0)(x)(a.b)(y);
+
+  brule(IntroduceAnlX.1,A) &
+  ReadData(CR) &
+  ia5_1(x)(A)(a.b)(y)(blen(A))
+ =>
+  ia5(0)(x)(a.b)(y);
+
+  brule(IntroduceAnlX.1,?) &
+  ReadData(CR) &
+  InformNotIdentifier(CR) &
+  OfferIntroduceFailureOptions
+ =>
+  ia5(0)(x)(a.b)(y);
+
+  ReadData(0) &
+  Writef("\n  Aborted\n")
+ =>
+  ia5(0)(x)(a.b)(y);
+
+  brule(IntroduceAnlX.1,A) &
+  PromptForData((BT_GET_STRING_M,"IMPLEMENTATION name","1",A)) &
+  ia5(0)(imp)(a.b)(y)
+ =>
+  ia4c(imp,a.b)(y);
+
+  brule(IntroduceAnlX.1,?) &
+  PromptForData((BT_GET_STRING_M,"IMPLEMENTATION name","1")) &
+  ia5(0)(imp)(a.b)(y)
+ =>
+  ia4c(imp,a.b)(y);
+
+  brule(IntroduceAnlX.1,A) &
+  PromptForData((BT_GET_STRING_M,"REFINEMENT name","1",A)) &
+  ia5(0)(ref)(a.b)(y)
+ =>
+  ia4c(ref,a.b)(y);
+
+  brule(IntroduceAnlX.1,?) &
+  PromptForData((BT_GET_STRING_M,"REFINEMENT name","1")) &
+  ia5(0)(ref)(a.b)(y)
+ =>
+  ia4c(ref,a.b)(y);
+
+  bmodr(IntroduceAnlX.1,A)
+ =>
+  suggest_name2(A);
+
+  IsCfg(A.b)
+ =>
+  suggest_name2(A);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  suggest_name1;
+
+  bget(".Bcom",A) &
+  suggest_name2(A)
+ =>
+  suggest_name1;
+
+
+
+  suggest_imp_name(a)(n);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  suggest_imp_name(a);
+
+  bconnect(".Bcom") &
+  bprintf("%R",a) &
+  suggest_name1
+ =>
+  suggest_imp_name(a);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,S)) &
+  bsearch(S,("_CP","_PR","_EV","_SM","_CM","_PK","_EN","_SG"),Z) &
+  bconnect(".Bcom") &
+  bprintf(P) &
+  bprintf("I") &
+  bprintf(S) &
+  suggest_name1
+ =>
+  suggest_imp_name(imp,a.b);
+
+  suggest_imp_name0(a);
+
+  btest(n<49) &
+  suggest_imp_name(a)
+ =>
+  suggest_imp_name0(a)(n);
+
+
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  suggest_name(X)(a,b);
+
+  bconnect(".Bcom") &
+  bprintf("%",a) &
+  bprintf(X) &
+  suggest_name1
+ =>
+  suggest_name(X)(a.b);
+
+  IsUsrVHDL(a.b) &
+  brule(IntroduceAnlX.2,(P,S)) &
+  bsearch(S,("_CP","_PR","_EV","_SM","_CM","_PK","_EN","_SG"),Z) &
+  bconnect(".Bcom") &
+  bprintf(P) &
+  bprintf(X) &
+  bprintf(S) &
+  suggest_name1
+ =>
+  suggest_name(X)(a.b);
+
+  suggest_name0(X)(a.b)(n);
+
+  btest(n<49) &
+  suggest_name(X)(a.b)
+ =>
+  suggest_name0(X)(a.b)(n);
+
+
+
+
+  bmodr(IntroduceAnlX.1,?) &
+  suggest_name0("I")(a.b)(blen(a)) &
+  ia4c(imp,a.b)(y)
+ =>
+  ia4b(imp,a.b)(y);
+
+  IsUsrVHDL(a.b) &
+  bmodr(IntroduceAnlX.1,?) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceAnlX.2)) &
+  suggest_name0("I")(a.b)(blen(a)) &
+  ia4c(imp,a.b)(y)
+ =>
+  ia4b(imp,a.b)(y);
+
+
+  bmodr(IntroduceAnlX.1,?) &
+  suggest_name0("R")(a.b)(blen(a)) &
+  ia4c(ref,a.b)(y)
+ =>
+  ia4b(ref,a.b)(y);
+
+  IsUsrVHDL(a.b) &
+  bmodr(IntroduceAnlX.1,?) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceAnlX.2)) &
+  suggest_name0("R")(a.b)(blen(a)) &
+  ia4c(ref,a.b)(y)
+ =>
+  ia4b(ref,a.b)(y);
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  ia4a(a.b)(f);
+
+  bget(f,y) &
+  bcall((PrintUseErrorX;WRITE)~: pue(t,a.b)(y))
+ =>
+  ia4a(t)(a.b)(f);
+
+  ia4a(t)(a.b)(bcatl("ANL/",a,".",b,".anl"))
+ =>
+  ia3(a.b)(t)
+
+END
+
+&
+
+THEORY IntroduceITFanlX IS
+
+#define introduce_itf_anl_Tac  ((CATL;WRITE;MAP;SHELL;MODR)~;IntroduceITFanlX)~
+
+/*
+#define IntroduceITFanl  bcall(introduce_itf_anl_Tac: introduce_itf_anl_0)
+*/
+#define IntroduceITFanl(x) \
+        bcall(introduce_itf_anl_Tac: introduce_itf_anl_2(x))
+
+  ?;
+
+  ?; /* for IMPORTS clause */
+
+  ?; /* BT_BSEL */
+
+  ?; /* comma between imported machines */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  append(f);
+
+  bappend(f)
+ =>
+  append(f);
+
+  bprintf("  %,\n",o)
+ =>
+  print_ops_itf(o,m,n);
+
+  bprintf("  %",o)
+ =>
+  print_ops_itf(o,n,n);
+
+  
+
+
+/*
+  bprintf(" , /? % ?/ ?",p)
+ =>
+  introduce_itf_anl_chk_ipt_8(M,p,m,n);
+
+  bprintf("/? % ?/ ?",p)
+ =>
+  introduce_itf_anl_chk_ipt_8(M,p,1,n);
+
+  bUpident(p) &
+  bprintf(" , /? % ?/ SCALAR",p)
+ =>
+  introduce_itf_anl_chk_ipt_8(M,p,m,n);
+
+  bUpident(p) &
+  bprintf("/? % ?/ SCALAR",p)
+ =>
+  introduce_itf_anl_chk_ipt_8(M,p,1,n);
+
+  bmodr(IntroduceITFanlX.1,1)
+ =>
+  chk_comma;
+
+  brule(IntroduceITFanlX.1,1) &
+  bprintf (",")
+ =>
+  chk_comma;
+
+  chk_comma &
+  bprintf("\n\n  %(",k) &
+  introduce_itf_anl_chk_ipt_8(m) bnmap l &
+  bprintf(")")
+ =>
+  introduce_itf_anl_chk_ipt_7(m,(k:l));
+
+  introduce_itf_anl_chk_ipt_7(m,?);
+
+  brule(IntroduceITFanlX.1,X) &
+  bprintf("\n\nIMPORTS") &
+  introduce_itf_anl_chk_ipt_7(m) bsmap X
+ =>
+  introduce_itf_anl_chk_ipt_6(m);
+
+  brule(IntroduceITFanlX.1,?)
+ =>
+  introduce_itf_anl_chk_ipt_6(m);
+
+  brule(IntroduceITFanlX.1,X) &
+  bmodr(IntroduceITFanlX.1,(X,(k:l)))
+ =>
+  introduce_itf_anl_chk_ipt_5(M)(k:l);
+
+  introduce_itf_anl_chk_ipt_5(M)(k:?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  introduce_itf_anl_chk_ipt_4(M)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  introduce_itf_anl_chk_ipt_5(M)(k:l)
+ =>
+  introduce_itf_anl_chk_ipt_4(M)(Z);
+
+  introduce_itf_anl_chk_ipt_4(m)(bcatl("ANL/",a,".mch.anl"))
+ =>
+  introduce_itf_anl_chk_ipt_3(m,a.mch);
+
+  introduce_itf_anl_chk_ipt_3(m,?);
+
+  bmodr(IntroduceITFanlX.1,?) &
+  introduce_itf_anl_chk_ipt_3(m) bsmap (Y) &
+  introduce_itf_anl_chk_ipt_6(m)
+ =>
+  introduce_itf_anl_chk_ipt_2(m)(?)(I)(Y);
+
+  introduce_itf_anl_chk_ipt_2(m)(X)(I)(Y,x)
+ =>
+  introduce_itf_anl_chk_ipt_2(m)(X,x)(I)(Y);
+
+  bsearch(x,I,J) &
+  introduce_itf_anl_chk_ipt_2(m)(X)(I)(Y)
+ =>
+  introduce_itf_anl_chk_ipt_2(m)(X,x)(I)(Y);
+
+/?  Read_recseenipt_mchlist(X) &
+  Read_recipt_mchlist(I) & ?/
+  brule(IntroduceITFanlX.3,(X|I)) &
+  introduce_itf_anl_chk_ipt_2(m)(X)(I)(?)
+ =>
+  introduce_itf_anl_chk_ipt_1(m);
+
+
+  introduce_itf_anl_chk_ipt_0(x);
+
+  ReadBotRef(i.imp) &
+  FifoWrite_Store((BT_REC_LISTS_M,i.imp,0),(IntroduceITFanlX.3)) &
+  introduce_itf_anl_chk_ipt_1(m)
+ =>
+  introduce_itf_anl_chk_ipt_0(m);
+*/
+
+
+
+  bprintf(", /* % */ ?",p)
+ =>
+  get_params_1(p,m,n);
+
+  bprintf("/* % */ ?",p)
+ =>
+  get_params_1(p,1,n);
+
+  bUpident(p) &
+  bprintf(", /* % */ SCALAR",p)
+ =>
+  get_params_1(p,m,n);
+
+  bUpident(p) &
+  bprintf("/* % */ SCALAR",p)
+ =>
+  get_params_1(p,1,n);
+
+  bprintf("(") &
+  get_params_1 bnmap l &
+  bprintf(")")
+ =>
+  get_params_0(l);
+
+  get_params_0(?);
+
+
+  bprintf("  %",k) &
+  get_params_0(l)
+ =>
+  chk_IMPORTS3(k(l));
+
+  chk_IMPORTS3(x) &
+  bprintf(",\n")
+ =>
+  chk_IMPORTS2(x,m,n);
+
+  chk_IMPORTS3(x)
+ =>
+  chk_IMPORTS2(x,n,n);
+
+  chk_IMPORTS2 bnmap (L)
+ =>
+  chk_IMPORTS1(L);
+
+  bsearch(?,L,M) &
+  chk_IMPORTS1(M)
+ =>
+  chk_IMPORTS1(L);
+
+  brule(IntroduceITFanlX.2,L) &
+  bprintf("\n\nIMPORTS\n\n") &
+  chk_IMPORTS1(L)
+ =>
+  chk_IMPORTS;
+
+  brule(IntroduceITFanlX.2,?)
+ =>
+  chk_IMPORTS;
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  introduce_itf_anl_8(x)(f)(j)(l);
+
+  bconnect(f) &
+  bprintf("INTERFACE     %",x) &
+  get_params_0(l) &
+  chk_IMPORTS &
+  bprintf("\n\nOPERATIONS\n\n") &
+  print_ops_itf bnmap j &
+  GetBotRef(x.mch) &
+/*  introduce_itf_anl_chk_ipt_0(x) & */
+  append(f) &
+/*  WriteMotifEndText & */
+  bprintf("\n\nEND\n",x) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(x.itf:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(x.itf) &
+  AddUsr(x.itf) &
+  Writef(bcatl("\n  Introduced ",x,".itf\n"))
+ =>
+  introduce_itf_anl_8(x)(f)(j)(l)(D);
+  
+  bconnect(f) &
+  bprintf("INTERFACE      %",x) &
+  get_params_0(l) &
+  chk_IMPORTS &
+  bprintf("\n\nOPERATIONS\n\n?\n\nEND\n") &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(x.itf:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(x.itf) &
+  AddUsr(x.itf) &
+  Writef(bcatl("\n  Introduced ",x,".itf\n"))
+ =>
+  introduce_itf_anl_8(x)(f)(?)(l)(D);
+  
+  introduce_itf_anl_8(x)(f)(j)(l)(D)
+ =>
+  introduce_itf_anl_7(x)(f)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(x," has no operations!"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduce_itf_anl_7(x)(f)(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);?);
+
+  InformCantConnect(g) &
+  PFZ
+ =>
+  introduce_itf_anl_6(x)(f)(g);
+
+  bget(g,X) &
+  introduce_itf_anl_7(x)(f)(X)
+ =>
+  introduce_itf_anl_6(x)(f)(g);
+
+  introduce_itf_anl_6(x)(f)(bcatl("ANL/",x,".mch.anl"))
+ =>
+  introduce_itf_anl_5(x)(f)(1);
+  
+  GetJobs(X) &
+  AddJob(X,(bcatl(x,".itf exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduce_itf_anl_5(x)(f)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  introduce_itf_anl_4(x)(f);
+  
+  bget(".Bcom",X) &
+  introduce_itf_anl_5(x)(f)(X)
+ =>
+  introduce_itf_anl_4(x)(f);
+  
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",x,".itf SRC")) &
+  introduce_itf_anl_4(x)(f)
+ =>
+  introduce_itf_anl_3(x)(f);
+  
+
+  brule(IntroduceITFanlX.2,L) &
+  bmodr(IntroduceITFanlX.2,(L,k(l)))
+ =>
+  int_itf_ipt2(k(l));
+  
+  int_itf_ipt2(k(?)); /* no params */
+
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  int_itf_ipt1(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  int_itf_ipt2(k(l))
+ =>
+  int_itf_ipt1(Z);
+
+  int_itf_ipt1(bcatl("ANL/",i,".mch.anl")) 
+ =>
+  int_itf_ipt(i.mch);
+
+  int_itf_ipt(?);
+
+  bmodr(IntroduceITFanlX.2,?) &
+  bmodr(IntroduceITFanlX.4,?) &
+  int_itf_ipt bsmap M &
+  introduce_itf_anl_3(x)(bcatl("CFG/",x,".itf"))
+ =>
+  introduce_itf_anl_2(x.mch|M) /* M is seen but not imported */
+
+END
+
+&
+
+THEORY IntroduceDOCcfgX IS
+
+#define iDcTac  ((MAP;WRITE;CATL;SHELL;MODR;ARI)~;IntroduceDOCcfgX)~
+
+#define introduceDOCcfg(x) bcall(iDcTac: iDc_0(x))
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  iDc_8(x);
+
+  bprintf("\ninclude(%.%);\n",a,b)
+ =>
+  iDc_10(a.b,m,n);
+
+  bprintf("\ninclude(%);\n",a.b.M.prf)
+ =>
+  iDc_10(a.b.M.prf,m,n);
+
+  bprintf("\ninclude(%.%)\n",a,b)
+ =>
+  iDc_10(a.b,n,n);
+
+  bprintf("\ninclude(%)\n",a.b.M.prf)
+ =>
+  iDc_10(a.b.M.prf,n,n);
+
+
+
+  GML_DMU_Language_Flag_set &
+  bprintf("\n/") &
+  bprintf("*\"\n:h1.%\n\"*",a) &
+  bprintf("/\n\ninclude(%.%);\n",a,b)
+ =>
+  iDc_9(a.b,m,n);
+
+  Latex_DMU_Language_Flag_set &
+  bprintf("\n/") &
+  bprintf("*\"\n\\newpage\n\\section{%}\n\"*",a) &
+  bprintf("/\n\ninclude(%.%);\n",a,b)
+ =>
+  iDc_9(a.b,m,n);
+
+  Latex2e_DMU_Language_Flag_set &
+  bprintf("\n/") &
+  bprintf("*\"\n\\newpage\n\\section{%}\n\"*",a) &
+  bprintf("/\n\ninclude(%.%);\n",a,b)
+ =>
+  iDc_9(a.b,m,n);
+
+  GML_DMU_Language_Flag_set &
+  bprintf("\n/") &
+  bprintf("*\"\n:h1.%\n\"*",a) &
+  bprintf("/\n\ninclude(%.%)\n",a,b)
+ =>
+  iDc_9(a.b,n,n);
+
+  Latex_DMU_Language_Flag_set &
+  bprintf("\n/") &
+  bprintf("*\"\n\\newpage\n\\section{%}\n\"*",a) &
+  bprintf("/\n\ninclude(%.%)\n",a,b)
+ =>
+  iDc_9(a.b,n,n);
+
+  Latex2e_DMU_Language_Flag_set &
+  bprintf("\n/") &
+  bprintf("*\"\n\\newpage\n\\section{%}\n\"*",a) &
+  bprintf("/\n\ninclude(%.%)\n",a,b)
+ =>
+  iDc_9(a.b,n,n);
+
+  iDc_10(a.b,m,n)
+ =>
+  iDc_8(a.b,m,n);
+
+  iDc_9(a.itf,m,n)
+ =>
+  iDc_8(a.itf,m,n);
+
+  iDc_9(a.imp,m,n)
+ =>
+  iDc_8(a.imp,m,n);
+
+  iDc_9(a.ref,m,n)
+ =>
+  iDc_8(a.ref,m,n);
+
+  iDc_9(a.mch,m,n)
+ =>
+  iDc_8(a.mch,m,n);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  iDc_7(S)(a)(f);
+
+  GML_DMU_Language_Flag_set &
+  bconnect(f) &
+  bprintf("/") &
+  bprintf("*\"\n:title.?\n:author.?\n:address.\n:aline.?\n:aline.?\n:aline.?\n:aline.?\n:aline.?\n:eaddress.\n:date.?\n\"*") &
+  bprintf("/\n\nDOCUMENT       %\n\nCONTENTS\n",a) &
+  iDc_8 bnmap S &
+  bprintf("\n\nEND\n") &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.doc:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(a.doc) &
+  AddUsr(a.doc) &
+  Writef(bcatl("\n  Introduced ",a,".doc\n"))
+ =>
+  iDc_7(S)(a)(f);
+
+  Latex_DMU_Language_Flag_set &
+  bconnect(f) &
+  bprintf("DOCUMENT       %\n\nCONTENTS\n\n/",a) &
+  bprintf("*\"\n  \\title{?}\n  \\author{? \and ?}\n  \\date{?}\n\n  \\maketitle\n\n  \\tableofcontents\n\"*") &
+  bprintf("/\n\n") &
+  iDc_8 bnmap S &
+  bprintf("\n\nEND\n") &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.doc:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(a.doc) &
+  AddUsr(a.doc) &
+  Writef(bcatl("\n  Introduced ",a,".doc\n"))
+ =>
+  iDc_7(S)(a)(f);
+
+  Latex2e_DMU_Language_Flag_set &
+  bconnect(f) &
+  bprintf("DOCUMENT\n\n  %\n\nCONTENTS\n\n/",a) &
+  bprintf("*\"\n  \\title{?}\n  \\author{? \and ?}\n  \\date{?}\n\n  \\maketitle\n\n  \\tableofcontents\n\"*") &
+  bprintf("/\n\n") &
+  iDc_8 bnmap S &
+  bprintf("\n\nEND\n") &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.doc:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(a.doc) &
+  AddUsr(a.doc) &
+  Writef(bcatl("\n  Introduced ",a,".doc\n"))
+ =>
+  iDc_7(S)(a)(f);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("Construct name ",a," too long (max length 60)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  iDc_6_1$N(S)(a)(f)(n);
+
+  btest(n<60) &
+  iDc_7(S)(a)(f)
+ =>
+  iDc_6_1$N(S)(a)(f)(n);
+
+  iDc_6_1$N(S)(a)(bcatl("CFG/",a,".doc"))(blen(a))
+ =>
+  iDc_6$N(S)(a)(1);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(a,".doc exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  iDc_6$N(S)(a)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  iDc_5$N(S)(a);
+
+  bget(".Bcom",x) &
+  iDc_6$N(S)(a)(x)
+ =>
+  iDc_5$N(S)(a);
+
+  bident(a) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".doc SRC")) &
+  iDc_5$N(S)(a)
+ =>
+  iDc_4$N(S)(a);
+
+  IsCfg(a.b) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Name ",a," is already used"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  iDc_4$N(S)(a);
+
+  ReadData(a) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("",a," should be an identifier"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  iDc_3$N(S);
+
+  ReadData(a) &
+  bident(a) &
+  iDc_4$N(S)(a)
+ =>
+  iDc_3$N(S);
+
+  ReadSelectionList(S) &
+  PromptForData(("\n  DOCUMENT name? ")) &
+  iDc_3$N(S)
+ =>
+  iDc_2$N;
+
+
+
+
+  PromptForData((BT_GET_STRING_M,"DOCUMENT name","1")) &
+  iDc_3$N(S)
+ =>
+  iDc_2$N(S);
+
+  bsearch(?,x,y) &
+  iDc_2$0(y)
+ =>
+  iDc_0(x)
+END
+
+&
+
+THEORY AddToBfilX IS
+
+#define AddToBfil(x) bcall(((WRITE)~;AddToBfilX)~: aBfil_0(x))
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  aBfil_1(L);
+
+  bconnect(".Bfil") &
+  bprintf("%\n",L) &
+  bclose
+ =>
+  aBfil_1(L);
+
+  aBfil_1(a.mch)
+ =>
+  aBfil_0(a);
+
+  bget(".Bfil",x) &
+  aBfil_1(x,a.mch)
+ =>
+  aBfil_0(a)
+
+END
+
+&
+
+THEORY IntroduceFromUserX IS
+
+/*
+  invocation:
+    IntroduceFromUserX
+  result:
+    CheckContext/CheckMachine/CheckRefinement/CheckImplementation
+*/
+
+  0;   /* 1. not used */
+
+  ?;   /* 2. ldf list/error flag */
+
+  ?;   /* 3. 0=>ANSIC 1=>non_ANSIC */
+
+  ?;   /* 4. seen mchs from SLIB construct */
+
+  ?;   /* 5. C Compiler/Flags */
+
+  ?;   /* 6. Non-X Link Libraries */
+
+  ?;   /* 7. X Link Libraries */
+
+  ?;   /* 8. Interface - 0=>Motif 1=>Non-Motif */
+
+  ?;   /* 9. VHDL store */
+
+  ?;   /* 10. */
+#define Set_CM_CFG_Flag     bmodr(IntroduceFromUserX.10,1)
+#define ReSet_CM_CFG_Flag   bmodr(IntroduceFromUserX.10,0)
+#define CM_CFG_Flag_Is_Set  brule(IntroduceFromUserX.10,1)
+
+  ?;   /* 11. */
+#define Modify_CM_CFG_Store(x)   bmodr(IntroduceFromUserX.11,x)
+#define Read_CM_CFG_Store(x)     brule(IntroduceFromUserX.11,x)
+
+  ?;   /* 12. */
+#define Modify_CM_CFG_No_Suffix_Store(x)   bmodr(IntroduceFromUserX.12,x)
+#define Read_CM_CFG_No_Suffix_Store(x)     brule(IntroduceFromUserX.12,x)
+
+  ?;   /* 13. */
+#define ModifySeenAttempted(x)   bmodr(IntroduceFromUserX.13,x)
+#define ReadSeenAttempted(x)     brule(IntroduceFromUserX.13,x)
+
+  ?;  /* 14. stack of current SLIB machines - see IntroduceFromUserX.4 */
+
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  copy_template_to_CFG(a.b)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("DOCUMENT\n\n  %\n\nCONTENTS\n\n  include(dummy.mch)\n\nEND\n",a)
+ =>
+  copy_template_to_CFG(a.doc)(f);
+
+  GML_DMU_Language_Flag_set &
+  bstring(f) &
+  bconnect(f) &
+  bprintf("/") &
+  bprintf("*\"\n:title.?\n:author.?\n:address.\n:aline.?\n:aline.?\n:aline.?\n:aline.?\n:aline.?\n:eaddress.\n:date.?\n\"*") &
+  bprintf("/\n\nDOCUMENT\n\n  %\n\nCONTENTS\n\n  include(dummy.mch)\n\nEND\n",a)
+ =>
+  copy_template_to_CFG(a.doc)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("ENUMERATION       %\n\n",a) &
+  bprintf("SEES              ?\n\n") &
+  bprintf("SETS              ?\n\n") &
+  bprintf("END\n")
+ =>
+  copy_template_to_CFG(a.enm)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("INTERFACE      %\n\nOPERATIONS\n\n  ?\n\nEND\n",a)
+ =>
+  copy_template_to_CFG(a.itf)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("SYSTEM       %\n\n",a) &
+  bprintf("SUPPORTS     ?\n\n") &
+  bprintf("IS\n\n  GLOBAL\n    ?\n  END;\n\n  BASE\n    ?\n  MANDATORY\n    ?\n  OPTIONAL\n    ?\n  END\n\nEND\n")
+ =>
+  copy_template_to_CFG(a.bse)(f);
+
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("          /*** VHDL Event % ***/\n\n",a) &
+  bprintf("MACHINE           %\n\n",a) &
+  bprintf("SEES              VHDL_PK\n\n") &
+  bprintf("/*  Two variables, to denote the current value (") &
+  bprintf(P) &
+  bprintf(")\n") &
+  bprintf("    and the value when it was last inspected (") &
+  bprintf(P) &
+  bprintf("_event)\n*/\n\n") &
+  bprintf("VARIABLES         ") & 
+  bprintf(P) &
+  bprintf(", ") &
+  bprintf(P) &
+  bprintf("_event\n\n") &
+  bprintf("INVARIANT         ") &
+  bprintf(P) &
+  bprintf(": std_logic & ") &
+  bprintf(P) &
+  bprintf("_event: std_logic\n\n") &
+  bprintf("INITIALISATION    BEGIN ") &
+  bprintf(P) &
+  bprintf(" := 0 || ") &
+  bprintf(P) &
+  bprintf("_event := 0 END\n\n") &
+  bprintf("OPERATIONS\n\n") &
+  bprintf("/*  Operation to change value:\n*/\n\n  ") &
+  bprintf(P) &
+  bprintf("_chg = BEGIN ") &
+  bprintf(P) &
+  bprintf(" := (") &
+  bprintf(P) &
+  bprintf("+1) mod 2  END;\n\n") &
+  bprintf("/*  Operation to simulate inspection:\n*/\n\n  ") &
+  bprintf(P) &
+  bprintf("_ack = BEGIN ") &
+  bprintf(P) &
+  bprintf("_event := ") &
+  bprintf(P) &
+  bprintf(" END\n\n") &
+  bprintf("END\n")
+ =>
+  copy_EV_template_to_CFG(a.mch)(P)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("           /*** VHDL Package % (stateless) ***/\n\n",a) &
+  bprintf("MACHINE           %\n\n",a) &
+  bprintf("SEES              VHDL_PK\n\n") & 
+  bprintf("SETS              ?\n\n") & 
+  bprintf("CONSTANTS         ?\n\n") &
+  bprintf("PROPERTIES        ?\n\n") &
+  bprintf("OPERATIONS\n\n  ?\n\n") &
+  bprintf("END\n")
+ =>
+  copy_PK_template_to_CFG(a.mch)(P)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("                 /*** VHDL Clocked Process % ***/\n\n",a) &
+  bprintf("MACHINE           %\n\n",a) &
+  bprintf("SEES              VHDL_PK\n\n") & 
+  bprintf("INCLUDES          ?\n\n") &
+  bprintf("/* Variables translated into signals of the entity-architecture module */\n\n") &
+  bprintf("VARIABLES         ?\n\n") & 
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n") &
+  bprintf("/* Single operation having the same name as the Clocked Process */\n\n  ") &
+  bprintf(P) &
+  bprintf("(?) =\n") &
+  bprintf("    PRE  \n      ?\n") &
+  bprintf("    THEN\n      ?\n") &
+  bprintf("    END\n\n") &
+  bprintf("END\n")
+ =>
+  copy_CP_template_to_CFG(a.mch)(P)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("                 /*** VHDL Process % ***/\n\n",a) &
+  bprintf("MACHINE           %\n\n",a) &
+  bprintf("SEES              VHDL_PK\n\n") & 
+  bprintf("INCLUDES          ?\n\n") &
+  bprintf("/* Variables translated into signals of the entity-architecture module */\n\n") &
+  bprintf("VARIABLES         ?\n\n") & 
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n") &
+  bprintf("/* Single operation having the same name as the Process */\n\n  ") &
+  bprintf(P) &
+  bprintf("(?) =\n") &
+  bprintf("    PRE  \n      ?\n") &
+  bprintf("    THEN\n      ?\n") &
+  bprintf("    END\n\n") &
+  bprintf("END\n")
+ =>
+  copy_PR_template_to_CFG(a.mch)(P)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("       /*** VHDL Enumeration % ***/\n\n",a) &
+  bprintf("ENUMERATION       %\n\n",a) &
+  bprintf("SETS\n\n") &
+  bprintf("  ?\n\n") &
+  bprintf("/*  SET1 = {el1,el2,el3}; */\n") &
+  bprintf("/*  SET2 = {el4,el5,el6,el7,el8} */\n\n") &
+  bprintf("END\n")
+ =>
+  copy_EN_template_to_CFG(a.enm)(P)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("                 /*** VHDL Compound Module % ***/\n\n",a) &
+  bprintf("MACHINE           %\n\n",a) &
+  bprintf("SEES              VHDL_PK\n\n") & 
+  bprintf("\n/* Inputs/outputs form the variables */\n\n") &
+  bprintf("VARIABLES         ?\n\n") & 
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("\n/* Module _SM or _CM machines should be included,\n") &
+  bprintf("   together with Process _PS and/or Event _EV machines */\n\n") &
+  bprintf("INCLUDES          ?\n\n") &
+  bprintf("\n/* Promote the event _source op, if used */\n\n") &
+  bprintf("PROMOTES          ?\n\n") &
+  bprintf("\n/* Inputs/outputs initialised to arbitrary values; not translated */\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n") &
+  bprintf("/*  Inputs are set by this _port operation; not translated, but\n") &
+  bprintf("    used to determine which of ") &
+  bprintf(P) &
+  bprintf("'s variables are inputs or outputs\n*/\n\n  ") &
+  bprintf(P) &
+  bprintf("_port(?) =\n") &
+  bprintf("    PRE  \n      ?\n") &
+  bprintf("    THEN\n      ?\n") &
+  bprintf("    END;\n\n") &
+  bprintf("/* Architecture body given in this _architecture operation\n*/\n\n  ? <-- ") &
+  bprintf(P) &
+  bprintf("_architecture =\n") &
+  bprintf("    BEGIN\n      ?\n") &
+  bprintf("    END\n\n") &
+  bprintf("END\n")
+ =>
+  copy_CM_template_to_CFG(a.mch)(P)(f);
+
+
+
+  bprintf("\n      ") &
+  bprintf(S) &
+  bprintf("_port(?) ||")
+ =>
+  copy_CM_CFG_2(S,m,n);
+
+  bprintf("\n      ") &
+  bprintf(S) &
+  bprintf("_architecture ||")
+ =>
+  copy_CM_CFG_3(S,m,n);
+
+  bprintf(",\n    %",a)
+ =>
+  copy_CM_CFG_1(a,m,n);
+
+  bprintf("\n\n    %",a)
+ =>
+  copy_CM_CFG_1(a,1,n);
+
+  CM_CFG_Flag_Is_Set &
+  Read_CM_CFG_Store(S) &
+  Read_CM_CFG_No_Suffix_Store(T) &
+  bstring(f) &
+  bconnect(f) &
+  bprintf("                 /*** VHDL Compound Module % ***/\n\n",a) &
+  bprintf("MACHINE           %\n\n",a) &
+  bprintf("SEES              VHDL_PK\n\n") & 
+  bprintf("\n/* Inputs/outputs form the variables */\n\n") &
+  bprintf("VARIABLES         ?\n\n") & 
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("\n/* Module _SM or _CM machines should be included,\n") &
+  bprintf("   together with Process _PS and/or Event _EV machines */\n\n") &
+  bprintf("INCLUDES") &
+  copy_CM_CFG_1 bnmap S &
+  bprintf("\n\n\n/* Promote the event _source op, if used */\n\n") &
+  bprintf("PROMOTES          ?\n\n") &
+  bprintf("\n/* Inputs/outputs initialised to arbitrary values; not translated */\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n") &
+  bprintf("/*  Inputs are set by this _port operation; not translated, but\n") &
+  bprintf("    used to determine which of ") &
+  bprintf(P) &
+  bprintf("'s variables are inputs or outputs\n*/\n\n  ") &
+  bprintf(P) &
+  bprintf("_port(?) =\n") &
+  bprintf("    PRE  \n      ?\n") &
+  bprintf("    THEN\n      ?\n") &
+  bprintf("    END;\n\n") &
+  bprintf("/* Port mapping is defined in this _architecture operation\n*/\n\n  ") &
+  bprintf(P) &
+  bprintf("_architecture =\n") &
+  bprintf("    BEGIN") &
+  bprintf("\n") &
+  copy_CM_CFG_2 bnmap T &  
+  bprintf("\n") &
+  copy_CM_CFG_3 bnmap T &  
+  bprintf("\n\n      ? := ?\n") &
+  bprintf("\n    END\n\n") &
+  bprintf("END\n")
+ =>
+  copy_CM_template_to_CFG(a.mch)(P)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("                 /*** VHDL Simple Module % ***/\n\n",a) &
+  bprintf("MACHINE           %\n\n",a) &
+  bprintf("SEES              VHDL_PK\n\n") & 
+  bprintf("\n/* Inputs/outputs form the variables */\n\n") &
+  bprintf("VARIABLES         ?\n\n") & 
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("\n/* Process _PS and/or Event _EV machines may be included\n") &
+  bprintf("   -- note that other Module _SM/_CM machines may NOT be\n") &
+  bprintf("      included in this Simple Module */\n\n") &
+  bprintf("INCLUDES          ?\n\n") &
+  bprintf("\n/* Promote the event _source op, if used */\n\n") &
+  bprintf("PROMOTES          ?\n\n") &
+  bprintf("\n/* Inputs/outputs initialised to arbitrary values; not translated */\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n") &
+  bprintf("/*  Inputs are set by this _port operation; not translated, but\n") &
+  bprintf("    used to determine which of the variables are inputs or outputs\n*/\n\n  ") &
+  bprintf(P) &
+  bprintf("_port(?) =\n") &
+  bprintf("    PRE  \n      ?\n") &
+  bprintf("    THEN\n      ?\n") &
+  bprintf("    END;\n\n") &
+  bprintf("/* Architecture body given in this _architecture operation\n*/\n\n  ") &
+  bprintf(P) &
+  bprintf("_architecture =\n") &
+  bprintf("    BEGIN\n      ?\n") &
+  bprintf("    END\n\n") &
+  bprintf("END\n")
+ =>
+  copy_SM_template_to_CFG(a.mch)(P)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("MACHINE           %(?)\n\n",a) &
+  bprintf("VARIABLES         ?\n\n") & 
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n  ?\n\n") &
+  bprintf("END\n")
+ =>
+  copy_template_to_CFG(a.mch)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("REFINEMENT        %\n\n",a) &
+  bprintf("REFINES           ?\n\n") &
+  bprintf("VARIABLES         ?\n\n") & 
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n  ?\n\n") &
+  bprintf("END\n")
+ =>
+  copy_template_to_CFG(a.ref)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bprintf("IMPLEMENTATION    %\n\n",a) &
+  bprintf("REFINES           ?\n\n") &
+  bprintf("IMPORTS           ?\n\n") &
+  bprintf("INVARIANT         ?\n\n") &
+  bprintf("INITIALISATION    ?\n\n") &
+  bprintf("OPERATIONS\n\n  ?\n\n") &
+  bprintf("END\n")
+ =>
+  copy_template_to_CFG(a.imp)(f);
+
+  copy_template_to_CFG(a.b)(bcatl("CFG/",a,".",b)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsr(a.b) &
+  Writef(bcatl("\n  Introduced ",a,".",b,"\n"))
+ =>
+  introduceNEW5$N(a.b)(1);
+
+
+  brule(IntroduceFromUserX.9,(P,"_EN")) &
+  copy_EN_template_to_CFG(a.enm)(P)(bcatl("CFG/",a,".",enm)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.enm:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.enm) &
+  AddUsrVHDL(a.enm) &
+  Writef(bcatl("\n  Introduced VHDL Enumeration ",a,".",enm,"\n"))
+ =>
+  introduceNEW5$N(a.enm_vhdl)(1);
+
+
+
+  brule(IntroduceFromUserX.9,(P,"_EV")) &
+  copy_template_to_CFG(a.imp)(P)(bcatl("CFG/",a,".",imp)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.imp) &
+  AddUsrVHDL(a.imp) &
+  Writef(bcatl("\n  Introduced VHDL Event ",a,".",imp,"\n"))
+ =>
+  introduceNEW5$N(a.imp_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_EV")) &
+  copy_template_to_CFG(a.ref)(P)(bcatl("CFG/",a,".",ref)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.ref:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.ref) &
+  AddUsrVHDL(a.ref) &
+  Writef(bcatl("\n  Introduced VHDL Event ",a,".",ref,"\n"))
+ =>
+  introduceNEW5$N(a.ref_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_EV")) &
+  copy_EV_template_to_CFG(a.mch)(P)(bcatl("CFG/",a,".",mch)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.mch) &
+  AddUsrVHDL(a.mch) &
+  Writef(bcatl("\n  Introduced VHDL Event ",a,".",mch,"\n"))
+ =>
+  introduceNEW5$N(a.mch_vhdl)(1);
+
+
+
+  brule(IntroduceFromUserX.9,(P,"_PK")) &
+  copy_template_to_CFG(a.imp)(P)(bcatl("CFG/",a,".",imp)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.imp) &
+  AddUsrVHDL(a.imp) &
+  Writef(bcatl("\n  Introduced VHDL Package ",a,".",imp,"\n"))
+ =>
+  introduceNEW5$N(a.imp_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_PK")) &
+  copy_template_to_CFG(a.ref)(P)(bcatl("CFG/",a,".",ref)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.ref:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.ref) &
+  AddUsrVHDL(a.ref) &
+  Writef(bcatl("\n  Introduced VHDL Package ",a,".",ref,"\n"))
+ =>
+  introduceNEW5$N(a.ref_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_PK")) &
+  copy_PK_template_to_CFG(a.mch)(P)(bcatl("CFG/",a,".",mch)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.mch) &
+  AddUsrVHDL(a.mch) &
+  Writef(bcatl("\n  Introduced VHDL Package ",a,".",mch,"\n"))
+ =>
+  introduceNEW5$N(a.mch_vhdl)(1);
+
+
+
+  brule(IntroduceFromUserX.9,(P,"_CP")) &
+  copy_template_to_CFG(a.imp)(P)(bcatl("CFG/",a,".",imp)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.imp) &
+  AddUsrVHDL(a.imp) &
+  Writef(bcatl("\n  Introduced VHDL Clocked Process ",a,".",imp,"\n"))
+ =>
+  introduceNEW5$N(a.imp_vhdl)(1);
+
+
+  brule(IntroduceFromUserX.9,(P,"_CP")) &
+  copy_template_to_CFG(a.ref)(P)(bcatl("CFG/",a,".",ref)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.ref:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.ref) &
+  AddUsrVHDL(a.ref) &
+  Writef(bcatl("\n  Introduced VHDL Clocked Process ",a,".",ref,"\n"))
+ =>
+  introduceNEW5$N(a.ref_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_CP")) &
+  copy_CP_template_to_CFG(a.mch)(P)(bcatl("CFG/",a,".",mch)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.mch) &
+  AddUsrVHDL(a.mch) &
+  Writef(bcatl("\n  Introduced VHDL Clocked Process ",a,".",mch,"\n"))
+ =>
+  introduceNEW5$N(a.mch_vhdl)(1);
+
+
+
+  brule(IntroduceFromUserX.9,(P,"_PR")) &
+  copy_template_to_CFG(a.imp)(P)(bcatl("CFG/",a,".",imp)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.imp:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.imp) &
+  AddUsrVHDL(a.imp) &
+  Writef(bcatl("\n  Introduced VHDL Process ",a,".",imp,"\n"))
+ =>
+  introduceNEW5$N(a.imp_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_PR")) &
+  copy_template_to_CFG(a.ref)(P)(bcatl("CFG/",a,".",ref)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.ref:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.ref) &
+  AddUsrVHDL(a.ref) &
+  Writef(bcatl("\n  Introduced VHDL Process ",a,".",ref,"\n"))
+ =>
+  introduceNEW5$N(a.ref_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_PR")) &
+  copy_PR_template_to_CFG(a.mch)(P)(bcatl("CFG/",a,".",mch)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.mch) &
+  AddUsrVHDL(a.mch) &
+  Writef(bcatl("\n  Introduced VHDL Process ",a,".",mch,"\n"))
+ =>
+  introduceNEW5$N(a.mch_vhdl)(1);
+
+
+
+  brule(IntroduceFromUserX.9,(P,"_CM")) &
+  copy_CM_template_to_CFG(a.mch)(P)(bcatl("CFG/",a,".",mch)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.mch) &
+  AddUsrVHDL(a.mch) &
+  Writef(bcatl("\n  Introduced VHDL Compound Module ",a,".",mch,"\n"))
+ =>
+  introduceNEW5$N(a.mch_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_SM")) &
+  copy_SM_template_to_CFG(a.mch)(P)(bcatl("CFG/",a,".",mch)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.mch) &
+  AddUsrVHDL(a.mch) &
+  Writef(bcatl("\n  Introduced VHDL Simple Module ",a,".",mch,"\n"))
+ =>
+  introduceNEW5$N(a.mch_vhdl)(1);
+
+  brule(IntroduceFromUserX.9,(P,"_SG")) &
+  copy_SM_template_to_CFG(a.mch)(P)(bcatl("CFG/",a,".",mch)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_OPEN_VHDL_CSTR:0)) &
+  AddCfg(a.mch) &
+  AddUsrVHDL(a.mch) &
+  Writef(bcatl("\n  Introduced VHDL Signal ",a,".",mch,"\n"))
+ =>
+  introduceNEW5$N(a.mch_vhdl)(1);
+
+
+
+
+
+  copy_template_to_CFG(a.bse_cb)(bcatl("CFG/",a,".",bse)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.bse:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(a.bse) &
+  AddUsr(a.bse) &
+  Writef(bcatl("\n  Introduced ",a,".bse\n"))
+ =>
+  introduceNEW5$N(a.bse_cb)(1);
+
+  copy_template_to_CFG(a.bse_dom)(bcatl("CFG/",a,".",bse)) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.bse:BT_CMT_OPEN_CSTR:0)) &
+  AddCfg(a.bse) &
+  AddUsr(a.bse) &
+  Writef(bcatl("\n  Introduced ",a,".bse\n"))
+ =>
+  introduceNEW5$N(a.bse_dom)(1);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(a,".",b," exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW5$N(a.b)(0);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(a,".",enm," exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW5$N(a.enm_vhdl)(0);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(a,".",imp," exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW5$N(a.imp_vhdl)(0);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(a,".",ref," exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW5$N(a.ref_vhdl)(0);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl(a,".",mch," exists in SRC"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW5$N(a.mch_vhdl)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  introduceNEW4$N(a.b);
+
+  bget(".Bcom",x) &
+  introduceNEW5$N(a.b)(x)
+ =>
+  introduceNEW4$N(a.b);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("",a," should be an identifier"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW3$N(a.b);
+
+  bident(a) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",b," SRC")) &
+  introduceNEW4$N(a.b)
+ =>
+  introduceNEW3$N(a.b);
+
+  bident(a) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceFromUserX.9)) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",enm," SRC")) &
+  introduceNEW4$N(a.enm_vhdl)
+ =>
+  introduceNEW3$N(a.enm_vhdl);
+
+  bident(a) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceFromUserX.9)) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",imp," SRC")) &
+  introduceNEW4$N(a.imp_vhdl)
+ =>
+  introduceNEW3$N(a.imp_vhdl);
+
+  bident(a) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceFromUserX.9)) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",ref," SRC")) &
+  introduceNEW4$N(a.ref_vhdl)
+ =>
+  introduceNEW3$N(a.ref_vhdl);
+
+  bident(a) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceFromUserX.9)) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",mch," SRC")) &
+  introduceNEW4$N(a.mch_vhdl)
+ =>
+  introduceNEW3$N(a.mch_vhdl);
+
+  bident(a) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",bse," SRC")) &
+  introduceNEW4$N(a.bse_dom)
+ =>
+  introduceNEW3$N(a.bse_dom);
+
+  bident(a) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".",bse," SRC")) &
+  introduceNEW4$N(a.bse_cb)
+ =>
+  introduceNEW3$N(a.bse_cb);
+
+  IsCfg(a.c) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Name ",a," is already used"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW3$N(a.b);
+
+
+
+  bident(a) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".itf SRC")) &
+  introduceNEW4$N(a.itf)
+ =>
+  introduceNEW3ITF$N(a.itf);
+
+  IsCfg(a.b) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Name ",a," is already used"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW3ITF$N(a.itf);
+
+  introduceNEW3$N(a.b)
+ =>
+  introduceNEW2_1$N(a.b)(n);
+
+  bident(a) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Construct name ",a," too long (max length 60)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW2_1$N(a.b)(n);
+
+  bident(a) &
+  btest(n<60) &
+  introduceNEW3$N(a.b)
+ =>
+  introduceNEW2_1$N(a.b)(n);
+
+  bident(a) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("DOMAIN name ",a," should be of length 2"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW2_1$N(a.bse_dom)(n);
+
+  bident(a) &
+  introduceNEW3$N(a.bse_dom)
+ =>
+  introduceNEW2_1$N(a.bse_dom)(2);
+
+  bident(a) &
+  InformBaseNameTooLong(a)
+ =>
+  introduceNEW2_1$N(a.bse_cb)(n);
+
+  bident(a) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("BASE name ",a," too long (max length 30)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW2_1$N(a.bse)(n);
+
+  bident(a) &
+  btest(n<30) &
+  introduceNEW3$N(a.bse_cb)
+ =>
+  introduceNEW2_1$N(a.bse_cb)(n);
+
+  bident(a) &
+  btest(n<30) &
+  introduceNEW3$N(a.bse)
+ =>
+  introduceNEW2_1$N(a.bse)(n);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("Construct name ",a," too long (max length 40)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW2_1$N(a.itf)(n);
+
+  btest(n<40) &
+  introduceNEW3ITF$N(a.itf)
+ =>
+  introduceNEW2_1$N(a.itf)(n);
+
+  ReadData(a) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("",a," should be an identifier"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  introduceNEW2$N(b);
+
+  ReadData(a) &
+  bident(a) &
+  introduceNEW2_1$N(a.b)(blen(a))
+ =>
+  introduceNEW2$N(b);
+
+  ReadData(0) &
+  Writef("\n  Aborted\n")
+ =>
+  introduceNEW2$N(b);
+
+
+  ModifyData(a) &
+  introduceNEW2$0(b)
+ =>
+  introduceNEW2_Motif(a.b);
+
+
+
+
+  Read_CM_CFG_No_Suffix_Store(S) &
+  bsearch(?,S,T) &
+  Modify_CM_CFG_No_Suffix_Store(T)
+ =>
+  cre_CM_CFG_No_CM_suffix2;
+
+  brule(IntroduceFromUserX.9,(P,"_CM")) &
+  Read_CM_CFG_No_Suffix_Store(S) &
+  Modify_CM_CFG_No_Suffix_Store((S,P))
+ =>
+  cre_CM_CFG_No_CM_suffix1(a);
+
+  brule(IntroduceFromUserX.9,(P,"_SM")) &
+  Read_CM_CFG_No_Suffix_Store(S) &
+  Modify_CM_CFG_No_Suffix_Store((S,P))
+ =>
+  cre_CM_CFG_No_CM_suffix1(a);
+
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceFromUserX.9)) &
+  cre_CM_CFG_No_CM_suffix1(a)
+ =>
+  cre_CM_CFG_No_CM_suffix(a);
+
+  Set_CM_CFG_Flag &
+  bsearch(?,b,c) &
+  Modify_CM_CFG_Store(c) &
+  Modify_CM_CFG_No_Suffix_Store(?) &
+  cre_CM_CFG_No_CM_suffix bsmap c &
+  cre_CM_CFG_No_CM_suffix2 &
+  introduceNEW2_Motif(a.mch_vhdl) &
+  ReSet_CM_CFG_Flag
+ =>
+  introduceNEW2_Motif_CM_CFG(a|b);
+
+
+/***********/
+
+
+/*
+  intr_SRC_7$(N+1)(a.b)(f)(g)         /? file still doesn't parse ?/
+ =>
+  intr_SRC_8$N(a.b)(f)(g);
+
+  ReadNonZeroNumber(1) &
+  bget(f,W) &                             /? file now parses ?/
+  bshell("$BKIT/BLIB/KillEditor") &
+  intr_SRC_5_1$(N+1)(a.b)(f)(g)(blen(a))
+ =>
+  intr_SRC_8$N(a.b)(f)(g);
+
+  ReadNonZeroNumber(0) &          /? Abandon Introduce ?/
+  bshell("$BKIT/BLIB/KillEditor")
+ =>
+  intr_SRC_8$N(a.b)(f)(g);
+
+  Writef(bcatl("\n  ",a,".",b," does not parse:\n")) &
+  bshell("cat .Berr ; $BKIT/BLIB/ClearBerr") &
+  FifoWrite_Store((BT_CMT_NOT_PARSE_M,a.b,0),(GetNonZeroNumberFromUserX.1)) &
+  intr_SRC_8$N(a.b)(f)(g)
+ =>
+  intr_SRC_7$N(a.b)(f)(g);
+*/
+
+  Writef(bcatl("\n  ",a,".",b," does not parse\n")) &
+  bshell("cat .Berr ; $BKIT/BLIB/ClearBerr") &
+  ResetFromMotif &
+  FifoWrite_NoStore((BT_CMT_NOT_PARSE_M,a.b,0)) &
+  ClearParseJob &
+  ModifyJobs(?) &
+  ModifyCurrentJob(?) &
+  LoadToolkit(1)
+ =>
+  intr_SRC_7$N(a.b)(f)(g);
+
+
+
+  bget(".Bcom",no) &
+  bmodr(GetNumberFromUserX.1,0) &
+  intr_SRC_8$N(a.b)(f)(g)
+ =>
+  intr_SRC_7M$N(a.b)(f)(g);
+
+  bget(".Bcom",yes) &
+  bmodr(GetNumberFromUserX.1,1) &
+  intr_SRC_8$N(a.b)(f)(g)
+ =>
+  intr_SRC_7M$N(a.b)(f)(g);
+
+  ReadEnvEditorString(e) &
+  bshell("cp .Berr .BBcom") &
+  FifoWrite_NoStore((BT_DSP_FILE_M,".BBcom",0)) &
+  bshell(bcatl(e," ",f,"& echo $! > .Bed")) &
+  intr_SRC_7$N(a.b)(f)(g)                /* SRC file doesn't parse */
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsr(a.b) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced ",a,".",b," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  IsVHDL &
+  brule(IntroduceFromUserX.9,(P,"_EV")) &
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_VHDL_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsrVHDL(a.b) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced VHDL Event ",a,".",b," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  IsVHDL &
+  brule(IntroduceFromUserX.9,(P,"_PK")) &
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_VHDL_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsrVHDL(a.b) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced VHDL Package ",a,".",b," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  IsVHDL &
+  brule(IntroduceFromUserX.9,(P,"_CP")) &
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_VHDL_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsrVHDL(a.b) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced VHDL Clocked Process ",a,".",b," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  IsVHDL &
+  brule(IntroduceFromUserX.9,(P,"_PR")) &
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_VHDL_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsrVHDL(a.b) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced VHDL Process ",a,".",b," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  IsVHDL &
+  brule(IntroduceFromUserX.9,(P,"_CM")) &
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_VHDL_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsrVHDL(a.b) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced VHDL Compound Module ",a,".",b," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  IsVHDL &
+  brule(IntroduceFromUserX.9,(P,"_SM")) &
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_VHDL_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsrVHDL(a.b) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced VHDL Simple Module ",a,".",b," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  IsVHDL &
+  brule(IntroduceFromUserX.9,(P,"_SG")) &
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.b:BT_CMT_VHDL_CSTR:0)) &
+  AddCfg(a.b) &
+  AddUsrVHDL(a.b) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced VHDL Signal ",a,".",b," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.b)(f)(g);
+
+  IsVHDL &
+  brule(IntroduceFromUserX.9,(P,"_EN")) &
+  bget(f,W) &                            /* SRC file parses */
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.enm:BT_CMT_VHDL_CSTR:0)) &
+  AddCfg(a.enm) &
+  AddUsrVHDL(a.enm) &
+  bshell(bcatl("mv -f ",f," ",g)) &
+  Writef(bcatl("\n  Introduced VHDL Enumeration ",a,".",enm," from SRC\n"))
+ =>
+  intr_SRC_6$N(a.enm)(f)(g);
+
+  intr_SRC_6$N(a.b)(f)(g)
+ =>
+  intr_SRC_5_1$N(a.b)(f)(g)(n);
+
+  IsVHDL &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceFromUserX.9)) &
+  intr_SRC_6$N(a.b)(f)(g)
+ =>
+  intr_SRC_5_1$N(a.b)(f)(g)(n);
+
+  intr_SRC_6$N(a.bse)(f)(g)
+ =>
+  intr_SRC_5_2_bse$N(a.bse)(f)(g)(X);
+
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("Base names may not contain the underscore character - ",a):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_SRC_5_2_bse$N(a.bse)(f)(g)(A;B);
+
+  bget(".Bcom",X) &
+  intr_SRC_5_2_bse$N(a.bse)(f)(g)(X)
+ =>
+  intr_SRC_5_1_bse$N(a.bse)(f)(g);
+  
+  bident(a) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Construct name ",a," too long (max length 60)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_SRC_5_1$N(a.b)(f)(g)(n);
+
+  bident(a) &
+  btest(n<60) &
+  intr_SRC_6$N(a.b)(f)(g)
+ =>
+  intr_SRC_5_1$N(a.b)(f)(g)(n);
+
+  bident(a) &
+  btest(n<60) &
+  IsVHDL &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceFromUserX.9)) &
+  intr_SRC_6$N(a.b)(f)(g)
+ =>
+  intr_SRC_5_1$N(a.b)(f)(g)(n);
+
+  bident(a) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Enumeration name ",a," too long (max length 30)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_SRC_5_1$N(a.enm)(f)(g)(n);
+
+  bident(a) &
+  btest(n<30) &
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  intr_SRC_6$N(a.enm)(f)(g)
+ =>
+  intr_SRC_5_1$N(a.enm)(f)(g)(n);
+
+  bident(a) &
+  GetJobs(X) &
+  AddJob(X,(bcatl("Base name ",a," too long (max length 30)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_SRC_5_1$N(a.bse)(f)(g)(n);
+
+  bident(a) &
+  btest(n<30) &
+  bshell(bcatl("echo ",a," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  intr_SRC_5_1_bse$N(a.bse)(f)(g)
+ =>
+  intr_SRC_5_1$N(a.bse)(f)(g)(n);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("",a," is not an identifier"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  intr_SRC_5(a.b);
+
+  bident(a) &
+  bshell("$BKIT/BLIB/ClearBerr") &
+  intr_SRC_5_1$0(a.b)(bcatl("SRC/",a,".",b))(bcatl("CFG/",a,".",b))(blen(a))
+ =>
+  intr_SRC_5(a.b);
+
+  intr_SRC_5(?);
+
+  intr_SRC_5 bsmap a
+ =>
+  intr_SRC_M(a);
+
+/***********/
+
+
+  intr_SRC_5_1$0(a.b)(bcatl("SRC/",a,".",b))(bcatl("CFG/",a,".",b))(blen(a))
+ =>
+  intr_SRC_force_0(a.b)
+
+/***********/
+
+END
+
+&
+
+THEORY CheckPASPX IS
+
+#define CheckPASP(x,y,z,R) \
+           bcall(((CATL~;SHELL;NEWV;WRITE;SUB;MAP)~;CheckPASPX)~:cp(x)(y)(z)(R))
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  bprintf(" (?)")
+ =>
+  cp6_5(?);
+
+  bprintf(" (%:%:%)",c,x,y)
+ =>
+  cp6_5(c:x:y);
+
+  bprintf(" (%_%:%:%)",b,c,x,y)
+ =>
+  cp6_5((b;c):x:y);
+
+  bprintf(" (%%_%:%:%)",a,b,c,x,y)
+ =>
+  cp6_5((a;b;c):x:y);
+
+  bprintf(",\n") &
+  cp6_5(y)
+ =>
+  cp6_4(y,m,n);
+
+  cp6_5(y)
+ =>
+  cp6_4(y,1,n);
+
+  cp6_4 bnmap (y)
+ =>
+  cp6_3(a)(y);
+
+  InformCantConnect(g) &
+  PFZ
+ =>
+  cp6_2(a)(R)(g)(x|y);
+
+  bconnect(g) &
+  bprintf(" (%)\n|\n(\n",x) &
+  cp6_3(a)([Rename_:=R]y) &
+  bprintf("\n)\n") &
+  bclose
+ =>
+  cp6_2(a)(R)(g)(x|y);
+
+  bconnect(g) &
+  bprintf(" (%)\n|\n(\n",x) &
+  cp6_3(a)(y) &
+  bprintf("\n)\n") &
+  bclose
+ =>
+  cp6_2(a)(?)(g)(x|y);
+
+  cp6_1(a)(R)(f)(g);   /* no .ldf */
+
+  bget(f,x) &
+  cp6_2(a)(R)(g)(x)
+ =>
+  cp6_1(a)(R)(f)(g);
+
+  GetJobs(X) &
+  AddJobs(X,(bnewv(R,b).mch:BT_PASP_SLIB_HTX:0)) &
+  cp6_1(a)(R)(bcatl("$BKIT/BLIB/LIB/CDE/PASP/",a,".ldf"))(bcatl("CDE/PASP/",R,b,".ldf")) /* &
+  cp7(a)(R)(bcatl("$BKIT/BLIB/LIB/CDE/PASP/",a,".ldf")) */
+ =>
+  cp6(a)(b)(R);
+
+  GetJobs(X) &
+  AddJobs(X,(a.mch:BT_PASP_SLIB_HTX:0)) &
+  cp6_1(a)(?)(bcatl("$BKIT/BLIB/LIB/CDE/PASP/",a,".ldf"))(bcatl("CDE/PASP/",a,".ldf")) /* &
+  cp7(a)(?)(bcatl("$BKIT/BLIB/LIB/CDE/PASP/",a,".ldf")) */
+ =>
+  cp6(a)(b)(?);
+
+  cp6(a)(b)(R) &
+  bshell(bcatl("sed -e s+Rename_+",u,"_+g < ",r," > ",s))
+ =>
+  cp5(a)(b)(R)(r)(s)(u);
+
+  cp6(a)(b)(?) &
+  bshell(bcatl("cp ",r," ",s))
+ =>
+  cp5(a)(b)(?)(r)(s)(u);
+
+  cp4(r)(a)(b)(R)(1);
+
+  cp5(a)(b)(R)(bcatl("$BKIT/BLIB/LIB/CDE/PASP/",a,".param"))(bcatl("CDE/PASP/",R,b,".param"))(r)
+ =>
+  cp4(r)(a)(b)(R)(0);
+
+  cp5(a)(b)(?)(bcatl("$BKIT/BLIB/LIB/CDE/PASP/",a,".param"))(bcatl("CDE/PASP/",a,".param"))(r)
+ =>
+  cp4(r)(a)(b)(?)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cp3(r)(a)(b)(R);
+
+  bget(".Bcom",x) &
+  cp4(r)(a)(b)(R)(x)
+ =>
+  cp3(r)(a)(b)(R);
+
+  cp2(r)(a)(b)(R)(1);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".param $BKIT/BLIB/LIB/CDE/PASP")) &
+  cp3(r)(a)(b)(R)
+ =>
+  cp2(r)(a)(b)(R)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  cp1(r)(a)(b)(R);
+
+  bget(".Bcom",x) &
+  cp2(r)(a)(b)(R)(x)
+ =>
+  cp1(r)(a)(b)(R);
+
+  cp(r)(a)(b)(R);
+
+  IsPASPToolkit &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists PASP CDE")) &
+  cp1(r)(a)(b)(R)
+ =>
+  cp(r)(a)(b)(R)
+
+END
+
+&
+
+THEORY InGetRenameInfoX IS
+
+#define InGetRenameInfo(x,y) \
+    bcall(((NEWV~;CATL;SHELL;MODR;SHELL)~;InGetRenameInfoX)~:igr(x)(y))
+
+  ?; /* (Rename_File:(My_ | My | File)) or (File) */
+#define ReadRenameInfo(x) brule(InGetRenameInfoX.1,x)
+#define ModrRenameInfo(x) bmodr(InGetRenameInfoX.1,x)
+
+  ?; /* My_File or File */
+#define ReadActRenamedMch(x) brule(InGetRenameInfoX.2,x)
+#define ModrActRenamedMch(x) bmodr(InGetRenameInfoX.2,x)
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  igr1(r)(a);
+  
+  bget(".Bcom",R) &
+  ModrRenameInfo((bnewv(Rename_,a):(R | r | a))) &
+  ModrActRenamedMch(bnewv(R,a))
+ =>
+  igr1(r)(a);
+  
+  bshell(bcatl("$BKIT/BLIB/LIB_Addunderscore ",r)) &
+  igr1(r)(a)
+ =>
+  igr(r)(a);
+
+  ModrRenameInfo(a) &
+  ModrActRenamedMch(a)
+ =>
+  igr(?)(a)
+
+END
+
+&
+
+THEORY CreHtmlCSLIBCodeFileX IS
+
+#define CreHtmlCSLIBCodeFile(x) \
+  bcall(((ARI;MAP;CATL;SHELL;RULE;NEWV;MODR;WRITE)~;CreHtmlCSLIBCodeFileX)~:csh0(x))
+
+/*
+  OWN (NAME)     ("<A NAME=\"%!%\">%</A>\n",CONST,c1,c1)
+    M MCH
+    O OP
+    C CONST
+
+  OTHERS (REF)   ("<A HREF=\"%.p.html#%!%\">%</A>\n",mchname,CONST,c1,c1) 
+    m MCH
+    o OP
+    c CONST
+*/
+
+  bprintf(a) &
+  bprintf("|%\n",b)
+ =>
+  csh_name(a)(b);
+
+  bstring(b) &
+  bprintf(a) &
+  bprintf("|") &
+  bprintf(b) &
+  bprintf("\n")
+ =>
+  csh_name(a)(b);
+
+
+  csh_own_ops(N);
+
+  brule(OwnMchColOps.N,(a:o)) &
+  csh_name("P")(o)  &
+  csh_own_ops(N+1)
+ =>
+  csh_own_ops(N);
+
+
+  csh_own_enumel(N);
+
+  brule(OwnMchColEnum.N,(a:o)) &
+  csh_name("T")(o)  &
+  csh_own_enumel(N+1)
+ =>
+  csh_own_enumel(N);
+
+
+  csh_own_const(N);
+
+  brule(OwnMchColConsts.N,(a:o)) &
+  csh_name("D")(o)  &
+  csh_own_const(N+1)
+ =>
+  csh_own_const(N);
+
+  csh_name("b")(s)
+ =>
+  csh_c_keywords(s);
+
+
+
+  Connect(".Bcom") &
+  csh_name(bcatl("CDE/C/|",a,".c|",a,".mch"))(a) &
+  csh_c_keywords bsmap c_keywords_html &
+  csh_own_enumel(1) &
+  csh_own_const(1) &
+  csh_own_ops(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc") &
+
+  Connect(".Bcom") &
+  csh_name(bcatl("CDE/C/|",a,".h|",a,".mch"))(a) &
+  csh_c_keywords bsmap c_keywords_html &
+  csh_own_enumel(1) &
+  csh_own_const(1) &
+  csh_own_ops(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc") &
+
+  Connect(".Bcom") &
+  csh_name(bcatl("CDE/C/|",a,".g|",a,".mch"))(a) &
+  csh_c_keywords bsmap c_keywords_html &
+  csh_own_enumel(1) &
+  csh_own_const(1) &
+  csh_own_ops(1) &
+  bclose &
+/***
+Writef(("\n\ncat .Bcom:\n++++++++++++\n"))&
+bcall(SHELL:bshell("cat .Bcom"))&
+Writef(("++++++++++++\n"))&
+***/
+  bshell("$BKIT/BLIB/CreHtmlc")
+
+ =>
+  csh2(a);
+
+
+  bcrer(OwnMchColOps,(a:o))
+ =>
+  csh_load_own_ops(a,o);
+  
+  csh_load_own_ops(a,?);
+  
+
+  bcrer(OwnMchColConsts,(a:c))
+ =>
+  csh_load_own_const(a,c);
+  
+  csh_load_own_const(a,?);
+  
+
+  bcrer(OwnMchColEnum,(a:e))
+ =>
+  csh_load_own_sets1(a,e);
+
+  csh_load_own_sets(x);
+  
+  csh_load_own_sets1(a) bsmap e
+ =>
+  csh_load_own_sets(a,s(e));
+  
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  csh1(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  csh_load_own_sets(k) bsmap D &
+  csh_load_own_const(k) bsmap F &
+  csh_load_own_ops(k,bnewv(INI_,k)) &
+  csh_load_own_ops(k) bsmap j &
+/***
+PrintTHEORY(OwnMchColConst) &
+PrintTHEORY(OwnMchColEnum) &
+PrintTHEORY(OwnMchColOps) &
+***/
+  csh2(k)
+ =>
+  csh1(Z);
+
+  csh1(bcatl("ANL/",a,".",mch,".anl"))
+ =>
+  csh0(a)
+
+END
+
+&
+
+THEORY IntroSLIBX IS
+
+  ?; /* 1. ?;(Rename_File1|My_File1);(File2|File2);... */
+#define ReadIntroList(x) brule(IntroSLIBX.1,x)
+#define ModrIntroList(x) bmodr(IntroSLIBX.1,x)
+
+  ?; /* 2. ?;(Rename_File1|My_File1);(File2|File2);... (not reduced ...) */
+#define ReadIntroListCopy(x) brule(IntroSLIBX.2,x)
+#define ModrIntroListCopy(x) bmodr(IntroSLIBX.2,x)
+
+  ?; /* 3. ?;(Rename_File1:(My_ | My | File1));... */
+#define ReadRenameList(x) brule(IntroSLIBX.3,x)
+#define ModrRenameList(x) bmodr(IntroSLIBX.3,x)
+
+  ?; /* 4. 1 => new sub constructs added to IntroList, 0 => not */
+#define ReadIntroSubFlag(x) brule(IntroSLIBX.4,x)
+#define ModrIntroSubFlag(x) bmodr(IntroSLIBX.4,x)
+  
+  ?; /* 5. ?,(  ?,(My_File1:(sub_file1,sub_file2),... */
+#define ReadSLIBDependencies(x) brule(IntroSLIBX.5,x)
+#define ModrSLIBDependencies(x) bmodr(IntroSLIBX.5,x)
+  
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+#define PrintSLIBinfo \
+    ReadIntroList(W) & HERE(("IntroList":W)) & \
+    ReadIntroListCopy(V) & HERE(("IntroListCopy":V)) & \
+    ReadRenameList(Y) & HERE(("RenameList":Y)) & \
+    ReadSLIBDependencies(Z) & HERE(("Dependencies":Z))
+
+
+/*******************************************************************/
+
+  Writef(bcatl("\n  (Programming Language Flag: C)\n"))
+ =>
+  write_prog_lang;
+
+  brule (IntroduceFromUserX.3,0) &   /* ANSI C */
+  Writef(bcatl("\n  (Programming Language Flag: ANSI C)\n"))
+ =>
+  write_prog_lang;
+
+
+  DisplayFileInMainWin(".Bter")
+ =>
+  intr_SLIB_force_Bter_err_msg(a);
+
+  IfWriteToXTerm &
+  bwritef("\n") &
+  bshell("cat .Bter")
+ =>
+  intr_SLIB_force_Bter_err_msg(a);
+
+
+  Writef(bcatl("\n  SLIB introduce ",a," abandoned\n")) &
+  AddToBfil(a) &
+  intr_SLIB_clean(L)
+ =>
+  intr_SLIB_clean(L;(m|a));
+
+  IsCfg(a.mch) &
+  intr_SLIB_clean(L)
+ =>
+  intr_SLIB_clean(L;(m|a));
+
+  intr_SLIB_clean(?);
+
+/***
+PrintSLIBinfo &
+***/
+  intr_SLIB_force_Bter_err_msg(a) &
+  bshell(bcatl("rm -f CFG/",a,".mch ANL/",a,".mch.anl TYP/",a,".mri.typ")) &
+  Writef(bcatl("\n  SLIB introduce ",a," aborted\n")) &
+  write_prog_lang &
+  AddToBfil(a) &
+  ModrRenameList(?) &
+  ReadIntroList(L) &
+  intr_SLIB_clean(L) &
+  ModrIntroList(?) &
+  ModrIntroListCopy(?) &
+  ModrSLIBDependencies(?)
+ =>
+  intr_SLIB_err_msg_and_clean(a);
+
+/*******************************************************************/
+
+/*
+HERE(("NO":a)) =>
+  intr_SLIB_chk_pasp_htx1(a)(1);
+
+  GetJobs(X) &
+  AddJobs(X,(a.mch:BT_PASP_SLIB_HTX:0))
+&HERE(("YES":a))
+ =>
+  intr_SLIB_chk_pasp_htx1(a)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  intr_SLIB_chk_pasp_htx(a);
+
+  bget(".Bcom",x) &
+  intr_SLIB_chk_pasp_htx1(a)(x)
+ =>
+  intr_SLIB_chk_pasp_htx(a);
+*/
+
+/*******************************************************************/
+
+
+/*
+  intr_SLIB_fini_Rename1(a)(S,s)(T)(?);
+*/
+
+  intr_SLIB_fini_Rename1(a)(S,s)(T)(A)
+ =>
+  intr_SLIB_fini_Rename1(a)(S,s)(T)(A|B);
+
+  ReadIntroListCopy(Q) &
+  bsearch((m|a),Q,W) &
+  ReadRenameList(L) &
+  bsearch((m:(R|r|c)),L,M) &
+  intr_SLIB_fini(a)(S)(T,bnewv(R,A))
+ =>
+  intr_SLIB_fini_Rename1(a)(S,s)(T)(C|Rename;A);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  iintr_SLIB_fini_Rename(a)(S,s)(T);
+
+  bget(".Bcom",x) &
+  intr_SLIB_fini_Rename1(a)(S,s)(T)(x)
+ =>
+  intr_SLIB_fini_Rename(a)(S,s)(T);
+
+
+/***
+PrintSLIBinfo &
+***/
+  DisplayFileInMainWin(".Bter") &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_LIB_CSTR:(S;I;?))) &
+  AddCfg(a.mch) &
+  AddAnl(a.mch) &
+  CreHtml(a.mch) &
+  Writef(bcatl("\n  Introduced ",a," from SLIB ")) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".param CDE/PASP")) &
+  CreHtmlCSLIBCodeFile(a) &
+  Writef("\n")
+ /* &
+  intr_SLIB_chk_pasp_htx(a) */
+/***
+&HERE(("Immediate dependencies":S:I))
+***/
+ =>
+  intr_SLIB_fini4(a)(S)(I);
+  
+
+  bsearch(?,S,T) &
+  intr_SLIB_fini4(a)(T)(I)
+ =>
+  intr_SLIB_fini4(a)(S)(I);
+
+  bsearch(?,I,J) &
+  intr_SLIB_fini4(a)(S)(J)
+ =>
+  intr_SLIB_fini4(a)(S)(I);
+
+  intr_SLIB_fini4(a)(S)(I)
+ =>
+  intr_SLIB_fini3(a)(S)(I)(?);
+
+  bsearch(?,b,c) &
+  intr_SLIB_fini3(a)(S)(I)(c)
+ =>
+  intr_SLIB_fini3(a)(S)(I)(b);
+
+  bsearch(?,S,T) &
+  intr_SLIB_fini3(a)(T)(I)(b)
+ =>
+  intr_SLIB_fini3(a)(S)(I)(b);
+
+  bsearch(?,I,J) &
+  intr_SLIB_fini3(a)(S)(J)(b)
+ =>
+  intr_SLIB_fini3(a)(S)(I)(b);
+
+  intr_SLIB_fini3(a)(S)(I,r)(b)
+ =>
+  intr_SLIB_fini3(a)(S)(I)(b,(r(s):t:u));
+
+  bsearch(r,S,T) &
+  intr_SLIB_fini3(a)(T)(I,r)(b)
+ =>
+  intr_SLIB_fini3(a)(S)(I)(b,(r(s):t:u));
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  intr_SLIB_fini2(a)(S)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  intr_SLIB_fini3(a)(bflat(?,S))(?)(bflat(?,b))
+ =>
+  intr_SLIB_fini2(a)(S)(Z);
+
+  intr_SLIB_fini2(a)(S)(bcatl("ANL/",a,".mch.anl"))
+ =>
+  intr_SLIB_fini1(a)(S);
+  
+  bsearch(?,S,T) &
+  intr_SLIB_fini1(a)(T)
+ =>
+  intr_SLIB_fini1(a)(S);
+  
+  intr_SLIB_fini1(a)(T)
+ =>
+  intr_SLIB_fini(a)(?)(T);
+
+  bshell(bcatl("echo ",s," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  intr_SLIB_fini_Rename(a)(S,s)(T)
+ =>
+  intr_SLIB_fini(a)(S,s)(T);  /* a is DAVE_str_obj, s is Rename__str_obj */
+
+  IsCfg(s.mch) &
+  intr_SLIB_fini(a)(S)(T,s)
+ =>
+  intr_SLIB_fini(a)(S,s)(T);
+
+  ReadIntroListCopy(I) &
+  bsearch((s|t),I,J) &
+  intr_SLIB_fini(a)(S)(T,t)
+ =>
+  intr_SLIB_fini(a)(S,s)(T);
+
+
+/*******************************************************************/
+
+  ReadIntroList(I) &
+  bsearch((m|a),I,J) &
+  ReadSLIBDependencies(L) &
+  bsearch(a(S),L,M) &
+  ModrSLIBDependencies((M,a(S,s)))
+ =>
+  in_log_dep(m,s);
+
+  ReadIntroList(I) &
+  bsearch((m|a),I,J) &
+  ReadSLIBDependencies(L) &
+  bsearch(a(S),L,M) &
+  bsearch(s,S,T)
+ =>
+  in_log_dep(m,s);
+
+  in_log_dep(m,?);
+
+  in_log_dep(m,r)
+ =>
+  in_log_dep(m,(r(s):t:u));
+
+/*******************************************************************/
+
+  InformCantConnect(".Bplf") &
+  PFZ
+ =>
+  intr_SLIB_load_Bplf;
+
+  bget(".Bplf",(z;n;A;B;C)) &
+/***
+HERE((".Bplf"))&
+HERE((z))&
+HERE((n))&
+HERE((A))&
+HERE((B))&
+HERE((C))&
+***/
+  bmodr(IntroduceFromUserX.8,z) &    /* Interface_Option     */
+  bmodr(IntroduceFromUserX.3,n) &    /* Prog_Language_Option */
+  bmodr(IntroduceFromUserX.5,A) &    /* cc_compiler_str_num  */
+  bmodr(IntroduceFromUserX.6,B) &    /* cc_link_lib_str_num  */
+  bmodr(IntroduceFromUserX.7,C)      /* cc_Xlink_lib_str_num */
+ =>
+  intr_SLIB_load_Bplf;
+
+/*******************************************************************/
+
+  /***
+  Rename
+  ***/
+
+  intr_SLIB_err_msg_and_clean(a) &
+  AddToBfil(a)
+ =>
+  intr_SLIB_force_5(r)(c)(a)(1);
+
+  DisplayFileInMainWin(".Bter") &
+  ReadSLIBDependencies(L) &
+  bsearch(a(S),L,M) &
+  intr_SLIB_fini(a)(S)(?)
+ =>
+  intr_SLIB_force_5(r)(c)(a)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  intr_SLIB_force_4(r)(c)(a);
+
+  bget(".Bcom",x) &
+  intr_SLIB_force_5(r)(c)(a)(x)
+ =>
+  intr_SLIB_force_4(r)(c)(a);
+
+  /***
+  LIB_Rename:
+	$1 	Rename prefix
+	$2	name (eg. Rename_token_io)
+	$3 	0=>ANSIC 1=>non_ANSIC
+	$4 	compiler string
+	$5 	0=>Motif 1=>Non-Motif
+  ***/
+  brule(IntroduceFromUserX.3,n) &    /* 0=>ANSIC 1=>non_ANSIC */
+  brule(IntroduceFromUserX.5,C) &    /* C Compiler/Flags */
+  brule(IntroduceFromUserX.8,i) &    /* 0=>Motif 1=>Non-Motif */
+  CheckPASP(r,c,a,R) &
+  bshell(bcatl("$BKIT/BLIB/LIB_Rename ",r," ",c," ",n," ",C," ",i)) &
+  intr_SLIB_force_4(r)(c)(b)
+ =>
+  intr_SLIB_force_0_1(R | r | b | c)(a);
+
+  IsCfg(b.mch)
+ =>
+  intr_SLIB_force_0_1(R | r | b | c)(a);
+
+
+  /***
+  No rename
+  ***/
+
+  intr_SLIB_err_msg_and_clean(a)  
+ =>
+  intr_SLIB_force_0_5(?)(a)(1);
+
+  ReadSLIBDependencies(L) &
+  bsearch(a(S),L,M) &
+  intr_SLIB_fini(a)(S)(?)
+ =>
+  intr_SLIB_force_0_5(?)(a)(0);
+
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  intr_SLIB_force_0_4(?)(a);
+
+  bget(".Bcom",x) &
+  intr_SLIB_force_0_5(?)(a)(x)
+ =>
+  intr_SLIB_force_0_4(?)(a);
+
+  /***
+  LIB_NoRename:
+	$1 	name (eg, Bool_TYPE)
+	$2 	0=>ANSIC 1=>non_ANSIC
+	$3 	compiler string
+	$4 	0=>Motif 1=>Non-Motif
+  ***/
+  /***
+  FilterHeaders ok
+  ***/
+  brule(IntroduceFromUserX.3,n) &    /* 0=>ANSIC 1=>non_ANSIC */
+  brule(IntroduceFromUserX.5,c) &    /* C Compiler/Flags */
+  brule(IntroduceFromUserX.8,i) &    /* 0=>Motif 1=>Non-Motif */
+  CheckPASP(?,a,a,?) &
+  bshell(bcatl("$BKIT/BLIB/LIB_NoRename ",a," ",n," ",c," ",i)) &
+  intr_SLIB_force_0_4(?)(a)
+ =>
+  intr_SLIB_force_0_1(?)(a);
+
+  IsCfg(a.mch)
+ =>
+  intr_SLIB_force_0_1(?)(a);
+
+
+/*******************************************************************/
+
+/*
+    R     r      b          c           a
+  (My_ | My | My_File | Rename_File) ( File )
+
+                      c        R     r    a 
+  in_slib_rename(Rename_File)(My_ | My | File)
+*/
+
+  intr_SLIB_force_0_1(R | r | bnewv(R,a) | c )(a)
+=>
+  in_slib_rename(c)(R|r|a);
+
+/*
+  in_slib_no_rename(Bool_TYPE)
+*/
+
+  intr_SLIB_force_0_1(?)(a)
+ =>
+  in_slib_no_rename(a);
+
+
+
+  /***
+  check .ldf files
+  ***/
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  in_slib5_pasp_ldf(N)(m);
+  
+  bget("TMP/.Bcom",x) &
+  in_log_dep(m,x)
+ =>
+  in_slib5_pasp_ldf(N)(m);
+
+  in_log_dep(m,s) &
+  in_slib5(N)(?,s)
+ =>
+  in_ldf2(N)(m,s);
+
+  ReadRenameList(L) &
+  bsearch((m:(R|r|c)),L,M) &
+  Connect("TMP/.Bcom") &
+  bprintf("%%_%",R,A,B) &
+  bclose &
+  in_slib5_pasp_ldf(N)(m) &
+  in_slib5(N)(bnewv(R,A),B)
+ =>
+  in_ldf2(N)(m,((Rename_;A;B):P:Q));
+
+  in_ldf2(N)(m,?);
+
+  in_ldf1(N)(m)(Z);
+
+  bget(Z,(A|B)) &
+  in_ldf2(N)(m) bsmap B
+ =>
+  in_ldf1(N)(m)(Z);
+
+  ReadIntroList(I) &
+  bsearch((m|a),I,J) &
+  ReadSLIBDependencies(L) &
+  ModrSLIBDependencies((L,a(?))) &
+  in_ldf1(N)(m)(bcatl("$BKIT/BLIB/LIB/CDE/C/",m,".ldf")) &
+  in_ldf1(N)(m)(bcatl("$BKIT/BLIB/LIB/CDE/PASP/",m,".ldf"))
+ =>
+  in_ldf(N)(m);
+
+  ReadIntroList(I) &
+  bsearch((m|a),I,J) &
+  ReadSLIBDependencies(L) &
+  bsearch(a(D),L,M) &
+  in_ldf1(N)(m)(bcatl("$BKIT/BLIB/LIB/CDE/C/",m,".ldf")) &
+  in_ldf1(N)(m)(bcatl("$BKIT/BLIB/LIB/CDE/PASP/",m,".ldf"))
+ =>
+  in_ldf(N)(m);
+
+  /***
+  check if sub constructs at last cycle
+  ***/
+
+  in_slib0(N+1)
+ =>
+  in_slib_chk_sub(N);
+
+  ReadIntroSubFlag(0) &        /* no sub constructs */
+  ReadIntroList((M;(m|a))) &   /* renamed */
+  ModrIntroList(M) & 
+  ReadRenameList(L) &
+  bsearch((m:(R)),L,P) &
+  in_slib_rename(m)(R) &
+  in_slib0(N+1)
+ =>
+  in_slib_chk_sub(N);
+
+  ReadIntroSubFlag(0) &        /* no sub constructs */
+  ReadIntroList((M;(m|m))) &   /* not renamed */
+  ModrIntroList(M) & 
+  in_slib_no_rename(m) &
+  in_slib0(N+1)
+ =>
+  in_slib_chk_sub(N);
+
+
+  /***
+  sub construct
+  ***/
+
+  ReadRenameInfo(m) &
+  ReadIntroList(L) &
+  ModrIntroList((L;(m|m))) &            /* sub construct not renamed */
+  ReadIntroListCopy(Q) &
+  ModrIntroListCopy((Q;(m|m))) &
+  ModrIntroSubFlag(1) &
+  in_ldf(N)(m)
+ =>
+  in_slib6(N)(?,q);
+
+  ReadRenameInfo((m:(R|r|c))) &
+  ReadIntroList(L) &
+  ModrIntroList((L;(m|bnewv(R,c)))) &   /* sub construct renamed */
+  ReadIntroListCopy(Q) &
+  ModrIntroListCopy((Q;(m|bnewv(R,c)))) &
+  ReadRenameList(P) &
+  ModrRenameList((P;(m:(R|r|c)))) &
+  ModrIntroSubFlag(1) &
+  in_ldf(N)(m)
+ =>
+  in_slib6(N)(p,q);
+
+  ReadActRenamedMch(a) &
+  IsCfg(a.mch)
+ =>
+  in_slib6(N)(r,m);
+
+  InGetRenameInfo(r,m) &
+  in_slib6(N)(r,m)
+ =>
+  in_slib5(N)(r,m);                /* alse (re)entry point for sub, ldf */
+
+  InGetRenameInfo(?,m) &
+  in_slib5(N)(?,s)
+ =>
+  in_slib4(N)(m)(s)(?);            /* sub not renamed */
+
+  in_slib4(N)(m)(s)(A)
+ =>
+  in_slib4(N)(m)(s)(A|B);
+
+  in_slib5(N)(Rename,A)
+ =>
+  in_slib4(N)(m)(s)(B|Rename;A);   /* sub renamed, parent isn't */
+
+  ReadRenameList(L) &
+  bsearch((m:(R|r|c)),L,M) &
+  in_slib5(N)(r,A)
+ =>
+  in_slib4(N)(m)(s)(B|Rename;A);   /* sub renamed, so is parent */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  in_slib3(N)(m)(r);
+
+  bget(".Bcom",x) &
+  in_slib4(N)(m)(r)(x)
+ =>
+  in_slib3(N)(m)(r);
+
+  bshell(bcatl("echo ",r," > .BBcom ; $BKIT/BLIB/CheckRenameLib < .BBcom > .Bcom ; rm -f .BBcom")) &
+  in_slib3(N)(m)(r)
+ =>
+  in_slib2(N)(m,(r(s):t:U));
+
+  in_slib2(N)(m,?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  in_slib1(N)(M)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  in_slib2(N)(M) bsmap bflat(A,B,b) &
+  in_log_dep(M) bsmap bflat(A,B,b)
+ =>
+  in_slib1(N)(M)(Z);
+
+  ReadIntroList((M;(m|a))) &
+  ModrIntroSubFlag(0) &
+  in_slib1(N)(m)(bcatl("$BKIT/BLIB/LIB/ANL/",m,".mch.anl")) &
+  in_slib_chk_sub(N)
+ =>
+  in_slib0(N);
+
+  ReadIntroList(?)   /* done */
+ =>
+  in_slib0(N);
+
+
+  /***
+  initialisation
+  ***/
+
+
+HERE((in_slib_ini3(x)))&PrintSLIBinfo &junk=>
+  in_slib_ini3(x);
+
+  ReadRenameInfo(m) &
+  ModrIntroList((?;(m|m))) &             /* inital construct not renamed */
+  ModrIntroListCopy((?;(m|m))) &
+  ModrRenameList(?) &
+  ModrSLIBDependencies(?) &
+  in_ldf(0)(m) &
+  in_slib0(0)
+ =>
+  in_slib_ini3(x);
+
+  ReadRenameInfo((m:(R|r|c))) &
+  ModrIntroList((?;(m|bnewv(R,c)))) &   /* inital construct renamed */
+  ModrIntroListCopy((?;(m|bnewv(R,c)))) &
+  ModrRenameList((?;(m:(R|r|c)))) &
+  ModrSLIBDependencies(?) &
+  in_ldf(0)(m) &
+  in_slib0(0)
+ =>
+  in_slib_ini3(x);
+
+  intr_SLIB_load_Bplf &
+  InGetRenameInfo(s,m) &
+  in_slib_ini3(s,m)
+ =>
+  in_slib_ini2(s,m);
+
+  Writef(("\n  %: bad rename prefix (not an arity 1 symbol!)\n",r)) &
+  bshell("$BKIT/BLIB/BPrompt 'Bad rename prefix'")
+ =>
+  in_slib1(N)(r,m);
+
+  bget("TMP/.Bcom",s) &
+  in_slib_ini2(s,m)
+ =>
+  in_slib_ini1(r,m);
+
+  in_slib_ini2(r,m)
+ =>
+  in_slib_ini0(r,m);
+
+  bstring(r) &
+  Connect("TMP/.Bcom") &
+  bprintf(r) &
+  bclose &
+  in_slib_ini1(r,m)
+ =>
+  in_slib_ini0(r,m)
+
+END
+
+&
+
+THEORY IntroduceTLIBX IS
+
+  ?;
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  IntroduceTLIBConstructForceFromDirect(m.mch)
+ =>
+  irtT_12(m.mch);
+
+  irtT_12(?);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  itrT_M;
+
+  bget(".Bsel",X) &
+  irtT_12 bsmap X
+ =>
+  itrT_M
+
+END
+
+&
+
+THEORY GetTLIBParamsX IS
+
+#define GetTLIBParam(x) \
+		bcall(((ARI;MODR;WRITE)~;GetTLIBParamsX)~ : gtlp_00(1)(x))
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("Bad value"):BT_MOTIF_ERR_NO_BERR:0)) &
+  FlagIntroTLIBError
+ =>
+  gtlp_1(N)(f);
+
+  ReadData(x) &
+  bnum(x) &
+  btest(x>0) &
+  brule(NewIntroduceTLIBX.5,L) &
+  bmodr(NewIntroduceTLIBX.5,(L,(N:f:x)))
+ =>
+  gtlp_1(N)(f);
+
+  bident(f) &
+  PromptForData((BT_GET_STRING_M,(bcatl("Actual value parameter for ",f,"?")),"0")) &
+  gtlp_1(N)(f) &
+  Writef("") &
+  bmodr(NewIntroduceTLIBX.6,N+1)
+ =>
+  gtlp_0(N)(f);
+
+  bUpident(f) &
+  Writef("") &
+  bmodr(NewIntroduceTLIBX.6,N+1)
+ =>
+  gtlp_0(N)(f);
+
+  bident(f) &
+  PromptForData((BT_GET_STRING_M,(bcatl("Actual value parameter for ",f,"?")),"0")) &
+  gtlp_1(N)(f) &
+  gtlp_0(N+1)(F)
+ =>
+  gtlp_0(N)(F,f);
+
+  bUpident(f) &
+  gtlp_0(N+1)(F)
+ =>
+  gtlp_0(N)(F,f);
+
+  Writef("") &
+  gtlp_0(N)(F)
+ =>
+  gtlp_00(N)(F);
+
+  gtlp_00(N)(?);
+
+  IntroTLIBErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY NewIntroduceTLIBX IS
+
+  ?;    /* 1. Error Flag */
+
+  ?;    /* 2. .anl form (J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j) */
+
+  ?;    /* 3. .anl form (k(l):m:R) */
+
+  ?;    /* 4. .anl form (n) */
+
+  ?;    /* 5. ?,(N:fopmalparam1:actparam1),... for NAT parameters */
+
+  ?;    /* 6. total no. parameters +1 */
+
+  ?;    /* 7. 1=>interactive, 0=>force */
+
+  0;    /* 8. /=0 => plx error */
+
+  ?;    /* 9. ldf dependencies */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  itlf_clean(a.mch)
+ =>
+  itlf_plx_21(a.mch)(x);
+
+  itlf_plx_21(a.mch)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  itlf_plx_11(a.mch);
+
+  bget(".Bcom",x) &
+  itlf_plx_21(a.mch)(x)
+ =>
+  itlf_plx_11(a.mch);
+
+  bshell(bcatl("$BKIT/BLIB/ExportPLXFile 21 ",a)) &
+  itlf_plx_11(a.mch)
+ =>
+  itlf_plx_4(a.mch);
+
+  IsCfg(a.mch)
+ =>
+  itlf_plx_4(a.mch);
+
+  itlf_plx_4(?);
+
+  itlf_plx_4 bsmap brev(Y)
+ =>
+  itlf_plx_4(X|Y);
+
+  itlf_plx_4(X)
+ =>
+  itlf_plx_4(X;x);
+
+  itlf_plx_3(S.mch)(f);
+
+  brule(NewIntroduceTLIBX.8,0) & /* wasn't an error from ExportPLXFile 20 */
+  bget(f,x) &
+  itlf_plx_4(x)
+ =>
+  itlf_plx_3(S.mch)(f);
+
+  bmodr(NewIntroduceTLIBX.8,x) &
+  itlf_clean(a.mch)
+ =>
+  itlf_plx_2(a.mch)(x);
+
+  bmodr(NewIntroduceTLIBX.8,0)
+ =>
+  itlf_plx_2(a.mch)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  itlf_plx_1(a.mch);
+
+  bget(".Bcom",x) &
+  itlf_plx_2(a.mch)(x)
+ =>
+  itlf_plx_1(a.mch);
+
+  itlf_plx_0(S.mch)(x);
+
+  bprintf("#define %PV% %\n",S,(T-N),a)
+ =>
+  itlf_plx_rename_0(S.mch,T,(N:f:a));
+
+  itlf_plx_rename_0(S.mch,T,?);
+
+  InformCantConnect(".BBcom") &
+  PFZ
+ =>
+  itlf_plx_0(S.mch)(0);
+
+  brule(NewIntroduceTLIBX.5,L) &
+  brule(NewIntroduceTLIBX.6,T) &
+  bconnect(".BBcom") &
+  itlf_plx_rename_0(S.mch,T) bsmap L &
+  bprintf("\n") &
+  bclose &
+  bshell(bcatl("$BKIT/BLIB/ExportPLXFile 20 ",S)) &
+  itlf_plx_1(S.mch) &
+  itlf_plx_3(S.mch)(bcatl("$BTEAMLIB/CDE/PLX/",S,".pop"))
+ =>
+  itlf_plx_0(S.mch)(0);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  itlf_plx_00(S.mch);
+
+  bget(".Bcom",x) &
+  itlf_plx_0(S.mch)(x)
+ =>
+  itlf_plx_00(S.mch);
+
+  bshell("$BKIT/BLIB/CheckFileExists PLX CDE") &
+  itlf_plx_00(S.mch)
+ =>
+  itlf_plx_000(S.mch);
+
+  ModifyJobs((?))
+ =>
+  itlf_clean_1;
+
+  bget(".BBcom",(a.b)) &
+/*
+  ModifyJobs((?;(a.b:BT_EDT_NML:0);(a.b:BT_EDT:0)))
+*/
+  ModifyJobs((?;(a.b:BT_EDT_NML:0)))
+ =>
+  itlf_clean_1;
+
+  ClearJobs &
+  Writef("\n  TLIB introduce aborted\n") &
+  bshell(bcatl("rm -f CFG/",S,".mch ANL/",S,".mch.anl TYP/",S,".mri.typ CDE/C/",S,".* CDE/PLX/",S,".*")) &
+  itlf_clean_1
+ =>
+  itlf_clean(S.mch);
+
+  bmodr(NewIntroduceTLIBX.9,a)
+ =>
+  sto_tlib_ldf(a);
+
+  bsearch(?,a,b) &
+  sto_tlib_ldf(b)
+ =>
+  sto_tlib_ldf(a);
+
+  Writef(bcatl("\n    Error - &",m,"& is not configured\n")) &
+  FlagIntroTLIBError
+ =>
+  check_tlib_ldf3(m);
+
+  IsCfg(m.mch) &
+  Writef(bcatl("\n    Error - &",m,"& is not analysed\n")) &
+  FlagIntroTLIBError
+ =>
+  check_tlib_ldf3(m);
+
+  IsAnl(m.mch)
+ =>
+  check_tlib_ldf3(m);
+
+  Writef(bcatl("\n    ",m,""))
+ =>
+  check_tlib_ldf2(m);
+
+  Writef(bcatl("\n\n  ",S," has no dependencies")) &
+  Writef("\n  ")
+ =>
+  check_tlib_ldf1(S)(?);
+
+  Writef(bcatl("\n\n  ",S," has the following dependency:\n")) &
+  check_tlib_ldf2(m) &
+  Writef("\n\n  It must be imported into the development\n") &
+  check_tlib_ldf3 bsmap (m) &
+  Writef("\n  ")
+ =>
+  check_tlib_ldf1(S)(m);
+
+  Writef(bcatl("\n\n  ",S," has no dependencies"))
+ =>
+  check_tlib_ldf1(S)(?);
+
+  Writef(bcatl("\n\n  ",S," has the following dependencies:\n")) &
+  check_tlib_ldf2 bsmap (M,m) &
+  Writef("\n\n  Each must be imported into the development\n") &
+  check_tlib_ldf3 bsmap (M,m) &
+  Writef("\n  ")
+ =>
+  check_tlib_ldf1(S)(M,m);
+
+  bmodr(NewIntroduceTLIBX.9,?)
+ =>
+  check_tlib_ldf(S)(f);
+
+  bget(f,(a|b)) &
+  sto_tlib_ldf(b) &
+  check_tlib_ldf1(S)(b)
+ =>
+  check_tlib_ldf(S)(f);
+
+  Writef(bcatl("\n\n    Can't Compile ",S,".c\n\n")) &
+  CatFileIfExists(".Bter",0) &
+  itlf_clean(S.mch)
+ =>
+  itlf_13(S.mch)(1);
+
+  WriteDot &
+  brule(NewIntroduceTLIBX.9,T) &
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(S.mch:BT_CMT_LIB_CSTR:(T;?;?))) &
+  AddCfg(S.mch) &
+  AddAnl(S.mch) &
+  CreHtml(S.mch) &
+  Writef("\n\n  Done") &
+  CatFileIfExists(".Bter",1) &
+   CreHtmlCSLIBCodeFile(S)
+ =>
+  itlf_13(S.mch)(0);
+
+  itlf_12(S.mch);
+
+  brule(NewIntroduceTLIBX.8,0) &
+  bget(".Bcom",x) &
+  itlf_13(S.mch)(x)
+ =>
+  itlf_12(S.mch);
+
+  WriteDot &
+  bshell(bcatl("$BKIT/BLIB/ExportFile 4 ",S)) &
+  itlf_12(S.mch)
+ =>
+  itlf_11(S.mch);
+
+ bshell(bcatl("sed -e s+'\<",S,"PV",T-N,"\>'+'",a,"'+g < CDE/C/",S,".g > CDE/C/",S,".i ; mv CDE/C/",S,".i CDE/C/",S,".g")) &
+  bshell(bcatl("sed -e s+'\<",S,"PV",T-N,"\>'+'",a,"'+g < CDE/C/",S,".c > CDE/C/",S,".i ; mv CDE/C/",S,".i CDE/C/",S,".c"))
+ =>
+  itlf_9(S.mch,T,(N:f:a));
+
+  itlf_9(S.mch,T,?);
+
+  brule(NewIntroduceTLIBX.5,L) &
+  brule(NewIntroduceTLIBX.6,T) &
+  bshell(bcatl("cat $BTEAMLIB/CFG/",S,".mch >> CFG/",S,".mch ; cp $BTEAMLIB/CDE/C/",S,".* CDE/C")) &
+  itlf_9(S.mch,T) bsmap L &
+  itlf_11(S.mch)
+ =>
+  itlf_8(S.mch);
+
+  bprintf("  % = % &\n",f,p) &
+  itlf_7(X)
+ =>
+  itlf_7(X,(N:f:p));
+
+  bprintf("  % = %\n\n***/\n\n",f,p) &
+  bclose
+ =>
+  itlf_7(?,(N:f:p));
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  itlf_6(S.mch)(f);
+
+  bconnect(f) &
+  brule(NewIntroduceTLIBX.5,L) &
+  WriteDot &
+  bshell(bcatl("cp $BTEAMLIB/TYP/",S,".mri.typ TYP/",S,".mri.typ")) &
+  bprintf("/***\n\nThis will eventually appear in the CONSTRAINTS clause\n\n  (the anlaysed, type and code files are all correct)\n\n") &
+  itlf_7(L) &
+  itlf_8(S.mch)
+ =>
+  itlf_6(S.mch)(f);
+
+  bconnect(f) &
+  brule(NewIntroduceTLIBX.5,?) &
+  WriteDot &
+  bshell(bcatl("cp $BTEAMLIB/TYP/",S,".mri.typ TYP/",S,".mri.typ")) &
+  itlf_8(S.mch)
+ =>
+  itlf_6(S.mch)(f);
+
+  IntroTLIBErrorFlagged &
+  AddToBfil(S)
+ =>
+  itlf_6(S.mch)(f);
+
+  bprintf("(%)\n,\n",a)
+ =>
+  pr_comm_1(a,m,n);
+
+  bprintf("(%)\n",a)
+ =>
+  pr_comm_1(a,n,n);
+
+  pr_comm_1 bnmap (a)
+ =>
+  pr_comm_0(a);
+
+  bprintf("% & ",(f=a))
+ =>
+  itlf_add_constr_1((N:f:a),m,n);    /* not last one - ampersand reqd */
+
+  bprintf("%",(f=a))
+ =>
+  itlf_add_constr_1((N:f:a),n,n);    /* last one - no ampersand reqd */
+
+  itlf_add_constr_1(?,m,n);          /* ignore */
+
+  brule(NewIntroduceTLIBX.5,L) &
+  itlf_add_constr_1 bnmap L
+ =>
+  itlf_add_constr_0;
+
+  brule(NewIntroduceTLIBX.4,(n)) &
+  bprintf(";\n(\n") &
+  bprintf("(%)\n",n) &
+  bprintf(")\n")
+ =>
+  itlf_5(S.mch);
+
+  brule(NewIntroduceTLIBX.4,(N,n)) &
+  bprintf(";\n(\n") &
+  pr_comm_0(N,n) &
+  bprintf(")\n")
+ =>
+  itlf_5(S.mch);
+
+/***
+  currently some constraints - and some to add
+***/
+  brule(NewIntroduceTLIBX.3,((k(l):m:R))) &
+  bprintf(";\n(%(%):(% & ",k,l,m) &    /* finish with ampersand */
+  itlf_add_constr_0 &
+  bprintf("):(%))\n",R) &
+  itlf_5(S.mch)
+ =>
+  itlf_4(S.mch);
+
+/***
+  currently some constraints - but none to add
+***/
+  brule(NewIntroduceTLIBX.3,((k(l):m:R))) &
+  brule(NewIntroduceTLIBX.5,?) &                /* none to add */
+  bprintf(";\n(%(%):(%):(%))\n",k,l,m,R) &
+  itlf_5(S.mch)
+ =>
+  itlf_4(S.mch);
+
+/***
+  currently no constraints - but some to insert
+***/
+  brule(NewIntroduceTLIBX.3,((k(l):?:R))) &
+  bprintf(";\n(%(%):(",k,l) &
+  itlf_add_constr_0 &
+  bprintf("):(%))\n",R) &
+  itlf_5(S.mch)
+ =>
+  itlf_4(S.mch);
+
+/***
+  currently no constraints - and none to add
+***/
+  brule(NewIntroduceTLIBX.3,((k(l):?:R))) &
+  brule(NewIntroduceTLIBX.5,?) &                /* none to add */
+  bprintf(";\n(%(%):(%):(%))\n",k,l,?,R) &
+  itlf_5(S.mch)
+ =>
+  itlf_4(S.mch);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  itlf_3(S.mch)(Z);
+
+  Writef("    .")
+ =>
+  itlf_3_dot;
+
+  brule(NewIntroduceTLIBX.7,0) &        /* force */
+  WriteDot
+ =>
+  itlf_3_dot;
+
+  bconnect(Z) &
+  brule(NewIntroduceTLIBX.2,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j)) &
+  itlf_3_dot &
+  bprintf("(\n") &
+  pr_comm_0(A) &
+  bprintf(")\n") &
+  bprintf(";\n(\n") &
+  pr_comm_0(B) &
+  bprintf(")\n") &
+  bprintf(";\n(%)\n",C) &
+  bprintf(";\n(%)\n",D) &
+  bprintf(";\n(%)\n",E) &
+  bprintf(";\n(%)\n",F) &
+  bprintf(";\n(%)\n",G) &
+  bprintf(";\n(%)\n",H) &
+  bprintf(";\n(") &
+  pr_comm_0(b) &
+  bprintf(")\n") &
+  bprintf(";\n(%)\n",c) &
+  bprintf(";\n(%)\n",Q) &
+  bprintf(";\n(%)\n",d) &
+  bprintf(";\n(%)\n",e) &
+  bprintf(";\n(%)\n",f) &
+  bprintf(";\n(%)\n",g) &
+  bprintf(";\n(%)\n",h) &
+  bprintf(";\n(%)\n",i) &
+  bprintf(";\n(%)\n",W) &
+  bprintf(";\n(%)\n",j) &
+  itlf_4(S.mch)
+ =>
+  itlf_3(S.mch)(Z);
+
+  IntroTLIBErrorFlagged &
+  itlf_clean(S.mch)
+ =>
+  itlf_3(S.mch)(Z);
+
+  bident(f) &
+  InformNonZeroInteger(a,f) &
+  FlagIntroTLIBError
+ =>
+  itlf_2(S.mch)(N)(P)(l)(a)(f);
+
+  bident(f) &
+  bnum(a) &
+  btest(a>0) &
+  brule(NewIntroduceTLIBX.5,L) &
+  bmodr(NewIntroduceTLIBX.5,(L,(N:f:a))) &
+  bmodr(NewIntroduceTLIBX.6,N+1)
+ =>
+  itlf_2(S.mch)(N)(P)(l)(a)(f);
+
+  bUpident(f) &
+  bmodr(NewIntroduceTLIBX.6,N+1)
+ =>
+  itlf_2(S.mch)(N)(P)(l)(a)(f);
+
+  AddJob(W,(bcatl(X,b):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  itlf_motif(W)(b)(X);
+
+  itlf_motif(W)(B)(X,",",b)
+ =>
+  itlf_motif(W)(B,b)(X);
+
+  itlf_motif(W)(B)(X,",",a,"/")
+ =>
+  itlf_motif(W)(a)(B)(X);
+
+  itlf_motif(W)(A)(B)(X,",",a)
+ =>
+  itlf_motif(W)(A,a)(B)(X);
+
+  InformParamDiscrepancy((P),(l)) &
+  FlagIntroTLIBError
+ =>
+  itlf_2(S.mch)(N)(P)(l)(a)(F,f);
+
+  InformParamDiscrepancy((P),(l)) &
+  FlagIntroTLIBError
+ =>
+  itlf_2(S.mch)(N)(P)(l)(A,a)(f);
+
+  bident(f) &
+  InformNonZeroInteger(a,f) &
+  FlagIntroTLIBError &
+  itlf_2(S.mch)(N+1)(P)(l)(A)(F)
+ =>
+  itlf_2(S.mch)(N)(P)(l)(A,a)(F,f);
+
+  bident(f) &
+  bnum(a) &
+  btest(a>0) &
+  brule(NewIntroduceTLIBX.5,L) &
+  bmodr(NewIntroduceTLIBX.5,(L,(N:f:a))) &
+  itlf_2(S.mch)(N+1)(P)(l)(A)(F)
+ =>
+  itlf_2(S.mch)(N)(P)(l)(A,a)(F,f);
+
+  bUpident(f) &
+  itlf_2(S.mch)(N+1)(P)(l)(A)(F)
+ =>
+  itlf_2(S.mch)(N)(P)(l)(A,a)(F,f);
+
+  itlf_2(S.mch)(N)(P)(l)(?)(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  itlf_1(S.mch)(P)(Z);
+
+  brule(NewIntroduceTLIBX.7,1) &        /* interactive */
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  ClearIntroTLIBError &
+  check_tlib_ldf(S)(bcatl("$BTEAMLIB/CDE/C/",S,".ldf")) &
+  bmodr(NewIntroduceTLIBX.2,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j)) &
+  bmodr(NewIntroduceTLIBX.3,(k(l):m:R)) &
+  bmodr(NewIntroduceTLIBX.4,(n)) &
+  bmodr(NewIntroduceTLIBX.5,?) &
+  GetTLIBParam(l) &
+  itlf_3(S.mch)(bcatl("ANL/",S,".mch.anl")) &
+  itlf_6(S.mch)(bcatl("CFG/",S,".mch"))
+ =>
+  itlf_1(S.mch)(P)(Z);
+
+  brule(NewIntroduceTLIBX.7,0) &        /* force */
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:R);n)) &
+  ClearIntroTLIBError &
+  check_tlib_ldf(S)(bcatl("$BTEAMLIB/CDE/C/",S,".ldf")) &
+  bmodr(NewIntroduceTLIBX.2,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j)) &
+  bmodr(NewIntroduceTLIBX.3,(k(l):m:R)) &
+  bmodr(NewIntroduceTLIBX.4,(n)) &
+  bmodr(NewIntroduceTLIBX.5,?) &
+  WriteDot &
+  itlf_2(S.mch)(1)(P)(l)(P)(l) &
+  itlf_3(S.mch)(bcatl("ANL/",S,".mch.anl")) &
+  itlf_6(S.mch)(bcatl("CFG/",S,".mch"))
+ =>
+  itlf_1(S.mch)(P)(Z);
+
+  InformCantConnect(".BBcom") &
+  PFZ
+ =>
+  itlf_0(S.mch)(P);
+
+  GetJobs(X) &
+  AddJob(X,(bcatl("Construct name ",S," too long (max length 60)"):BT_MOTIF_ERR_NO_BERR:0))
+ =>
+  itlf_0(S.mch)(P)(N);
+
+  btest(N<60) &
+  Writef(bcatl("\n  Introducing ",S," from TLIB ")) &
+  bmodr(NewIntroduceTLIBX.8,0) &                     /* reset plx error flag */
+  itlf_1(S.mch)(P)(bcatl("$BTEAMLIB/ANL/",S,".mch.anl"))
+ =>
+  itlf_0(S.mch)(P)(N);
+
+
+  InformCantConnect(".Bplf") &
+  PFZ
+ =>
+  itlf_00(S.mch)(P);
+
+  bget(".Bplf",(z;n;A;B;C)) &
+  bmodr(IntroduceFromUserX.8,z) &
+  bmodr(IntroduceFromUserX.3,n) &
+  bmodr(IntroduceFromUserX.5,A) &
+  bmodr(IntroduceFromUserX.6,B) &
+  bmodr(IntroduceFromUserX.7,C) &
+  bmodr(NewIntroduceTLIBX.7,0) &    /* force */
+  itlf_0(S.mch)(P)(blen(S))
+ =>
+  itlf_00(S.mch)(P);
+
+  InformCantConnect(".Bplf") &
+  PFZ
+ =>
+  itl_00(S.mch);
+
+  bget(".Bplf",(z;n;A;B;C)) &
+  bmodr(IntroduceFromUserX.8,z) &
+  bmodr(IntroduceFromUserX.3,n) &
+  bmodr(IntroduceFromUserX.5,A) &
+  bmodr(IntroduceFromUserX.6,B) &
+  bmodr(IntroduceFromUserX.7,C) &
+  bmodr(NewIntroduceTLIBX.7,1) &    /* interactive */
+  itlf_0(S.mch)(?)(blen(S))
+ =>
+  itl_00(S.mch)
+
+END
+
+&
+
+THEORY IntroduceVHDLSLIBFromUserX IS
+
+  ?; /* 1. 1=> sub machines to be loaded first */
+
+  ?; /* 2. ADD_UND */
+
+  ?; /* 3. POSTFIX  */
+
+  ReadBget(a) &
+  GetJobs(X) &
+  AddJobs(X,(a.vhd:BT_VHDL_SLIB_HTX:0)) &
+  bshell(bcatl("sed -e s+Rename+",R,"+g $BKIT/BLIB/LIB_VHDL/CDE/VHDL/Rename_",P,".vhd  > CDE/VHDL/",a,".vhd"))
+ =>
+  iv_rename_slib_cde3(R)(P)(0); /* code file exists */
+
+  brule(IntroduceVHDLSLIBFromUserX.3,(I,J)) &
+  Connect("TMP/.Bcom") &
+  bprintf("%_",R) &
+  bprintf(I) &
+  bprintf(J) &
+  bclose &
+  Bget("TMP/.Bcom") &
+  iv_rename_slib_cde3(R)(P)(0)
+ =>
+  iv_rename_slib_cde2(R)(P)(0); /* code file exists */
+
+  iv_rename_slib_cde2(R)(P)(1); /* no code file */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  iv_rename_slib_cde1(R)(P);
+
+  bget(".Bcom",x) &
+  iv_rename_slib_cde2(R)(P)(x)
+ =>
+  iv_rename_slib_cde1(R)(P);
+
+
+  brule(IntroduceVHDLSLIBFromUserX.2,a) &
+  brule(IntroduceVHDLSLIBFromUserX.3,(P,S)) &
+  AddCfg(b.mch) &
+  AddAnl(b.mch) &
+  Writef(("\n  Introduced VHDL SLIB %",a)) &
+  Writef((P)) &
+  iv_slib6(P,S)
+ =>
+  iv_rename_slib5(b.mch)(R);
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_VHDL_LIB_CSTR:(?;?;?))) &
+  CreHtml(a.mch) &
+  iv_rename_slib5(a.mch)(R)
+ =>
+  iv_rename_slib4(R)(P)(a);
+
+
+
+
+  ReadBget(a) &
+  iv_rename_slib4(R)(P)(a)
+ =>
+  iv_rename_slib4_1(R)(P);
+
+  brule(IntroduceVHDLSLIBFromUserX.3,(s,"_CP")) &
+  Connect("TMP/.Bcom") &
+  bprintf("%_",R) &
+  bprintf(s) &
+  bprintf("_CP") &
+  bclose &
+  Bget("TMP/.Bcom") &
+  iv_rename_slib4_1(R)(P)
+ =>
+  iv_rename_slib4_0(R)(P);
+
+  brule(IntroduceVHDLSLIBFromUserX.3,(s,"_PR")) &
+  Connect("TMP/.Bcom") &
+  bprintf("%_",R) &
+  bprintf(s) &
+  bprintf("_PR") &
+  bclose &
+  Bget("TMP/.Bcom") &
+  iv_rename_slib4_1(R)(P)
+ =>
+  iv_rename_slib4_0(R)(P);
+
+  brule(IntroduceVHDLSLIBFromUserX.2,a) &
+  iv_rename_slib4(R)(P)(bnewv(a,PR))
+ =>
+  iv_rename_slib4_0(R)("PR");
+
+  brule(IntroduceVHDLSLIBFromUserX.3,(s,"_PK")) &
+  Connect("TMP/.Bcom") &
+  bprintf("%_",R) &
+  bprintf(s) &
+  bprintf("_PK") &
+  bclose &
+  Bget("TMP/.Bcom") &
+  iv_rename_slib4_1(R)(P)
+ =>
+  iv_rename_slib4_0(R)(P);
+
+  brule(IntroduceVHDLSLIBFromUserX.2,a) &
+  iv_rename_slib4(R)(P)(bnewv(a,PK))
+ =>
+  iv_rename_slib4_0(R)("PK");
+
+  brule(IntroduceVHDLSLIBFromUserX.3,(s,"_SG")) &
+  Connect("TMP/.Bcom") &
+  bprintf("%_",R) &
+  bprintf(s) &
+  bprintf("_SG") &
+  bclose &
+  Bget("TMP/.Bcom") &
+  iv_rename_slib4_1(R)(P)
+ =>
+  iv_rename_slib4_0(R)(P);
+
+  brule(IntroduceVHDLSLIBFromUserX.2,a) &
+  iv_rename_slib4(R)(P)(bnewv(a,SG))
+ =>
+  iv_rename_slib4_0(R)("SG");
+
+  brule(IntroduceVHDLSLIBFromUserX.3,("EV","")) &
+  Connect("TMP/.Bcom") &
+  bprintf("%_EV",R) &
+  bclose &
+  Bget("TMP/.Bcom") &
+  iv_rename_slib4_1(R)(P)
+ =>
+  iv_rename_slib4_0(R)(P);
+
+  brule(IntroduceVHDLSLIBFromUserX.2,a) &
+  iv_rename_slib4(R)(P)(bnewv(a,EV))
+ =>
+  iv_rename_slib4_0(R)("EV");
+
+
+  GetJobs(X) &
+  AddJob(X,((R,P):BT_VHDL_LIB_FRC_WITH_ENV:0))
+ =>
+  iv_rename_slib3(R)(P);                 /* sub loads reqd - re-job */
+
+
+  brule(IntroduceVHDLSLIBFromUserX.1,0) &
+  bshell(bcatl("sed -e s+Rename+",R,"+g $BKIT/BLIB/LIB_VHDL/CFG/Rename_",P,".mch  > CFG/",R,"_",P,".mch")) &
+  bshell(bcatl("sed -e s+Rename+",R,"+g $BKIT/BLIB/LIB_VHDL/ANL/Rename_",P,".mch.anl  > ANL/",R,"_",P,".mch.anl")) &
+  bshell(bcatl("sed -e s+Rename+",R,"+g $BKIT/BLIB/LIB_VHDL/TYP/Rename_",P,".mri.typ  > TYP/",R,"_",P,".mri.typ")) &
+  bshell(bcatl("sed -e s+Rename+",R,"+g $BKIT/BHELP/HTX/Rename_",P,".mch.html  > HTX/",R,"_",P,".mch.html")) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists Rename_",P,".vhd $BKIT/BLIB/LIB_VHDL/CDE/VHDL")) &
+  iv_rename_slib_cde1(R)(P) &
+  iv_rename_slib4_0(R)(P)
+ =>
+  iv_rename_slib3(R)(P);                 /* no sub loads reqd */
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  iv_rename_slib1(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  iv_slib2 bsmap A &
+  iv_slib2 bsmap B &
+  iv_slib2 bsmap b
+ =>
+  iv_rename_slib1(Z);
+
+  iv_slib1(bcatl("$BKIT/BLIB/LIB_VHDL/ANL/Rename_",P,".mch.anl")) &
+  FifoWrite_Store((BT_ADD_UND_M,R,0),(IntroduceVHDLSLIBFromUserX.2)) &
+  FifoWrite_Store((BT_POSTFIX_M,P,0),(IntroduceVHDLSLIBFromUserX.3)) &
+  iv_rename_slib3(R)(P)
+ =>
+  iv_rename_slib(R)(P);
+
+
+  GetJobs(X) &
+  AddJobs(X,(a.vhd:BT_VHDL_SLIB_HTX:0)) &
+  bshell(bcatl("cp $BKIT/BLIB/LIB_VHDL/CDE/VHDL/",a,".vhd CDE/VHDL"))
+ =>
+  iv_slib_cde2(a)(0); /* code file exists */
+
+  iv_slib_cde2(a)(1); /* no code file */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  iv_slib_cde1(a);
+
+  bget(".Bcom",x) &
+  iv_slib_cde2(a)(x)
+ =>
+  iv_slib_cde1(a);
+
+
+  Writef((" (unknown type(%,%))\n",P,S))
+ =>
+  iv_slib6(P,S);
+
+  Writef((" Process\n"))
+ =>
+  iv_slib6("PR","");
+
+  Writef((" Clocked Process\n"))
+ =>
+  iv_slib6(P,"_CP");
+
+  Writef((" Process\n"))
+ =>
+  iv_slib6(P,"_PR");
+
+  Writef((" Signal\n"))
+ =>
+  iv_slib6("SG","");
+
+  Writef((" Signal\n"))
+ =>
+  iv_slib6(P,"_SG");
+
+  Writef((" Compound Module\n"))
+ =>
+  iv_slib6("CM","");
+
+  Writef((" Compound Module\n"))
+ =>
+  iv_slib6(P,"_CM");
+
+  Writef((" Simple Module\n"))
+ =>
+  iv_slib6("SM","");
+
+  Writef((" Simple Module\n"))
+ =>
+  iv_slib6(P,"_SM");
+
+  Writef((" Event\n"))
+ =>
+  iv_slib6("EV","");
+
+  Writef((" Event\n"))
+ =>
+  iv_slib6(P,"_EV");
+
+  Writef((" Package\n"))
+ =>
+  iv_slib6("PK","");
+
+  Writef((" Package\n"))
+ =>
+  iv_slib6(P,"_PK");
+
+  brule(IntroduceVHDLSLIBFromUserX.3,(P,S)) &
+  AddUsrVHDL(a.mch) &
+  AddCfg(a.mch) &
+  AddAnl(a.mch) &
+  Writef(("\n  Introduced VHDL SLIB ")) &
+  Writef((P)) &
+  iv_slib6(P,S)
+ =>
+  iv_slib5(a.mch);
+
+  GetCompletedJobs(X) &
+  AddCompletedJobs(X,(a.mch:BT_CMT_VHDL_LIB_CSTR:(?;?;?))) &
+  CreHtml(a.mch) &
+  iv_slib5(a.mch)
+ =>
+  iv_slib4(a);
+
+  GetJobs(X) &
+  AddJob(X,((?,a):BT_VHDL_LIB_FRC_WITH_ENV:0))
+ =>
+  iv_slib3(?,a);                 /* sub loads reqd - re-job */
+
+  brule(IntroduceVHDLSLIBFromUserX.1,0) &
+  bshell(bcatl("cp $BKIT/BLIB/LIB_VHDL/CFG/",a,".mch CFG")) &
+  bshell(bcatl("cp $BKIT/BLIB/LIB_VHDL/ANL/",a,".mch.anl ANL")) &
+  bshell(bcatl("cp $BKIT/BLIB/LIB_VHDL/TYP/",a,".mri.typ TYP")) &
+  bshell(bcatl("cp $BKIT/BHELP/HTX/",a,".mch.html HTX")) &
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",a,".vhd $BKIT/BLIB/LIB_VHDL/CDE/VHDL")) &
+  iv_slib_cde1(a) &
+  iv_slib4(a)
+ =>
+  iv_slib3(?,a);                 /* no sub loads reqd */
+
+
+  Writef(("\n  VHDL SLIB % does not exist\n",r)) &
+  ModifyJobs(?) &
+  LoadToolkit(1)
+ =>
+  iv_slib2_2(r(s):t:u)(1);      /* file doesn't exist */
+
+  bmodr(IntroduceVHDLSLIBFromUserX.1,1) &
+  GetJobs(X) &
+  AddJob(X,((?,r):BT_SUB_VHDL_LIB_FRC:0))
+ =>
+  iv_slib2_2(r(s):t:u)(0);      /* file exists */
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  iv_slib2_1(r(s):t:u);
+
+  bget(".Bcom",x) &
+  iv_slib2_2(r(s):t:u)(x)
+ =>
+  iv_slib2_1(r(s):t:u);
+
+  bshell(bcatl("$BKIT/BLIB/CheckFileExists ",r,".mch $BKIT/BLIB/LIB_VHDL/CFG")) &
+  iv_slib2_1(r(s):t:u)
+ =>
+  iv_slib2(r(s):t:u);
+
+  IsCfg(r.mch)
+ =>
+  iv_slib2(r(s):t:u);
+
+  iv_slib2(?);
+
+  InformCantConnect(Z) &
+  PFZ
+ =>
+  iv_slib1(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;I;g;h;i;W;j;(k(l):m:r);n)) &
+  iv_slib2 bsmap A &
+  iv_slib2 bsmap B &
+  iv_slib2 bsmap b
+ =>
+  iv_slib1(Z);
+
+/*
+  bmodr(IntroduceVHDLSLIBFromUserX.1,0) &
+  iv_rename_slib(R)(P)
+ =>
+  iv_slib(R,P);
+*/
+
+  Writef(("\n  %: bad rename prefix (not an arity 1 symbol!)\n",R)) &
+  bshell("$BKIT/BLIB/BPrompt 'Bad rename prefix'")
+ =>
+  iv_slib__(R,P);
+
+  bget("TMP/.Bcom",X) &
+  bmodr(IntroduceVHDLSLIBFromUserX.1,0) &
+  iv_rename_slib(X)(P)
+ =>
+  iv_slib__(R,P);
+
+  bmodr(IntroduceVHDLSLIBFromUserX.1,0) &
+  iv_rename_slib(R)(P)
+ =>
+  iv_slib(R,P);
+
+  bstring(R) &
+  Connect("TMP/.Bcom") &
+  bmodr(IntroduceVHDLSLIBFromUserX.1,0) &
+  bprintf(R) &
+  bclose &
+  iv_slib__(R,P)
+ =>
+  iv_slib(R,P);
+
+  bmodr(IntroduceVHDLSLIBFromUserX.1,0) &
+  iv_slib1(bcatl("$BKIT/BLIB/LIB_VHDL/ANL/",a,".mch.anl")) &
+  FifoWrite_Store((BT_POSTFIX_M,a,0),(IntroduceVHDLSLIBFromUserX.3)) &
+  iv_slib3(?,a)
+ =>
+  iv_slib(?,a);
+
+  IsCfg(a.mch)
+ =>
+  iv_slib(?,a)
+
+END

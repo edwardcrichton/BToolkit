@@ -1,0 +1,167 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+extern int tathe[];
+extern int tarul[];
+extern int taspe[];
+extern int tares[];
+extern int tafrm[];
+extern int tatmb[];
+extern int max_tac;
+int tac;
+int tattm;
+                  
+/*  PROGRAMS FOR TACTIC MACHINE  */
+
+#define DED_tac     1
+
+#define GEN_tac     2
+
+#define HYP_tac     3
+
+#define ARI_tac     4
+
+#define TIL_tac     5
+
+#define RUT_tac     6
+
+#define REV_tac     7
+
+#define FLAT_tac    8
+
+#define MAP_tac     9
+
+#define LMAP_tac   10
+
+#define FEQL_tac   11
+
+#define MODR_tac   12
+
+#define SHELL_tac  13
+
+#define WRITE_tac  14
+
+#define RULE_tac   15
+
+#define TAC_tac    16
+
+#define FEQLS_tac  17
+
+#define CATL_tac   18
+
+#define NEWV_tac   19
+
+#define SUB_tac    20
+                  
+
+#define ini_tac tac=0; tattm=0
+
+#define the_tac(t)  tathe[t]
+
+#define rul_tac(t)  tarul[t]
+
+#define spe_tac(t)  taspe[t]
+
+#define res_tac(t)  tares[t]
+
+#define frm_tac(t)  tafrm[t]
+mak_tacfunc()
+#define mak_tac mak_tacfunc()
+{register int t ;
+  if( tattm!=0 ){
+    t=tatmb[tattm];
+    tattm=tattm-1;
+  } else if( tac<max_tac ){
+    tac=tac+1;
+    t=tac;
+  } else {
+
+#ifdef BTOOL_FLAG
+    fprintf ( bstdout, "      TOO MANY TACTICS (Press CR to exit)\n");
+    {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
+#else
+    fprintf ( bstdout, "      bplatform: Too many tactics\n\n");
+#endif /* BTOOL_FLAG */
+    exit___(1);
+  }
+; return t;
+}
+
+sup_tac(t)
+{
+  tattm=tattm+1;
+  tatmb[tattm]=t;
+}
+
+cre_tac(f)
+{register int t ;
+  t=mak_tac;
+  the_tac(t)=0;
+  rul_tac(t)=0;
+  spe_tac(t)=0;
+  res_tac(t)=FALSE;
+  frm_tac(t)=f
+; return t;
+}
+
+kil_tac(t)
+{
+  sup_tac(t);
+  kil_tree(frm_tac(t));
+}
+
+mod_the_tac(t,th)
+{
+  the_tac(t)=th;
+}
+
+mod_rul_tac(t,r)
+{
+  rul_tac(t)=r;
+}
+
+mod_spe_tac(t,s)
+{
+  spe_tac(t)=s;
+}
+
+mod_res_tac(t,b)
+{
+  res_tac(t)=b;
+}
+
+#define def_the_tac(t) ((the_tac(t)!=0)!=0)
+
+#define def_rul_tac(t) ((rul_tac(t)!=0)!=0)
+
+#define def_spe_tac(t) ((spe_tac(t)!=0)!=0)
+sta_tacfunc()
+#define sta_tac sta_tacfunc()
+{
+  fprintf ( bstdout,"      Max Number of Tactics:         ");
+  fprintf ( bstdout,"%8d\n",max_tac);
+  fprintf ( bstdout,"      Number of Used Tactics:        ");
+  fprintf ( bstdout,"%8d\n",tac);
+  fprintf ( bstdout,"      Number of Dead Tactics:        ");
+  fprintf ( bstdout,"%8d\n",tattm);
+  fprintf ( bstdout,"      Number of Live Tactics:        ");
+  fprintf ( bstdout,"%8d\n\n",tac-tattm);
+}
+
+    
+    

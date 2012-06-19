@@ -1,0 +1,61 @@
+
+                     PERSON1 DEMONSTRATION
+                     ---------------------
+
+The PERSON1 demonstration illustrates the use if the SLIB constructs
+in the data and algorithmic design of a simple software module. The
+interface generator is used to produce running code.
+
+0. Enter the PERSON1 directory and run the B-Toolkit to create a new
+   development directory.
+
+1. Introduce `Person1.mch' from SRC and Analyse (anl); the `String_TYPE' and
+   `Bool_TYPE' SLIB machines are committed.
+
+2. Animate (anm) interactively `Person1.mch' to check its functionality.
+   Give values to `max_person' (e.g 10) and the set
+   PERSON (e.g {p1,p2,p3,p4,p5}). Leave `STRING' as it is and assume
+   for the purpose of animation that any identifier (e.g. john and
+   mary) are members of that set.
+   The `Save' and `Restore' Operations will in the implementation
+   allow for saving current state to the file system and restoring
+   the state from a previously saved state. The Specification
+   does not model the file-system, so `Restore' will simply
+   overwrite the current state with new values, which the
+   user must enter correctly.
+
+3. Introduce the `Person1I' implementation from SRC and Analyse; the
+   `Name_str_obj', `Person1_fnc_obj', `Person1_file_io', `file_dump', ...
+   SLIB machines are introduced.
+
+4. Introduce a new Interface of the implemented machine` Person1.mch`.
+
+5. Set the interface-flag Option to non-Motif (top bar Option).
+
+6. Enter the Generators Environment and edit the parameter of `Person1.itf'
+   (the interface of the implemented machine  Person1) to be, for
+   example, 10. Commit edits and  generate the interface (itf);
+   the constructs `Person1Io.mch',` Person1IoI.imp',
+   `Person1Itf.mch',` Person1ItfI.imp' and `Person1EnumItf.enm' are
+   generated, and the SLIB construct `ITF_token_io.mch' is introduced.
+   The enumeration is first generated and then` Person1I',` Person1IoI'
+   and `Person1ItfI' are translated, and the latter linked to produce
+   running code which may be executed from the Translators Environment.
+
+7. Use the Browser to get an overview of the design.
+
+8. Now set the interface-flag Option to Motif. In the Main Environment
+   Reset (rst) the existing interface (Person1.itf) and Remake. 
+   Again the program can be run from the Translators environment.
+
+6. Return to the Main Menu and Introduce a new  Document of all
+   configured constructs; edit, set the required
+   Document flags (in the Options Menu), mark-up (dmu) and print.
+
+
+
+This demonstration is, of course, rather artificial in that it would
+be more usual - and certainly more efficient - to pass tokens over the
+interface (rather than the values stored in those tokens), but we
+wanted a small example in which to demonstrate the use of the object
+machine iterators ...

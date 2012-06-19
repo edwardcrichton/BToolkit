@@ -1,0 +1,930 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.35 i586) [Netscape]">
+   <TITLE>ASCII Symbols for AMN</TITLE>
+</HEAD>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#66FFFF" VLINK="#FF6666" ALINK="#FF0000">
+<A NAME="ASCII"></A>
+<H1>
+ASCII Symbols for the Abstract Machine Notation</H1>
+
+<ADDRESS>
+NOTE: If your browser does not support tables, <A HREF="ASCIISymbols.old.html">click
+here</A>.</ADDRESS>
+
+<TABLE BORDER WIDTH="80%" >
+<TR>
+<TH COLSPAN="6">RELATIONS</TH>
+</TR>
+
+<TR>
+<TH ROWSPAN="2">SYMBOL</TH>
+
+<TH ROWSPAN="2">MEANING</TH>
+
+<TH COLSPAN="2">Cardinality</TH>
+
+<TH COLSPAN="2">Optionality</TH>
+</TR>
+
+<TR>
+<TH>Domain</TH>
+
+<TH>Range</TH>
+
+<TH>Domain</TH>
+
+<TH>Range</TH>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;-></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Relation">relation</A>&nbsp;</TD>
+
+<TD>many</TD>
+
+<TD>many</TD>
+
+<TD>optional</TD>
+
+<TD>optional</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>+-></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Functions!Partial">partial function</A></TD>
+
+<TD>many</TD>
+
+<TD>one</TD>
+
+<TD>optional</TD>
+
+<TD>optional</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>--></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Functions!Total">total function</A></TD>
+
+<TD>many</TD>
+
+<TD>one</TD>
+
+<TD>mandatory</TD>
+
+<TD>optional</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>+->></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Surjection!Partial">partial
+surjection</A></TD>
+
+<TD>many</TD>
+
+<TD>one</TD>
+
+<TD>optional</TD>
+
+<TD>mandatory</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>-->></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Surjection!Total">total surjection</A></TD>
+
+<TD>many</TD>
+
+<TD>one</TD>
+
+<TD>mandatory</TD>
+
+<TD>mandatory</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>>+></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Injection!Partial">partial injection</A></TD>
+
+<TD>one</TD>
+
+<TD>one</TD>
+
+<TD>optional</TD>
+
+<TD>optional</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>>-></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Injection!Total">total injection</A></TD>
+
+<TD>one</TD>
+
+<TD>one</TD>
+
+<TD>mandatory</TD>
+
+<TD>optional</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>>->></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Functions!Bijection">bijection</A>&nbsp;</TD>
+
+<TD>one</TD>
+
+<TD>one</TD>
+
+<TD>mandatory</TD>
+
+<TD>mandatory</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER WIDTH="80%" >
+<TR>
+<TH COLSPAN="2">LOGIC</TH>
+</TR>
+
+<TR>
+<TH ALIGN=LEFT>SYMBOL</TH>
+
+<TH ALIGN=LEFT>MEANING&nbsp;</TH>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&amp;</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Conjunction">logical and</A>,
+conjunction&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>or</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Disjunction">logical disjunction</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>=></TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Implication">logical implication</A>,
+implies&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;=></TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Equivalence">logical equivalence</A>,
+if and only if&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>not</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Negation">logical negation</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>!</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Quantification!Universal">universal
+quantification</A>, for all&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>#</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Quantification!Existential">existential
+quantification</A>, there exists&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>=</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Equals">equality</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>/=</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Negation!Not_Equals">inequality</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>==</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite
+rule</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>|-></TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Ordered_Pair">ordered pair</A>,
+maplet&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>z\A</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Freeness">non-freeness</A> of
+z in A</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER WIDTH="80%" >
+<TR>
+<TH COLSPAN="2">SETS</TH>
+</TR>
+
+<TR>
+<TH ALIGN=LEFT>SYMBOL</TH>
+
+<TH ALIGN=LEFT>MEANING&nbsp;</TH>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>:</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Membership">set membership</A>,
+belongs to, element of&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>/:</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Negation!Not_Set_Member">set
+non-membership</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;:</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Inclusion">set inclusion</A>,
+subset of&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>/&lt;:</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Negation!Not_Set_Inclusion">set
+non-inclusion</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>*</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Cartesian_Product">Cartesian
+product</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>\/</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Union">set union</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>/\</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Intersection">set intersection</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>-</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Difference">set difference</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>{}</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Empty">empty set</A>, null
+set&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>POW</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Power">powerset</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>POW1</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Subsets!Non_empty">set
+of all non-empty subsets</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>FIN</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Subsets!Finite">set of
+all finite subsets</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>FIN1</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Subsets!Finite_Non_Empty">set
+of all non-empty finite subsets</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>{E}</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Singleton">singleton set</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>{E,F}</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Enumeration">enumerated
+set</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>union</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Union!Generalised">generalised
+union</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>inter</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Intersection!Generalised">generalised
+intersection</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>UNION(z).(P | E)</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Union!UGeneralised">generalised
+union</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>INTER(z).(P | E)</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Intersection!UGeneralised">generalised
+intersection</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>card</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Cardinality">set cardinality</A>&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER WIDTH="80%" >
+<TR>
+<TH COLSPAN="2">NATURALS</TH>
+</TR>
+
+<TR>
+<TH ALIGN=LEFT>SYMBOL</TH>
+
+<TH ALIGN=LEFT>MEANING&nbsp;</TH>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>></TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Inequality">strict
+inequality</A>, greater than&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Inequality">strict
+inequality</A>, less than&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>>=</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Inequality">inequality</A>,
+greater than or equal&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;=</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Inequality">inequality</A>,
+less than or equal&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>NAT</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Set_of">set
+of natural numbers</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>NAT1</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Set_of!Non_zero">set
+of non-zero natural numbers</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>max</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Maximum">maximum</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>min</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Minimum">minimum</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>+</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Addition">addition</A>,
+plus&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>-</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Difference">difference</A>,
+minus&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>*</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Product">product</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>/</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Division">division</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>mod</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Remainder">remainder
+of integer division</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>..</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Natural_Numbers!Interval">interval</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>SIGMA</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Summation">summation</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>PI</TT>&nbsp;</TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sets!Product">product</A>&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER WIDTH="80%" >
+<TR>
+<TH COLSPAN="2">RELATIONS</TH>
+</TR>
+
+<TR>
+<TH ALIGN=LEFT>SYMBOL</TH>
+
+<TH ALIGN=LEFT>MEANING&nbsp;</TH>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>dom</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Domain">domain</A>
+of relation&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>ran</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Codomain">co-domain</A>
+(or range) of relation</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>;</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Composition">relational
+composition</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>circ</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Composition">relational
+composition</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>id</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Identity">identity
+relation</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;|</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Domain_Restriction">domain-restriction</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>|></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Range_Restriction">range-restriction</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;&lt;|</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Anti_Domain_Restriction">anti-domain-restriction</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>|>></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Anti_Range_Restriction">anti-range-restriction</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>r~</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Inverse">inverse</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>r[s]</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Image">image</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;+</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Overriding">overriding</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>+></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Overriding">overriding</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>>&lt;</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Product,_Direct">direct
+product</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>||</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Product,_Parallel">parallel
+product</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>iterate(r,n)</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Iteration">iteration</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>closure(r)</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Closure">reflexive
+transitive closure</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>prj1</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Projection">projection</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>prj2</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Relations!Projection">projection</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>%(z).(P | E)</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Quantification!Lambda_Abstraction">lambda
+abstraction</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>f(x)</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Functions!Application">function
+application</A></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER WIDTH="80%" >
+<TR>
+<TH COLSPAN="2">SEQUENCES</TH>
+</TR>
+
+<TR>
+<TH ALIGN=LEFT>SYMBOL</TH>
+
+<TH ALIGN=LEFT>MEANING&nbsp;</TH>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Empty">empty sequence</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>seq(S)</TT></TD>
+
+<TD ALIGN=LEFT>set of <A HREF="MathsNotation.html#Sequences!Finite">finite
+sequences</A> over S</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>iseq(S)</TT></TD>
+
+<TD ALIGN=LEFT>set of <A HREF="MathsNotation.html#Sequences!Injective">injective
+sequences</A> over S</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>seq1(S)</TT></TD>
+
+<TD ALIGN=LEFT>set of <A HREF="MathsNotation.html#Sequences!Non_empty">non-empty
+sequences</A> over S</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>perm(S)</TT></TD>
+
+<TD ALIGN=LEFT>set of <A HREF="MathsNotation.html#Sequences!Bijective">bijective
+sequences</A> over S</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>^</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Concatenation">sequence
+concatenation</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>-></TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Prepend">prepend</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>&lt;-</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Append">append</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>[E]</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Singleton">singleton
+sequence</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>[E,F]</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Enumeration">sequence
+enumeration</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>size</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Size_of">sequence
+size</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>rev</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Reverse">sequence
+reverse</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>/|\</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Projection">sequence
+projection</A> (prefix)</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>\|/</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Projection">sequence
+projection</A> (suffix)</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>first</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!First_Element">first
+sequence element</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>last</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Last_Element">last
+sequence element</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>tail</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Tail">sequence tail</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>front</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Sequences!Frint">sequence front</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>conc</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Concatenation!Generalised">generalised
+concatenation</A></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER WIDTH="80%" >
+<TR>
+<TH COLSPAN="2">AMN SUBSTITUTIONS</TH>
+</TR>
+
+<TR>
+<TH ALIGN=LEFT>SYMBOL</TH>
+
+<TH ALIGN=LEFT>MEANING&nbsp;</TH>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>x:=E</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Substitutions!Simple">simple
+substitution</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>x,y:=E,F</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Substitutions!Simultaneous">simultaneous
+substitution</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>x::E</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="AMNotation.html#Substitutions!Postconditioned">membership
+postconditioned substitution</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>x: P</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="AMNotation.html#Substitutions!Postconditioned">general
+postconditioned substitution</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>S ; T</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Substitutions!Sequencing">substitution
+S followed by substitution T</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>skip</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Substitutions!skip">no-substitution</A></TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>oo &lt;-- op(ii)</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="AMNotation.html#AMN!Operations">parameterised substitution</A>
+with input ii, output oo</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER WIDTH="80%" >
+<TR>
+<TH COLSPAN="2">GENERALISED SUBSTITUTIONS</TH>
+</TR>
+
+<TR>
+<TH ALIGN=LEFT>SYMBOL</TH>
+
+<TH ALIGN=LEFT>MEANING&nbsp;</TH>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>[S]P</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Substitutions!Application">substitution
+application</A> to a predicate P</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>[x:= E]F</TT></TD>
+
+<TD ALIGN=LEFT>simple substitution on expression F</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>P | S</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Substitutions!Preconditioned">pre-conditioning</A>
+of S by P</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>P ==> S</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Substitutions!Guarded">guarding</A>
+of S by P</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>S [] T</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Substitutions!Choice">choice</A>
+between S and T</TD>
+</TR>
+
+<TR>
+<TD ALIGN=LEFT><TT>@z.S</TT></TD>
+
+<TD ALIGN=LEFT><A HREF="MathsNotation.html#Quantification!Unbounded_Choice">unbounded
+choice</A></TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P>
+<HR WIDTH="60%">
+<CENTER><I><FONT COLOR="#33CCFF"></FONT></I>&nbsp;</CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF"></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
+
+<CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
+<A HREF="Index.html">Index</A>.</FONT></I></CENTER>
+
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25  ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
+<HR WIDTH="60%"></CENTER>
+
+</BODY>
+</HTML>

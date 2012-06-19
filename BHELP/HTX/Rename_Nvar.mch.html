@@ -1,0 +1,240 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_Nvar">
+  <TITLE>The Rename_Nvar machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>         Rename_Nvar(maxint)
+
+<A NAME="CONSTRAINTS"><B>CONSTRAINTS</B></A>     maxint &lt;= 2147483646
+
+<A NAME="SEES"><B>SEES</B></A>            <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>       Rename_Nvar
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>       Rename_Nvar:0..maxint
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>  Rename_Nvar:=0
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_NVAR">Rename_VAL_NVAR</A> =
+  <B>BEGIN</B> 
+    vv:=Rename_Nvar
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_STO_NVAR">Rename_STO_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B> 
+    Rename_Nvar:=vv
+  <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!Rename_MIN_NVAR">Rename_MIN_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    uu:=min({Rename_Nvar,vv})
+  <B>END</B>;
+
+  uu <-- <A NAME="OPNAME!Rename_MAX_NVAR">Rename_MAX_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    uu:=max({Rename_Nvar,vv})
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_PRE_INC_NVAR">Rename_PRE_INC_NVAR</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(Rename_Nvar&lt;maxint)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_INC_NVAR">Rename_INC_NVAR</A> =
+  <B>PRE</B>
+    Rename_Nvar+1:0..maxint
+  <B>THEN</B>
+    Rename_Nvar:=Rename_Nvar+1
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_PRE_DEC_NVAR">Rename_PRE_DEC_NVAR</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(Rename_Nvar&gt;0)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_DEC_NVAR">Rename_DEC_NVAR</A> =
+  <B>PRE</B>
+    Rename_Nvar:1..maxint
+  <B>THEN</B>
+    Rename_Nvar:=Rename_Nvar-1
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_PRE_ADD_NVAR">Rename_PRE_ADD_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar+vv &lt;= maxint)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_ADD_NVAR">Rename_ADD_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    Rename_Nvar+vv &lt;= maxint
+  <B>THEN</B> 
+    Rename_Nvar:=Rename_Nvar+vv
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_PRE_MUL_NVAR">Rename_PRE_MUL_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar*vv &lt;= maxint)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_MUL_NVAR">Rename_MUL_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    Rename_Nvar*vv &lt;= maxint
+  <B>THEN</B> 
+    Rename_Nvar:=Rename_Nvar*vv
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_PRE_SUB_NVAR">Rename_PRE_SUB_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar-vv &gt;= 0)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_SUB_NVAR">Rename_SUB_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint &
+    Rename_Nvar-vv &gt;= 0
+  <B>THEN</B> 
+    Rename_Nvar:=Rename_Nvar-vv
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_PRE_DIV_NVAR">Rename_PRE_DIV_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(vv &gt; 0)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_DIV_NVAR">Rename_DIV_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:1..maxint
+  <B>THEN</B> 
+    Rename_Nvar:=Rename_Nvar/vv
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_PRE_MOD_NVAR">Rename_PRE_MOD_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(vv &gt; 0)
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_MOD_NVAR">Rename_MOD_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:1..maxint
+  <B>THEN</B> 
+    Rename_Nvar:=Rename_Nvar-vv*(Rename_Nvar/vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EQL_NVAR">Rename_EQL_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_NEQ_NVAR">Rename_NEQ_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar/=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_GTR_NVAR">Rename_GTR_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar&gt;vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_GEQ_NVAR">Rename_GEQ_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar&gt;=vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_SMR_NVAR">Rename_SMR_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar&lt;vv)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_LEQ_NVAR">Rename_LEQ_NVAR</A>(vv) =
+  <B>PRE</B>
+    vv:0..maxint
+  <B>THEN</B>
+    bb:=<B>bool</B>(Rename_Nvar&lt;=vv)
+  <B>END</B>;
+
+
+/**************  save/restore host byte order **************/
+
+  <A NAME="OPNAME!Rename_SAV_NVAR">Rename_SAV_NVAR</A> =
+  <B>BEGIN</B>
+     <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RST_NVAR">Rename_RST_NVAR</A> =
+  <B>BEGIN</B>
+    Rename_Nvar :: 0..maxint
+  <B>END</B>;
+
+/**************  save/restore network byte order **************/
+
+  <A NAME="OPNAME!Rename_SAVN_NVAR">Rename_SAVN_NVAR</A> =
+  <B>BEGIN</B>
+     <B>skip</B>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RSTN_NVAR">Rename_RSTN_NVAR</A> =
+  <B>BEGIN</B>
+    Rename_Nvar :: 0..maxint
+  <B>END</B>
+
+<B>END</B>
+
+
+
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:10 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

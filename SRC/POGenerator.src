@@ -1,0 +1,6811 @@
+/* Copyright (c) 1995, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define pogfuTac ((ARI;CATL;MODR;WRITE;MAP;CATL;SHELL;POGeneratorFromUserX)~)
+
+#define pogfbcTac ((MODR;WRITE;POGeneratorFromBcomX)~)
+
+
+#define POGeneratorDirect(x) bcall(pogfuTac:(bmodr(TempX.11,true) & pogfu_0(x)))
+
+#define POGeneratorFromMake(x) bcall(POGeneratorFromMakeX:(ModifyRule(TempX,11,true) & pogfm(x)))
+
+
+#define  ClearPOGeneratorError    bcall(MODR:bmodr(POGeneratorErrorX.1,0))
+
+#define  FlagPOGeneratorError     bcall(MODR:bmodr(POGeneratorErrorX.1,1))
+
+
+
+#define carrTac \
+		((MAP;FLAT;CATL)~;CheckAllRecursiveRewritesX)~
+
+#define CheckAllRecursiveRewritesInv(k,x)    bcall(carrTac: carr_0(k)(x))
+
+#define CheckAllRecursiveRewritesMchOp(m,o)     bcall(carrTac: carr_2(m,o))
+
+#define CheckAllRecursiveRewritesRefOp(m,x,o)   bcall(carrTac: carr_2(m$x,o))
+
+
+
+
+#define InformCfgFileError  Writef(("\n  % in Configuration File\n",berr))
+
+#define InformContextError(s) Writef(("\n\n    Duplicate name(s) in SETS/CONSTANTS clauses:\n\n      %\n",bsrv s berv))
+
+
+
+#define InformNoVariablesMch Writef(("\n    No variables!\n",berr))
+
+#define InformNoInitialisationMch Writef(("\n    No initialisation!\n",berr))
+
+#define InformIptMchNotFound(a) Writef(("\n    Machine % not found\n",a))
+
+#define InformNotAnalysedPO(a) Writef(("\n    Machine % is not analysed\n",a))
+
+#define InformNotConfiguredPO(a) Writef(("\n  M  achine % is not configured\n",a))
+
+
+#define InformCantReadFile(f) Writef(("\n    Can't read file  %\n",f))
+
+
+
+
+
+
+
+#define InformNoSetsConstsCtx(c) Writef(("\n\n  % has properties ...\n\n  ... but no sets or constants\n",bsrv c berv))
+
+#define SimplifyOpTac       ( \
+                             ( \
+                               DesugarStatementX; \
+                               ( \
+                                 FLAT~; \
+                                 RebuildX \
+                               )~ \
+                             )~; \
+                             DesugarOperationX; \
+                             WRITE; \
+                             DesugarErrorX; \
+                             WRITE~ \
+                           )
+
+#define SimplifyOp(a)  bcall(SimplifyOpTac:(? | (a) | ?))
+
+
+
+THEORY POGeneratorErrorX IS 0 END &
+
+THEORY StandX IS
+
+#define Stand(x) \
+     bcall((StandX;MODR;MAP;(ARI~;SUB~;(StandardizeX;FLAT)~;StandX;MODR)~):sd0(x))
+
+#define ReadStand(x) brule(StandX.1,x)
+
+  _;
+
+  brule(StandX.1,A) &
+  bmodr(StandX.1,(A&a))
+ =>
+  sd1(a);
+
+  brule(StandX.1,_) &
+  bmodr(StandX.1,a)
+ =>
+  sd1(a);
+
+  bmodr(StandX.1,_) &
+  sd1(a)
+ =>
+  sd0(a);
+
+  bmodr(StandX.1,_) &
+  sd1 bsmap (A&a)
+ =>
+  sd0(A&a)
+
+END
+
+&
+
+THEORY CrePrintAppendX IS
+
+/* y is theory, z (h=>predicates) */
+
+#define CrePrintAppend(y,z) \
+   bcall(((SUB;ARI~;NEWV;MODR;RULE;MAP;WRITE)~;CrePrintAppendX)~:cpa0(y)(z))
+
+#define DontCreButPrintAppend(y,z) \
+   bcall(((SUB;ARI~;NEWV;MODR;RULE;MAP;WRITE)~;CrePrintAppendX)~:dcbpa0(y)(z))
+
+  brule(POGeneratorFromUserX.3,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  atf2;
+
+  brule(POGeneratorFromUserX.3,f) &
+  bappend(f)
+ =>
+  atf2;
+
+  bprintf(";\n  %",(h=>p))                   /* not first rule of theory */
+ =>
+  atf1(h,p);
+
+  brule(POGeneratorFromUserX.5,0) &          /* first rule of theory */
+  bmodr(POGeneratorFromUserX.5,1) &
+  bprintf("IS\n  %",(h=>p))
+ =>
+  atf1(h,p);
+
+  brule(POGeneratorFromUserX.4,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  atf0;
+
+  brule(POGeneratorFromUserX.4,f) &
+  bappend(f)
+ =>
+  atf0;
+
+
+
+  bprintf(";\n  %",(h=>p))                   /* not first rule of theory */
+ =>
+  pr0(h,p);
+
+  brule(POGeneratorFromUserX.1,0) &          /* first rule of theory */
+  bmodr(POGeneratorFromUserX.1,1) &
+  bprintf("IS\n  %",(h=>p))
+ =>
+  pr0(h,p);
+
+
+/***
+to suppress creation of ctx(m)=>p rules for SEEN machines m
+***/
+  ReadStand(P) &
+  pr0(h) bsmap P &
+  atf0 &
+  atf1(h) bsmap P &
+  atf2
+ =>
+  dcbpa1(T)(h);
+
+  ReadStand(P) &
+  bcrer(UnusedPropertiesX,(h=>P)) &
+  pr0(h) bsmap P &
+  atf0 &
+  atf1(h) bsmap P &
+  atf2
+ =>
+  dcbpa1(PropertiesX)(h);
+
+  Stand(P) &
+  dcbpa1(T)(h)
+ =>
+  dcbpa0(T)(h=>P);
+
+
+
+  ReadStand(P) &
+  bcrer(T,(h=>P)) &
+  pr0(h) bsmap P &
+  atf0 &
+  atf1(h) bsmap P &
+  atf2
+ =>
+  cpa1(T)(h);
+
+  Stand(P) &
+  cpa1(T)(h)
+ =>
+  cpa0(T)(h=>P)
+
+END
+
+&
+
+THEORY ORtbdX END &
+
+THEORY ORdX END &
+
+THEORY OrFlagX IS
+
+#define SetOrFlag     bcall(MODR: bmodr(OrFlagX.1,1))
+
+#define ClearOrFlag   bcall(MODR: bmodr(OrFlagX.1,0))
+
+#define OrFlagSet     brule(OrFlagX.1,1)
+
+#define OrFlagNotSet  brule(OrFlagX.1,0)
+
+ 0
+
+END
+
+&
+
+THEORY InitialisePOBCountX IS
+
+#define PrintBptl(x) \
+	bcall((((FLAT;WRITE)~;InitialisePOBCountX) : pbtl_0(x)))
+
+
+  ReadTopAbs(s.t) &
+  brule(POGeneratorFromUserX.2,a.b) &
+  brule(POGeneratorFromUserX.3,f) &
+  bprintf("%\n|\n%\n|\n%\n|\n%\n",s.t,(bflat(?,O)),a.b,f)
+ =>
+  pbtl_2(O);
+
+  bsearch(?,O,P) &
+  pbtl_2(P)
+ =>
+  pbtl_2(O);
+
+  pbtl_2(bflat(Initialisation,O,Context,Assertions,Constraints))
+ =>
+  pbtl_1(O);
+
+  InformCantConnect("POB/.Bpbl") &
+  PFZ
+ =>
+  pbtl_0(O);
+
+  bconnect("POB/.Bpbl") &
+  brule(POGeneratorFromUserX.2,a.b) &
+  GetTopAbs(a.b) &
+  pbtl_1(O) &
+  bcall(AppendTempFileX : atf_2)
+ =>
+  pbtl_0(O)
+
+END
+
+&
+
+THEORY ConnectDotPOFileX IS
+
+#define ConnectDotPOFile(x) \
+		bcall(((CATL;MODR;WRITE)~;ConnectDotPOFileX)~ : codpo_0(x))
+
+#define PrintDotLemma(x) \
+		bcall(((FLAT~;WRITE)~;ConnectDotPOFileX)~ : pdl(x))
+
+#define CloseDotPOFile(x) \
+		bcall(((WRITE)~;ConnectDotPOFileX)~ : cldpo(x))
+
+#define WriteDotInvariant(x) \
+		bcall((ConnectDotPOFileX)~ : wdi(x))
+
+  ?;
+
+  InformCantConnect("POB/.Invariant") &
+  PFZ
+ =>
+  wdi(I);
+
+  bconnect("POB/.Invariant") &
+  bcall(((StandardizeX;FLAT)~;WRITE) : bprintf("%\n",I)) &
+  bcall(MODR : bmodr(ConnectDotPOFileX.1,I))
+ =>
+  wdi(I);
+
+  bprintf("\n") &
+  bclose
+ =>
+  cldpo(a);
+
+
+  bprintf("\n;\n(%)",x)
+ =>
+  pdl(x);
+
+
+  pdl(i=>i);
+
+  pdl(c=>(i=>i));
+
+  pdl(b=>(c=>(i=>i)));
+
+  pdl(a=>(b=>(c=>(i=>i))));
+
+  pdl(d=>(a=>(b=>(c=>(i=>i)))));
+
+
+  pdl(true);
+
+  pdl(c=>(true));
+
+  pdl(b=>(c=>(true)));
+
+  pdl(a=>(b=>(c=>(true))));
+
+  pdl(d=>(a=>(b=>(c=>(true)))));
+
+
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",[s]?)
+ =>
+  pdl([s]I);
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",(c=>[s]?))
+ =>
+  pdl(c=>[s]I);
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",(b=>(c=>[s]?)))
+ =>
+  pdl(b=>(c=>[s]I));
+
+
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",([s][t]?))
+ =>
+  pdl([s][t]I);
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",(c=>[s][t]?))
+ =>
+  pdl(c=>[s][t]I);
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",(b=>(c=>[s][t]?)))
+ =>
+  pdl(b=>(c=>[s][t]I));
+
+
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",([s]not([t]not(?))))
+ =>
+  pdl([s]not([t]not(I)));
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",(c=>[s]not([t]not(?))))
+ =>
+  pdl(c=>[s]not([t]not(I)));
+
+  brule(ConnectDotPOFileX.1,I) &
+  bprintf("\n;\n(%)",(b=>(c=>[s]not([t]not(?)))))
+ =>
+  pdl(b=>(c=>[s]not([t]not(I))));
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  codpo_0(f);
+
+  bconnect(f) &
+  bprintf("?")
+ =>
+  codpo_0(f)
+
+END
+
+&
+
+THEORY AppendTempFileX IS
+
+#define ModTempFilename(x) \
+  bcall(((CATL;MODR;WRITE)~;AppendTempFileX)~ : mtf_0(x))
+
+#define AppendTempFile(x) \
+  bcall(((CATL;MODR;WRITE)~;AppendTempFileX)~ : atf_0(x))
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  mtf_0(f);
+
+  bconnect(f) &
+  bmodr(POGeneratorFromUserX.4,bcatl(f)) &
+  bmodr(POGeneratorFromUserX.5,0) &
+  atf_2
+ =>
+  mtf_0(f);
+
+
+  brule(POGeneratorFromUserX.3,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  atf_2;
+
+  brule(POGeneratorFromUserX.3,f) &
+  bappend(f)
+ =>
+  atf_2;
+
+  brule(POGeneratorFromUserX.4,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  atf_0(x);
+
+  brule(POGeneratorFromUserX.4,f) &
+  bappend(f) &
+  bprintf(x) &
+  atf_2
+ =>
+  atf_0(x)
+
+END
+
+&
+
+THEORY TempX IS
+
+/* 13 temporary storage locations */
+
+  (?:?);  /* 1 rename */
+  ?;?;?;?;?;?;?;?;?;?;
+  0;  /* pob count */
+  ?;  /* construct type - mch,ref,imp or int */
+  ?;?;?;?;?;?;
+  ?;  /* .14 - non-promoted (comma) op list (W) */
+  ? /* 21 - was TempX.1 formal parameters of machine:constraints of machine */
+
+END
+
+&
+
+THEORY ContextX  END &
+
+THEORY RawVariableX END &
+
+THEORY ParameterX END &
+
+THEORY InvariantX END &
+
+THEORY InitialisationX END &
+
+THEORY OperationX IS ?;? END &
+
+THEORY OutputParametersX IS ?;? END &
+
+THEORY EnumerateX END &
+
+THEORY NotEqualX END &
+
+THEORY RewriteToFalseOrTrueX END &
+
+THEORY FwdContra0X END &
+
+THEORY FwdEqual1X END &
+
+THEORY PropertiesX END &
+
+THEORY UnusedPropertiesX END &
+
+THEORY ExpandHypX END &
+
+THEORY ConverToAmpersandX IS
+
+  convertoampersand(a) == a;
+
+  convertoampersand(a JOK2 b) == (convertoampersand(a)&b)
+
+END
+
+&
+
+THEORY OfferPOGeneratorFailureOptionsX IS
+
+#define OfferPOGeneratorFailureOptions \
+          bcall(((FLAT;MODR;OfferPOGeneratorFailureOptionsX)~):opogfo0)
+
+
+  brule(POGeneratorFromUserX.2,a.b) &
+  FlagPOGeneratorError &
+  GetJobs(X) &
+/*
+  AddJobs(X,((a.b:BT_EDT_NML_POG:0);(a.b:BT_EDT:0)))
+*/
+  AddJobs(X,((a.b:BT_EDT_NML_POG:0)))
+ =>
+  opogfo0
+
+END
+
+&
+
+THEORY StoreMchDollar0RenameX IS
+
+#define StoreMchDollar0Rename(x) \
+  bcall(((MAP;MODR;WRITE)~;StoreMchDollar0RenameX)~: \
+  ((smdor bsmap x) & \
+  smdor1))
+
+  ?;
+#define ReadMchDollar0Rename(x)    brule(StoreMchDollar0RenameX.1,x)
+#define ModifyMchDollar0Rename(x)  bmodr(StoreMchDollar0RenameX.1,x)
+
+
+  ReadMchDollar0Rename(R) &
+  Connect(("POB/.MchBSRename")) &
+  bprintf("%\n",R) &
+  bclose
+ =>
+  smdor1;
+
+  ReadMchDollar0Rename((A:=B)) &
+  ModifyMchDollar0Rename((A,v$0:=B,v))
+ =>
+  smdor(v);
+
+  ReadMchDollar0Rename(?) &
+  ModifyMchDollar0Rename((v$0:=v))
+ =>
+  smdor(v);
+
+  ModifyMchDollar0Rename((aa:=aa))
+ =>
+  smdor(?)
+END
+
+&
+
+THEORY AbstractSetsConstantsPropertiesX IS
+
+#define ascTac ((MAP;MODR)~;(StandardizeX;FLAT)~~;AbstractSetsConstantsPropertiesX)~
+
+#define StoreAbstractConstants(x) bcall(ascTac: (sac bsmap (x)))
+#define StoreAbstractSets(x) bcall(ascTac: (sas bsmap (x)))
+#define StoreAbstractProperties(x) bcall(ascTac: (sap bsmap (x)))
+
+#define ModifyAbstractConstants(x) bmodr(AbstractSetsConstantsPropertiesX.1,x)
+#define ModifyAbstractSets(x) bmodr(AbstractSetsConstantsPropertiesX.2,x)
+#define ModifyAbstractProperties(x) bmodr(AbstractSetsConstantsPropertiesX.3,x)
+
+#define ReadAbstractConstants(x) brule(AbstractSetsConstantsPropertiesX.1,x)
+#define ReadAbstractSets(x) brule(AbstractSetsConstantsPropertiesX.2,x)
+#define ReadAbstractProperties(x) brule(AbstractSetsConstantsPropertiesX.3,x)
+
+
+  ?;?;?;
+
+  ReadAbstractProperties(C) &
+  ModifyAbstractProperties((C&c))
+ =>
+  sap(c);
+
+  ReadAbstractProperties(C) &
+  bsearch(c,C,D)
+ =>
+  sap(c);
+
+  sap(?);
+
+  ReadAbstractSets(C) &
+  ModifyAbstractSets((C,c))
+ =>
+  sas(c);
+
+  ReadAbstractSets(C) &
+  bsearch(c,C,D)
+ =>
+  sas(c);
+
+  sas(?);
+
+  ReadAbstractConstants(C) &
+  ModifyAbstractConstants((C,c))
+ =>
+  sac(c);
+
+  ReadAbstractConstants(C) &
+  bsearch(c,C,D)
+ =>
+  sac(c);
+
+  sac(?)
+
+END
+
+&
+
+THEORY RecTempX END &
+
+THEORY RecStoreX IS
+
+  bmodr(TestRewriteRecursionX.2,x)
+ =>
+  x 
+
+END
+
+&
+
+THEORY TestRewriteRecursionX IS
+
+#define rrecTac \
+	(MODR;FLAT;((MAP;MODR;RULE;WRITE)~;TestRewriteRecursionX)~)
+
+#define TestRewriteRecursion(x,s) \
+	bcall(rrecTac: ( \
+                         bmodr(TestRewriteRecursionX.4,s) & \
+                         rr_0(bflat(?&x))(?) \
+                       ) )
+
+#define rdiTac ( \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecTempX;RecTempX;RecTempX;RecTempX;RecTempX; \
+  RecStoreX;MODR )
+
+#define RewriteDoIt(x)       bcall(rdiTac: x)
+
+#define rfTac                (RecTempX;RecStoreX;MODR )
+
+#define RewriteFinal(x)      bcall(rdiTac: x)
+
+
+  ?; /* .1 list of all equality predicates with ? */
+
+  ?; /* .2 rewritten goal */
+
+  ?; /* .3 flag */
+
+  ?; /* .4 identifier */
+
+  ?; /* .5 single rule problems */
+
+
+  dp(x);
+
+  Writef(("\n      %",bsrv a=b berv))
+ =>
+  dp(a=b);
+
+  Writef(("\n      %",bsrv a=b berv))
+ =>
+  dp(a==b);
+
+  brule(TestRewriteRecursionX.3,1) &
+  brule(TestRewriteRecursionX.1,L) &
+  brule(TestRewriteRecursionX.4,S) &
+  Writef("\n\n    Warning - the following predicates will be treated\n    by the Provers as re-write rules, and may\n    cause looping (") &
+  Writef(S) &
+  Writef("):\n") &
+  dp bsmap L &
+  Writef(" ...")
+ =>
+  chk_rec;
+
+  brule(TestRewriteRecursionX.3,0)
+ =>
+  chk_rec;
+
+  brule(TestRewriteRecursionX.2,d) &
+  bmodr(TestRewriteRecursionX.3,1)
+ =>
+  rr_4(c);
+
+  brule(TestRewriteRecursionX.2,c)
+ =>
+  rr_4(c);
+
+  brule(TestRewriteRecursionX.2,c) &
+  bclean(RecTempX) &
+  bcrer(RecTempX,(a==b)) &
+  RewriteFinal(c) &
+  rr_4(c)
+ =>
+  rr_3(a==b);
+
+  brule(TestRewriteRecursionX.2,b)
+ =>
+  rr_3(a==b);
+
+  brule(TestRewriteRecursionX.1,P) &
+  bsearch((a==b),P,Q) &
+  bcrelr(RecTempX,Q) &
+  RewriteDoIt(b) &
+  rr_3(a==b)
+ =>
+  rr_2(a==b);
+
+  bclean(RecTempX) &
+  rr_2(a==b)
+ =>
+  rr_1(a==b);
+
+  brule(TestRewriteRecursionX.3,1)
+ =>
+  rr_1(x);
+
+  rr_1(?);
+
+  rr_0(?)(X);
+
+  bmodr(TestRewriteRecursionX.1,(X;Y)) &
+  bmodr(TestRewriteRecursionX.3,0) &
+  rr_1 bsmap (X;Y) &
+  chk_rec
+ =>
+  rr_0(?)(X;Y);
+
+  rr_0(P)(X)
+ =>
+  rr_0(P&p)(X);
+
+  rr_0(P)(X;(a==b))
+ =>
+  rr_0(P&(a=b))(X);
+
+  bident(a) &
+  brule(TestRewriteRecursionX.5,R) &
+  bmodr(TestRewriteRecursionX.5,(R&(a=b))) &
+  brule(TestRewriteRecursionX.4,S) &
+  Writef("\n\n    Warning - the following predicate will be treated\n    by the Provers as a re-write rule, and may\n    cause looping (") &
+  Writef(S) &
+  Writef("):\n") &
+  dp(a=b) &
+  Writef(" ...") &
+  rr_0(P)(X;(a==b))
+ =>
+  rr_0(P&(a=b))(X);
+
+  brule(TestRewriteRecursionX.5,R) &
+  bsearch((a=b),R,S) &
+  rr_0(P)(X;(a==b))
+ =>
+  rr_0(P&(a=b))(X);
+
+  a\b &
+  rr_0(P)(X;(a==b))
+ =>
+  rr_0(P&(a=b))(X);
+
+  rr_0(P)(X)
+ =>
+  rr_0(P&(a=a))(X)
+
+END
+
+&
+
+THEORY PrintTheoryHeaderX IS
+
+/* 
+
+  invocation
+    PrintTheoryHeader(x):
+      x theory name
+
+  result
+    POGeneratorFromUserX.1 set to 0
+    "\nEND\n\nTHEORY x " printed
+
+*/
+
+#define PrintTheoryHeader(x) bcall((PrintTheoryHeaderX;MODR;WRITE):pth(x))
+
+
+  bmodr(POGeneratorFromUserX.1,0) &
+  bprintf("\nEND\n&\nTHEORY % ",x)
+ =>
+  pth(x);
+
+  brule(POGeneratorFromUserX.1,0) &        /* no rules in theory */
+  bprintf("END\n&\nTHEORY % ",x)
+ =>
+  pth(x);
+
+  POGeneratorErrorFlagged
+ =>
+  pth(x)
+
+END
+
+&
+
+THEORY FwdStoreX IS
+ 
+/*
+  conditionally prints list of predicates (in ExpandHypX)
+ (in implication and, for pre and inv, == form)
+  SUB first effected
+
+  invocation: FwdStore(a,b,f)
+    a the construct name
+    b an ampersand list of predicates
+    f the function (inv, asn etc.)
+  result:
+    if b = ? or true, then no action
+    otherwise if f=pre or f=inv or f=asn, f(a)=>b and f(a)==b printed
+              if f/=pre and f/=inv and f/=asn, f(a)=>b printed 
+*/
+
+#define FwdStore(a,b,f) bcall((SUB;FwdStoreX;RULE~):fs(a,b,f))
+
+  CrePrintAppend(ExpandHypX,(f(a)=>b))
+ =>
+  fs(a,b,f);
+
+  CrePrintAppend(ExpandHypX,(inv(a)=>b))
+ =>
+  fs(a,b,inv);
+
+  CrePrintAppend(ExpandHypX,(asn(a)=>b))
+ =>
+  fs(a,b,asn);
+
+  CrePrintAppend(ExpandHypX,(pre(a)=>b))
+ =>
+  fs(a,b,pre);
+
+  fs(a,dummy,pre); /* TEMPORARY - remove when .anl sorted out */
+
+  fs(a,true,f);
+
+  fs(a,?,f)
+
+END
+
+&
+
+THEORY StoreSetsInPropertiesXX IS
+
+#define StoreSetsInPropertiesX(k,y,N) \
+   bcall(((ARI~;MAP;RULE)~;StoreSetsInPropertiesXX)~: \
+		(sto_sets_in_prp(k,N) bsmap (y)))
+
+#define StoreSeenUsedSetsInPropertiesX(k,N) \
+   bcall(((ARI~;MAP;RULE)~;StoreSetsInPropertiesXX)~: \
+		(sto_sets_in_prp_seen_used(k,N)))
+
+
+
+  CrePrintAppend(PropertiesX,(ctx(m$N)=>card(b)=(n+1)))
+ =>
+  sto_sets_in_prp1(m,N)(b)(E)(d)(n);
+
+  brule(StoreSeenUsedMachineNamesX.1,L) &
+  bsearch(m,(L,?),M) &                    /* m is seen/used */
+  DontCreButPrintAppend(PropertiesX,(ctx(m$N)=>card(b)=(n+1)))
+ =>
+  sto_sets_in_prp1(m,N)(b)(E)(d)(n);
+
+
+
+  CrePrintAppend(PropertiesX,(ctx(m)=>card(b)=(n+1)))
+ =>
+  sto_sets_in_prp1(m,0)(b)(E)(d)(n);
+
+  brule(StoreSeenUsedMachineNamesX.1,L) &
+  bsearch(m,(L,?),M) &                    /* m is seen/used */
+  DontCreButPrintAppend(PropertiesX,(ctx(m)=>card(b)=(n+1)))
+ =>
+  sto_sets_in_prp1(m,0)(b)(E)(d)(n);
+
+
+
+  sto_sets_in_prp1(m,N)(b)(E)(c)(n+1)
+ =>
+  sto_sets_in_prp1(m,N)(b)(E)(c,d)(n);
+
+  sto_sets_in_prp1(m,0)(b)(E)(c)(n+1)
+ =>
+  sto_sets_in_prp1(m,0)(b)(E)(c,d)(n);
+
+/*
+  CrePrintAppend(PropertiesX,(ctx(m$N)=>(card(b):NAT)))
+ =>
+*/
+  sto_sets_in_prp(m,N,b);
+
+/*
+  CrePrintAppend(PropertiesX,(ctx(m)=>(card(b):NAT)))
+ =>
+*/
+  sto_sets_in_prp(m,0,b);
+
+  sto_sets_in_prp(m,N,?);                              /* no sets */
+
+
+
+  CrePrintAppend(PropertiesX,(ctx(m$N)=>b={c})) &
+  sto_sets_in_prp1(m,N)(b)(c)(c)(0)
+ =>
+  sto_sets_in_prp(m,N,b(c));
+
+  brule(StoreSeenUsedMachineNamesX.1,L) &
+  bsearch(m,(L,?),M) &                    /* m is seen/used */
+  DontCreButPrintAppend(PropertiesX,(ctx(m$N)=>b={c})) &
+  sto_sets_in_prp1(m,N)(b)(c)(c)(0)
+ =>
+  sto_sets_in_prp(m,N,b(c));
+
+
+
+  CrePrintAppend(PropertiesX,(ctx(m)=>b={c})) &
+  sto_sets_in_prp1(m,0)(b)(c)(c)(0)
+ =>
+  sto_sets_in_prp(m,0,b(c));
+
+  brule(StoreSeenUsedMachineNamesX.1,L) &
+  bsearch(m,(L,?),M) &                    /* m is seen/used */
+  DontCreButPrintAppend(PropertiesX,(ctx(m)=>b={c})) &
+  sto_sets_in_prp1(m,0)(b)(c)(c)(0)
+ =>
+  sto_sets_in_prp(m,0,b(c));
+
+
+
+  bnum(N)
+ =>
+  sto_sets_in_prp(m,n,b[N]);
+
+
+
+  CrePrintAppend(PropertiesX,(ctx(m$N)=>b=(c..d))) &
+  CrePrintAppend(PropertiesX,(ctx(m$N)=>card(b)=(d+1-c)))
+ =>
+  sto_sets_in_prp(m,N,b(c..d));
+
+  brule(StoreSeenUsedMachineNamesX.1,L) &
+  bsearch(m,(L,?),M) &                    /* m is seen/used */
+  DontCreButPrintAppend(PropertiesX,(ctx(m$N)=>b=(c..d))) &
+  DontCreButPrintAppend(PropertiesX,(ctx(m$N)=>card(b)=(d+1-c)))
+ =>
+  sto_sets_in_prp(m,N,b(c..d));
+
+
+
+  CrePrintAppend(PropertiesX,(ctx(m)=>b=(c..d))) &
+  CrePrintAppend(PropertiesX,(ctx(m)=>card(b)=(d+1-c)))
+ =>
+  sto_sets_in_prp(m,0,b(c..d));
+
+  brule(StoreSeenUsedMachineNamesX.1,L) &
+  bsearch(m,(L,?),M) &                    /* m is seen/used */
+  DontCreButPrintAppend(PropertiesX,(ctx(m)=>b=(c..d))) &
+  DontCreButPrintAppend(PropertiesX,(ctx(m)=>card(b)=(d+1-c)))
+ =>
+  sto_sets_in_prp(m,0,b(c..d));
+
+
+/***
+check for seen/used mch
+***/
+
+  brule(ProcessPOUsesSeesX.2,L) &
+  bsearch((b:K),L,M) &   /* K is seen/used */
+  sto_sets_in_prp(K,n,b)
+ =>
+  sto_sets_in_prp(m,n,b);
+
+  brule(ProcessPOUsesSeesX.2,L) &
+  bsearch((b:K),L,M) &   /* K is seen/used */
+  sto_sets_in_prp(K,n,b(c))
+ =>
+  sto_sets_in_prp(m,n,b(c));
+
+  brule(ProcessPOUsesSeesX.2,L) &
+  bsearch((b:K),L,M) &   /* K is seen/used */
+  sto_sets_in_prp(K,n,b(c..d))
+ =>
+  sto_sets_in_prp(m,n,b(c..d));
+
+
+
+
+
+  POGeneratorErrorFlagged
+ =>
+  sto_sets_in_prp(x);
+
+
+  brule(ProcessPOUsesSeesX.1,E) &
+  sto_sets_in_prp(k,N) bsmap E
+ =>
+  sto_sets_in_prp_seen_used(k,N);
+
+  brule(ProcessPOUsesSeesX.1,?)     /* no enum sets used/seen */
+ =>
+  sto_sets_in_prp_seen_used(k,N);
+
+  POGeneratorErrorFlagged
+ =>
+  sto_sets_in_prp_seen_used(k,N)
+
+END
+
+&
+
+THEORY StoreSets_JokerXX IS
+
+ (a,b);
+ (a,b,c);
+ (a,b,c,d);
+ (a,b,c,d,e);
+ (a,b,c,d,e,f);
+ (a,b,c,d,e,f,g);
+ (a,b,c,d,e,f,g,h);
+ (a,b,c,d,e,f,g,h,i);
+ (a,b,c,d,e,f,g,h,i,j);
+ (a,b,c,d,e,f,g,h,i,j,k);
+ (a,b,c,d,e,f,g,h,i,j,k,l);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y);
+ (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z)
+
+END
+
+&
+
+THEORY StoreSetsInNotEqualXX IS
+
+#define StoreSetsInNotEqualX(x) \
+       bcall(((MAP;ARI)~;StoreSetsInNotEqualXX)~ : (sne_0 bsmap (x)))
+
+#define StoreSeenUsedSetsInNotEqualX \
+       bcall(((MAP;ARI)~;StoreSetsInNotEqualXX)~ : sne_su_0)
+
+
+  sne_1(A(B))(I);
+
+  brule(StoreSets_JokerXX.I,W) &
+  CrePrintAppend(NotEqualX,((binhyp(A={W})&binhyp(card(A)=I+1)&bsearch(E,(W),S) &bsearch(F,S,T)=>not(E=F))))
+ =>
+  sne_1(A(B))(I);
+
+  sne_0(x);
+
+  brule(UnusedPropertiesX.I,(ctx(m)=>card(A)=N)) &
+  sne_1(A(B))(N-1)
+ =>
+  sne_0(A(B));
+
+  brule(PropertiesX.I,(ctx(m)=>card(A)=N)) &
+  sne_1(A(B))(N-1)
+ =>
+  sne_0(A(B));
+
+  brule(UnusedPropertiesX.I,(ctx(m)=>card(A)=2)) &
+  brule(UnusedPropertiesX.J,(ctx(m)=>A={e,f})) &
+  CrePrintAppend(NotEqualX,(binhyp(A={e,f})&binhyp(card(A)=2)=>(not(e=f)))) &
+  CrePrintAppend(NotEqualX,(binhyp(A={e,f})&binhyp(card(A)=2)=>(not(f=e))))
+ =>
+  sne_0(A(B));
+
+  brule(PropertiesX.I,(ctx(m)=>card(A)=2)) &
+  brule(PropertiesX.J,(ctx(m)=>A={e,f})) &
+  CrePrintAppend(NotEqualX,(binhyp(A={e,f})&binhyp(card(A)=2)=>(not(e=f)))) &
+  CrePrintAppend(NotEqualX,(binhyp(A={e,f})&binhyp(card(A)=2)=>(not(f=e))))
+ =>
+  sne_0(A(B));
+
+/*  sne_0(BOOL(B));  /? suppress for BOOL ?/ */
+
+  bnum(N)
+ =>
+  sne_0(a[N]);
+
+
+  brule(ProcessPOUsesSeesX.1,E) &
+  sne_0 bsmap E
+ =>
+  sne_su_0;
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY StoreSetsInRewriteToFalseOrTrueXX IS
+
+#define StoreSetsInRewriteToFalseOrTrueX(x) \
+       bcall(((MAP;ARI)~;StoreSetsInRewriteToFalseOrTrueXX)~ : (srft_0 bsmap (x)))
+
+#define StoreSeenUsedSetsInRewriteToFalseOrTrueX \
+       bcall(((MAP;ARI)~;StoreSetsInRewriteToFalseOrTrueXX)~ : srft_su_0)
+
+
+  srft_1(A(B))(I);
+
+  brule(StoreSets_JokerXX.I,W) &
+  CrePrintAppend(RewriteToFalseOrTrueX,((binhyp(A={W})&binhyp(card(A)=I+1)&bsearch(E,(W),S) &bsearch(F,S,T)=>((E=F)==false))))
+ =>
+  srft_1(A(B))(I);
+
+  srft_0(x);
+
+  brule(UnusedPropertiesX.I,(ctx(m)=>card(A)=N)) &
+  srft_1(A(B))(N-1)
+ =>
+  srft_0(A(B));
+
+  brule(PropertiesX.I,(ctx(m)=>card(A)=N)) &
+  srft_1(A(B))(N-1)
+ =>
+  srft_0(A(B));
+
+  brule(UnusedPropertiesX.I,(ctx(m)=>card(A)=2)) &
+  brule(UnusedPropertiesX.J,(ctx(m)=>A={e,f})) &
+  CrePrintAppend(RewriteToFalseOrTrueX,((binhyp(A={e,f})&binhyp(card(A)=2))=>((e=f)==false))) &
+  CrePrintAppend(RewriteToFalseOrTrueX,((binhyp(A={e,f})&binhyp(card(A)=2))=>((f=e)==false)))
+ =>
+  srft_0(A(B));
+
+  brule(PropertiesX.I,(ctx(m)=>card(A)=2)) &
+  brule(PropertiesX.J,(ctx(m)=>A={e,f})) &
+  CrePrintAppend(RewriteToFalseOrTrueX,((binhyp(A={e,f})&binhyp(card(A)=2))=>((e=f)==false))) &
+  CrePrintAppend(RewriteToFalseOrTrueX,((binhyp(A={e,f})&binhyp(card(A)=2))=>((f=e)==false)))
+ =>
+  srft_0(A(B));
+
+/*  srft_0(BOOL(B));  /? suppress for BOOL ?/ */
+
+  bnum(N)
+ =>
+  srft_0(a[N]);
+
+
+  brule(ProcessPOUsesSeesX.1,E) &
+  srft_0 bsmap E
+ =>
+  srft_su_0;
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY StoreSetsInFwdContra0XX IS
+
+#define StoreSetsInFwdContra0X(x) \
+       bcall(((MAP;ARI)~;StoreSetsInFwdContra0XX)~ : (sfc_0 bsmap (x)))
+
+#define StoreSeenUsedSetsInFwdContra0X \
+       bcall(((MAP;ARI)~;StoreSetsInFwdContra0XX)~ : sfc_su_0)
+
+  sfc_0(x);
+
+  CrePrintAppend(FwdContra0X,((e=f)&ctx(m)=>bfalse)) &
+  CrePrintAppend(FwdContra0X,((x=e)&(x=f)&ctx(m)=>bfalse)) &
+  CrePrintAppend(FwdContra0X,((x=e)&(y=x)&(y=f)&ctx(m)=>bfalse)) &
+  /* CrePrintAppend(FwdContra0X,((x=e)&(x=y)&(y=f)&ctx(m)=>bfalse))  & */
+  CrePrintAppend(FwdContra0X,((x=f)&(x=e)&ctx(m)=>bfalse)) &
+  CrePrintAppend(FwdContra0X,((x=f)&(y=x)&(y=e)&ctx(m)=>bfalse))  /* &
+  CrePrintAppend(FwdContra0X,((x=f)&(x=y)&(y=e)&ctx(m)=>bfalse)) */
+ =>
+  sfc_2(m,e,f);
+
+  sfc_1(m)(e);
+
+  sfc_2(m,e) bsmap E &
+  sfc_1(m)(E)
+ =>
+  sfc_1(m)(E,e);
+
+  sfc_0(x);
+
+  brule(UnusedPropertiesX.I,(ctx(m)=>card(A)=N)) &
+  btest(N<=5) &  /*** TWEAK ***/
+  brule(UnusedPropertiesX.J,(ctx(m)=>A={E})) &
+  sfc_1(m)(E)
+ =>
+  sfc_0(A(B));
+
+  brule(PropertiesX.I,(ctx(m)=>card(A)=N)) &
+  btest(N<=5) &  /*** TWEAK ***/
+  brule(PropertiesX.J,(ctx(m)=>A={E})) &
+  sfc_1(m)(E)
+ =>
+  sfc_0(A(B));
+
+/*  sfc_0(BOOL(B));  /? suppress for BOOL ?/ */
+
+  bnum(N)
+ =>
+  sfc_0(a[N]);
+
+
+  brule(ProcessPOUsesSeesX.1,E) &
+  sfc_0 bsmap E
+ =>
+  sfc_su_0;
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY StoreSetsInFwdEqual1XX IS
+
+#define StoreSetsInFwdEqual1X(x) \
+       bcall(((MAP;ARI)~;StoreSetsInFwdEqual1XX)~ : (sfe_0 bsmap (x)))
+
+#define StoreSeenUsedSetsInFwdEqual1X \
+       bcall(((MAP;ARI)~;StoreSetsInFwdEqual1XX)~ : sfe_su_0)
+
+
+  
+  CrePrintAppend(FwdEqual1X,(not(e=x)&ctx(m)=>(x=f))) &
+  CrePrintAppend(FwdEqual1X,(not(x=e)&ctx(m)=>(x=f))) &
+  CrePrintAppend(FwdEqual1X,(not(f=x)&ctx(m)=>(x=e))) &
+  CrePrintAppend(FwdEqual1X,(not(x=f)&ctx(m)=>(x=e)))
+ =>
+  sfe_2(m)(e,f);
+
+  sfe_0(x);
+
+  CrePrintAppend(FwdEqual1X,((e=x)=>(x=e)))
+ =>
+  sfe_1(m,e);
+
+  sfe_0(x);
+
+  brule(UnusedPropertiesX.J,(ctx(m)=>A={E})) &
+  sfe_1(m) bsmap E
+ =>
+  sfe_0(A(B));
+
+  brule(PropertiesX.J,(ctx(m)=>A={E})) &
+  sfe_1(m) bsmap E
+ =>
+  sfe_0(A(B));
+
+  brule(UnusedPropertiesX.I,(ctx(m)=>card(A)=2)) &
+  brule(UnusedPropertiesX.J,(ctx(m)=>A={E})) &
+  sfe_1(m) bsmap E &
+  sfe_2(m)(E)
+ =>
+  sfe_0(A(B));
+
+  brule(PropertiesX.I,(ctx(m)=>card(A)=2)) &
+  brule(PropertiesX.J,(ctx(m)=>A={E})) &
+  sfe_1(m) bsmap E &
+  sfe_2(m)(E)
+ =>
+  sfe_0(A(B));
+
+/*   sfe_0(BOOL(B));  /? suppress for BOOL ?/ */
+
+  bnum(N)
+ =>
+  sfe_0(a[N]);
+
+
+  brule(ProcessPOUsesSeesX.1,E) &
+  sfe_0 bsmap E
+ =>
+  sfe_su_0;
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY StoreSetsInEnumerateXX IS
+
+/*
+  enumerated sets printed (to EnumerateX)
+  each abstract set causes the generation of non-emptyness and finiteness
+  properties to be stored in PropertiesX
+
+  invocation: StoreSetsInEnumerateX(k,z,N)
+    m the context name
+    z the set list
+    N the level
+  invocation: StoreSeenUsedSetsInEnumerateX(k,N)
+    m the context name
+    N the level
+  result:
+    each set of the form a(b,c) and a(b..c) printed (to EnumerateX) in
+    the form binhyp(ctx(m))=>a=={b,c} and binhyp(ctx(m))=>a==b..c
+    card of enum sets also printed
+*/
+
+#define StoreSetsInEnumerateX(k,z,N) \
+       bcall((ARI~;MAP;(StoreSetsInEnumerateXX;RULE)~):(sto_sets(k,N) bsmap (z)))
+
+#define StoreSeenUsedSetsInEnumerateX(k,N) \
+       bcall(((ARI~;MAP;RULE);StoreSetsInEnumerateXX)~:sto_sets_seen_used(k,N))
+
+
+
+
+  sto_sets(m,N,b);
+
+  CrePrintAppend(EnumerateX,(binhyp(ctx(m$N))=>(b=={c})))
+ =>
+  sto_sets(m,N,b(c));
+
+  CrePrintAppend(EnumerateX,(binhyp(ctx(m))=>(b=={c})))
+ =>
+  sto_sets(m,0,b(c));
+
+  bnum(N) 
+ =>
+  sto_sets(m,n,b[N]);
+
+/***
+check for seen/used mch
+***/
+
+  brule(ProcessPOUsesSeesX.2,L) &
+  bsearch((b:K),L,M) &   /* K is seen/used */
+  sto_sets(K,n,b)
+ =>
+  sto_sets(m,n,b);
+
+  brule(ProcessPOUsesSeesX.2,L) &
+  bsearch((b:K),L,M) &   /* K is seen/used */
+  sto_sets(K,n,b(c))
+ =>
+  sto_sets(m,n,b(c));
+
+  brule(ProcessPOUsesSeesX.2,L) &
+  bsearch((b:K),L,M) &   /* K is seen/used */
+  sto_sets(K,n,b(c..d))
+ =>
+  sto_sets(m,n,b(c..d));
+
+
+
+
+  POGeneratorErrorFlagged
+ =>
+  sto_sets(x);
+
+
+  brule(ProcessPOUsesSeesX.1,E) &
+  sto_sets(k,N) bsmap E
+ =>
+  sto_sets_seen_used(k,N);
+
+  brule(ProcessPOUsesSeesX.1,?)     /* no enum sets used/seen */
+ =>
+  sto_sets_seen_used(k,N);
+
+  POGeneratorErrorFlagged
+ =>
+  sto_sets_seen_used(k,N)
+
+END
+
+&
+
+THEORY StorePropertiesX IS
+
+/*
+  
+  properties stored in PropertiesX
+
+  invocation: StoreProperties(k,x,N)
+    m the context name
+    x the property list
+    N the level
+  result:
+    if r/= ?, each rule stored in PropertiesX in the form ctx(m)=>r
+    otherwise, no action
+*/
+
+/***
+#define StoreProperties(k,x,N) \
+          bcall((MAP;(StorePropertiesX;RULE)~):(sp(k,N) bsmap x))
+***/
+
+#define StoreProperties(k,x,N) \
+          bcall((MAP;(StorePropertiesX;RULE)~):(sp(k,N,x)))
+
+  CrePrintAppend(PropertiesX,(ctx(m$N)=>b))
+ =>
+  sp(m,N,b);
+
+  brule(StoreSeenUsedMachineNamesX.1,L) &
+  bsearch(m,(L,?),M) &                    /* m is seen/used */
+  DontCreButPrintAppend(PropertiesX,(ctx(m$N)=>b))
+ =>
+  sp(m,N,b);
+
+  CrePrintAppend(PropertiesX,(ctx(m)=>b))
+ =>
+  sp(m,0,b);
+
+  brule(StoreSeenUsedMachineNamesX.1,L) &
+  bsearch(m,(L,?),M) &                    /* m is seen/used */
+  DontCreButPrintAppend(PropertiesX,(ctx(m)=>b))
+ =>
+  sp(m,0,b);
+
+  sp(m,N,?);
+
+  POGeneratorErrorFlagged
+ =>
+  sp(x)
+
+END
+
+&
+
+THEORY StoreSeenUsedMachineNamesX IS
+
+#define sto_seen_mch_names_tac \
+  (FLAT;StoreSeenUsedMachineNamesX;LMAP;StoreSeenUsedMachineNamesX~;NEWV~;REV;MODR)
+
+
+#define StoreSeenUsedMachineNames(x) \
+	bcall(sto_seen_mch_names_tac: sto_seen_mch_names_0 (bflat(x)))
+
+
+  ?;
+
+  bmodr(StoreSeenUsedMachineNamesX.1,brev(x))
+ =>
+  sto_seen_mch_names_1(x);
+
+  bsearch(?,x,y) &
+  sto_seen_mch_names_1(y)
+ =>
+  sto_seen_mch_names_1(x);
+
+  get_name(?) == ?;
+
+  get_name(r(s):t:(u,v,w)) == r;
+
+  get_name(R.r(s):t:(u,v,w)) == bnewv(R,r);
+
+  sto_seen_mch_names_1(get_name bslmap x)
+ =>
+  sto_seen_mch_names_0(x)
+
+END
+
+&
+
+THEORY GenerateAssertionLemmasX IS
+
+/*
+  generates assertion pob
+
+  invocation: GenerateAssertionLemmas(s,x,a)
+    s the machine name
+    x the level
+    a the (ampersand) list of assertions
+  result:
+    generates assertion pob printed to AssertionLemma, such that, for
+    the nth assertion, asn(n), the pob generated is:
+      inv(s$x) & asn(1) & ... & asn(n-1) => asn(n)
+*/
+
+#define gasTac \
+  ((GenerateAssertionLemmasX;SUB~)~;MAP;(ARI;FLAT;GenerateAssertionLemmasX)~)
+
+#define GenerateAssertionLemmas(s,x,a) bcall(gasTac:gal00(s,x,a))
+
+  PrintDotLemma(b=>a)
+ =>
+  gal6(s$x)(a)(b);
+
+
+  gal6(s$x)(a)(b)
+ =>
+  gal5(s$x)(a)(b&?);
+
+  brule(TempXX.n,r) &
+  gal4(s$x)(a)(r&b)(n-1)
+ =>
+  gal4(s$x)(a)(b)(n);
+
+  brule(TempXX.1,r) &
+  gal5(s$x)(a)(bflat(cst(s$x)&ctx(s$x)&inv(s$x)&r&b))
+ =>
+  gal4(s$x)(a)(b)(1);
+
+  brule(TempXX.1,r) &
+  gal5(s$0)(a)(bflat(cst(s)&ctx(s)&inv(s)&r&b))
+ =>
+  gal4(s$0)(a)(b)(1);
+
+
+  brule(TempXX.n,r) &
+  gal3(s$x)(n-1) &
+  gal4(s$x)(r)(?)(n-1)
+ =>
+  gal3(s$x)(n);
+
+  brule(TempXX.1,r) &
+  gal6(s$x)(r)(cst(s$x)&ctx(s$x)&inv(s$x))  
+ =>
+  gal3(s$x)(1);
+
+  brule(TempXX.1,r) &
+  gal6(s$0)(r)(cst(s)&ctx(s)&inv(s))  
+ =>
+  gal3(s$0)(1);
+
+  brule(TempXX.n,r) &  /* get no of assertions */
+  gal3(s$x)(n)
+ =>
+  gal2(s$x);
+
+  AddRule(TempXX,a)
+ =>
+  gal1(a);
+
+  ReadStand(a) &
+  gal1 bsmap a &
+  gal2(s$n)
+ =>
+  gal0(s,n);
+
+  brule(TempX.1,(t:u)) &            /* get rename */
+  Stand([t:=u]a) &
+  gal0(s,x)
+ =>
+  gal00(s,x,a);
+
+  Stand(a) &
+  gal0(s,0)                         /* mch - no rename */
+ =>
+  gal00(s,0,a);
+
+  gal00(s,x,?);     /* no assertions */
+
+  POGeneratorErrorFlagged
+ =>
+  gal00(x)
+
+END
+
+&
+
+THEORY GeneratePOContextMacrosX IS
+
+  extractname(a) == a;
+
+  extractname(a(b)) == ?;
+
+  bnum(N)
+ =>
+  extractname(a[N]) == a;
+
+  extractname(a,b) == (extractname(a),b);
+
+  extractname(a,b(c)) == (extractname(a),?);
+
+  bnum(N)
+ =>
+  extractname(a,b[N]) == (extractname(a),b)
+
+END
+
+&
+
+THEORY FreePredsX IS
+
+#define FreePreds(v,p) bcall((MODR~;MAP;(MODR;FreePredsX)~): \
+    (bmodr(FreePredsX.1,?)& \
+     bmodr(FreePredsX.2,?)& \
+     fp(v) bsmap p& \
+     fpclean1& \
+     fpclean2))
+
+
+  ?;   /* bound preds */
+
+  ?;   /* freed preds */
+
+  fpclean2;
+
+  fpclean1;
+
+  brule(FreePredsX.2,x) &
+  bsearch(?,x,y) &
+  bmodr(FreePredsX.2,y)
+ =>
+  fpclean2;
+
+  brule(FreePredsX.1,x) &
+  bsearch(?,x,y) &
+  bmodr(FreePredsX.1,y)
+ =>
+  fpclean1;
+
+  brule(FreePredsX.1,x) &
+  bmodr(FreePredsX.1,(x&p))
+ =>
+  fp(v,p);
+
+  v\p &
+  brule(FreePredsX.2,x) &
+  bmodr(FreePredsX.2,(x&p))
+ =>
+  fp(v,p)
+
+END
+
+&
+
+THEORY GeneratePOContextX IS
+
+/*
+  rules and properties conjoined are exsistentaily quantified by sets
+  and constants, under the implication of the machine's constraints
+
+  invocation: GeneratePOContext(k,A,C,D,E,F,G,H)
+    k machine name
+    A sees list
+    C local set list (,)
+    D full set list (,)
+    E local constant list (,)
+    F full constant list (,)
+    G local property list (&)
+    H full property list (&)
+    TempX.21 (formal parameters of machine:constraints of machine)
+    TempX.9 true/false  NOT USED
+      true  => po to be generated
+      false => no po to be generated (included mch)
+
+*/
+
+#define gpocTac \
+  ( \
+    (StandardizeX;FLAT)~; \
+    GeneratePOContextX;GeneratePOContextX;FLAT~;GeneratePOContextMacrosX~; \
+    ( \
+       (REV~;NEWV;SUB;MODR;FLAT~;MAP;ARI)~; \
+       GeneratePOContextX \
+    )~ \
+  )
+
+
+#define sto_seesTac (FLAT;MAP;((NEWV;ARI~;MODR)~;GeneratePOContextX)~)
+
+#define GeneratePOContext(S,T,U,V,W,X,Y,Z) \
+		bcall(gpocTac:gpoc0000(S)(bflat(T))(U)(V)(W)(X)(Y)(Z))
+/***
+    S machine name
+    T sees/uses list
+    U local set list (,)
+    V full set list (,)
+    W local constant list (,)
+    X full constant list (,)
+    Y local property list (&)
+    Z full property list (&)
+***/
+
+#define GeneratePOConstraints(k,l,m) bcall(gpocTac:gpocst(k)(l)(m))
+
+#define StoEnumPrp(x) \
+        bcall(((MAP;ARI~;MODR)~;GeneratePOContextX)~:(sto_enum_prp bsmap x))
+
+
+  ?;   /* 1. for enumeration properties (includes) */
+
+  ?;   /* 2. sees (ctx(a)) list */
+
+  ?;   /* 3. constraints flag */
+
+  ?;   /* 4. reallocal sets/consts (excluding abstractions) */
+
+  ?;   /* 5. reallocal prop (excluding abstractions) */
+
+  ?;   /* 6. {full}-{reallocal} sets/consts */
+
+  ?;   /* 7. {full}-{reallocal} prop */
+
+  brule(GeneratePOContextX.1,P) &
+  bmodr(GeneratePOContextX.1,(P&(s={S})&(card(s)=n)))
+ =>
+  sto_enum_prp1(s)(S)(e)(n);
+
+  sto_enum_prp1(s)(S)(E)(n+1)
+ =>
+  sto_enum_prp1(s)(S)(E,e)(n);
+
+  sto_enum_prp(x);
+
+  sto_enum_prp1(s)(e)(e)(1)
+ =>
+  sto_enum_prp(s(e));
+
+  bnum(N)
+ =>
+  sto_enum_prp(s[N]);
+
+
+
+  PrintDotLemma(a)
+ =>
+  gpoc9(a);
+
+  bsearch(?,H,J) &
+  gpoc9(J=>a)
+ =>
+  gpoc9(H=>a);
+
+  brule(GeneratePOContextX.1,P) &
+  brule(GeneratePOContextX.2,C) &
+  brule(ProcessImportedContextX.1,D) &
+  brule(POGeneratorFromUserX.2,s.imp) &
+  brule(GetLevelAndAbstractionX.1,N) &
+  gpoc9(bflat(cst(s$N)&D&C&P)=>a)
+ =>
+  gpoc8(a);
+
+  brule(GeneratePOContextX.1,P) &
+  brule(GeneratePOContextX.2,C) &
+  brule(POGeneratorFromUserX.2,s.ref) &
+  brule(GetLevelAndAbstractionX.1,N) &
+  gpoc9(bflat(cst(s$N)&C&P)=>a)
+ =>
+  gpoc8(a);
+
+  brule(GeneratePOContextX.1,P) &
+  brule(GeneratePOContextX.2,C) &
+  brule(POGeneratorFromUserX.2,s.mch) &
+  gpoc9(bflat(cst(s)&C&P)=>a)
+ =>
+  gpoc8(a);
+
+
+  brule(GeneratePOContextX.1,P) &
+  bsearch((S={e}),P,Q)
+ =>
+  gpoc8(not(S={}));
+
+
+
+  brule(GeneratePOContextX.3,1) &
+  PrintDotLemma(a)
+ =>
+  gpoc8(a);
+
+  gpoc8(not({}={x}));
+
+  gpoc8(not({x}={}));
+
+  gpoc8(a)
+ =>
+  gpoc8(true => a);
+
+  gpoc8(h => ?);
+
+  gpoc6(h => a) &
+  gpoc6(h => b)
+ =>
+  gpoc8(h => (a&b));
+
+
+
+
+  gpoc8(x)
+ =>
+  gpoc7(x);
+
+
+  brule(FreePredsX.1,p) &
+  brule(FreePredsX.2,f) &
+  gpoc6(h => f) &
+  gpoc6(h => #a.p)
+ =>
+  get_free_preds(h)(a);
+
+  brule(FreePredsX.1,p) &
+  brule(FreePredsX.2,?) &
+  gpoc7(h => #a.p)
+ =>
+  get_free_preds(h)(a);
+
+
+  gpoc8(x)          /* prev an old goal */
+ =>
+  gpoc6(x);
+
+  gpoc7(x)          /* prev an old goal */
+ =>
+  gpoc6(x);
+
+  FreePreds(a,b) &
+  get_free_preds(h)(a)
+ =>
+  gpoc6(h => #a.b);
+
+
+  bsearch((p=q),b,c) &   /* make sure there is an equality before rotating */
+  bident(A) &
+  gpoc6(h => #(a,A).b)          /* rotate */
+ =>
+  gpoc6(h => #(A,a).b);
+
+  bsearch((p=q),b,c) &   /* make sure there is an equality before rotating */
+  bsearch(s,A,t) &
+  gpoc6(h => #(t,a,s).b)        /* rotate */
+ =>
+  gpoc6(h => #(A,a).b);
+
+
+  bsearch((y=a),b,c) &   /* make sure there is another before rotating */
+  bsearch((z=a),c,d) &
+  gpoc6(h => #a.(c&(y=a)))
+ =>
+  gpoc6(h => #a.(b));
+
+  bsearch((y=a),b,c) &
+  bsearch((a=z),c,d) &    /* make sure there is another before rotating */
+  gpoc6(h => #a.(c&(y=a)))
+ =>
+  gpoc6(h => #a.(b));
+
+  bsearch((a=y),b,c) &
+  bsearch((z=a),c,d) &   /* make sure there is another before rotating */
+  gpoc6(h => #a.(c&(a=y)))
+ =>
+  gpoc6(h => #a.(b));
+
+  bsearch((a=y),b,c) &
+  bsearch((a=z),c,d) &   /* make sure there is another before rotating */
+  gpoc6(h => #a.(c&(a=y)))
+ =>
+  gpoc6(h => #a.(b));
+
+
+
+
+  bsearch((((? JOK2 ?):t),b,c)) &
+  gpoc6(h => #a.c)
+ =>
+  gpoc6(h => #a.b);
+
+  bsearch(true,h,k) &
+  gpoc6(k => #a.b)
+ =>
+  gpoc6(h => #a.b);
+
+  a\b &
+  gpoc6(h => #A.b)
+ =>
+  gpoc6(h => #(A,a).b);
+
+  bsearch(a,A,B) &
+  a\b &
+  gpoc6(h => #B.b)
+ =>
+  gpoc6(h => #A.b);
+
+  bsearch(b,B,C) &               /* duplicate */
+  gpoc6(h => #a.C)
+ =>
+  gpoc6(h => #a.(B&b));
+
+  gpoc6(h => #a.(b))
+ =>
+  gpoc6(h => #a.(b&b));          /* duplicate */
+
+  bsearch((y=a),b,c) &
+  a\y &
+  gpoc6(h => [a:=y]c)
+ =>
+  gpoc6(h => #a.b);
+
+  bsearch((a=y),b,c) &
+  a\y &
+  gpoc6(h => [a:=y]c)
+ =>
+  gpoc6(h => #a.b);
+
+  bsearch((x=y),b,c) &
+  bsearch(y,a,s) &
+  y\x &
+  gpoc6(h => (#s.[y:=x]c))
+ =>
+  gpoc6(h => #a.b);
+
+  bsearch((x=y),b,c) &
+  bsearch(x,a,s) &
+  x\y &
+  gpoc6(h => (#s.[x:=y]c))
+ =>
+  gpoc6(h => #a.b);
+
+
+  bsearch(p,b,c) &
+  bsearch(x,a,s) &
+  x\c &
+  s\p &
+  gpoc6(h=>#s.c) &
+  gpoc6(h=>#x.p)
+ =>
+  gpoc6(h => #a.b);
+
+
+
+/* Dave - added 4 rules below 08.06.92 */
+
+  InformContextError(s) &
+  FlagPOGeneratorError
+ =>
+  gpoc6(#a.[s:=c]d);
+
+  InformContextError(s) &
+  FlagPOGeneratorError
+ =>
+  gpoc6(#a.[S][s:=c]d);
+
+  InformContextError(s) &
+  FlagPOGeneratorError
+ =>
+  gpoc6(h=>#a.[s:=c]d);
+
+  InformContextError(s) &
+  FlagPOGeneratorError
+ =>
+  gpoc6(h=>#a.[S][s:=c]d);
+
+
+  gpoc6(true => (#v.p))             /* establish a hypothesis */
+ =>
+  gpoc5(m)(p)(v,?);
+
+  gpoc5(m)(p)(?);                   /* no quantified sets/csts */
+
+  gpoc5(m)(p)(brev(X))
+ =>
+  gpoc4(m)(p)(?)(X);
+
+  gpoc4(m)(p)(x)(X,d)
+ =>
+  gpoc4(m)(p)(x,d)(X);
+
+
+  brule(EnumerateX.I,(binhyp(ctx(m))=>(d==e))) &
+  gpoc4(m)([d:=e]p)(x)(X) /* one-point sub for enumeration */
+ =>
+  gpoc4(m)(p)(x,d)(X);
+
+  gpoc4(m)(p)(x,d)(?)     /* gpoc4(m)(props)(x)(y) */
+ =>
+  gpoc3(m)(d)(p)(x);
+
+  d\p &
+  gpoc4(m)(p)(x)(?)
+ =>
+  gpoc3(m)(d)(p)(x);
+
+  gpoc3(m)(c)(p)(x,d)
+ =>
+  gpoc3(m)(c,d)(p)(x);
+
+  d\p &
+  gpoc3(m)(c)(p)(x)
+ =>
+  gpoc3(m)(c,d)(p)(x);
+
+  gpoc3(m)(c)(p)(?)
+ =>
+  gpoc0(m)(c)(p);
+
+  gpoc6(true => (p))        /* establish a hypothesis */
+ =>
+  gpoc0(m)(?)(p);
+
+  gpoc0(m)(?)(?);          /* no sets/constants/properties */
+
+  bsearch(?,P,p) &
+  gpoc0(m)(c)(p)
+ =>
+  gpoc0(m)(c)(P);
+
+  bsearch(?,C,c) &
+  gpoc0(m)(c)(p)
+ =>
+  gpoc0(m)(C)(p);
+
+
+/***
+also used by GeneratePOContextRef (for imports) NOT NOW!
+***/
+  brule(GeneratePOContextX.2,x) &
+  bmodr(GeneratePOContextX.2,(x&ctx(a)))
+ =>
+  store_sees(a(b):c:(d,e,f));
+
+  brule(GeneratePOContextX.2,?) &
+  bmodr(GeneratePOContextX.2,ctx(a))
+ =>
+  store_sees(a(b):c:(d,e,f));
+
+  store_sees(bnewv(r,a)(b):c:(d,e,f))
+ =>
+  store_sees(r.a(b):c:(d,e,f));
+
+  store_sees(?);
+
+
+
+
+/***
+HERE(("local properties - mch/ref - take full lists"))&
+***/
+  StoEnumPrp(D) &
+  bcall(sto_seesTac: (store_sees bsmap A)) &
+  gpoc0(k)(extractname(bflat(D,F)))(H) &
+  bmodr(FreePredsX.1,?) &
+  bmodr(FreePredsX.2,?)
+ =>
+  gpoc0000(k)(A)(C)(D)(E)(F)(G)(H);
+
+/***
+HERE(("local properties - imp - take local lists"))&
+***/
+  brule(POGeneratorFromUserX.2,k.imp) &  
+  StoEnumPrp(D) &
+  bcall(sto_seesTac: (store_sees bsmap A)) &
+  gpoc0(k)(extractname(bflat(C,E)))(G) &
+  bmodr(FreePredsX.1,?) &
+  bmodr(FreePredsX.2,?)
+ =>
+  gpoc0000(k)(A)(C)(D)(E)(F)(G)(H);
+
+/***
+HERE(("no local properties"))&
+***/
+  StoEnumPrp(D) &
+  bcall(sto_seesTac: (store_sees bsmap A)) &
+  bmodr(FreePredsX.1,?) &
+  bmodr(FreePredsX.2,?)
+ =>
+  gpoc0000(k)(A)(C)(D)(E)(F)(?)(H);
+
+
+/***
+constraints
+***/
+  gpoc6(true => (#p.c))             /* establish a hypothesis */
+ =>
+  gpocst(k)(p)(c);
+
+  gpocst(k)(?)(c);
+
+
+
+
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+
+THEORY GeneratePOIncIptX IS
+
+/*
+  constraint po for included/imported machines generated
+
+  invocation: GeneratePOIncIpt(m,b)
+    m using machine
+    b the included machine list
+      each entry in b of form:  (r(s):t:(u,v,w))
+        r included machine name
+        s included machine's actual parameters
+        t included machines actual constraints
+        u included machines `unprefixed' variables (var1,var2,...)
+        v included machines `prefixed' variables (prefixvar1,prefixvar2,...)
+        w included machines `dotted' variables (prefix.var1,prefix.var2,...)
+  result:
+    ctx(m)=> ... printed (to ConstraintLemma) one po for each constraint
+                   predicate of each included machine p
+*/
+
+#define gpouipTac (MAP;GeneratePOIncIptX~)~
+
+#define GeneratePOIncIpt(k,b) bcall(gpouipTac:gpouip0(k)(b))
+
+  gpouip_FIN(m,x);
+
+  bUpident(S) &
+  brule(GetLevelAndAbstractionX.1,N) /* &
+  PrintDotLemma(cst(m$N)&ctx(m$N)=>card(S):NAT) */
+ =>
+  gpouip_FIN(m,S);
+
+  bUpident(S) &
+  brule(GetLevelAndAbstractionX.1,0) /* &
+  PrintDotLemma(cst(m)&ctx(m)=>card(S):NAT) */
+ =>
+  gpouip_FIN(m,S);
+
+  brule(POGeneratorFromUserX.2,x.ref)
+ =>
+  gpouip_FIN(m,S);
+
+  brule(POGeneratorFromUserX.2,x.mch)
+ =>
+  gpouip_FIN(m,S);
+
+
+
+
+
+  brule(GetLevelAndAbstractionX.1,N) &
+  PrintDotLemma(cst(m$N)&ctx(m$N)=>r) &
+  gpouip_FIN(m) bsmap q
+ =>
+  gpouip1(m,(p(q):r:c));
+
+  brule(GetLevelAndAbstractionX.1,N) &
+  PrintDotLemma(cst(m$N)&ctx(m$N)=>r) &
+  gpouip_FIN(m) bsmap q
+ =>
+  gpouip1(m,(R.p(q):r:c));
+
+  brule(GetLevelAndAbstractionX.1,0) &
+  PrintDotLemma(cst(m)&ctx(m)=>r) &
+  gpouip_FIN(m) bsmap q
+ =>
+  gpouip1(m,(p(q):r:c));
+
+  brule(GetLevelAndAbstractionX.1,0) &
+  PrintDotLemma(cst(m)&ctx(m)=>r) &
+  gpouip_FIN(m) bsmap q
+ =>
+  gpouip1(m,(R.p(q):r:c));
+
+  gpouip_FIN(m) bsmap q
+ =>
+  gpouip1(m,(p(q):?:c));               /* no constraints */
+
+  gpouip_FIN(m) bsmap q
+ =>
+  gpouip1(m,(R.p(q):?:c));             /* no constraints */
+
+  gpouip1(m,(p(?):?:c));               /* no parameters or constraints */
+
+  gpouip1(m,(R.p(?):?:c));             /* no parameters or constraints */
+
+  ModifyRule(TempX,9,false) &          /* so context po not generated */
+  gpouip1(m) bsmap b
+ =>
+  gpouip0(m)(b);
+
+  gpouip0(m)(?);                        /* no included/imported machines */
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GeneratePOMchX IS
+
+/*
+  proof obligations generated from the initialisation and each operation
+
+  invocation: GeneratePOMch(m,j,B)
+    m machine name
+    j raw opn name list including INC ops
+  result:
+     if f/=?
+       the initialisation and each operation not appearing in p is proved,
+       and resulting math/type pob are saved as rules in the theory
+       nMath_pobX or nType_pobX, where m is the machine name,
+       and n the operation name (Init for the initialisation)
+      if f=?
+       no action
+*/
+
+#define GeneratePOMch(m,j,B) \
+  bcall((((NEWV~;REV;MAP;SUB;MODR;CATL;SHELL)~;GeneratePOMchX)~):gpom(m)(j)(B))
+
+
+  ?; /* composite initialisation of used machines */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+
+  PrintDotLemma(a)
+ =>
+  gpom_stand(a);
+
+
+  /***
+  init
+  ***/
+
+  brule(InvariantX.q,i(m)) &
+  InformNoVariablesMch &
+  OfferPOGeneratorFailureOptions
+ =>
+  gpom2a(m);
+
+  brule(InvariantX.q,i(m)) &
+  brule(RawVariableX.r,v(m)) &
+  InformNoInitialisationMch &
+  OfferPOGeneratorFailureOptions
+ =>
+  gpom2a(m);
+
+  brule(InitialisationX.p,s(m)) &
+  brule(InvariantX.q,i(m)) &
+  brule(RawVariableX.r,v(m)) &
+  PrintDotLemma(cst(m) => (ctx(m) => [s]i))
+ => 
+  gpom2a(m);
+
+  brule(InitialisationX.p,?(m)) &   /* invariant, but no initialisation */
+  brule(InvariantX.q,i(m)) &
+  brule(RawVariableX.r,v(m)) &
+  PrintDotLemma(cst(m) => (ctx(m) => [skip]i))
+ => 
+  gpom2a(m);
+
+  brule(InitialisationX.p,s(m)) &
+  brule(InvariantX.q,?(m)) &        /* no invariant */
+  brule(RawVariableX.r,v(m)) &
+  PrintDotLemma(cst(m) => (ctx(m) => [s]true))
+ => 
+  gpom2a(m);
+
+  brule(InitialisationX.p,?(m)) &   /* no initialisation */
+  brule(InvariantX.q,?(m)) &        /* no invariant */
+  brule(RawVariableX.r,v(m)) &
+  PrintDotLemma(cst(m) => (ctx(m) => [skip]true))
+ => 
+  gpom2a(m);
+
+
+  /***
+  ops
+  ***/
+
+  gpom3bP(m,v,w,o);
+
+  brule(TempX.14,W) &
+  bsearch(o,(W,?),r)  &     /* no precondition PO for promoted operations */
+  bcall( ( (StandardizeX;FLAT)~;GeneratePOMchX):gpom_stand(cst(m) => (ctx(m) & inv(m) & asn(m) => (v=>w))))
+ =>
+  gpom3bP(m,v,w,o);
+
+  gpom3bT(m,s,o);
+
+  brule(TempX.14,W) &
+  bsearch(o,(W,?),r)  &     /* no termination PO for promoted operations */
+  PrintDotLemma(cst(m) => (ctx(m) & inv(m) & asn(m) & pre(o) => [s]true))
+ =>
+  gpom3bT(m,s,o);
+
+
+
+
+  brule(OperationX.p,(Z|v|w|s)(o)) &
+  brule(InvariantX.q,i(m)) &             /* invariant */
+  gpom3bP(m,v,w,o) & 
+  PrintDotLemma(cst(m) => (ctx(m) & inv(m) & asn(m) & pre(o) => [s]i))
+ =>
+  gpom3b(m)(o);
+
+  brule(OperationX.p,(Z|v|w|s)(o)) &
+  brule(InvariantX.q,?(m)) &             /* no invariant */
+  gpom3bP(m,v,w,o) & 
+  gpom3bT(m,s,o)
+ =>
+  gpom3b(m)(o);
+
+
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  load_dot_op_file(f)(a.N)(n);
+
+  bget(f,(S|P)) &
+  bcall((POGPreProcessStandardizeX~;MODR):bmodr(OperationX.n,((S)(a)))) &
+/*  bmodr(OperationX.n,((S)(a))) & */
+  bmodr(OutputParametersX.n,((P)(a))) &
+  bshell(bcatl("rm ",f))
+ =>
+  load_dot_op_file(f)(a.0)(n);             /* mch */
+
+
+
+
+  ConnectDotPOFile("POB/.Initialisation") &
+  gpom2a(m) &
+  CloseDotPOFile(Initialisation)
+ =>
+  gpom2(m);
+
+  ConnectDotPOFile(bcatl("POB/.",p)) &
+  bmodr(OperationX.1,?) &
+  bmodr(OperationX.2,?) &
+  bmodr(OutputParametersX.1,?) &
+  bmodr(OutputParametersX.2,?) &
+  load_dot_op_file(bcatl("POB/.op.",o,".",0))(o.0)(1) &
+  CheckAllRecursiveRewritesMchOp(m,o) &
+  gpom3b(m)(o) &
+  CloseDotPOFile(p)
+ =>
+  gpom3a(m)(o)(p);
+
+  WriteDot &
+  gpom3a(m)(o)(o)
+ =>
+  gpom3(m,o);
+
+  gpom3(m,?);                     /* no operations */
+
+
+
+
+  brule(InitialisationX.p,I(m)) &  /* initialisation */
+  brule(GeneratePOMchX.1,U) &      /* used initialisation */
+  bmodr(InitialisationX.p,(U||I)(m))
+ =>
+  get_full_init(m);
+
+  brule(InitialisationX.p,?(m)) &  /* no initialisation */
+  brule(GeneratePOMchX.1,U) &      /* used initialisation */
+  bmodr(InitialisationX.p,U(m))
+ =>
+  get_full_init(m);
+
+  brule(InitialisationX.p,I(m)) &  /* initialisation */
+  brule(GeneratePOMchX.1,?) &      /* no used initialisation */
+  bmodr(InitialisationX.p,I(m))
+ =>
+  get_full_init(m);
+
+  brule(InitialisationX.p,?(m)) &  /* no initialisation */
+  brule(GeneratePOMchX.1,?)        /* no used initialisation */
+ =>
+  get_full_init(m);
+
+
+
+
+  brule(UsedInitialisationX.i,(n(I))) &
+  brule(GeneratePOMchX.1,X) &
+  bmodr(GeneratePOMchX.1,(X || I))
+ =>
+  get_composite_used_init_1(n);
+
+  brule(UsedInitialisationX.i,(n(I))) &
+  brule(GeneratePOMchX.1,?) &
+  bmodr(GeneratePOMchX.1,I)
+ =>
+  get_composite_used_init_1(n);
+
+  brule(UsedInitialisationX.i,(n(?)))
+ =>
+  get_composite_used_init_1(n);
+
+  brule(UsedInitialisationX.i,(n(?)))
+ =>
+  get_composite_used_init_1(n);
+
+  get_composite_used_init_1(n)
+ =>
+  get_composite_used_init(n(s):t:(?,?,?));
+
+  get_composite_used_init_1(bnewv(r,n))
+ =>
+  get_composite_used_init(r.n(s):t:(X,Y,Z));
+
+
+
+
+  WriteDot &
+  brule(InvariantX.q,i(m)) &
+  WriteDotInvariant(i) &
+  get_composite_used_init bsmap (B) &
+  get_full_init(m) &
+  gpom2(m) &                      /* initialisation */
+  gpom3(m) bsmap j
+ =>
+  gpom(m)(j)(B);
+
+  WriteDot &
+  brule(InvariantX.q,i(m)) &
+  WriteDotInvariant(i) &
+  gpom2(m) &                      /* initialisation */
+  gpom3(m) bsmap j
+ =>
+  gpom(m)(j)(?);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY Pre_PrintDotRefLemmaFiniX IS
+
+  WriteDot &
+  PrintDotLemma(a)
+ =>
+  ppdl_5(a);
+
+  WriteDot &
+/***
+HERE((ppdl_3(a)))&
+***/
+  PrintDotLemma(a)
+ =>
+  ppdl_3(a)
+
+END
+
+&
+
+#define Pre_PrintDotRefLemma(x) \
+               bcall(((FLAT~;(Pre_PrintDotRefLemma1X;FLAT)~;Pre_PrintDotRefLemma2X~;Pre_PrintDotRefLemmaFiniX)~) : ppdl_0(x))
+
+
+
+THEORY Pre_PrintDotRefLemma2X IS
+
+/***
+HERE(a)
+=>
+proc1(a);
+
+HERE2(b)
+=>
+proc1(b ==> c);
+
+proc1(a)
+&HERE2(b)
+=>
+proc1(a [] b ==> c);
+
+HERE(("NOWAY":b))
+=>
+proc(n)((b));
+
+HERE((n:"START"))&
+proc1(a [] b ==> c)&
+HERE(("END"))
+=>
+proc(n)((a [] b ==> c));
+***/
+
+
+
+
+/***
+  brule(Pre_PrintDotRefLemma1X.1,H) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_5(H=>[a]not([b]I))
+ =>
+  ppdl_4([a]not([b]?));
+
+  brule(Pre_PrintDotRefLemma1X.1,(h=>H)) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_5(h=>(H=>[a]not([b]I)))
+ =>
+  ppdl_4([a]not([b]?));
+
+  brule(Pre_PrintDotRefLemma1X.1,?) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_5([a]not([b]I))
+ =>
+  ppdl_4([a]not([b]?));
+***/
+
+
+  brule(Pre_PrintDotRefLemma1X.1,H) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_3(H=>[a][b]I)
+ =>
+  ppdl_1([a][b]?);
+
+  brule(Pre_PrintDotRefLemma1X.1,(h=>H)) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_3(h=>(H=>[a][b]I))
+ =>
+  ppdl_1([a][b]?);
+
+  brule(Pre_PrintDotRefLemma1X.1,?) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_3([a][b]I)
+ =>
+  ppdl_1([a][b]?);
+
+
+
+  brule(Pre_PrintDotRefLemma1X.1,H) &
+  brule(Pre_PrintDotRefLemma1X.3,b) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_3(H=>[a]not([b]I))
+/***
+&proc(3)((b))
+***/
+ =>
+  ppdl_1([a]not([?]?));
+
+  brule(Pre_PrintDotRefLemma1X.1,(h=>H)) &
+  brule(Pre_PrintDotRefLemma1X.3,b) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_3(h=>(H=>[a]not([b]I)))
+/***
+&proc(2)((b))
+***/
+ =>
+  ppdl_1([a]not([?]?));
+
+  brule(Pre_PrintDotRefLemma1X.1,?) &
+  brule(Pre_PrintDotRefLemma1X.3,b) &
+  brule(Pre_PrintDotRefLemma1X.2,I) &
+  ppdl_3([a]not([b]I))
+/***
+&proc(1)((b))
+***/
+ =>
+  ppdl_1([a]not([?]?));
+
+/***
+HERE1((U:1))
+=>
+***/
+  ( S || ( P | T ) ) == ( P | ( S || T ) );
+
+/***
+HERE1((U:2))
+=>
+***/
+  ( ( P ==> S ) ; T ) == ( P ==> ( S ; T ) );
+
+/***
+HERE1((U:3))
+=>
+***/
+  ( P ==> ( S || T ) ) == ( P ==> ( S || T ) );
+
+/***
+HERE1((U:4))
+=>
+***/
+  ( S || ( P ==> T ) ) == ( P ==> ( S || T ) );
+
+/***
+HERE1((U:5))
+=>
+***/
+  ( ( @z.S ) []  ( @z.T ) ) == ( @z. ( S [] T ) );
+
+/***
+HERE1((U:6))
+=>
+***/
+  ( ( P | S ) [] T ) == ( P | ( S [] T ) );
+
+/***
+HERE1((U:7))
+=>
+***/
+  ( ( b ; d ) [] ( c ; d ) ) == ( ( b [] c ) ; d );
+
+/***
+HERE1((U:8))
+=>
+***/
+  ( ( d ; b ) [] ( d ; c ) ) == ( d ; ( b [] c ) );
+
+/***
+HERE1((U:9))
+=>
+***/
+  ( ( b || d ) [] ( c || d ) ) == ( ( b [] c ) || d );
+
+/***
+HERE1((U:10))
+=>
+***/
+  ( ( d || b ) [] ( d || c ) ) == ( d || ( b [] c ) )
+
+END
+
+&
+
+THEORY Pre_PrintDotRefLemma1X IS
+
+  ?;
+
+  ?;
+
+  ?;
+
+  ?;
+
+
+  (a||(b||c)) == (a||b||c);
+
+  (a&(b&c)) == bflat(a&b&c);
+
+  (a;(b;c)) == bflat(a;b;c);
+
+
+/***
+HERE1((1))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.( e ; b ; d ) ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.( e ; c ; d ) ]?)
+ =>
+  ppdl_1([a][ @z.( e ; ( b [] c ) ; d ) ]?);
+
+/***
+HERE1((2))&
+***/
+  WriteDot &
+  ppdl_1([a][ e ; b ; d ]?) &
+  WriteDot &
+  ppdl_1([a][ e ; c ; d ]?)
+ =>
+  ppdl_1([a][ e ; ( b [] c ) ; d ]?);
+
+/***
+HERE1((3))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.( b ; d ) ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.( c ; d ) ]?)
+ =>
+  ppdl_1([a][ @z.( ( b [] c ) ; d ) ]?);
+
+/***
+HERE1((4))&
+***/
+  WriteDot &
+  ppdl_1([a][ b ; d ]?) &
+  WriteDot &
+  ppdl_1([a][ c ; d ]?)
+ =>
+  ppdl_1([a][ ( b [] c ) ; d ]?);
+
+/***
+HERE1((5))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.( d ; b ; e ) ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.( d ; c ; e ) ]?)
+ =>
+  ppdl_1([a][ @z.( d ; ( b [] c ) ; e ) ]?);
+
+/***
+HERE1((6))&
+***/
+  WriteDot &
+  ppdl_1([a][ d ; b ; e ]?) &
+  WriteDot &
+  ppdl_1([a][ d ; c ; e ]?)
+ =>
+  ppdl_1([a][ d ; ( b [] c ) ; e ]?);
+
+/***
+HERE1((7))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.( d ; b ) ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.( d ; c ) ]?)
+ =>
+  ppdl_1([a][ @z.( d ; ( b [] c ) ) ]?);
+
+/***
+HERE1((8))&
+***/
+  WriteDot &
+  ppdl_1([a][ d ; b ]?) &
+  WriteDot &
+  ppdl_1([a][ d ; c ]?)
+ =>
+  ppdl_1([a][ d ; ( b [] c ) ]?);
+
+/***
+HERE1((9))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.( e || b || d ) ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.( e || c || d ) ]?)
+ =>
+  ppdl_1([a][ @z.( e || ( b [] c ) || d ) ]?);
+
+/***
+HERE1((10))&
+***/
+  WriteDot &
+  ppdl_1([a][ e || b || d ]?) &
+  WriteDot &
+  ppdl_1([a][ e || c || d ]?)
+ =>
+  ppdl_1([a][ e || ( b [] c ) || d ]?);
+
+/***
+HERE1((11))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.( b || d ) ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.( c || d ) ]?)
+ =>
+  ppdl_1([a][ @z.( ( b [] c ) || d ) ]?);
+
+/***
+HERE1((12))&
+***/
+  WriteDot &
+  ppdl_1([a][ b || d ]?) &
+  WriteDot &
+  ppdl_1([a][ c || d ]?)
+ =>
+  ppdl_1([a][ ( b [] c ) || d ]?);
+
+/***
+HERE1((13))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.( d || b || e ) ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.( d || c || e ) ]?)
+ =>
+  ppdl_1([a][ @z.( d || ( b [] c ) || e ) ]?);
+
+/***
+HERE1((14))&
+***/
+  WriteDot &
+  ppdl_1([a][ d || b || e ]?) &
+  WriteDot &
+  ppdl_1([a][ d || c || e ]?)
+ =>
+  ppdl_1([a][ d || ( b [] c ) || e ]?);
+
+/***
+HERE1((15))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.( d || b ) ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.( d || c ) ]?)
+ =>
+  ppdl_1([a][ @z.( d || ( b [] c ) ) ]?);
+
+/***
+HERE1((16))&
+***/
+  WriteDot &
+  ppdl_1([a][ d || b ]?) &
+  WriteDot &
+  ppdl_1([a][ d || c ]?)
+ =>
+  ppdl_1([a][ d || ( b [] c ) ]?);
+
+/***
+HERE1((17))&
+***/
+  WriteDot &
+  ppdl_1([a][ @z.c ]?) &
+  WriteDot &
+  ppdl_1([a][ @z.d ]?)
+ =>
+  ppdl_1([a][ @z.(c [] d ) ]?);
+
+/***
+HERE1((18))&
+***/
+  WriteDot &
+  ppdl_1([a][ c ]?) &
+  WriteDot &
+  ppdl_1([a][ d ]?)
+ =>
+  ppdl_1([a][ c [] d ]?);
+
+
+
+
+/***
+HERE1((19))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( d ; a ; e ) ][c]?) &
+  WriteDot &
+  ppdl_1([ @z.( d ; b ; e ) ][c]?)
+ =>
+  ppdl_1([ @z.( d ; ( a [] b ) ; e ) ][c]?);
+
+/***
+HERE1((20))&
+***/
+  WriteDot &
+  ppdl_1([ d ; a ; e ][c]?) &
+  WriteDot &
+  ppdl_1([ d ; b ; e ][c]?)
+ =>
+  ppdl_1([ d ; ( a [] b ) ; e ][c]?);
+
+/***
+HERE1((21))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( d ; a ) ][c]?) &
+  WriteDot &
+  ppdl_1([ @z.( d ; b ) ][c]?)
+ =>
+  ppdl_1([ @z.( d ; ( a [] b ) ) ][c]?);
+
+/***
+HERE1((22))&
+***/
+  WriteDot &
+  ppdl_1([ d ; a ][c]?) &
+  WriteDot &
+  ppdl_1([ d ; b ][c]?)
+ =>
+  ppdl_1([ d ; ( a [] b ) ][c]?);
+
+/***
+HERE1((23))&
+***/
+  WriteDot &
+  ppdl_1([  @z.( e ; a ; d ) ][c]?) &
+  WriteDot &
+  ppdl_1([  @z.( e ; b ; d ) ][c]?)
+ =>
+  ppdl_1([  @z.( e ; ( a [] b ) ; d ) ][c]?);
+
+/***
+HERE1((24))&
+***/
+  WriteDot &
+  ppdl_1([ e ; a ; d ][c]?) &
+  WriteDot &
+  ppdl_1([ e ; b ; d ][c]?)
+ =>
+  ppdl_1([ e ; ( a [] b ) ; d ][c]?);
+
+/***
+HERE1((25))&
+***/
+  WriteDot &
+  ppdl_1([  @z.( a ; d ) ][c]?) &
+  WriteDot &
+  ppdl_1([  @z.( b ; d ) ][c]?)
+ =>
+  ppdl_1([  @z.( ( a [] b ) ; d ) ][c]?);
+
+/***
+HERE1((26))&
+***/
+  WriteDot &
+  ppdl_1([ a ; d ][c]?) &
+  WriteDot &
+  ppdl_1([ b ; d ][c]?)
+ =>
+  ppdl_1([ ( a [] b ) ; d ][c]?);
+
+/***
+HERE1((27))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( d || a || e ) ][c]?) &
+  WriteDot &
+  ppdl_1([ @z.( d || b || e ) ][c]?)
+ =>
+  ppdl_1([ @z.( d || ( a [] b ) || e ) ][c]?);
+
+/***
+HERE1((28))&
+***/
+  WriteDot &
+  ppdl_1([ d || a || e ][c]?) &
+  WriteDot &
+  ppdl_1([ d || b || e ][c]?)
+ =>
+  ppdl_1([ d || ( a [] b || e ) ][c]?);
+
+/***
+HERE1((29))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( d || a ) ][c]?) &
+  WriteDot &
+  ppdl_1([ @z.( d || b ) ][c]?)
+ =>
+  ppdl_1([ @z.( d || ( a [] b ) ) ][c]?);
+
+/***
+HERE1((30))&
+***/
+  WriteDot &
+  ppdl_1([ d || a ][c]?) &
+  WriteDot &
+  ppdl_1([ d || b ][c]?)
+ =>
+  ppdl_1([ d || ( a [] b ) ][c]?);
+
+/***
+HERE1((31))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( e || a || d ) ][c]?) &
+  WriteDot &
+  ppdl_1([ @z.( e || b || d ) ][c]?)
+ =>
+  ppdl_1([ @z.( e || ( a [] b ) || d ) ][c]?);
+
+/***
+HERE1((32))&
+***/
+  WriteDot &
+  ppdl_1([ e || a || d ][c]?) &
+  WriteDot &
+  ppdl_1([ e || b || d ][c]?)
+ =>
+  ppdl_1([ e || ( a [] b ) || d ][c]?);
+
+/***
+HERE1((33))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( a || d ) ][c]?) &
+  WriteDot &
+  ppdl_1([ @z.( b || d ) ][c]?)
+ =>
+  ppdl_1([ @z.( ( a [] b ) || d ) ][c]?);
+
+/***
+HERE1((34))&
+***/
+  WriteDot &
+  ppdl_1([ a || d ][c]?) &
+  WriteDot &
+  ppdl_1([ b || d ][c]?)
+ =>
+  ppdl_1([ ( a [] b ) || d ][c]?);
+
+/***
+HERE1((35))&
+***/
+  WriteDot &
+  ppdl_1([ @z.a ][c]?) &
+  WriteDot &
+  ppdl_1([ @z.b ][c]?)
+ =>
+  ppdl_1([ @z.( a [] b ) ][c]?);
+
+/***
+HERE1((36))&
+***/
+  WriteDot &
+  ppdl_1([ a ][c]?) &
+  WriteDot &
+  ppdl_1([ b ][c]?)
+ =>
+  ppdl_1([ a [] b ][c]?);
+
+
+
+
+
+
+/***
+HERE1((37))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( e ; b ; d ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.( e ; c ; d ) ]not([?]?))
+ =>
+  ppdl_1([ @z.( e ; ( b [] c ) ; d ) ]not([?]?));
+
+/***
+HERE1((38))&
+***/
+  WriteDot &
+  ppdl_1([ ( e ; b ; d ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ ( e ; c ; d ) ]not([?]?))
+ =>
+  ppdl_1([ e ; ( b [] c ) ; d ]not([?]?));
+
+/***
+HERE1((39))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( b ; d ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.( c ; d ) ]not([?]?))
+ =>
+  ppdl_1([ @z.( ( b [] c ) ; d ) ]not([?]?));
+
+/***
+HERE1((40))&
+***/
+  WriteDot &
+  ppdl_1([ ( b ; d ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ ( c ; d ) ]not([?]?))
+ =>
+  ppdl_1([ ( b [] c ) ; d ]not([?]?));
+
+/***
+HERE1((41))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( d ; c ; e ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.( d ; b ; e ) ]not([?]?))
+ =>
+  ppdl_1([ @z.( d ; ( b [] c ) ; e ) ]not([?]?));
+
+/***
+HERE1((42))&
+***/
+  WriteDot &
+  ppdl_1([ ( d ; c ; e ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ ( d ; b ; e ) ]not([?]?))
+ =>
+  ppdl_1([ d ; ( b [] c ) ; e ]not([?]?));
+
+/***
+HERE1((43))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( d ; c ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.( d ; b ) ]not([?]?))
+ =>
+  ppdl_1([ @z.( d ; ( b [] c ) ) ]not([?]?));
+
+/***
+HERE1((44))&
+***/
+  WriteDot &
+  ppdl_1([ ( d ; c ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ ( d ; b ) ]not([?]?))
+ =>
+  ppdl_1([ d ; ( b [] c ) ]not([?]?));
+
+/***
+HERE1((45))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( e || b || d ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.( e || c || d ) ]not([?]?))
+ =>
+  ppdl_1([ @z.( e || ( b [] c ) || d ) ]not([?]?));
+
+/***
+HERE1((46))&
+***/
+  WriteDot &
+  ppdl_1([ ( e || b || d ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ ( e || c || d ) ]not([?]?))
+ =>
+  ppdl_1([ e || ( b [] c ) || d ]not([?]?));
+
+/***
+HERE1((47))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( b || d ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.( c || d ) ]not([?]?))
+ =>
+  ppdl_1([ @z.( ( b [] c ) || d ) ]not([?]?));
+
+/***
+HERE1((48))&
+***/
+  WriteDot &
+  ppdl_1([ ( b || d ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ ( c || d ) ]not([?]?))
+ =>
+  ppdl_1([ ( b [] c ) || d ]not([?]?));
+
+/***
+HERE1((49))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( d || c || e ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.( d || b || e ) ]not([?]?))
+ =>
+  ppdl_1([ @z.( d || ( b [] c ) || e ) ]not([?]?));
+
+/***
+HERE1((50))&
+***/
+  WriteDot &
+  ppdl_1([ ( d || c || e ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ ( d || b || e ) ]not([?]?))
+ =>
+  ppdl_1([ d || ( b [] c ) || e ]not([?]?));
+
+/***
+HERE1((51))&
+***/
+  WriteDot &
+  ppdl_1([ @z.( d || c ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.( d || b ) ]not([?]?))
+ =>
+  ppdl_1([ @z.( d || ( b [] c ) ) ]not([?]?));
+
+/***
+HERE1((52))&
+***/
+  WriteDot &
+  ppdl_1([ ( d || c ) ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ ( d || b ) ]not([?]?))
+ =>
+  ppdl_1([ d || ( b [] c ) ]not([?]?));
+
+/***
+HERE1((53))&
+***/
+  WriteDot &
+  ppdl_1([ @z.a ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ @z.b ]not([?]?))
+ =>
+  ppdl_1([ @z.(a [] b) ]not([?]?));
+
+/***
+HERE1((54))&
+***/
+  WriteDot &
+  ppdl_1([ a ]not([?]?)) &
+  WriteDot &
+  ppdl_1([ b ]not([?]?))
+ =>
+  ppdl_1([ a [] b ]not([?]?));
+
+
+/***
+HERE1(("P ==> ( Q ==> S [] R ==> T"))=>
+***/
+  ( P ==> ( Q ==> S [] R ==> T ) ) ==
+   ( ( P ==> ( Q ==> S ) ) [] ( P ==> ( R  ==> T ) ) );
+
+/***
+HERE1(("P or Q ==> S"))=>
+***/
+  ( P or Q ==> S ) == ( ( P ==> S ) [] ( Q ==> S ) );
+
+/***
+HERE1(("P | ( Q | S )"))=>
+***/
+  ( P | ( Q | S ) ) == ( bflat(P & Q) | S );
+
+/***
+HERE1(("P | Q | S"))=>
+***/
+  ( P | Q | S ) == ( bflat(P & Q) | S );
+
+/***
+HERE1(("P | ( S || T )"))=>
+***/
+  ( P | ( S || T ) ) == ( ( P | S ) || ( P | T ) );
+
+/***
+HERE1(("P ==> ( S || T )"))=>
+***/
+  ( P ==> ( S || T ) ) == ( ( P ==> S ) || ( P ==> T ) );
+
+/***
+HERE1(("P | ( S [] T )"))=>
+***/
+  ( P | ( S [] T ) ) == ( ( P | S ) [] ( P | T ) );
+
+/***
+HERE1(("@ []"))&
+***/
+  ( @z.( a [] b ) ) == ( @z.a [] @z.b );
+
+/***
+HERE1(("@"))&
+***/
+  z\a &
+  @z.a == a;
+
+/***
+HERE1(("@ ;"))&
+***/
+  z\a &
+  @z.( a ; b ) == ( a ; @z.b );
+
+/***
+HERE1(("@ ;"))&
+***/
+  z\b &
+  @z.( a ; b ) == ( @z.a ; b );
+
+/***
+HERE1(("@ ||"))&
+***/
+  z\a &
+  @z.( a || b ) == ( a || @z.b );
+
+/***
+HERE1(("@ ||"))&
+***/
+  z\b &
+  @z.( a || b ) == ( @z.a || b );
+
+/***
+HERE1(("NEW bflat :="))&
+***/
+  WriteDot
+ =>
+  ( x := E || S || y := F ) == ( ( bflat(x,y) := bflat (E,F) ) || S );
+
+/***
+HERE1(("bflat :="))&
+***/
+  WriteDot
+ =>
+  ( x := E || y := F ) == ( bflat(x,y) := bflat (E,F) );
+
+/***
+HERE1(("true | S"))&
+***/
+  WriteDot
+ =>
+  ( true | S ) == S;
+
+/***
+HERE1(("skip ;"))&
+***/
+  WriteDot
+ =>
+  ( skip ; a ) == a;
+
+/***
+HERE1(("skip ;"))&
+***/
+  WriteDot
+ =>
+  ( a ; skip ) == a;
+
+/***
+HERE1(("skip ||"))&
+***/
+  WriteDot
+ =>
+  ( skip || a ) == a;
+
+/***
+HERE1(("skip ||"))&
+***/
+  WriteDot
+ =>
+  ( a || skip ) == a;
+
+
+
+
+
+  bcall((FLAT;MODR):bmodr(Pre_PrintDotRefLemma1X.2,I))
+ =>
+  ppdl_inv(I);
+
+  bsearch(true,I,J) &
+  ppdl_inv(J)
+ =>
+  ppdl_inv(I);
+
+  bsearch(true,I,J) &
+  ppdl_inv(not(J))
+ =>
+  ppdl_inv(not(I));
+
+
+/***
+HERE1((ppdl_1:L))&
+***/
+  PrintDotLemma(L)
+ =>
+  ppdl_0(L);
+
+/***
+HERE((1))&
+***/
+  bcall((FLAT;MODR):bmodr(Pre_PrintDotRefLemma1X.1,?)) &
+  ppdl_inv(I) &
+  ppdl_1([a][b]?)
+ =>
+  ppdl_0([a][b]I);
+
+/***
+HERE((2))&
+***/
+  bcall((FLAT;MODR):bmodr(Pre_PrintDotRefLemma1X.1,bflat(H))) &
+  ppdl_inv(I) &
+  ppdl_1([a][b]?)
+ =>
+  ppdl_0(H=>[a][b]I);
+
+/***
+HERE((3))&
+***/
+  bcall((FLAT;MODR):bmodr(Pre_PrintDotRefLemma1X.1,(h=>bflat(H)))) &
+  ppdl_inv(I) &
+  ppdl_1([a][b]?)
+ =>
+  ppdl_0(h=>(H=>[a][b]I));
+
+/***
+HERE((4))&
+***/
+  bcall((FLAT;MODR):bmodr(Pre_PrintDotRefLemma1X.1,?)) &
+  ppdl_inv(I) &
+  bcall(MODR:bmodr(Pre_PrintDotRefLemma1X.3,b)) &
+  ppdl_1([a]not([?]?))
+ =>
+  ppdl_0([a]not([b]I));
+
+/***
+HERE((5))&
+***/
+  bcall((FLAT;MODR):bmodr(Pre_PrintDotRefLemma1X.1,bflat(H))) &
+  ppdl_inv(I) &
+  bcall(MODR:bmodr(Pre_PrintDotRefLemma1X.3,b)) &
+  ppdl_1([a]not([?]?))
+ =>
+  ppdl_0(H=>[a]not([b]I));
+
+/***
+HERE((6))&
+***/
+  bcall((FLAT;MODR):bmodr(Pre_PrintDotRefLemma1X.1,(h=>bflat(H)))) &
+  ppdl_inv(I) &
+  bcall(MODR:bmodr(Pre_PrintDotRefLemma1X.3,b)) &
+  ppdl_1([a]not([?]?))
+ =>
+  ppdl_0(h=>(H=>[a]not([b]I)))
+
+END
+
+&
+
+THEORY GeneratePORefX IS
+
+/*
+  a proof obligation generated for the initialisation and each operation
+
+  invocation: GeneratePORef(k,x,j,f)
+    k machine name
+    x level of refinement
+    j raw opn name list
+  result:
+     if d/= ?
+       the initialisation and each operation is proved, and resulting
+       math/type pob are saved as rules in the theory nMath_pobX
+       or nType_pobX, where n is the operation name
+       name - Init for the initialisation
+     if d= ?
+       no action
+*/
+
+#define GeneratePORef(k,N,j) \
+  bcall((StandardizeX~;(ARI;((NEWV~;SUB)~;REV;MAP;LMAP;MODR;CATL;SHELL)~;GeneratePORefX)~): gpor(k)(N)(N-1)(j))
+
+  ?;  /* (Det/NonDet_Op | Invariant) */
+
+  InformCantExecute(f) &
+  PFZ
+ =>
+  bshell(f);
+
+  brule(GeneratePORefX.1,H) &
+HERE((H)) &
+HERE((inc_ret_params_101(m)(o)(x)(y)(s)(t)(X)))
+=>
+inc_ret_params_101(m)(o)(x)(y)(s)(t)(X);
+
+
+
+
+  /***
+  ops with no return params
+  ***/
+
+  bsearch(?,X,Y) &
+  brule(GeneratePORefX.1,(NonDet_Op|I)) &
+  Pre_PrintDotRefLemma((cst(m$x) => (ctx(m$x) & inv(m$x) & asn(m$x) & pre(o) => [s]not([t]not(bflat(I&Y))))))
+ =>
+  inc_ret_params_101(m)(o)(x)(y)(s)(t)(X);
+
+  bsearch(?,X,Y) &
+  brule(GeneratePORefX.1,(Det_Op|I)) &
+  Pre_PrintDotRefLemma((cst(m$x) => (ctx(m$x) & inv(m$x) & asn(m$x) & pre(o) => [s][t](bflat(I&Y)))))
+ =>
+  inc_ret_params_101(m)(o)(x)(y)(s)(t)(X);
+
+
+
+  inc_ret_params_101(m)(o)(x)(y)(s)(t)(X&(a=b))
+ =>
+  inc_ret_params_100(m)(o)(x)(y)(s)(t)(a)(b)(X);
+
+  inc_ret_params_100(m)(o)(x)(y)(s)(t)(S)(T)(X&(a=b))
+ =>
+  inc_ret_params_100(m)(o)(x)(y)(s)(t)(S,a)(T,b)(X);
+
+  inc_ret_params_2(m)(o)(X)(Y)(s)(t)(S)(T)(glue(Z) bslmap U)
+ =>
+  inc_ret_params_2(m)(o)(X)(Y)(s)(t)(S)(T)(U);
+
+  blident(U) &
+  U\s &
+  U\t &
+  U\S &
+  inc_ret_params_1(m)(o)(X)(Y)([S:=U]s)(t)(U)(T)
+ =>
+  inc_ret_params_2(m)(o)(X)(Y)(s)(t)(S)(T)(U);
+
+  inc_ret_params_2(m)(o)(X)(Y)(s)(t)(S)(T)(glue(Z) bslmap T)
+ =>
+  inc_ret_params_1(m)(o)(X)(Y)(s)(t)(S)(T);
+
+  glue(x,T) == bnewv(T,x);
+
+  T\S &
+  inc_ret_params_100(m)(o)(x)(y)(s)(t)(S)(T)(?)
+ =>
+  inc_ret_params_1(m)(o)(x)(y)(s)(t)(S)(T);
+
+  brule(OutputParametersX.I,S(o$x)) &
+  brule(OutputParametersX.J,T(o$y)) &
+  inc_ret_params_1(m)(o)(x)(y)(s)(t)(S)(T)
+ =>
+  inc_ret_params_0(m)(o)(x)(y)(s)(t);
+   
+  brule(OutputParametersX.I,S(o$1)) &
+  brule(OutputParametersX.J,T(o)) &
+  inc_ret_params_1(m)(o)(1)(0)(s)(t)(S)(T)
+ =>
+  inc_ret_params_0(m)(o)(1)(0)(s)(t);
+   
+
+
+  /***
+  ops with no return params
+  ***/
+
+  brule(OutputParametersX.J,?(o$x)) &
+  brule(GeneratePORefX.1,(NonDet_Op|I)) &
+  Pre_PrintDotRefLemma((cst(m$x) => (ctx(m$x) & inv(m$x) & asn(m$x) & pre(o) => [s]not([t]not(I)))))
+ =>
+  inc_ret_params_0(m)(o)(x)(y)(s)(t); 
+   
+  brule(OutputParametersX.J,?(o$x)) &
+  brule(GeneratePORefX.1,(Det_Op|I)) &
+  Pre_PrintDotRefLemma((cst(m$x) => (ctx(m$x) & inv(m$x) & asn(m$x) & pre(o) => [s][t](I))))
+ =>
+  inc_ret_params_0(m)(o)(x)(y)(s)(t); 
+   
+
+
+
+  /***
+  initialisation - ref/imp level 1
+  ***/
+
+  brule(InvariantX.q,i(m$x)) &
+  brule(InitialisationX.p,s(m$x)) &    /* concrete ini */
+  brule(InitialisationX.r,t(W$y)) &    /* abstract ini */
+  Pre_PrintDotRefLemma((cst(m$x) => (ctx(m$x) => [s]not([t]not(i)))))
+ =>
+  gpor2a(m)(x)(y);
+
+  brule(InvariantX.q,i(m$x)) &
+  brule(InitialisationX.p,?(m$x)) &    /* no concrete ini, abstract ini */
+  brule(InitialisationX.r,t(W$y)) &
+  Pre_PrintDotRefLemma((cst(m$x) => (ctx(m$x) => [skip]not([t]not(i)))))
+ =>
+  gpor2a(m)(x)(y);
+
+  brule(InvariantX.q,i(m$x)) &
+  brule(InitialisationX.p,s(m$x)) &    /* concrete ini, no abstract ini */
+  brule(InitialisationX.r,?(W$y)) &
+  Pre_PrintDotRefLemma((cst(m$x) => (ctx(m$x) => [s]not([skip]not(i)))))
+ =>
+  gpor2a(m)(x)(y);
+
+  brule(InvariantX.q,i(m$x)) &
+  brule(InitialisationX.p,?(m$x)) &    /* no concrete ini, no abstract ini */
+  brule(InitialisationX.r,?(W$y)) &
+  Pre_PrintDotRefLemma((cst(m$x) => (ctx(m$x) => [skip]not([skip]not(i)))))
+ =>
+  gpor2a(m)(x)(y);
+
+  brule(InvariantX.q,?(m$x)) &         /* no invariant */
+  brule(InitialisationX.p,?(m$x)) &    /* no concrete ini, no abstract ini */
+  brule(InitialisationX.r,?(W$y))
+ =>
+  gpor2a(m)(x)(y);
+
+
+
+  /***
+  initialisation - ref/imp level > 1
+  ***/
+
+  brule(GetLevelAndAbstractionX.2,W.mch) &
+  brule(InvariantX.q,i(m$1)) &
+  brule(InitialisationX.p,s(m$1)) &      /* concrete ini */
+  brule(InitialisationX.r,t(W)) &        /* abstract ini */
+/***
+HERE((s))&
+HERE((i))&
+***/
+  Pre_PrintDotRefLemma((cst(m$1) => (ctx(m$1) => [s]not([t]not(i)))))
+ =>
+  gpor2a(m)(1)(0);
+
+  brule(GetLevelAndAbstractionX.2,W.mch) &
+  brule(InvariantX.q,i(m$1)) &
+  brule(InitialisationX.p,?(m$1)) &      /* no concrete ini, abstract ini */
+  brule(InitialisationX.r,t(W)) &
+  Pre_PrintDotRefLemma((cst(m$1) => (ctx(m$1) => [skip]not([t]not(i)))))
+ =>
+  gpor2a(m)(1)(0);
+
+  brule(GetLevelAndAbstractionX.2,W.mch) &
+  brule(InvariantX.q,i(m$1)) &
+  brule(InitialisationX.p,s(m$1)) &      /* concrete ini, no abstract ini */
+  brule(InitialisationX.r,?(W)) &
+  Pre_PrintDotRefLemma((cst(m$1) => (ctx(m$1) => [s]not([skip]not(i)))))
+ =>
+  gpor2a(m)(1)(0);
+
+  brule(GetLevelAndAbstractionX.2,W.mch) &
+  brule(InvariantX.q,i(m$1)) &
+  brule(InitialisationX.p,?(m$1)) &      /* no concrete ini, no abstract ini */
+  brule(InitialisationX.r,?(W)) &
+  Pre_PrintDotRefLemma((cst(m$1) => (ctx(m$1) => [skip]not([skip]not(i)))))
+ =>
+  gpor2a(m)(1)(0);
+
+  brule(GetLevelAndAbstractionX.2,W.mch) &
+  brule(InvariantX.q,?(m$1)) &           /* no invariant */
+  brule(InitialisationX.p,?(m$1)) &      /* no concrete ini, no abstract ini */
+  brule(InitialisationX.r,?(W))
+ =>
+  gpor2a(m)(1)(0);
+
+
+
+
+  /***
+  op - ref/imp level > 1
+  ***/
+
+  brule(InvariantX.q,i(m$x)) &
+  brule(OperationX.p,(Z|v|w|s)(o$x)) &          /* concrete op*/
+  brule(OperationX.r,(NonDet_Op|e|f|t)(o$y)) &  /* abstract op*/
+  bmodr(GeneratePORefX.1,(NonDet_Op|i)) &
+  inc_ret_params_0(m)(o)(x)(y)(w|s)(t)
+ =>
+  gpor3b(m)(x)(y)(o);
+
+  brule(InvariantX.q,i(m$x)) &
+  brule(OperationX.p,(Z|v|w|s)(o$x)) &          /* concrete op*/
+  brule(OperationX.r,(Det_Op|e|f|t)(o$y)) &     /* abstract op*/
+  bmodr(GeneratePORefX.1,(Det_Op|i)) &
+  inc_ret_params_0(m)(o)(x)(y)(w|s)(t)
+ =>
+  gpor3b(m)(x)(y)(o);
+
+  /***
+  op - ref/imp level 1
+  ***/
+
+  brule(InvariantX.q,i(m$1)) &
+  brule(OperationX.p,(Z|v|w|s)(o$1)) &          /* concrete op*/
+  brule(OperationX.r,(NonDet_Op|e|f|t)(o)) &    /* abstract op*/
+  bmodr(GeneratePORefX.1,(NonDet_Op|i)) &
+  inc_ret_params_0(m)(o)(1)(0)(w|s)(t)
+ =>
+  gpor3b(m)(1)(0)(o);
+
+  brule(InvariantX.q,i(m$1)) &
+  brule(OperationX.p,(Z|v|w|s)(o$1)) &         /* concrete op*/
+  brule(OperationX.r,(Det_Op|e|f|t)(o)) &      /* abstract op*/
+  bmodr(GeneratePORefX.1,(Det_Op|i)) &
+  inc_ret_params_0(m)(o)(1)(0)(w|s)(t)
+ =>
+  gpor3b(m)(1)(0)(o);
+
+
+
+
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  load_dot_op_file(f)(a.N)(n);
+
+  bget(f,(S|P)) &
+  bcall((POGPreProcessStandardizeX~;MODR):bmodr(OperationX.n,((S)(a$N)))) &
+/*  bmodr(OperationX.n,((S)(a$N))) & */
+  bmodr(OutputParametersX.n,((P)(a$N))) &
+  bshell(bcatl("rm ",f))
+ =>
+  load_dot_op_file(f)(a.N)(n);             /* ref/imp */
+
+  bget(f,(S|P)) &
+  bcall((POGPreProcessStandardizeX~;MODR):bmodr(OperationX.n,((S)(a)))) &
+/*  bmodr(OperationX.n,((S)(a))) & */
+  bmodr(OutputParametersX.n,((P)(a))) &
+  bshell(bcatl("rm ",f))
+ =>
+  load_dot_op_file(f)(a.0)(n);             /* mch */
+
+
+
+/***
+HERE(("PORef":Initialisation))&
+***/
+  ConnectDotPOFile("POB/.Initialisation") &
+  gpor2a(m)(x)(y) &
+  CloseDotPOFile(Initialisation)
+/***
+&bcall(SHELL~:(bshell("echo ''")&bshell("echo ------------")&bshell("cat POB/.Initialisation")&bshell("echo ------------")))
+***/
+ =>
+  gpor2(m)(x)(y);
+
+  ConnectDotPOFile(bcatl("POB/.",p)) &
+  bmodr(OperationX.1,?) &
+  bmodr(OperationX.2,?) &
+  bmodr(OutputParametersX.1,?) &
+  bmodr(OutputParametersX.2,?) &
+  load_dot_op_file(bcatl("POB/.op.",o,".",x))(o.x)(1) &
+  load_dot_op_file(bcatl("POB/.op.",o,".",y))(o.y)(2) &
+  CheckAllRecursiveRewritesRefOp(m,x,o) &
+  gpor3b(m)(x)(y)(o) &
+  CloseDotPOFile(p)
+ =>
+  gpor3a(m)(x)(y)(o)(p);
+
+/***
+HERE(("PORef":o))&
+***/
+  WriteDot &
+  gpor3a(m)(x)(y)(o)(o)
+ =>
+  gpor3(m,x,y,o);
+
+  gpor3(m,x,y,?);                  /* no operations */
+
+
+  WriteDot &
+  brule(InvariantX.q,i(m$x)) &
+  WriteDotInvariant(i) &
+  gpor2(m)(x)(y) &                 /* initialisation */
+  gpor3(m,x,y) bsmap j
+ =>
+  gpor(m)(x)(y)(j);
+
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+
+
+/*
+THEORY CalcPreX END &
+
+THEORY CalcOpPreMacrosX IS
+
+  ((a|b)[]d) == (a|(b[]d));
+
+  (b[](c|d)) == (c|(b[]d));
+
+  ((a|b)[](c|d)) == ((a&c)|(b[]d));
+
+  (a==>(b|c)) == ((a=>b)|(a==>c));
+
+  (a|(b|c)) == ((a&b)|c);
+
+  ((b|c)||a) == (b|(c||a));
+
+  (a||(b|c)) == (b|(a||c))
+
+END
+
+&
+
+THEORY CalcOpPreX IS
+
+#define CalcOpPre(x,y) bcall((CalcOpPreX~;RULE):cop(x)(y))
+
+  ?;
+
+  brule(CalcOpPreX.1,(p|s)) &
+  bcrer(CalcPreX,o(p))
+ =>
+  cop1(o);
+
+/???/
+HERE((o(s)))&
+/???/
+  bcall((CalcOpPreMacrosX~;MODR):bmodr(CalcOpPreX.1,s)) &
+  cop1(o)
+ =>
+  cop(o)(s)
+
+END
+
+&
+*/
+
+
+
+
+THEORY ProcessOpnListX IS
+
+/*
+	processes analysed opn list
+
+  invocation: ProcessOpnList(k,x)
+    k analysed opn list
+    x level of machine
+    when x/=0, TempX.1 contains rename in form p:q
+  result:
+
+
+*/
+
+#define polTac (ProcessOpnListX;MAP;((CATL;SUB;WRITE)~;ProcessOpnListX)~)
+
+#define ProcessOpnList(k,x) bcall(polTac:(pol1(x)(k)))
+
+  ?;
+
+  brule(POGeneratorFromUserX.3,f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  app_tmp_file;
+
+  brule(POGeneratorFromUserX.3,f) &
+  bappend(f)
+ =>
+  app_tmp_file;
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  write_op(f)(x);
+
+  bconnect(f) &
+  bprintf("(%)|(%)\n",x,y) &
+  bclose &
+  app_tmp_file
+ =>
+  write_op(f)(x|y);
+
+  brule(TempX.1,(t:u)) &
+  write_op(bcatl("POB/.op.",a,".",x))(([t:=u](Z|q|p|g))|(d))
+ =>
+  pol2(x,(a;(X,Y,Z,b);c;d;(q|f);(p|g)));       /* x/=0  => ref op */
+
+  write_op(bcatl("POB/.op.",a,".",0))((Z|q|p|g)|(d)) &
+  FwdStore(a,q,pre)
+ =>
+  pol2(0,(a;(X,Y,Z,b);c;d;(q|f);(p|g)));       /* 0 => mch op */
+
+
+
+
+
+  brule(ProcessOpnListX.1,g) &
+/***
+HERE((ProcessOpnListX.1,g))&
+***/
+/*
+  CalcOpPre(a,(p|g)) & - not used
+*/
+  pol2(N,(a;(X,Y,Z,b);c;d;(q|f);(p|g)))
+ =>
+  pol2_1(N,(a;(X,Y,Z,b);c;d;(q|f);(p|?)));
+
+  bcall(((SubOpsX;(OpSimplificationX;FLAT~)~)~;MODR):bmodr(ProcessOpnListX.1,g)) &
+  pol2_1(N,(a;(X,Y,Z,b);c;d;(q|f);(p|?)))
+ =>
+  pol2_0(N,(a;(X,Y,Z,b);c;d;(q|f);(p|g)));
+
+  pol2_0(x) bsmap k                              /* >1 operations */
+ =>
+  pol1(x)(k);
+
+  pol2_0(x,(a;b))                                /* 1 operation */
+ =>
+  pol1(x)(a;b);
+
+  pol1(x)(?);                                  /* 0 operations */
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+/*
+      a   raw name
+      b   header
+      c   input list
+      d   output list
+      q|f unexpanded substitution with user-stated precondition q
+      p|g expanded substitution with calculated precondition p
+
+*/    
+
+END
+
+&
+
+THEORY ConstructFullInvariantX IS
+
+/*
+  constructs full invariant of the refinement
+
+  invocation: ConstructFullInvariant(n,x,g)
+    s the machine name
+    x the level
+    g user supplied invariant
+    TempX.1 contains (p:q) - the refinement rename (through ConstructRefRename)
+    TempX.9 contains state overlap (through FindStateOverlap)
+  result:
+    if state overlap, invariant (i) taken as g plus overlap$=overlap$(x-1)
+    if no state overlap, invariant (i) is g 
+      the (decorated) invariant is then stored in InvariantX in from i(n$x)
+*/
+
+#define ConstructFullInvariant(s,x,g) \
+	bcall(((SUB;ARI;FLAT;REV;ConstructFullInvariantX)~): \
+						const_full_inv_0(s)(x)(g))
+
+  FwdStore(n$x,a,inv)
+ =>
+  const_full_inv_3(n$x)(a);
+
+  const_full_inv_3(n$x)(bflat(a&g))
+ =>
+  const_full_inv_2(n$x)(g)(a&?);    /* user supplied invariant */
+
+  FwdStore(n$x,a,inv)
+ =>
+  const_full_inv_2(n$x)(?)(a&?);    /* no user supplied invariant */
+
+  const_full_inv_2(n$x)(g)(brev(c&(a$x=a$(x-1))))
+ =>
+  const_full_inv_1(n$x)(g)(a | c);
+
+  const_full_inv_2(n$1)(g)(brev(c&(a$1=a)))
+ =>
+  const_full_inv_1(n$1)(g)(a | c);    /* spec */
+
+  const_full_inv_1(n$x)(g)(a | c&(b$x=b$(x-1)))
+ =>
+  const_full_inv_1(n$x)(g)(a,b | c);
+
+  const_full_inv_1(n$1)(g)(a | c&(b$1=b))
+ =>
+  const_full_inv_1(n$1)(g)(a,b | c);     /* spec */
+
+  brule(TempX.1,(p:q)) &  /* rename */
+  brule(TempX.9,a) &      /* raw overlap */
+  const_full_inv_1(n$x)([p:=q]g)(a | ?)
+ =>
+  const_full_inv_0(n)(x)(g);
+
+  brule(TempX.1,(p:q)) &  /* rename */
+  brule(TempX.9,?) &      /* no overlap */
+  FwdStore(n$x,[p:=q]g,inv)
+ =>
+  const_full_inv_0(n)(x)(g);
+
+  const_full_inv_0(n)(x)(true)
+ =>
+  const_full_inv_0(n)(x)(?);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY ConstructLocalInvariantX IS
+
+/*
+  constructs local invariant of the refinement
+
+  invocation: ConstructLocalInvariant(n,x,g)
+    s the machine name
+    x the level
+    g user supplied invariant
+    TempX.1 contains (p:q) - the refinement rename (through ConstructRefRename)
+    TempX.9 contains state overlap (through FindStateOverlap)
+  result:
+    if state overlap, invariant (i) taken as g plus overlap$(x-1)=overlap$x
+    if no state overlap, invariant (i) is g 
+      the (decorated) invariant is then stored in InvariantX in from i(n$x)
+*/
+
+#define ConstructLocalInvariant(s,x,g) \
+	bcall(((SUB;ARI;FLAT;REV;ConstructLocalInvariantX)~): \
+						const_loc_inv_0(s)(x)(g))
+
+  AddRule(InvariantX,a(n$x))
+ =>
+  const_loc_inv_3(n$x)(a);
+
+  const_loc_inv_3(n$x)(bflat(a&g))
+ =>
+  const_loc_inv_2(n$x)(g)(a&?);    /* user supplied invariant */
+
+  AddRule(InvariantX,a(n$x))
+ =>
+  const_loc_inv_2(n$x)(?)(a&?);    /* no user supplied invariant */
+
+  const_loc_inv_2(n$x)(g)(brev(c&(a$x=a$(x-1))))
+ =>
+  const_loc_inv_1(n$x)(g)(a | c);
+
+  const_loc_inv_2(n$1)(g)(brev(c&(a$1=a)))
+ =>
+  const_loc_inv_1(n$1)(g)(a | c);    /* spec */
+
+  const_loc_inv_1(n$x)(g)(a | c&(b$x=b$(x-1)))
+ =>
+  const_loc_inv_1(n$x)(g)(a,b | c);
+
+  const_loc_inv_1(n$1)(g)(a | c&(b$1=b))
+ =>
+  const_loc_inv_1(n$1)(g)(a,b | c);     /* spec */
+
+  brule(TempX.1,(p:q)) &  /* rename */
+  brule(TempX.9,a) &      /* raw overlap */
+  const_loc_inv_1(n$x)([p:=q]g)(a | ?)
+ =>
+  const_loc_inv_0(n)(x)(g);
+
+  brule(TempX.1,(p:q)) &  /* rename */
+  brule(TempX.9,?) &      /* no overlap */
+  AddRule(InvariantX,[p:=q]g(n$x))
+ =>
+  const_loc_inv_0(n)(x)(g);
+
+  const_loc_inv_0(n)(x)(true)
+ =>
+  const_loc_inv_0(n)(x)(?);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY ConstructRefRenameX IS
+
+/*
+  Constructs and stores refinement variable rename in TempX.1
+
+  invocation: ConstructRefRename
+  result:
+    rename in form p:q stored in TempX.1
+      p raw variables
+      q decorated variables
+      TempX.9 raw overlap 
+      TempX.10 overlap (decorated with 0)
+      TempX.3 overlap (abstract decoration)
+      TempX.4 overlap (conctete decoration)
+      TempX.5 raw abstract residue
+      TempX.6 abstract residue
+      TempX.7 raw concrete residue
+      TempX.8 concrete residue (through FindStateOverlap)
+    if refinement stateless, the dummy aa:aa stored
+*/
+
+/*
+#define ConstructRefRename \
+	bcall((ConstructRefRenameX~;FLAT~;ConstructRefRenameX;MODR):crr0(?:?))
+
+#define ConstructImpRename \
+	bcall((ConstructRefRenameX~;FLAT~;ConstructRefRenameX;MODR):crr0(?:?))
+*/
+
+#define ConstructRefRename \
+	bcall(((FLAT~;MODR)~;ConstructRefRenameX)~:crr0(?:?))
+
+#define ConstructImpRename ConstructRefRename
+
+  bmodr(TempX.1,(X,p,s:Y,q,t))
+ =>
+  crr_alg(p:q)(s:t)(X:Y);        /* no alg match */
+
+  bmodr(TempX.1,(p,s:q,t))
+ =>
+  crr_alg(p:q)(s:t)(?:?);        /* no alg match */
+
+  bmodr(TempX.1,(X,p:Y,q))
+ =>
+  crr_alg(p:q)(p:t)(X:Y);        /* alg match */
+
+  bmodr(TempX.1,(p:q))
+ =>
+  crr_alg(p:q)(p:t)(?:?);        /* alg match */
+
+
+
+  crr_alg(p:q)(S:T)(X,s:Y,t)
+ =>
+  crr_alg(p:q)(S,s:T,t)(X:Y);        /* no alg match */
+
+  crr_alg(p:q)(S:T)(s:t)
+ =>
+  crr_alg(p:q)(S,s:T,t)(?:?);        /* no alg match */
+
+  bmodr(TempX.1,(X,p:Y,q)) &
+  crr4(S:T)
+ =>
+  crr_alg(p:q)(S,p:T,t)(X:Y);        /* alg match */
+
+  bmodr(TempX.1,(p:q)) &
+  crr4(S:T)
+ =>
+  crr_alg(p:q)(S,p:T,t)(?:?);        /* alg match */
+
+
+
+  bmodr(TempX.1,(X,s:Y,t)) &
+  crr4(P,p:Q,q)
+ =>
+  crr_alg(P,p:Q,q)(s:t)(X:Y);        /* no alg match */
+
+  bmodr(TempX.1,(s:t)) &
+  crr4(P,p:Q,q)
+ =>
+  crr_alg(P,p:Q,q)(s:t)(?:?);        /* no alg match */
+
+  bmodr(TempX.1,(X,p:Y,q)) &
+  crr4(P:Q)
+ =>
+  crr_alg(P,p:Q,q)(p:t)(X:Y);        /* alg match */
+
+  bmodr(TempX.1,(p:q)) &
+  crr4(P:Q)
+ =>
+  crr_alg(P,p:Q,q)(p:t)(?:?);        /* alg match */
+
+
+
+  crr_alg(P,p:Q,q)(S:T)(X,s:Y,t)
+ =>
+  crr_alg(P,p:Q,q)(S,s:T,t)(X:Y);    /* no alg match */
+
+  crr_alg(P,p:Q,q)(S:T)(s:t)
+ =>
+  crr_alg(P,p:Q,q)(S,s:T,t)(?:?);    /* no alg match */
+
+  crr_alg(P:Q)(S:T)(X,p:Y,q)
+ =>
+  crr_alg(P,p:Q,q)(S,p:T,t)(X:Y);    /* alg match */
+
+  crr_alg(P:Q)(S:T)(p:q)
+ =>
+  crr_alg(P,p:Q,q)(S,p:T,t)(?:?);    /* alg match */
+
+
+  brule(TempX.1,(S:T)) &
+  bmodr(TempX.1,((S,p):(T,q)))
+ =>
+  crr4(p:q);
+
+  brule(TempX.1,(S:T)) &
+  bsearch(p,S,A) &
+  crr_alg(p:q)(S:T)(?:?)
+ =>
+  crr4(p:q);
+
+  brule(TempX.1,(S:T)) &
+  bsearch(p,S,A) &
+  bsearch(q,T,B)
+ =>
+  crr4(p:q);
+
+
+  brule(TempX.1,(S:T)) &
+  bmodr(TempX.1,((S,p):(T,q))) &
+  crr4(P:Q)
+ =>
+  crr4(P,p:Q,q);
+
+  brule(TempX.1,(S:T)) &
+  bsearch(p,S,A) &
+  crr_alg(P,p:Q,q)(S:T)(?:?)
+ =>
+  crr4(P,p:Q,q);
+
+  brule(TempX.1,(S:T)) &
+  bsearch(p,S,A) &
+  bsearch(q,T,B) &
+  crr4(P:Q)
+ =>
+  crr4(P,p:Q,q);
+
+
+  brule(TempX.1,(?:?)) &
+  bmodr(TempX.1,(P:Q))
+ =>
+  crr4(P:Q);
+
+
+  bmodr(TempX.1,(aa_______$1000:aa_______$1000))
+ =>
+  crr4(?:?);
+
+  brule(TempX.1,(S:T))
+ =>
+  crr4(?:?);
+
+  brule(TempX.1,(?:?)) &
+  bmodr(TempX.1,(aa_______$1000:aa_______$1000))
+ =>
+  crr4(?:?);
+
+  brule(TempX.1,(?)) &
+  bmodr(TempX.1,(aa_______$1000:aa_______$1000))
+ =>
+  crr4(?:?);
+
+
+  crr4(p:q)
+ =>
+  crr4(p,?:q,?);
+
+
+  brule(TempX.7,a) &
+  brule(TempX.8,b) &
+  crr4((bflat(a,p):bflat(b,q)))
+ =>
+  crr3(p:q);
+
+  brule(TempX.7,?) &
+  brule(TempX.8,?) &
+  crr4((bflat(p):bflat(q)))
+ =>
+  crr3(p:q);
+
+  brule(TempX.5,a) &
+  brule(TempX.6,b) &
+  crr3(a,p:b,q)
+ =>
+  crr2(p:q);
+
+  brule(TempX.5,?) &
+  brule(TempX.6,?) &
+  crr3(p:q)
+ =>
+  crr2(p:q);
+
+  brule(TempX.10,a) &
+  brule(TempX.3,b) &
+  crr2(a,p:b,q)
+ =>
+  crr1(p:q);
+
+  brule(TempX.10,?) &
+  brule(TempX.3,?) &
+  crr2(p:q)
+ =>
+  crr1(p:q);
+
+  brule(TempX.9,a) &  /* raw overlap */
+  brule(TempX.4,b) &  /* overlap$conc */
+  crr1(a,p:b,q)
+ =>
+  crr0(p:q);
+
+  brule(TempX.9,?) &  /* raw overlap */
+  brule(TempX.4,?) &  /* overlap$conc */
+  crr1(p:q)
+ =>
+  crr0(p:q);           /* p=? q=? */
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY ConstructIntRenameX IS
+
+/*
+  Constructs and stores interface variable rename in TempX.1
+
+  invocation: ConstructIntRename
+  result:
+    rename in form aa:aa stored in TempX.1
+*/
+
+#define ConstructIntRename \
+	bcall((ConstructIntRenameX;MODR):cir)
+
+
+  bmodr(TempX.1,(aa:aa))       /* dummy for interfaces */
+ =>
+  cir
+
+END
+
+&
+
+THEORY FindStateOverlapX IS
+
+/*
+  stores overlapping and residual state in TempX
+
+  invocation: FindStateOverlap(s,x)
+    s the machine name
+    x the level
+  result:
+    TempX.3 overlap              (abstract decoration)
+    TempX.4 overlap              (conctete decoration)
+    TempX.5 raw abstract residue (no decoration)
+    TempX.6 abstract residue     (abstract decoration)
+    TempX.7 raw concrete residue (no decoration)
+    TempX.8 concrete residue     (conctete decoration)
+    TempX.9 raw overlap          (no decoration)
+    TempX.10 overlap             (decorated with 0)
+
+*/
+
+#define fsoTac (ARI~;((REV~;MODR~)~;FindStateOverlapX)~)
+
+#define FindStateOverlap(s,x) bcall(fsoTac:fso0(s)(x)((x-1)))
+
+
+  bmodr(TempX.7,?) &  /* raw conc residue */
+  bmodr(TempX.8,?)    /* conc residue */
+ =>
+  fso5(n$x$y)(? | ?);
+
+  bmodr(TempX.7,a) &  /* raw conc residue */
+  bmodr(TempX.8,b)    /* conc residue */
+ =>
+  fso5(n$x$y)(a,? | b,?);
+
+  bmodr(TempX.7,?) &  /* raw conc residue */
+  bmodr(TempX.8,?)    /* conc residue */
+ =>
+  fso4(n$x$y)(a)(? | ? | ?);
+
+  bvrb(c) &
+  fso5(n$x$y)(brev(g) | brev(h))
+ =>
+  fso4(n$x$y)(a)(c | g | h);
+
+  c\a &
+  fso5(n$x$y)(brev(g,c) | brev(h,c$x))
+ =>
+  fso4(n$x$y)(a)(c | g | h);
+
+  bvrb(d) &
+  fso4(n$x$y)(a)(c | g | h)
+ =>
+  fso4(n$x$y)(a)(c,d | g | h);
+
+  d\a &
+  fso4(n$x$y)(a)(c | g,d | h,d$x)
+ =>
+  fso4(n$x$y)(a)(c,d | g | h);
+
+/*
+  fso4(n$x$y)(raw overlap)
+               (raw conc | conc | raw conc residue | conc residue)
+*/
+
+  brule(RawVariableX.i,p(n$x)) &
+  fso4(n$x$y)(a)(p | ? | ?)
+ =>
+  fso3(n$x$y)(a);
+
+
+
+  bmodr(TempX.9,a) &  /* raw overlap */
+  bmodr(TempX.10,b) & /* overlap$0 */
+  bmodr(TempX.3,c) &  /* overlap$abs */
+  bmodr(TempX.4,d) &  /* overlap$conc */
+  bmodr(TempX.5,e) &  /* raw abs residue */
+  bmodr(TempX.6,f) &  /* abs residue */
+  fso3(n$x$y)(a)
+ =>
+  fso2(n$x$y)(a,? | b,? | c,? | d,? | e,? | f,?);
+
+  bmodr(TempX.9,a) &  /* raw overlap */
+  bmodr(TempX.10,b) & /* overlap$0 */
+  bmodr(TempX.3,c) &  /* overlap$abs */
+  bmodr(TempX.4,d) &  /* overlap$conc */
+  bmodr(TempX.5,?) &  /* raw abs residue */
+  bmodr(TempX.6,?) &  /* abs residue */
+  fso3(n$x$y)(a)
+ =>
+  fso2(n$x$y)(a,? | b,? | c,? | d,? | ? | ?);
+
+  bmodr(TempX.9,?) &  /* raw overlap */
+  bmodr(TempX.10,?) & /* overlap$0 */
+  bmodr(TempX.3,?) &  /* overlap$abs */
+  bmodr(TempX.4,?) &  /* overlap$conc */
+  bmodr(TempX.5,e) &  /* raw abs residue */
+  bmodr(TempX.6,f) &  /* abs residue */
+  fso3(n$x$y)(?)
+ =>
+  fso2(n$x$y)(? | ? | ? | ? | e,? | f,?);
+
+  bmodr(TempX.9,?) &  /* raw overlap */
+  bmodr(TempX.10,?) & /* overlap$0 */
+  bmodr(TempX.3,?) &  /* overlap$abs */
+  bmodr(TempX.4,?) &  /* overlap$conc */
+  bmodr(TempX.5,?) &  /* raw abs residue */
+  bmodr(TempX.6,?) &  /* abs residue */
+  fso3(n$x$y)(?)
+ =>
+  fso1(n$x$y)(a)(? | ? | ? | ? | ? | ? | ?);
+
+  bvrb(b) &
+  fso2(n$x$y)(brev(f,b) | brev(g,b$0) |
+				 brev(h,b$y) | brev(i,b$x) | brev(j) | brev(k))
+ =>
+  fso1(n$x$y)(a)(b | f | g | h | i | j | k);
+
+  bvrb(b) &
+  fso2(n$1$0)(brev(f,b) | brev(g,b$0) |
+				 brev(h,b) | brev(i,b$1) | brev(j) | brev(k))
+ =>
+  fso1(n$1$0)(a)(b | f | g | h | i | j | k);      /* spec */
+
+  b\a &
+  fso2(n$x$y)(brev(f) | brev(g) | brev(h) | brev(i) | brev(j,b) | brev(k,b$y))
+ =>
+  fso1(n$x$y)(a)(b | f | g | h | i | j | k);
+
+  b\a &
+  fso2(n$1$0)(brev(f) | brev(g) | brev(h) | brev(i) | brev(j,b) | brev(k,b))
+ =>
+  fso1(n$1$0)(a)(b | f | g | h | i | j | k);     /* spec */
+
+  bvrb(c) &
+  fso1(n$x$y)(a)(b | f,c | g,c$0 | h,c$y | i,c$x | j | k)
+ =>
+  fso1(n$x$y)(a)(b,c | f | g | h | i | j | k);
+
+  bvrb(c) &
+  fso1(n$1$0)(a)(b | f,c | g,c$0 | h,c | i,c$1 | j | k)
+ =>
+  fso1(n$1$0)(a)(b,c | f | g | h | i | j | k);    /* spec */
+
+  c\a &
+  fso1(n$x$y)(a)(b | f | g | h | i | j,c | k,c$y)
+ =>
+  fso1(n$x$y)(a)(b,c | f | g | h | i | j | k);
+
+  c\a &
+  fso1(n$1$0)(a)(b | f | g | h | i | j,c | k,c)
+ =>
+  fso1(n$1$0)(a)(b,c | f | g | h | i | j | k);        /* spec */
+
+/*
+  fso1(n$x$y)(raw conc)
+        (raw abs | raw overlap | overlap$0 |
+		overlap$abs | overlap$conc | raw abs residue | abs residue)
+*/
+
+  brule(RawVariableX.i,p(a$m)) &
+  brule(RawVariableX.j,q(b$n)) &
+  fso1(b$n$m)(q)(p | ? | ? | ? | ? | ? | ?)
+ =>
+  fso0(a)(n)(m);         /* a is the abstraction - not a mch */
+
+  brule(RawVariableX.i,p(a)) &
+  brule(RawVariableX.j,q(b$1)) &
+  fso1(b$1$0)(q)(p | ? | ? | ? | ? | ? | ?)
+ =>
+  fso0(a)(1)(0);         /* a is the abstraction - must be a mch */
+
+
+/*** abstraction
+  brule(POGeneratorFromUserX.2,a.imp) &
+  ReadDependencies(D) &
+  bsearch((a.imp>->b.mch),D,E) &
+  fso0(b)(1)(0)
+ =>
+  fso0(?)(1)(0);         /? ? is the abstraction - ie. none ?/
+***/
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY ProcessPOUsesSeesX IS
+
+#define proc_uses_seesTac \
+	(((MAP;CATL;RULE;SUB;NEWV;MODR)~;ProcessPOUsesSeesX)~)
+
+#define ProcessPOUsesInv(k,A) \
+	bcall(proc_uses_seesTac:proc_uses_sees0(1,k) bsmap A)
+
+#define ProcessPOSeesInv(k,B) \
+	bcall(proc_uses_seesTac:proc_uses_sees0(1,k) bsmap B)
+
+#define ProcessPOUsesCtx(k,A) \
+	bcall(proc_uses_seesTac:(proc_uses_sees0(2,k) bsmap A))
+
+#define ProcessPOSeesCtx(k,B) \
+	bcall(proc_uses_seesTac:(proc_uses_sees0(2,k) bsmap B))
+
+
+  ?; /* accumulation of all enumerated sets in seen/used machines */
+
+  ?; /* set owners: ?,(set1:mch1),(set2:mch2),... */
+
+
+/***
+  set owners
+***/
+
+  brule(ProcessPOUsesSeesX.2,L) &
+  bmodr(ProcessPOUsesSeesX.2,(L,(s:K)))
+ =>
+  sto_owners(K,s);
+
+  sto_owners(K,s)
+ =>
+  sto_owners(K,s(e));
+
+  sto_owners(K,?);
+
+/***
+  ctx
+***/
+
+  proc_uses_sees_ctx_set1(S);                   /* no enum sets */
+
+  brule(ProcessPOUsesSeesX.1,X) &
+  bsearch(?,X,Y) &
+  [S]bmodr(ProcessPOUsesSeesX.1,Y)
+ =>
+  proc_uses_sees_ctx_set1(S);
+
+  proc_uses_sees_ctx_set(x);               /* only interested in enum sets */
+
+  brule(ProcessPOUsesSeesX.1,X) &
+  bmodr(ProcessPOUsesSeesX.1,(X,s(e)))
+ =>
+  proc_uses_sees_ctx_set(s(e));
+
+/*
+  CrePrintAppend(PropertiesX,(ctx(K)=>(card(b):NAT)))
+ =>
+*/
+  proc_uses_sees_ctx_impl_prp(K,b);
+
+  proc_uses_sees_ctx_impl_prp(K,s(e));        /* not interested in enum sets */
+
+  proc_uses_sees_ctx_impl_prp(K,?);
+
+  DontCreButPrintAppend(PropertiesX,([S](ctx(K)=>H)))
+ =>
+  proc_uses_sees_ctx_prp(K,S,H);
+
+  proc_uses_sees_ctx_prp(K,S,?);               /* no properties */
+
+  InformCantReadFile(z) &
+  PFZ
+ =>
+  proc_uses_sees2(K,z,S);
+
+  bget(z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  proc_uses_sees_ctx_prp(K,S,H) &
+  proc_uses_sees_ctx_impl_prp(K) bsmap (D) &
+  sto_owners(K) bsmap D &
+  proc_uses_sees_ctx_set bsmap (D) &
+  proc_uses_sees_ctx_set1(S)
+ =>
+  proc_uses_sees2(2,K,z,S);                 /* SEEN/USED machine */
+
+
+/***
+  init
+***/
+
+  [S]bcrer(UsedInitialisationX,(K(I)))
+ =>
+  store_init(K,I,S);
+
+
+/***
+  inv
+***/
+
+  CrePrintAppend(ExpandHypX,([S](inv(K)=>f)))
+ =>
+  proc_uses_sees_inv(K,S,f);
+
+  proc_uses_sees_inv(K,S,?);                  /* no invariant */
+
+  InformCantConnect(z) &
+  PFZ
+ =>
+  proc_uses_sees2(1,K,z,S);                   /* inv */
+
+  bget(z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  proc_uses_sees_inv(K,S,f) &
+  store_init(K,i,S)
+ =>
+  proc_uses_sees2(1,K,z,S);                   /* inv */
+
+
+
+  CrePrintAppend(PropertiesX,(ctx(k)=>ctx(m))) &
+  proc_uses_sees2(2,m,bcatl("ANL/",m,".mch.anl"),S)
+ =>
+  proc_uses_sees1(2,k,m,S);                   /* ctx (no rename) */
+
+  CrePrintAppend(ExpandHypX,(inv(k)=>inv(m))) &
+  proc_uses_sees2(1,m,bcatl("ANL/",m,".mch.anl"),S)
+ =>
+  proc_uses_sees1(1,k,m,S);                   /* inv (no rename) */
+
+  CrePrintAppend(PropertiesX,(ctx(k)=>ctx(bnewv(r,m)))) &
+  proc_uses_sees2(2,bnewv(r,m),bcatl("ANL/",m,".mch.anl"),S)
+ =>
+  proc_uses_sees1(2,k,r.m,S);                   /* ctx (rename) */
+
+  CrePrintAppend(ExpandHypX,(inv(k)=>inv(bnewv(r,m)))) &
+  proc_uses_sees2(1,bnewv(r,m),bcatl("ANL/",m,".mch.anl"),S)
+ =>
+  proc_uses_sees1(1,k,r.m,S);                   /* inv (rename) */
+
+  InformNotConfiguredPO(m) &
+  OfferPOGeneratorFailureOptions
+ =>
+  proc_uses_sees(N,k,m,S);
+
+  InformNotConfiguredPO(m) &
+  OfferPOGeneratorFailureOptions
+ =>
+  proc_uses_sees(N,k,r.m,S);
+
+
+
+  IsCfg(m.mch) &
+  InformNotAnalysedPO(m) &
+  OfferPOGeneratorFailureOptions
+ =>
+  proc_uses_sees(N,k,m,S);
+
+  IsCfg(m.mch) &
+  InformNotAnalysedPO(m) &
+  OfferPOGeneratorFailureOptions
+ =>
+  proc_uses_sees(N,k,r.m,S);
+
+  IsAnl(m.mch) &
+  proc_uses_sees1(N,k,m,S)
+ =>
+  proc_uses_sees(N,k,m,S);
+
+  IsAnl(m.mch) &
+  proc_uses_sees1(N,k,r.m,S)
+ =>
+  proc_uses_sees(N,k,r.m,S);
+
+
+
+  proc_uses_sees(N,k,n,(aaa:=aaa))             /* no rename - store dummy */
+ =>
+  proc_uses_sees0(N,k,(n(s):t:(?,?,?)));
+
+  proc_uses_sees(N,k,r.n,(X:=Y))
+ =>
+  proc_uses_sees0(N,k,(r.n(s):t:(X,Y,Z)));
+
+  proc_uses_sees(N,k,r.n,(aaa:=aaa))
+ =>
+  proc_uses_sees0(N,k,(r.n(s):t:(?,?,?)));     /* renamed without variables */
+
+  proc_uses_sees0(N,k,?);                      /* no sees/uses */
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+
+
+END
+
+&
+
+THEORY WriteAbstractSeenXX IS
+
+#define WriteAbstractSeenX bcall(((ARI;WRITE)~;WriteAbstractSeenXX)~:wasX)
+
+  was1X(N);
+
+  brule(AbstractSeenX.N,a) &
+  bprintf(";%",a) &
+  was1X(N+1)
+ =>
+  was1X(N);
+
+  Connect("POB/.AbstractSeenX") &
+  bprintf("THEORY AbstractSeenX IS true\n") &
+  was1X(1) &
+  bprintf(" END\n") &
+  bclose
+ =>
+  wasX
+
+END
+
+&
+
+THEORY StoreAbstractSeenX IS
+
+#define StoreAbstractSeen(x) \
+    bcall(((FLAT;SUB;MAP;NEWV;RULE);StoreAbstractSeenX)~:sas(x)) /* FLAT IS reqd */
+
+  bcrer(AbstractSeenX,(ctx(K)=>A_b__s_t_r__a_c_t_S_e___e_n___J887_l__(a)))
+ =>
+  sas3(K.mch,a);
+
+  sas3(K.mch,?);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  sas3(K.mch) bsmap ([R]H) &
+  sas3(K.mch) bsmap ([R]f) &
+  sas3(K.mch) bsmap ([R]D)
+ =>  
+  sas2(R)(K.mch);
+
+  brule(POGeneratorFromUserX.2,a.b) &
+  brule(GetLevelAndAbstractionX.1,N) &
+  bcrer(AbstractSeenX,(ctx(a$N)=>ctx(r))) &
+  Bget(("ANL/",r,".mch.anl")) &
+  sas2(aaa:=aaa)(r.mch)
+ =>
+  sas1(r(s):t:(u,v,w));
+
+  brule(POGeneratorFromUserX.2,a.b) &
+  brule(GetLevelAndAbstractionX.1,N) &
+  bcrer(AbstractSeenX,(ctx(a$N)=>ctx(bnewv(R,r)))) &
+  Bget(("ANL/",r,".mch.anl")) &
+  sas2(u:=v)(bnewv(R,r).mch)
+ =>
+  sas1(R.r(s):t:(u,v,w));
+
+  sas1(?);
+
+  sas1 bsmap a
+ =>
+  sas(a)
+
+END
+
+&
+
+THEORY LoadAbstractionMchX IS
+
+#define LoadAbstractionMch(m) \
+               bcall((((CATL;WRITE;(FLAT;MODR)~)~;LoadAbstractionMchX)~):lam(m))
+
+  brule(POGeneratorFromUserX.2,a) &
+  AddRule(RawVariableX,d(k)) &
+  AddRule(InitialisationX,i(k)) &
+  FwdStore(k,f,inv) &
+  ProcessOpnList(n,0)
+ =>
+  lam2(k)(d)(i)(n)(f);
+
+  bstring(Z) &
+  InformCantReadFile(Z) &
+  PFZ
+ =>
+  lam1(m)(Z);
+
+  bstring(Z) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  StoreAbstractConstants(F) &
+  StoreAbstractSets(D) &
+  StoreAbstractProperties(H) &
+  StoreAbstractSeen((bflat(A,B))) &
+  lam2(k)(d)(i)(n)(f)
+ =>
+  lam1(k)(Z);
+
+  lam1(a)(bcatl("ANL/",a,".mch.anl"))
+ =>
+  lam(a);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY LoadAbstractionRefX IS
+
+#define LoadAbstractionRef(a,n) \
+          bcall((((ARI~;CATL;(FLAT;MODR)~)~;LoadAbstractionRefX)~):lar(a)(n))
+
+
+  brule(TempX.1,(t:u)) &              /* get rename */
+  AddRule(InitialisationX,[t:=u]j(m$x))
+ =>
+  lar3(m)(x)(j)(f);
+
+  brule(POGeneratorFromUserX.2,a) &
+  AddRule(RawVariableX,d(k$x)) &
+  FindStateOverlap(A,x) &
+  ConstructRefRename &
+  ConstructLocalInvariant(k,x,e) &
+  ConstructFullInvariant(k,x,f) &
+  lar3(k)(x)(i)(f) &
+  ProcessOpnList(n,x)
+ =>
+  lar2(k)(x)(d)(i)(n)(e)(f)(A.B);
+
+
+  lar2(k)(x)(d)(i)(n)(e)(f)(r.ref)
+ =>
+  lar1_1(k)(x)(d)(i)(n)(e)(f)(r);
+
+  IsCfg(r.mch) &
+  lar2(k)(x)(d)(i)(n)(e)(f)(r.mch)
+ =>
+  lar1_1(k)(x)(d)(i)(n)(e)(f)(r);
+
+  bstring(Z) &
+  InformCantReadFile(Z) &
+  PFZ
+ =>
+  lar1(k)(x)(Z);
+
+  bstring(Z) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  StoreAbstractConstants(F) &
+  StoreAbstractSets(D) &
+  StoreAbstractProperties(H) &
+  StoreAbstractSeen((bflat(A,B))) &
+  lar1_1(k)(x)(d)(i)(n)(e)(f)(r)
+ =>
+  lar1(k)(x)(Z);
+
+  lar1(k)(x)(bcatl("ANL/",k,".ref.anl"))
+ =>
+  lar(k)(x);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY LoadAbstractionsX IS
+
+#define LoadAbstractions(x) bcall(((REV;MAP)~;LoadAbstractionsX)~:la0(x))
+
+
+  la5(N)(X,c.d);
+
+  CrePrintAppend(ExpandHypX,(inv(c$(N+1))=>inv(a$N))) &
+  CrePrintAppend(ExpandHypX,(asn(c$(N+1))=>asn(a$N))) &
+  la5(N+1)(X,c.d)
+ =>
+  la5(N)(X,c.d,a.b);
+
+  CrePrintAppend(ExpandHypX,(inv(c$1)=>inv(a))) &
+  CrePrintAppend(ExpandHypX,(asn(c$1)=>asn(a))) &
+  la5(1)(X,c.d)
+ =>
+  la5(0)(X,c.d,a.b);
+
+  LoadAbstractionMch(a)
+ =>
+  la4(a.mch,1,n);  
+
+  LoadAbstractionRef(a,(m-1))
+ =>
+  la4(a.ref,m,n);
+
+  la4(a.b,n,n);             /* the current construct */
+
+
+  la2(a.b)(C)
+ =>
+  la2(a.b)(C,x);            /* peel off the more concrete constructs */
+
+  la4 bnmap (C,a.b) &
+  la5(0)(brev(C,a.b,?))     /* process in concrete->abstract order */
+ =>
+  la2(a.b)(C,a.b);          /* C is absraction list m.mch,r.ref,... */
+
+  la1(x);
+
+  bsearch(a.b,C,D) &
+  la2(a.b)(C)               /* C is refinement list including a.b */
+ =>
+  la1(a.b,C);
+
+  la2(a.b)(a.b)
+ =>
+  la1(a.b,a.b);
+
+  ReadRef(X) &
+  la1(a.b) bsmap X
+ =>
+  la0(a.b);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY GetLevelAndAbstractionX IS
+
+#define GetLevelAndAbstraction(x) \
+            bcall(((ARI;MODR;MAP)~;GetLevelAndAbstractionX)~:glaa(x))
+
+
+  ?;  /* level of current refinement */  
+
+  ?;  /* abstraction current refinement */  
+
+
+  bmodr(GetLevelAndAbstractionX.1,n+1)
+ =>
+  glaa3(n)(x);
+
+  glaa3(n+1)(X)
+ =>
+  glaa3(n)(X,x);
+
+  glaa2(a.b)(C)
+ =>
+  glaa2(a.b)(C,x);
+
+  bmodr(GetLevelAndAbstractionX.2,c.d) &
+  glaa3(1)(C)
+ =>
+  glaa2(a.b)(C,c.d,a.b);
+
+  bmodr(GetLevelAndAbstractionX.2,c.d) &
+  bmodr(GetLevelAndAbstractionX.1,1)
+ =>
+  glaa2(a.b)(c.d,a.b);
+
+  glaa1(x);
+
+  bsearch(a.b,C,D) &
+  glaa2(a.b)(C)
+ =>
+  glaa1(a.b,C);
+
+  ReadRef(X) &
+  glaa1(a.b) bsmap X
+ =>
+  glaa(a.b);        /* b is ref or imp */
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY OpenPOFileX IS
+
+/* 
+
+  invocation
+    OpenPOFile(x,N):
+      x is a.b
+        a is construct name
+        b is mch ref imp or int
+        N the level
+
+  result
+    PO file is connected to
+    "THEORY PropertiesX " printed
+    POGeneratorFromUserX.1 set to 0
+
+*/
+
+#define OpenPOFile(x,N) bcall((OpenPOFileX;CATL;OpenPOFileX;WRITE;MODR):of(N)(x))
+
+
+  bstring(f) &
+  InformCantConnect(f) &
+  PFZ
+ =>
+  of1(a)(f);
+
+  bstring(f) &
+  bconnect(f) &
+  bmodr(WriteX.1,f) &
+  bprintf("THEORY PropertiesX ",a$N,a$N,a$N,a$N) &
+  ModTempFilename("POB/.PropertiesX") &
+  AppendTempFile("THEORY PropertiesX ") &
+  bmodr(POGeneratorFromUserX.1,0)
+ =>
+  of1(N)(a)(f);
+
+
+  bstring(f) &
+  bconnect(f) &
+  bmodr(WriteX.1,f) &
+  bprintf("THEORY PropertiesX ",a,a,a,a) &
+  ModTempFilename("POB/.PropertiesX") &
+  AppendTempFile("THEORY PropertiesX ") &
+  bmodr(POGeneratorFromUserX.1,0)
+ =>
+  of1(0)(a)(f);
+
+
+
+  of1(N)(a)(bcatl("POB/",a,".",b,".0.po"))
+ =>
+  of(N)(a.b);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY CheckAllRecursiveRewritesX IS
+
+  ?;
+
+  x;
+
+  brule(CheckAllRecursiveRewritesX.1,s) &
+  TestRewriteRecursion(a,s)
+ =>
+  (a==>b) == ?;
+
+  brule(CheckAllRecursiveRewritesX.1,?)
+ =>
+  (a==>b) == ?;
+
+  TestRewriteRecursion(i,s)
+ =>
+  carr_3(i)(s);
+
+  carr_2(m$n,?);
+
+  brule(OperationX.p,(Z|v|w|s)(o)) &
+  brule(InvariantX.q,i(m)) &
+  carr_3(bflat(i&w))(bcatl("INVARIANT/",o)) &
+  bcall((CATL;MODR):bmodr(CheckAllRecursiveRewritesX.1,(bcatl("Guard/",o)))) &
+  carr_4(s) &
+  bcall(MODR:bmodr(CheckAllRecursiveRewritesX.1,?))
+ =>
+  carr_2(m,o);
+
+  brule(OperationX.p,(Z|v|w|s)(o$n)) &
+  brule(InvariantX.q,i(m$n)) &
+  carr_3(bflat(i&w))(bcatl("INVARIANT/",o)) &
+  bcall((CATL;MODR):bmodr(CheckAllRecursiveRewritesX.1,(bcatl("Guard/",o)))) &
+  carr_4(s) &
+  bcall(MODR:bmodr(CheckAllRecursiveRewritesX.1,?))
+ =>
+  carr_2(m$n,o);
+
+  brule(InvariantX.q,i(m$n)) &
+  TestRewriteRecursion(i,"INVARIANT")
+ =>
+  carr_0(m)(n);
+
+  brule(InvariantX.q,i(m)) &
+  TestRewriteRecursion(i,"INVARIANT")
+ =>
+  carr_0(m)(0);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY LoadGivenSetsX IS
+
+#define LoadGivenSets(x) bcall(((WRITE;MAP;CATL)~;LoadGivenSetsX)~:lgs_0(x))
+
+
+  lgs_3(x);
+
+  bprintf("&(%)\n",(a=b)) &
+  bprintf("&(%)\n",(b=a))
+ =>
+  lgs_3(a=b);
+
+  lgs_3 bsmap B
+ =>
+  lgs_2(B|C);
+
+  lgs_3 bsmap B
+ =>
+  lgs_2(A|B|C);
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  lgs_1(f);
+
+  bget(f,x) &
+  WriteDot &
+  lgs_2(x)
+ =>
+  lgs_1(f);
+
+  InformCantConnect(".BBcom") &
+  PFZ
+ =>
+  lgs_0(a.b);
+
+  bconnect(".BBcom") &
+  bprintf("?\n") &
+  lgs_1(bcatl("TYP/",a,".mri.typ")) &
+  bclose
+ =>
+  lgs_0(a.b);
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY ProcessImportedContextX IS
+
+#define ProcessImportedContext(k,N,b) \
+  bcall(((NEWV;MAP;CATL;MODR;RULE;SUB)~;ProcessImportedContextX)~: \
+        (pic_0(k$N) bsmap b))
+
+  ?;  /* import name list - (?&ctx(mch1)&...) */
+
+  CrePrintAppend(PropertiesX,(ctx(r)=>P))
+ =>
+  pic_4(r)(P);
+
+  pic_4(r)([l:=s]P)
+ =>
+  pic_3(s)(l)(r)(P);
+
+  pic_4(r)(P)
+ =>
+  pic_3(?)(?)(r)(P);
+
+  pic_3(s)(l)(r)(?);
+
+  InformCantConnect(z) &
+  PFZ
+ =>
+  pic_2(K$N)(s)(R)(z);
+
+  bget(z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  pic_3(s)(l)(R)(H) &
+  StoreSetsInPropertiesX(R,D,0)
+ =>
+  pic_2(K$N)(s)(R)(z);
+
+  brule(ProcessImportedContextX.1,I) &
+  bmodr(ProcessImportedContextX.1,(I&ctx(R))) &
+  CrePrintAppend(PropertiesX,(ctx(k$N)=>ctx(R))) &
+  pic_2(k$N)(s)(r)(bcatl("ANL/",r,".mch.anl"))
+ =>
+  pic_1(k$N)(s)(R)(r);
+
+  pic_0(k$N,?);
+
+  pic_1(k$N)(s)(r)(r)
+ =>
+  pic_0(k$N,(r(s):t:(u,v,w)));
+
+  pic_1(k$N)(s)(bnewv(R,r))(r)
+ =>
+  pic_0(k$N,(R.r(s):t:(u,v,w)))
+
+END
+
+&
+
+THEORY InformNonTrivialOrAllX IS
+
+#define InformNonTrivialOrAll(x,y) \
+  bcall(InformNonTrivialOrAllX~:inta(x)(y))
+
+  Writef(("\n  POGenerating all proof obligations\n  for ")) &
+  Writef((s)) &
+  Writef((" % ",a))
+ =>
+  inta(s)(a)(1);
+
+  Writef(("\n  POGenerating non-trivial proof obligations\n  for ")) &
+  Writef((s)) &
+  Writef((" % ",a))
+ =>
+  inta(s)(a)(0);
+
+  InformCantConnect("TMP/.Bpog") &
+  PFZ
+ =>
+  inta(s);
+
+  bget("TMP/.Bpog",x) &
+  inta(s)(a)(x)
+ =>
+  inta(s)(a);
+
+
+  POGeneratorErrorFlagged
+ =>
+  x
+
+END
+
+&
+
+THEORY OpSimplificationX IS
+
+/***
+HERE((OpSimplificationX.0.3)) =>
+***/
+  ( a || ( b || c ) ) == ( a || b || c );
+
+/***
+HERE((OpSimplificationX.0.2)) =>
+***/
+  ( a & ( b & c ) ) == bflat( a & b & c );
+
+/***
+HERE((OpSimplificationX.0.1)) =>
+***/
+  ( a ; ( b ; c ) ) == ( a ; b ; c );
+
+/***
+HERE((OpSimplificationX.1)) =>
+***/
+  (s;skip) == (s);
+
+/***
+HERE((OpSimplificationX.2)) =>
+***/
+  (skip;s) == (s);
+
+/***
+HERE((OpSimplificationX.3)) =>
+***/
+  (s||skip) == (s);
+
+/***
+HERE((OpSimplificationX.4)) =>
+***/
+  (skip||s) == (s);
+
+/***
+HERE((OpSimplificationX.5.1)) =>
+***/
+  (s||a:=b||t||c:=d) == (s||t||bflat(a,c):=bflat(b,d));
+
+/***
+HERE((OpSimplificationX.5)) =>
+***/
+  (s||a:=b||c:=d) == (s||bflat(a,c):=bflat(b,d));
+
+/***
+HERE((OpSimplificationX.6)) =>
+***/
+  (a:=b||s||c:=d) == (s||bflat(a,c):=bflat(b,d));
+
+/***
+HERE((OpSimplificationX.7)) =>
+***/
+  (a:=b||c:=d) == (bflat(a,c):=bflat(b,d));
+
+/***
+HERE((OpSimplificationX.8)) =>
+***/
+  (a||(b|c)) == (b|(a||c));
+
+/***
+HERE((OpSimplificationX.9)) =>
+***/
+  (a[](b|c)) == (b|(a[]c));
+
+/***
+HERE((OpSimplificationX.10)) =>
+***/
+  ((a|b)[]c) == (a|(b[]c));
+
+/***
+HERE((OpSimplificationX.11)) =>
+***/
+  ((b|c)||a) == (b|(c||a));
+
+/***
+HERE((OpSimplificationX.12)) =>
+***/
+  ((a|b)[](c|d)) == ((a&c)|(b[]d));
+
+/***
+HERE((OpSimplificationX.13)) =>
+***/
+  (a|(b|c)) == ((a&b)|c)
+
+END
+
+&
+
+THEORY SubOpsX END &
+
+THEORY JokerizeSubOpPOGX IS /* lifted from animator */
+
+/*
+defined in ExpandMachineOp.src
+#define JokerizeSubOpPOG(x) \
+    bcall(((FLAT;SUB~)~;JokerizeSubOpPOGX)~:jso(x))
+*/
+
+  jso2([A:=a](y) == [A:a](z))
+ =>
+  jso1(A)(y==z);
+
+  jso2([A,B:=a,b](y) == [A,B:a,b](z))
+ =>
+  jso1(A,B)(y==z);
+
+  jso2([A,B,C:=a,b,c](y) == [A,B,C:a,b,c](z))
+ =>
+  jso1(A,B,C)(y==z);
+
+  jso2([A,B,C,D:=a,b,c,d](y) == [A,B,C,D:a,b,c,d](z))
+ =>
+  jso1(A,B,C,D)(y==z);
+
+  jso2([A,B,C,D,E:=a,b,c,d,e](y) == [A,B,C,D,E:a,b,c,d,e](z))
+ =>
+  jso1(A,B,C,D,E)(y==z);
+
+  jso2([A,B,C,D,E,F:=a,b,c,d,e,f](y) == [A,B,C,D,E,F:a,b,c,d,e,f](z))
+ =>
+  jso1(A,B,C,D,E,F)(y==z);
+
+  jso2([A,B,C,D,E,F,G:=a,b,c,d,e,f,g](y) == [A,B,C,D,E,F,G:a,b,c,d,e,f,g](z))
+ =>
+  jso1(A,B,C,D,E,F,G)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H:=a,b,c,d,e,f,g,h](y) == [A,B,C,D,E,F,G,H:a,b,c,d,e,f,g,h](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I:=a,b,c,d,e,f,g,h,i](y) == [A,B,C,D,E,F,G,H,I:a,b,c,d,e,f,g,h,i](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J:=a,b,c,d,e,f,g,h,i,j](y) == [A,B,C,D,E,F,G,H,I,J:a,b,c,d,e,f,g,h,i,j](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K:=a,b,c,d,e,f,g,h,i,j,k](y) == [A,B,C,D,E,F,G,H,I,J,K:a,b,c,d,e,f,g,h,i,j,k](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L:=a,b,c,d,e,f,g,h,i,j,k,l](y) == [A,B,C,D,E,F,G,H,I,J,K,L:a,b,c,d,e,f,g,h,i,j,k,l](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M:=a,b,c,d,e,f,g,h,i,j,k,l,m](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M:a,b,c,d,e,f,g,h,i,j,k,l,m](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O:=a,b,c,d,e,f,g,h,i,j,k,l,m,o](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O:a,b,c,d,e,f,g,h,i,j,k,l,m,o](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T:=a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v,w](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v,w](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W)(y==z);
+
+  jso2([A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X:=
+   a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v,w,x](y) == [A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X:a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v,w,x](z))
+ =>
+  jso1(A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X)(y==z);
+
+
+
+/***
+HERERAW(("Creating"->(n==s)))&
+***/
+  bcall(RULE:bcrer(SubOpsX,(n==s)))
+ =>
+  jso2(n==s);
+
+/***
+HERERAW(("Overwriting"->(n==s)))&
+***/
+  brule(SubOpsX.N,(n==t)) &
+  bcall(MODR:bmodr(SubOpsX.N,(n==s)))
+ =>
+  jso2(n==s);
+
+
+
+/***
+HERERAW(("Creating"->(n(i))==[S:=T]s))&
+***/
+  bcall(RULE:bcrer(SubOpsX,((n(i))==[S:=T]s)))
+ =>
+  jso2((n(i))==[S:T]s);
+
+/***
+HERERAW(("Overwriting"->(n(i))==[S:=T]s))&
+***/
+  brule(SubOpsX.N,((n(i))==t)) &
+  bcall(MODR:bmodr(SubOpsX.N,((n(i))==[S:=T]s)))
+ =>
+  jso2((n(i))==[S:T]s);
+
+
+/***
+HERERAW(("Creating"->((o<--n)==[S:=T]s)))&
+***/
+  bcall(RULE:bcrer(SubOpsX,((o<--n)==[S:=T]s)))
+ =>
+  jso2((o<--n)==[S:T]s);
+
+/***
+HERERAW(("Overwriting"->((o<--n)==[S:=T]s)))&
+***/
+  brule(SubOpsX.N,((o<--n)==t)) &
+  bcall(MODR:bmodr(SubOpsX.N,((o<--n)==[S:=T]s)))
+ =>
+  jso2((o<--n)==[S:T]s);
+
+
+/***
+HERERAW(("Creating"->((o<--n(i))==[S:=T]s)))&
+***/
+  bcall(RULE:bcrer(SubOpsX,((o<--n(i))==[S:=T]s)))
+ =>
+  jso2((o<--n(i))==[S:T]s);
+
+/***
+HERERAW(("Overwriting"->((o<--n(i))==[S:=T]s)))&
+***/
+  brule(SubOpsX.N,((o<--n(i))==t)) &
+  bcall(MODR:bmodr(SubOpsX.N,((o<--n(i))==[S:=T]s)))
+ =>
+  jso2((o<--n(i))==[S:T]s);
+
+
+
+  jso2(n==s)
+ =>
+  jso(n=s);
+
+  jso1(i)((n(i))==s)
+ =>
+  jso(n(i)=s);
+
+  jso1(o)((o<--n)==s)
+ =>
+  jso(o<--n=s);
+
+  jso1(bflat(o,i))((o<--n(i))==s)
+ =>
+  jso(o<--n(i)=s)
+
+END
+
+&
+
+THEORY StoreRecSubOps_SeenUsedX IS
+
+#define StoreRecSubOps_SeenUsed(x,y) \
+  bcall(((FLAT~;SUB;MAP)~;StoreRecSubOps_SeenUsedX)~:srso0_su(x)(y))
+
+  srso4_su(?);
+
+  JokerizeSubOpPOG(K=(y|z))
+ =>
+  srso4_su(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  srso4_su(n)
+ =>
+  srso3_su(n);
+
+  srso4_su bsmap (N,n)
+ =>
+  srso3_su(N,n);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+/***
+HERE(("Processing (Seen/Used)":k:(X:=Y)))&
+***/
+  srso3_su([X:=Y]n) &
+  StoreRecSubOps_SeenUsed((X:=Y),A) &
+  StoreRecSubOps_SeenUsed((X:=Y),B)  
+ =>
+  srso2_su(Z)(X)(Y);
+
+  srso2_su(Z)(aaa)(aaa)
+ =>
+  srso2_su(Z)(?)(?);
+
+  bsearch(?,F,G) &
+  bsearch(?,A,B) &
+  srso2_su(Z)(G)(B)
+ =>
+  srso2_su(Z)(F)(A);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  srso2_su(Z)(bflat(u,l))(bflat(v,s))
+ =>
+  srso1_su(Z)(u)(v)(s);
+
+  srso_su(?);
+
+  Bget(("ANL/",r,".mch.anl")) &
+  srso1_su(r)(u)(v)(s)
+ =>
+  srso_su(r(s):t:(u,v,w));
+
+  srso_su(r(s):t:(u,v,w))
+ =>
+  srso_su(R.r(s):t:(u,v,w));
+
+/***
+HERE((srso0_su(R)(y)))&
+***/
+  [R](srso_su bsmap y)
+ =>
+  srso0_su(R)(y)
+
+END
+
+&
+
+THEORY StoreRecSubOps_IncIptX IS
+
+#define StoreRecSubOps_IncIpt(x,y) \
+  bcall(((FLAT~;SUB;MAP)~;StoreRecSubOps_IncIptX)~:srso0_ii(x)(y))
+
+  srso4_ii(?);
+
+  JokerizeSubOpPOG(K=(y|z))
+/***
+&HERE(("JokerizeSubOpPOG NOT done (refinement/implementation) for":s:K))
+***/
+ =>
+  srso4_ii(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  brule(ExpandMachineTmpOpsX.N,(H:s:K:X))
+/***
+&HERE(("JokerizeSubOpPOG ALREADY done (machine) for":s))
+***/
+ =>
+  srso4_ii(s;(?,I,J,K);u;v;(w|x);(y|z));
+
+  srso4_ii(n)
+ =>
+  srso3_ii(n);
+
+  srso4_ii bsmap (N,n)
+ =>
+  srso3_ii(N,n);
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+/***
+HERE(("Processing (Inc/Ipt)":k:(X:=Y)))&
+***/
+  srso3_ii([X:=Y]n) &
+  StoreRecSubOps_IncIpt((X:=Y),b)  
+ =>
+  srso2_ii(Z)(X)(Y);
+
+  srso2_ii(Z)(aaa)(aaa)
+ =>
+  srso2_ii(Z)(?)(?);
+
+  bsearch(?,F,G) &
+  bsearch(?,A,B) &
+  srso2_ii(Z)(G)(B)
+ =>
+  srso2_ii(Z)(F)(A);
+
+
+/*
+  StoreRecSubOps_SeenUsed((F:=A),S)
+ =>
+  srso1_ii_seen_used(F)(A)(S);
+
+  srso1_ii_seen_used(aaa)(aaa)(S)
+ =>
+  srso1_ii_seen_used(?)(?)(S);
+
+  bsearch(?,F,G) &
+  bsearch(?,A,B) &
+  srso1_ii_seen_used(G)(B)(S)
+ =>
+  srso1_ii_seen_used(F)(A)(S);
+*/
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  srso2_ii(Z)(bflat(u,l))(bflat(v,s))
+/*
+  srso1_ii_seen_used(bflat(u,l))(bflat(v,s))(A) &
+  srso1_ii_seen_used(bflat(u,l))(bflat(v,s))(B)
+*/
+ =>
+  srso1_ii(Z)(u)(v)(s);
+
+  srso_ii(?);
+
+  Bget(("ANL/",r,".mch.anl")) &
+  srso1_ii(r)(u)(v)(s)
+ =>
+  srso_ii(r(s):t:(u,v,w));
+
+  srso_ii(r(s):t:(u,v,w))
+ =>
+  srso_ii(R.r(s):t:(u,v,w));
+
+  [R](srso_ii bsmap y)
+ =>
+  srso0_ii(R)(y)
+
+END
+
+&
+
+THEORY LoadAnalysedMachineX IS
+
+/*
+  k.mch.anl: (J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+
+  A see list (,)
+    if A/=?, each entry comprises (r(s):t:(u,v,w))
+      r name
+      s actual parameters  (? if no parameters)
+      t actual constraints (? if no parameters)
+      u `unprefixed' variables (var1,var2,...)
+      v `prefixed' variables (prefixvar1,prefixvar2,... or ? if no prefix)
+      w `dotted' variables (prefix.var1,prefix.var2,... or ? if no prefix)
+      no rename => u=v=w=?
+  B use list (,)
+    if B/=?, each entry comprises (r(s):t:(u,v,w))
+      r name
+      s actual parameters  (? if no parameters)
+      t actual constraints (? if no parameters)
+      u `unprefixed' variables (var1,var2,...)
+      v `prefixed' variables (prefixvar1,prefixvar2,... or ? if no prefix)
+      w `dotted' variables (prefix.var1,prefix.var2,... or ? if no prefix)
+      no rename => u=v=w=?
+  C local set list (,)
+  D full set list (,)
+  E local constant list (,)
+  F full constant list (,)
+  G local property list (&)
+  H full property list (&)
+  b include list (,)
+    if b/=?, each entry comprises (r(s):t:(u,v,w))
+      r name
+      s actual parameters  (? if no parameters)
+      t actual constraints (? if no parameters)
+      u `unprefixed' variables (var1,var2,...)
+      v `prefixed' variables (prefixvar1,prefixvar2,... or ? if no prefix)
+      w `dotted' variables (prefix.var1,prefix.var2,... or ? if no prefix)
+      no rename => u=v=w=?
+  c promote list (,)
+  Q local variable list (,) -- not including variables of included machines
+  d full variable list (,) -- including variables of included machines
+  e invariant list (&) -- not including invariant of included machines
+  f full invariant list (&) -- including invariant of included machines
+  g assertion list (&)
+  h unexpanded initialisation -- included initialisations unexpanded
+  i expanded initialisation -- included initialisations expanded
+  W local operation name list (,) -- not including promoted operations
+  j full operation name list (,) -- including promoted operations
+  k machine name
+  l formal parameters of machine (,)
+  m constraints of machine (&)
+  r abstraction (usually ?)
+  n operation list (,)
+    if n/=?, each entry comprising (s;t;u;v;(w|x);(y|z)):
+      s raw name
+      t header info comprising (?,I,J,K)
+        I  Mod_op or NonMod_Op
+        J  Det_op or NonDet_Op
+        K  header
+      u input list
+      v output list
+      w user-stated pre condition
+      x unexpanded substitution -- used operations unexpanded
+      y calculated pre condition
+      z expanded substitution -- used operations expanded
+
+
+
+
+  invocation: LoadAnalysedMachine(k,Z) 
+    k the machine name
+    Z the file name
+  result:
+    ...
+*/
+
+#define LoadAnalysedMachine(k,Z) \
+              bcall((LoadAnalysedMachineX~;CATL;MODR)~:lam1(k)(Z))
+
+  ?; /* for k */
+
+  brule(LoadAnalysedMachineX.1,k) &
+  AddRule(InitialisationX,i(k))
+ =>
+  _add_rule_init(i);
+
+
+  brule(GetLevelAndAbstractionX.1,N) &  /* current level */
+  ModTempFilename("POB/.ExpandHypX") &
+  ModifyRule(TempX,21,(l:m)) &   /* for context po */
+  ModifyRule(TempX,9,true) &     /* so context po are generated */
+  ModifyRule(TempX,13,mch) &
+  ModifyRule(TempX,14,W) &
+  StoreMchDollar0Rename(d) &
+  OpenPOFile(k.mch,0) &
+  StoreSeenUsedMachineNames((A,B)) &
+  StoreProperties(k,H,N) &
+  StoreSetsInPropertiesX(k,D,N) &
+  ProcessPOSeesCtx(k,A) &
+  ProcessPOUsesCtx(k,B) &
+/*
+  ProcessPOCtxFini(k) &
+*/
+  StoreSeenUsedSetsInPropertiesX(k,0) &
+
+  PrintTheoryHeader(EnumerateX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.EnumerateX") &
+  AppendTempFile("THEORY EnumerateX ") &
+  StoreSetsInEnumerateX(k,D,N) &
+  StoreSeenUsedSetsInEnumerateX(k,0) &
+
+  PrintTheoryHeader(NotEqualX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.NotEqualX") &
+  AppendTempFile("THEORY NotEqualX ") &
+  StoreSetsInNotEqualX(D) &
+  StoreSeenUsedSetsInNotEqualX &
+
+  PrintTheoryHeader(RewriteToFalseOrTrueX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.RewriteToFalseOrTrueX") &
+  AppendTempFile("THEORY RewriteToFalseOrTrueX ") &
+  StoreSetsInRewriteToFalseOrTrueX(D) &
+  StoreSeenUsedSetsInRewriteToFalseOrTrueX &
+
+  PrintTheoryHeader(FwdContra0X) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.FwdContra0X") &
+  AppendTempFile("THEORY FwdContra0X ") &
+  StoreSetsInFwdContra0X(D) &
+  StoreSeenUsedSetsInFwdContra0X &
+
+  PrintTheoryHeader(FwdEqual1X) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.FwdEqual1X") &
+  AppendTempFile("THEORY FwdEqual1X ") &
+  StoreSetsInFwdEqual1X(D) &
+  StoreSeenUsedSetsInFwdEqual1X &
+
+  PrintTheoryHeader(ExpandHypX) &
+  AppendTempFile("\nEND\n") &
+  WriteDot &
+  ModTempFilename("POB/.ExpandHypX") &
+  AppendTempFile("THEORY ExpandHypX ") &
+  ProcessPOSeesInv(k,A) &
+  ProcessPOUsesInv(k,B) &
+  FwdStore(k,f,inv) &          /* the full invariant */
+  FwdStore(k,g,asn) &
+  FwdStore(k,m,cst) &
+  AddRule(RawVariableX,d(k)) &
+  AddRule(InvariantX,e(k)) &
+  AddRule(ParameterX,l(k)) &
+/*
+  AddRule(InitialisationX,i(k)) &
+*/
+  bcall(MODR:bmodr(LoadAnalysedMachineX.1,k)) &
+  bcall((SubOpsX~;LoadAnalysedMachineX):_add_rule_init(i)) &
+  ProcessOpnList(n,0) &
+  CheckAllRecursiveRewritesInv(k,0) &
+  AppendTempFile("\nEND\n") &
+  PrintBptl(j) &
+  GeneratePOMch(k,j,B) &
+  ConnectDotPOFile("POB/.Context") &
+  GeneratePOContext(k,(A,B),C,D,E,F,G,H) &
+  CloseDotPOFile("POB/.Context") &
+  ConnectDotPOFile("POB/.Assertions") &
+  GenerateAssertionLemmas(k,0,g) &
+  CloseDotPOFile("POB/.Assertions") &
+  ConnectDotPOFile("POB/.Constraints") &
+  bmodr(GeneratePOContextX.3,1) &
+  GeneratePOConstraints(k,l,m) &
+  bmodr(GeneratePOContextX.3,?) &
+  GeneratePOIncIpt(k,b) &
+  CloseDotPOFile("POB/.Constraints") &
+  LoadGivenSets(k.mch)
+/*
+&PrintTHEORY(EnumerateX)
+&PrintTHEORY(NotEqualX)
+&PrintTHEORY(RewriteToFalseOrTrueX)
+&PrintTHEORY(FwdContra0X)
+&PrintTHEORY(FwdEqual1X)
+&PrintTHEORY(PropertiesX)
+&PrintTHEORY(ExpandHypX)
+&PrintRule(ProcessPOUsesSeesX.1)
+&PrintRule(ProcessPOUsesSeesX.2)
+*/
+ =>
+  lam2(A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  bstring(Z) &
+  InformCantReadFile(Z) &
+  PFZ
+ =>
+  lam1(k)(Z);
+
+  POGeneratorErrorFlagged
+ =>
+  x;
+
+  bstring(Z) &
+  InformNonTrivialOrAll("MACHINE",k) &
+  bmodr(GetLevelAndAbstractionX.1,0) &         /* current level */
+  ExpandMachineOps(k,0) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &    
+  StoreRecSubOps_SeenUsed((aaa:=aaa),A) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),B) &
+  StoreRecSubOps_IncIpt((aaa:=aaa),b) &
+/***
+PrintTHEORY(SubOpsX)&
+***/
+  lam2(A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+/***
+&PrintTHEORY(CalcPreX) - not used!
+***/
+ =>
+  lam1(k)(Z)
+
+END
+
+&
+
+THEORY ProcessAbstractionAsnX IS
+
+#define ProcessAbstractionAsn(v,w) \
+     bcall(((ARI;CATL)~;ProcessAbstractionAsnX)~:paa(v)(w))
+
+  brule(TempX.1,(t:u)) &                                     /* get rename */
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  FwdStore(k$N,[t:=u]g,asn) &
+  ProcessAbstractionAsn((N-1),r)
+ =>
+  paa1(k.ref)(N)(Z);
+
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  FwdStore(k,g,asn)
+ =>
+  paa1(k.mch)(0)(Z);
+
+  paa(?);
+
+  IsCfg(m.ref) &
+  paa1(m.ref)(N)(bcatl("ANL/",m,".ref.anl"))
+ =>
+  paa(N)(m);
+
+  IsCfg(m.mch) &
+  paa1(m.mch)(0)(bcatl("ANL/",m,".mch.anl"))
+ =>
+  paa(0)(m)
+
+END
+
+&
+
+THEORY StoreConcVarsInvX IS
+
+#define StoreConcVarsInv(x,y,z) \
+  bcall(((MAP;SUB~;CATL;WRITE;MODR)~;StoreConcVarsInvX):csvi_0(x)(y)(z))
+
+  true; /* imported invariant predicates of for v:t */
+
+  ?;  /* local invariant & ? */
+
+  InformCantConnect("POB/.Loop") &
+  PFZ
+ =>
+  csvi_6(i)(s:t);
+
+  bconnect("POB/.Loop") &
+  bprintf("%|(%:%)",i,s,t)
+ =>
+  csvi_6(i)(s:t);
+
+  brule(TempX.1,(a:b)) &
+/***
+HERE(("LoopVar rename":(a:=b):(i)(s:t)))&
+***/
+  csvi_6([a:=b]i)(s:t)
+ =>
+  csvi_5(s)(t)(i);
+
+  bsearch(true,I,J) &
+  csvi_5(s)(t)(J)
+ =>
+  csvi_5(s)(t)(I);
+
+  brule(StoreConcVarsInvX.1,I) &
+  csvi_5(s)(t)(I)
+ =>
+  csvi_4(s)(t);
+
+
+
+  csvi_4(aaa)(aaa)
+ =>
+  csvi_4(?)(?);
+
+  bsearch(?,x,s) &
+  bsearch(?,y,t) &
+  csvi_4(s)(t)
+ =>
+  csvi_4(x)(y);
+
+  bget(".Bcom",v) &
+  csvi_4(x,a$n)(y,v)
+ =>
+  csvi_3b(x,a$n)(y);
+
+  csvi_4(x)(y)
+ =>
+  csvi_3(v)(a)(b)(x)(y);
+
+  brule(GetLevelAndAbstractionX.1,n) &
+  InformCantConnect("Bcom") &
+  PFZ
+ =>
+  csvi_3(v)(a)(a$n)(x)(y);
+
+  brule(GetLevelAndAbstractionX.1,n) &
+  bconnect(".Bcom") &
+  bprintf("%_LoopVar",a) &
+  csvi_3b(x,a$n)(y)
+ =>
+  csvi_3(v)(a)(a$n)(x)(y);
+
+
+
+  InformCantConnect("Bcom") &
+  PFZ
+ =>
+  csvi_3a(v)(A,a)(B,a$n)(x)(y);
+
+  bget(".Bcom",V) &
+  csvi_3(v)(A)(B)(x,a$n)(y,V)
+ =>
+  csvi_3a(v)(A,a)(B,a$n)(x)(y);
+
+  csvi_3(v)(A)(B)(x)(y)
+ =>
+  csvi_3(v)(A,a)(B,b)(x)(y);
+
+  brule(GetLevelAndAbstractionX.1,n) &
+  InformCantConnect("Bcom") &
+  PFZ
+ =>
+  csvi_3(v)(A,a)(B,a$n)(x)(y);
+
+  brule(GetLevelAndAbstractionX.1,n) &
+  bconnect(".Bcom") &
+  bprintf("%_LoopVar",a) &
+  csvi_3a(v)(A,a)(B,a$n)(x)(y)
+ =>
+  csvi_3(v)(A,a)(B,a$n)(x)(y);
+
+  brule(TempX.1,(a:b)) &
+  csvi_3(v)(a)(b)(?)(?)
+ =>
+  csvi_2(v);
+
+  brule(StoreConcVarsInvX.1,I) &
+  bmodr(StoreConcVarsInvX.1,(I&i))
+ =>
+  csvi_1(i);
+
+  brule(StoreConcVarsInvX.2,P) &
+  bsearch(i,P,Q)                /* local invariant - ignore */
+ =>
+  csvi_1(i);
+
+  bmodr(StoreConcVarsInvX.2,(i&?)) &
+  csvi_1 bsmap (I) &
+  csvi_2(v)
+ =>
+  csvi_0(v)(i)(I)
+
+END
+
+&
+
+THEORY LoadAnalysedRefinementX IS
+
+#define LoadAnalysedRefinement(k,Z) \
+             bcall(((CATL;MODR)~;LoadAnalysedRefinementX)~:lar(k)(Z))
+
+
+  ?; /* for k$N */
+
+/* not needed
+  brule(LoadAnalysedRefinementX.1,k$N) &
+  AddRule(UnexpandedInitialisationX,h(k$N))
+ =>
+  _add_rule_unexp_init(h);
+*/
+
+  brule(LoadAnalysedRefinementX.1,k$x) &
+  AddRule(InitialisationX,i(k$x))
+ =>
+  _add_rule_init(i);
+
+
+  brule(TempX.1,(t:u)) &               /* get rename */
+/* BOX(((t:u)))& */
+/*
+  AddRule(InitialisationX,[t:=u]i(k$x)) &
+*/
+  bcall(MODR:bmodr(LoadAnalysedRefinementX.1,(k$x))) &
+/*
+  bcall((SUB;LoadAnalysedRefinementX):_add_rule_unexp_init([t:=u]h)) &
+*/
+  bcall((SubOpsX~;SUB;LoadAnalysedRefinementX):_add_rule_init([t:=u]i)) &
+  FwdStore(k$x,[t:=u]g,asn) &
+  ProcessAbstractionAsn((x-1),r) &
+  FwdStore(k$x,[t:=u]m,cst) &
+  CheckAllRecursiveRewritesInv(k,x) &
+  AppendTempFile("\nEND\n") &
+  PrintBptl(j) &
+  GeneratePORef(k,x,j) &
+  ConnectDotPOFile("POB/.Context") &
+  GeneratePOContext(k,A,C,D,E,F,G,G) &
+  CloseDotPOFile("POB/.Context") &
+  ConnectDotPOFile("POB/.Assertions") &
+  GenerateAssertionLemmas(k,x,g) &
+  CloseDotPOFile("POB/.Assertions") &
+  ConnectDotPOFile("POB/.Constraints") &
+  GeneratePOIncIpt(k,?) &
+  CloseDotPOFile("POB/.Constraints") &
+  LoadGivenSets(k.ref)
+ =>
+  lar3(x)(A;C;D;E;F;G,H;b;d;f;g;h;i;j;k;m;r);
+
+  IsVHDL &
+  brule(TempX.1,(t:u)) &               /* get rename */
+/* BOX(((t:u)))& */
+/*
+  AddRule(InitialisationX,[t:=u]i(k$x)) &
+*/
+  bcall(MODR:bmodr(LoadAnalysedRefinementX.1,(k$x))) &
+/*
+  bcall((SUB;LoadAnalysedRefinementX):_add_rule_unexp_init([t:=u]h)) &
+*/
+  bcall((SubOpsX~;SUB;LoadAnalysedRefinementX):_add_rule_init([t:=u]i)) &
+  FwdStore(k$x,[t:=u]g,asn) &
+  ProcessAbstractionAsn((x-1),r) &
+  FwdStore(k$x,[t:=u]m,cst) &
+  CheckAllRecursiveRewritesInv(k,x) &
+  AppendTempFile("\nEND\n") &
+  PrintBptl(j) &
+  GeneratePORef(k,x,j) &
+  ConnectDotPOFile("POB/.Context") &
+  GeneratePOContext(k,A,C,D,E,F,G,G) &
+  CloseDotPOFile("POB/.Context") &
+  ConnectDotPOFile("POB/.Assertions") &
+  GenerateAssertionLemmas(k,x,g) &
+  CloseDotPOFile("POB/.Assertions") &
+  ConnectDotPOFile("POB/.Constraints") &
+  GeneratePOIncIpt(k,?) &
+  CloseDotPOFile("POB/.Constraints") &
+  LoadGivenSets(k.ref) &
+  StoreConcVarsInv(d,e,f)   /* RELAXED FOR WIL */
+ =>
+  lar3(x)(A;C;D;E;F;G,H;b;d;f;g;h;i;j;k;m;r);
+
+  brule(GetLevelAndAbstractionX.1,N) &  /* current level */
+  ModTempFilename("POB/.ExpandHypX") &
+  ModifyRule(TempX,21,(l:m)) &          /* for context po */
+  ModifyRule(TempX,9,true) &            /* so context po are generated */
+  ModifyRule(TempX,13,ref) &
+  OpenPOFile(k.ref,N) &
+  StoreSeenUsedMachineNames((A,B)) &
+  StoreProperties(k,H,N) &
+  StoreSetsInPropertiesX(k,D,N) &
+  ProcessPOSeesCtx(k$N,A) &
+/*
+  ProcessPOCtxFini(k$N) &
+*/
+  StoreSeenUsedSetsInPropertiesX(k,0) &
+
+  PrintTheoryHeader(EnumerateX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.EnumerateX") &
+  AppendTempFile("THEORY EnumerateX ") &
+  StoreSetsInEnumerateX(k,D,N) &
+  StoreSeenUsedSetsInEnumerateX(k,0) &
+
+  PrintTheoryHeader(NotEqualX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.NotEqualX") &
+  AppendTempFile("THEORY NotEqualX ") &
+  StoreSetsInNotEqualX(D) &
+  StoreSeenUsedSetsInNotEqualX &
+
+  PrintTheoryHeader(RewriteToFalseOrTrueX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.RewriteToFalseOrTrueX") &
+  AppendTempFile("THEORY RewriteToFalseOrTrueX ") &
+  StoreSetsInRewriteToFalseOrTrueX(D) &
+  StoreSeenUsedSetsInRewriteToFalseOrTrueX &
+
+  PrintTheoryHeader(FwdContra0X) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.FwdContra0X") &
+  AppendTempFile("THEORY FwdContra0X ") &
+  StoreSetsInFwdContra0X(D) &
+  StoreSeenUsedSetsInFwdContra0X &
+
+  PrintTheoryHeader(FwdEqual1X) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.FwdEqual1X") &
+  AppendTempFile("THEORY FwdEqual1X ") &
+  StoreSetsInFwdEqual1X(D) &
+  StoreSeenUsedSetsInFwdEqual1X &
+
+  PrintTheoryHeader(ExpandHypX) &
+  AppendTempFile("\nEND\n") &
+  WriteDot &
+  ModTempFilename("POB/.ExpandHypX") &
+  AppendTempFile("THEORY ExpandHypX ") &
+  ProcessPOSeesInv(k$N,A) &
+  ProcessPOUsesInv(k$N,B) &
+  AddRule(RawVariableX,d(k$N)) &
+/*
+  AddRule(UnexpandedInitialisationX,h(k$N)) &
+*/
+  bcall(MODR:bmodr(LoadAnalysedRefinementX.1,(k$N))) &
+  AddRule(ParameterX,l(k$N)) &
+  LoadAbstractions(k.ref) &
+  FindStateOverlap(r,N) &
+  ConstructRefRename &
+  ProcessOpnList(n,N) &
+  ConstructLocalInvariant(k,N,e) &
+  ConstructFullInvariant(k,N,f) &
+  lar3(N)(A;C;D;E;F;G,H;b;d;f;g;h;i;j;k;m;r)
+ =>
+  lar2(A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  bstring(Z) &
+  InformCantReadFile(Z) &
+  PFZ
+ =>
+  lar1(k)(Z);
+
+  POGeneratorErrorFlagged
+ =>
+  x;
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),A) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),B) &
+  StoreRecSubOps_IncIpt((aaa:=aaa),b)
+ =>
+  lai_sub_ops_abs1(R); 
+
+  Bget(("ANL/",r,".ref.anl")) &
+  lai_sub_ops_abs1(r)
+ =>
+  lai_sub_ops_abs(r);
+
+  IsCfg(r.mch) &
+  Bget(("ANL/",r,".mch.anl")) &
+  lai_sub_ops_abs1(r)
+ =>
+  lai_sub_ops_abs(r);
+
+  bstring(Z) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  lai_sub_ops_abs(r) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),A) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),B) &
+  StoreRecSubOps_IncIpt((aaa:=aaa),b) &
+  lar2(A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+ =>
+  lar1(k)(Z);
+
+  InformNonTrivialOrAll("REFINEMENT",k) &
+  GetLevelAndAbstraction(k.ref) &
+  lar1(k)(Z)
+ =>
+  lar(k)(Z)
+
+END
+
+&
+
+THEORY LoadAnalysedImplementationX IS
+
+#define LoadAnalysedImplementation(k,Z) \
+             bcall(((CATL;MODR)~;LoadAnalysedImplementationX)~:lai(k)(Z))
+
+  ?; /* for k$N */
+
+/* not needed
+  brule(LoadAnalysedImplementationX.1,k$N) &
+  AddRule(UnexpandedInitialisationX,h(k$N))
+ =>
+  _add_rule_unexp_init(h);
+*/
+
+  brule(LoadAnalysedImplementationX.1,k$N) &
+  AddRule(InitialisationX,i(k$N))
+ =>
+  _add_rule_init(i);
+
+
+  brule(TempX.1,(t:u)) &                      /* get rename */
+/* BOX(((t:u)))& */
+/*
+  AddRule(InitialisationX,[t:=u]i(k$N)) &
+*/
+  bcall(MODR:bmodr(LoadAnalysedImplementationX.1,(k$N))) &
+/*
+  bcall((SUB;LoadAnalysedImplementationX):_add_rule_unexp_init([t:=u]h)) &
+*/
+  bcall((SubOpsX~;SUB;LoadAnalysedImplementationX):_add_rule_init([t:=u]i)) &
+  FwdStore(k$N,[t:=u]g,asn) &
+  ProcessAbstractionAsn((N-1),r) &
+  FwdStore(k$N,[t:=u]m,cst) &
+  CheckAllRecursiveRewritesInv(k,N) &
+  AppendTempFile("\nEND\n") &
+  PrintBptl(j) &
+  GeneratePORef(k,N,j) &
+  ConnectDotPOFile("POB/.Context") &
+  GeneratePOContext(k,A,C,D,E,F,G,G) &
+  CloseDotPOFile("POB/.Context") &
+  ConnectDotPOFile("POB/.Assertions") &
+  GenerateAssertionLemmas(k,N,g) &
+  CloseDotPOFile("POB/.Assertions") &
+  ConnectDotPOFile("POB/.Constraints") &
+  GeneratePOIncIpt(k,b) &
+  CloseDotPOFile("POB/.Constraints") &
+  LoadGivenSets(k.imp) &
+  StoreConcVarsInv(d,e,f)
+ =>
+  lai3(N)(A;C;D;E;F;G;H;b;d;e;f;g;h;i;j;k;m;r);  /* an implementation */
+
+  brule(GetLevelAndAbstractionX.1,N) &         /* current level */
+  ModTempFilename("POB/.ExpandHypX") &
+  ModifyRule(TempX,21,(l:m)) &                 /* for context po */
+  ModifyRule(TempX,9,true) &                   /* so context po are generated */
+  ModifyRule(TempX,13,imp) &
+  OpenPOFile(k.imp,N) &
+  StoreSeenUsedMachineNames((A,B)) &
+  StoreProperties(k,G,N) &
+  StoreSetsInPropertiesX(k,C,N) &
+  ProcessPOSeesCtx(k$N,A) &
+/*
+  ProcessPOCtxFini(k$N) &
+*/
+  StoreSeenUsedSetsInPropertiesX(k,0) &
+  ProcessImportedContext(k,N,b) &
+  PrintTheoryHeader(EnumerateX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.EnumerateX") &
+  AppendTempFile("THEORY EnumerateX ") &
+  StoreSetsInEnumerateX(k,C,N) &
+  StoreSeenUsedSetsInEnumerateX(k,0) &
+
+  PrintTheoryHeader(NotEqualX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.NotEqualX") &
+  AppendTempFile("THEORY NotEqualX ") &
+  StoreSetsInNotEqualX(D) &
+  StoreSeenUsedSetsInNotEqualX &
+
+  PrintTheoryHeader(RewriteToFalseOrTrueX) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.RewriteToFalseOrTrueX") &
+  AppendTempFile("THEORY RewriteToFalseOrTrueX ") &
+  StoreSetsInRewriteToFalseOrTrueX(D) &
+  StoreSeenUsedSetsInRewriteToFalseOrTrueX &
+
+  PrintTheoryHeader(FwdContra0X) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.FwdContra0X") &
+  AppendTempFile("THEORY FwdContra0X ") &
+  StoreSetsInFwdContra0X(D) &
+  StoreSeenUsedSetsInFwdContra0X &
+
+  PrintTheoryHeader(FwdEqual1X) &
+  AppendTempFile("\nEND\n") &
+  ModTempFilename("POB/.FwdEqual1X") &
+  AppendTempFile("THEORY FwdEqual1X ") &
+  StoreSetsInFwdEqual1X(D) &
+  StoreSeenUsedSetsInFwdEqual1X &
+
+  PrintTheoryHeader(ExpandHypX) &
+  AppendTempFile("\nEND\n") &
+  WriteDot &
+  ModTempFilename("POB/.ExpandHypX") &
+  AppendTempFile("THEORY ExpandHypX ") &
+  ProcessPOSeesInv(k$N,A) &
+  ProcessPOUsesInv(k$N,B) &
+  AddRule(RawVariableX,d(k$N)) &
+/*
+  AddRule(UnexpandedInitialisationX,h(k$N)) &
+*/
+  bcall(MODR:bmodr(LoadAnalysedImplementationX.1,(k$N))) &
+  AddRule(ParameterX,l(k$N)) &
+  LoadAbstractions(k.imp) &
+  FindStateOverlap(r,N) &
+  ConstructImpRename &
+  ProcessOpnList(n,N) &
+  ConstructLocalInvariant(k,N,e) &
+  ConstructFullInvariant(k,N,f) &
+  lai3(N)(A;C;D;E;F;G;H;b;d;e;f;g;h;i;j;k;m;r)
+ =>
+  lai2a(A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+  lai2a(A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+ =>                                                /* an implementation */
+  lai2(A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n);
+
+
+  bstring(Z) &
+  InformCantReadFile(Z) &
+  PFZ
+ =>
+  lai1(k)(Z);
+
+  POGeneratorErrorFlagged
+ =>
+  x;
+
+
+  ReadBget((J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),A) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),B) &
+  StoreRecSubOps_IncIpt((aaa:=aaa),b)
+ =>
+  lai_sub_ops_abs1(R); 
+
+  Bget(("ANL/",r,".ref.anl")) &
+  lai_sub_ops_abs1(r)
+ =>
+  lai_sub_ops_abs(r);
+
+  IsCfg(r.mch) &
+  Bget(("ANL/",r,".mch.anl")) &
+  lai_sub_ops_abs1(r)
+ =>
+  lai_sub_ops_abs(r);
+
+  bstring(Z) &
+  bget(Z,(J;A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)) &
+  lai_sub_ops_abs(r) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),A) &
+  StoreRecSubOps_SeenUsed((aaa:=aaa),B) &
+  StoreRecSubOps_IncIpt((aaa:=aaa),b) &
+/***
+PrintTHEORY(SubOpsX)&
+***/
+  lai2(A;B;C;D;E;F;G;H;b;c;Q;d;e;f;g;h;i;W;j;(k(l):m:r);n)
+ =>
+  lai1(k)(Z);
+
+  InformNonTrivialOrAll("IMPLEMENTATION",k) &
+  GetLevelAndAbstraction(k.imp) &
+  lai1(k)(Z)
+ =>
+  lai(k)(Z)
+
+END
+
+&
+
+THEORY PrintStsPOGeneratorFileX IS
+
+/*
+
+  prints a .sts file
+
+  invovation: PrintStsPOGeneratorFile(s)
+    s is a.b
+      a: construct name
+      b: mch, ref or imp
+  result:
+    .a.b.sts file written to analysed directory
+
+*/
+
+
+#define PrintStsPOGeneratorFile(s) \
+        bcall((((CATL;MODR;SHELL;WRITE)~;PrintStsPOGeneratorFileX)~):psf0(s))
+
+  ?;   /* shell flag */
+
+  brule(PrintStsPOGeneratorFileX.1,F) &
+  InformCantExecute(F) &
+  PFZ
+ =>
+  bshell(a);
+
+  InformCantConnect(F) &
+  PFZ
+ =>
+  psf4(F)(X)(x);
+
+  bconnect(F) &
+  bmodr(WriteX.1,F) &
+  brule(TempX.12,n) &           /* number of pob produced */
+  bprintf("%|%|%|%,{0,%}\n",A,B,C,x,n) 
+ =>
+  psf4(F)(A|B|C|?)(x);
+
+  bstring(F) &
+  bstring(F) &
+  InformCantReadFile(F) &
+  PFZ
+ =>
+  psf3(F)(x);
+
+  bstring(F) &
+  bget(F,X) &
+  psf4(F)(X)(x)
+ =>
+  psf3(F)(x);
+
+  InformCantConnect(".Bcom") &
+  PFZ
+ =>
+  psf2(F);
+
+  bget(".Bcom",X) &
+  psf3(F)(X)
+ =>
+  psf2(F);
+
+  bstring(F) &
+  bmodr(PrintStsPOGeneratorFileX.1,F) &
+  bshell(F)
+ =>
+  psf1(F);
+
+  psf1(bcatl("$BKIT/BLIB/CreateSts sub POB ", a,".",b,".0.po")) &
+  psf2(bcatl("ANL/.",a,".",b,".sts"))
+ =>
+  psf0(a.b)
+
+END
+
+&
+
+THEORY CheckFwdLoopingRuleX IS ? END &
+
+THEORY CheckFwdLoopingX IS
+
+#define CheckFwdLooping bcall(((MAP;ARI;WRITE;MODR)~;CheckFwdLoopingX)~: cfl_0)
+
+  ?;  /* rule after 25 applications of CheckFwdLoopingRuleX.1 */
+
+  ?;  /* rule after 26 applications of CheckFwdLoopingRuleX.1 */
+
+  ?;  /* the offending rules */
+
+  Writef(("\n    %\n",r))
+ =>
+  cfl37(r);
+
+  cfl37(?);
+
+  brule(CheckFwdLoopingX.3,L) &
+  Writef("\n\n    Warning - the following predicate(s) may cause the Provers to loop:\n") &
+  cfl37 bsmap L
+ =>
+  cfl36;
+
+  brule(CheckFwdLoopingX.3,?)
+ =>
+  cfl36;
+
+  brule(CheckFwdLoopingX.3,R) &
+  bmodr(CheckFwdLoopingX.3,(R&r))
+ =>
+  cfl7(r);
+
+  brule(CheckFwdLoopingX.1,x) &
+  brule(CheckFwdLoopingX.2,x)
+ =>
+  cfl7(r);
+
+  bmodr(CheckFwdLoopingX.2,x)
+ =>
+  cfl6(x);
+
+  brule(CheckFwdLoopingX.1,x) &
+  bcall((CheckFwdLoopingRuleX;CheckFwdLoopingX;MODR):cfl6(x)) &
+  cfl7(r)
+ =>
+  cfl5(r);
+
+  bmodr(CheckFwdLoopingX.1,x)
+ =>
+  cfl4(x);
+
+  cfl3(r);
+
+
+/***
+  bmodr(CheckFwdLoopingRuleX.1,(card(s) == card(t))) &
+  bcall((CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingX;MODR):cfl4(r : s >->> t)) &
+  cfl5(r : s >->> t)
+ =>
+  cfl3(r : s >->> t);
+***/
+
+
+#define chk_rewrite(r,e) \
+  bmodr(CheckFwdLoopingRuleX.1,e) & \
+  bcall((CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingRuleX;CheckFwdLoopingX;MODR):cfl4(r)) & \
+  cfl5(r) \
+ => \
+  cfl3(r)
+
+/***
+  all Fwd rules in SetOfRules with = replaced by ==
+***/
+
+  chk_rewrite(( a /\ b = c ),( b /\ a == c ));
+
+  chk_rewrite(( a \/ b = c ),( b \/ a == c ));
+
+  chk_rewrite(( n : p..p ),( n == p ));
+
+  chk_rewrite(( a:{card(s)} ),( a == card(s) ));
+
+  chk_rewrite(( a : ran({c|->d}) ),( a == d ));
+
+  chk_rewrite(( a : dom({c|->d}) ),( a == c ));
+
+  chk_rewrite(( a: {f(x)} ),( f(x) == a ));
+
+  chk_rewrite(( a: {f~(x)} ),( f~(x) == a ));
+
+  chk_rewrite(( r : s >->> t ),( card(s) == card(t) ));
+
+  chk_rewrite((  f : s +->> t ),( ran(f) == t ));
+
+  chk_rewrite(( f : s --> t ),( dom(f) == s ));
+
+  cfl3(R) &
+  cfl3(r)
+ =>
+  cfl3(R&r);
+
+  cfl3(r)
+ =>
+  cfl2(r);
+
+  cfl3(r)
+ =>
+  cfl2(h=>r);
+
+  cfl1(t)(n);
+
+  brule(t.n,r) &
+  cfl2(r) &
+  cfl1(t)(n+1)
+ =>
+  cfl1(t)(n);
+
+  cfl1(PropertiesX)(1) &
+  cfl1(ExpandHypX)(1) &
+  cfl36 &
+  bmodr(CheckFwdLoopingRuleX.1,?) &
+  bmodr(CheckFwdLoopingX.1,?) &
+  bmodr(CheckFwdLoopingX.2,?) &
+  bmodr(CheckFwdLoopingX.3,?)
+ =>
+  cfl_0
+
+END
+
+&
+
+THEORY POGeneratorFromUserX IS
+
+/*
+    identifies x.mch.anl, y.ref.anl, y.imp.anl and y.int.anl files from PATHS: analysed
+
+  invocation:
+    POGeneratorFromUser
+  result:
+  if >1 file found
+    presents a list of names (obtained from PATH: analysed) on screen
+    and gets selection from user, and a subsequent call made to
+    LoadAnalysedMachine or LoadAnalysedRefinement
+    or LoadAnalysedImplementation
+  if 1 file found
+    call made to LoadAnalysedMachine, LoadAnalysedRefinement
+    LoadAnalysedImplementation
+  if 0 files found
+    abort
+*/
+
+  ?;  /* 1. 0=> nothing yet writen to current THEORY (so print `IS' first),
+            1=> something written (so print `;' first) */
+
+  ?;  /* 2. construct - a.b */
+
+  ?;  /* 3. filename - "POB/.a.b.ref.po" */
+
+  ?;  /* 4. temporary filename (eg "POB/.ExpandHypX") */
+
+  ?;  /* 5. 0=> nothing yet writen to temporary filename (so print `IS' first),
+            1=> something written (so print `;' first) */
+
+  InformCantConnect(f) &
+  PFZ
+ =>
+  bshell(f);
+
+/*
+  Writef("\n") &
+*/
+  LoadToolkit(21)
+ =>
+  check_error;
+
+  brule(POGeneratorFromUserX.2,a.mch) &
+/*
+  Writef("\n") &
+*/
+  LoadToolkit(20)
+ =>
+  check_error;
+
+  Writef("\n") &
+  POGeneratorErrorFlagged
+ =>
+  check_error;
+
+  bstring(f) &
+  bstring(g) &
+  brule(TempX.11,true) &
+  bmodr(POGeneratorFromUserX.3,g) &
+  ModifyRule(TempX,11,?) &
+  LoadAnalysedMachine(m,f)
+ =>
+  pogfu_7(m.mch)(f)(g);
+
+  bstring(f) &
+  bstring(g) &
+  brule(TempX.11,true) &
+  bmodr(POGeneratorFromUserX.3,g) &
+  ModifyRule(TempX,11,?) &
+  LoadAnalysedRefinement(m,f) &
+  WriteAbstractSeenX
+ =>
+  pogfu_7(m.ref)(f)(g);
+
+  bstring(f) &
+  bstring(g) &
+  brule(TempX.11,true) &
+  bmodr(POGeneratorFromUserX.3,g) &
+  ModifyRule(TempX,11,?) &
+  LoadAnalysedImplementation(m,f) &
+  WriteAbstractSeenX
+ =>
+  pogfu_7(m.imp)(f)(g);
+
+  ClearPOGeneratorError &
+  bmodr(POGeneratorFromUserX.2,a.b) &
+  pogfu_7(a.b)(bcatl("ANL/",a,".",b,".anl"))(bcatl("POB/",a,".",b,".0.po")) &
+  CheckFwdLooping &
+/***
+PrintTHEORY(PropertiesX)&
+PrintTHEORY(UnusedPropertiesX)&
+PrintTHEORY(EnumerateX)&
+PrintTHEORY(NotEqualX)&
+PrintTHEORY(RewriteToFalseOrTrueX)&
+PrintTHEORY(FwdContra0X)&
+PrintTHEORY(FwdEqual1X)&
+PrintTHEORY(ExpandHypX)&
+***/
+  check_error
+ => 
+  pogfu_6(a.b.anl);
+
+  pogfu_6(a.b.anl)
+ =>
+  pogfu_0(a.b.anl);
+
+  IsLvl(a.b(n))
+ =>
+  pogfu_0(a.b.anl)
+
+END
+
+
+
+/***
+&
+
+THEORY TEST IS
+
+  TestRewriteRecursion(parse = Sentence/|\size(parse),"I")
+
+END
+***/

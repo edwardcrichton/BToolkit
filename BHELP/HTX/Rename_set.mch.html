@@ -1,0 +1,145 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Rename_set">
+  <TITLE>The Rename_set machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>         Rename_set(VALUE,maxcrd)
+
+<A NAME="SEES"><B>SEES</B></A>            <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>
+
+<A NAME="VARIABLES"><B>VARIABLES</B></A>       Rename_sset,Rename_ordn
+
+<A NAME="INVARIANT"><B>INVARIANT</B></A>
+
+  Rename_sset: FIN(VALUE) &
+  Rename_ordn: perm(Rename_sset) &
+  card(Rename_sset)&lt;=maxcrd
+
+<A NAME="INITIALISATION"><B>INITIALISATION</B></A>  Rename_sset,Rename_ordn:={},<>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  bb <-- <A NAME="OPNAME!Rename_FUL_SET">Rename_FUL_SET</A> =
+  <B>BEGIN</B>
+    bb:=<B>bool</B>(card(Rename_sset)=maxcrd)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_XST_IDX_SET">Rename_XST_IDX_SET</A>(ii) =
+  <B>PRE</B>
+    ii: 1..maxcrd
+  <B>THEN</B>
+    bb:=<B>bool</B>(ii:1..card(Rename_sset))
+  <B>END</B>;
+
+  nn <-- <A NAME="OPNAME!Rename_CRD_SET">Rename_CRD_SET</A> =
+  <B>BEGIN</B>
+    nn:=card(Rename_sset)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_VAL_SET">Rename_VAL_SET</A>(ii) =
+  <B>PRE</B>
+    ii:1..card(Rename_sset)
+  <B>THEN</B> 
+    vv:=Rename_ordn(ii)
+  <B>END</B>;
+
+  vv <-- <A NAME="OPNAME!Rename_ANY_SET">Rename_ANY_SET</A> =
+  <B>PRE</B>
+    not(Rename_sset= {})
+  <B>THEN</B> 
+    vv:: Rename_sset
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_CLR_SET">Rename_CLR_SET</A> =
+  <B>BEGIN</B>
+    Rename_sset := {} ||
+    Rename_ordn := <>
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_ENT_SET">Rename_ENT_SET</A>(vv) =
+  <B>PRE</B>
+    vv: VALUE &
+    card(Rename_sset) &lt; maxcrd
+  <B>THEN</B>
+    Rename_sset:=Rename_sset \/ {vv} ||
+    Rename_ordn::perm(Rename_sset \/ {vv})
+  <B>END</B>;
+
+  <A NAME="OPNAME!Rename_RMV_SET">Rename_RMV_SET</A>(vv) =
+  <B>PRE</B>
+    vv: VALUE
+  <B>THEN</B>
+    Rename_sset:=Rename_sset - {vv} ||
+    Rename_ordn::perm(Rename_sset - {vv})
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_MBR_SET">Rename_MBR_SET</A>(vv) =
+  <B>PRE</B>
+    vv: VALUE
+  <B>THEN</B>
+    bb:= <B>bool</B>(vv:Rename_sset)
+  <B>END</B>;
+
+  bb <-- <A NAME="OPNAME!Rename_EMP_SET">Rename_EMP_SET</A> =
+  <B>BEGIN</B>
+    bb:= <B>bool</B>(Rename_sset={})
+  <B>END</B>;
+
+  
+/**************  save/restore host byte order **************/
+
+  <A NAME="OPNAME!Rename_SAV_SET">Rename_SAV_SET</A>= <B>skip</B>;
+
+  <A NAME="OPNAME!Rename_RST_SET">Rename_RST_SET</A> =
+  <B>ANY</B> rset,rseq <B>WHERE</B>
+     rset: FIN(VALUE) &
+     rseq : perm(rset) &
+     card(rset) &lt;= maxcrd
+  <B>THEN</B>
+    Rename_sset := rset ||
+    Rename_ordn := rseq
+  <B>END</B>;
+
+/**************  save/restore network byte order **************/
+
+  <A NAME="OPNAME!Rename_SAVN_SET">Rename_SAVN_SET</A>= <B>skip</B>;
+
+  <A NAME="OPNAME!Rename_RSTN_SET">Rename_RSTN_SET</A> =
+  <B>ANY</B> rset,rseq <B>WHERE</B>
+     rset: FIN(VALUE) &
+     rseq : perm(rset) &
+     card(rset) &lt;= maxcrd
+  <B>THEN</B>
+    Rename_sset := rset ||
+    Rename_ordn := rseq
+  <B>END</B>
+
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:36:54 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

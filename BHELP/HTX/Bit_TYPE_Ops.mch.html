@@ -1,0 +1,141 @@
+<HTML>
+<HEAD>
+  <META NAME="Author" CONTENT="B-Toolkit Beta 4.55">
+  <META NAME="Description" CONTENT="Hypertext version of Bit_TYPE_Ops">
+  <TITLE>The Bit_TYPE_Ops machine</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE0" LINK="#2A9BFF" VLINK="#FF6565" ALINK="#FF0000">
+
+<PRE><A NAME="MACHINE"><B>MACHINE</B></A>     Bit_TYPE_Ops
+
+<A NAME="SEES"><B>SEES</B></A>        <A HREF="Bool_TYPE.mch.html#MACHINE">Bool_TYPE</A>, <A HREF="Bit_TYPE.mch.html#MACHINE">Bit_TYPE</A>
+
+<A NAME="OPERATIONS"><B>OPERATIONS</B></A>
+
+  ss <-- <A NAME="OPNAME!NO_BITS">NO_BITS</A> = <B>BEGIN</B> ss := (1..32)*{FALSE}  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!LFT_BTS">LFT_BTS</A>(tt,nn) =
+  <B>PRE</B>
+    tt: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    nn: 1..32
+  <B>THEN</B>
+    ss:= ( (tt\|/nn) ^ ((1..nn)*{FALSE}) )
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!RHT_BTS">RHT_BTS</A>(tt,nn) =
+  <B>PRE</B>
+    tt :<A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    nn :1..32
+  <B>THEN</B>
+    ss:=( ( (1..nn)*{first(tt)} ) ^ (tt/|\(32-nn)) )
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!CPL_BTS">CPL_BTS</A>(tt) =
+  <B>PRE</B>
+    tt: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A>
+  <B>THEN</B>
+    ss:= ( tt;<A HREF="Bit_TYPE.mch.html#CONSTANTS">tcp</A> )
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!LND_BTS">LND_BTS</A>(tt,uu) =
+  <B>PRE</B>
+    tt: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    uu: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A>
+  <B>THEN</B>
+    ss:= ( (tt &gt;< uu);<A HREF="Bit_TYPE.mch.html#CONSTANTS">tnd</A> )
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!LOR_BTS">LOR_BTS</A>(tt,uu) =
+  <B>PRE</B>
+    tt: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    uu: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A>
+  <B>THEN</B>
+    ss:= ( (tt &gt;< uu);<A HREF="Bit_TYPE.mch.html#CONSTANTS">tor</A> )
+  <B>END</B>;
+
+   ss <-- <A NAME="OPNAME!LXR_BTS">LXR_BTS</A>(tt,uu) =
+  <B>PRE</B>
+    tt: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    uu: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A>
+  <B>THEN</B>
+    ss:= ( (tt &gt;< uu);<A HREF="Bit_TYPE.mch.html#CONSTANTS">txr</A> )
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!MSK_BTS">MSK_BTS</A>(mm,nn) =
+  <B>PRE</B>
+    mm:0..32 &
+    nn:0..32 &
+    mm&lt;=nn
+  <B>THEN</B>
+    ss:= ( ((1..32)*{FALSE}) &lt;+ ((mm..nn)*{TRUE})  )
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!VMS_BTS">VMS_BTS</A>(bb,mm,nn) =
+  <B>PRE</B>
+    bb:<A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    mm:1..32 &
+    nn:1..32 &
+    mm&lt;=nn
+  <B>THEN</B>
+    ss:= ((1..32)*{FALSE}) &lt;+ ( bb\|/(mm-1)/|\(nn-mm+1) ) 
+  <B>END</B>;
+
+   ss <-- <A NAME="OPNAME!MMS_BTS">MMS_BTS</A>(bb,mm,nn,vv) =
+  <B>PRE</B>
+    bb: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    mm:1..32 &
+    nn:1..32 &
+    vv: <A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    mm&lt;=nn
+  <B>THEN</B>
+    <B>LET</B> cc <B>BE</B>
+      cc = vv \|/ (32-nn+mm-1)
+    <B>IN</B>
+      ss:= ( bb/|\(mm-1) ^ cc ^ (bb\|/nn) )
+    <B>END</B>
+  <B>END</B>;
+
+
+  ss <-- <A NAME="OPNAME!VAL_BTS">VAL_BTS</A>(bb,nn) =
+  <B>PRE</B>
+    bb : <A HREF="Bit_TYPE.mch.html#SETS">BITS</A> &
+    nn : 1..32 &
+    bb(nn) : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+  <B>THEN</B>
+    ss := bb(nn)
+  <B>END</B>;
+
+  ss <-- <A NAME="OPNAME!STO_BTS">STO_BTS</A>(bb,nn,vv) =
+  <B>PRE</B>
+    bb : <A HREF="Bit_TYPE.mch.html#SETS">BITS</A>  &
+    nn : 1..32 &
+    vv : <A HREF="Bool_TYPE.mch.html#SETS">BOOL</A>
+  <B>THEN</B>
+    ss := bb <+ {nn |-> vv}
+  <B>END</B>
+
+<B>END</B>
+</PRE>
+<P><HR WIDTH=80%>
+<P>
+<H3><FONT COLOR="#004EFF">Analysed Constructs</FONT></H3>
+
+<MENU>
+<DD><A HREF="ConstructsSummary.html">Hypertext Constructs Page</A></DD>
+</MENU>
+
+<H3><FONT COLOR="#004EFF">On-line Help</FONT></H3>
+<MENU>
+<DD><A HREF="../Contents.html">Help Contents Page</A>
+<DD><A HREF="../Index.html">Index</A></DD>
+</MENU>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+<FONT FACE="sans-serif, Arial, Helvetica"><FONT COLOR="#CF6500"><FONT SIZE=-2>Document Last Updated: Wed Aug 25 17:35:31 1999
+<BR>
+<IMG SRC="../../B.gif" VSPACE=5><BR>B-Toolkit Beta 4.55</FONT></FONT></FONT>
+<CENTER>
+<HR  WIDTH=33% SIZE=2 COLOR="#CF6500" NOSHADE>
+</CENTER>
+</BODY>
+</HTML>

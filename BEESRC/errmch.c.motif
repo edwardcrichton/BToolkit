@@ -1,0 +1,332 @@
+/* Copyright (c) 1985-2012, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+#define max_err               30
+/*  same as max_siz_lex in lexmch.q  */
+
+#define max_fic_err          500
+                
+int efic[max_err+1];
+int elin[max_err+1];
+int enat[max_err+1];
+int efst[max_err+1];
+int esnd[max_err+1];
+int edif[max_err+1];
+int too_many_err;
+/* */
+int errs=0;
+/* */
+int enam[max_fic_err+1];
+int fic_nbr_err;
+                    
+/*  PROGRAMS FOR ERROR MACHINE  */
+                    
+
+#define missing_zeroary_err 1
+
+#define missing_binary_err  2
+
+#define missing_opening_err 3
+
+#define missing_closing_err 4
+
+#define missing_spe_opening_err 5
+
+#define Not_enough_arguments 6
+
+#define Missing_macro_identifier 7
+
+#define Missing_include_identifier 8
+
+#define Wrong_macro_identifier 9
+
+#define Missing_right_parenthesis_in_macro_definition 10
+
+#define Bad_symbol_in_macro_formal_parameter 11
+
+#define Bad_include_file 12
+
+#define Wrong_macro_identifier_starter 13
+
+#define fic_err(t)  efic[t]
+
+#define lin_err(t)  elin[t]
+
+#define nat_err(t)  enat[t]
+
+#define fst_err(t)  efst[t]
+
+#define snd_err(t)  esnd[t]
+
+#define dif_err(t)  edif[t]
+
+#define fic_nam_err(f)  enam[f]
+
+#define nbr_err     errs
+
+#define def_fic_err(t) ((fic_err(t)!=0)!=0)
+
+#define val_too_many_err too_many_err
+
+#define set_too_many_err too_many_err=TRUE
+ini_errfunc()
+#define ini_err ini_errfunc()
+{
+  errs=0; 
+  fic_nbr_err=0; 
+  too_many_err=FALSE;
+}
+
+reset_errfunc()
+#define reset_err reset_errfunc()
+{
+  register int f ;
+  errs=0;
+  itrn( f , 1 , fic_nbr_err , {
+    kil(fic_nam_err(f))
+ ;});
+  fic_nbr_err=0;
+  too_many_err=FALSE;
+}
+
+#define itr_err(e,s)           itrn( e , 1 , errs , s)
+
+#define xst_err(e,p,s1,s2)     stp=stp+1; e=1; stack[stp-1]=errs+1; while( e!=stack[stp-1] ){ if( p ){ s1; stack[stp-1]=e ;} else { e=e+1 ;} ;}; if( e==errs+1 ){ s2 ;}; stp=stp-1
+                                 
+mak_errfunc()
+#define mak_err mak_errfunc()
+{
+  errs=errs+1
+; return errs;
+}
+
+mak_fic_errfunc()
+#define mak_fic_err mak_fic_errfunc()
+{
+  if( fic_nbr_err==max_fic_err ){
+            if ( ! exit_flag ) {
+              exit_flag = 1;
+              max_toolfunc();
+              Popup_Info ( "  Too many files included!  " );
+	    }
+            else {
+              static int count = 0;
+              XmUpdateDisplay ( top_level );
+              sleep ( 1 );
+              count++;
+              if ( count == 5 ) exit___( 1 );
+	    }
+  } else {
+    fic_nbr_err=fic_nbr_err+1;
+  }
+; return fic_nbr_err;
+}
+
+cre_fic_errfunc()
+#define cre_fic_err cre_fic_errfunc()
+{register int f ;
+  f=mak_fic_err;
+  fic_nam_err(f)=cre(5)
+; return f;
+}
+
+psh_fic_err(f,c)
+{
+  psh_str(fic_nam_err(f),c);
+}
+
+cre_err(f,l,d,n,s)
+{register int e ;
+  if( too_many_err==TRUE ){
+    {};
+  } else if( nbr_err==max_err ){
+    strcat ( str_buf, "\n      TOO MANY ERRORS" );
+    too_many_err=TRUE;
+  } else {
+    e=mak_err;
+    fic_err(e)=f;
+    lin_err(e)=l;
+    dif_err(e)=d;
+    nat_err(e)=n;
+    fst_err(e)=s;
+    snd_err(e)=0;
+  };
+}
+
+cre_symb_err(f,l,d,n,a,b)
+{register int e ;
+  if( too_many_err==TRUE ){
+    {};
+  } else if( nbr_err==max_err ){
+    strcat ( str_buf, "\n      TOO MANY ERRORS" );
+    too_many_err=TRUE;
+  } else {
+    e=mak_err;
+    fic_err(e)=f;
+    lin_err(e)=l;
+    dif_err(e)=d;
+    nat_err(e)=n;
+    fst_err(e)=a;
+    snd_err(e)=b;
+  };
+}
+
+write_blk_err(n)
+{register int i ;
+  itrn( i , 1 , n , {
+    strcat ( str_buf, " " )
+ ;});
+}
+
+write_err(e)
+{register int l ;
+  FILE * BBcom;
+  l=lin_err(e);
+/***
+printf ( " ********************* e: %d\n", e );
+printf ( " ********************* l: %d\n", l );
+***/
+  BBcom = fopen ( ".BBcom", "a" );
+  if ( BBcom != NULL ) {
+    fprintf ( BBcom, " %d", l );
+    fclose ( BBcom );
+  }
+  else {
+    unlink ( ".BBcom" );
+  };
+/*
+  write_blk_err(4-len_nat(l)+1);
+*/
+  if      ( l < 10 )     strcat ( str_buf, "    " );
+  else if ( l < 100 )    strcat ( str_buf, "   " );
+  else if ( l < 1000 )   strcat ( str_buf, "  " );
+  else                   strcat ( str_buf, " " );
+  CreNumInBuf ( str_buf, l );
+  strcat ( str_buf, ": " );
+  switch( nat_err(e) ){
+    case missing_zeroary_err :{
+      if( fst_err(e)==BET_sym ){
+        strcat ( str_buf, "Formula required at start of line " );
+      } else if( snd_err(e)==EOT_sym ){
+        strcat ( str_buf, "Formula required at end of line " );
+      } else if( dif_err(e)==TRUE ){
+        strcat ( str_buf, "Formula required at end of line " );
+      } else {
+        strcat ( str_buf, "Formula required between " );
+/*        str_buf [ 0 ] = '\0'; */
+        write_err_stri_sym(fst_err(e));
+        strcat ( str_buf, " " );
+        strcat ( str_buf, "and" );
+        strcat ( str_buf, " " );
+/*        str_buf [ 0 ] = '\0'; */
+        write_err_stri_sym(snd_err(e));
+        strcat ( str_buf, " " );
+      }
+    ;break;}case missing_binary_err :{
+      if( dif_err(e)==TRUE ){
+        strcat ( str_buf, "Infix operator required at end of line " );
+      } else {
+        strcat ( str_buf, "Infix operator required between \"" );
+/*        str_buf [ 0 ] = '\0'; */
+        write_err_stri_sym(fst_err(e));
+        strcat ( str_buf, "\" " );
+        strcat ( str_buf, "and" );
+        strcat ( str_buf, " \"" );
+/*         str_buf [ 0 ] = '\0'; */
+        write_err_stri_sym(snd_err(e));
+        strcat ( str_buf, "\" " );
+      }
+    ;break;}case missing_opening_err :{
+      strcat ( str_buf, "Too many closing brackets ( \"" );
+/*       str_buf [ 0 ] = '\0'; */
+      write_err_stri_sym(fst_err(e));
+      strcat ( str_buf, "\" ??? ) " )
+    ;break;}case missing_closing_err :{
+      strcat ( str_buf, "Closing bracket required ( \"" );
+/*       str_buf [ 0 ] = '\0'; */
+      write_err_stri_sym(fst_err(e));
+      strcat ( str_buf, "\" ??? ) " )
+    ;break;}case missing_spe_opening_err :{
+      if( dif_err(e)==TRUE ){
+        strcat ( str_buf, "Opening bracket required at end of line " );
+      } else {
+        strcat ( str_buf, "Opening bracket required between \"" );
+/*         str_buf [ 0 ] = '\0'; */
+        write_err_stri_sym(fst_err(e));
+        strcat ( str_buf, "\" " );
+        strcat ( str_buf, "and" );
+        strcat ( str_buf, " \"" );
+/*         str_buf [ 0 ] = '\0'; */
+        write_err_stri_sym(snd_err(e));
+        strcat ( str_buf, "\" " );
+      }
+    ;break;};
+  }
+
+  if( def_fic_err(e)==TRUE ){
+    strcat ( str_buf, "(" );
+/*     str_buf [ 0 ] = '\0';
+    str_buf_i = 0; */
+    str_buf_i = strlen ( str_buf );
+    write_err_str(fic_nam_err(fic_err(e)));
+    strcat ( str_buf, " )" );
+  }
+
+  strcat ( str_buf, "  \n" );
+}
+
+write_lst_errfunc()
+#define write_lst_err write_lst_errfunc()
+{register int e ;
+  XtIntervalId id;
+  extern int non_batch_non_compile_mode;
+
+  if ( report_parse_errors ) {
+
+    strcpy ( str_buf, "  \nParse Error:\n\n  " );
+    itr_err(e,write_err(e));
+    str_buf [ 998 ] = '\0';
+    strcpy ( err_str_buf, str_buf );
+
+/*
+#ifndef BTOOLM_FLAG
+*/
+#ifndef BTOOLKIT_FLAG
+
+    if ( non_batch_non_compile_mode ) {
+      id = XtAppAddTimeOut ( app, ( 2 * InvokeBLogoFlashTimer_delay_off ),
+          ( XtTimerCallbackProc ) Popup_Parse_Err,
+          NULL );
+    }
+    else {
+      printf ( "%s\n", err_str_buf );
+    }
+
+#else
+
+/*
+    printf ( "%s\n", err_str_buf );
+*/
+    id = XtAppAddTimeOut ( app, ( 2 * InvokeBLogoFlashTimer_delay_off ),
+        ( XtTimerCallbackProc ) Popup_Parse_Err,
+        NULL );
+
+#endif /* BTOOLKIT_FLAG */
+
+  }
+}

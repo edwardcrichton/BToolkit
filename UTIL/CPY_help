@@ -1,0 +1,123 @@
+#! /bin/csh -f
+
+#
+# Install in $BKIT/BHELP
+#
+
+set curdir = `pwd`
+cd ..
+
+echo ""
+echo "  -----------------------------------------------------"
+echo "  This script copies recursively from BHELP "
+echo "  to  `pwd`/BKIT/BHELP "
+echo "  -----------------------------------------------------"
+
+cd $curdir
+
+######################################
+# set all variables 
+######################################
+
+source ./set_compile_variables
+
+if ( $status != 0 ) then
+  exit ( 1 )
+endif
+
+if ( ! -d $BKIT/BHELP ) then
+  mkdir $BKIT/BHELP
+endif
+
+if ( ! -d $BKIT/BHELP/HTX ) then
+  mkdir $BKIT/BHELP/HTX
+endif
+
+cd ../BHELP
+
+echo ""
+
+set HELP_html_files = `ls *.html`
+
+foreach file ( $HELP_html_files  )
+
+  if ( ! -r $file ) then
+    echo ""
+    echo "            ----->>>>> $file does not exist - NOT COPIED"
+    echo ""
+    echo "            Aborted"
+    echo ""
+    exit ( 1 )
+  else
+    rm -f  $BKIT/BHELP/$file
+    cp $file $BKIT/BHELP
+    echo "    $file -> $BKIT/BHELP "
+  endif
+
+end
+
+set HELP_xpm_files = `ls *.xpm`
+
+foreach file ( $HELP_xpm_files  )
+
+  if ( ! -r $file ) then
+    echo ""
+    echo "            ----->>>>> $file does not exist - NOT COPIED"
+    echo ""
+    echo "            Aborted"
+    echo ""
+    exit ( 1 )
+  else
+    rm -f  $BKIT/BHELP/$file
+    cp $file $BKIT/BHELP
+    echo "    $file -> $BKIT/BHELP "
+  endif
+
+end
+
+set HELP_gif_files = `ls *.gif`
+
+foreach file ( $HELP_gif_files  )
+
+  if ( ! -r $file ) then
+    echo ""
+    echo "            ----->>>>> $file does not exist - NOT COPIED"
+    echo ""
+    echo "            Aborted"
+    echo ""
+    exit ( 1 )
+  else
+    rm -f  $BKIT/BHELP/$file
+    cp $file $BKIT/BHELP
+    echo "    $file -> $BKIT/BHELP "
+  endif
+
+end
+
+# 
+#  Now done in CPY_lib
+# 
+# cd HTX
+# echo ""
+# 
+# set HELP_lib_files = `ls *.html`
+# 
+# foreach file ( $HELP_lib_files  )
+# 
+#   if ( ! -r $file ) then
+#     echo ""
+#     echo "            ----->>>>> $file does not exist - NOT COPIED"
+#   else
+#     cp $file $BKIT/BHELP/HTX
+#     echo "    $file -> $BKIT/BHELP/HTX "
+#   endif
+# 
+# end
+# cd ..
+
+cd $BKIT/BHELP
+cp *.gif HTX
+
+echo ""
+echo "  Done "
+echo ""

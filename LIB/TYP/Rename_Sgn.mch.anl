@@ -1,0 +1,283 @@
+(
+(Bool_TYPE(?):(?):((?),(?),(?)))
+,
+(Sgn_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_sgn)
+;
+(Rename_sgn)
+;
+(Rename_sgn: SIGNED)
+;
+(Rename_sgn: SIGNED)
+;
+(?)
+;
+(Rename_sgn:: SIGNED)
+;
+(@Rename_sgnx.(Rename_sgnx: SIGNED ==> Rename_sgn:=Rename_sgnx))
+;
+(Rename_VAL,Rename_STO,Rename_INC,Rename_DEC,Rename_ADD,Rename_SUB,Rename_MUL,Rename_DIV,Rename_MOD)
+;
+(Rename_VAL,Rename_STO,Rename_INC,Rename_DEC,Rename_ADD,Rename_SUB,Rename_MUL,Rename_DIV,Rename_MOD)
+;
+(Rename_Sgn(?):(?):(?))
+;
+(
+(
+ (Rename_VAL)
+;
+ (?,Val_Op,Det_Op,(vv <-- Rename_VAL))
+;
+ (?)
+;
+ (vv)
+;
+ (
+ (true)
+ |
+ (
+ (BEGIN
+ vv:=Rename_sgn
+ END)
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (vv:=Rename_sgn)
+ )
+ )
+)
+,
+(
+ (Rename_STO)
+;
+ (?,Mod_Op,Det_Op,Rename_STO(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: SIGNED)
+ |
+ (
+ (BEGIN
+ Rename_sgn:=vv
+ END)
+ )
+ )
+;
+ (
+ (vv: SIGNED)
+ |
+ (
+ (Rename_sgn:=vv)
+ )
+ )
+)
+,
+(
+ (Rename_INC)
+;
+ (?,Val_Op,Det_Op,Rename_INC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_sgn+n2ps(1): SIGNED)
+ |
+ (
+ (Rename_sgn <-- SADD(Rename_sgn,n2ps(1)))
+ )
+ )
+;
+ (
+ (Rename_sgn+n2ps(1): SIGNED & Rename_sgn: SIGNED & n2ps(1): SIGNED)
+ |
+ (
+ (Rename_sgn:=Rename_sgn+n2ps(1))
+ )
+ )
+)
+,
+(
+ (Rename_DEC)
+;
+ (?,Val_Op,Det_Op,Rename_DEC)
+;
+ (?)
+;
+ (?)
+;
+ (
+ (Rename_sgn-n2ps(1): SIGNED)
+ |
+ (
+ (Rename_sgn <-- SSUB(Rename_sgn,n2ps(1)))
+ )
+ )
+;
+ (
+ (Rename_sgn-n2ps(1): SIGNED & Rename_sgn: SIGNED & n2ps(1): SIGNED)
+ |
+ (
+ (Rename_sgn:=Rename_sgn-n2ps(1))
+ )
+ )
+)
+,
+(
+ (Rename_ADD)
+;
+ (?,Val_Op,Det_Op,Rename_ADD(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: SIGNED & Rename_sgn+vv: SIGNED)
+ |
+ (
+ (Rename_sgn <-- SADD(Rename_sgn,vv))
+ )
+ )
+;
+ (
+ (vv: SIGNED & Rename_sgn+vv: SIGNED & Rename_sgn: SIGNED)
+ |
+ (
+ (Rename_sgn:=Rename_sgn+vv)
+ )
+ )
+)
+,
+(
+ (Rename_SUB)
+;
+ (?,Val_Op,Det_Op,Rename_SUB(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: SIGNED & Rename_sgn-vv: SIGNED)
+ |
+ (
+ (Rename_sgn <-- SSUB(Rename_sgn,vv))
+ )
+ )
+;
+ (
+ (vv: SIGNED & Rename_sgn-vv: SIGNED & Rename_sgn: SIGNED)
+ |
+ (
+ (Rename_sgn:=Rename_sgn-vv)
+ )
+ )
+)
+,
+(
+ (Rename_MUL)
+;
+ (?,Val_Op,Det_Op,Rename_MUL(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: SIGNED & Rename_sgn*vv: SIGNED)
+ |
+ (
+ (Rename_sgn <-- SMUL(Rename_sgn,vv))
+ )
+ )
+;
+ (
+ (vv: SIGNED & Rename_sgn*vv: SIGNED & Rename_sgn: SIGNED)
+ |
+ (
+ (Rename_sgn:=Rename_sgn*vv)
+ )
+ )
+)
+,
+(
+ (Rename_DIV)
+;
+ (?,Val_Op,Det_Op,Rename_DIV(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: SIGNED & vv/=n2ps(0) & Rename_sgn/vv: SIGNED)
+ |
+ (
+ (Rename_sgn <-- SDIV(Rename_sgn,vv))
+ )
+ )
+;
+ (
+ (vv: SIGNED & not(vv = n2ps(0)) & Rename_sgn/vv: SIGNED & Rename_sgn: SIGNED)
+ |
+ (
+ (Rename_sgn:=Rename_sgn/vv)
+ )
+ )
+)
+,
+(
+ (Rename_MOD)
+;
+ (?,Val_Op,Det_Op,Rename_MOD(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv: SIGNED & vv>n2ps(0) & Rename_sgn mod vv: SIGNED)
+ |
+ (
+ (Rename_sgn <-- SMOD(Rename_sgn,vv))
+ )
+ )
+;
+ (
+ (vv: SIGNED & n2ps(0)<vv & Rename_sgn mod vv: SIGNED & Rename_sgn: SIGNED)
+ |
+ (
+ (Rename_sgn:=Rename_sgn mod vv)
+ )
+ )
+)
+)

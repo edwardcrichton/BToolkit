@@ -1,0 +1,69 @@
+#! /bin/sh
+
+rm -f .Bter
+echo 0 > .Bcom
+cd CDE/C
+if [ "$2" = "1" ]
+then
+  $BKIT/BLIB/TransCFilter < $1.c > .BBcom 2> .Bter
+  if [ $? != 0 ]
+  then
+    echo 1 > ../../.Bcom
+    echo ""  
+    echo ""
+    if [ -s .Bter ]
+    then
+      cat .Bter
+    fi
+    rm -f .BBcom .Bter
+    exit
+  fi
+  $BKIT/BLIB/NLFilter < .BBcom > $1.c 2> .Bter
+  if [ $? != 0 ]
+  then
+    echo 1 > ../../.Bcom
+    echo ""  
+    echo ""
+    if [ -s .Bter ]
+    then
+      cat .Bter
+    fi
+    rm -f .BBcom .Bter
+    exit
+  fi
+fi
+rm -f .BBcom .Bter
+
+if [ "$4" = "1" ]
+then
+  cc_string="$3"
+else
+  cc_string="$3 -D_BT_Motif"
+fi
+if [ "$5" = "0" ]
+then
+  cc_string="$cc_string -D_BT_ANSIC"
+fi
+$cc_string -c $1.c 2> .Bter
+if [ $? != 0 ]
+then
+  echo 1 > ../../.Bcom
+  echo ""  
+  echo ""
+  if [ -s .Bter ]
+  then
+    cat .Bter
+  fi
+  rm -f .Bter
+  exit
+fi
+
+if [ -s .Bter ]
+then
+  echo 2 > ../../.Bcom
+  echo ""  
+  echo ""
+  cat .Bter
+  echo ""
+fi
+rm -f .Bter

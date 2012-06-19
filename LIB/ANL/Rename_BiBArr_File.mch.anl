@@ -1,0 +1,848 @@
+(
+ (?)
+ ;
+ (
+ (
+ (?)
+ )
+ |
+ (
+ (?)
+ )
+ )
+ )
+;
+(
+(Byt_TYPE(?):(?):((?),(?),(?)))
+,
+(Bool_TYPE(?):(?):((?),(?),(?)))
+)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(?)
+;
+(Rename_bba , Rename_nxt)
+;
+(Rename_bba , Rename_nxt)
+;
+(Rename_bba : lb..ub +-> BYTE & Rename_nxt : lb..ub)
+;
+(Rename_bba : lb..ub +-> BYTE & Rename_nxt : lb..ub)
+;
+(?)
+;
+(Rename_bba :: lb..ub +-> BYTE || Rename_nxt := ub)
+;
+(@Rename_bbax.(Rename_bbax : lb..ub +-> BYTE ==> Rename_bba := Rename_bbax) || Rename_nxt := ub)
+;
+(Rename_BiBA_IDX,Rename_BiBA_VAL,Rename_BiBA_STO,Rename_BiBA_EQ,Rename_BiBA_IEQ,Rename_BiBA_NE,Rename_BiBA_INE,Rename_BiBA_GT,Rename_BiBA_IGT,Rename_BiBA_GE,Rename_BiBA_IGE,Rename_BiBA_LT,Rename_BiBA_ILT,Rename_BiBA_LE,Rename_BiBA_ILE,Rename_BiBA_ADD,Rename_BiBA_IADD,Rename_BiBA_SUB,Rename_BiBA_ISUB,Rename_BiBA_INC,Rename_BiBA_DEC,Rename_BiBA_MUL,Rename_BiBA_DIV,Rename_BiBA_REM,Rename_BiBA_STO_NXT,Rename_BiBA_FILL,Rename_BiBA_NXT)
+;
+(Rename_BiBA_IDX , Rename_BiBA_VAL , Rename_BiBA_STO , Rename_BiBA_EQ , Rename_BiBA_IEQ , Rename_BiBA_NE , Rename_BiBA_INE , Rename_BiBA_GT , Rename_BiBA_IGT , Rename_BiBA_GE , Rename_BiBA_IGE , Rename_BiBA_LT , Rename_BiBA_ILT , Rename_BiBA_LE , Rename_BiBA_ILE , Rename_BiBA_ADD , Rename_BiBA_IADD , Rename_BiBA_SUB , Rename_BiBA_ISUB , Rename_BiBA_INC , Rename_BiBA_DEC , Rename_BiBA_MUL , Rename_BiBA_DIV , Rename_BiBA_REM , Rename_BiBA_STO_NXT , Rename_BiBA_FILL , Rename_BiBA_NXT)
+;
+(Rename_BiBArr_File(lb , ub):(lb >= 0 & ub <= 255 & lb <= ub & ub : NAT & lb : NAT):(?))
+;
+(
+(
+ (Rename_BiBA_IDX)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_IDX(idx)))
+;
+ (idx)
+;
+ (bb)
+;
+ (
+ (idx : BYTE)
+ |
+ (
+ (BEGIN
+ bb := bool(b2n(idx) : lb..ub)
+ END)
+ )
+ )
+;
+ (
+ (idx : BYTE)
+ |
+ (
+ (bb := bool(idx : n2b[lb..ub]))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_VAL)
+;
+ (? , Val_Op , Det_Op , (vv <-- Rename_BiBA_VAL(idx)))
+;
+ (idx)
+;
+ (vv)
+;
+ (
+ (idx : BYTE & b2n(idx) : dom(Rename_bba))
+ |
+ (
+ (vv := Rename_bba(b2n(idx)))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx : n2b[dom(Rename_bba)])
+ |
+ (
+ (vv := Rename_bba(b2n(idx)))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_STO)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_STO(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : lb..ub)
+ |
+ (
+ (
+ (Rename_bba(b2n(idx)) := vv)
+ )
+ ||
+ (
+ (IF b2n(idx) < ub THEN
+ Rename_nxt := b2n(idx)+1
+ ELSE
+ Rename_nxt := lb
+ END)
+ )
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[lb..ub])
+ |
+ (
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> vv})
+ )
+ ||
+ (
+ (
+ (
+ (idx < n2b(ub))
+ )
+ ==>
+ (
+ (Rename_nxt := b2n(idx)+1)
+ )
+ )
+ []
+ (
+ (
+ (n2b(ub) <= idx)
+ )
+ ==>
+ (
+ (Rename_nxt := lb)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_EQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_EQ(idx , vv)))
+;
+ (idx , vv)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba))
+ |
+ (
+ (bb := bool(Rename_bba(b2n(idx)) = vv))
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb := bool(Rename_bba(b2n(idx)) = vv))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_IEQ)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_IEQ(idx , idx2)))
+;
+ (idx , idx2)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & idx2 : BYTE & b2n(idx) : dom(Rename_bba) & b2n(idx2) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BEQ(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx2 : BYTE & idx : n2b[dom(Rename_bba)] & idx2 : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BEQ(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_NE)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_NE(idx , vv)))
+;
+ (idx , vv)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BNE(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BNE(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_INE)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_INE(idx , idx2)))
+;
+ (idx , idx2)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & idx2 : BYTE & b2n(idx) : dom(Rename_bba) & b2n(idx2) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BNE(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx2 : BYTE & idx : n2b[dom(Rename_bba)] & idx2 : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BNE(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_GT)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_GT(idx , vv)))
+;
+ (idx , vv)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BGT(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BGT(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_IGT)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_IGT(idx , idx2)))
+;
+ (idx , idx2)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & idx2 : BYTE & b2n(idx) : dom(Rename_bba) & b2n(idx2) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BGT(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx2 : BYTE & idx : n2b[dom(Rename_bba)] & idx2 : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BGT(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_GE)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_GE(idx , vv)))
+;
+ (idx , vv)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BGE(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BGE(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_IGE)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_IGE(idx , idx2)))
+;
+ (idx , idx2)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & idx2 : BYTE & b2n(idx) : dom(Rename_bba) & b2n(idx2) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BGE(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx2 : BYTE & idx : n2b[dom(Rename_bba)] & idx2 : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BGE(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_LT)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_LT(idx , vv)))
+;
+ (idx , vv)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BLT(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BLT(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_ILT)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_ILT(idx , idx2)))
+;
+ (idx , idx2)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & idx2 : BYTE & b2n(idx) : dom(Rename_bba) & b2n(idx2) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BLT(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx2 : BYTE & idx : n2b[dom(Rename_bba)] & idx2 : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BLT(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_LE)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_LE(idx , vv)))
+;
+ (idx , vv)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BLE(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BLE(Rename_bba(b2n(idx)) , vv))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_ILE)
+;
+ (? , Val_Op , Det_Op , (bb <-- Rename_BiBA_ILE(idx , idx2)))
+;
+ (idx , idx2)
+;
+ (bb)
+;
+ (
+ (idx : BYTE & idx2 : BYTE & b2n(idx) : dom(Rename_bba) & b2n(idx2) : dom(Rename_bba))
+ |
+ (
+ (bb <-- BLE(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx2 : BYTE & idx : n2b[dom(Rename_bba)] & idx2 : n2b[dom(Rename_bba)])
+ |
+ (
+ (bb <-- BLE(Rename_bba(b2n(idx)) , Rename_bba(b2n(idx2))))
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_ADD)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_ADD(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba) & Rename_bba(b2n(idx))+vv <= n2b(255) & Rename_bba(b2n(idx))+vv : BYTE)
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx))+vv)
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)] & Rename_bba(b2n(idx))+vv <= n2b(255) & Rename_bba(b2n(idx))+vv : BYTE)
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx))+vv})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_IADD)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_IADD(idx , idx2))
+;
+ (idx , idx2)
+;
+ (?)
+;
+ (
+ (idx : BYTE & idx2 : BYTE & b2n(idx) : dom(Rename_bba) & b2n(idx2) : dom(Rename_bba) & Rename_bba(b2n(idx))+Rename_bba(b2n(idx2)) : BYTE & Rename_bba(b2n(idx))+Rename_bba(b2n(idx2)) <= n2b(255))
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx))+Rename_bba(b2n(idx2)))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx2 : BYTE & idx : n2b[dom(Rename_bba)] & idx2 : n2b[dom(Rename_bba)] & Rename_bba(b2n(idx))+Rename_bba(b2n(idx2)) : BYTE & Rename_bba(b2n(idx))+Rename_bba(b2n(idx2)) <= n2b(255))
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx))+Rename_bba(b2n(idx2))})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_SUB)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_SUB(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba) & Rename_bba(b2n(idx)) >= vv & Rename_bba(b2n(idx))-vv : BYTE & Rename_bba(b2n(idx))-vv >= n2b(0))
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx))-vv)
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)] & vv <= Rename_bba(b2n(idx)) & Rename_bba(b2n(idx))-vv : BYTE & n2b(0) <= Rename_bba(b2n(idx))-vv)
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx))-vv})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_ISUB)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_ISUB(idx , idx2))
+;
+ (idx , idx2)
+;
+ (?)
+;
+ (
+ (idx : BYTE & idx2 : BYTE & b2n(idx) : dom(Rename_bba) & b2n(idx2) : dom(Rename_bba) & Rename_bba(b2n(idx)) >= Rename_bba(b2n(idx2)) & Rename_bba(b2n(idx))-Rename_bba(b2n(idx2)) : BYTE & Rename_bba(b2n(idx))-Rename_bba(b2n(idx2)) >= n2b(0))
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx))-Rename_bba(b2n(idx2)))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx2 : BYTE & idx : n2b[dom(Rename_bba)] & idx2 : n2b[dom(Rename_bba)] & Rename_bba(b2n(idx2)) <= Rename_bba(b2n(idx)) & Rename_bba(b2n(idx))-Rename_bba(b2n(idx2)) : BYTE & n2b(0) <= Rename_bba(b2n(idx))-Rename_bba(b2n(idx2)))
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx))-Rename_bba(b2n(idx2))})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_INC)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_INC(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx : BYTE & b2n(idx) : dom(Rename_bba) & Rename_bba(b2n(idx)) < n2b(255) & Rename_bba(b2n(idx))+n2b(1) : BYTE)
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx))+n2b(1))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx : n2b[dom(Rename_bba)] & Rename_bba(b2n(idx)) < n2b(255) & Rename_bba(b2n(idx))+n2b(1) : BYTE)
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx))+n2b(1)})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_DEC)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_DEC(idx))
+;
+ (idx)
+;
+ (?)
+;
+ (
+ (idx : BYTE & b2n(idx) : dom(Rename_bba) & Rename_bba(b2n(idx))-n2b(1) : BYTE & Rename_bba(b2n(idx)) > n2b(0))
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx))-n2b(1))
+ )
+ )
+;
+ (
+ (idx : BYTE & idx : n2b[dom(Rename_bba)] & Rename_bba(b2n(idx))-n2b(1) : BYTE & n2b(0) < Rename_bba(b2n(idx)))
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx))-n2b(1)})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_MUL)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_MUL(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba) & Rename_bba(b2n(idx))*vv <= n2b(255) & Rename_bba(b2n(idx))*vv : BYTE)
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx))*vv)
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)] & Rename_bba(b2n(idx))*vv <= n2b(255) & Rename_bba(b2n(idx))*vv : BYTE)
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx))*vv})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_DIV)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_DIV(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : BYTE & vv : BYTE & vv /= n2b(0) & idx /= n2b(0) & Rename_bba(b2n(idx))/vv : BYTE)
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx))/vv)
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & not(vv = n2b(0)) & not(idx = n2b(0)) & Rename_bba(b2n(idx))/vv : BYTE)
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx))/vv})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_REM)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_REM(idx , vv))
+;
+ (idx , vv)
+;
+ (?)
+;
+ (
+ (idx : BYTE & vv : BYTE & b2n(idx) : dom(Rename_bba) & Rename_bba(b2n(idx)) mod vv : BYTE & vv > n2b(0))
+ |
+ (
+ (Rename_bba(b2n(idx)) := Rename_bba(b2n(idx)) mod vv)
+ )
+ )
+;
+ (
+ (idx : BYTE & vv : BYTE & idx : n2b[dom(Rename_bba)] & Rename_bba(b2n(idx)) mod vv : BYTE & n2b(0) < vv)
+ |
+ (
+ (Rename_bba := Rename_bba <+ {b2n(idx) |-> Rename_bba(b2n(idx)) mod vv})
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_STO_NXT)
+;
+ (? , Mod_Op , Det_Op , Rename_BiBA_STO_NXT(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (BEGIN
+ Rename_bba(Rename_nxt) := vv ||
+ IF Rename_nxt < ub THEN
+ Rename_nxt := Rename_nxt+1
+ ELSE
+ Rename_nxt := lb
+ END
+ END)
+ )
+ )
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (
+ (Rename_bba := Rename_bba <+ {Rename_nxt |-> vv})
+ )
+ ||
+ (
+ (
+ (
+ (Rename_nxt < ub)
+ )
+ ==>
+ (
+ (Rename_nxt := Rename_nxt+1)
+ )
+ )
+ []
+ (
+ (
+ (ub <= Rename_nxt)
+ )
+ ==>
+ (
+ (Rename_nxt := lb)
+ )
+ )
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_FILL)
+;
+ (? , Mod_Op , NonDet_Op , Rename_BiBA_FILL(vv))
+;
+ (vv)
+;
+ (?)
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (BEGIN
+ Rename_bba : (Rename_bba : seq(BYTE) &
+ card(Rename_bba) = ub-lb+1 &
+ ran(Rename_bba) = {vv}) ||
+ Rename_nxt := lb
+ END)
+ )
+ )
+;
+ (
+ (vv : BYTE)
+ |
+ (
+ (
+ @(Rename_bbax).
+ (
+ (
+ (Rename_bbax : seq(BYTE) & card(Rename_bbax) = ub-lb+1 & ran(Rename_bbax) = {vv})
+ )
+ ==>
+ (
+ (Rename_bba := Rename_bbax)
+ )
+ )
+ )
+ ||
+ (
+ (Rename_nxt := lb)
+ )
+ )
+ )
+)
+,
+(
+ (Rename_BiBA_NXT)
+;
+ (? , Val_Op , Det_Op , (nn <-- Rename_BiBA_NXT))
+;
+ (?)
+;
+ (nn)
+;
+ (
+ (true)
+ |
+ (
+ (nn := n2b(Rename_nxt))
+ )
+ )
+;
+ (
+ (true)
+ |
+ (
+ (nn := n2b(Rename_nxt))
+ )
+ )
+)
+)

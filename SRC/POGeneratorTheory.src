@@ -1,0 +1,102 @@
+/* Copyright (c) 1985-98, B-Core (UK) Ltd
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+THEORY POGTheory_DischargeExistX IS
+
+  (a&true) == a;
+
+  (true&a) == a;
+
+  true;
+
+  binhyp(t<<:u)
+ =>
+  (#s.(t=s)) == true;
+
+  binhyp(t<<:u)
+ =>
+  (#s.(s=t)) == true;
+
+  binhyp(t<:u)
+ =>
+  (#s.(t=s)) == true;
+
+  binhyp(t<:u)
+ =>
+  (#s.(s=t)) == true;
+
+  binhyp(not(t={}))
+ =>
+  (#s.(t=s)) == true;
+
+  binhyp(not(t={}))
+ =>
+  (#s.(s=t)) == true;
+
+  bnum(t)
+ =>
+  (#s.(t=s)) == true;
+
+  bnum(t)
+ =>
+  (#s.(s=t)) == true;
+
+  (#s.(not(s = {}) & s: POW(NAT))) == true;
+
+  (#s.(not(s = {}) & s: POW(SCALAR))) == true;
+
+   bident(n)
+  =>
+  (#a.(a=n)) == true;
+
+   bnum(n)
+  =>
+  (#a.(a=n)) == true;
+
+  (#a.(a:NAT)) == true;
+
+  (#a.(a:SCALAR)) == true;
+
+  (#a.(a:NAT1)) == true
+
+
+END
+
+&
+
+THEORY POGTheory_GeneralX IS
+
+  TRUE : BOOL;
+
+  FALSE : BOOL;
+
+  bool(C) : BOOL;
+
+  binhyp(not(a=FALSE))
+ =>
+  a = TRUE;
+
+  binhyp(not(a=TRUE))
+ =>
+  a = FALSE;
+
+  binhyp(not(c))
+ =>
+  bool(c) = FALSE
+
+END

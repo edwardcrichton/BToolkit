@@ -1,0 +1,20 @@
+
+rm -f ../BEESRC/itfmch.c
+rm -f ../BEESRC/natmch.c
+rm -f ../BEESRC/filmch.c
+rm -f ../BEESRC/themch.c
+rm -f ../BEESRC/prfmch.c
+rm -f ../BEESRC/tolmch.c
+rm -f ../BEESRC/symmch.c
+rm -f ../BEESRC/strmch.c
+rm -f ../BEESRC/lexmch.c
+rm -f ../BEESRC/frmmch.c
+rm -f ../BEESRC/errmch.c
+rm -f ../BEESRC/macmch.c
+rm -f ../BEESRC/rulmch.c
+rm -f ../BEESRC/resmch.c
+rm -f ../BEESRC/hypmch.c
+rm -f ../BEESRC/tacmch.c
+rm -f ../BEESRC/nodmch.c
+rm -f ../BEESRC/golmch.c
+rm -f ../BEESRC/seqmch.c

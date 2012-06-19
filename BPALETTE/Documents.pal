@@ -1,0 +1,52 @@
+            *********
+            DOCUMENTS
+            *********
+
+DOCUMENT
+
+ documentname
+
+CONTENTS
+
+/*" annotation "*/
+
+ include(cst.ext(op,...,op));
+
+/*" annotation "*/
+
+  ...;
+
+/*" annotation "*/
+
+ include(cst.ext(op,...,op))
+
+/*" annotation "*/
+
+END
+
+
+Notes:
+-----
+
+An included construct may
+have an `ext' of:
+    mch
+    ref
+    imp
+    bse
+    int
+    enm
+    doc
+    mch.number.prf
+    ref.number.prf
+    imp.number.prf
+
+All annotations are optional,
+as is the operation name list
+parameter for included
+constructs.
+
+
+See Top Bar Help for
+Documents for more
+information.
