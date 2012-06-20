@@ -1,0 +1,20 @@
+# Object files
+*.o
+
+# Libraries
+*.lib
+
+# Shared objects
+*.dll
+*.so
+
+# Executables
+*.out
+
+# Editors
+*~
+\#*\#
+
+# Unix hidden files
+.*
+!.gitignore
