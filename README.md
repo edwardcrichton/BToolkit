@@ -33,3 +33,7 @@ construction of the software. The validation processes are supported
 by static analysis, by dynamic analysis using simulation, as well as proof
 of correctness using an integrated theorem prover (the B-ToolProvers). 
 
+License
+=======
+
+BSD 2 clause license. 
