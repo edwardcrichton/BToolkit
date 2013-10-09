@@ -36,4 +36,8 @@ of correctness using an integrated theorem prover (the B-ToolProvers).
 License
 =======
 
-BSD 2-clause license. 
+BSD 2-clause license.
+
+Please feel free to get in touch if you have any questions or even to say what you might use the BToolkit source for.
+
+See my [homepage](http://www.cs.ox.ac.uk/people/edward.crichton/) for details.
