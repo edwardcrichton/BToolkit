@@ -36,4 +36,4 @@ of correctness using an integrated theorem prover (the B-ToolProvers).
 License
 =======
 
-BSD 2 clause license. 
+BSD 2-clause license. 
