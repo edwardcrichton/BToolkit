@@ -17,7 +17,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 #include <stdio.h>
-#include <stdlib.h>
 
 int
 main ( int argc, char ** argv )
@@ -26,7 +25,7 @@ main ( int argc, char ** argv )
 
   c = getchar ();
   while ( c != EOF ) {
-    if   ( c == '\n' ) putchar ( '\r' );
+    if ( c == '\n' ) putchar ( '\r' );
     putchar ( c );
     c = getchar ();
   }
