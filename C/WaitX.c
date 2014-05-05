@@ -20,39 +20,11 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <stdlib.h>
 #include <unistd.h>
 
-FILE * fileid;
-
-static char *num[] = { "0",
-                       "1",
-                       "2",
-                       "3",
-                       "4",
-                       "5",
-                       "6",
-                       "7",
-                       "8",
-                       "9"
-		     };
-
-void
-PrintNum ( file, n )
-FILE * file;
-int n;
-{
-  if ( n > 9 ) {
-    PrintNum ( file, n/10 );
-    fprintf ( file, num [ n % 10 ] );
-  }
-  else {
-    fprintf ( file, num [ n ] );
-  }
-}
-
-/*void*/
-/* should be int*/
 int
-main ()
+main (int argc, char *argv[])
 {
+  FILE * fileid;
+
   system ( "tty > .Btty" );
 
   /***
