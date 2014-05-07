@@ -18,7 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #define BT_VERSION "6.0.3"
 #define BT_COPYRIGHT_YEAR "2012"
-#define BT_COMPANY "B-Core(UK) Ltd"
+#define BT_COMPANY "B-Core(UK) Ltd."
 
 char cur_hdr_string[] = "BT401";
 char old_hdr_string[] = "BT400";
@@ -62,7 +62,7 @@ char *B_info_help_text =
   o  B-Method\n\
        the collection of mathematically based techniques\n\
        for the specification, design and implementation\n\
-        ofsoftware components.\n\n\
+        of software components.\n\n\
   o  Abstract Machine Notation\n\
        the notation used to specify and design software\n\
        systems using the B-Method; often abbreviated\n\
@@ -75,7 +75,7 @@ char *B_info_help_text =
   o  B-Platform\n\
        the inference engine providing the software\n\
        platform on which many of the tools of the B-Toolkit\n\
-       are builtalso known as the B-Tool and the B-Kernel,\n\
+       are built also known as the B-Tool and the B-Kernel,\n\
        it has been sold as the former since 1991.\n\n\
       B was developed by BP International Ltd. from 1985-92;\n\
        B-Core(UK) Ltd. purchased the full rights to B in 1993,\n\
@@ -84,6 +84,6 @@ char *B_info_help_text =
 
 char * BCore_info_help_text = "\n\
                            B-Toolkit Release "BT_VERSION"\n\n\
-                               B-Core(UK) Ltd\n\
+                               B-Core(UK) Ltd.\n\
            The B-Tool, B-Toolkit, B-Platform and AMN are\n\
                 Copyright (c) 1985-"BT_COPYRIGHT_YEAR" B-Core(UK) Ltd.\n";
