@@ -17,8 +17,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 #include <stdio.h>
-/**/
-#include <stdlib.h>
+#include <string.h>
 
 int c, d, i, non_remove;
 char buf [ 10000 ];
@@ -54,7 +53,7 @@ get_next_word ()
                 buf [ i++ ] = c;
                 c = getchar ();
                 d = c;
-        };
+        }
         buf [ i ] = '\0';
 /*
         if ( c == '\\' ) {
@@ -65,8 +64,6 @@ get_next_word ()
 */
 }
 
-/*void*/
-/* should be int*/
 int
 main(argc,argv)
 int argc;
@@ -77,7 +74,7 @@ char *argv[];
         }
         else {
                 non_remove = 0;
-        };
+        }
         c = getchar();
         while ( c != EOF ) {
                 if ( c == '\\' ) {
@@ -95,11 +92,11 @@ char *argv[];
                                         printf( "%s", buf );
                                 }
                         }
-                };
+                }
                 if ( c != EOF && c != '\\' ) {
                         printf( "%c", c );
                         c = getchar ();
                 }
-        };
-        exit ( 0 );
+        }
+        return 0;
 }
