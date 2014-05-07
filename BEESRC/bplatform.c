@@ -432,7 +432,7 @@ interrupt_SIGUSR2 ()
     if( x!=0 ){
       fprintf ( Bsta, "      Average Free Space Size:       ");
       fprintf ( Bsta, "%8d words\n",(z / x));
-    };
+    }
     fprintf ( Bsta, "\n");
     fprintf ( Bsta, "      SIGMA OF FREE SPACES:          ");
     fprintf ( Bsta, "%8d words\n",z);
@@ -443,7 +443,7 @@ interrupt_SIGUSR2 ()
     fprintf ( Bsta, "%8d words\n\n",z+max_mem-vad(vnbs+1));
     fprintf ( Bsta, "\n");
     fclose ( Bsta );
-  };
+  }
 
   Bpmd = fopen ( ".Bpmd", "r" );
   if ( Bpmd != NULL ) {
@@ -456,16 +456,16 @@ interrupt_SIGUSR2 ()
       buf2 [ x ] = ( char ) z;
       x++;
       z = getc ( Bpmd );
-    };
+    }
     fclose ( Bpmd );
     strcat (  buf1, buf2 );
     system ( buf1 );
-  };
+  }
   Bses = fopen ( ".Bses", "w" );
   if ( Bses == NULL ) {
     fprintf ( bstdout,  "\n             Can't open \".Bses\" for writing\n\n" );
     exit ( 1 );
-  };
+  }
   fprintf ( Bses, "999" );
   fclose ( Bses );
   exit ( 0 );
@@ -486,34 +486,34 @@ check_system_calls_ok()
   if ( Bbbb == NULL ) {
     fprintf ( stdout,  "\n             Can't open \".Bbbb\" for writing\n\n" );
     exit ( 1 );
-  };
+  }
   putc ( '1', Bbbb );
   fclose ( Bbbb );
   Bbbb = fopen ( ".Bbbb", "r" );
   if ( Bbbb == NULL ) {
     fprintf ( stdout,  "\n             Can't open \".Bbbb\" for reading\n\n" );
     exit ( 1 );
-  };
+  }
   c = getc ( Bbbb );
   if ( ( char ) c  != '1' ) {
     fprintf ( stdout,  "\n             Can't write to \".Bbbb\"\n\n" );
     fclose ( Bbbb );
     exit ( 1 );
-  };
+  }
   fclose ( Bbbb );
   system ( "echo 2 > .Bbbb" );
   fopen ( ".Bbbb", "r" );
   if ( Bbbb == NULL ) {
     fprintf ( stdout,  "\n             Can't open \".Bbbb\" for reading\n\n" );
     exit ( 1 );
-  };
+  }
   c = getc ( Bbbb );
   if ( ( char ) c  != '2' ) {
     fprintf ( stdout,  "\n             bplatform: not enough memory (bplatform_size: %d)\n\n", max_mem );
     fprintf ( stdout,  "\n             Run:\n               $BKIT/BProcessInfo\n             to kill B Processes\n\n" );
     fclose ( Bbbb );
     exit ( 1 );
-  };
+  }
   fclose ( Bbbb );
   unlink ( ".Bbbb" );
 }
@@ -625,7 +625,7 @@ ProofPrinter => exec_prf==FALSE  val_batch_sys==FALSE
   if ( Bpib == NULL ) {
     fprintf ( stdout,  "\n             Can't open \".Bpib\" for writing\n\n" );
     exit ( 1 );
-  };
+  }
   fprintf ( Bpib, "%d\n", getpid() );    /* the \n is necessary! */
   fclose ( Bpib );
 
