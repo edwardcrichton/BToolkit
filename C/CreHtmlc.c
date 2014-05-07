@@ -51,8 +51,6 @@ int  tot_ref_arr;
 
 int c, i, ll;
 
-time_t time_now;
-
 int in_annot = 0;
 
 /***/
@@ -396,6 +394,7 @@ main ( argc, argv )
 int argc;
 char *argv[];
 {
+  time_t time_now;
   char * getenv(), * name, bkit [ 250 ];
 
   printf ( "." ); fflush ( stdout );
