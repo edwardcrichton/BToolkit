@@ -345,5 +345,5 @@ if ( ! MODULE_OR_MAIN_found ) {
   fclose ( file_in );
   fclose ( file_out );
 
-  exit ( 0 );
+  return 0;
 }
