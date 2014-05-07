@@ -104,7 +104,7 @@ ss_shutdown ()
 */
 
 
-int
+void
 SSTL_MasterSocketInit ( int * port, int * master_sock )
 {
   struct servent      * servent_ptr;
