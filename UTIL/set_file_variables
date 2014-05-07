@@ -2,8 +2,6 @@
 
 # All the lists of files
 
-setenv Master_dir /se/bin/BTOOL/MASTER_RELEASE/3.3
-
 setenv working_dir /tmp
 
 set bin_script_files = \
