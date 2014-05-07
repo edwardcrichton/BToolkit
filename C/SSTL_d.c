@@ -188,7 +188,7 @@ main ( int argc, char * * argv )
     slave_sock = accept ( master_sock,
               ( struct sockaddr * ) &acc_s_server, &slave_sock_addr_len );
     if ( slave_sock < 0 ) {
-      if ( errno = EINTR )
+      if ( errno == EINTR )
         continue;
       SyslogErrExit ( "accept failed - errno %d\n", errno, -1 );
     }
