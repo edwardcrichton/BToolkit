@@ -517,7 +517,7 @@ printf ( "\n    ---------------------------------------------------\n     initia
     } else {
       mod_men_sys(FALSE);
       n=1;
-    };
+    }
     if( argc>n ){
       if( (argv[n][0]=='-') && (argv[n][1]=='f') ){
         if( argc==n+2 ){
@@ -535,7 +535,7 @@ printf ( "\n    ---------------------------------------------------\n     initia
           ini;
           fprintf ( bstdout, "\n" );
           sys_all_the;
-        };
+        }
       } else if( (argv[n][0]=='-') && (argv[n][1]=='b') ){
         mod_batch_sys(TRUE);
         n=n+1;
@@ -554,8 +554,7 @@ printf ( "\n    ---------------------------------------------------\n     initia
         {register int
           more;
           FILE *pipein, *pipeout;
-          char first[1001], second[1001]
-        ;
+          char first[1001], second[1001];
           mod_batch_sys(TRUE);
           n = n+1;
           pipein = fopen(argv[n], "r");
@@ -574,7 +573,7 @@ printf ( "\n    ---------------------------------------------------\n     initia
                 ini;
                 strcpy(name_restore_fil, first);
                 restore_tool;
-              };
+              }
               strcpy(name_fil, second);
               {register int t ;
                 xst_the(t,num_the(t)==2,exec_file_prf(t),{});
@@ -583,9 +582,9 @@ printf ( "\n    ---------------------------------------------------\n     initia
               fprintf(pipeout, "0\n");
               fflush(pipeout);
               more = fscanf(pipein, "%s %s", first, second);
-            };
-          };
-        };
+            }
+          }
+        }
       } else { 
 /*  error (unknown || missing option) --> interactive without file  */
         banner;
@@ -593,7 +592,7 @@ printf ( "\n    ---------------------------------------------------\n     initia
         ini;
         fprintf ( bstdout, "\n" );
         sys_all_the;
-      };
+      }
     } else {  
 /*  b -m  */
       banner;
@@ -601,8 +600,8 @@ printf ( "\n    ---------------------------------------------------\n     initia
       ini;
       fprintf ( bstdout, "\n" );
       sys_all_the;
-    };
-    };
+    }
+    }
   } else {  
 /*  b  */
     banner;
@@ -610,7 +609,7 @@ printf ( "\n    ---------------------------------------------------\n     initia
     ini;
     fprintf ( bstdout, "\n" );
     sys_all_the;
-  };
+  }
   fprintf ( bstdout, "\n" );
   exit___ ( 0 );
 }
