@@ -17,6 +17,8 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 FILE *scriptfile_in;
 FILE *scriptfile_out;
@@ -24,6 +26,7 @@ FILE *scriptfile_out;
 int c;
 int n;
 
+void
 rem_ws ()
 {
   /***
@@ -38,7 +41,7 @@ rem_ws ()
 }
 
 
-
+void
 find_start_opname ()
 {
   /***
@@ -53,7 +56,7 @@ find_start_opname ()
 }
 
 
-
+void
 print_op_and_params ()
 {
   /***
@@ -63,7 +66,7 @@ print_op_and_params ()
   while ( c != '(' && c != ';' && c != ' ' && c != '\n' && c != EOF ) {
     putc( c,  scriptfile_out );
     c = getc ( scriptfile_in );
-  };
+  }
   fputs ( "_OP\n",  scriptfile_out );
 
   rem_ws ();
@@ -80,39 +83,33 @@ print_op_and_params ()
       while ( c != ',' && c != ' ' && c != '\t' && c != ')' && c != EOF ) {
         putc( c,  scriptfile_out );
         c = getc ( scriptfile_in );
-      };
+      }
       if ( c == ',' ) {
         putc( '\n',  scriptfile_out );
-      };
+      }
       if ( c != ')' && c != EOF ) {
         c = getc ( scriptfile_in );
       }
     }
-  };
+  }
   putc( '\n',  scriptfile_out );
   rem_ws ();
 }
 
-
+void
 print_num ( m )
 int m;
 {
-  if ( m > 9 ) {
-    print_num ( m/10 );
-    putc( (m%10)+'0',  scriptfile_out );
-  }
-  else {
-    putc( m+'0',  scriptfile_out );
-  }
+  fprintf(scriptfile_out, "%d", m);
 }
 
-
+void
 clean_files ()
 {
   system ( "rm -f C.c C.i" );
 }
 
-
+int
 main(argc,argv)
 int argc;
 char *argv[];
@@ -138,12 +135,12 @@ char script_file [ 100 ];
     strcat ( s, "  C.c ; cc -P C.c" );
     if ( system ( s ) != 0 ) {
       printf( "\n  Can't execute \"" );
-      printf( s );
+      printf( "%s", s );
       printf( "\"\n\n" );
       clean_files ();
       exit ( 1 );
     }
-  };
+  }
 
   /***
   decrement op numbers in itf.h file!
@@ -153,13 +150,13 @@ char script_file [ 100 ];
     printf( "\n  Can't open C.c for writing\n\n" );
     clean_files ();
     exit ( 1 );
-  };
+  }
   scriptfile_in = fopen( dot_h_file, "r" );
   if ( scriptfile_in == NULL ) {
     printf( "\n  Can't open %s for reading\n\n", dot_h_file );
     clean_files ();
     exit ( 1 );
-  };
+  }
 
   c = getc ( scriptfile_in );
   while ( c != EOF ) {
@@ -169,22 +166,22 @@ char script_file [ 100 ];
     while ( c != ' ' && c != EOF ) {
       putc( c,  scriptfile_out );
       c = getc ( scriptfile_in );
-    };
+    }
     if ( c != EOF ) {
       putc( c,  scriptfile_out );
       c = getc ( scriptfile_in );
-    };
+    }
     /***
     read up to second space
     ***/
     while ( c != ' ' && c != EOF ) {
       putc( c,  scriptfile_out );
       c = getc ( scriptfile_in );
-    };
+    }
     while ( c != EOF && ( c < '0' || c > '9' ) ) {
       putc( c,  scriptfile_out );
       c = getc ( scriptfile_in );
-    };
+    }
     if ( c != EOF ) {
       /***
       read value into n
@@ -200,7 +197,7 @@ char script_file [ 100 ];
       n--;
       print_num ( n );
     }
-  };
+  }
 
   fclose ( scriptfile_in );
   fclose ( scriptfile_out );
@@ -210,13 +207,13 @@ char script_file [ 100 ];
     printf( "\n  Can't open C.c for writing\n\n" );
     clean_files ();
     exit ( 1 );
-  };
+  }
   scriptfile_in = fopen( "C.i", "r" );
   if ( scriptfile_in == NULL ) {
     printf( "\n  Can't open C.i for reading\n\n" );
     clean_files ();
     exit ( 1 );
-  };
+  }
 
   c = getc ( scriptfile_in );
   while ( c != EOF ) {
@@ -224,7 +221,7 @@ char script_file [ 100 ];
     if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) ) {
       print_op_and_params ();
     }
-  };
+  }
 
   /***
   add Quit_OP
@@ -238,7 +235,7 @@ char script_file [ 100 ];
     printf( "\n  Can't execute \"cc -P C.c\"\n\n" );
     clean_files ();
     exit ( 1 );
-  };
+  }
 
   /***
   and finally, remove newlines
@@ -254,14 +251,14 @@ char script_file [ 100 ];
     printf( "\n  Can't open %s for writing\n\n", script_file );
     clean_files ();
     exit ( 1 );
-  };
+  }
 
   scriptfile_in = fopen( "C.i", "r" );
   if ( scriptfile_in == NULL ) {
     printf( "\n  Can't open C.i for reading\n\n" );
     clean_files ();
     exit ( 1 );
-  };
+  }
 
   /***
   remove initial whitespace
@@ -269,11 +266,11 @@ char script_file [ 100 ];
   c = getc ( scriptfile_in );
   while ( ( c == ' ' || c == '\t' || c == '\n' ) && c != EOF ) {
     c = getc ( scriptfile_in );
-  };
+  }
   if ( c != EOF ) {
     putc( c,  scriptfile_out );
     c = getc ( scriptfile_in );
-  };
+  }
 
   /***
   remove subsequent multiple newlines
@@ -288,7 +285,7 @@ char script_file [ 100 ];
     else {
       c = getc ( scriptfile_in );
     }
-  };
+  }
 
   fclose ( scriptfile_in );
   fclose ( scriptfile_out );
@@ -308,9 +305,10 @@ char script_file [ 100 ];
     strcat ( s, " > /dev/null" );
 */
     system ( s );
-  };
+  }
 
   exit ( 0 );
 
-}
+  return 0;
 
+}
