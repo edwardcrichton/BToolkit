@@ -26,7 +26,7 @@ open_winfunc()
     redirect_trm(name_win); 
 /* freopen(name_win,"w",bstdout); */
     write_top_clear_res;
-};
+} 
 }
 
 open_men_winfunc()
@@ -35,7 +35,7 @@ open_men_winfunc()
   if( is_win==TRUE ){
     redirect_trm(name_win) 
 /* freopen(name_win,"w",bstdout) */;
-  };
+  } 
 }
 
 clos_winfunc()
@@ -44,7 +44,7 @@ clos_winfunc()
   if( is_win==TRUE ){
     reset_trm 
 /* freopen(TERMINAL,"w",bstdout); */;
-  };
+  } 
 }
 
 sho_winfunc()
@@ -56,11 +56,11 @@ sho_winfunc()
     while( name_win[i]!='\0' ){
       putc(name_win[i], bstdout);
       i=i+1;
-    };
+    } 
     fprintf ( bstdout, "\n");
 } else {
     fprintf ( bstdout, "\n");
-  };
+  } 
 }
 
 ass_winfunc()
@@ -69,20 +69,20 @@ ass_winfunc()
   i=0;
   while( !(access("win",R_OK) >= 0) ){
     sleep ( 1 );
-  };
+  } 
   while( is_win==FALSE ){
     ff_win=fopen("win","r");
     if ( ff_win == NULL ) {
       fprintf ( bstdout, "\n\n             Can't open \"win\" for reading\n\n" );
       exit___ ( 1 );
-    };
+    } 
     i=0;
     c=getc(ff_win);
     while( c!=EOF ){
       i=i+1;
       name_win[i-1]=c;
       c=getc(ff_win);
-    };
+    } 
     if( i>2 ){
       if( name_win[i-2]=='?' ){
         name_win[i-3]='\0';
@@ -91,11 +91,11 @@ ass_winfunc()
         ; fprintf ( bstdout, "\n");
         sho_win
 ;
-      };
-    };
+      } 
+    } 
     fclose(ff_win);
     system ( "rm -f win" );
-  };
+  } 
 }
 
 ini_winfunc()
@@ -104,6 +104,6 @@ ini_winfunc()
   is_win=FALSE;
   if( val_men_sys==TRUE ){
     ass_win;
-  };
+  } 
 }
 
