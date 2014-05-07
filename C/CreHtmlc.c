@@ -395,7 +395,7 @@ int argc;
 char *argv[];
 {
   time_t time_now;
-  char * getenv(), * name, bkit [ 250 ];
+  char * name, bkit [ 250 ];
 
   printf ( "." ); fflush ( stdout );
 
