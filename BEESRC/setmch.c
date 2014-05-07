@@ -30,7 +30,7 @@ del_set(a,v)
   if( !(jj==0) ){ 
     str(a,jj,val(a,len(a)));
     pop(a) ;
-  };
+  }
 }
 
 union_set(s,t)
@@ -47,8 +47,8 @@ inter_set(s,t)
       pop(s);
     } else {
       i=i+1;
-    };
-  };
+    }
+  }
 }
 
 diff_set(s,t)
