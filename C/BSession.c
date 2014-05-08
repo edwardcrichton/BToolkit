@@ -63,7 +63,7 @@ read_Bini_load_strings ()
   int i, c;
   int loop_count = MAX_loop_count + 2;
   FILE * fileid;
-  int seconds = 15;
+  useconds_t sleep_time = 100000;
 
   /***
   this is now part of initialisation
@@ -111,7 +111,7 @@ read_Bini_load_strings ()
         else if ( loop_count < MAX_loop_count + 1 )
 	  printf ( "\n               Waiting for BMotif ... (%2d)", loop_count );
         fflush ( stdout );
-        sleep ( seconds );
+        usleep ( sleep_time );
         loop_count--;
       }
     }
