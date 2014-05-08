@@ -87,7 +87,7 @@ int cs_nn, cs_rr;
 char serv_addr [ 20 ];
 int port;
 FILE * Bfile;
-int pid;
+pid_t pid;
 int Blm_registered = 0;
 
 void ini_Blm ();

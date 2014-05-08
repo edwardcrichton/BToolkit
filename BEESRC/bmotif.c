@@ -271,7 +271,7 @@ int port;
 char buf [ 75000 ];
 #endif
 
-int pid;
+pid_t pid;
 int Blm_registered = 0;
 
 void ini_Blm ();
