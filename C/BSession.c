@@ -79,7 +79,7 @@ read_Bini_load_strings ()
   ***/
   fileid = fopen ( "TMP/.BBcom", "w" );
   if ( fileid == NULL ) {
-    printf ( "\n\n             Can't open \"TMP/.BBcom\" for reading\n" );
+    printf ( "\n\n             Can't open \"TMP/.BBcom\" for writing\n" );
     exit ( 1 );
   }
   fclose ( fileid );
