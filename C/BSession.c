@@ -165,7 +165,6 @@ void
 int_trap ()
 {
   err_exit ( 11 );
-
 }
 
 void
@@ -594,11 +593,14 @@ kill_BMotif ()
    }
  */
 
+/* FIXME: refactor kill_* functions into kill_pidfile(const char *filename) */
+
 void
 kill_XTerm ()
 {
   fileptr = fopen ( ".Bpix", "r" );
   if ( fileptr != NULL ) {
+    /* FIXME: use fscanf */
     i = 0;
     c = getc ( fileptr );
     while ( c != EOF && c != '\n' ) {
@@ -611,12 +613,12 @@ kill_XTerm ()
   }
 }
 
-
 void
 kill_bplatform ()
 {
   fileptr = fopen ( ".Bpib", "r" );
   if ( fileptr != NULL ) {
+    /* FIXME: use fscanf */
     i = 0;
     c = getc ( fileptr );
     while ( c != EOF && c != '\n' ) {
@@ -633,6 +635,7 @@ kill_edit ()
 {
   fileptr = fopen ( ".Bed", "r" );
   if ( fileptr != NULL ) {
+    /* FIXME: use fscanf */
     i = 0;
     c = getc ( fileptr );
     while ( c != EOF && c != '\n' ) {
@@ -650,6 +653,7 @@ chk_info_reqd ()
 {
   fileptr = fopen ( ".Berc", "r" );
   if ( fileptr != NULL ) {
+    /* FIXME: use fscanf */
     i = 0;
     c = getc ( fileptr );
     while ( c != EOF && c != '\n' &&
