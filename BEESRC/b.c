@@ -92,30 +92,12 @@ int Blm_registered = 0;
 
 void ini_Blm ();
 
-static char *numnum[] = { "0",
-                       "1",
-                       "2",
-                       "3",
-                       "4",
-                       "5",
-                       "6",
-                       "7",
-                       "8",
-                       "9"
-		     };
-
 void
 CreNumInBuf ( buf, n )
 char * buf;
 long n;
 {
-  if ( n > 9 ) {
-    CreNumInBuf ( buf, n/10 );
-    strcat ( buf, numnum [ n % 10 ] );
-  }
-  else {
-    strcat ( buf, numnum [ n ] );
-  }
+  sprintf( buf, "%ld", n);
 }
 
 #include "ClientSocket.c"
