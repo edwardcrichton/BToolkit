@@ -17,37 +17,24 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include <string.h>
-
 #include <signal.h>
-
 #include <unistd.h>
-
 #include <sys/types.h>
-
 #include <sys/socket.h>
-
 #include <netdb.h>
-
 #include <sys/utsname.h>
-
 #include <time.h>
 
-
 FILE * bstdout;
-
 
 #define alloc_init                 500000
 
 #define init_alloc_topup          2000000
 #define alloc_topup               2500000
 
-
 #define compact_cut_off         100000000
-
 
 #define max_proved_rr_val        100
 			     /* MUST be same as in bmotif.h */
@@ -62,13 +49,9 @@ int max_fwd_ctr_auto_prf = 250;
 ***/
 
 #define write_srv_res        putc(27, bstdout); fprintf ( bstdout, "[7m")
-
 #define write_erv_res        putc(27, bstdout); fprintf ( bstdout, "[0m")
-
 #define write_srv_err_res    putc(27,stderr); fprintf(stderr,"[7m")
-
 #define write_erv_err_res    putc(27,stderr); fprintf(stderr,"[0m")
-
 
 /***
 #define write_top_clear_res  putc(27, bstdout); \
@@ -84,19 +67,13 @@ int max_fwd_ctr_auto_prf = 250;
 
 /*** 
 #endif
-  
 
 #ifdef hpcomputer
-                        
 
 #define write_srv_res        putc(27, bstdout); fprintf ( bstdout, "&dB")
-
 #define write_erv_res        putc(27, bstdout); fprintf ( bstdout, "&d@")
-
 #define write_srv_err_res    putc(27,stderr); fprintf(stderr,"&dB")
-
 #define write_erv_err_res    putc(27,stderr); fprintf(stderr,"&d@")
-
 #define write_top_clear_res  putc(27, bstdout); fprintf ( bstdout, "H");  putc(27, bstdout); fprintf ( bstdout, "J")
 
 #endif
@@ -219,7 +196,6 @@ long n;
 #include "itfmch.c"
 
 
-
 #ifdef ipaddresses
 
 #define iphid_val 1
@@ -232,11 +208,6 @@ long n;
 #define iphid_val 0
 
 #endif
-
-
-
-
-
 
 
 bannerfunc()
