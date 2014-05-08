@@ -262,11 +262,11 @@ for ( i = 0 ; i < argc ; i++ ) {
   act1.sa_flags = ( int ) 0;
   sigaction ( SIGINT, &act1, NULL );
 
-  banim = getenv ( "BANIMATOR" );
-  if ( banim == NULL ) banim = getenv ( "BKIT" );
-
   bkit = getenv ( "BKIT" );
   if ( bkit == NULL ) err_exit ( 1 );
+
+  banim = getenv ( "BANIMATOR" );
+  if ( banim == NULL ) banim = bkit;
 
   strcpy ( cur_dir, argv [ 1 ] );
 
