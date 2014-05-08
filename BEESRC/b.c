@@ -266,23 +266,23 @@ get_tcpip ()
       if ( c == EOF ) {
         printf ( "\n  %s: syntax error 1\n", buf );
         exit ( 1 );
-      };
+      }
       while ( ( c != EOF ) && ( c !=',' ) ) {
         serv_addr [ i ] = ( char ) c;
         i++;
         c = getc ( Btcp );
-      };
+      }
       if ( c == EOF ) {
         printf ( "\n  %s: syntax error 2\n", buf );
         exit ( 1 );
       }
       else {
         c = getc ( Btcp );
-      };
+      }
       while ( c >= '0' && c <= '9' ) {
         port = ( port * 10 ) + c - '0';
         c = getc ( Btcp );
-      };
+      }
       fclose ( Btcp );
     }
     else {
@@ -319,7 +319,7 @@ ini_Blm_off ()
     else {
       fclose ( Bpid_id );
     }
-  };
+  }
 
   /***
   send hiip_request - hprot now redundant - always ipaddress protection!
@@ -535,7 +535,7 @@ printf ( "\n    ---------------------------------------------------\n     initia
               {register int t ;
                 xst_the(t,num_the(t)==2,exec_file_prf(t),{});
                 rem_rul_the(t,len(rul_the(t)));
-              };
+              }
               fprintf(pipeout, "0\n");
               fflush(pipeout);
               more = fscanf(pipein, "%s %s", first, second);
