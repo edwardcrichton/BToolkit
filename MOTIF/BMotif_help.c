@@ -144,7 +144,7 @@ MenuItem Help_Generators_menu [] = {
 
 MenuItem Help_Translator_menu [] = {
   { "Translate to Code", "trl",
-   ( XtPointer ) "Translators", ( MenuItem * ) NULL },
+   ( XtPointer ) "Translator", ( MenuItem * ) NULL },
   { "Link Code", "lnk",
    ( XtPointer ) "Linker", ( MenuItem * ) NULL },
   { "Execute Programs", "run",
