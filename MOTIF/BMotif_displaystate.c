@@ -554,12 +554,12 @@ XtPointer call_data;
     if ( user_data_option != nme_num ) { XBell ( display, -75 ); return; }
   }
 
-  printf("user_data_option = %ld\n", user_data_option);
+  printf("user_data_option = %d\n", user_data_option);
   
-  printf("nme_num: %ld\n", nme_num);
-printf("cmt_num: %ld\n", cmt_num);
-printf("anl_num: %ld\n", anl_num);
-printf("pog_num: %ld\n", pog_num);
+  printf("nme_num: %d\n", nme_num);
+  printf("cmt_num: %d\n", cmt_num);
+  printf("anl_num: %d\n", anl_num);
+  printf("pog_num: %d\n", pog_num);
 
   /*switch ( * ( int * ) user_data ) {*/
   switch ( user_data_option ) {
