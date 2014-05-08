@@ -331,20 +331,6 @@ int goal_rule_vert_diff;
 #define btl_proofPV1 max_proved_rr_val
 #define btl_proofPV2 (25*max_proved_rr_val)
 
-#ifdef ipaddresses
-
-#define iphid_val 1
-
-#endif
-
-
-#ifdef hostids
-
-#define iphid_val 0
-
-#endif
-
-
 /**************************************************************************/
 
 extern char err_str_buf [];

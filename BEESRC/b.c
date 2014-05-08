@@ -196,20 +196,6 @@ long n;
 #include "itfmch.c"
 
 
-#ifdef ipaddresses
-
-#define iphid_val 1
-
-#endif
-
-
-#ifdef hostids
-
-#define iphid_val 0
-
-#endif
-
-
 bannerfunc()
 #define banner bannerfunc()
 {
