@@ -28,24 +28,17 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #define MAX_loop_count 15
 
 
-struct sigaction act1;
 FILE * fileptr;
 
 char *banim;
 char *bkit;
-char *blic;
 
 char cur_dir [ 250 ];
 char fifo_file_2m [ 50 ];
 char fifo_file_2b [ 50 ];
-char bkit_tool [ 500 ];
 char BSes_num [ 50 ];
 char tty_id [ 50 ];
-char cmd [ 600 ];
-int n, done, i, j, c, count, Bxok_exists;
-int cant_open_bses = 0;
-
-struct stat statBxok;
+int n, done, i, j, c;
 
 void read_Bini_load_strings ();
 void re_initialise ();
@@ -186,6 +179,9 @@ get_new_dir_from_Bcom ()
 void
 wait_Bxok_and_get_tty_id ()
 {
+  int count, Bxok_exists;
+  struct stat statBxok;
+
   /***
   wait for .Bxok from BMotif - then we know .Btty complete
   ***/
@@ -236,7 +232,10 @@ main ( argc, argv )
      int argc;
      char *argv[];
 {
-
+   struct sigaction act1;
+   int cant_open_bses = 0;
+   char bkit_tool [ 500 ];
+   char cmd [ 600 ];
 /***
 system ( "echo \"BSession originally running in:\n  `pwd`\"" );
 ***/
