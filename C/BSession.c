@@ -545,12 +545,12 @@ kill_BMotif ()
   struct stat stat_Bpim;
   int count = 0;
   int Bpim_not_present = stat ( ".Bpim", &stat_Bpim );
-  while ( ! Bpim_not_present && count < 10 ) {
+  while ( (Bpim_not_present == -1) && count < 10 ) {
     sleep ( 1 );
     Bpim_not_present = stat ( ".Bpim", &stat_Bpim );
     count++;
   }
-  if ( Bpim_not_present ) return;
+  if ( Bpim_not_present == -1) return;
   fileptr = fopen ( ".Bpim", "r" );
   if ( fileptr != NULL ) {
     i = 0;
