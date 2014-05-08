@@ -17,6 +17,11 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 
+	/***
+	   Pre_GML_0:
+             removes comments
+	***/
+
 
 EMPTYCOMMENT    "/*"[ \t\n]*"*/"
 

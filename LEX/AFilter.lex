@@ -17,7 +17,11 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 
-   int flag=0;
+        /***
+           ALFilter
+        ***/
+
+  int flag=0;
 
 %%
 

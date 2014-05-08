@@ -17,8 +17,11 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 
+	/***
+	   Latex_Index
+	***/
 
-int flag=0;
+  int flag=0;
 
 %%
 

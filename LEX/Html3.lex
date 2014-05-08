@@ -17,7 +17,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 
-
 %{
 #define LEXDEBUG
 #define allprint(x) printf("%d",x);

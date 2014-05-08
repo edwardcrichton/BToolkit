@@ -17,8 +17,12 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 
+        /***
+           TransCFilter
+        ***/
 
-int flag=0;
+
+  int flag=0;
 
 
 

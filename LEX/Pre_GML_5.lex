@@ -17,6 +17,10 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 
+	/***
+	   Pre_GML_5:
+             tidies up after Pre_GML_4
+	***/
 
 WS	[ \t\n]*
 
