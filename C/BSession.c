@@ -79,7 +79,7 @@ read_Bini_load_strings ()
   ***/
   fileid = fopen ( "TMP/.BBcom", "w" );
   if ( fileid == NULL ) {
-    printf ( "\n\n             Can't open \"TMP/.BBcom\" for writing\n" );
+    puts ( "\n\n             Can't open \"TMP/.BBcom\" for writing\n" );
     exit ( 1 );
   }
   fclose ( fileid );
@@ -114,7 +114,7 @@ read_Bini_load_strings ()
     else {
       if ( loop_count ) {
         if ( loop_count == MAX_loop_count + 1 )
-          printf ( "\n            $BKIT/BLIB/BMotif not yet running\n" );
+          puts ( "\n            $BKIT/BLIB/BMotif not yet running\n" );
         else if ( loop_count < MAX_loop_count + 1 )
 	  printf ( "\n               Waiting for BMotif ... (%2d)", loop_count );
         fflush ( stdout );
@@ -125,11 +125,11 @@ read_Bini_load_strings ()
   }
 
   if ( noBini ) {
-    printf ( "\n\n\n              $BKIT/BLIB/BMotif didn't start\n\n\n" );
+    puts ( "\n\n\n              $BKIT/BLIB/BMotif didn't start\n\n\n" );
     err_exit ( 11 );
   }
   else if ( loop_count < MAX_loop_count + 1 ) {
-    printf ( " ... ok\n" );
+    puts ( " ... ok\n" );
   }
 
 }
@@ -159,7 +159,6 @@ int BT_PROB_BINARY_flag;
   ***/
   fclose ( fileptr );
 }
-
 
 void
 int_trap ()
@@ -232,7 +231,6 @@ get_pog_flag ()
   return ( c - '0' );
 }
 
-
 int
 main ( argc, argv )
      int argc;
@@ -304,7 +302,7 @@ for ( i = 0 ; i < argc ; i++ ) {
   ***/
 
   while ( ( strcmp ( BSes_num, "0" )      != 0 ) &&
-          ( strcmp ( BSes_num, "999999" ) != 0 )    ) {
+           ( strcmp ( BSes_num, "999999" ) != 0 )    ) {
 
 /***
 printf (  "                              BSession - .Bses : %s\n", BSes_num  );
@@ -427,7 +425,7 @@ system ( "echo \"BSession now running in:\n  `pwd`\"" );
   ***/
 
   if ( strcmp ( BSes_num, "999999" ) == 0 ) {
-    printf ( "\n\n       THIS IS *NOT* THE WAY TO TERMINATE THE B-TOOLKIT;\n         DATA MAY BE LOST, OR THE SYSTEM LEFT HANGING\n\n            PLEASE USE THE UTILS->EXIT PULLDOWN\n\n\n\n" );
+    puts ( "\n\n       THIS IS *NOT* THE WAY TO TERMINATE THE B-TOOLKIT;\n         DATA MAY BE LOST, OR THE SYSTEM LEFT HANGING\n\n            PLEASE USE THE UTILS->EXIT PULLDOWN\n\n\n\n" );
   }
   else {
     kill_BMotif ();
@@ -448,8 +446,8 @@ int warn_no;
 {
   switch ( warn_no ) {
   case 1:
-    printf ( " \n\n               Problem with toolkit binary\n" );
-    printf ( "\n  Contents of .Berr (may not be relevant):\n\n" );
+    puts ( "\n\n               Problem with toolkit binary\n" );
+    puts ( "\n  Contents of .Berr (may not be relevant):\n\n" );
     system ( "cat .Berr" );
     break;
   }
@@ -461,74 +459,77 @@ int err_no;
 {
   switch ( err_no ) {
   case 1:
-    printf ( "\n  Environment variable BKIT not set\n\n" );
+    puts ( "\n  Environment variable BKIT not set" );
     break;
   case 2:
-    printf ( " \n         Execution problem ( insufficient memory? )" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n         Execution problem ( insufficient memory? )" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 3:
     system ( "cat .Berr" );
-    printf ( " \n\n               Problem running B-Toolkit" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n               Problem running B-Toolkit" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 12:
-    printf ( " \n\n                 \".Bini\" format error" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n                 \".Bini\" format error" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 5:
-    printf ( " \n\n             Can't open \".Btty\" for reading" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n             Can't open \".Btty\" for reading" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 6:
-    printf ( " \n\n             Can't open \".Bver\" for writing" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n             Can't open \".Bver\" for writing" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 7:
-    printf ( " \n\n             Can't open \".Bjob\" for writing" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n             Can't open \".Bjob\" for writing" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 8:
-    printf ( " \n\n             Can't open \".Bcom\" for reading" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n             Can't open \".Bcom\" for reading" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 9:
-    printf ( " \n\n  Can't \"chdir\" to %s", cur_dir );
+    printf ( "\n\n  Can't \"chdir\" to %s", cur_dir );
     perror ( "\n\n              chdir" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 10:
-    printf ( " \n\n             Can't open \".Benv\" for writing" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n             Can't open \".Benv\" for writing" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   case 11:
 #ifdef VERBOSE_FLAG
-    printf ( "\n  BSession: gave up on .Bini\n\n" );
+    puts ( "\n  BSession: gave up on .Bini\n\n" );
 #endif /* VERBOSE_FLAG */
     break;
   case 13:
-    printf ( " \n\n             Can't open \"TMP/.Bpog\" for reading" );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+    puts ( "\n\n             Can't open \"TMP/.Bpog\" for reading" );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
-  case 37: printf ( "\n\n              Can't mkfifo in %s", fifo_file_2m );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+  case 37:
+    printf ( "\n\n              Can't mkfifo in %s", fifo_file_2m );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
-  case 38: printf ( "\n\n              Can't mkfifo in %s", fifo_file_2b );
-    printf ( "\n\n              B-Toolkit Session Terminated" );
-    printf ( "\n\n             ( all data has been preserved )\n\n\n" );
+  case 38:
+    printf ( "\n\n              Can't mkfifo in %s", fifo_file_2b );
+    puts ( "\n\n              B-Toolkit Session Terminated" );
+    puts ( "\n\n             ( all data has been preserved )" );
     break;
   }
+  puts ("\n\n\n");
   kill_BMotif ();
   kill_XTerm ();
   kill_edit ();
@@ -665,7 +666,7 @@ chk_info_reqd ()
     fclose ( fileptr );
     unlink ( ".Berc" );
     if ( i >= 15280 && i <= 15289 && i != 15284 )
-      printf ( "           Run the script: $BKIT/BProcessInfo\n\n\n" );
+      puts ( "           Run the script: $BKIT/BProcessInfo\n\n\n" );
   }
 
 }
