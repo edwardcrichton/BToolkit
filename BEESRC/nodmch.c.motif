@@ -18,7 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 int last_seq_tot = 0;
 
-print_live_seq(src)
+print_live_seq(const char *src)
 {
   int ni, nj, nk, nfound, ntot;
   static int live_seq = 0;
