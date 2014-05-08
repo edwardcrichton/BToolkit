@@ -47,13 +47,13 @@ char * f;
    filefour=fopen(".Btac","r");
    if (filefour == NULL) {
      exit(102);
-   };
+   }
    c = getc(filefour);
    while (c != EOF)
      {
        putc(c,filetwo);
        c = getc(filefour);
-     };
+     }
    fputs("):c)\n=>(x <- c)\n)\n`\n",filetwo);
    fclose(filefour);
 
@@ -61,13 +61,13 @@ char * f;
    filefour=fopen(".Btad","r");
    if (filefour == NULL) {
      exit(102);
-   };
+   }
    c = getc(filefour);
    while (c != EOF)
      {
        putc(c,filetwo);
        c = getc(filefour);
-     };
+     }
    fputs("):c)\n=>(x <- x <- c)\n)\n`\n",filetwo); /* obsolete, but leave in */
    fclose(filefour);
 
@@ -75,13 +75,13 @@ char * f;
    filefour=fopen(".Btac","r");
    if (filefour == NULL) {
      exit(102);
-   };
+   }
    c = getc(filefour);
    while (c != EOF)
      {
        putc(c,filetwo);
        c = getc(filefour);
-     };
+     }
    fputs("\n`\n",filetwo);
    fclose(filefour);
 
@@ -93,11 +93,11 @@ char * f;
  {
    if (filetwo == NULL) {
      exit(100);
-   };
+   }
    fputs("5\n.B.bin\n3\n2\n5\nbcall(SwitchX:\n(\n",filetwo);
    if (filetwo == NULL) {
      exit(100);
-   };
+   }
  }
 
 
@@ -106,13 +106,13 @@ char * f;
  {
    if (filethree == NULL) {
      exit(101);
-   };
+   }
    c = getc(filethree);
    while (c != EOF)
      {
        putc(c,filetwo);
        c = getc(filethree);
-     };
+     }
  }
 
  void
@@ -155,7 +155,7 @@ read_ini()
           }
         }
       }
-    };
+    }
     c = getc(fileone);
   }
 }
@@ -199,11 +199,11 @@ step()
       while (c != ' ') {
         putc(c,filetwo);
         next();
-      };
+      }
       z=t;
       while (c == ' ') {
         next();
-      };
+      }
       z=(t-z)/2;
       putc('[',filetwo);
       if (z>9) { y=(z%10)+'0'; z=(z/10)+'0'; putc(z,filetwo); putc(y,filetwo); }
@@ -245,7 +245,7 @@ ins()
   while (c != EOF && u == 0) {
     if (t == 1) {
       step();
-    };
+    }
     if (c == ' ') {
       if (t == 49 || t == 50) {
         just();
@@ -290,7 +290,7 @@ ins()
     }
     else {
       putc(c,filetwo);
-    };
+    }
     next();  
   }
 }
@@ -302,7 +302,7 @@ inispc()
    fileone=fopen(".Bnum","w");
      if (filetwo == NULL) {
        exit(104);
-     };
+     }
    n = '0';
    putc(n,fileone);
    fclose(fileone);
@@ -316,17 +316,17 @@ spc()
    fileone=fopen(".Bnum","r");
      if (filetwo == NULL) {
        exit(105);
-     };
+     }
    n = getc(fileone);
    fclose(fileone);
    n = n+1;
    if ( n == '5' ) {
      n = '0';
-   };
+   }
    fileone=fopen(".Bnum","w");
      if (filetwo == NULL) {
        exit(104);
-     };
+     }
    putc(n,fileone);
    fclose(fileone);
 }
@@ -400,14 +400,14 @@ printf ( "------------\n" );
     if (bkit==NULL) {
       printf("\n              Environment variable BKIT not set\n\n");
       exit(1);
-      };
+      }
     strcpy(bses,bkit);
     strcat(bses,"/BLIB/BSession");
     if (strcmp("1",argv[1]) == 0) {
      filetwo=fopen(".BBcom","w");
      if (filetwo == NULL) {
        exit(100);
-     };
+     }
      zero_filetwo(argv[2]);
      fclose(filetwo);
      strcpy(s,argv[2]);

@@ -77,7 +77,7 @@ check_replace_word ()
     if ( ! found ) {
       i++;
     }
-  };
+  }
   if ( found ) {
     fputs ( repl_string [ i ], file_out );
   }
@@ -99,10 +99,10 @@ process_next_word ()
     word [ i ] = c;
     c = getc ( file_in );
     i++;
-  };
+  }
   if ( i == max_string ) {
     format_error ( 5 );
-  };
+  }
   word [ i ] = '\0';
 /***
   print_word;
@@ -127,10 +127,10 @@ process_next_html_word ()
     word [ i ] = c;
     c = getc ( file_in );
     i++;
-  };
+  }
   if ( i == max_string ) {
     format_error ( 5 );
-  };
+  }
   word [ i ] = '\0';
 /***
   print_word;
@@ -155,10 +155,10 @@ process_next_num_word ()
     word [ i ] = c;
     c = getc ( file_in );
     i++;
-  };
+  }
   if ( i == max_string ) {
     format_error ( 5 );
-  };
+  }
   word [ i ] = '\0';
 /***
   print_word;
@@ -177,7 +177,7 @@ char *argv[];
 {
   if ( argc != 6 ) {
     format_error ( 0 );
-  };
+  }
 
 /***
 {
@@ -205,7 +205,7 @@ for ( i = 0 ; i < argc ; i++ ) {
   }
   else {
     format_error ( 6 );
-  };
+  }
 
   file_in = fopen ( ".Bcom", "r" );
   if ( file_in == NULL ) {
@@ -221,13 +221,13 @@ for ( i = 0 ; i < argc ; i++ ) {
       orig_string [ tot_pairs ] [ i ] = c;
       c = getc ( file_in );
       i++;
-    };
+    }
     if ( i == max_string ) {
       format_error ( 1 );
-    };
+    }
     if ( c != ',' ) {
       format_error ( 2 );
-    };
+    }
     orig_string [ tot_pairs ] [ i ] = '\0';
     c = getc ( file_in );
     i = 0;
@@ -235,20 +235,20 @@ for ( i = 0 ; i < argc ; i++ ) {
       repl_string [ tot_pairs ] [ i ] = c;
       c = getc ( file_in );
       i++;
-    };
+    }
     if ( i == max_string ) {
       format_error ( 3 );
-    };
+    }
     if ( c != '\n' ) {
       format_error ( 4 );
-    };
+    }
     repl_string [ tot_pairs ] [ i ] = '\0';
     c = getc ( file_in );
     tot_pairs++;
-  };
+  }
   if ( c != EOF ) {
     format_error ( 3 );
-  };
+  }
   fclose ( file_in );
 
 /***
@@ -265,7 +265,7 @@ print_string_pairs;
   if ( file_out == NULL ) {
     printf ( "\n  Greplace: can't open \"%s\" for writing\n\n", out_file_name );
     exit ( 1 );
-  };
+  }
 
   /***
   if PASP skip to MODULE or MAIN if present
@@ -340,12 +340,10 @@ if ( ! MODULE_OR_MAIN_found ) {
     else {
       process_next_num_word ();
     }
-  };
+  }
 
   fclose ( file_in );
   fclose ( file_out );
 
-  exit ( 0 );
+  return 0;
 }
-
-   

@@ -58,7 +58,7 @@ print_ansiC_op ()
   while ( ! found && ! eof_flag ) {
     if ( fgets ( line_arr, maxline, dotcfile ) == NULL ) {
       eof_flag = 1;
-    };
+    }
     if ( ! eof_flag ) {
       if ( strcmp ( line_arr, ansiC_header ) == 0 ) {
         found = 1;
@@ -70,7 +70,7 @@ print_ansiC_op ()
         fputs ( line_arr, Btmp );
       }
     }
-  };
+  }
 
   /***
   print to ansiC_footer
@@ -89,7 +89,7 @@ print_ansiC_op ()
         fputs ( line_arr, Btmp );
       }
     }
-  };
+  }
 
   /***
   remove non-ansiC signature
@@ -107,7 +107,7 @@ print_ansiC_op ()
       else if ( argv3 == '1' ) {
         fputs ( "\n", Btmp );
       }
-    };
+    }
     found = 0;
     while ( ! found ) {
       fgets ( line_arr, maxline, dotcfile );
@@ -122,7 +122,7 @@ print_ansiC_op ()
           fputs ( "\n", Btmp );
 	}
       }
-    };
+    }
     c = getc ( dotcfile );
     if ( c != '\n' ) {
       ungetc ( c, dotcfile );
@@ -144,7 +144,7 @@ print_non_ansiC_op ()
   while ( ! found && ! eof_flag ) {
     if ( fgets ( line_arr, maxline, dotcfile ) == NULL ) {
       eof_flag = 1;
-    };
+    }
     if ( ! eof_flag ) {
       if ( strcmp ( line_arr, ansiC_header ) == 0 ) {
         found = 1;
@@ -156,7 +156,7 @@ print_non_ansiC_op ()
         fputs ( line_arr, Btmp );
       }
     }
-  };
+  }
 
   /***
   remove to non-ansiC_header
@@ -174,7 +174,7 @@ print_non_ansiC_op ()
       else if ( argv3 == '1' ) {
         fputs ( "\n", Btmp );
       }
-    };
+    }
   }
 
   /***
@@ -193,7 +193,7 @@ print_non_ansiC_op ()
       else {
         fputs ( line_arr, Btmp );
       }
-    };
+    }
     c = getc ( dotcfile );
     if ( c != '\n' ) {
       ungetc ( c, dotcfile );
@@ -202,7 +202,7 @@ print_non_ansiC_op ()
 }
 
 
-void
+int
 main(argc,argv)
 int argc;
 char *argv[];
@@ -215,12 +215,12 @@ char *argv[];
   if ( ( Btmp = fopen ( ".Btmp", "w" ) ) == NULL ) {
     printf( "\n      Can't open .Btmp for writing " );
     exit ( 1 );
-  };
+  }
 
   if ( ( dotcfile = fopen ( opfile, "r" ) ) == NULL ) {
     printf( "\n      Can't open %s for reading\n\n", opfile );
     exit ( 1 );
-  };
+  }
 
   eof_flag = 0;
 
@@ -233,7 +233,7 @@ char *argv[];
     while ( ! eof_flag ) {
       print_ansiC_op ();
     }
-  };
+  }
 
   fclose ( Btmp );
   fclose ( dotcfile );
@@ -243,6 +243,5 @@ char *argv[];
   strcat ( cmd, " ; rm -f .Btmp" );
   system ( cmd );
 
-  exit ( 0 );
-
+  return 0;
 }

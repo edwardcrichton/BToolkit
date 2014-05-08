@@ -16,11 +16,13 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-FILE *comf;
+
+#include <stdio.h>
 
 #define YES 1
 
 #define NO  2
+int
 yes_nofunc()
 #define yes_no yes_nofunc()
 {register int c,yes_no_res ;
@@ -30,6 +32,5 @@ yes_nofunc()
      yes_no_res = NO;
      c = getchar();
   }
-; return yes_no_res;
+  return yes_no_res;
 }
-

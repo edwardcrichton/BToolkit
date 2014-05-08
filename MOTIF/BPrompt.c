@@ -66,30 +66,12 @@ int tot_fld, cur_fld;
 
 int is_error;
 
-static char *num[] = { "0",
-                       "1",
-                       "2",
-                       "3",
-                       "4",
-                       "5",
-                       "6",
-                       "7",
-                       "8",
-                       "9"
-		     };
-
 void
 AppNumToBuf ( buf, n )
 char * buf;
 int n;
 {
-  if ( n > 9 ) {
-    AppNumToBuf ( buf, n/10 );
-    strcat ( buf, num [ n % 10 ] );
-  }
-  else {
-    strcat ( buf, num [ n ] );
-  }
+  sprintf(buf, "%d", n);
 }
 
 void

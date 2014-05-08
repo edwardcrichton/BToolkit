@@ -16,9 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include<string.h>
+#include <string.h>
 #include <time.h>
 
 #include "../MOTIF/BMotif_version.c"
@@ -50,8 +50,6 @@ char ref_arr_type       [ max_ref ];
 int  tot_ref_arr;
 
 int c, i, ll;
-
-time_t time_now;
 
 int in_annot = 0;
 
@@ -396,7 +394,8 @@ main ( argc, argv )
 int argc;
 char *argv[];
 {
-  char * getenv(), * name, bkit [ 250 ];
+  time_t time_now;
+  char * name, bkit [ 250 ];
 
   printf ( "." ); fflush ( stdout );
 

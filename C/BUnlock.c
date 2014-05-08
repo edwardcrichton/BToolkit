@@ -24,34 +24,28 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <errno.h>
 #include <sys/stat.h>
 
-FILE *fileid;
-
-char *getenv();
-char *bkit;
-
-char bpwd [ 1000 ];
-char block [ 1000 ];
-
-int i, c;
-
 int
 main ( argc, argv )
 int argc;
 char *argv[];
 {
+  FILE *fileid;
   struct stat stat_buf;
   int unlock_reqd = 1;
+  int i, c;
+  char *bkit;
+  char bpwd [ 1000 ];
+  char block [ 1000 ];
 
   bkit = getenv ( "BKIT" );
   if ( bkit  ==  NULL ) {
     printf ( "\n  Environment variable BKIT not set\n\n" );
     exit ( 0 );
-  };
+  }
 
   if ( argc == 3 ) {
     char buf [ 250 ];
     char msg [ 250 ];
-    FILE * fileid;
 
     unlock_reqd = 0;
     strcpy ( bpwd, argv [ 1 ] );
@@ -99,14 +93,14 @@ char *argv[];
     if ( fileid == NULL ) {
       printf ( "\n\n             Can't open \".Bcom\" for reading\n\n" );
       exit ( 1 );
-    };
+    }
     i = 0;
     c = getc ( fileid );
     while ( c != EOF && c != '\n' ) {
       bpwd [ i ] = c;
       i++;
       c = getc ( fileid );
-    };
+    }
     bpwd [ i ] = '\0';
     fclose ( fileid );
   }

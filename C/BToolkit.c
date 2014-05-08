@@ -31,7 +31,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 FILE *fileid;
 
-char *getenv();
 char* name;
 char* bkit;
 
@@ -469,19 +468,19 @@ int err_no;
           printf ( "\n                                  AIX\n\n\n" );
           unlink ( ".BToolkitLock" );
           break;
-  case 6: printf ( "\n\n              Problem with `uname'\n\n\n" );
+  case 6: printf ( "\n\n                Problem with `uname'\n\n\n" );
           unlink ( ".BToolkitLock" );
           break;
-  case 7: printf ( "\n\n              $BKIT/BLIB/BSession does not exist\n\n\n" );
+  case 7: printf ( "\n\n                $BKIT/BLIB/BSession does not exist\n\n\n" );
           unlink ( ".BToolkitLock" );
           break;
-  case 9: printf ( "\n\n              Environment variable BKIT not set\n\n\n" );
+  case 9: printf ( "\n\n                Environment variable BKIT not set\n\n\n" );
           unlink ( ".BToolkitLock" );
           break;
-  case 11: printf ( "\n\n              Can't write to file .Bver\n\n\n" );
+  case 11: printf ( "\n\n               Can't write to file .Bver\n\n\n" );
            unlink ( ".BToolkitLock" );
            break;
-  case 12: printf ( "\n\n              Environment variable BSITECODE not set\n\n\n" );
+  case 12: printf ( "\n\n               Environment variable BSITECODE not set\n\n\n" );
           unlink ( ".BToolkitLock" );
           break;
   case 16: printf ( "\n\n               B-Toolkit: Error code 13813\n\n\n" );
@@ -503,8 +502,8 @@ int err_no;
           unlink ( ".BToolkitLock" );
           break;
   case 25: printf ( "\n\n               Can't open .Bpla for writing\n\n\n" );
-           unlink ( ".BToolkitLock" );
-           break;
+          unlink ( ".BToolkitLock" );
+          break;
   case 26: printf ( "\n\n               B-Toolkit: Error code 13814\n\n\n" );
           unlink ( ".BToolkitLock" );
           break;
