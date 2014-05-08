@@ -23,7 +23,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 /*
  * launch.c 2007/06/08
  * 
- * One click launch of the toolkit for non command line bods.
+ * One click launch of the toolkit for non-command line bods.
  * Allows a symbolic link to the resulting executable to launch
  * the toolkit. Also symbolic links to this executable
  * will call the BKIT executable with the symlink name
@@ -45,7 +45,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 void dirname(path)
 char* path;
 {
-	int end;
+	size_t end;
 
 	end=strlen(path);
 	while(path[end]!='/' && end){end--;}	
@@ -104,10 +104,10 @@ const char* argv0;
 
 		if(file_exists(result) == 0)
 		{			
-			which[0]='\0';
-			result[0]='\0';
-			strcat(which,"which ");
+			strcpy(which,"which ");
 			strcat(which,argv0);
+
+                        result[0]='\0';
 
 			pfile=popen(which,"r");
 			fgets(result,PATH_MAX,pfile);
@@ -138,8 +138,7 @@ int file_exists(char* filename)
 	struct stat buf;
 	int i;
 	i=stat(filename,&buf);
-	if(i==0){return 1;}
-	return 0;
+	return (i==0) ? 1 : 0;
 }
 
 /*
@@ -159,17 +158,14 @@ int file_exists(char* filename)
 int main(int argc, char* argv[])
 {
 	char* executabledir;
-	int exelen=0;
-	int total=6;
+	size_t exelen=0;
 	char env1[PATH_MAX];
-	char env2[PATH_MAX];
 	char env3[PATH_MAX];
 	char bkit[PATH_MAX];
 	char homedir[PATH_MAX];
 	char display[PATH_MAX];
 	char commandlineargs[PATH_MAX];
 	char uname[PATH_MAX];
-	char lsof[PATH_MAX];
 	char* HOME;
 	char* PATH;
 	char* DISPLAY;
@@ -196,16 +192,8 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-
-	bkit[0]='\0';
-	env1[0]='\0';
-	env2[0]='\0';
-	env3[0]='\0';
-	homedir[0]='\0';
-	commandlineargs[0]='\0';
-
 	executabledir=getExecutableDir(argv[0]);
-	strcat(bkit,executabledir);
+	strcpy(bkit,executabledir);
 
 	exelen=strlen(bkit);
 	
@@ -217,7 +205,7 @@ int main(int argc, char* argv[])
 		strcat(bkit,"/BKIT");
 	}
 
-	strcat(env1,"BKIT=");
+	strcpy(env1,"BKIT=");
 	strcat(env1,bkit);
 
 	putenv(env1);
@@ -268,16 +256,14 @@ int main(int argc, char* argv[])
 		*  copy the demos
 		*  copy XBMotif into $HOME */
 
-		homedir[0]='\0';
-		strcat(homedir,HOME);
+		strcpy(homedir,HOME);
 		strcat(homedir,"/B_Projects");
 		madeB_Projects=mkdir(homedir,S_IRWXU);
 
 		if(madeB_Projects==0)
 		{
 			/* created it - so copy the DEMO directory too */
-			homedir[0]='\0';
-			strcat(homedir,"cp -r ");
+			strcpy(homedir,"cp -r ");
 			strcat(homedir,bkit);
 			strcat(homedir,"/BDEMO/* ");
 			strcat(homedir,HOME);
@@ -285,15 +271,13 @@ int main(int argc, char* argv[])
 			system(homedir);
 		}
 
-		homedir[0]='\0';
-		strcat(homedir,HOME);
+		strcpy(homedir,HOME);
 		strcat(homedir,"/XBMotif");
 
 		if(file_exists(homedir)==0)
 		{
 			/* copy XBMotif */
-			homedir[0]='\0';
-			strcat(homedir,"cp ");
+			strcpy(homedir,"cp ");
 			strcat(homedir,bkit);
 			strcat(homedir,"/XBMotif ");
 			strcat(homedir,HOME);
@@ -302,19 +286,17 @@ int main(int argc, char* argv[])
 
 		/* change working directory to the B_Projects directory */
 
-		homedir[0]='\0';
-		strcat(homedir,HOME);
+		strcpy(homedir,HOME);
 		strcat(homedir,"/B_Projects");
 		chdir(homedir);
 	}
 		
 	/* add $BKIT/BLIB to path */
 	
-	PATH=getenv("PATH");
-	env3[0]='\0';
-	strcat(env3,"PATH=");
+	strcpy(env3,"PATH=");
 	strcat(env3,bkit);
-	strcat(env3,"/BLIB:.:/bin:/usr/bin:/usr/X11R6/bin:/usr/local/bin:/sw/bin:/opt/bin:/opt/local/bin:/sbin:/usr/sbin");
+	strcat(env3,"/BLIB:.");
+        PATH=getenv("PATH");
 	if(PATH!=NULL)
 	{
 		strcat(env3,":");
@@ -332,8 +314,7 @@ int main(int argc, char* argv[])
 		DISPLAY=getenv("DISPLAY");
 		if(DISPLAY==NULL)
 		{
-			display[0]='\0';
-			strcat(display,"DISPLAY=:0.0");
+			strcpy(display,"DISPLAY=:0.0");
 			putenv(display);
 			printf("%s\n",display);
 		}
@@ -391,7 +372,7 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		strcat(commandlineargs,"$BKIT/");
+		strcpy(commandlineargs,"$BKIT/");
 		strcat(commandlineargs,myname);
 		strcat(commandlineargs," ");
 		/*
@@ -412,4 +393,3 @@ int main(int argc, char* argv[])
 		system(commandlineargs);
 	}
 }
-
