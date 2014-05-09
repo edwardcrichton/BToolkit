@@ -61,9 +61,9 @@ case "$1" in
    
    ;;
    install|1)
-   echo
+   #echo
     ;;
   failed-upgrade|abort-upgrade)
-    echo
+    #echo
     ;;
 esac
