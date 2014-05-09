@@ -18,7 +18,7 @@ umask 022
 
 echo "postinst $1 $2 $3"
 
-if [ "$1" != "configure" -a "$1" != "reconfigure" -a "$1" != "abort-upgrade" -a "$1" != "1" -a -a "$1" != "2" ] ; then
+if [ "$1" != "configure" -a "$1" != "reconfigure" -a "$1" != "abort-upgrade" -a "$1" != "1" -a "$1" != "2" ] ; then
 
 exit 0
 
