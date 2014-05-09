@@ -49,7 +49,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 #define PUT_CHR(c)           putchar ( c )
 
-#define PUT_STR(s)           printf ( ( char * ) s )
+#define PUT_STR(s)           puts ( ( char * ) s )
 
 #define PUT_BOOL(b)          if   ( b )  PUT_STR ( "TRUE" ); \
                              else        PUT_STR ( "FALSE" )

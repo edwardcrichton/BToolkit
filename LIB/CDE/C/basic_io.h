@@ -61,7 +61,7 @@ extern FILE * _b;
 
 #define PUT_CHR(c)           fprintf ( _b, "%c", ( char ) c )
 
-#define PUT_STR(s)           fprintf ( _b, ( char * ) s )
+#define PUT_STR(s)           fputs ( ( char * ) s, _b )
 
 #define PUT_BOOL(b)          if   ( b )  PUT_STR ( "TRUE" ); \
                              else        PUT_STR ( "FALSE" )
