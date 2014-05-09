@@ -269,7 +269,7 @@ printf( "    (Popup_Sel_flag %d  radiobox_flag %d)\n", Popup_Sel_flag, radiobox_
   else {
     DisplayCurrWinText ( buf );
     DisplayCurrWinText ( "\n" );
-    if ( strlen ( buf ) ) printf ( buf );
+    if ( strlen ( buf ) ) puts ( buf );
     Popup_Err ( 0, "  Can't complete current job " );
   }
 }
@@ -7249,10 +7249,10 @@ printf ( "! translating_pre_MInterface\n" );
           DisplayCurrWinText ( "\n\n    Bad directory:\n\n        " );
           printf ( "\n\n    Bad directory:\n\n        " );
           DisplayCurrWinText ( buf );
-          printf ( buf );
+          puts ( buf );
           strcat ( buf, "\n\n    It does not conform to a B-formula!\n\n       One or more of the directory names is not an\n       `arity 1' symbol - see $BKIT/BHELP/BPlatform.html\n\n    Can't create BToolkit development directory\n\n\n" );
           DisplayCurrWinText(buf);
-          printf ( buf );
+          puts ( buf );
           check_started_from_cd ( "" );
           DisplayCurrentEnv ();
 	}
@@ -7375,7 +7375,7 @@ printf ( "nn: %d nn+563: %d\n", nn, nn + 563 ); fflush ( stdout );
         strcat ( buf, cur_dir );
         strcat ( buf, "\n\n    It does not conform to a B-formula!\n\n       One or more of the directory names is not an\n       `arity 1' symbol - see $BKIT/BHELP/BPlatform.html\n\n    Can't create BToolkit development directory\n\n\n" );
         DisplayCurrWinText(buf);
-        printf ( buf );
+        puts ( buf );
 
         unlink ( pid_id_file );
         exit ( 1 );
