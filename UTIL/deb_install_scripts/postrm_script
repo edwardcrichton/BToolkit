@@ -6,7 +6,7 @@
 # rpm: 1 == replace, 0 == remove
 
 
-echo "postrm $1 $2 $3"
+#echo "postrm $1 $2 $3"
 
 case "$1" in
 remove|purge|0)

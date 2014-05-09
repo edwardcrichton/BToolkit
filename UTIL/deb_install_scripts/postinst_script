@@ -16,7 +16,7 @@ umask 022
 
 # 1 == first configure, 2 == upgrade configure
 
-echo "postinst $1 $2 $3"
+#echo "postinst $1 $2 $3"
 
 if [ "$1" != "configure" -a "$1" != "reconfigure" -a "$1" != "abort-upgrade" -a "$1" != "1" -a "$1" != "2" ] ; then
 

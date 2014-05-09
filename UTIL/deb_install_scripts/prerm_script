@@ -4,7 +4,7 @@
 # called with <remove|upgrade|failed-upgrade> [version]
 # rpm: 1 == replace, 0 == remove
 
-echo "prerm $1 $2 $3"
+#echo "prerm $1 $2 $3"
 
 if [ ! -d /usr/local/btoolkit ] ; then
 

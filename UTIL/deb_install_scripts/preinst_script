@@ -4,7 +4,7 @@
 # or upgrade is completed (following the successful execution of the 'postinst' script).
 # rpm: 1 == install, 2 == upgrade
 
-echo "preinst $1 $2 $3"
+#echo "preinst $1 $2 $3"
 
 case "$1" in
   upgrade|2)
