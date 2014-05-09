@@ -629,23 +629,23 @@ lst_all_symfunc()
               if( letchif_sym(s)==FALSE ){
                 str_buf [ 0 ] = '\0';
                 write_stri_sym(s);
-                fprintf ( bstdout, str_buf );
+                fputs ( str_buf, bstdout );
                 if( len_str(stri_sym(s))<8 ){
                   putc(9, bstdout);
                 };
                 putc(9, bstdout);
                 str_buf [ 0 ] = '\0';
                 write_lexi_sym(s);
-                fprintf ( bstdout, str_buf );
+                fputs ( str_buf, bstdout );
                 putc(9, bstdout);
                 str_buf [ 0 ] = '\0';
                 write_edit_sym(s);
-                fprintf ( bstdout, str_buf );
+                fputs ( str_buf, bstdout );
                 putc(9, bstdout);
                 str_buf [ 0 ] = '\0';
                 write_prio_sym(s);
-                fprintf ( bstdout, str_buf );
-                fprintf ( bstdout, "\n");
+                fputs ( str_buf, bstdout );
+                fputs ( "\n", bstdout );
               }
            ;});
 }

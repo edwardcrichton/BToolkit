@@ -327,28 +327,28 @@ sta0_seqfunc()
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Used Sequences:      ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, vnbs );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Dead Sequences:      ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, ttms );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Live Sequences:      ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, vnbs-ttms );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n\n          Memory Size:                   ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, max_mem );
@@ -356,7 +356,7 @@ sta0_seqfunc()
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
   strcat ( buf, " words" );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Memory Used:                   ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, vad(vnbs+1) );
@@ -364,7 +364,7 @@ sta0_seqfunc()
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
   strcat ( buf, " words" );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n\n          SPARE MEMORY:                  ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, max_mem-vad(vnbs+1) );
@@ -372,21 +372,21 @@ sta0_seqfunc()
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
   strcat ( buf, " words" );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n\n          Sequences with no Free Space:  ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, vnbs-x );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Sequences with Free Space:     ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, x );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   if ( vnbs ) {
     strcpy ( buf, "\n          Average Sequence Size:         ");
     str_buf [ 0 ] = '\0';
@@ -395,7 +395,7 @@ sta0_seqfunc()
     while ( i++ < 8 ) strcat ( buf, " " );
     strcat ( buf, str_buf );
     strcat ( buf, " words" );
-    if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+    if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   }
   if ( x ) {
     strcpy ( buf, "\n          Average Free Space Size:       ");
@@ -405,7 +405,7 @@ sta0_seqfunc()
     while ( i++ < 8 ) strcat ( buf, " " );
     strcat ( buf, str_buf );
     strcat ( buf, " words" );
-    if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+    if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   }
   strcpy ( buf, "\n\n          SIGMA OF FREE SPACES:          ");
   str_buf [ 0 ] = '\0';
@@ -414,7 +414,7 @@ sta0_seqfunc()
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
   strcat ( buf, " words" );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n\n          SPARE MEMORY +\n          SIGMA OF FREE SPACES:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, z+max_mem-vad(vnbs+1));
@@ -422,8 +422,8 @@ sta0_seqfunc()
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
   strcat ( buf, " words" );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
-  if ( exit_flag ) printf ( "\n\n      --------------------------+-------------------------\n" ); else DisplayCurrWinText ( "\n\n      ----------------------------+-----------------------\n" );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( "\n\n      --------------------------+-------------------------\n" ); else DisplayCurrWinText ( "\n\n      ----------------------------+-----------------------\n" );
 }
 
 

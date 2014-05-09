@@ -9460,7 +9460,7 @@ int t;
     l = val ( rul_the ( t ), i );
     strcpy ( str_buf, "\n" );
     write_hor_short_rul ( val_rul_the ( t, i ) );
-    printf ( str_buf );
+    puts ( str_buf );
     if ( typ_rul ( l ) == lem_rul ) {
       if (  pvd_rul ( l ) != now_rul ) {
         str_buf [ 0 ] = '\0';
