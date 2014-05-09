@@ -52,11 +52,7 @@ endsw
 
 set binding=""
 
-set arch=`uname -m`
-
-if ( `echo $arch | grep "i.86"` != "" ) then
-      set arch="i386"
-endif
+set arch=`dpkg-architecture -qDEB_BUILD_ARCH_CPU`
 
 
 # the package name
@@ -218,7 +214,7 @@ foreach c ( $TOCAT )
 cp "$scripts/header" "$scripts/$c"
 cat "$scripts/${c}_script" >> "$scripts/$c"
 chmod 755 "$scripts/$c"
-cp "$scripts/$c" $DEBIAN/.
+mv "$scripts/$c" $DEBIAN/
 end
 
 # copy the files and directories
