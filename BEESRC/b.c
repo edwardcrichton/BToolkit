@@ -181,18 +181,18 @@ long n;
 bannerfunc()
 #define banner bannerfunc()
 {
-  fprintf ( bstdout, "\n\n" );
+  fputs ( "\n\n", bstdout );
 /*
-  fprintf ( bstdout, b_name );
+  fputs ( b_name, bstdout );
 */
-  fprintf ( bstdout, "                 b (malloc) for B-Core" );
-  fprintf ( bstdout, "\n\n" );
-  fprintf ( bstdout, toolkit_ver_with_sp );
-  fprintf ( bstdout, "\n\n" );
-  fprintf ( bstdout, orig_author );
-  fprintf ( bstdout, "\n\n" );
-  fprintf ( bstdout, toolkit_copyright );
-  fprintf ( bstdout, "\n\n" );
+  fputs ( "                 b (malloc) for B-Core", bstdout );
+  fputs ( "\n\n", bstdout );
+  fputs ( toolkit_ver_with_sp, bstdout );
+  fputs ( "\n\n", bstdout );
+  fputs ( orig_author, bstdout );
+  fputs ( "\n\n", bstdout );
+  fputs ( toolkit_copyright, bstdout );
+  fputs ( "\n\n", bstdout );
 }
 
 /*  
