@@ -154,7 +154,7 @@ lst_fwd_tac_prf,fwd_tac_prf,fwd_tac_ptr_prf,
 the_prf,new_tac_prf,end_of_tac_prf,max_fwd_ctr_prf,print_ext_prf,
 first_prf,
 sho_big_gol_prf,sho_gol_prf,sho_der_hyp_prf,exec_prf;
-/* FUCK char fstr_prf[10001];  increased for use in fifowrite
+/* char fstr_prf[10001];  increased for use in fifowrite
    other places might need attention */ 
 #define MAXfstr 10001
 char fstr_prf[MAXfstr];
