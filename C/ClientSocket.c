@@ -547,7 +547,7 @@ printf ( "\n\n\t\t  ClientSocketNUM\n" );
         Kill_bplatform_and_exit ( 0, 0 );
       }
       BToolkitd_Client_GET_STR (  ( int * ) ss );
-      printf ( ss );
+      puts ( ss );
 
       * nn = 0;
       * rr = 0;
@@ -604,7 +604,7 @@ printf ( "\n\n\t\t  ClientSocketNUM\n" );
       }
 
       BToolkitd_Client_GET_STR (  ( int * ) ss );
-      printf ( ss );
+      puts ( ss );
 
       tot_str--;
     }
@@ -664,7 +664,7 @@ printf ( "\n\n\t\t  ClientSocketNUM\n" );
     if ( buf [ 0 ] != '\0' ) {
       if ( strlen ( buf ) > 2 ) {
         if ( ( buf [ 0 ] != 'Z' ) && ( buf [ 0 ] != 'Z' ) )
-          printf ( buf );
+          puts ( buf );
       }
     }
   }
@@ -680,7 +680,7 @@ printf ( "\n\n\t\t  ClientSocketNUM\n" );
     if ( buf [ 0 ] != '\0' ) {
       if ( strlen ( buf ) > 2 ) {
         if ( ( buf [ 0 ] != 'Z' ) && ( buf [ 0 ] != 'Z' ) )
-          printf ( buf );
+          puts ( buf );
       }
     }
   }
@@ -946,7 +946,7 @@ fprintf ( bstdout, " (req=%d)\n", req );
       Kill_bplatform_and_exit ( 0, 0 );
     }
     BToolkitd_Client_GET_STR (  ( int * ) buf );
-    if ( buf [ 0 ] != '0' ) printf ( buf );
+    if ( buf [ 0 ] != '0' ) puts ( buf );
   }
 
   /************************************************************************
