@@ -594,23 +594,23 @@ char util_str [ util_str_max + 2 ] [ util_str_max + 2 ];
 bannerfunc()
 #define banner bannerfunc()
 {
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
-  printf             ( btool_name );
+  puts               ( btool_name );
   DisplayCurrWinText ( btool_name );
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
-  printf             ( toolkit_ver_with_sp );
+  puts               ( toolkit_ver_with_sp );
   DisplayCurrWinText ( toolkit_ver_with_sp );
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
-  printf             ( orig_author );
+  puts               ( orig_author );
   DisplayCurrWinText ( orig_author );
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
-  printf             ( toolkit_copyright );
+  puts               ( toolkit_copyright );
   DisplayCurrWinText ( toolkit_copyright );
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
 }
 
