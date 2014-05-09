@@ -1,4 +1,0 @@
-#!/bin/sh
-set -e
-BT_VERSION_NUM="6.03" 
-BT_EXECUTABLES="btool btoolkit btoolkitd btoolkitd_util bunlock" 
