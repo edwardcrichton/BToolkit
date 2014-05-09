@@ -22,7 +22,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <signal.h>
 #include <sys/stat.h>
 #include <unistd.h>
-/* add*/
 #include <string.h>
 
 #define MAX_loop_count 15
