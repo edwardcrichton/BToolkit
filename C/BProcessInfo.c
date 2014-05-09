@@ -265,16 +265,16 @@ char *argv[];
     platform = is_darwin;
   }
   else {
-    printf ( "\n\n              Alien environment:  " );
-    printf ( benv );
-    printf ( "\n\n              Known environments: SunOS" );
-    printf ( "\n                                  Solaris" );
-    printf ( "\n                                  OSF1" );
-    printf ( "\n                                  IRIX" );
-    printf ( "\n                                  Linux" );
-    printf ( "\n                                  Darwin" );
-    printf ( "\n                                  AIX\n" );
-    printf ( "\n                Assuming Linux\n\n" );
+    puts ( "\n\n              Alien environment:  " );
+    puts ( benv );
+    puts ( "\n\n              Known environments: SunOS" );
+    puts ( "\n                                  Solaris" );
+    puts ( "\n                                  OSF1" );
+    puts ( "\n                                  IRIX" );
+    puts ( "\n                                  Linux" );
+    puts ( "\n                                  Darwin" );
+    puts ( "\n                                  AIX\n" );
+    puts ( "\n                Assuming Linux\n\n" );
     platform = is_linux;
   }
 
