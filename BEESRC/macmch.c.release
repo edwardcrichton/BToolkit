@@ -449,7 +449,7 @@ fprintf ( bstdout, "                                  %s\n                      
     write_lst_err;
     fprintf ( bstdout,"\n"); fflush ( bstdout );
     fprintf ( bstdout,"\n       Error in fifo read:\n\n" ); fflush ( bstdout );
-    fprintf ( bstdout, "\n        bplatform macmch: read (len %d)\n", strlen ( ss ) ); fflush ( bstdout );
+    fprintf ( bstdout, "\n        bplatform macmch: read (len %zd)\n", strlen ( ss ) ); fflush ( bstdout );
     fprintf ( bstdout, "\n        %s\n\n", ss ); fflush ( bstdout );
 /*
     system ( "$BKIT/BLIB/BPrompt \"  bplatform - Error in fifo read - See shell\"  " );
