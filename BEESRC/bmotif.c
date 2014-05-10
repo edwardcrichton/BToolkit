@@ -943,7 +943,7 @@ ini_Blm_off ()
   }
   else {
     {
-      int my_id;
+      uid_t my_id;
       my_id = getuid ();
       remove_my_zombie_pid ( pid, my_id );
       put_num( &hi_l , &hi_m, &hi_h );

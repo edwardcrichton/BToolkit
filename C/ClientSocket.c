@@ -304,8 +304,8 @@ char * bkit_dir;
 
 void
 remove_my_zombie_pid ( pid, my_id )
-int pid;
-int my_id;
+pid_t pid;
+uid_t my_id;
 {
   int ClientSocketNUM ();
   FILE * Bcom;
@@ -391,7 +391,7 @@ printf ( "    not my process and not active - killing\n" );
 void
 remove_all_zombie_pid ( p, my_id )
 int p;
-int my_id;
+uid_t my_id;
 {
   int ClientSocketNUM ();
   char buf [ 250 ];
