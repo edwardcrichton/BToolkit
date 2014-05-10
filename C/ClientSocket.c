@@ -430,7 +430,7 @@ ClientSocketNUM (nn, rr, req, pid, hi_l, hi_m, hi_h )
 int * nn;
 int * rr;
 int req;
-int pid;
+pid_t pid;
 int hi_l;
 int hi_m;
 int hi_h;
@@ -445,7 +445,7 @@ DoClientSocketNUM ( nn, rr, req, pid, hi_l, hi_m, hi_h , killPlatform)
 int * nn;
 int * rr;
 int req;
-int pid;
+pid_t pid;
 int hi_l;
 int hi_m;
 int hi_h;
