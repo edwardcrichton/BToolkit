@@ -401,7 +401,7 @@ int p;
   while ( p ) {
     strcat ( buf, " " );
     p--;
-  };
+  }
   CreNumInBuf ( buf, n );
 }
 
@@ -932,7 +932,7 @@ ini_Blm_off ()
     else {
       fclose ( Bpid_id );
     }
-  };
+  }
 
   /***
   send hiip_request - hprot now redundant - always ipaddress protection!
