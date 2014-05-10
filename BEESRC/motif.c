@@ -2472,7 +2472,7 @@ char * text;
 
   if ( first_time ) {
     first_time = 0;
-    Popup_Info_id = XtAppAddTimeOut ( app, ( long unsigned ) 2500L,
+    Popup_Info_id = XtAppAddTimeOut ( app, 2500UL,
       ( XtTimerCallbackProc ) Popup_Info_CB,
       ( XtPointer ) dialog );
     XmAddWMProtocolCallback ( dialog, WM_DELETE_WINDOW,
@@ -2480,7 +2480,7 @@ char * text;
         ( XtPointer ) dialog );
   }
   else {
-     Popup_Info_id = XtAppAddTimeOut ( app, ( long unsigned ) 3500L,
+     Popup_Info_id = XtAppAddTimeOut ( app, 3500UL,
       ( XtTimerCallbackProc ) Popup_Info_CB,
       ( XtPointer ) dialog );
   }
