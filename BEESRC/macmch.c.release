@@ -313,7 +313,7 @@ fprintf ( bstdout, "                                  bplatform: about to open f
 	fprintf ( stdout, "                                  bplatform: read open\n"); fflush ( stdout );
 	#endif /* FIFO_TRACE_FLAG */
 	
-	if(errno==EINTR)
+	if(fifo_read_ptr == -1 && errno == EINTR)
 	{
 		#ifdef FIFO_TRACE_FLAG
 		fprintf ( stdout, "                                  bplatform: read open EINTR\n"); fflush ( stdout );
@@ -322,13 +322,13 @@ fprintf ( bstdout, "                                  bplatform: about to open f
 		sleep(1);
 	}
   }
-  while( fifo_read_ptr < 0 && errno == EINTR );
+  while( fifo_read_ptr == -1 && errno == EINTR );
 
 
-  if ( fifo_read_ptr < 0 ) {
+  if ( fifo_read_ptr == -1 ) {
   
-  		fprintf ( stdout, "                                  bplatform: read open error\n"); fflush ( stdout );
-  
+           fprintf ( stdout, "                                  bplatform: read open error\n"); fflush ( stdout );
+
            sprintf ( err_buf, "  bplatform: %s", fifo_file_2b );
            perror ( err_buf );
            printf ( "\n" );
@@ -352,10 +352,10 @@ fifo_info ( "                                  << bplatform fifo_read_ptr",  fif
 	
 while ( sock_buf_len > 0 ) {
 
-    errno=0;
+    errno = 0;
 
     n = read ( fifo_read_ptr, sock_buf_ptr, sock_buf_len );
-    if(errno == EINTR)
+    if(n == -1 && errno == EINTR)
     {
     
     	#ifdef FIFO_TRACE_FLAG
@@ -365,7 +365,7 @@ while ( sock_buf_len > 0 ) {
 	sleep(1);
     	continue;
     }
-    if( n==0 && sock_buf_len == 250000)
+    if( n == 0 && sock_buf_len == 250000)
     {
     
     	#ifdef FIFO_TRACE_FLAG
@@ -397,14 +397,14 @@ fprintf ( bstdout, "                                  bplatform: fifo_read (inte
   }
  **/
 
-  if ( n < 0 ) {
+  if ( n == -1 ) {
            fprintf ( stdout, "bplatform: read error\n" ); fflush ( stdout );
            perror ( "" );
            system ( "echo 0 > .Bses" );
            exit ( 1 );
   }
 
-    if (   close ( fifo_read_ptr )  != 0 )
+    if ( close ( fifo_read_ptr )  != 0 )
     {
            fprintf ( stdout, "bplatform: close error\n" ); fflush ( stdout );
            perror ( "" );
