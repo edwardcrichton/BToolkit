@@ -41,7 +41,7 @@ int qbbuf,bbuf,sta,sta_bra,dst,linput,ficput;
 
 #define neutral_lex     0
 
-#define psh_lex(i,x)   tapip[i]=tapip[i]+1;pip[i][tapip[i]]=x
+#define psh_lex(i,x)  tapip[i]=tapip[i]+1;pip[i][tapip[i]]=x
 
 /***
 #define psh_lex(i,x) \
@@ -351,8 +351,7 @@ dave_print_bbuf;
             psh_str(qbbuf,x)
           ;break;};
         };
-      }
-     else if( x==ANTI_SLASH_sym ){
+      } else if( x==ANTI_SLASH_sym ){
         switch( n ){
           case 4 :{
             psh_str(qbbuf,x);
@@ -372,7 +371,9 @@ dave_print_bbuf;
             psh_lex(k,SMR_sym);
             psh_lex(k,x);
             mod_lex(i,0)
-          ;break;}case 0 /* ,2,3 */ :{
+          ;break;}case 0
+/* ,2,3 */
+ :{
             psh_lex(k,x);
             mod_lex(i,0)
           ;break;}case 1 :{
@@ -397,10 +398,7 @@ dave_print_bbuf;
           ;break;}case 4,5 :{
             psh_str(qbbuf,x)
           ;break;};
-        }
-*/
-
-
+        } */
       } else {
         switch( n ){
           case 0 :{  /* same as case 1 */
@@ -997,8 +995,6 @@ dave_print_bbuf;
       }
       break;
     }
-
-
   }
 }
 

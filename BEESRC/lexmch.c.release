@@ -41,7 +41,7 @@ int qbbuf,bbuf,sta,sta_bra,dst,linput,ficput;
 
 #define neutral_lex     0
 
-#define psh_lex(i,x)  tapip[i]=tapip[i]+1;pip[i][tapip[i]]=x 
+#define psh_lex(i,x)  tapip[i]=tapip[i]+1;pip[i][tapip[i]]=x
 
 #define len_lex(i)    tapip[i] 
 
@@ -191,7 +191,8 @@ enter_lexfunc()
         } else {
           enter_lex_res=(-r);
         }
-      ;break;}case upp :{
+        break;}
+      case upp :{
         dave_is_upper_case = TRUE;
         enter_lex_res=cre_sym(bbuf,opn,mixw,0)
       ;break;}case mix :{
@@ -203,7 +204,7 @@ enter_lexfunc()
       ;break;};
     };
   }
-; return enter_lex_res;
+  return enter_lex_res;
 }
 
 ousta_lex(i)
@@ -285,7 +286,9 @@ ousta_lex(i)
           ;break;};
         }
      
-/* ;} else if( x==SMPQUO_sym ){
+/*
+      }
+      else if( x==SMPQUO_sym ){
         switch( n ){
           case 0,1,6,7,8 :{
             psh_str(qbbuf,x); 
@@ -299,7 +302,7 @@ ousta_lex(i)
           ;break;}case 4,5 :{
             psh_str(qbbuf,x)
           ;break;};
-        } */;
+        } */
       } else {
         switch( n ){
           case 0 :{
@@ -307,7 +310,7 @@ ousta_lex(i)
               {};
             } else if( (x!=BLK_sym) || (n==0) ){
               psh_lex(k,x);
-            };
+            }
             if( x==BLK_sym ){
               mod_lex(i,1);
             } else if( x==LSB_sym ){
@@ -319,12 +322,14 @@ ousta_lex(i)
             } else {
               mod_lex(i,0);
             }
-          ;break;}case 1 :{
+            break;
+          }
+          case 1 :{
             if( (x==LSB_sym) || (x==LCB_sym) || (x==SMR_sym) ){
               {};
             } else if( (x!=BLK_sym) || (n==0) ){
               psh_lex(k,x);
-            };
+            }
             if( x==BLK_sym ){
               mod_lex(i,1);
             } else if( x==LSB_sym ){
@@ -791,8 +796,8 @@ printf ( "               ------------- GHO_sym for - or + ----------------\n" );
         };
         psh(sta,x);
       }
-    ;break;};
-  };
+    ;break;}
+  }
 }
 
 ana_lex(p)
