@@ -7559,11 +7559,11 @@ printf ( str_buf );
       ;
     }
     if ( strlen ( str_buf ) > 0 ) {
-      fprintf ( bstdout, "HYPOTHESES:\n\n" );
-      fprintf ( bstdout, str_buf );
+      fputs ( "HYPOTHESES:\n\n", bstdout );
+      fputs ( str_buf, bstdout );
     }
     else {
-      fprintf ( bstdout, "No hypotheses\n" );
+      fputs ( "No hypotheses\n", bstdout );
     }
       reset_trm; 
 /* freopen(TERMINAL,"w", bstdout); */
