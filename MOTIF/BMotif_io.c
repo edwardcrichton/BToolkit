@@ -16,6 +16,10 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#include <assert.h>
+#include <stdio.h>
+
 #include "BMotif_globals.h"
 
 #include "../C/BToolkitlm_globals.h"
@@ -2894,7 +2898,6 @@ char * name;
   }
 }
 
-
 void
 GetNameFromString ( name, str )
 char * name;
@@ -2909,40 +2912,23 @@ char * str;
   name [ i ] = '\0';
 }
 
-
 void
 CreNumInBuf ( buf_, n )
 char * buf_;
 int n;
 {
-  if ( n < 0 ) {
-    n = n * (-1);
-    strcat ( buf_, "-" );
-  }
-  if ( n > 9 ) {
-    CreNumInBuf ( buf_, n/10 );
-    strcat ( buf_, num_strings [ n % 10 ] );
-  }
-  else {
-    strcat ( buf_, num_strings [ n ] );
-  }
+  assert(n >= 0);
+  sprintf( buf_, "%d", n);
 }
-
 
 void
 PrintNum ( file, n )
 FILE * file;
 int n;
 {
-  if ( n > 9 ) {
-    PrintNum ( file, n/10 );
-    fprintf ( file, num_strings [ n % 10 ] );
-  }
-  else {
-    fprintf ( file, num_strings [ n ] );
-  }
+  assert(n >= 0);
+  fprintf( file, "%d", n);
 }
-
 
 void
 CreNumFromBuf ( n, buf )
@@ -2958,7 +2944,6 @@ char * buf;
     i++;
   }
 }
-
 
 void
 DeCommentFile ( filenamein, filenameout, no_annot )
