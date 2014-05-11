@@ -774,7 +774,7 @@ void
 LoadBSelRecLists ()
 {
   int rr, nn, cc, cc1;
-  int  ext, name [ 50 ];
+  int ext, name [ 50 ];
 
   GetExtNumFromString ( &ext, primary_string );
   GetNameFromString ( name, primary_string );
@@ -2872,7 +2872,7 @@ printf ( "c %d %s   platform_ident %d %s\n", c, platform_types [ c ], platform_i
 void
 GetExtNumFromString ( ext, name )
 int * ext;
-char * name;
+const char * name;
 {
   size_t i = 0;
   size_t j = 0;
