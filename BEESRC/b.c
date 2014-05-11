@@ -97,7 +97,7 @@ CreNumInBuf ( buf, n )
 char * buf;
 long n;
 {
-  sprintf( buf, "%ld", n);
+  sprintf( buf + strlen ( buf ), "%ld", n);
 }
 
 #include "ClientSocket.c"

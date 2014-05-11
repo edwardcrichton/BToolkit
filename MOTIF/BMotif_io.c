@@ -17,7 +17,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 
-#include <assert.h>
 #include <stdio.h>
 
 #include "BMotif_globals.h"
@@ -2917,8 +2916,7 @@ CreNumInBuf ( buf_, n )
 char * buf_;
 int n;
 {
-  assert(n >= 0);
-  sprintf( buf_, "%d", n);
+  sprintf( buf_ + strlen ( buf_ ), "%d", n);
 }
 
 void
@@ -2926,7 +2924,6 @@ PrintNum ( file, n )
 FILE * file;
 int n;
 {
-  assert(n >= 0);
   fprintf( file, "%d", n);
 }
 
