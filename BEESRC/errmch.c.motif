@@ -153,7 +153,6 @@ psh_fic_err(f,c)
 cre_err(f,l,d,n,s)
 {register int e ;
   if( too_many_err==TRUE ){
-    {};
   } else if( nbr_err==max_err ){
     strcat ( str_buf, "\n      TOO MANY ERRORS" );
     too_many_err=TRUE;
@@ -208,15 +207,11 @@ printf ( " ********************* l: %d\n", l );
   }
   else {
     unlink ( ".BBcom" );
-  };
+  }
 /*
   write_blk_err(4-len_nat(l)+1);
 */
-  if      ( l < 10 )     strcat ( str_buf, "    " );
-  else if ( l < 100 )    strcat ( str_buf, "   " );
-  else if ( l < 1000 )   strcat ( str_buf, "  " );
-  else                   strcat ( str_buf, " " );
-  CreNumInBuf ( str_buf, l );
+  sprintf( str_buf + strlen(str_buf), "%5d",l);
   strcat ( str_buf, ": " );
   switch( nat_err(e) ){
     case missing_zeroary_err :{
@@ -275,9 +270,8 @@ printf ( " ********************* l: %d\n", l );
         write_err_stri_sym(snd_err(e));
         strcat ( str_buf, "\" " );
       }
-    ;break;};
+    ;break;}
   }
-
   if( def_fic_err(e)==TRUE ){
     strcat ( str_buf, "(" );
 /*     str_buf [ 0 ] = '\0';
@@ -286,8 +280,7 @@ printf ( " ********************* l: %d\n", l );
     write_err_str(fic_nam_err(fic_err(e)));
     strcat ( str_buf, " )" );
   }
-
-  strcat ( str_buf, "  \n" );
+  strcat ( str_buf, "\n" );
 }
 
 write_lst_errfunc()
