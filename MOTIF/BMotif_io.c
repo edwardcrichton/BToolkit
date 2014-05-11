@@ -5980,9 +5980,6 @@ ESC separates
   }
 }
 
- 
-
-
 #ifdef WWW_VERSION
 
 Reset_WWW() {}
@@ -6013,7 +6010,6 @@ Reset_WWW() {}
 */
 #endif /* WWW_VERSION */
 
-
 #ifdef COUNT_WWW
 
 void
@@ -6042,7 +6038,6 @@ printf ( "In COUNTCheckIsBad: nn %d: COUNT_25_msg %d\n", nn, COUNT_25_msg );
   }
   COUNT_25_msg = 1;
 
-
 #ifdef COUNT_VERSION
 
   printf ( "\n\n   This B-Toolkit restricted licence has now expired\n\n\n" );
@@ -6069,10 +6064,6 @@ printf ( "In COUNTCheckIsBad: nn %d: COUNT_25_msg %d\n", nn, COUNT_25_msg );
 }
 
 #endif /* COUNT_WWW */
-
-
-
-
 
 #ifdef WWW_VERSION
 
@@ -7902,8 +7893,8 @@ printf ( "2BT_BTL_AUP_M: primary_string %s secondary_string %s buf %s ext %d\n",
       aaa_bbb_sss_Name -> Rename_Name
     ***/
       {
-        int j;
-        int i = strlen ( primary_string );
+        size_t j;
+        size_t i = strlen ( primary_string );
 
         while ( ( i ) && primary_string [ i ] != '_' ) { i--; }
         if ( primary_string [ i ] = '_' ) {
