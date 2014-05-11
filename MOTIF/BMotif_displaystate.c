@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#include <inttypes.h>
+
 #include "BMotif_globals.h"
 
 struct Display * Display_0   = ( struct Display * ) NULL;
@@ -291,7 +294,7 @@ DisplayAndCheckTotals ()
   int tot;
 
   printf ( "\nDisplay         %3d ", DisplayTotal );
-  printf ( " (%d)\n", DisplayMallocTotal );
+  printf ( " (" PRIdPTR ")\n", DisplayMallocTotal );
 
   printf ( "Main            %3d ", MainTotal );
   tot = 0;
@@ -300,7 +303,7 @@ DisplayAndCheckTotals ()
     if ( Main_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != MainTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", MainMallocTotal );
+  printf ( " (" PRIdPTR ")\n", MainMallocTotal );
 
   printf ( "Provers         %3d ", ProversTotal );
   tot = 0;
@@ -309,7 +312,7 @@ DisplayAndCheckTotals ()
     if ( Provers_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != ProversTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", ProversMallocTotal );
+  printf ( " (" PRIdPTR ")\n", ProversMallocTotal );
 
   printf ( "Generators      %3d ", GeneratorsTotal );
   tot = 0;
@@ -318,7 +321,7 @@ DisplayAndCheckTotals ()
     if ( Generators_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != GeneratorsTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", GeneratorsMallocTotal );
+  printf ( " (" PRIdPTR ")\n", GeneratorsMallocTotal );
 
   printf ( "Translators     %3d ", TranslatorsTotal );
   tot = 0;
@@ -327,7 +330,7 @@ DisplayAndCheckTotals ()
     if ( Translators_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != TranslatorsTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", TranslatorsMallocTotal );
+  printf ( " (" PRIdPTR ")\n", TranslatorsMallocTotal );
 
   printf ( "Documents       %3d ", DocumentsTotal );
   tot = 0;
@@ -336,7 +339,7 @@ DisplayAndCheckTotals ()
     if ( Documents_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != DocumentsTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", DocumentsMallocTotal );
+  printf ( " (" PRIdPTR ")\n", DocumentsMallocTotal );
 
 }
 
