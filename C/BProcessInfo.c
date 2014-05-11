@@ -41,24 +41,12 @@ int c, i, j, k;
 int done, user_header, other_header, proc_total, bmotif_proc_total, reqd;
 int bm_num;
 
-static char *num[] = { "0","1","2","3","4","5","6","7","8","9" };
-
 void
 CreNumInBuf ( buf, n )
 char * buf;
 long n;
 {
-  if ( n < 0 ) {
-    n = n * (-1);
-    strcat ( buf, "-" );
-  }
-  if ( n > 9 ) {
-    CreNumInBuf ( buf, n/10 );
-    strcat ( buf, num [ n % 10 ] );
-  }
-  else {
-    strcat ( buf, num [ n ] );
-  }
+  sprintf ( buf + strlen ( buf ), "%ld", n );
 }
 
 void
