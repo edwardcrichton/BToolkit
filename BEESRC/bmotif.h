@@ -434,9 +434,9 @@ extern int c_arr [];
 
 #ifndef BTOOLKIT_FLAG
 
-extern char *proved_label[];
+extern const char *proved_label[];
 
-extern char *proved_class[];
+extern const char *proved_class[];
 
 #endif
 

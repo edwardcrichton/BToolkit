@@ -200,13 +200,13 @@ int curr_thy, curr_rule;
 
 int c_arr [ c_arr_MAX ];
 
-char *proved_label[] = { "(unproved)",
+const char *proved_label[] = { "(unproved)",
                          "(proved)",
                          "(proved at previous level)",
                          "(proved at this level)"
 		       };
 
-char *proved_class[] = { "Highlight",
+const char *proved_class[] = { "Highlight",
                          "Label",
                          "Label",
                          "Label"
