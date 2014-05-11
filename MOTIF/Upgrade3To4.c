@@ -182,7 +182,7 @@ CfgDepBase_RST_STR_OBJ_342()
 	while( i!=0 ){
 		read_fmc(c,1);
 		i = i-1;
-	};
+	}
 }
 
 void
@@ -465,7 +465,7 @@ Construct_RST_FNC_OBJ_40()
           while ( i <= Construct_ssize_fnc_obj*Construct_ffnc_objP2 ) {
 	    Construct_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= Construct_ssize_fnc_obj ) {
 	    read_fm(Construct_fnc_obj[1+(i-1)*Construct_ffnc_objP2], old_size);
@@ -490,7 +490,7 @@ Abs2Conc_RST_FNC_OBJ_40()
           while ( i <= Abs2Conc_ssize_fnc_obj*Abs2Conc_ffnc_objP2 ) {
 	    Abs2Conc_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= Abs2Conc_ssize_fnc_obj ) {
 	    read_fm(Abs2Conc_fnc_obj[1+(i-1)*Abs2Conc_ffnc_objP2], old_size);
@@ -515,7 +515,7 @@ MRIState_RST_FNC_OBJ_40()
           while ( i <= MRIState_ssize_fnc_obj*MRIState_ffnc_objP2 ) {
 	    MRIState_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= MRIState_ssize_fnc_obj ) {
 	    read_fm(MRIState_fnc_obj[1+(i-1)*MRIState_ffnc_objP2], old_size);
@@ -540,7 +540,7 @@ GENState_RST_FNC_OBJ_40()
           while ( i <= GENState_ssize_fnc_obj*GENState_ffnc_objP2 ) {
 	    GENState_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= GENState_ssize_fnc_obj ) {
 	    read_fm(GENState_fnc_obj[1+(i-1)*GENState_ffnc_objP2], old_size);
@@ -565,7 +565,7 @@ Seqstr_RST_FNC_OBJ_40()
           while ( i <= Seqstr_ssize_fnc_obj*Seqstr_ffnc_objP2 ) {
 	    Seqstr_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= Seqstr_ssize_fnc_obj ) {
 	    read_fm(Seqstr_fnc_obj[1+(i-1)*Seqstr_ffnc_objP2], old_size);
@@ -590,7 +590,7 @@ String_RST_FNC_OBJ_40()
           while ( i <= String_ssize_fnc_obj*String_ffnc_objP2 ) {
 	    String_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= String_ssize_fnc_obj ) {
 	    read_fm(String_fnc_obj[1+(i-1)*String_ffnc_objP2], old_size);
@@ -689,7 +689,7 @@ int *rep;
 Info_40 ();
 ***/
     CfgDepBase_close_dump_40(&bb);
-  };
+  }
   *rep = bb;
 }
 
