@@ -2874,8 +2874,8 @@ GetExtNumFromString ( ext, name )
 int * ext;
 char * name;
 {
-  int i = 0;
-  int j = 0;
+  size_t i = 0;
+  size_t j = 0;
   char ext_str [ 10 ];
 
   while ( name [ i ] != '.' ) {
@@ -2903,7 +2903,7 @@ GetNameFromString ( name, str )
 char * name;
 char * str;
 {
-  int i = 0;
+  size_t i = 0;
 
   while ( str [ i ] != '.' && str [ i ] != '\0' ) {
     name [ i ] = str [ i ];
