@@ -254,9 +254,9 @@ printf ( " ***************************************************** ini_codfunc\n" 
 
   coding=fopen(symfilname_cod,"r");
   if( (coding == NULL) ){
-     fprintf ( bstdout, "\n       Can't open:\n\n         ");
-     fprintf ( bstdout, symfilname_cod);
-     fprintf ( bstdout, "\n\n       for reading\n\n");
+     fputs ( "\n       Can't open:\n\n         ", bstdout );
+     fputs ( symfilname_cod, bstdout );
+     fputs ( "\n\n       for reading\n\n", bstdout );
      exit(1);
   }
   c=getc(coding);
