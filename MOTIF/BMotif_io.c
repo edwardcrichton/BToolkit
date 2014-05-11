@@ -140,8 +140,6 @@ int exit_code;
     }
 }
 
-
-
 void
 AbortedMsgFile ( file_msg )
 char * file_msg;
@@ -149,13 +147,6 @@ char * file_msg;
     fprintf ( stderr,  "\n\n             BMotif: can't open %s", file_msg );
     fprintf ( stderr,  "\n\n                  B-Toolkit Terminated" );
     fprintf ( stderr,  "\n\n             All data has been preserved\n\n\n" );
-}
-
-void
-Msg_ ( nn )
-int nn;
-{
-  
 }
 
 void

@@ -1899,7 +1899,6 @@ extern void fifo_write_non_fifo ();
      i/o procedures
 ***************************************************/
 
-extern void   Msg_ ();
 extern void   main_continue();
 
 extern void   AbortedMsg ();

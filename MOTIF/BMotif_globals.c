@@ -1970,7 +1970,6 @@ void fifo_write_non_fifo ();
      i/o procedures
 ***************************************************/
 
-void   Msg_ ();
 void   main_continue();
 
 void   AbortedMsg ();
