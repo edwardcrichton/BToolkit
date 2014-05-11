@@ -69,8 +69,8 @@ void
 AbortedMsgCode ( exit_code )
 int exit_code;
 {
-    char temp[255];
-    temp[0]='\0';
+    char temp[255] = "";
+
     switch ( exit_code ) {
     case 13242:
     case 13243:
