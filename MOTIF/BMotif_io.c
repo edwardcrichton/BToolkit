@@ -54,14 +54,11 @@ char * buf;
 {
     fprintf ( stderr,  "\n\n                  B-Toolkit Terminated" );
     fprintf ( stderr,  "\n\n                    Exit code: %d", exit_code );
-    if( buf != NULL)
+    if( buf != NULL && buf[0] != '\0' )
     {
-        if(buf[0] != '\0' )
-	{
-            fprintf ( stderr,  "\n\n                      (%s)", buf );
-        }
+        fprintf ( stderr,  "\n\n                      (%s)", buf );
     }
-    if( buf == NULL || buf[0]=='\0')
+    else if( buf == NULL || buf[0] == '\0' )
     {
         fprintf ( stderr,  "\n\n             See: %s/ErrorCodes", BKIT_path );
     }
