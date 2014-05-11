@@ -22,8 +22,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 extern char * no_toolkit_short_ver;
 
-int ipsn_arr [ 16 ];
-
 /*#include "../C/BToolkitd_common.c"*/
 
 
