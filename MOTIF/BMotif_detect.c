@@ -30,9 +30,9 @@ char* path;
 	}
 }
 
-char* detectApplications(char* known[], int total)
+char* detectApplications(char* known[], size_t total)
 {
-	int i;
+	size_t i;
 	char which[PATH_MAX];
 	char which_output[PATH_MAX];
 	char which_output_canonical[PATH_MAX];
@@ -42,7 +42,7 @@ char* detectApplications(char* known[], int total)
 	
 	printf("detectApplications\n");
 	
-	applicationList=(char *)malloc((size_t) (PATH_MAX*total));
+	applicationList= (char *) malloc(PATH_MAX*total);
 	applicationList[0]='\0';
 	canonicalList[0]='\0';
 	
@@ -109,7 +109,7 @@ char* detectApplications(char* known[], int total)
 }
 
 /*
-   Make a colon separated list of editors from, $VISUAL, $XEDITOR and a
+   Make a colon separated list of editors from $VISUAL, $XEDITOR and a
    list of known editors.
 */
 
@@ -117,28 +117,26 @@ char* detectEditors()
 {
 	char* known[]=
 	{
-		NULL,NULL,"nedit", "gedit","xedit",
-		"textedit" , "/Applications/TextWrangler.app/Contents/MacOS/TextWrangler","/Applications/TextEdit.app/Contents/MacOS/TextEdit",
-		"xemacs", "emacs" ,"/Applications/Emacs.app/Contents/MacOS/Emacs","kedit",
-		"gvim","nano","pico","vi"
+                NULL, /* placeholder for $VISUAL */
+                NULL, /* placeholder for $XEDITOR */
+		"nedit",
+		"gedit",
+		"xedit",
+		"textedit",
+		"/Applications/TextWrangler.app/Contents/MacOS/TextWrangler",
+		"/Applications/TextEdit.app/Contents/MacOS/TextEdit",
+		"xemacs",
+		"emacs",
+		"/Applications/Emacs.app/Contents/MacOS/Emacs",
+		"kedit",
+		"gvim",
+		"nano",
+		"pico",
+		"vi"
 	};
-	int total=14;
-	char visual[PATH_MAX];
-	char xeditor[PATH_MAX];
-	visual[0]='\0';
-	xeditor[0]='\0';
-	known[0]=getenv("VISUAL");
-	if(known[0]!=NULL)
-	{
-		strcat(visual,known[0]);
-		known[0]=visual;
-	}
-	known[1]=getenv("XEDITOR");
-	if(known[1]!=NULL)
-	{
-		strcat(xeditor,known[1]);
-		known[1]=xeditor;
-	}
+        known[0]=getenv("VISUAL");
+        known[1]=getenv("XEDITOR");
+	size_t total=sizeof(known)/sizeof(known[0]);
 	return detectApplications(known,total);
 }
 
@@ -146,10 +144,21 @@ char* detectBrowsers()
 {
 	char* known[]=
 	{
-		"firefox", "google-chrome", "/Applications/Firefox.app/Contents/MacOS/firefox","/Applications/Safari.app/Contents/MacOS/Safari","/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-		"netscape", "w3m", "konqueror", "opera", "elinks", "links", "lynx", "yelp"
+		"firefox",
+		"google-chrome",
+		"/Applications/Firefox.app/Contents/MacOS/firefox",
+		"/Applications/Safari.app/Contents/MacOS/Safari",
+		"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+		"netscape",
+		"w3m",
+		"konqueror",
+		"opera",
+		"elinks",
+		"links",
+		"lynx",
+		"yelp"
 	};
-	int total=11;
+	size_t total=sizeof(known)/sizeof(known[0]);
 	return detectApplications(known,total);	
 }
 
@@ -230,7 +239,6 @@ char* escapeQuotesAndBackslashes(char* arguments)
 	result[length]='\0';
 	return result;
 }
-
 
 char* getApplicationCommandLineTemplate(char* cmd,char* known[], char* xterm[], int total)
 {

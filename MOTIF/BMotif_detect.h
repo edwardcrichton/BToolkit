@@ -29,7 +29,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #define H_DETECT
 
 extern void canonical(char*);
-extern char* detectApplications(char**,int);
+extern char* detectApplications(char**,size_t);
 extern char* detectEditors();
 extern char* detectBrowsers();
 extern char* getCommandExecutableName(char*);
