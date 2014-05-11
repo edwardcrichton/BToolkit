@@ -84,7 +84,7 @@ void
 Write ( ss )
 char * ss;
 {
-  printf ( ss );  fflush ( stdout );
+  puts ( ss );  fflush ( stdout );
 }
 
 void
@@ -865,4 +865,3 @@ int rep;
   }
   exit ( rep );
 }
-
