@@ -508,7 +508,7 @@ Widget button;
 XtPointer client_data;
 XtPointer call_data;
 {
-  int user_data;
+  XtPointer user_data;
   Pixel lab_col;
   int obj = * ( int * ) client_data;
   void SetDisplay_1_for_obj ();
