@@ -19246,7 +19246,7 @@ printf ( "%d  %d  %d  %d  %d  %d  %d\n",  user_lab_col_f, lib_lab_col_f, gen_lab
        ( gen_lab_col_b  == inapplicable_lab_col )    ) {
     Popup_Err ( /* 999998  */ 0, "Can't allocate colours from  \"XBMotif\" " );
     sprintf ( buf, "%s", "\n  Can't allocate colours from \"XBMotif\" resource file.\n\n  This could be because of an already-running\n  colour-hungry application (eg. Netscape),\n  or because \"XBMotif\" is in the wrong place.\n\n  If it is the latter, please put \"XBMotif\"\n  where it can be read, for example in:\n\n        /usr/lib/X11/app-defaults           or\n        /usr/openwinlib/X11/app-defaults    or\n        /usr/X11R6/lib/app-defaults         or\n        $HOME\n\n  The location is dependent on the X file search path\n  of your local setup and you should consult\n  your System Administrator if you experience\n  difficulties.\n\n" );
-    printf ( buf );
+    puts ( buf );
     DisplayCurrWinText ( buf );
     XBell ( display, -75 );
     XBell ( display, -75 );

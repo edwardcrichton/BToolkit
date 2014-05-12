@@ -88,7 +88,7 @@ show_gset (gsetnn)
     }
     BLK (6);
     xtr_name (Str, cc);
-    printf ((char *) Str);
+    puts ((char *) Str);
     val_ext (&ex, cc);
     switch (ex) {
     case mch:
