@@ -1,0 +1,16 @@
+Build requirements:
+- flex
+- motif (e.g. lesstif2-dev or libmotif-dev)
+- tcsh
+
+Build procedure:
+$ cd BToolkit/UTIL/
+$ export PATH=`pwd`:${PATH}
+$ ./BUILD
+# answer 'N' and then 'A'
+
+Run:
+$ cd BKIT
+$ export BKIT=`pwd`
+$ cd BDEMO
+$ ../BToolkit
