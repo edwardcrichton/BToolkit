@@ -10674,7 +10674,7 @@ int WM_flag;
       NULL );
   XtAddCallback ( dismiss, XmNactivateCallback,
       ( XtCallbackProc ) Dismiss_BrowseTheories_CB,
-      ( XtPointer ) Dismiss_BrowseTheories_CB );
+      ( XtPointer ) NULL );
   
 
   XtManageChild ( B_logo );
@@ -11249,7 +11249,7 @@ int WM_flag;
         NULL );
     XtAddCallback ( dismiss, XmNactivateCallback,
         ( XtCallbackProc ) Dismiss_BrowseATheory_CB,
-        ( XtPointer ) Dismiss_BrowseATheory_CB );
+        ( XtPointer ) NULL );
   
     browse_theories = XtVaCreateManagedWidget ( "Theories", 
         xmPushButtonGadgetClass, bot_form,
