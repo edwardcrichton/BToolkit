@@ -134,9 +134,9 @@ char* detectEditors()
 		"pico",
 		"vi"
 	};
+        size_t total=sizeof(known)/sizeof(known[0]);
         known[0]=getenv("VISUAL");
         known[1]=getenv("XEDITOR");
-	size_t total=sizeof(known)/sizeof(known[0]);
 	return detectApplications(known,total);
 }
 
