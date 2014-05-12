@@ -225,28 +225,28 @@ sta_hypfunc()
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Used Hypos:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, hyp );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Dead Hypos:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, httm );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Live Hypos:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, hyp-httm );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
 }
 
     

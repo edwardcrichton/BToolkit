@@ -381,28 +381,28 @@ sta_golfunc()
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Used Goals:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, gol );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Dead Goals:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, gttm );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Live Goals:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, gol-gttm );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
 }
 
     

@@ -346,28 +346,28 @@ sta_nodfunc()
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Used Nodes:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, nod );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Dead Nodes:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, nttm );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Live Nodes:          ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, nod-nttm );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
 }
 
 hello1(i,j)
