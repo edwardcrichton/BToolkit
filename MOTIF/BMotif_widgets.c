@@ -8250,6 +8250,10 @@ XtPointer help_data;
          o_form, o_o;
    char* textPtr;
    
+   int help_height_;
+   int help_width_;
+   int help_type_;
+
    textPtr=( ( struct help_struct * ) help_data ) -> text;
    
    
@@ -8272,9 +8276,9 @@ XtPointer help_data;
    }
   #endif
 
-  int help_height_ = ( ( struct help_struct * ) help_data ) -> height;
-  int help_width_  = ( ( struct help_struct * ) help_data ) -> width;
-  int help_type_   = ( ( struct help_struct * ) help_data ) -> type;
+  help_height_ = ( ( struct help_struct * ) help_data ) -> height;
+  help_width_  = ( ( struct help_struct * ) help_data ) -> width;
+  help_type_   = ( ( struct help_struct * ) help_data ) -> type;
 
   /***
   create the dialog
