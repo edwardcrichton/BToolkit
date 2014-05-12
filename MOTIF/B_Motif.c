@@ -7152,21 +7152,19 @@ printf ( "additional_string = `%s'\n", additional_string );
 void
 NEW_Dialog_RadioBox_CB ( button, client_data, call_data )
 Widget button;
-int client_data;
-/*long client_data;*/
+XtPointer client_data;
 XtPointer call_data;
 {
   static int first_time = 1;
   static int double_click = 0;
   static XtIntervalId id = 0;
   int n = * ( int * ) client_data;
-  /*long n = * ( long * ) client_data;*/
   XmPushButtonCallbackStruct * cbs =
               ( XmPushButtonCallbackStruct * ) call_data;
 
 /***
 if ( ! second_visit ) printf ( "\n" );
-printf ( "NEW_Dialog_RadioBox_CB n=%d second_visit=%d waiting_option=%d\n", * ( int * ) client_data, second_visit, waiting_option );
+printf ( "NEW_Dialog_RadioBox_CB n=%d second_visit=%d waiting_option=%d\n", n, second_visit, waiting_option );
 ***/
 
 /***
@@ -7246,21 +7244,19 @@ int but_num;
 void
 NEW_Dialog_RadioBox_EditedFileExists_CB ( button, client_data, call_data )
 Widget button;
-int client_data;
-/*long client_data;*/
+XtPointer client_data;
 XtPointer call_data;
 {
   static int first_time = 1;
   static int double_click = 0;
   static XtIntervalId id = 0;
   int n = * ( int * ) client_data;
-  /*long n = * ( long * ) client_data;*/
   XmPushButtonCallbackStruct * cbs =
               ( XmPushButtonCallbackStruct * ) call_data;
 
 /***
 if ( ! second_visit ) printf ( "\n" );
-printf ( "NEW_Dialog_RadioBox_EditedFileExists_CB n=%d second_visit=%d waiting_option=%d\n", * ( int * ) client_data, second_visit, waiting_option );
+printf ( "NEW_Dialog_RadioBox_EditedFileExists_CB n=%d second_visit=%d waiting_option=%d\n", n, second_visit, waiting_option );
 ***/
 
   if ( second_visit ) {
