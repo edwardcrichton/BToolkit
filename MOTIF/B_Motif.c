@@ -5893,7 +5893,7 @@ void
 DisplayCurrWinText ( text )
 char *text;
 {
-  int text_length = strlen ( text );
+  size_t text_length = strlen ( text );
 
   if (  ( text_length > 50 )                                        && 
         ( ( int ) curr_text_posn + text_length > text_trigger_tot )    ) {
