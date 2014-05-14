@@ -200,13 +200,13 @@ int curr_thy, curr_rule;
 
 int c_arr [ c_arr_MAX ];
 
-char *proved_label[] = { "(unproved)",
+const char *proved_label[] = { "(unproved)",
                          "(proved)",
                          "(proved at previous level)",
                          "(proved at this level)"
 		       };
 
-char *proved_class[] = { "Highlight",
+const char *proved_class[] = { "Highlight",
                          "Label",
                          "Label",
                          "Label"
@@ -271,7 +271,7 @@ int port;
 char buf [ 75000 ];
 #endif
 
-int pid;
+pid_t pid;
 int Blm_registered = 0;
 
 void ini_Blm ();
@@ -401,7 +401,7 @@ int p;
   while ( p ) {
     strcat ( buf, " " );
     p--;
-  };
+  }
   CreNumInBuf ( buf, n );
 }
 
@@ -594,23 +594,23 @@ char util_str [ util_str_max + 2 ] [ util_str_max + 2 ];
 bannerfunc()
 #define banner bannerfunc()
 {
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
-  printf             ( btool_name );
+  puts               ( btool_name );
   DisplayCurrWinText ( btool_name );
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
-  printf             ( toolkit_ver_with_sp );
+  puts               ( toolkit_ver_with_sp );
   DisplayCurrWinText ( toolkit_ver_with_sp );
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
-  printf             ( orig_author );
+  puts               ( orig_author );
   DisplayCurrWinText ( orig_author );
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
-  printf             ( toolkit_copyright );
+  puts               ( toolkit_copyright );
   DisplayCurrWinText ( toolkit_copyright );
-  printf             ( "\n\n" );
+  puts               ( "\n\n" );
   DisplayCurrWinText ( "\n\n" );
 }
 
@@ -932,7 +932,7 @@ ini_Blm_off ()
     else {
       fclose ( Bpid_id );
     }
-  };
+  }
 
   /***
   send hiip_request - hprot now redundant - always ipaddress protection!
@@ -943,7 +943,7 @@ ini_Blm_off ()
   }
   else {
     {
-      int my_id;
+      uid_t my_id;
       my_id = getuid ();
       remove_my_zombie_pid ( pid, my_id );
       put_num( &hi_l , &hi_m, &hi_h );

@@ -575,7 +575,7 @@ fflush ( stdout );
 
     /*  GlobalDefs.src: #define BT_INFO_DONT_WAIT_M 999122 */
     char info_buf [ 500 ];
-    sprintf ( info_buf, "999122@bplatform memory realloc -> %d Mb@0",
+    sprintf ( info_buf, "999122@bplatform memory realloc -> %lud Mb@0",
                                          ( max_mem / 1000000 ) * sizeof ( int ) );
     bfifowrite_direct ( info_buf );
     if ( ! ( fifo_read_direct () ) ) {
@@ -927,7 +927,7 @@ char * sss;
     sprintf ( err_buf, "  bplatform: %s", fifo_file_2m );
     perror ( err_buf );
     fprintf ( bstdout, "\n" ); fflush ( bstdout );
-    fprintf ( bstdout, "\n        bplatform: attempting to write (len %d)\n",
+    fprintf ( bstdout, "\n        bplatform: attempting to write (len %zd)\n",
                                               strlen ( sss ) ); fflush ( bstdout );
     fprintf ( bstdout, "\n        %s\n\n", sss ); fflush ( bstdout );
     system ( "echo 0 > .Bses" );

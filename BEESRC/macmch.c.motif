@@ -26,7 +26,7 @@ get_line_nbr_macfunc()
     n=n*10+(c-'0');
     c=get_input_fil;
   }
-; return n;
+  return n;
 }
 
 get_file_macfunc()
@@ -39,7 +39,7 @@ get_file_macfunc()
     psh_fic_err(fic,c);
     c=get_input_fil;
   }
-; return fic;
+  return fic;
 }
 
 macTRUE_read_fifo ( ss )
@@ -90,14 +90,14 @@ fprintf ( bstdout, "%c", c ); fflush ( stdout );
         while( c!='\n' ){
           enter_name_cod(c);
           c=get_input_fil;
-        };
+        }
         term_name_cod;
         ana_lex(ord(' '));
         line=line+1;
         mod_lin_lex(fic,line);
       } else {
         ana_lex(c);
-      };
+      }
     } else if( c=='#' ){
       if( state == 1 ){
         line=get_line_nbr_mac;
@@ -105,25 +105,25 @@ fprintf ( bstdout, "%c", c ); fflush ( stdout );
         c=get_input_fil;
         while( c!='\n' ){
           c=get_input_fil;
-        };
+        }
         mod_lin_lex(fic,line);
       } else {
         ana_lex(c);
-      };
+      }
     } else if( c=='\t' ){
       ana_lex(ord(' '));
       state=0;
     } else if( (c>=32) && (c<=126) ){
       ana_lex(c);
       state=0;
-    };
-    if( c!=EOF ){ c=get_input_fil ;};
-  };
+    }
+    if( c!=EOF ){ c=get_input_fil ;}
+  }
   if( val_too_many_err==FALSE ){
     ana_lex(ord(' '));
     ana_lex(BLK_sym);
     ana_lex(EOT_sym);
-  };
+  }
 }
 
 macTRUEspefunc()
@@ -146,14 +146,14 @@ macTRUEspefunc()
     } else if( (c>=32) && (c<=126) ){
       ana_lex(c);
       state=0;
-    };
-    if( c!=EOF ){ c=get_input_fil ;};
-  };
+    }
+    if( c!=EOF ){ c=get_input_fil ;}
+  }
   if( val_too_many_err==FALSE ){
     ana_lex(ord(' '));
     ana_lex(BLK_sym);
     ana_lex(EOT_sym);
-  };
+  }
 }
 
 macTRUEspefunc_str_buf()
@@ -180,9 +180,9 @@ printf ( "             ----->>>>> macTRUEspe_str_buf |%s|\n", str_buf );
     } else if( (c>=32) && (c<=126) ){
       ana_lex(c);
       state=0;
-    };
-    if( c!='\0' ){ c = str_buf [ str_buf_i++ ];};
-  };
+    }
+    if( c!='\0' ){ c = str_buf [ str_buf_i++ ];}
+  }
   if( val_too_many_err==FALSE ){
     ana_lex(ord(' '));
     ana_lex(BLK_sym);
@@ -206,8 +206,7 @@ read_frmfunc()
       b=TRUE;
       write_lst_err;
       rmv_sym(n);
-    }
-    else {
+    } else {
       b=FALSE;
     }
     close_input_fil;
@@ -254,11 +253,11 @@ read_eol_frmfunc()
       rmv_sym(n);
     } else {
       b=FALSE;
-    } ;
+    }
     close_input_fil;
-  };
-  reset_err
-; return dst;
+  }
+  reset_err;
+  return dst;
 }
 
 #ifdef bplatform
@@ -437,7 +436,6 @@ read_file_frmfunc()
   while( b==TRUE ){
     if( reset_input_fil(1)==FALSE ){
       b=FALSE;
-      
       read_file_frm_res=0;
     } else {
       reset_err;
@@ -455,23 +453,23 @@ read_file_frmfunc()
           } else {
             b=FALSE;
             read_file_frm_res=0;
-          };
+          }
         } else {
           b=FALSE;
           read_file_frm_res=0;
-        };
+        }
       } else {
         b=FALSE;
         read_file_frm_res=dst;
-      } ;
+      }
       close_input_fil;
-    };
+    }
     reset_err;
-  };
+  }
   if( read_file_frm_res == 0 ){
     kil(dst);
   }
-; return read_file_frm_res;
+  return read_file_frm_res;
 }
 */
 

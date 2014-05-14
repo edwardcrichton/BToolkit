@@ -4605,14 +4605,14 @@ printf ( "cfg name_fil=`%s'\n", CFGName );
   if ( ! cfg_f ) {
     sprintf ( buf, "\n  %s no longer parses!\n\n", CFGName );
     DisplayCurrWinText ( buf );
-    printf ( buf );
+    puts ( buf );
     AbortedMsg ();
     BT_err_exit ( 0 );
   }
   if ( ! src_f ) {
     sprintf ( buf, "\n  %s no longer parses!\n\n", SRCName );
     DisplayCurrWinText ( buf );
-    printf ( buf );
+    puts ( buf );
     AbortedMsg ();
     BT_err_exit ( 0 );
   }
@@ -5536,7 +5536,7 @@ char *colourname;
       strcat(buf,"  If it is the latter, please put \"XBMotif\"\n  where it can be read, for example in:\n\n");
       strcat(buf,"        /usr/lib/X11/app-defaults           or\n        /usr/openwinlib/X11/app-defaults    or\n        /usr/X11R6/lib/app-defaults         or\n        $HOME\n\n");
       strcat(buf,"  The location is dependent on the X file search path\n  of your local setup and you should consult\n  your System Administrator if you experience\n  difficulties.\n\n" );
-      printf ( buf );
+      puts ( buf );
       DisplayCurrWinText ( buf );
       XBell ( display, -75 );
       XBell ( display, -75 );
@@ -5893,7 +5893,7 @@ void
 DisplayCurrWinText ( text )
 char *text;
 {
-  int text_length = strlen ( text );
+  size_t text_length = strlen ( text );
 
   if (  ( text_length > 50 )                                        && 
         ( ( int ) curr_text_posn + text_length > text_trigger_tot )    ) {
@@ -6213,7 +6213,7 @@ printf ( "%d %s   %d %s\n", c, platform_types [ c ], platform_ident, platform_ty
     AbortedMsgFile ( fifo_write_buf );
     return;
   }
-  fprintf ( Bcom, cur_dir );
+  fputs ( cur_dir, Bcom );
   fclose ( Bcom );
 
   system ( "rm -fr TMP" );
@@ -6258,7 +6258,7 @@ char * new_dir;
     BT_err_exit ( 0 );
     return;
   }
-  fprintf ( Bcom, cur_dir );
+  fputs ( cur_dir, Bcom );
   fclose ( Bcom );
   system ( "rm -fr TMP" );
   CheckAllDIRSExist ();     /* TMP ! */
@@ -7152,21 +7152,19 @@ printf ( "additional_string = `%s'\n", additional_string );
 void
 NEW_Dialog_RadioBox_CB ( button, client_data, call_data )
 Widget button;
-int client_data;
-/*long client_data;*/
+XtPointer client_data;
 XtPointer call_data;
 {
   static int first_time = 1;
   static int double_click = 0;
   static XtIntervalId id = 0;
   int n = * ( int * ) client_data;
-  /*long n = * ( long * ) client_data;*/
   XmPushButtonCallbackStruct * cbs =
               ( XmPushButtonCallbackStruct * ) call_data;
 
 /***
 if ( ! second_visit ) printf ( "\n" );
-printf ( "NEW_Dialog_RadioBox_CB n=%d second_visit=%d waiting_option=%d\n", * ( int * ) client_data, second_visit, waiting_option );
+printf ( "NEW_Dialog_RadioBox_CB n=%d second_visit=%d waiting_option=%d\n", n, second_visit, waiting_option );
 ***/
 
 /***
@@ -7246,21 +7244,19 @@ int but_num;
 void
 NEW_Dialog_RadioBox_EditedFileExists_CB ( button, client_data, call_data )
 Widget button;
-int client_data;
-/*long client_data;*/
+XtPointer client_data;
 XtPointer call_data;
 {
   static int first_time = 1;
   static int double_click = 0;
   static XtIntervalId id = 0;
   int n = * ( int * ) client_data;
-  /*long n = * ( long * ) client_data;*/
   XmPushButtonCallbackStruct * cbs =
               ( XmPushButtonCallbackStruct * ) call_data;
 
 /***
 if ( ! second_visit ) printf ( "\n" );
-printf ( "NEW_Dialog_RadioBox_EditedFileExists_CB n=%d second_visit=%d waiting_option=%d\n", * ( int * ) client_data, second_visit, waiting_option );
+printf ( "NEW_Dialog_RadioBox_EditedFileExists_CB n=%d second_visit=%d waiting_option=%d\n", n, second_visit, waiting_option );
 ***/
 
   if ( second_visit ) {

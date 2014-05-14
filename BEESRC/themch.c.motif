@@ -380,18 +380,18 @@ ini_thefunc()
   
 lst_rul_the(t)
 {register int i,r,l ;
-printf ( " ->>> lst_rul_the(t)\n" );
-  fprintf ( bstdout, "THEORY " );
+puts ( " ->>> lst_rul_the(t)\n" );
+  fputs ( "THEORY ", bstdout );
   str_buf [ 0 ] = '\0';
   write_nam_the(t);
-  fprintf ( bstdout, str_buf );
-  fprintf ( bstdout, " IS" );
-  fprintf ( bstdout, "\n" );
-  fprintf ( bstdout, "\n" );
+  fputs ( str_buf, bstdout );
+  fputs ( " IS", bstdout );
+  fputs ( "\n", bstdout );
+  fputs ( "\n", bstdout );
   l=len(rul_the(t));
-  itr(rul_the(t),i,r,str_buf [ 0 ] = '\0';write_hor_rul(r);fprintf ( bstdout, str_buf );if( i < l ){ fprintf ( bstdout, ";" ) ;}; fprintf ( bstdout, "\n" ));
-  fprintf ( bstdout, "\n" );
-  fprintf ( bstdout, "END" );
+  itr(rul_the(t),i,r,str_buf [ 0 ] = '\0';write_hor_rul(r);fputs ( str_buf, bstdout );if( i < l ){ fputs ( ";", bstdout ) ;}; fputs ( "\n", bstdout ));
+  fputs ( "\n", bstdout );
+  fputs ( "END", bstdout );
 }
 
 lst_short_rul_the(t)
@@ -627,28 +627,28 @@ sta_thefunc()
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Used Theories:       " );
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, the );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Dead Theories:       " );
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, tttm );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Live Theories:       " );
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, the-tttm );
   i = strlen ( str_buf );
   while ( i++ < 8 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
 }
 
       

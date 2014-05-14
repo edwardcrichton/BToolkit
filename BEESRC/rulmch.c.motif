@@ -650,28 +650,28 @@ sta_rulfunc()
   i = strlen ( str_buf );
   while ( i++ < 10 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Used Rules:        ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, rul );
   i = strlen ( str_buf );
   while ( i++ < 10 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Dead Rules:        ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, rttm );
   i = strlen ( str_buf );
   while ( i++ < 10 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
   strcpy ( buf, "\n          Number of Live Rules:        ");
   str_buf [ 0 ] = '\0';
   CreNumInBuf ( str_buf, rul-rttm );
   i = strlen ( str_buf );
   while ( i++ < 10 ) strcat ( buf, " " );
   strcat ( buf, str_buf );
-  if ( exit_flag ) printf ( buf ); else DisplayCurrWinText ( buf );
+  if ( exit_flag ) puts ( buf ); else DisplayCurrWinText ( buf );
 }
 
     

@@ -2472,7 +2472,7 @@ char * text;
 
   if ( first_time ) {
     first_time = 0;
-    Popup_Info_id = XtAppAddTimeOut ( app, ( long unsigned ) 2500L,
+    Popup_Info_id = XtAppAddTimeOut ( app, 2500UL,
       ( XtTimerCallbackProc ) Popup_Info_CB,
       ( XtPointer ) dialog );
     XmAddWMProtocolCallback ( dialog, WM_DELETE_WINDOW,
@@ -2480,7 +2480,7 @@ char * text;
         ( XtPointer ) dialog );
   }
   else {
-     Popup_Info_id = XtAppAddTimeOut ( app, ( long unsigned ) 3500L,
+     Popup_Info_id = XtAppAddTimeOut ( app, 3500UL,
       ( XtTimerCallbackProc ) Popup_Info_CB,
       ( XtPointer ) dialog );
   }
@@ -7559,11 +7559,11 @@ printf ( str_buf );
       ;
     }
     if ( strlen ( str_buf ) > 0 ) {
-      fprintf ( bstdout, "HYPOTHESES:\n\n" );
-      fprintf ( bstdout, str_buf );
+      fputs ( "HYPOTHESES:\n\n", bstdout );
+      fputs ( str_buf, bstdout );
     }
     else {
-      fprintf ( bstdout, "No hypotheses\n" );
+      fputs ( "No hypotheses\n", bstdout );
     }
       reset_trm; 
 /* freopen(TERMINAL,"w", bstdout); */
@@ -10674,7 +10674,7 @@ int WM_flag;
       NULL );
   XtAddCallback ( dismiss, XmNactivateCallback,
       ( XtCallbackProc ) Dismiss_BrowseTheories_CB,
-      ( XtPointer ) Dismiss_BrowseTheories_CB );
+      ( XtPointer ) NULL );
   
 
   XtManageChild ( B_logo );
@@ -11249,7 +11249,7 @@ int WM_flag;
         NULL );
     XtAddCallback ( dismiss, XmNactivateCallback,
         ( XtCallbackProc ) Dismiss_BrowseATheory_CB,
-        ( XtPointer ) Dismiss_BrowseATheory_CB );
+        ( XtPointer ) NULL );
   
     browse_theories = XtVaCreateManagedWidget ( "Theories", 
         xmPushButtonGadgetClass, bot_form,

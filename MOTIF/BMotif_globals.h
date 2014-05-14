@@ -998,7 +998,7 @@ extern int platform_ident;
 #define platform_ident_Linux      4
 #define platform_ident_AIX        5
 #define platform_ident_HP_UX      6
-extern char *platform_types[];
+extern const char *platform_types[];
 
 extern int auto_reset_and_remake;
 extern int auto_timer;
@@ -1289,7 +1289,7 @@ extern int Commit_All_type;
 
 
 
-extern char *EnvString[];
+extern const char *EnvString[];
 #define EnvString_tot 5
 
 #define env_str_anm_num   EnvString_tot
@@ -1327,13 +1327,13 @@ extern int c_arr [];
 extern int global_file_diff_but;
 
 
-extern char *lab_types[];
+extern const char *lab_types[];
 
-extern char *extens[];
+extern const char *extens[];
 
-extern char *num_strings[];
+extern const char *num_strings[];
 
-extern char *DIRS[];
+extern const char *DIRS[];
 #define dir_len         11
 
 
@@ -1342,7 +1342,7 @@ extern char *DIRS[];
 extern TopBarMenuItem Overview_menu [];
 
 
-extern char *PaletteN_pal[];
+extern const char *PaletteN_pal[];
 
 extern TopBarMenuItem PaletteN_menu [];
 
@@ -1420,9 +1420,9 @@ extern char str_buf [];
 extern int str_buf_i;
 extern int tmp_btool_ipr_thy;
 
-extern char *proved_label[];
+extern const char *proved_label[];
 
-extern char *proved_class[];
+extern const char *proved_class[];
 
 extern char prev_thy [];
 extern int  prev_rule;
@@ -1899,7 +1899,6 @@ extern void fifo_write_non_fifo ();
      i/o procedures
 ***************************************************/
 
-extern void   Msg_ ();
 extern void   main_continue();
 
 extern void   AbortedMsg ();

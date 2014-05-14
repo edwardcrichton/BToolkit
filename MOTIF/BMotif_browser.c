@@ -35,7 +35,7 @@ void
 SaveBrowse ( filename )
 char * filename;
 {
-  int len;
+  size_t len;
   Widget dialog;
   XmString xstr = XmStringCreateLtoR ( "Resize the browse window first (if required) and,\nafter clicking on `OK', position the crosshair\ncursor in the browse window and click the mouse.", charset );
 

@@ -16,13 +16,14 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#include <stdio.h>
+
 #include "BMotif_globals.h"
 
 #include "../C/BToolkitlm_globals.h"
 
 extern char * no_toolkit_short_ver;
-
-int ipsn_arr [ 16 ];
 
 /*#include "../C/BToolkitd_common.c"*/
 
@@ -56,14 +57,11 @@ char * buf;
 {
     fprintf ( stderr,  "\n\n                  B-Toolkit Terminated" );
     fprintf ( stderr,  "\n\n                    Exit code: %d", exit_code );
-    if( buf != NULL)
+    if( buf != NULL && buf[0] != '\0' )
     {
-        if(buf[0] != '\0' )
-	{
-            fprintf ( stderr,  "\n\n                      (%s)", buf );
-        }
+        fprintf ( stderr,  "\n\n                      (%s)", buf );
     }
-    if( buf == NULL || buf[0]=='\0')
+    else if( buf == NULL || buf[0] == '\0' )
     {
         fprintf ( stderr,  "\n\n             See: %s/ErrorCodes", BKIT_path );
     }
@@ -74,8 +72,8 @@ void
 AbortedMsgCode ( exit_code )
 int exit_code;
 {
-    char temp[255];
-    temp[0]='\0';
+    char temp[255] = "";
+
     switch ( exit_code ) {
     case 13242:
     case 13243:
@@ -145,8 +143,6 @@ int exit_code;
     }
 }
 
-
-
 void
 AbortedMsgFile ( file_msg )
 char * file_msg;
@@ -154,13 +150,6 @@ char * file_msg;
     fprintf ( stderr,  "\n\n             BMotif: can't open %s", file_msg );
     fprintf ( stderr,  "\n\n                  B-Toolkit Terminated" );
     fprintf ( stderr,  "\n\n             All data has been preserved\n\n\n" );
-}
-
-void
-Msg_ ( nn )
-int nn;
-{
-  
 }
 
 void
@@ -269,7 +258,7 @@ printf( "    (Popup_Sel_flag %d  radiobox_flag %d)\n", Popup_Sel_flag, radiobox_
   else {
     DisplayCurrWinText ( buf );
     DisplayCurrWinText ( "\n" );
-    if ( strlen ( buf ) ) printf ( buf );
+    if ( strlen ( buf ) ) puts ( buf );
     Popup_Err ( 0, "  Can't complete current job " );
   }
 }
@@ -784,7 +773,7 @@ void
 LoadBSelRecLists ()
 {
   int rr, nn, cc, cc1;
-  int  ext, name [ 50 ];
+  int ext, name [ 50 ];
 
   GetExtNumFromString ( &ext, primary_string );
   GetNameFromString ( name, primary_string );
@@ -2882,10 +2871,10 @@ printf ( "c %d %s   platform_ident %d %s\n", c, platform_types [ c ], platform_i
 void
 GetExtNumFromString ( ext, name )
 int * ext;
-char * name;
+const char * name;
 {
-  int i = 0;
-  int j = 0;
+  size_t i = 0;
+  size_t j = 0;
   char ext_str [ 10 ];
 
   while ( name [ i ] != '.' ) {
@@ -2908,13 +2897,12 @@ char * name;
   }
 }
 
-
 void
 GetNameFromString ( name, str )
 char * name;
 char * str;
 {
-  int i = 0;
+  size_t i = 0;
 
   while ( str [ i ] != '.' && str [ i ] != '\0' ) {
     name [ i ] = str [ i ];
@@ -2923,40 +2911,21 @@ char * str;
   name [ i ] = '\0';
 }
 
-
 void
 CreNumInBuf ( buf_, n )
 char * buf_;
 int n;
 {
-  if ( n < 0 ) {
-    n = n * (-1);
-    strcat ( buf_, "-" );
-  }
-  if ( n > 9 ) {
-    CreNumInBuf ( buf_, n/10 );
-    strcat ( buf_, num_strings [ n % 10 ] );
-  }
-  else {
-    strcat ( buf_, num_strings [ n ] );
-  }
+  sprintf( buf_ + strlen ( buf_ ), "%d", n);
 }
-
 
 void
 PrintNum ( file, n )
 FILE * file;
 int n;
 {
-  if ( n > 9 ) {
-    PrintNum ( file, n/10 );
-    fprintf ( file, num_strings [ n % 10 ] );
-  }
-  else {
-    fprintf ( file, num_strings [ n ] );
-  }
+  fprintf( file, "%d", n);
 }
-
 
 void
 CreNumFromBuf ( n, buf )
@@ -2972,7 +2941,6 @@ char * buf;
     i++;
   }
 }
-
 
 void
 DeCommentFile ( filenamein, filenameout, no_annot )
@@ -5994,9 +5962,6 @@ ESC separates
   }
 }
 
- 
-
-
 #ifdef WWW_VERSION
 
 Reset_WWW() {}
@@ -6027,7 +5992,6 @@ Reset_WWW() {}
 */
 #endif /* WWW_VERSION */
 
-
 #ifdef COUNT_WWW
 
 void
@@ -6056,7 +6020,6 @@ printf ( "In COUNTCheckIsBad: nn %d: COUNT_25_msg %d\n", nn, COUNT_25_msg );
   }
   COUNT_25_msg = 1;
 
-
 #ifdef COUNT_VERSION
 
   printf ( "\n\n   This B-Toolkit restricted licence has now expired\n\n\n" );
@@ -6083,10 +6046,6 @@ printf ( "In COUNTCheckIsBad: nn %d: COUNT_25_msg %d\n", nn, COUNT_25_msg );
 }
 
 #endif /* COUNT_WWW */
-
-
-
-
 
 #ifdef WWW_VERSION
 
@@ -7249,10 +7208,10 @@ printf ( "! translating_pre_MInterface\n" );
           DisplayCurrWinText ( "\n\n    Bad directory:\n\n        " );
           printf ( "\n\n    Bad directory:\n\n        " );
           DisplayCurrWinText ( buf );
-          printf ( buf );
+          puts ( buf );
           strcat ( buf, "\n\n    It does not conform to a B-formula!\n\n       One or more of the directory names is not an\n       `arity 1' symbol - see $BKIT/BHELP/BPlatform.html\n\n    Can't create BToolkit development directory\n\n\n" );
           DisplayCurrWinText(buf);
-          printf ( buf );
+          puts ( buf );
           check_started_from_cd ( "" );
           DisplayCurrentEnv ();
 	}
@@ -7375,7 +7334,7 @@ printf ( "nn: %d nn+563: %d\n", nn, nn + 563 ); fflush ( stdout );
         strcat ( buf, cur_dir );
         strcat ( buf, "\n\n    It does not conform to a B-formula!\n\n       One or more of the directory names is not an\n       `arity 1' symbol - see $BKIT/BHELP/BPlatform.html\n\n    Can't create BToolkit development directory\n\n\n" );
         DisplayCurrWinText(buf);
-        printf ( buf );
+        puts ( buf );
 
         unlink ( pid_id_file );
         exit ( 1 );
@@ -7916,8 +7875,8 @@ printf ( "2BT_BTL_AUP_M: primary_string %s secondary_string %s buf %s ext %d\n",
       aaa_bbb_sss_Name -> Rename_Name
     ***/
       {
-        int j;
-        int i = strlen ( primary_string );
+        size_t j;
+        size_t i = strlen ( primary_string );
 
         while ( ( i ) && primary_string [ i ] != '_' ) { i--; }
         if ( primary_string [ i ] = '_' ) {

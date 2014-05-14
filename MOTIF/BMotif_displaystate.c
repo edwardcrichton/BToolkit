@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#include <inttypes.h>
+
 #include "BMotif_globals.h"
 
 struct Display * Display_0   = ( struct Display * ) NULL;
@@ -291,7 +294,7 @@ DisplayAndCheckTotals ()
   int tot;
 
   printf ( "\nDisplay         %3d ", DisplayTotal );
-  printf ( " (%d)\n", DisplayMallocTotal );
+  printf ( " (" PRIdPTR ")\n", DisplayMallocTotal );
 
   printf ( "Main            %3d ", MainTotal );
   tot = 0;
@@ -300,7 +303,7 @@ DisplayAndCheckTotals ()
     if ( Main_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != MainTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", MainMallocTotal );
+  printf ( " (" PRIdPTR ")\n", MainMallocTotal );
 
   printf ( "Provers         %3d ", ProversTotal );
   tot = 0;
@@ -309,7 +312,7 @@ DisplayAndCheckTotals ()
     if ( Provers_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != ProversTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", ProversMallocTotal );
+  printf ( " (" PRIdPTR ")\n", ProversMallocTotal );
 
   printf ( "Generators      %3d ", GeneratorsTotal );
   tot = 0;
@@ -318,7 +321,7 @@ DisplayAndCheckTotals ()
     if ( Generators_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != GeneratorsTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", GeneratorsMallocTotal );
+  printf ( " (" PRIdPTR ")\n", GeneratorsMallocTotal );
 
   printf ( "Translators     %3d ", TranslatorsTotal );
   tot = 0;
@@ -327,7 +330,7 @@ DisplayAndCheckTotals ()
     if ( Translators_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != TranslatorsTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", TranslatorsMallocTotal );
+  printf ( " (" PRIdPTR ")\n", TranslatorsMallocTotal );
 
   printf ( "Documents       %3d ", DocumentsTotal );
   tot = 0;
@@ -336,7 +339,7 @@ DisplayAndCheckTotals ()
     if ( Documents_1->row != /*( XtPointer )*/ NULL ) tot++;
   }
   if ( tot != DocumentsTotal ) printf ( " ********** tot = %d ********** ", tot );
-  printf ( " (%d)\n", DocumentsMallocTotal );
+  printf ( " (" PRIdPTR ")\n", DocumentsMallocTotal );
 
 }
 
@@ -505,7 +508,7 @@ Widget button;
 XtPointer client_data;
 XtPointer call_data;
 {
-  int user_data;
+  XtPointer user_data;
   Pixel lab_col;
   int obj = * ( int * ) client_data;
   void SetDisplay_1_for_obj ();
@@ -554,12 +557,12 @@ XtPointer call_data;
     if ( user_data_option != nme_num ) { XBell ( display, -75 ); return; }
   }
 
-  printf("user_data_option = %ld\n", user_data_option);
+  printf("user_data_option = %d\n", user_data_option);
   
-  printf("nme_num: %ld\n", nme_num);
-printf("cmt_num: %ld\n", cmt_num);
-printf("anl_num: %ld\n", anl_num);
-printf("pog_num: %ld\n", pog_num);
+  printf("nme_num: %d\n", nme_num);
+  printf("cmt_num: %d\n", cmt_num);
+  printf("anl_num: %d\n", anl_num);
+  printf("pog_num: %d\n", pog_num);
 
   /*switch ( * ( int * ) user_data ) {*/
   switch ( user_data_option ) {

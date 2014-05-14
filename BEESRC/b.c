@@ -17,37 +17,24 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include <string.h>
-
 #include <signal.h>
-
 #include <unistd.h>
-
 #include <sys/types.h>
-
 #include <sys/socket.h>
-
 #include <netdb.h>
-
 #include <sys/utsname.h>
-
 #include <time.h>
 
-
 FILE * bstdout;
-
 
 #define alloc_init                 500000
 
 #define init_alloc_topup          2000000
 #define alloc_topup               2500000
 
-
 #define compact_cut_off         100000000
-
 
 #define max_proved_rr_val        100
 			     /* MUST be same as in bmotif.h */
@@ -62,13 +49,9 @@ int max_fwd_ctr_auto_prf = 250;
 ***/
 
 #define write_srv_res        putc(27, bstdout); fprintf ( bstdout, "[7m")
-
 #define write_erv_res        putc(27, bstdout); fprintf ( bstdout, "[0m")
-
 #define write_srv_err_res    putc(27,stderr); fprintf(stderr,"[7m")
-
 #define write_erv_err_res    putc(27,stderr); fprintf(stderr,"[0m")
-
 
 /***
 #define write_top_clear_res  putc(27, bstdout); \
@@ -84,19 +67,13 @@ int max_fwd_ctr_auto_prf = 250;
 
 /*** 
 #endif
-  
 
 #ifdef hpcomputer
-                        
 
 #define write_srv_res        putc(27, bstdout); fprintf ( bstdout, "&dB")
-
 #define write_erv_res        putc(27, bstdout); fprintf ( bstdout, "&d@")
-
 #define write_srv_err_res    putc(27,stderr); fprintf(stderr,"&dB")
-
 #define write_erv_err_res    putc(27,stderr); fprintf(stderr,"&d@")
-
 #define write_top_clear_res  putc(27, bstdout); fprintf ( bstdout, "H");  putc(27, bstdout); fprintf ( bstdout, "J")
 
 #endif
@@ -110,35 +87,17 @@ int cs_nn, cs_rr;
 char serv_addr [ 20 ];
 int port;
 FILE * Bfile;
-int pid;
+pid_t pid;
 int Blm_registered = 0;
 
 void ini_Blm ();
-
-static char *numnum[] = { "0",
-                       "1",
-                       "2",
-                       "3",
-                       "4",
-                       "5",
-                       "6",
-                       "7",
-                       "8",
-                       "9"
-		     };
 
 void
 CreNumInBuf ( buf, n )
 char * buf;
 long n;
 {
-  if ( n > 9 ) {
-    CreNumInBuf ( buf, n/10 );
-    strcat ( buf, numnum [ n % 10 ] );
-  }
-  else {
-    strcat ( buf, numnum [ n ] );
-  }
+  sprintf( buf + strlen ( buf ), "%ld", n);
 }
 
 #include "ClientSocket.c"
@@ -219,41 +178,21 @@ long n;
 #include "itfmch.c"
 
 
-
-#ifdef ipaddresses
-
-#define iphid_val 1
-
-#endif
-
-
-#ifdef hostids
-
-#define iphid_val 0
-
-#endif
-
-
-
-
-
-
-
 bannerfunc()
 #define banner bannerfunc()
 {
-  fprintf ( bstdout, "\n\n" );
+  fputs ( "\n\n", bstdout );
 /*
-  fprintf ( bstdout, b_name );
+  fputs ( b_name, bstdout );
 */
-  fprintf ( bstdout, "                 b (malloc) for B-Core" );
-  fprintf ( bstdout, "\n\n" );
-  fprintf ( bstdout, toolkit_ver_with_sp );
-  fprintf ( bstdout, "\n\n" );
-  fprintf ( bstdout, orig_author );
-  fprintf ( bstdout, "\n\n" );
-  fprintf ( bstdout, toolkit_copyright );
-  fprintf ( bstdout, "\n\n" );
+  fputs ( "                 b (malloc) for B-Core", bstdout );
+  fputs ( "\n\n", bstdout );
+  fputs ( toolkit_ver_with_sp, bstdout );
+  fputs ( "\n\n", bstdout );
+  fputs ( orig_author, bstdout );
+  fputs ( "\n\n", bstdout );
+  fputs ( toolkit_copyright, bstdout );
+  fputs ( "\n\n", bstdout );
 }
 
 /*  
@@ -309,23 +248,23 @@ get_tcpip ()
       if ( c == EOF ) {
         printf ( "\n  %s: syntax error 1\n", buf );
         exit ( 1 );
-      };
+      }
       while ( ( c != EOF ) && ( c !=',' ) ) {
         serv_addr [ i ] = ( char ) c;
         i++;
         c = getc ( Btcp );
-      };
+      }
       if ( c == EOF ) {
         printf ( "\n  %s: syntax error 2\n", buf );
         exit ( 1 );
       }
       else {
         c = getc ( Btcp );
-      };
+      }
       while ( c >= '0' && c <= '9' ) {
         port = ( port * 10 ) + c - '0';
         c = getc ( Btcp );
-      };
+      }
       fclose ( Btcp );
     }
     else {
@@ -362,7 +301,7 @@ ini_Blm_off ()
     else {
       fclose ( Bpid_id );
     }
-  };
+  }
 
   /***
   send hiip_request - hprot now redundant - always ipaddress protection!
@@ -578,7 +517,7 @@ printf ( "\n    ---------------------------------------------------\n     initia
               {register int t ;
                 xst_the(t,num_the(t)==2,exec_file_prf(t),{});
                 rem_rul_the(t,len(rul_the(t)));
-              };
+              }
               fprintf(pipeout, "0\n");
               fflush(pipeout);
               more = fscanf(pipein, "%s %s", first, second);

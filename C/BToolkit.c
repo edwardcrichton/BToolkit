@@ -63,7 +63,7 @@ char cc;
   exit ( 1 );
 }
 
-/* from  Upgrade4.xToWWW1.x.c */
+/* from Upgrade4.xToWWW1.x.c */
 void
 check ( file )
 char * file;
@@ -218,15 +218,15 @@ char *argv[];
   unlink ( ".Bxterm" );
   if ( c != '/' ) err_rep ( 42 );
 
-  
 
+  /* FIXME: use getcwd() */
   if ( system ( "pwd > .Bcom" ) != 0 ) {
-    printf ( "\n\n             Error executing \"pwd > .Bcom\"\n\n" );
+    puts ( "\n\n             Error executing \"pwd > .Bcom\"\n\n" );
     exit ( 1 );
   }
   fileid = fopen ( ".Bcom", "r" );
   if ( fileid == NULL ) {
-    printf ( "\n\n             Can't open \".Bcom\" for reading\n\n" );
+    puts ( "\n\n             Can't open \".Bcom\" for reading\n\n" );
     exit ( 1 );
   }
   i = 0;
@@ -264,13 +264,13 @@ char *argv[];
 
   unlink ( ".Benv" );
   fileid = fopen ( ".Benv", "w" );
-  if ( fileid == NULL ) err_rep ( 3 );       /* can't open .Benv - no report */
+  if ( fileid == NULL ) err_rep ( 3 );       /* can't open .Benv */
   fputs ( "0$toolkit$0$0\n", fileid );
   fclose ( fileid );
 
   unlink ( ".Bses" );
   fileid = fopen ( ".Bses", "w" );
-  if ( fileid == NULL ) err_rep ( 4 );       /* can't open .Bses - no report */
+  if ( fileid == NULL ) err_rep ( 4 );       /* can't open .Bses */
   fclose ( fileid );
   unlink ( ".Bses" );
 
@@ -309,15 +309,15 @@ char *argv[];
   else if ( strcmp ( benv, "Darwin" ) == 0 ) { is_darwin = 1; }
   else if ( strcmp ( benv, "AIX" ) == 0 )   { is_aix = 1; }
   else {
-    printf ( "\n\n              Alien environment:  " );
-    printf ( benv );
-    printf ( "\n\n              Known environments: SunOS" );
-    printf ( "\n                                  Solaris" );
-    printf ( "\n                                  Linux" );
-    printf ( "\n                                  Darwin" );
-    printf ( "\n                                  OSF1" );
-    printf ( "\n                                  AIX\n" );
-    printf ( "\n                Assuming Linux\n\n" );
+    puts ( "\n\n              Alien environment:  " );
+    puts ( benv );
+    puts ( "\n\n              Known environments: SunOS" );
+    puts ( "\n                                  Solaris" );
+    puts ( "\n                                  Linux" );
+    puts ( "\n                                  Darwin" );
+    puts ( "\n                                  OSF1" );
+    puts ( "\n                                  AIX\n" );
+    puts ( "\n                Assuming Linux\n\n" );
     is_linux = 1;
   }
 
@@ -336,13 +336,13 @@ char *argv[];
   if ( stat ( bses, &stat_buf ) != 0 ) err_rep ( 30 );    /* bplatform not exist */
   if ( ! ( stat_buf.st_mode & S_IXOTH ) ) err_rep ( 39 ); /* no execute permission */
 
-  printf ( "\n\n" );
-  printf ( toolkit_name );
-  printf ( "\n\n" );
-  printf ( toolkit_ver_with_sp );
-  printf ( "\n\n" );
-  printf ( toolkit_copyright );
-  printf ( "\n\n" );
+  puts ( "\n\n" );
+  puts ( toolkit_name );
+  puts ( "\n\n" );
+  puts ( toolkit_ver_with_sp );
+  puts ( "\n\n" );
+  puts ( toolkit_copyright );
+  puts ( "\n\n" );
 
   system ( "rm -fr TMP" );
 
@@ -419,139 +419,140 @@ int err_no;
   void rm_files ();
 
   switch ( err_no ) {
-  case 1: if ( system ( "pwd > .Bcom" ) != 0 ) {
-            printf ( "\n\n             Error executing \"pwd > .Bcom\"\n" );
-            exit ( 1 );
-          }
-          fileid = fopen ( ".Bcom", "r" );
-          if ( fileid == NULL ) {
-            printf ( "\n\n             Can't open \".Bcom\" for reading\n" );
-            exit ( 1 );
-          }
-          i = 0;
-          c = getc ( fileid );
-          while ( c != EOF && c != '\n' ) {
-            bpwd [ i ] = c;
-            i++;
-            c = getc ( fileid );
-          }
-          bpwd [ i ] = '\0';
-          fclose ( fileid );
-          unlink ( ".Bcom" );
+  case 1:  if ( system ( "pwd > .Bcom" ) != 0 ) {
+             puts ( "\n\n             Error executing \"pwd > .Bcom\"\n" );
+             exit ( 1 );
+           }
+           fileid = fopen ( ".Bcom", "r" );
+           if ( fileid == NULL ) {
+             puts ( "\n\n             Can't open \".Bcom\" for reading\n" );
+             exit ( 1 );
+           }
+           i = 0;
+           c = getc ( fileid );
+           while ( c != EOF && c != '\n' ) {
+             bpwd [ i ] = c;
+             i++;
+             c = getc ( fileid );
+           }
+           bpwd [ i ] = '\0';
+           fclose ( fileid );
+           unlink ( ".Bcom" );
 /*
-          printf ( "\n\n  This B-Toolkit development directory:\n\n" );
-          printf ( "    %s\n\n", bpwd );
-          printf ( "  is currently locked; run\n\n" );
-          printf ( "    $BKIT/BUnlock %s\n\n", bpwd );
-          printf ( "  to unlock\n\n\n" );
+           puts ( "\n\n  This B-Toolkit development directory:\n\n" );
+           puts ( "    %s\n\n", bpwd );
+           puts ( "  is currently locked; run\n\n" );
+           puts ( "    $BKIT/BUnlock %s\n\n", bpwd );
+           puts ( "  to unlock\n\n\n" );
 */
-          printf ( "\n\n  Development not unlocked: run\n\n" );
-          printf ( "    $BKIT/BUnlock %s\n\n", bpwd );
-          printf ( "  to unlock\n\n\n" );
-                    break;
-  case 2: printf ( "\n\n              Can't write to file .BToolkitLock\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 3: printf ( "\n\n              Can't write to file .Benv\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 4: printf ( "\n\n              Can't write to file .Bses\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 5: printf ( "\n\n              Alien environment:  " );
-          printf ( benv );
-          printf ( "\n\n              Known environments: SunOS" );
-          printf ( "\n                                  Solaris" );
-          printf ( "\n                                  OSF1" );
-          printf ( "\n                                  Linux" );
-          printf ( "\n                                  Darwin" );
-          printf ( "\n                                  AIX\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 6: printf ( "\n\n                Problem with `uname'\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 7: printf ( "\n\n                $BKIT/BLIB/BSession does not exist\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 9: printf ( "\n\n                Environment variable BKIT not set\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 11: printf ( "\n\n               Can't write to file .Bver\n\n\n" );
+           puts ( "\n\n  Development not unlocked: run\n\n" );
+           printf ( "    $BKIT/BUnlock %s\n\n", bpwd );
+           puts ( "  to unlock" );
+           break;
+  case 2:  puts ( "\n\n              Can't write to file .BToolkitLock" );
            unlink ( ".BToolkitLock" );
            break;
-  case 12: printf ( "\n\n               Environment variable BSITECODE not set\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 16: printf ( "\n\n               B-Toolkit: Error code 13813\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 17: printf ( "\n\n               B-Toolkit: Error code 13812\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 18: printf ( "\n\n               Can't open .Bcom for reading\n\n\n" );
+  case 3:  puts ( "\n\n              Can't write to file .Benv" );
            unlink ( ".BToolkitLock" );
            break;
-  case 22: printf ( "\n\n               B-Toolkit: Error code 13821\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 23: printf ( "\n\n               B-Toolkit: Error code 13822\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 24: printf ( "\n\n               B-Toolkit: Error code 13823\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 25: printf ( "\n\n               Can't open .Bpla for writing\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 26: printf ( "\n\n               B-Toolkit: Error code 13814\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 27: printf ( "\n\n               B-Toolkit: Error code 13815\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 28: printf ( "\n\n               B-Toolkit: Error code 13824\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 30: printf ( "\n\n              $BKIT/BPLAT/bplatform does not exist\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 31: printf ( "\n\n              $BKIT/BLIB/BMotif does not exist\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 32: printf ( "\n\n              BToolkit: no argument required\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 33: printf("\n           Not enough memory\n\n\n");
-          unlink ( ".BToolkitLock" );
-          break;
-  case 35: printf ( "\n\n              Can't open .Bjob for writing\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 36: printf ( "\n\n                 Can't create TMP\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
+  case 4:  puts ( "\n\n              Can't write to file .Bses" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 5:  puts ( "\n\n              Alien environment:  " );
+           puts ( benv );
+           puts ( "\n\n              Known environments: SunOS" );
+           puts ( "\n                                  Solaris" );
+           puts ( "\n                                  OSF1" );
+           puts ( "\n                                  Linux" );
+           puts ( "\n                                  Darwin" );
+           puts ( "\n                                  AIX" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 6:  puts ( "\n\n                Problem with `uname'" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 7:  puts ( "\n\n                $BKIT/BLIB/BSession does not exist" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 9:  puts ( "\n\n                Environment variable BKIT not set" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 11: puts ( "\n\n               Can't write to file .Bver" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 12: puts ( "\n\n               Environment variable BSITECODE not set" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 16: puts ( "\n\n               B-Toolkit: Error code 13813" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 17: puts ( "\n\n               B-Toolkit: Error code 13812" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 18: puts ( "\n\n               Can't open .Bcom for reading" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 22: puts ( "\n\n               B-Toolkit: Error code 13821" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 23: puts ( "\n\n               B-Toolkit: Error code 13822" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 24: puts ( "\n\n               B-Toolkit: Error code 13823" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 25: puts ( "\n\n               Can't open .Bpla for writing" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 26: puts ( "\n\n               B-Toolkit: Error code 13814" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 27: puts ( "\n\n               B-Toolkit: Error code 13815" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 28: puts ( "\n\n               B-Toolkit: Error code 13824" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 30: puts ( "\n\n               $BKIT/BPLAT/bplatform does not exist" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 31: puts ( "\n\n               $BKIT/BLIB/BMotif does not exist" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 32: puts ( "\n\n               BToolkit: no argument required" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 33: puts("\n                   Can't execute BSession");
+           unlink ( ".BToolkitLock" );
+           break;
+  case 35: puts ( "\n\n               Can't open .Bjob for writing" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 36: puts ( "\n\n               Can't create TMP" );
+           unlink ( ".BToolkitLock" );
+           break;
 /*
-  case 37: printf ( "\n\n                 Can't execute mkfifo\n\n      (%s)\n\n\n", bpwd );
+  case 37: puts ( "\n\n                 Can't execute mkfifo\n\n      (%s)", bpwd );
           unlink ( ".BToolkitLock" );
           break;
 */
-  case 38: printf ( "\n\n     $BKIT/BKIT/BMotif does not have execute permission\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 39: printf ( "\n\n   $BKIT/BPLAT/bplatform does not have execute permission\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 40: printf ( "\n\n    $BKIT/BLIB/BSession does not have execute permission\n\n\n" );
-          unlink ( ".BToolkitLock" );
-          break;
-  case 41: printf ( "\n\n              Can't write to file .Bxterm\n\n\n" );
+  case 38: puts ( "\n\n     $BKIT/BKIT/BMotif does not have execute permission" );
            unlink ( ".BToolkitLock" );
            break;
-  case 42: printf ( "\n\n              Can't locate xterm from your PATH\n\n\n" );
+  case 39: puts ( "\n\n   $BKIT/BPLAT/bplatform does not have execute permission" );
            unlink ( ".BToolkitLock" );
            break;
- }
+  case 40: puts ( "\n\n    $BKIT/BLIB/BSession does not have execute permission" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 41: puts ( "\n\n              Can't write to file .Bxterm" );
+           unlink ( ".BToolkitLock" );
+           break;
+  case 42: puts ( "\n\n              Can't locate xterm from your PATH" );
+           unlink ( ".BToolkitLock" );
+           break;
+  }
+  puts("\n\n\n");
   if ( err_no != 1 ) {
     rm_files();
   }

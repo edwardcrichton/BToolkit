@@ -889,7 +889,7 @@ int platform_ident = 0;
 #define platform_ident_Linux      4
 #define platform_ident_AIX        5
 #define platform_ident_HP_UX      6
-char *platform_types[] = { "",
+const char *platform_types[] = { "",
                                   "SunOS",
                                   "Solaris",
                                   "OSF1",
@@ -1181,7 +1181,7 @@ int Commit_All_type;
 
 
 
-char *EnvString[] = { 
+const char *EnvString[] = {
                        "Main",
                        "Provers",
                        "Generators",
@@ -1225,7 +1225,7 @@ int c_arr [ c_arr_MAX ];
 int global_file_diff_but;
 
 
-char *lab_types[] = { "",
+const char *lab_types[] = { "",
                              "UserLab",
                              "LibraryLab",
                              "GeneratedLab",
@@ -1237,7 +1237,7 @@ char *lab_types[] = { "",
                              "LibVHDLLab"
 			   };
 
-char *extens[] = { "",
+const char *extens[] = { "",
                           "mch",
                           "ref",
                           "imp",
@@ -1252,7 +1252,7 @@ char *extens[] = { "",
                           "map"
 			};
 
-char *num_strings[] = { "0",
+const char *num_strings[] = { "0",
                         "1",
                         "2",
                         "3",
@@ -1264,7 +1264,7 @@ char *num_strings[] = { "0",
                         "9"
 		      };
 
-char *DIRS[] = { "ANL",
+const char *DIRS[] = { "ANL",
                  "CFG",
                  "HTX",
                  "PMD",
@@ -1289,7 +1289,7 @@ TopBarMenuItem Overview_menu [] = {
 };
 
 
-char *PaletteN_pal[] = {
+const char *PaletteN_pal[] = {
  "Machines.pal",
  "OpsMch.pal",
  "Refinements.pal",
@@ -1479,13 +1479,13 @@ char str_buf [ MAX_str_buf + 5 ];
 int str_buf_i;
 int tmp_btool_ipr_thy;
 
-char *proved_label[] = { "(unproved)",
+const char *proved_label[] = { "(unproved)",
                                 "(proved)",
                                 "(proved at previous level)",
                                 "(proved at this level)"
 			      };
 
-char *proved_class[] = { "Highlight",
+const char *proved_class[] = { "Highlight",
                                 "Label",
                                 "Label",
                                 "Label"
@@ -1970,7 +1970,6 @@ void fifo_write_non_fifo ();
      i/o procedures
 ***************************************************/
 
-void   Msg_ ();
 void   main_continue();
 
 void   AbortedMsg ();

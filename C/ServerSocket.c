@@ -679,7 +679,6 @@ printf ( " -> sent: %d %d\n", fini_request + 1, ss_r );
 printf ( "\nCOULDN'T REMOVE pid %d\n", ss_n );
 #endif /* VERBOSE_FLAG */
 
-            ;
 	  }
           else {
 

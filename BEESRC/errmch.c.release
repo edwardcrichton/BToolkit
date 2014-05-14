@@ -148,7 +148,6 @@ psh_fic_err(f,c)
 cre_err(f,l,d,n,s)
 {register int e ;
   if( too_many_err==TRUE ){
-    {};
   } else if( nbr_err==max_err ){
     fprintf(stderr,"\n      TOO MANY ERRORS");
     too_many_err=TRUE;
@@ -199,7 +198,7 @@ write_err(e)
   }
   else {
     unlink ( ".BBcom" );
-  };
+  }
 /*
   write_blk_err(4-len_nat(l)+1);
 */
@@ -254,13 +253,13 @@ write_err(e)
         write_err_stri_sym(snd_err(e));
         fprintf(stderr,"\" ");
       }
-    ;break;};
-  };
+    ;break;}
+  }
   if( def_fic_err(e)==TRUE ){
     fprintf(stderr,"(");
     write_err_str(fic_nam_err(fic_err(e)));
     fprintf(stderr,")");
-  };
+  }
   fprintf(stderr,"\n");
 }
 
@@ -270,5 +269,3 @@ write_lst_errfunc()
   itr_err(e,write_err(e));
 }
 
-      
-  

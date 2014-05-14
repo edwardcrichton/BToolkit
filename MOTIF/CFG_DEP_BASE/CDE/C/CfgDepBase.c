@@ -108,32 +108,32 @@ INI_CfgDepBase()
     int bb,Set;
     CfgDepBase_CRE_SET_OBJ(&bb,&Set);
     CfgDepBase_STO_FNC(gset1_idx,Set);
-  };
+  }
   {
     int bb,Set;
     CfgDepBase_CRE_SET_OBJ(&bb,&Set);
     CfgDepBase_STO_FNC(gset2_idx,Set);
-  };
+  }
   {
     int bb,Set;
     CfgDepBase_CRE_SET_OBJ(&bb,&Set);
     CfgDepBase_STO_FNC(gset3_idx,Set);
-  };
+  }
   {
     int bb,Set;
     CfgDepBase_CRE_SET_OBJ(&bb,&Set);
     CfgDepBase_STO_FNC(gset4_idx,Set);
-  };
+  }
   {
     int bb,Set;
     CfgDepBase_CRE_SET_OBJ(&bb,&Set);
     CfgDepBase_STO_FNC(gset5_idx,Set);
-  };
+  }
   {
     int bb,Seq;
     CfgDepBase_CRE_SEQ_OBJ(&bb,&Seq);
     CfgDepBase_STO_FNC(gseq_idx,Seq);
-  };
+  }
   {
     int bb,Seq;
     CfgDepBase_CRE_SEQ_OBJ(&bb,&Seq);
@@ -159,7 +159,7 @@ int *_rep;
     CfgDepBase_SAV_SEQ_OBJ();
     CfgDepBase_SAV_SET_OBJ();
     CfgDepBase_close_dump(&bb);
-  };
+  }
   *_rep = bb;
 }
 
@@ -181,7 +181,7 @@ int *_rep;
     CfgDepBase_RST_SEQ_OBJ();
     CfgDepBase_RST_SET_OBJ();
     CfgDepBase_close_dump(&bb);
-  };
+  }
   *_rep = bb;
 }
 
@@ -203,7 +203,7 @@ int *_rep;
     CfgDepBase_SAVN_SEQ_OBJ();
     CfgDepBase_SAVN_SET_OBJ();
     CfgDepBase_close_dump(&bb);
-  };
+  }
   *_rep = bb;
 }
 
@@ -225,7 +225,7 @@ int *_rep;
     CfgDepBase_RSTN_SEQ_OBJ();
     CfgDepBase_RSTN_SET_OBJ();
     CfgDepBase_close_dump(&bb);
-  };
+  }
   *_rep = bb;
 }
 
@@ -250,17 +250,17 @@ print_Globals_CfgDepBase()
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       BLK(1);
       ord = ord+1;
-    };
+    }
     PUT_STR("}");
     NWL(1);
-  };
+  }
   {
     int setobj,elem,crd,ord;
     BLK(2);
@@ -278,17 +278,17 @@ print_Globals_CfgDepBase()
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       BLK(1);
       ord = ord+1;
-    };
+    }
     PUT_STR("}");
     NWL(1);
-  };
+  }
   {
     int setobj,elem,crd,ord;
     BLK(2);
@@ -306,17 +306,17 @@ print_Globals_CfgDepBase()
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       BLK(1);
       ord = ord+1;
-    };
+    }
     PUT_STR("}");
     NWL(1);
-  };
+  }
   {
     int setobj,elem,crd,ord;
     BLK(2);
@@ -334,17 +334,17 @@ print_Globals_CfgDepBase()
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       BLK(1);
       ord = ord+1;
-    };
+    }
     PUT_STR("}");
     NWL(1);
-  };
+  }
   {
     int setobj,elem,crd,ord;
     BLK(2);
@@ -362,17 +362,17 @@ print_Globals_CfgDepBase()
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       BLK(1);
       ord = ord+1;
-    };
+    }
     PUT_STR("}");
     NWL(1);
-  };
+  }
   {
     int seqobj,elem,len,ith;
     BLK(2);
@@ -390,17 +390,17 @@ print_Globals_CfgDepBase()
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       BLK(1);
       ith = ith+1;
-    };
+    }
     PUT_STR("]");
     NWL(1);
-  };
+  }
   {
     int seqobj,elem,len,ith;
     BLK(2);
@@ -414,10 +414,10 @@ print_Globals_CfgDepBase()
       CfgDepBase_PUT_ACT_TOK(SCALAR,elem);
       BLK(1);
       ith = ith+1;
-    };
+    }
     PUT_STR("]");
     NWL(1);
-  };
+  }
   PUT_STR("----------------------------------------\n");
 }
 
@@ -805,12 +805,12 @@ int *_rep,_ii;
   CfgDepBase_CRE_SEQ_OBJ(&bb,&Seq_0);
   if ( bb == TRUE ) {
     CfgDepBase_CPY_SEQ_OBJ(&bb,Seq,Seq_0);
-  };
+  }
   if ( bb == TRUE ) {
     CfgDepBase_CUT_SEQ_OBJ(Seq_0,_ii);
     CfgDepBase_KEP_SEQ_OBJ(Seq,_ii-1);
     CfgDepBase_APP_SEQ_OBJ(&bb,Seq,Seq_0);
-  };
+  }
   CfgDepBase_KIL_SEQ_OBJ(Seq_0);
   *_rep = bb;
 }
@@ -879,11 +879,11 @@ int *_rep,*_Base_Construct,_Val_ext,_Val_type;
     if ( bb == TRUE ) {
       Construct_STO_FNC_OBJ(Base_Constructx,name_idx,Str);
     }
-  };
+  }
   if ( bb == TRUE ) {
     Construct_STO_FNC_OBJ(Base_Constructx,ext_idx,_Val_ext);
     Construct_STO_FNC_OBJ(Base_Constructx,type_idx,_Val_type);
-  };
+  }
   *_Base_Construct = Base_Constructx;
   *_rep = bb;
 }
@@ -896,7 +896,7 @@ int _Base_Construct;
     int Str;
     Construct_VAL_FNC_OBJ(&Str,_Base_Construct,name_idx);
     CfgDepBase_KIL_STR_OBJ(Str);
-  };
+  }
   {
     int Set,bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,sees_uses_idx);
@@ -904,7 +904,7 @@ int _Base_Construct;
       Construct_VAL_FNC_OBJ(&Set,_Base_Construct,sees_uses_idx);
       CfgDepBase_KIL_SET_OBJ(Set);
     }
-  };
+  }
   {
     int Set,bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,inc_ipt_idx);
@@ -912,7 +912,7 @@ int _Base_Construct;
       Construct_VAL_FNC_OBJ(&Set,_Base_Construct,inc_ipt_idx);
       CfgDepBase_KIL_SET_OBJ(Set);
     }
-  };
+  }
   Construct_KIL_FNC_OBJ(_Base_Construct);
 }
 
@@ -933,9 +933,9 @@ int _Base_Construct;
       int ss[250];
       CfgDepBase_XTR_STR_OBJ(ss,elem);
       PUT_STR(ss);
-    };
+    }
     NWL(1);
-  };
+  }
   {
     int elem;
     Construct_VAL_FNC_OBJ(&elem,_Base_Construct,ext_idx);
@@ -943,7 +943,7 @@ int _Base_Construct;
     PUT_STR_PAD("ext ",13);
     CfgDepBase_PUT_ACT_TOK(CfgDepBaseP7,elem);
     NWL(1);
-  };
+  }
   {
     int elem;
     Construct_VAL_FNC_OBJ(&elem,_Base_Construct,type_idx);
@@ -951,7 +951,7 @@ int _Base_Construct;
     PUT_STR_PAD("type ",13);
     CfgDepBase_PUT_ACT_TOK(CfgDepBaseP8,elem);
     NWL(1);
-  };
+  }
   PUT_STR("OPTIONAL\n");
   {
     int bb;
@@ -973,18 +973,18 @@ int _Base_Construct;
             int ss[250];
             CfgDepBase_XTR_STR_OBJ(ss,strobj);
             PUT_STR(ss);
-          };
+          }
           PUT_STR("(");
           CfgDepBase_PUT_TOK(elem);
           PUT_STR(")");
-        };
+        }
         BLK(1);
         ord = ord+1;
-      };
+      }
       PUT_STR("}");
       NWL(1);
     }
-  };
+  }
   {
     int bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,inc_ipt_idx);
@@ -1005,18 +1005,18 @@ int _Base_Construct;
             int ss[250];
             CfgDepBase_XTR_STR_OBJ(ss,strobj);
             PUT_STR(ss);
-          };
+          }
           PUT_STR("(");
           CfgDepBase_PUT_TOK(elem);
           PUT_STR(")");
-        };
+        }
         BLK(1);
         ord = ord+1;
-      };
+      }
       PUT_STR("}");
       NWL(1);
     }
-  };
+  }
   {
     int bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,abs2conc_idx);
@@ -1029,7 +1029,7 @@ int _Base_Construct;
       CfgDepBase_PUT_TOK(elem);
       NWL(1);
     }
-  };
+  }
   {
     int bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,gen_by_idx);
@@ -1045,14 +1045,14 @@ int _Base_Construct;
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       NWL(1);
     }
-  };
+  }
   {
     int bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,prf_level_idx);
@@ -1064,7 +1064,7 @@ int _Base_Construct;
       CfgDepBase_PUT_ACT_TOK(SCALAR,elem);
       NWL(1);
     }
-  };
+  }
   {
     int bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,curMRIState_idx);
@@ -1077,7 +1077,7 @@ int _Base_Construct;
       CfgDepBase_PUT_TOK(elem);
       NWL(1);
     }
-  };
+  }
   {
     int bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,cptMRIState_idx);
@@ -1090,7 +1090,7 @@ int _Base_Construct;
       CfgDepBase_PUT_TOK(elem);
       NWL(1);
     }
-  };
+  }
   {
     int bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,curGENState_idx);
@@ -1103,7 +1103,7 @@ int _Base_Construct;
       CfgDepBase_PUT_TOK(elem);
       NWL(1);
     }
-  };
+  }
   {
     int bb;
     Construct_DEF_FNC_OBJ(&bb,_Base_Construct,cptGENState_idx);
@@ -1116,7 +1116,7 @@ int _Base_Construct;
       CfgDepBase_PUT_TOK(elem);
       NWL(1);
     }
-  };
+  }
   PUT_STR("----------------------------------------\n");
 }
 
@@ -1168,7 +1168,7 @@ int *_rep,_Base_Construct,*_Str;
   CfgDepBase_NEW_STR_OBJ(&bb,&Str_0,_Str);
   if ( bb == TRUE ) {
     Construct_STO_FNC_OBJ(_Base_Construct,name_idx,Str_0);
-  };
+  }
   *_rep = bb;
 }
 
@@ -1194,7 +1194,7 @@ int *_rep,_Base_Construct;
   CfgDepBase_CRE_SET_OBJ(&repx,&Set);
   if ( repx == TRUE ) {
     Construct_STO_FNC_OBJ(_Base_Construct,sees_uses_idx,Set);
-  };
+  }
   *_rep = repx;
 }
 
@@ -1266,7 +1266,7 @@ int *_rep,_Base_Construct;
   CfgDepBase_CRE_SET_OBJ(&repx,&Set);
   if ( repx == TRUE ) {
     Construct_STO_FNC_OBJ(_Base_Construct,inc_ipt_idx,Set);
-  };
+  }
   *_rep = repx;
 }
 
@@ -1509,7 +1509,7 @@ int *_rep,*_Base_Abs2Conc;
     if ( bb == TRUE ) {
       Abs2Conc_STO_FNC_OBJ(Base_Abs2Concx,a2c_idx,Seq);
     }
-  };
+  }
   *_Base_Abs2Conc = Base_Abs2Concx;
   *_rep = bb;
 }
@@ -1522,7 +1522,7 @@ int _Base_Abs2Conc;
     int Seq;
     Abs2Conc_VAL_FNC_OBJ(&Seq,_Base_Abs2Conc,a2c_idx);
     CfgDepBase_KIL_SEQ_OBJ(Seq);
-  };
+  }
   Abs2Conc_KIL_FNC_OBJ(_Base_Abs2Conc);
 }
 
@@ -1551,17 +1551,17 @@ int _Base_Abs2Conc;
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       BLK(1);
       ith = ith+1;
-    };
+    }
     PUT_STR("]");
     NWL(1);
-  };
+  }
   PUT_STR("----------------------------------------\n");
 }
 
@@ -1643,25 +1643,25 @@ int *_rep,*_Base_MRIState,_Val_anl,_Val_dmu,_Val_trl,_Val_lnk;
     if ( bb == TRUE ) {
       MRIState_STO_FNC_OBJ(Base_MRIStatex,pob_idx,Seq);
     }
-  };
+  }
   if ( bb == TRUE ) {
     CfgDepBase_CRE_SET_OBJ(&bb,&Set);
     if ( bb == TRUE ) {
       MRIState_STO_FNC_OBJ(Base_MRIStatex,ppf_idx,Set);
     }
-  };
+  }
   if ( bb == TRUE ) {
     CfgDepBase_CRE_SET_OBJ(&bb,&Setx);
     if ( bb == TRUE ) {
       MRIState_STO_FNC_OBJ(Base_MRIStatex,ppf_dmu_idx,Setx);
     }
-  };
+  }
   if ( bb == TRUE ) {
     MRIState_STO_FNC_OBJ(Base_MRIStatex,anl_idx,_Val_anl);
     MRIState_STO_FNC_OBJ(Base_MRIStatex,dmu_idx,_Val_dmu);
     MRIState_STO_FNC_OBJ(Base_MRIStatex,trl_idx,_Val_trl);
     MRIState_STO_FNC_OBJ(Base_MRIStatex,lnk_idx,_Val_lnk);
-  };
+  }
   *_Base_MRIState = Base_MRIStatex;
   *_rep = bb;
 }
@@ -1674,17 +1674,17 @@ int _Base_MRIState;
     int Seq;
     MRIState_VAL_FNC_OBJ(&Seq,_Base_MRIState,pob_idx);
     CfgDepBase_KIL_SEQ_OBJ(Seq);
-  };
+  }
   {
     int Set;
     MRIState_VAL_FNC_OBJ(&Set,_Base_MRIState,ppf_idx);
     CfgDepBase_KIL_SET_OBJ(Set);
-  };
+  }
   {
     int Set;
     MRIState_VAL_FNC_OBJ(&Set,_Base_MRIState,ppf_dmu_idx);
     CfgDepBase_KIL_SET_OBJ(Set);
-  };
+  }
   MRIState_KIL_FNC_OBJ(_Base_MRIState);
 }
 
@@ -1703,7 +1703,7 @@ int _Base_MRIState;
     PUT_STR_PAD("anl ",13);
     PUT_BOOL(elem);
     NWL(1);
-  };
+  }
   {
     int elem;
     MRIState_VAL_FNC_OBJ(&elem,_Base_MRIState,dmu_idx);
@@ -1711,7 +1711,7 @@ int _Base_MRIState;
     PUT_STR_PAD("dmu ",13);
     PUT_BOOL(elem);
     NWL(1);
-  };
+  }
   {
     int elem;
     MRIState_VAL_FNC_OBJ(&elem,_Base_MRIState,trl_idx);
@@ -1719,7 +1719,7 @@ int _Base_MRIState;
     PUT_STR_PAD("trl ",13);
     PUT_BOOL(elem);
     NWL(1);
-  };
+  }
   {
     int elem;
     MRIState_VAL_FNC_OBJ(&elem,_Base_MRIState,lnk_idx);
@@ -1727,7 +1727,7 @@ int _Base_MRIState;
     PUT_STR_PAD("lnk ",13);
     PUT_BOOL(elem);
     NWL(1);
-  };
+  }
   {
     int seqobj,elem,len,ith;
     BLK(2);
@@ -1741,10 +1741,10 @@ int _Base_MRIState;
       CfgDepBase_PUT_ACT_TOK(SCALAR,elem);
       BLK(1);
       ith = ith+1;
-    };
+    }
     PUT_STR("]");
     NWL(1);
-  };
+  }
   {
     int setobj,elem,crd,ord;
     BLK(2);
@@ -1758,10 +1758,10 @@ int _Base_MRIState;
       CfgDepBase_PUT_ACT_TOK(SCALAR,elem);
       BLK(1);
       ord = ord+1;
-    };
+    }
     PUT_STR("}");
     NWL(1);
-  };
+  }
   {
     int setobj,elem,crd,ord;
     BLK(2);
@@ -1775,10 +1775,10 @@ int _Base_MRIState;
       CfgDepBase_PUT_ACT_TOK(SCALAR,elem);
       BLK(1);
       ord = ord+1;
-    };
+    }
     PUT_STR("}");
     NWL(1);
-  };
+  }
   PUT_STR("----------------------------------------\n");
 }
 
@@ -2034,7 +2034,7 @@ int *_rep,*_Base_GENState,_Val_gen1,_Val_gen2,_Val_gen_dmu;
     GENState_STO_FNC_OBJ(Base_GENStatex,gen1_idx,_Val_gen1);
     GENState_STO_FNC_OBJ(Base_GENStatex,gen2_idx,_Val_gen2);
     GENState_STO_FNC_OBJ(Base_GENStatex,gen_dmu_idx,_Val_gen_dmu);
-  };
+  }
   *_Base_GENState = Base_GENStatex;
   *_rep = bb;
 }
@@ -2061,7 +2061,7 @@ int _Base_GENState;
     PUT_STR_PAD("gen1 ",13);
     PUT_BOOL(elem);
     NWL(1);
-  };
+  }
   {
     int elem;
     GENState_VAL_FNC_OBJ(&elem,_Base_GENState,gen2_idx);
@@ -2069,7 +2069,7 @@ int _Base_GENState;
     PUT_STR_PAD("gen2 ",13);
     PUT_BOOL(elem);
     NWL(1);
-  };
+  }
   {
     int elem;
     GENState_VAL_FNC_OBJ(&elem,_Base_GENState,gen_dmu_idx);
@@ -2077,7 +2077,7 @@ int _Base_GENState;
     PUT_STR_PAD("gen_dmu ",13);
     PUT_BOOL(elem);
     NWL(1);
-  };
+  }
   PUT_STR("----------------------------------------\n");
 }
 
@@ -2148,7 +2148,7 @@ int *_rep,*_Base_Seqstr;
     if ( bb == TRUE ) {
       Seqstr_STO_FNC_OBJ(Base_Seqstrx,seqstr_idx,Seq);
     }
-  };
+  }
   *_Base_Seqstr = Base_Seqstrx;
   *_rep = bb;
 }
@@ -2178,17 +2178,17 @@ int _Base_Seqstr;
           int ss[250];
           CfgDepBase_XTR_STR_OBJ(ss,strobj);
           PUT_STR(ss);
-        };
+        }
         PUT_STR("(");
         CfgDepBase_PUT_TOK(elem);
         PUT_STR(")");
-      };
+      }
       BLK(1);
       ith = ith+1;
-    };
+    }
     PUT_STR("]");
     NWL(1);
-  };
+  }
   PUT_STR("----------------------------------------\n");
 }
 
@@ -2244,7 +2244,7 @@ int *_rep,*_Base_String;
     if ( bb == TRUE ) {
       String_STO_FNC_OBJ(Base_Stringx,string_idx,Str);
     }
-  };
+  }
   *_Base_String = Base_Stringx;
   *_rep = bb;
 }
@@ -2266,9 +2266,9 @@ int _Base_String;
       int ss[250];
       CfgDepBase_XTR_STR_OBJ(ss,elem);
       PUT_STR(ss);
-    };
+    }
     NWL(1);
-  };
+  }
   PUT_STR("----------------------------------------\n");
 }
 
@@ -2313,7 +2313,7 @@ int *_rep,_Base_String,*_Str;
   CfgDepBase_NEW_STR_OBJ(&bb,&Str_0,_Str);
   if ( bb == TRUE ) {
     String_STO_FNC_OBJ(_Base_String,string_idx,Str_0);
-  };
+  }
   *_rep = bb;
 }
 

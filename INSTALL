@@ -1,0 +1,22 @@
+B-Toolkit has been tried on Ubuntu 12.04 and 14.04. Both x86 and
+x86_64 should work.
+
+Note: There are no lesstif packages for Ubuntu 14.04; use openmotif
+instead.
+
+Build requirements (to be installed with apt-get):
+- flex
+- motif (e.g. lesstif2-dev or libmotif-dev)
+- tcsh
+
+Build procedure:
+$ cd BToolkit/UTIL/
+$ export PATH=`pwd`:${PATH}
+$ ./BUILD
+(answer 'N' and then 'A')
+
+Run:
+$ cd BKIT
+$ export BKIT=`pwd`
+$ cd BDEMO
+$ ../BToolkit

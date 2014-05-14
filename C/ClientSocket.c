@@ -304,8 +304,8 @@ char * bkit_dir;
 
 void
 remove_my_zombie_pid ( pid, my_id )
-int pid;
-int my_id;
+pid_t pid;
+uid_t my_id;
 {
   int ClientSocketNUM ();
   FILE * Bcom;
@@ -391,7 +391,7 @@ printf ( "    not my process and not active - killing\n" );
 void
 remove_all_zombie_pid ( p, my_id )
 int p;
-int my_id;
+uid_t my_id;
 {
   int ClientSocketNUM ();
   char buf [ 250 ];
@@ -430,7 +430,7 @@ ClientSocketNUM (nn, rr, req, pid, hi_l, hi_m, hi_h )
 int * nn;
 int * rr;
 int req;
-int pid;
+pid_t pid;
 int hi_l;
 int hi_m;
 int hi_h;
@@ -445,7 +445,7 @@ DoClientSocketNUM ( nn, rr, req, pid, hi_l, hi_m, hi_h , killPlatform)
 int * nn;
 int * rr;
 int req;
-int pid;
+pid_t pid;
 int hi_l;
 int hi_m;
 int hi_h;
@@ -547,7 +547,7 @@ printf ( "\n\n\t\t  ClientSocketNUM\n" );
         Kill_bplatform_and_exit ( 0, 0 );
       }
       BToolkitd_Client_GET_STR (  ( int * ) ss );
-      printf ( ss );
+      puts ( ss );
 
       * nn = 0;
       * rr = 0;
@@ -604,7 +604,7 @@ printf ( "\n\n\t\t  ClientSocketNUM\n" );
       }
 
       BToolkitd_Client_GET_STR (  ( int * ) ss );
-      printf ( ss );
+      puts ( ss );
 
       tot_str--;
     }
@@ -664,7 +664,7 @@ printf ( "\n\n\t\t  ClientSocketNUM\n" );
     if ( buf [ 0 ] != '\0' ) {
       if ( strlen ( buf ) > 2 ) {
         if ( ( buf [ 0 ] != 'Z' ) && ( buf [ 0 ] != 'Z' ) )
-          printf ( buf );
+          puts ( buf );
       }
     }
   }
@@ -680,7 +680,7 @@ printf ( "\n\n\t\t  ClientSocketNUM\n" );
     if ( buf [ 0 ] != '\0' ) {
       if ( strlen ( buf ) > 2 ) {
         if ( ( buf [ 0 ] != 'Z' ) && ( buf [ 0 ] != 'Z' ) )
-          printf ( buf );
+          puts ( buf );
       }
     }
   }
@@ -946,7 +946,7 @@ fprintf ( bstdout, " (req=%d)\n", req );
       Kill_bplatform_and_exit ( 0, 0 );
     }
     BToolkitd_Client_GET_STR (  ( int * ) buf );
-    if ( buf [ 0 ] != '0' ) printf ( buf );
+    if ( buf [ 0 ] != '0' ) puts ( buf );
   }
 
   /************************************************************************

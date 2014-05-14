@@ -225,7 +225,7 @@ printf ( "looking for word `%s'\n", ref_arr_name_val [ i ] );
           fprintf ( Outfile, "<B>]</B>" );
 	}
         else {
-          fprintf ( Outfile, buf );
+          fputs ( buf, Outfile );
 	}
         if ( word [ k ] == '[' ) {
           fprintf ( Outfile, "<B>[</B>" );

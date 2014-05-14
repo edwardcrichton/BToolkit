@@ -3240,7 +3240,7 @@ printf ( "  ))))))))))  RedrawProofTree(%d,0) motif.c ReconstructProofAndPrint\n
             reappend_trm ( name_prf_fil );
             str_buf [ 0 ] = '\0';
             write_prf ( p, 0 );
-            fprintf ( bstdout, str_buf );
+            fputs ( str_buf, bstdout );
 	    reset_trm;
           }
           else {

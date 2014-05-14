@@ -41,24 +41,12 @@ int c, i, j, k;
 int done, user_header, other_header, proc_total, bmotif_proc_total, reqd;
 int bm_num;
 
-static char *num[] = { "0","1","2","3","4","5","6","7","8","9" };
-
 void
 CreNumInBuf ( buf, n )
 char * buf;
 long n;
 {
-  if ( n < 0 ) {
-    n = n * (-1);
-    strcat ( buf, "-" );
-  }
-  if ( n > 9 ) {
-    CreNumInBuf ( buf, n/10 );
-    strcat ( buf, num [ n % 10 ] );
-  }
-  else {
-    strcat ( buf, num [ n ] );
-  }
+  sprintf ( buf + strlen ( buf ), "%ld", n );
 }
 
 void
@@ -265,16 +253,16 @@ char *argv[];
     platform = is_darwin;
   }
   else {
-    printf ( "\n\n              Alien environment:  " );
-    printf ( benv );
-    printf ( "\n\n              Known environments: SunOS" );
-    printf ( "\n                                  Solaris" );
-    printf ( "\n                                  OSF1" );
-    printf ( "\n                                  IRIX" );
-    printf ( "\n                                  Linux" );
-    printf ( "\n                                  Darwin" );
-    printf ( "\n                                  AIX\n" );
-    printf ( "\n                Assuming Linux\n\n" );
+    puts ( "\n\n              Alien environment:  " );
+    puts ( benv );
+    puts ( "\n\n              Known environments: SunOS" );
+    puts ( "\n                                  Solaris" );
+    puts ( "\n                                  OSF1" );
+    puts ( "\n                                  IRIX" );
+    puts ( "\n                                  Linux" );
+    puts ( "\n                                  Darwin" );
+    puts ( "\n                                  AIX\n" );
+    puts ( "\n                Assuming Linux\n\n" );
     platform = is_linux;
   }
 
