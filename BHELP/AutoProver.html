@@ -81,15 +81,16 @@ session, and subsequent use by the AutoProver at the next level.
 
 <P>During the AutoProof the status of each obligation is represented by
 a single character as follows:
-<PRE>&nbsp;&nbsp;&nbsp;&nbsp; p&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; indicating it has already been discharged&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at a previous proof level
-
-&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; indicating it is not being attempted at this level&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (see the <A HREF="InterProver.html#PROOFMETHOD_File">ON clause of the PROOFMETHOD</A>)
-
-&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; indicating that it was successfully discharged at this level
-
-&nbsp;&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; indicating that it was attempted but not discharged at this&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; level</PRE>
+<DL>
+<DT><PRE>p</PRE><DT>
+<DD>indicating it has already been discharged at a previous proof level</DD>
+<DT><PRE>.</PRE><DT>
+<DD>indicating it is not being attempted at this level (see the <A HREF="InterProver.html#PROOFMETHOD_File">ON clause of the PROOFMETHOD</A>)<DD>
+<DT><PRE>+</PRE><DT>
+<DD>indicating that it was successfully discharged at this level</DD>
+<DT><PRE>-</PRE><DT>
+<DD>indicating that it was attempted but not discharged at this level</DD>
+</DL>
 The current number of outstanding proof obligations and total number of
 proof obligations (where applicable) is displayed for each construct in
 the <A HREF="BToolkit.html#Constructs!Area">Constructs Area</A> of the
