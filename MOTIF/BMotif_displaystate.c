@@ -3628,11 +3628,12 @@ char * name;
 printf ( "SetDisplay_1_for_name ( name = %s )\n", name );
 ***/
   Display_1 = Display_0;
-  while ( ( strcmp ( Display_1->name, name ) != 0 ) &&
-          ( Display_1 < Display_0 + DisplayTotal )       ) {
+
+  while ( ( Display_1 < Display_0 + DisplayTotal ) &&
+          ( strcmp ( Display_1->name, name ) != 0 )   ) {
     Display_1++;
   }
-  if ( Display_1 ==  Display_0 + DisplayTotal ) Display_1 = Display_0 - 1;
+  if ( Display_1 == Display_0 + DisplayTotal ) Display_1 = Display_0 - 1;
 }
 
 /************* SetDisplayField_obj_Changed ****************/
