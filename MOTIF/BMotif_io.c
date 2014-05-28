@@ -1403,6 +1403,7 @@ const char * dir;
   closedir ( dp );
 
   /* In all calling contexts 'sel_str_arr [ sel_arr_MAX ]' already contains 'dir'. */
+  assert(sel_str_arr [ sel_arr_MAX ] == dir);
   /*
   strcpy ( sel_str_arr [ sel_arr_MAX ], dir );
   */
