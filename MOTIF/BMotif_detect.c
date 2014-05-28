@@ -325,9 +325,7 @@ char* getApplicationCommandLineTemplate(char* cmd,char* known[], char* xterm[], 
 		strcat(localResult," \"%s\"");
 	}
 	
-	result=(char *)malloc((size_t) (strlen(localResult)+1));
-	result[0]='\0';
-	strcat(result,localResult);
+	result=strdup(localResult);
 	
 	return result;
 }
@@ -342,13 +340,12 @@ char* getApplicationCommandLine(char* application,char* filename, char* known[],
 {
 	char* template;
 	char* result;
-	int totalSize;
+	size_t totalSize;
 	
 	template=getApplicationCommandLineTemplate(application,known,xterm,total);
 	
 	totalSize=strlen(template)+strlen(filename);
 	result=(char *)malloc((size_t) (totalSize+1));
-	result[0]='\0';
 	
 	sprintf(result,template,filename);
 	
