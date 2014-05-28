@@ -16,6 +16,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+#include <ctype.h>
+
 #include "BMotif_globals.h"
 
 
@@ -633,9 +635,9 @@ printf ( "Check_inlined_ops_dot_h: about to fopen `%s'\n", buf );
           c = getc ( hfile );
         }
         i = 0;
-        while ( ( c >= 'a' ) && ( c <= 'z' ) ||
-                ( c >= 'A' ) && ( c <= 'Z' ) ||
-                ( c >= '0' ) && ( c <= '9' ) ||
+        while ( islower(c) ||
+                isupper(c) ||
+                isdigit(c) ||
                 ( c == '_' )                    ) {
           buf [ i++ ] = c;
           c = getc ( hfile );
