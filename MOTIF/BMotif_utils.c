@@ -53,30 +53,20 @@ show_gset (gsetnn)
   while (nn > 0) {
     switch (gsetnn) {
     case 1:
-      {
 	valOrd_gset1 (&cc, nn);
 	break;
-      }
     case 2:
-      {
 	valOrd_gset2 (&cc, nn);
 	break;
-      }
     case 3:
-      {
 	valOrd_gset3 (&cc, nn);
 	break;
-      }
     case 4:
-      {
 	valOrd_gset4 (&cc, nn);
 	break;
-      }
     case 5:
-      {
 	valOrd_gset5 (&cc, nn);
 	break;
-      }
     }
     BLK (6);
     xtr_name (Str, cc);
@@ -244,7 +234,6 @@ intr_gen (rep, cc, ex, nm, tt, cc1)
     if (rr == TRUE) {
       switch (tt) {
       case bse_gen:
-	{
 	  if (ex == ops) {
 	    cre_gen_by (*cc, cc1);
 	  }
@@ -260,9 +249,7 @@ intr_gen (rep, cc, ex, nm, tt, cc1)
 	    }
 	  }
 	  break;
-	}
       case enm_gen:
-	{
 	  make_MRIState (&rr, &curMRI, TRUE, FALSE, TRUE, FALSE);
 	  if (rr == TRUE) {
 	    make_MRIState (&rr, &cptMRI, TRUE, FALSE, TRUE, FALSE);
@@ -273,10 +260,7 @@ intr_gen (rep, cc, ex, nm, tt, cc1)
 	    }
 	  }
 	  break;
-	}
-
       case itf_gen:
-	{
 	  if (ex == enm) {
 	    make_GENState (&rr, &curGEN, FALSE, FALSE, FALSE);
 	    if (rr == TRUE) {
@@ -300,7 +284,6 @@ intr_gen (rep, cc, ex, nm, tt, cc1)
 	    }
 	  }
 	  break;
-	}
       }
     }
     if (rr == FALSE) {
