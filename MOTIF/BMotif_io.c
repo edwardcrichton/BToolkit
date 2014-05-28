@@ -18,6 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 
 #include <stdio.h>
+#include <assert.h>
 
 #include "BMotif_globals.h"
 
