@@ -17,9 +17,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 #define HERE(s) \
-  printf ( s ); \
-  printf ( "\n" ); \
-  fflush ( stdout );
+  printf ( s "\n");
 
 #define storeStartClock \
   start_c = clock()
