@@ -1649,7 +1649,7 @@ Options
 
 
 
-extern char *options[];
+extern const char *options[];
 
 /* moved to BMotif_version.h
 extern char *cpyrt[];
