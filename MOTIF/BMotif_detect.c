@@ -20,13 +20,11 @@ void canonical(path)
 char* path;
 {
 /* Resolves symbolic links. Overwrites the contents of path. path should have size PATH_MAX. */
-	char buf[PATH_MAX];
-	buf[0]='\0';
+	char buf[PATH_MAX] = "";
 
 	if (realpath(path, buf))
 	{
-		path[0]='\0';
-		strcat(path,buf);
+		strcpy(path,buf);
 	}
 }
 
@@ -363,9 +361,17 @@ char* getBrowserCommandLine(char* application,char* filename)
 {
 	char* known[]=
 	{
-		"konqueror", "netscape",
-		"firefox", "/Applications/Firefox.app/Contents/MacOS/firefox","/Applications/Safari.app/Contents/MacOS/Safari",
-		"elinks", "links", "opera", "yelp", "lynx", "w3m"
+		"konqueror",
+		"netscape",
+		"firefox",
+		"/Applications/Firefox.app/Contents/MacOS/firefox",
+		"/Applications/Safari.app/Contents/MacOS/Safari",
+		"elinks",
+		"links",
+		"opera",
+		"yelp",
+		"lynx",
+		"w3m"
 	};
 	char* xterm[]=
 	{
@@ -379,11 +385,20 @@ char* getBrowserCommandLine(char* application,char* filename)
 
 char* getEditorCommandLine(char* editor,char* filename)
 {
-	char* known[]=
+	const char* known[]=
 	{
-		"nedit", "xedit", "textedit" , "/Applications/TextEdit.app/Contents/MacOS/TextEdit",
-		"xemacs", "emacs" ,"/Applications/Emacs.app/Contents/MacOS/Emacs", "gvim", "kedit",
-		"vi", "nano", "pico"
+		"nedit",
+		"xedit",
+		"textedit",
+		"/Applications/TextEdit.app/Contents/MacOS/TextEdit",
+		"xemacs",
+		"emacs",
+		"/Applications/Emacs.app/Contents/MacOS/Emacs",
+		"gvim",
+		"kedit",
+		"vi",
+		"nano",
+		"pico"
 	};
 	char* xterm[]=
 	{
@@ -394,7 +409,6 @@ char* getEditorCommandLine(char* editor,char* filename)
 	int total=12;
 	return getApplicationCommandLine(editor,filename,known,xterm,total);
 }
-
 
 void getEditorOptions()
 {
@@ -429,15 +443,11 @@ void getEditorOptions()
 		{
 			if ( strcmp ( platform, "Solaris" ) == 0 )
 			{
-				editors[at]=(char *)malloc((size_t) 9);
-				editors[at][0]='\0';
-				strcat(editors[at],"textedit");
+				editors[at] = strdup("textedit");
 			}
 			else
 			{
-				editors[at]=(char *)malloc((size_t) 6);
-				editors[at][0]='\0';
-				strcat(editors[at],"xedit");
+				editors[at] = strdup("xedit");
 			}
 			at++;
 		}
@@ -475,10 +485,8 @@ void getEditorOptions()
 void getEditorOption(char* buf)
 {
 	/* looks up the default editor. Picks the first one */
-	
 	getEditorOptions();
-	buf[0]='\0';
-	strcat(buf,editors[0]);
+	strcpy(buf,editors[0]);
 }
 
 void getBrowserOptions()
@@ -513,10 +521,8 @@ void getBrowserOptions()
 	{
 		if(at<browsersCount)
 		{
-			browsers[at]=(char *)malloc((size_t) 8);
-			browsers[at][0]='\0';
-			strcat(browsers[at],"firefox");
-			at=at+1;
+			browsers[at]=strdup("firefox");
+			at++;
 		}
 		return;
 	}
@@ -551,10 +557,5 @@ void getBrowserOption(char* buf)
 {
 	/* looks up the default browser. Picks the first one */
 	getBrowserOptions();
-	buf[0]='\0';
-	strcat(buf,browsers[0]);
+	strcpy(buf,browsers[0]);
 }
-
-/**************************************************
-          /detect environment
-***************************************************/
