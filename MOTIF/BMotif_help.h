@@ -41,8 +41,3 @@ extern MenuItem Help_Translator_menu [];
 extern MenuItem Help_Documents_menu [];
 
 extern MenuItem Help_menus [];
-
-
-#define Palette_menu_tot 20
-
-extern char *Palette_menu [];
