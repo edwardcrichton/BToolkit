@@ -143,13 +143,13 @@ int strip_arr_tot;
         global 
 ***************************************************/
 
-int editorsCount=10;
+size_t editorsCount=10;
 char* editors[10];
 
 textWidgetXeditor* constructEditors[10];
 textWidgetXeditor* proofMethodEditors[10];
 
-int browsersCount=10;
+size_t browsersCount=10;
 char* browsers[10];
 
 textWidgetXbrowser* htmlBrowsers[10];

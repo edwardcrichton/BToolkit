@@ -406,10 +406,10 @@ void getEditorOptions()
 	char *end;
 	char *pos;
 	char *current;
-	int at;
+	size_t at;
 	int pathLength;
 	char buf[250];
-	int i;
+	size_t i;
 	
 	for(i=0;i<editorsCount;i++)
 	{
@@ -439,7 +439,7 @@ void getEditorOptions()
 				editors[at][0]='\0';
 				strcat(editors[at],"xedit");
 			}
-			at=at+1;
+			at++;
 		}
 		return;
 	}
@@ -491,11 +491,11 @@ void getBrowserOptions()
 	char *end;
 	char *pos;
 	char *current;
-	int at;
+	size_t at;
 	int pathLength;
 	char buf[250];
 	
-	int i;
+	size_t i;
 	
 	for(i=0;i<browsersCount;i++)
 	{

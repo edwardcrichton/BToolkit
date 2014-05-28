@@ -547,14 +547,14 @@ void psh_from_btoolkit ();
 ***************************************************/
 #ifdef BTOOLKIT_FLAG
 
-extern int editorsCount;
+extern size_t editorsCount;
 extern char* editors[];
 
 extern textWidgetXeditor* constructEditors[];
 extern textWidgetXeditor* proofMethodEditors[];
 
 
-extern int browsersCount;
+extern size_t browsersCount;
 extern char* browsers[];
 
 extern textWidgetXbrowser* htmlBrowsers[];

@@ -15745,7 +15745,7 @@ Popup_NewEditorsViewers_Options_Dialog ()
 {
   Make_NewOption_Dialog_Declarations;
   Widget w,constructEditor,pmdEditor,htmlBrowser,b,bb,bbb;
-  int i;
+  size_t i;
   XmString xstr, xstr1, xstr2;
   char buf [ PATH_MAX ];  /* don't want the global buf */
 
