@@ -32,30 +32,20 @@ show_gset (gsetnn)
   printf ( "    gset%d:\n", gsetnn );
   switch (gsetnn) {
   case 1:
-    {
       card_gset1 (&nn);
       break;
-    }
   case 2:
-    {
       card_gset2 (&nn);
       break;
-    }
   case 3:
-    {
       card_gset3 (&nn);
       break;
-    }
   case 4:
-    {
       card_gset4 (&nn);
       break;
-    }
   case 5:
-    {
       card_gset5 (&nn);
       break;
-    }
   }
   if ( ! nn ) printf ( "      empty\n" );
   while (nn > 0) {
@@ -92,45 +82,29 @@ show_gset (gsetnn)
     val_ext (&ex, cc);
     switch (ex) {
     case mch:
-      {
 	printf (".mch");
 	break;
-      }
     case ref:
-      {
 	printf (".ref");
 	break;
-      }
     case imp:
-      {
 	printf (".imp");
 	break;
-      }
     case bse:
-      {
 	printf (".bse");
 	break;
-      }
     case itf:
-      {
 	printf (".itf");
 	break;
-      }
     case enm:
-      {
 	printf (".enm");
 	break;
-      }
     case doc:
-      {
 	printf (".doc");
 	break;
-      }
     case ops:
-      {
 	printf (".ops");
 	break;
-      }
     case mch_prf:
       {
 	int nn;
@@ -204,7 +178,6 @@ intr_usr_lib (rep, cc, ex, nm, tt)
       case imp:
       case doc:
       case map:
-	{
 	  if (tt == lib) {
 /*"
    if a {\em lib\/} set {\em anl\/} and {\em trl\/} to TRUE:
@@ -232,11 +205,9 @@ intr_usr_lib (rep, cc, ex, nm, tt)
 	    }
 	  }
 	  break;
-	}
       case bse:
       case enm:
       case itf:
-	{
 	  make_GENState (&rr,
 			 &curGEN, FALSE,
 			 FALSE, FALSE);
@@ -249,7 +220,6 @@ intr_usr_lib (rep, cc, ex, nm, tt)
 	    }
 	  }
 	  break;
-	}
       }
     }
     if (rr == FALSE) {
