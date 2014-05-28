@@ -1389,6 +1389,7 @@ const char * dir;
       if ( stat ( buf, &stat_buf ) == -1 ) {
          sprintf ( fifo_write_buf, " Problem with \"stat %s\" ", buf );
          Popup_Err ( 0, fifo_write_buf );
+         closedir ( dp );
          return;
       }
       if ( S_ISDIR ( stat_buf . st_mode ) != 0 ) {
