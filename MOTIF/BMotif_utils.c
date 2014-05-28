@@ -338,9 +338,9 @@ printf ( "Process_code_files: about to fopen `%s'\n", str_buf );
     while ( c != EOF ) {
       if ( c == '<' ) {
         c = getc ( codefile );
-        if ( ( ( c >= 'a' ) && ( c <= 'z' ) ) ||
-             ( ( c >= 'A' ) && ( c <= 'Z' ) ) ||
-             ( ( c >= '0' ) && ( c <= '9' ) )   ) {
+        if ( islower(c) ||
+             isupper(c) ||
+             isdigit(c) ) {
           putc ( ' ', tempfile );
           putc ( '<', tempfile );
           putc ( ' ', tempfile );
