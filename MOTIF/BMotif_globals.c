@@ -2632,10 +2632,3 @@ void Popup_SelOne_Dialog ();
 void Popup_SelChoice_Dialog ();
 void Popup_SelLargeOne_Dialog ();
 void Popup_Selection_Sel_Dialog ();
-
-
-
-send_chk_vers_request_from_globals ()
-{
-  
-}
