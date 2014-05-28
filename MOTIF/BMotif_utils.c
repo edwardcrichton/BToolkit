@@ -525,9 +525,9 @@ printf ( "Print_inlined_op_dot_h: str_buf: `%s' filename: `%s' \n", str_buf, fil
         c = getc ( hfile );
       }
       i = 0;
-      while ( ( c >= 'a' ) && ( c <= 'z' ) ||
-              ( c >= 'A' ) && ( c <= 'Z' ) ||
-              ( c >= '0' ) && ( c <= '9' ) ||
+      while ( islower(c) ||
+              isupper(c) ||
+              isdigit(c) ||
               ( c == '_' )                    ) {
         buf [ i++ ] = c;
         c = getc ( hfile );
