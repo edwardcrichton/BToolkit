@@ -5849,7 +5849,7 @@ RemoveTopCurrText ( add_length )
 int add_length;
 {
   XmTextPosition nl_pos;
-  int nl_found;
+  Boolean nl_found;
 
 #define text_trigger_tot   30000
 #define text_rem_tot        2500
