@@ -11425,7 +11425,7 @@ fflush ( stdout );
   get parent dialog/OK or CANCEL/file_diff_but/rad_but
   ***/
   if ( cbs->reason == XmCR_PROTOCOLS ) {    /*** WM Close ***/
-    dialog =  button;
+    dialog = button;
     ok_pressed = 0;
     file_diff_but = 999;
 /***
