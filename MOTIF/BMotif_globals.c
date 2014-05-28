@@ -25,7 +25,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
   start_c = clock()
 
 #define elapsedClock \
-   clock()- start_c
+   clock() - start_c
 
 #include "BMotif_globals.h"
 
