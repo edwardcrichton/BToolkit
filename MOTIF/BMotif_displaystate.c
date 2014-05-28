@@ -2002,7 +2002,7 @@ ChangeMainButDecorationAndCmtApplicablity ( str )  /* Display_1/Main_1 is set */
 char * str;
 {
   Pixel fg, bg;
-  XmString  xstr = XmStringCreateLtoR ( str, charset );
+  XmString xstr = XmStringCreateLtoR ( str, charset );
   XtVaSetValues ( ( Widget ) Main_1->cmt, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Main_1->anl, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Main_1->pog, XmNlabelString, xstr, NULL );
