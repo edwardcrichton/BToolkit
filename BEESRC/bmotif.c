@@ -999,7 +999,7 @@ printf ( "\n  pre_init_request: buf = `%s'\n", buf );
         ClientSocketNUM ( &cs_nn, &cs_rr, BTd_id_BT_id_check, pid, hi_l, hi_m, hi_h );
 
         cs_rr = 0;
-        j = len_cur_BToolkitd_id;
+        j = strlen(cur_BToolkitd_id);
         i = 0;
         while ( i != j ) {
           cs_rr = ( 10 * cs_rr ) + cv2 [ cv1 [ cur_BToolkitd_id [ j - i - 1 ] - '0' ] ];

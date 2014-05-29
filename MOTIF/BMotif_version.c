@@ -25,9 +25,7 @@ char old_hdr_string[] = "BT400";
 /*** must ALWAYS be length 5
        for UpgradeWWW, DetermineBpdaType & BToolkit to work ***/
 
-/* must always be of length 8 */
 char cur_BToolkitd_id[] = "0401";
-#define len_cur_BToolkitd_id 4
 
 
 char * lock_file_name         = "/tmp/.Btkd"BT_VERSION"pid";
@@ -62,7 +60,7 @@ char *B_info_help_text =
   o  B-Method\n\
        the collection of mathematically based techniques\n\
        for the specification, design and implementation\n\
-        of software components.\n\n\
+       of software components.\n\n\
   o  Abstract Machine Notation\n\
        the notation used to specify and design software\n\
        systems using the B-Method; often abbreviated\n\

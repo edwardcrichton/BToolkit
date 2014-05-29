@@ -21,9 +21,7 @@ extern char old_hdr_string[];
 /*** must ALWAYS be length 5
        for UpgradeWWW, DetermineBpdaType & BToolkit to work ***/
 
-/* must always be of length 8 */
 extern char cur_BToolkitd_id[];
-#define len_cur_BToolkitd_id 4
 
 
 /***
