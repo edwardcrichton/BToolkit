@@ -76,8 +76,8 @@ char *B_info_help_text =
        are built also known as the B-Tool and the B-Kernel,\n\
        it has been sold as the former since 1991.\n\n\
       B was developed by BP International Ltd. from 1985-92;\n\
-       B-Core(UK) Ltd. purchased the full rights to B in 1993,\n\
-              and is continuing to develop all aspects of B.";
+      B-Core(UK) Ltd. purchased the full rights to B in 1993,\n\
+      and is continuing to develop all aspects of B.";
 
 
 char * BCore_info_help_text = "\n\
