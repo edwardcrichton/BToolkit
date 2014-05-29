@@ -1026,7 +1026,7 @@ void
 CreOptionUtilityLabelInStrBuf ( nn )
 int nn;
 {
-  int i, j;
+  size_t i;
   char buf [ 150 ];  /* don't want the global buf */
 
   switch ( nn ) {
@@ -1050,15 +1050,12 @@ int nn;
     Retrieve_String ( optional_utility5_str_num, buf );
     strcpy ( str_buf, "Optional Utility 5 is not set" );
     break;
-
   }
   i = strlen ( buf );
   if ( i ) {
     while ( ( i ) && buf [ i ] != '/' ) { i--; }
     if ( buf [ i ] == '/' ) i++;
-    j = 0;
-    while ( buf [ i ] != '\0' ) { str_buf [ j++ ] = buf [ i++ ]; }
-    str_buf [ j ] = '\0';
+    strcpy( str_buf, & buf [ i ] );
   }
 }
 
@@ -1066,7 +1063,8 @@ void
 Cre_Top_Bar_Utils_Pulldown ()
 {
   Widget pull_down, cascade, widget;
-  int i, j;
+  size_t i;
+  int j;
   XmString xstr;
   XtCallbackProc TopBar_Utils_CB ();
 
@@ -1142,7 +1140,7 @@ TopBarMenuItem * items;
 XtCallbackProc call_back;
 {
   Widget pull_down, cascade, widget;
-  int i;
+  size_t i;
   XmString xstr;
 
 /* Pulldown menus are built from cascade buttons, so this function
@@ -2567,7 +2565,7 @@ char * menu_title;
 MenuItem * items;
 {
   Widget pull_down, cascade, widget;
-  int i;
+  size_t i;
   XmString str;
 
 /* Pulldown menus are built from cascade buttons, so this function
