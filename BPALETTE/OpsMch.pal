@@ -7,11 +7,9 @@
 
  skip
 
-
 ----- PARALLEL -----
 
  S || T
-
 
 ---- ASSIGNMENTS ---
 
@@ -24,7 +22,6 @@
  ff(xx):= E
 
  bb:= bool(P)
-
 
 --- PRECONDITION ---
 
@@ -59,7 +56,6 @@
  ELSIF Q THEN
      T
  END
-
 
 ---- LOCAL VARS ----
 
@@ -107,7 +103,6 @@
      U
  END
 
-
 ------- CASE -------
 
  CASE E OF
@@ -121,7 +116,6 @@
          V
      END
  END
-
 
  CASE E OF
      EITHER l THEN
@@ -139,4 +133,3 @@
  Not allowed
 
 ------------------
-
