@@ -1235,17 +1235,13 @@ XtPointer client_data;
   switch ( * ( int * ) client_data ) {
 
   case 0:
-    {
       /* Pre_Remake ( remake_all_constructs ); */
       CommitAll_CB ( Commit_All_remake_all );
-    }
   break;
 
   case 1:
-    {
       /* Pre_Remake ( remake_construct ); */
       CommitAll_CB ( Commit_All_remake_construct );
-    }
   break;
 
   case 2:
