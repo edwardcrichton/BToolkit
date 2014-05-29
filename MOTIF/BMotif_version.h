@@ -23,7 +23,6 @@ extern char old_hdr_string[];
 
 extern char cur_BToolkitd_id[];
 
-
 /***
 used by BToolkit.c & BMotif_widgets.c
 ***/
@@ -51,17 +50,7 @@ used by BMotif_widgets.c
 ***/
 extern char * B_info_help_text;
 
-
-
-#ifdef WWW_VERSION
-
 extern char * BCore_info_help_text;
-
-#else
-
-extern char * BCore_info_help_text;
-
-#endif
 
 #ifdef WWW_VERSION
 
