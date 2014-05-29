@@ -86,6 +86,7 @@ foreach file ( $slib_files )
   cp HTX/$file.mch.html $BKIT/BHELP/HTX
   
 end
+cp HTX/ConstructsSummary.html $BKIT/BHELP/HTX
 
 echo ""
 
