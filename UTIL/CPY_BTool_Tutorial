@@ -29,7 +29,7 @@ echo ""
 
 if ( $?TOOLKIT_VERSION && $TOOLKIT_VERSION == "WWW_VERSION" ) then
 
-  echo "  BTool_Tutorial not copied (WWW_VERSION)
+  echo "  BTool_Tutorial not copied (WWW_VERSION)"
 
 else
 
