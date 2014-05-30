@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -14,7 +15,6 @@ for all constructs. It represents a toggle for opening/closing (quitting
 from) a construct edit; if the <A HREF="BToolkit.html#Constructs!Area">construct</A>
 is currently open, the option label is printed in inverse video.
 
-<P>
 <HR WIDTH="60%">
 <H2>
 Open Editor</H2>
@@ -24,26 +24,27 @@ directory; if a file of that name currently exists in SRC, and differs
 from that in CFG, the following options are offered:
 <UL>
 <LI>
-<TT>Open SRC file</TT></LI>
-
-<BR>opens the SRC file, when edits may subsequently be committed in the
-usual way.
-<BR>&nbsp;
-<BR>&nbsp;
-<LI>
-<TT>Open CFG file</TT></LI>
-
-<BR>opens the CFG file and in so-doing overwrites the edited SRC file (which
-is thus lost); edits may subsequently be committed in the usual way.
-<BR>&nbsp;
-<BR>&nbsp;
-<LI>
-<TT>Show difference</TT></LI>
-
-<BR>displays the UNIX diff between the two files.
+<TT>Open SRC file</TT><BR>
 
 <P>
-<HR WIDTH="60%"></UL>
+opens the SRC file, when edits may subsequently be committed in the
+usual way.
+</P>
+</LI>
+<LI>
+<TT>Open CFG file</TT>
+
+<P>opens the CFG file and in so-doing overwrites the edited SRC file (which
+is thus lost); edits may subsequently be committed in the usual way.
+</P>
+</LI>
+<LI>
+<TT>Show difference</TT>
+
+<P>displays the UNIX diff between the two files.</P>
+</LI>
+</UL>
+<HR WIDTH="60%">
 The editor setting is made though the <A HREF="Options.html#Options!Editor!Construct_Editor">Construct
 Editor</A> setting of the <A HREF="Options.html#Options">Options</A>.
 <H2>
@@ -64,29 +65,31 @@ the edited file differs from that which is currently committed), the following
 choice is offered:
 <UL>
 <LI>
-<TT>Commit edits</TT></LI>
+<TT>Commit edits</TT>
 
-<BR>updates the CFG directory, and in so doing causes any processing of
+<P>updates the CFG directory, and in so doing causes any processing of
 the construct to be lost; further, processing of any dependent constructs
 is also lost (but you will be warned in this case before the commit is
 actually made). If the difference is annotational, the processing lost
-is restricted to marked-up documents.
-<BR>&nbsp;
+is restricted to marked-up documents.</P>
+</LI>
 <LI>
-<TT>Discard edits</TT></LI>
+<TT>Discard edits</TT>
 
-<BR>removes the edited SRC file from the file system.
-<BR>&nbsp;
+<P>removes the edited SRC file from the file system.</P>
+</LI>
 <LI>
-<TT>Save in SRC</TT></LI>
+<TT>Save in SRC</TT>
 
-<BR>does not commit the edited file, but leaves it in the SRC directory
-for later use.
-<BR>&nbsp;
+<P>does not commit the edited file, but leaves it in the SRC directory
+for later use.</P>
+</LI>
 <LI>
-<TT>Show difference</TT></LI>
+<TT>Show difference</TT>
 
-<BR>displays the UNIX diff between the SRC and CFG files.</UL>
+<P>displays the UNIX diff between the SRC and CFG files.</P>
+</LI>
+</UL>
 It is also possible to commit the changes of an edited construct through
 the <A HREF="Close.html#Close">Close</A>, <A HREF="CommitEdits.html#CommitEdits">CommitEdits</A>,
 <A HREF="Commit.html#Commit">Commit</A>, <A HREF="Remake.html#Remake">Remake</A>,
@@ -106,9 +109,8 @@ and the one currently configured in <A HREF="BToolkit.html#Development_Environme
 if the two files differ edits may be committed without opening the construct
 through<TT> <A HREF="Commit.html#Commit">Commit All Updated Constructs</A>
 </TT>invoked from the<TT> <A HREF="BToolkit.html#Construct">TopBar Constructs</A>
-pull-down.</TT><TT></TT>
+pull-down.</TT>
 
-<P>
 <HR WIDTH="60%">
 <CENTER>&nbsp;</CENTER>
 
@@ -119,7 +121,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 

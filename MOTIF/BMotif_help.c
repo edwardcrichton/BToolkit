@@ -164,7 +164,6 @@ MenuItem Help_Documents_menu [] = {
   ( XtPointer ) NULL,
 };
 
-
 MenuItem Help_menus [] = {
   { "Contents", "", ( XtPointer ) "Contents", ( MenuItem * ) NULL },
   { "BMethod", "", ( XtPointer ) NULL, Help_BMethod_menu },
@@ -180,21 +179,4 @@ MenuItem Help_menus [] = {
   { "Documents", "", ( XtPointer ) NULL, Help_Documents_menu },
   { "Index", "", ( XtPointer ) "Index", ( MenuItem * ) NULL },
   ( XtPointer ) NULL,
-};
-
-
-
-#define Palette_menu_tot 20
-
-char *Palette_menu [] = {
-  "Machines.pal",  "Machines",
-  "OpsMch.pal",  "Machine Ops",
-  "Refinements.pal",  "Refinements",
-  "OpsRef.pal",  "Refinement Ops",
-  "Implementations.pal",  "Implementations",
-  "OpsImp.pal",  "Implementation Ops",
-  "Bases.pal",  "Bases",
-  "Documents.pal",  "Documents",
-  "Enumerations.pal",  "Enumerations",
-  "Interfaces.pal",  "Interfaces",
 };

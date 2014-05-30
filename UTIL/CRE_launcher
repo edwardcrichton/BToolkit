@@ -56,5 +56,3 @@ if ($status != "0") then
 endif
 
 strip ../BKIT/"Blauncher"
-
-

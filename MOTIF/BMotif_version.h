@@ -21,10 +21,7 @@ extern char old_hdr_string[];
 /*** must ALWAYS be length 5
        for UpgradeWWW, DetermineBpdaType & BToolkit to work ***/
 
-/* must always be of length 8 */
 extern char cur_BToolkitd_id[];
-#define len_cur_BToolkitd_id 4
-
 
 /***
 used by BToolkit.c & BMotif_widgets.c
@@ -53,17 +50,7 @@ used by BMotif_widgets.c
 ***/
 extern char * B_info_help_text;
 
-
-
-#ifdef WWW_VERSION
-
 extern char * BCore_info_help_text;
-
-#else
-
-extern char * BCore_info_help_text;
-
-#endif
 
 #ifdef WWW_VERSION
 

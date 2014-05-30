@@ -20,6 +20,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 String fallbacks[] = {
   "ErrorBox*fontList: -*-new century schoolbook-bold-r-*--12-*=TAG1",
@@ -33,14 +34,13 @@ String fallbacks[] = {
   "ErrorBox*geometry: +400+150",
   NULL
 };
-Display *       display;
-XtAppContext  app;
-Position nx, ny;
 
+Display * display;
+XtAppContext app;
+Position nx, ny;
 
 #define max_num_fld 250
 #define max_num_enm 100
-
 
 int dd [ max_num_fld ];
 int is_error_box;
@@ -92,8 +92,7 @@ Cre_Framed_B_logo_Pixmap ()
   Bxpm = fopen ( "B.xpm", "w" );
   if ( Bxpm == NULL ) {
     printf ( "\n  BPrompt: can't open B.xpm for writing\n" );
-    exit ( 1 );
-    return;
+    exit ( EXIT_FAILURE );
   }
   fprintf ( Bxpm, "/" );
   fprintf ( Bxpm, "* XPM *" );
@@ -150,7 +149,7 @@ int r_off;
 {
   Widget B_logo;
   Cre_Framed_B_logo_Pixmap ();
-  B_logo =  XtVaCreateManagedWidget ( "ItfDialog",
+  B_logo = XtVaCreateManagedWidget ( "ItfDialog",
       xmLabelGadgetClass,             parent,
       XmNlabelType,                   XmPIXMAP,
       XmNlabelPixmap,                 B_framed_pixmap_gray94,
@@ -355,7 +354,7 @@ int tot;
 {
   Widget pull_down, widget;
   Arg args [ 5 ];
-  int n = 0;
+  size_t n = 0;
   menu [ field_num ] = XmCreatePulldownMenu ( parent, "InputText", NULL, 0);
   xstr = XmStringCreateLtoR ( "", charset );
   XtSetArg ( args [ n ], XmNsubMenuId, menu [ field_num ] ); n++;
@@ -462,7 +461,7 @@ XtPointer client_data;
     if ( is_enm [ cur_fld ] ) {
       if ( strcmp ( Enum_Name [ cur_fld ], "_BOOL" ) == 0 ) {
         if  ( enum_i [ cur_fld ] ) strcat ( buf, "1" );
-        else                          strcat ( buf, "0" );
+        else                       strcat ( buf, "0" );
       }
       else {
         AppNumToBuf ( buf, enum_i [ cur_fld ] + 1 );
@@ -488,7 +487,7 @@ XtPointer client_data;
 
         if ( is_num [ cur_fld ] ) {
           int is_num_error = 0;
-          int slen = strlen ( cur_buf );
+          size_t slen = strlen ( cur_buf );
           if ( slen > 10 ) {
             is_num_error = 1;
           }
@@ -496,7 +495,7 @@ XtPointer client_data;
             i = 0;
             j = 0;
             while ( ! is_num_error && i < slen ) {
-              if ( cur_buf [ i ] < '0' || cur_buf [ i ] > '9' )
+              if ( isdigit ( cur_buf [ i ] ) )
                 is_num_error = 1;
               else
                 j = ( 10 * j ) + cur_buf [ i ] - '0';
@@ -520,7 +519,7 @@ XtPointer client_data;
         }
 
         else if ( is_chr [ cur_fld ] ) {
-          int slen = strlen ( cur_buf );
+          size_t slen = strlen ( cur_buf );
           if ( slen != 1                       ||
                cur_buf [ 0 ] < ( char ) 32  ||
                cur_buf [ 0 ] > ( char ) 126    ) {
@@ -534,7 +533,7 @@ XtPointer client_data;
 
         else if ( is_bts [ cur_fld ] ) {
           int is_bts_error = 0;
-          int slen = strlen ( cur_buf );
+          size_t slen = strlen ( cur_buf );
           if ( slen > 32 ) {
             is_bts_error = 1;
           }
@@ -575,7 +574,7 @@ XtPointer client_data;
     if ( ! is_error ) {
       cur_fld++;
       if ( cur_fld != tot_fld ) {
-        int slen = strlen ( buf );
+        size_t slen = strlen ( buf );
         buf [ slen ] = ( char ) 17;
         buf [ slen + 1 ] = '\0';
       }
@@ -845,4 +844,6 @@ char *argv[];
   }
 
   XtAppMainLoop ( app );
+
+  return 0;
 }

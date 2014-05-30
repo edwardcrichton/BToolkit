@@ -18,6 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 
 #include <stdio.h>
+#include <assert.h>
 
 #include "BMotif_globals.h"
 
@@ -1353,12 +1354,12 @@ VHDLULIBIsADirectory ( int flag )
 
 void
 LoadWritableDirInto_sel_strs ( dir )
-char * dir;
+const char * dir;
 {
   struct stat stat_buf;
   struct dirent * dirent_ptr;
   DIR * dp;
-  int i;
+  size_t i;
   int full = 0;
   void Sort_sel_strs_from_third ();
 
@@ -1368,11 +1369,9 @@ char * dir;
      return;
   }
 
-  sprintf ( fifo_write_buf, "Current %s", /* DropFinalDir ( cur_dir ) */ dir );
-  strcpy ( sel_str_arr [ 0 ], fifo_write_buf );
+  sprintf ( sel_str_arr [ 0 ], "Current %s", /* DropFinalDir ( cur_dir ) */ dir );
 
-  sprintf ( fifo_write_buf, "Up to %s", DropFinalDir ( dir ) );
-  strcpy ( sel_str_arr [ 1 ], fifo_write_buf );
+  sprintf ( sel_str_arr [ 1 ], "Up to %s", DropFinalDir ( dir ) );
 
   sel_arr_tot = 2;
 
@@ -1391,6 +1390,7 @@ char * dir;
       if ( stat ( buf, &stat_buf ) == -1 ) {
          sprintf ( fifo_write_buf, " Problem with \"stat %s\" ", buf );
          Popup_Err ( 0, fifo_write_buf );
+         closedir ( dp );
          return;
       }
       if ( S_ISDIR ( stat_buf . st_mode ) != 0 ) {
@@ -1404,12 +1404,16 @@ char * dir;
 
   closedir ( dp );
 
+  /* In all calling contexts 'sel_str_arr [ sel_arr_MAX ]' already contains 'dir'. */
+  assert(sel_str_arr [ sel_arr_MAX ] == dir);
+  /*
   strcpy ( sel_str_arr [ sel_arr_MAX ], dir );
+  */
 
   Sort_sel_strs_from_third ();
 
   i = strlen ( sel_str_arr [ sel_arr_MAX ] );
-  if (  sel_str_arr [ sel_arr_MAX ] [ i - 1 ] == '/' )
+  if ( i > 0 && sel_str_arr [ sel_arr_MAX ] [ i - 1 ] == '/' )
     sel_str_arr [ sel_arr_MAX ] [ i - 1 ] = '\0';
 
   if ( full ) {

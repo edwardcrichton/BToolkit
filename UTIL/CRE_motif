@@ -249,7 +249,7 @@ if ( $TOOLKIT_VERSION == "WWW_VERSION" ) then
     echo "  $CC -Dbmotif \ "
     echo "      $ALL_FLAGS  \ "
     echo "      $CC_opt_Motif \ "
-    echo "      $CC_X_incl_dir \"
+    echo "      $CC_X_incl_dir \ "
     echo "      -o $BKIT/BLIB/$file \ "
     echo "      $file.c \ "
     echo "      $CC_X_link_dir \ "

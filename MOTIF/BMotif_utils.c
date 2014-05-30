@@ -16,6 +16,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+#include <ctype.h>
+
 #include "BMotif_globals.h"
 
 
@@ -32,59 +34,39 @@ show_gset (gsetnn)
   printf ( "    gset%d:\n", gsetnn );
   switch (gsetnn) {
   case 1:
-    {
       card_gset1 (&nn);
       break;
-    }
   case 2:
-    {
       card_gset2 (&nn);
       break;
-    }
   case 3:
-    {
       card_gset3 (&nn);
       break;
-    }
   case 4:
-    {
       card_gset4 (&nn);
       break;
-    }
   case 5:
-    {
       card_gset5 (&nn);
       break;
-    }
   }
   if ( ! nn ) printf ( "      empty\n" );
   while (nn > 0) {
     switch (gsetnn) {
     case 1:
-      {
 	valOrd_gset1 (&cc, nn);
 	break;
-      }
     case 2:
-      {
 	valOrd_gset2 (&cc, nn);
 	break;
-      }
     case 3:
-      {
 	valOrd_gset3 (&cc, nn);
 	break;
-      }
     case 4:
-      {
 	valOrd_gset4 (&cc, nn);
 	break;
-      }
     case 5:
-      {
 	valOrd_gset5 (&cc, nn);
 	break;
-      }
     }
     BLK (6);
     xtr_name (Str, cc);
@@ -92,45 +74,29 @@ show_gset (gsetnn)
     val_ext (&ex, cc);
     switch (ex) {
     case mch:
-      {
 	printf (".mch");
 	break;
-      }
     case ref:
-      {
 	printf (".ref");
 	break;
-      }
     case imp:
-      {
 	printf (".imp");
 	break;
-      }
     case bse:
-      {
 	printf (".bse");
 	break;
-      }
     case itf:
-      {
 	printf (".itf");
 	break;
-      }
     case enm:
-      {
 	printf (".enm");
 	break;
-      }
     case doc:
-      {
 	printf (".doc");
 	break;
-      }
     case ops:
-      {
 	printf (".ops");
 	break;
-      }
     case mch_prf:
       {
 	int nn;
@@ -204,7 +170,6 @@ intr_usr_lib (rep, cc, ex, nm, tt)
       case imp:
       case doc:
       case map:
-	{
 	  if (tt == lib) {
 /*"
    if a {\em lib\/} set {\em anl\/} and {\em trl\/} to TRUE:
@@ -232,11 +197,9 @@ intr_usr_lib (rep, cc, ex, nm, tt)
 	    }
 	  }
 	  break;
-	}
       case bse:
       case enm:
       case itf:
-	{
 	  make_GENState (&rr,
 			 &curGEN, FALSE,
 			 FALSE, FALSE);
@@ -249,7 +212,6 @@ intr_usr_lib (rep, cc, ex, nm, tt)
 	    }
 	  }
 	  break;
-	}
       }
     }
     if (rr == FALSE) {
@@ -272,7 +234,6 @@ intr_gen (rep, cc, ex, nm, tt, cc1)
     if (rr == TRUE) {
       switch (tt) {
       case bse_gen:
-	{
 	  if (ex == ops) {
 	    cre_gen_by (*cc, cc1);
 	  }
@@ -288,9 +249,7 @@ intr_gen (rep, cc, ex, nm, tt, cc1)
 	    }
 	  }
 	  break;
-	}
       case enm_gen:
-	{
 	  make_MRIState (&rr, &curMRI, TRUE, FALSE, TRUE, FALSE);
 	  if (rr == TRUE) {
 	    make_MRIState (&rr, &cptMRI, TRUE, FALSE, TRUE, FALSE);
@@ -301,10 +260,7 @@ intr_gen (rep, cc, ex, nm, tt, cc1)
 	    }
 	  }
 	  break;
-	}
-
       case itf_gen:
-	{
 	  if (ex == enm) {
 	    make_GENState (&rr, &curGEN, FALSE, FALSE, FALSE);
 	    if (rr == TRUE) {
@@ -328,7 +284,6 @@ intr_gen (rep, cc, ex, nm, tt, cc1)
 	    }
 	  }
 	  break;
-	}
       }
     }
     if (rr == FALSE) {
@@ -383,9 +338,9 @@ printf ( "Process_code_files: about to fopen `%s'\n", str_buf );
     while ( c != EOF ) {
       if ( c == '<' ) {
         c = getc ( codefile );
-        if ( ( ( c >= 'a' ) && ( c <= 'z' ) ) ||
-             ( ( c >= 'A' ) && ( c <= 'Z' ) ) ||
-             ( ( c >= '0' ) && ( c <= '9' ) )   ) {
+        if ( islower(c) ||
+             isupper(c) ||
+             isdigit(c) ) {
           putc ( ' ', tempfile );
           putc ( '<', tempfile );
           putc ( ' ', tempfile );
@@ -570,9 +525,9 @@ printf ( "Print_inlined_op_dot_h: str_buf: `%s' filename: `%s' \n", str_buf, fil
         c = getc ( hfile );
       }
       i = 0;
-      while ( ( c >= 'a' ) && ( c <= 'z' ) ||
-              ( c >= 'A' ) && ( c <= 'Z' ) ||
-              ( c >= '0' ) && ( c <= '9' ) ||
+      while ( islower(c) ||
+              isupper(c) ||
+              isdigit(c) ||
               ( c == '_' )                    ) {
         buf [ i++ ] = c;
         c = getc ( hfile );
@@ -663,9 +618,9 @@ printf ( "Check_inlined_ops_dot_h: about to fopen `%s'\n", buf );
           c = getc ( hfile );
         }
         i = 0;
-        while ( ( c >= 'a' ) && ( c <= 'z' ) ||
-                ( c >= 'A' ) && ( c <= 'Z' ) ||
-                ( c >= '0' ) && ( c <= '9' ) ||
+        while ( islower(c) ||
+                isupper(c) ||
+                isdigit(c) ||
                 ( c == '_' )                    ) {
           buf [ i++ ] = c;
           c = getc ( hfile );

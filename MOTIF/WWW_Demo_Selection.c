@@ -16,9 +16,10 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+#include <stdlib.h>
+#include <unistd.h>
+
 #include <Xm/XmAll.h>
-
-
 
 #define MAX_WWW_DEMO_NAME 50
 #define MAX_WWW_DEMO      50
@@ -28,7 +29,6 @@ int c_arr [ MAX_WWW_DEMO ];
 
 int tot_www_dirs;
 
-char *getenv();
 char* bkit;
 
 XtAppContext app;
@@ -58,7 +58,7 @@ Widget widget;
 XtPointer client_data;
 {
   char buf [ 1000 ];
-  int i =  * ( int * ) client_data;
+  int i = * ( int * ) client_data;
 
   strcpy ( buf, "WWW_DEMOS/" );
   strcat ( buf, demo_directory [ i ] );
@@ -70,7 +70,7 @@ XtPointer client_data;
   exit ( 1 );
 }
 
-get_demo_directories ()
+void get_demo_directories ()
 {
   int i, j, c;
   FILE * fileid;
@@ -85,7 +85,7 @@ get_demo_directories ()
   if ( fileid == NULL ) {
     printf ( "\n\n  Can't open .Bdir for reading\n\n" );
     exit (1);
-  };
+  }
 
   i = 0;
   c = getc ( fileid );
@@ -95,7 +95,7 @@ get_demo_directories ()
       demo_directory [ i ] [ j ] = c;
       j++;
       c = getc ( fileid );
-    };
+    }
     if ( j == MAX_WWW_DEMO_NAME ) {
       printf ( "\n  Direcrory name %s too long\n", demo_directory [ i ] );
       i--;
@@ -122,27 +122,24 @@ get_demo_directories ()
       else {
         i--; 
       }
-    };
+    }
     
     i++;
     while ( c == '\n' ||  c == ' ' ) {
       c = getc ( fileid );
     }
-  };
+  }
 
   fclose ( fileid );
 
   if ( i == MAX_WWW_DEMO ) {
     printf ( "\n  Too many directories\n " );
-  };
+  }
 
   tot_www_dirs = i;
 }
 
-
-
-
-
+int
 main(argc, argv)
 int argc;
 char *argv[];
@@ -157,7 +154,7 @@ char *argv[];
   if ( bkit  ==  NULL ) {
     printf ( "\n\n  Environment variable BKIT not set\n\n" );
     exit ( 1 );
-  };
+  }
 
   XtSetLanguageProc ( NULL, NULL, NULL );
 
@@ -236,15 +233,15 @@ char *argv[];
     j = 0;
     while ( demo_directory [ i ] [ j ] != '_' ) {
       j++;
-    };
+    }
     j++;
     while ( demo_directory [ i ] [ j ] != '_' ) {
       j++;
-    };
+    }
     j++;
     while ( demo_directory [ i ] [ j ] != '_' ) {
       j++;
-    };
+    }
     j++;
     if ( demo_directory [ i ] [ j - 3 ] != '0' ) {
       buf [ 14 ] = demo_directory [ i ] [ j - 3 ];
@@ -258,12 +255,12 @@ char *argv[];
       buf [ 15 ] = ':';
       buf [ 16 ] = ' ';
       k = 17;
-    };
+    }
     while ( demo_directory [ i ] [ j - 3 ] != '\0' ) {
       buf [ k ] = demo_directory [ i ] [ j ];
       j++;
       k++;
-    };
+    }
     buf [ k ] = '\0';
     xstr = XmStringCreateLtoR ( buf, charset );
     but = XtVaCreateManagedWidget ( "WWWDialog",
@@ -282,9 +279,11 @@ char *argv[];
                            ( XtCallbackProc ) pushed,
                            ( XtPointer ) & c_arr [ i ] );
     XmStringFree ( xstr );
-  };
+  }
 
   XtManageChild ( row_col );
   XtRealizeWidget ( top_level );
   XtAppMainLoop ( app );
+
+  return 0;
 }

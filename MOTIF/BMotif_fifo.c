@@ -173,7 +173,7 @@ printf ( "%s\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n", fifo_write_buf ); fflush(stdout
 
 void fifo_read ()
 {
-  int n;
+  ssize_t n;
   char * buf_ptr;
   int buf_len;
 

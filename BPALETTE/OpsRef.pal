@@ -7,11 +7,9 @@
 
  skip
 
-
 ----- PARALLEL -----
 
  S || T
-
 
 ---- ASSIGNMENTS ---
 
@@ -24,7 +22,6 @@
  ff(xx):= E
 
  bb:= bool(P)
-
 
 --- PRECONDITION ---
 
@@ -60,7 +57,6 @@
       T
  END
 
-
 ---- LOCAL VARS ----
 
  ANY xx WHERE
@@ -74,7 +70,6 @@
  IN
      S
  END
-
 
 ----- BRANCHING -----
 
@@ -108,7 +103,6 @@
      U
  END
 
-
 ------- CASE -------
 
  CASE E OF
@@ -122,7 +116,6 @@
          V
      END
  END
-
 
  CASE E OF
      EITHER l THEN
@@ -140,4 +133,3 @@
  S;T
 
 ------------------
-

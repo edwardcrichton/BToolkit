@@ -95,19 +95,16 @@ extern char pid_id_file [];
 
 #define print_debug(m) \
   if ( is_debug ) \
-      printf ( "\n    BMotif: debug trace %4d\n", m ); \
-      fflush ( stdout )
+      printf ( "\n    BMotif: debug trace %4d\n", m );
 
 #define HERE(s) \
-  printf ( s ); \
-  printf ( "\n" ); \
-  fflush ( stdout );
+  printf ( s "\n");
 
 #define storeStartClock \
   start_c = clock()
 
 #define elapsedClock \
-   clock()- start_c
+   clock() - start_c
 
 #include "BMotif_version.h"
 
@@ -162,7 +159,7 @@ extern int BOOSTER_link;
     if ( fclose ( bstdout ) != 0 ) { \
       fprintf ( stderr, "\n\n             Can't close menu window\n\n" ); \
       exit___ ( 1 ); \
-    }; \
+    } \
     bstdout = stdout;
 
 #endif
@@ -550,14 +547,14 @@ void psh_from_btoolkit ();
 ***************************************************/
 #ifdef BTOOLKIT_FLAG
 
-extern int editorsCount;
+extern size_t editorsCount;
 extern char* editors[];
 
 extern textWidgetXeditor* constructEditors[];
 extern textWidgetXeditor* proofMethodEditors[];
 
 
-extern int browsersCount;
+extern size_t browsersCount;
 extern char* browsers[];
 
 extern textWidgetXbrowser* htmlBrowsers[];
@@ -1652,7 +1649,7 @@ Options
 
 
 
-extern char *options[];
+extern const char *options[];
 
 /* moved to BMotif_version.h
 extern char *cpyrt[];

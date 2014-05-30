@@ -76,20 +76,21 @@ obligation file</A> `fifi.mch.2.po' and a template <A HREF="POGenerator.html#Pro
 obligation file</A> `fifi.mch.2.pmd' (if the latter does not already exist
 in the <A HREF="BToolkit.html#Development_Environment">PMD</A>, and there
 remain undischarged proof obligations). This is the used in investigation
-of the undischarged proof obligations through the next <A HREF="InterProver.html#InterProver">InterProver</A>,
+of the undischarged proof obligations through the next <A HREF="InterProver.html#InterProver">InterProver</A>
 session, and subsequent use by the AutoProver at the next level.
 
 <P>During the AutoProof the status of each obligation is represented by
 a single character as follows:
-<PRE>&nbsp;&nbsp;&nbsp;&nbsp; p&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; indicating it has already been discharged&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at a previous proof level
-
-&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; indicating it is not being attempted at this level&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (see the <A HREF="InterProver.html#PROOFMETHOD_File">ON clause of the PROOFMETHOD</A>)
-
-&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; indicating that it was successfully discharged at this level
-
-&nbsp;&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; indicating that it was attempted but not discharged at this&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; level</PRE>
+<DL>
+<DT><PRE>p</PRE><DT>
+<DD>indicating it has already been discharged at a previous proof level</DD>
+<DT><PRE>.</PRE><DT>
+<DD>indicating it is not being attempted at this level (see the <A HREF="InterProver.html#PROOFMETHOD_File">ON clause of the PROOFMETHOD</A>)<DD>
+<DT><PRE>+</PRE><DT>
+<DD>indicating that it was successfully discharged at this level</DD>
+<DT><PRE>-</PRE><DT>
+<DD>indicating that it was attempted but not discharged at this level</DD>
+</DL>
 The current number of outstanding proof obligations and total number of
 proof obligations (where applicable) is displayed for each construct in
 the <A HREF="BToolkit.html#Constructs!Area">Constructs Area</A> of the
@@ -107,7 +108,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
-<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 HEIGHT=28 WIDTH=32 ALIGN=CENTER><B><FONT COLOR="#33CCFF">
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 HEIGHT=28 WIDTH=32 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
 <I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
 <HR WIDTH="60%"></CENTER>
