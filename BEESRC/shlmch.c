@@ -27,7 +27,7 @@ sys_shlfunc()
     fprintf ( bstdout, "\n");
     fprintf ( bstdout, "Shell (0 to quit): ");
     read_str(st);
-  };
+  }
   while( fst_str(st)!=ord('0') ){
     itr_str(st,i,v,cstr_shl[i-1]=chr(v));
     cstr_shl[len_str(st)]='\0';
