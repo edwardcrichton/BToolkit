@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -9,9 +10,9 @@
 <H1>
 The AutoProver</H1>
 The AutoProver is invoked from the <A HREF="BToolkit.html#Environments!Provers">Provers
-Environment</A> :
+Environment</A>:
 
-<P><A HREF="three_provers.gif"><IMG SRC="three_provers_icon.gif" ALT="Three Provers" BORDER=2 HEIGHT=126 WIDTH=142 ALIGN=CENTER></A>
+<P><A HREF="three_provers.gif"><IMG SRC="three_provers_icon.gif" ALT="Three Provers" BORDER=2 HEIGHT=126 WIDTH=142 ALIGN=MIDDLE></A>
 <A HREF="three_provers.gif">See figure</A>
 
 <P>It is applicable to all <A HREF="AMNotation.html#MACHINE">machines</A>,
@@ -43,7 +44,7 @@ file</A>.
 possible, allowing the user to concentrate on different proof obligations
 at each one, if required; at each Level, the following may be set through
 the <A HREF="InterProver.html#PROOFMETHOD_File">PROOFMETHOD</A>:-
-<MENU>
+<UL>
 <LI>
 the <A HREF="InterProver.html#ON_Clause">proof obligations to attempt</A></LI>
 
@@ -56,7 +57,7 @@ the <A HREF="InterProver.html#PROOFMETHOD_File">user-supplied theory</A></LI>
 
 <LI>
 the <A HREF="InterProver.html#Tactic!User">user-supplied tactic</A></LI>
-</MENU>
+</UL>
 <A NAME="Proof!Cycle"></A>The AutoProver-InterProver cycle has the following
 structure:
 <PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --> AutoProver
@@ -82,13 +83,13 @@ session, and subsequent use by the AutoProver at the next level.
 <P>During the AutoProof the status of each obligation is represented by
 a single character as follows:
 <DL>
-<DT><PRE>p</PRE><DT>
+<DT><TT>p</TT></DT>
 <DD>indicating it has already been discharged at a previous proof level</DD>
-<DT><PRE>.</PRE><DT>
-<DD>indicating it is not being attempted at this level (see the <A HREF="InterProver.html#PROOFMETHOD_File">ON clause of the PROOFMETHOD</A>)<DD>
-<DT><PRE>+</PRE><DT>
+<DT><TT>.</TT></DT>
+<DD>indicating it is not being attempted at this level (see the <A HREF="InterProver.html#PROOFMETHOD_File">ON clause of the PROOFMETHOD</A>)</DD>
+<DT><TT>+</TT></DT>
 <DD>indicating that it was successfully discharged at this level</DD>
-<DT><PRE>-</PRE><DT>
+<DT><TT>-</TT></DT>
 <DD>indicating that it was attempted but not discharged at this level</DD>
 </DL>
 The current number of outstanding proof obligations and total number of
@@ -99,9 +100,8 @@ under `pob' and `tot' respectively.
 
 <P>See also <A HREF="BToolProver.html#BToolProver">BToolProver</A>.
 
-<P>
 <HR WIDTH="60%">
-<BR>&nbsp;
+
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 
@@ -109,7 +109,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 HEIGHT=28 WIDTH=32 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
