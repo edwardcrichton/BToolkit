@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -11,8 +12,8 @@ The Analyser (anl)</H1>
 Analysis is the first stage of processing necessary for a <A HREF="AMNotation.html#MACHINE">MACHINE</A>,
 <A HREF="AMNotation.html#REFINEMENT">REFINEMENT</A> or <A HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>
 and is a prerequisite for the application of the <A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerator
-(pog)</A> --- and hence the <A HREF="AutoProver.html#AutoProver">Provers</A>
---- the <A HREF="Animator.html#Animator">Animator (anm)</A> and <A HREF="DocumentMarkUp.html#Document_Mark_Up">Documentation
+(pog)</A> &mdash; and hence the <A HREF="AutoProver.html#AutoProver">Provers</A>,
+the <A HREF="Animator.html#Animator">Animator (anm)</A> and <A HREF="DocumentMarkUp.html#Document_Mark_Up">Documentation
 Tool (dmu)</A>.
 
 <P>The <A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerator</A>
@@ -26,8 +27,8 @@ implementations not currently analysed.
 
 <P>Analysis comprises three distinct phases: normalisation, syntax-checking
 and type-checking. The&nbsp;<A NAME="Normaliser"></A>Normaliser produces
-an internal form ---&nbsp;<A NAME="Analysed_Form"></A>the analysed form
---- for the construct, expanding subordinate constructs where necessary.
+an internal form &mdash; <A NAME="Analysed_Form"></A>the analysed form
+&mdash; for the construct, expanding subordinate constructs where necessary.
 The SyntaxChecker performs syntactic checks on the construct, and the TypeChecker
 performs checks for type correctness.
 
@@ -94,8 +95,8 @@ directory, it is first committed and the the machine generated.
 <H2>
 Type Determination</H2>
 Each variable (a state variable, a constant, a quantified variable in a
-predicate or a local variable within an operation) is given a type by the&nbsp;<A NAME="TypeChecker"></A>i.e.
-the tool determines to which set within a pool of sets the variable belongs.
+predicate or a local variable within an operation) is given a type by the <A NAME="TypeChecker">TypeChecker</A>,
+i.e. the tool determines to which set within a pool of sets the variable belongs.
 The pool of sets consists of the sets given in the <A HREF="AMNotation.html#SETS_Clause">SETS</A>
 clause and in the formal parameter list, together with all other sets which
 can be constructed from the given sets by means of the power set operation
@@ -108,31 +109,39 @@ operation (<A HREF="MathsNotation.html#Cartesian_Product">*</A>).
 the <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clause contains
 <OL>
 <LI>
-<TT>cc &lt;: CSET</TT></LI>
+<TT>cc &lt;: CSET</TT>
 
-<BR>then <TT>cc</TT> is given type <TT>POW(CSET)</TT>
+<P>then <TT>cc</TT> is given type <TT>POW(CSET)</TT></P>
+</LI>
 <LI>
-<TT>cc = 7</TT></LI>
+<TT>cc = 7</TT>
 
-<BR>then <TT>cc</TT> is given type <TT>NAT</TT>
+<P>then <TT>cc</TT> is given type <TT>NAT</TT></P>
+</LI>
 <LI>
-<TT>cc : NAT --> CSET</TT></LI>
+<TT>cc : NAT --> CSET</TT>
 
-<BR>then <TT>cc</TT> is given type <TT>POW(NAT*CSET)</TT></OL>
+<P>then <TT>cc</TT> is given type <TT>POW(NAT*CSET)</TT></P>
+</LI>
+</OL>
 if <TT>ASET</TT> is also given and <TT>aa</TT> and <TT>rel</TT> are variables
 and the <A HREF="AMNotation.html#INVARIANT_Clause">INVARIANT</A> clause
 contains
 <OL>
 <LI>
-<TT>aa &lt;: ASET</TT></LI>
+<TT>aa &lt;: ASET</TT>
 
-<BR>then <TT>aa</TT> is given type <TT>POW(ASET)</TT>
+<P>then <TT>aa</TT> is given type <TT>POW(ASET)</TT></P>
+</LI>
 <LI>
-<TT>aa = cc</TT></LI>
+<TT>aa = cc</TT>
 
-<BR>then <TT>bb</TT> is given the same type as <TT>cc</TT>
+<P>then <TT>bb</TT> is given the same type as <TT>cc</TT></P>
+</LI>
 <LI>
-<TT>rel : ASET &lt;-> CSET</TT> then <TT>rel</TT> is given type <TT>POW(ASET*CSET)</TT></LI>
+<TT>rel : ASET &lt;-> CSET</TT>
+
+<P>then <TT>rel</TT> is given type <TT>POW(ASET*CSET)</TT></P></LI>
 </OL>
 if <TT>bb</TT> is a local variable and <TT>bb := 1</TT> is the first statement
 encountered by the TypeChecker then <TT>bb</TT> is given type <TT>NAT</TT>.
@@ -158,7 +167,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
