@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -24,7 +25,6 @@ correct, well-typed and internally consistent.
 <P>The purpose of the Enumerator is to provide basic teletype i/o operations
 for enumerated sets present in a development.
 
-<P>
 <HR WIDTH="60%">
 
 <P>The general form of an enumeration description is given in a BNF-like
@@ -49,7 +49,6 @@ for the enumeration and the <TT>SETS</TT> clause identifies those enumerated
 sets for which operations are to be generated; each set should be defined
 in one of the machines in scope.
 
-<P>
 <HR WIDTH="60%">
 
 <P>An example enumeration is:
@@ -73,37 +72,36 @@ code) which may be employed in i/o operations. Three operations for each
 enumerated set are provided:
 <UL>
 <LI>
-PUT_SET1, PUT_SET2</LI>
+PUT_SET1, PUT_SET2
 
 <P>having a single input parameter, which value can range over the
 enumerated set; the operation is an output operation to standard terminal
 output and might be used in an interactive application to output the value
 of a particular variable which ranges over the enumerated set.
+</LI>
 <LI>
-GET_SET1, GET_SET2</LI>
+GET_SET1, GET_SET2
 
 <P>having a single output parameter, which value ranges over the
 enumerated set; the operation is an input operation which takes its input
 from standard keyboard input and can be used to input a particular value
 ranging over the enumerated set. The generated code is robust and features
 a small help facility.
+</LI>
 <LI>
-GET_PROMPT_SET1, GET_PROMPT_SET2</LI>
+GET_PROMPT_SET1, GET_PROMPT_SET2
 
 <P>having an input parameter, with precondition that it is a string,
 and output parameter, which value ranges over the enumerated set; the operation
 is an input operation which takes its input from standard keyboard input
 and can be used to prompt for a particular value ranging over the enumerated
 set. Again the generated code is robust and features a small help facility.
-<BR>&nbsp;</UL>
+</LI>
+</UL>
 Note that the Enumerator is automatically employed by the <A HREF="Interface.html#Interface!Generator!Non_Motif">non-Motif
 Interface</A> generator where necessary.
 
-<P>
 <HR WIDTH="60%">
-<CENTER><I><FONT COLOR="#33CCFF"></FONT></I>&nbsp;</CENTER>
-
-<CENTER><I><FONT COLOR="#33CCFF"></FONT></I></CENTER>
 
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
@@ -112,7 +110,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
