@@ -26,15 +26,15 @@ open_winfunc()
     redirect_trm(name_win); 
 /* freopen(name_win,"w",bstdout); */
     write_top_clear_res;
-} 
+  } 
 }
 
 open_men_winfunc()
 #define open_men_win open_men_winfunc()
 {
   if( is_win==TRUE ){
-    redirect_trm(name_win) 
-/* freopen(name_win,"w",bstdout) */;
+    redirect_trm(name_win);
+/* freopen(name_win,"w",bstdout); */
   } 
 }
 
@@ -42,8 +42,8 @@ clos_winfunc()
 #define clos_win clos_winfunc()
 {
   if( is_win==TRUE ){
-    reset_trm 
-/* freopen(TERMINAL,"w",bstdout); */;
+    reset_trm;
+/* freopen(TERMINAL,"w",bstdout); */
   } 
 }
 
@@ -58,7 +58,7 @@ sho_winfunc()
       i=i+1;
     } 
     fprintf ( bstdout, "\n");
-} else {
+  } else {
     fprintf ( bstdout, "\n");
   } 
 }
@@ -86,11 +86,10 @@ ass_winfunc()
     if( i>2 ){
       if( name_win[i-2]=='?' ){
         name_win[i-3]='\0';
-        is_win=TRUE
+        is_win=TRUE;
 /*   commented out (at Dave's request) for B Toolkit */
-        ; fprintf ( bstdout, "\n");
-        sho_win
-;
+        fprintf ( bstdout, "\n");
+        sho_win;
       } 
     } 
     fclose(ff_win);
@@ -106,4 +105,3 @@ ini_winfunc()
     ass_win;
   } 
 }
-

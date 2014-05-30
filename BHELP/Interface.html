@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -82,21 +83,22 @@ operations require input/have output, the interface implementation will
 produce appropriate prompts and call the relevant library procedures.
 
 <P>The Interface generator produces two specification/implementation pairs:
-for example if the INTERFACE name if `fifi', the following constructs are
+for example, if the INTERFACE name is `fifi', the following constructs are
 generated:
 <OL>
 <LI>
-<TT>fifiIo.mch</TT> and <TT>fifiIoI.imp</TT></LI>
+<TT>fifiIo.mch</TT> and <TT>fifiIoI.imp</TT>
 
-<BR>This specification/implementation pair concerns the i/o relating to
+<P>This specification/implementation pair concerns the i/o relating to
 the `in-scope' operations; the specification comprises an enumerated set
 of operation names, with weakest specification operations to display the
 menu of operation names, and to select one of the names from the set. The
-implementation is achieved by importing using the `basic_io' SLIB machine.
+implementation is achieved by importing using the `basic_io' SLIB machine.</P>
+</LI>
 <LI>
-<TT>fifiItf.mch</TT> and <TT>fifiItfI.imp</TT></LI>
+<TT>fifiItf.mch</TT> and <TT>fifiItfI.imp</TT>
 
-<BR>This pair has a single operation `main' (specified as `skip') and is
+<P>This pair has a single operation `main' (specified as `skip') and is
 implemented by importing (or seeing, depending on the way the user has
 built the implementation of the original specification) the specification
 for which the interface is being generated, the generated i/o machine,
@@ -106,7 +108,9 @@ construct, EnumItf is also imported, if required. The operation is implemented
 as an initialised loop, enabling the user to quit, display the menu or
 select an operation (calling the i/o machine), prompting for input (where
 appropriate), calling the selected operation of the users development,
-and displaying output (where appropriate).</OL>
+and displaying output (where appropriate).
+</LI>
+</OL>
 The construct `<TT><A HREF="Enumerator.html#Enumerator">EnumItf.enm</A></TT>'
 will also be produced if the user's specification contains an enumerated
 set. The ENUMERATION, if produced, enables i/o to be constructed for the
@@ -121,7 +125,7 @@ Environment</A> by calling the <A HREF="Run.html#Run">`Run' tool</A> with
 the generated interface implementation. Errors are dealt with in the usual
 way:
 
-<P><A HREF="non_motif_itf.gif#"><IMG SRC="non_motif_itf_icon.gif" ALT="Non-Motif Interface"  ALIGN=CENTER></A><A HREF="non_motif_itf.gif#">
+<P><A HREF="non_motif_itf.gif#"><IMG SRC="non_motif_itf_icon.gif" ALT="Non-Motif Interface" ALIGN=MIDDLE></A><A HREF="non_motif_itf.gif#">
 See figure<LATEX="\ \ref{non_motif_itf.fig}">.</A>
 
 <P><A NAME="Interface!Generator!Motif"></A>
@@ -145,29 +149,23 @@ should reflect the version of X installed.
 <P>The resulting Motif interface pops up a window presenting a push-button
 menu of operation names:
 
-<P><A HREF="itf_motif_ops.gif#"><IMG SRC="itf_motif_ops_icon.gif" ALT="Motif Interface Operations Menu"  ALIGN=CENTER></A><A HREF="itf_motif_ops.gif#">
+<P><A HREF="itf_motif_ops.gif#"><IMG SRC="itf_motif_ops_icon.gif" ALT="Motif Interface Operations Menu" ALIGN=MIDDLE></A><A HREF="itf_motif_ops.gif#">
 See figure<LATEX="\ \ref{itf_motif_ops.fig}">.</A>
 
 <P>and prompts for input as a form (i.e. operations with more than one
 input variable appear as a single form to fill in), with enumerations appearing
 as cascading menus:
 
-<P><A HREF="itf_motif_inp.gif#"><IMG SRC="itf_motif_inp_icon.gif" ALT="Motif Interface Input"  ALIGN=CENTER></A><A HREF="itf_motif_inp.gif#">
+<P><A HREF="itf_motif_inp.gif#"><IMG SRC="itf_motif_inp_icon.gif" ALT="Motif Interface Input" ALIGN=MIDDLE></A><A HREF="itf_motif_inp.gif#">
 See figure<LATEX="\ \ref{itf_motif_inp.fig}">.</A>
 
 <P>Output is displayed in the <A HREF="BToolkit.html#Display_Area">Display
 Area</A>:
 
-<P><A HREF="itf_motif_display.gif#"><IMG SRC="itf_motif_display_icon.gif" ALT="Motif Interface Display"  ALIGN=CENTER></A><A HREF="itf_motif_display.gif#">
+<P><A HREF="itf_motif_display.gif#"><IMG SRC="itf_motif_display_icon.gif" ALT="Motif Interface Display" ALIGN=MIDDLE></A><A HREF="itf_motif_display.gif#">
 See figure<LATEX="\ \ref{itf_motif_display.fig}">.</A>
 
-<P>
 <HR WIDTH="60%">
-<CENTER>&nbsp;</CENTER>
-
-<CENTER>&nbsp;</CENTER>
-
-<CENTER></CENTER>
 
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
@@ -176,7 +174,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 

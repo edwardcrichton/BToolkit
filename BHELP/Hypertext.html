@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -13,14 +14,12 @@ Browse</A> menu&nbsp; and invokes the <TT>Hypertext Viewer</TT> set in
 the <A HREF="Options.html#Options!Editor!Construct_Editor">Editor/Viewer/Shell
 Options</A>&nbsp; with a selection of currently-available hypertext constructs
 (which will change dynamically depending on the current state of the development).
-<BR>&nbsp;
-
 <P><U>Hypertext Versions of AMN Documents</U>
 
 <P>Each is a hypertext version of the corresponding AMN file in the <A HREF="BToolkit.html#Development_Environment">CFG</A>&nbsp;
 and is automatically created (in the <A HREF="BToolkit.html#Development_Environment">HTX</A>
 directory) for each of the following:
-<MENU>
+<UL>
 <LI>
 <A HREF="Analyser.html">analysis</A> of a <A HREF="Introduce.html#IntroduceSRC">user-introduced</A>
 machines, refinements or implementations</LI>
@@ -39,8 +38,7 @@ construct</LI>
 
 <LI>
 <A HREF="Enumerator.html">enumeration</A></LI>
-</MENU>
-&nbsp;
+</UL>
 
 <P><U>Hypertext Versions of Code Modules</U>
 
@@ -61,14 +59,11 @@ construct having predefined code modules</LI>
 generated construct)</LI>
 </UL>
 
-
-<P>
 <HR>
-<H2>
-Referencing constructs</H2>
+<H2>Referencing constructs</H2>
 In each referencing construct, a hypertext link is created to the relevant
 subsidiary construct for the appearance of each of the following:
-<MENU>
+<UL>
 <LI>
 a <A HREF="AMNotation.html#MACHINE">machine</A>, <A HREF="AMNotation.html#REFINEMENT">refinement</A>
 or <A HREF="AMNotation.html#IMPLEMENTATION">implementation</A> name</LI>
@@ -84,19 +79,18 @@ a <A HREF="AMNotation.html#VARIABLES_Clause">variable</A> name</LI>
 
 <LI>
 an <A HREF="AMNotation.html#OPERATIONS_Clause">operation</A> name</LI>
-</MENU>
+</UL>
 
 <HR>
-<H2>
-Referenced constructs</H2>
+<H2>Referenced constructs</H2>
 Every construct <TT>construct_name.ext</TT> in the <A HREF="BToolkit.html#Development_Environment">HTX</A>
 directory has the filename <TT>construct_name.ext.html</TT>; destination
 hypertext links are constructed using the following convention:
-<MENU>
+<UL>
 <LI>
-for the construct itself:</LI>
+for the construct itself:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="MACHINE">MACHINE&lt;/A></TT></LI>
 
@@ -105,104 +99,117 @@ for the construct itself:</LI>
 
 <LI>
 <TT>&lt;A NAME="IMPLEMENTATION">IMPLEMENTATION&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#SETS_Clause">sets</A>:</LI>
+for its <A HREF="AMNotation.html#SETS_Clause">sets</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="SETS">SETS&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#CONSTANTS_Clause">constants</A>:</LI>
+for its <A HREF="AMNotation.html#CONSTANTS_Clause">constants</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="CONSTANTS">CONSTANTS&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#PROPERTIES_Clause">properties</A>:</LI>
+for its <A HREF="AMNotation.html#PROPERTIES_Clause">properties</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="PROPERTIES">PROPERTIES&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#VARIABLES_Clause">variables</A>:</LI>
+for its <A HREF="AMNotation.html#VARIABLES_Clause">variables</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="VARIABLES">VARIABLES&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#DEFINITIONS_Clause">definitions</A>:</LI>
+for its <A HREF="AMNotation.html#DEFINITIONS_Clause">definitions</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="DEFINITIONS">DEFINITIONS&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#INVARIANT_Clause">invariant</A>:</LI>
+for its <A HREF="AMNotation.html#INVARIANT_Clause">invariant</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="INVARIANT">INVARIANT&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#ASSERTIONS_Clause">assertions</A>:</LI>
+for its <A HREF="AMNotation.html#ASSERTIONS_Clause">assertions</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="ASSERTIONS">ASSERTIONS&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#INCLUDES_Clause">includes</A>:</LI>
+for its <A HREF="AMNotation.html#INCLUDES_Clause">includes</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="INCLUDES">INCLUDES&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#IMPORTS_Clause">imports</A>:</LI>
+for its <A HREF="AMNotation.html#IMPORTS_Clause">imports</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="IMPORTS">IMPORTS&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#EXTENDS_Clause">extends</A>:</LI>
+for its <A HREF="AMNotation.html#EXTENDS_Clause">extends</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="EXTENDS">EXTENDS&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for its <A HREF="AMNotation.html#PROMOTES_Clause!Syntax">promoted operations</A>:</LI>
+for its <A HREF="AMNotation.html#PROMOTES_Clause!Syntax">promoted operations</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="PROMOTES">PROMOTES&lt;/A></TT></LI>
-</MENU>
+</UL>
+</LI>
 
 <LI>
-for each of its <A HREF="AMNotation.html#OPERATIONS_Clause">own operations</A>:</LI>
+for each of its <A HREF="AMNotation.html#OPERATIONS_Clause">own operations</A>:
 
-<MENU>
+<UL>
 <LI>
 <TT>&lt;A NAME="OPNAME!op_name">op_name&lt;/A></TT></LI>
-</MENU>
-</MENU>
+</UL>
+</LI>
+</UL>
 Thus it is possible to link other documents (for example informal requirements)
 to these <A HREF="BToolkit.html#Development_Environment">HTX</A> documents
 by reference to the above convention. For example the variable <TT>var1</TT>
@@ -211,9 +218,8 @@ of <TT>fifi.mch</TT> would be referenced:
 assuming that the referencing construct also resides in the <A HREF="BToolkit.html#Development_Environment">HTX</A>
 directory.
 
-<P>
 <HR WIDTH="60%">
-<BR>&nbsp;
+
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 
@@ -221,7 +227,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
