@@ -16,6 +16,15 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 void canonical(path)
 char* path;
 {
@@ -203,10 +212,9 @@ char* getCommandExecutableName(char* commandline)
 char* escapeQuotesAndBackslashes(char* arguments)
 {
 	char* result;
-	int length;
-	int argslength;
-	int i;
-	int j;
+	size_t length;
+	size_t argslength;
+	size_t i, j;
 	
 	argslength=strlen(arguments);
 	
@@ -238,9 +246,9 @@ char* escapeQuotesAndBackslashes(char* arguments)
 	return result;
 }
 
-char* getApplicationCommandLineTemplate(char* cmd,char* known[], char* xterm[], int total)
+char* getApplicationCommandLineTemplate(char* cmd, char* known[], char* xterm[], size_t total)
 {
-	int i;
+	size_t i;
 	int match;
 	char* name;
 	char localResult[PATH_MAX*4];
@@ -252,7 +260,7 @@ char* getApplicationCommandLineTemplate(char* cmd,char* known[], char* xterm[], 
 	
 	name=getCommandExecutableName(cmd);
 	
-	for(i=0;i<total;i=i+1)
+	for(i=0;i<total;i++)
 	{
 		if(strcmp(name,known[i])==0)
 		{
@@ -267,7 +275,6 @@ char* getApplicationCommandLineTemplate(char* cmd,char* known[], char* xterm[], 
 	
 	if(match!=-1)
 	{
-
 		isXterm=0;
 		if(strcmp(xterm[match],"y")==0)
 		{
@@ -336,13 +343,13 @@ char* getApplicationCommandLineTemplate(char* cmd,char* known[], char* xterm[], 
    text only browsers in an xterm and escaping any \ or " in parameters given.
 */
 
-char* getApplicationCommandLine(char* application,char* filename, char* known[], char* xterm[], int total)
+char* getApplicationCommandLine(char* application, char* filename, char* known[], char* xterm[], size_t total)
 {
 	char* template;
 	char* result;
 	size_t totalSize;
 	
-	template=getApplicationCommandLineTemplate(application,known,xterm,total);
+	template=getApplicationCommandLineTemplate(application, known, xterm, total);
 	
 	totalSize=strlen(template)+strlen(filename);
 	result=(char *)malloc((size_t) (totalSize+1));
@@ -372,12 +379,12 @@ char* getBrowserCommandLine(char* application,char* filename)
 	};
 	char* xterm[]=
 	{
-		"n"        , "n"       ,
-		"n"      , "n"        , "n"       ,
-		"y"     , "y"    , "n"    , "n"   , "y"   , "y"
+		"n", "n", "n", "n",
+		"n", "y", "y", "n",
+		"n", "y", "y"
 	};
-	int total=11;
-	return getApplicationCommandLine(application,filename, known, xterm, total);
+	size_t total=sizeof(known)/sizeof(known[0]);
+	return getApplicationCommandLine(application, filename, known, xterm, total);
 }
 
 char* getEditorCommandLine(char* editor,char* filename)
@@ -399,12 +406,12 @@ char* getEditorCommandLine(char* editor,char* filename)
 	};
 	char* xterm[]=
 	{
-		"n"    , "n"    , "n"        , "n",
-		"n"    , "n"     , "n"  , "n"   , "n",
-		"y" , "y"   , "y"
+		"n", "n", "n", "n",
+		"n", "n", "n", "n",
+		"n", "y", "y", "y"
 	};
-	int total=12;
-	return getApplicationCommandLine(editor,filename,known,xterm,total);
+	size_t total=sizeof(known)/sizeof(known[0]);
+	return getApplicationCommandLine(editor, filename, known, xterm, total);
 }
 
 void getEditorOptions()

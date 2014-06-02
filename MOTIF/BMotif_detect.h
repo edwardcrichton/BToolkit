@@ -16,16 +16,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-#if !defined (PATH_MAX)
-#    define PATH_MAX 2048
-#endif
 
 /**************************************************
           detect environment
 ***************************************************/
 
 #ifndef H_DETECT
-
 #define H_DETECT
 
 extern void canonical(char*);
@@ -34,14 +30,15 @@ extern char* detectEditors();
 extern char* detectBrowsers();
 extern char* getCommandExecutableName(char*);
 extern char* escapeQuotesAndBackslashes(char*);
-extern char* getApplicationCommandLineTemplate(char*,char**, char**,int);
-extern char* getApplicationCommandLine(char*,char*,char**,char**,int);
+extern char* getApplicationCommandLineTemplate(char*,char**, char**,size_t);
+extern char* getApplicationCommandLine(char*,char*,char**,char**,size_t);
 extern char* getBrowserCommandLine(char*,char*);
 extern char* getEditorCommandLine(char*,char*);
 extern void getEditorOptions();
 extern void getEditorOption(char*);
 extern void getBrowserOptions();
 extern void getBrowserOption(char*);
+
 #endif
 /**************************************************
           /detect environment
