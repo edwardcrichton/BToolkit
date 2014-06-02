@@ -75,15 +75,15 @@ entersymb_coding(bbuf,i,s,t,k,neg)
         mod_lexi_sym(k,atm);
       } else {
         mod_lexi_sym(k,atm);
-      };
+      }
     } else {
       mod_lexi_sym(k,atm);
-    };
+    }
     if( lexi_sym(k)==atm ){
       arity[k]=0;
     } else {
       arity[k]=2;
-    };
+    }
   } else if( s==3 ){
     if( i==4 ){
       if( is_symbol4('k','e','y','w') ){
@@ -112,10 +112,10 @@ entersymb_coding(bbuf,i,s,t,k,neg)
         mod_edit_sym(k,term);
       } else {
         mod_edit_sym(k,nrml);
-      };
+      }
     } else {
       mod_edit_sym(k,nrml);
-    };
+    }
   } else if( s==4 ){
     if( t==dig ){
       n=trans_str(bbuf);
@@ -123,10 +123,10 @@ entersymb_coding(bbuf,i,s,t,k,neg)
         mod_prio_sym(k,0-n);
       } else {
         mod_prio_sym(k,n);
-      };
+      }
     } else {
       mod_prio_sym(k,0);
-    };
+    }
   } else if( s==5 ){
     if( lexi_sym(k)==bin ){
       mod_righ_sym(k,1);
@@ -138,11 +138,11 @@ entersymb_coding(bbuf,i,s,t,k,neg)
           mod_clos_sym(k,val_str(bbuf,1));
         } else {
           mod_clos_sym(k,ord(')'));
-        };
-      };
-    };
+        }
+      }
+    }
   }
-; return entersymb_coding_res;
+  return entersymb_coding_res;
 }
 
 nature(o)
@@ -156,7 +156,7 @@ nature(o)
   } else {
     natureres=opss;
   }
-; return natureres;
+  return natureres;
 }
 
 lexical_coding(bbuf,c)
@@ -178,31 +178,31 @@ printf ( "%c\n", p );
         neg=FALSE;
         if( u==1 ){ 
           k=n;
-        };
+        }
         clr_str(bbuf);
-      };
+      }
     } else {
       if( len_str(bbuf)==0 ){
         t=nature(p);
-      };
+      }
       if( t==mix ){
         {};
       } else if( t!=nature(p) ){
         t=mix;
-      };
+      }
       psh_str(bbuf,p);
-    };
+    }
     p=getc(coding);
-  };
+  }
   if( len_str(bbuf)!=0 ){
     u=u+1;
     n=entersymb_coding(bbuf,len_str(bbuf),u,t,k,neg);
     neg=FALSE;
     if( u==1 ){ 
       k=n;
-    };
+    }
     clr_str(bbuf);
-  };
+  }
   if( k!=0 ){
     if( u==1 ){
       mod_lexi_sym(k,atm);
@@ -214,8 +214,8 @@ printf ( "%c\n", p );
       mod_prio_sym(k,0);
     } else if( u==3 ){
       mod_prio_sym(k,0);
-    };
-  };
+    }
+  }
 }
 
   
@@ -235,7 +235,7 @@ printf ( " ***************************************************** ini_codfunc\n" 
      fprintf ( bstdout, "\n     Environment variable BKIT not set");
      fprintf ( bstdout, "\n  ++++++++++++++++++++++++++++++++++++++\n\n");
      exit(1);
-  };
+  }
 
 #ifdef BTOOL_FLAG
 
@@ -329,7 +329,7 @@ enter_name_cod(v)
   if( index_name_cod < 100 ){
     name_cod[index_name_cod] = v ;
     index_name_cod =  index_name_cod + 1;
-  };
+  }
 }
 
 term_name_codfunc()
@@ -347,4 +347,3 @@ term_name_codfunc()
 #endif
   }
 }
-
