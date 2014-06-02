@@ -32,25 +32,22 @@ int *bb, *ff;
 	if( b==0 ){
 		if( Construct_sold_fnc_obj==0 ){
 			Construct_ssize_fnc_obj = Construct_ssize_fnc_obj+1;
-			f=Construct_ssize_fnc_obj
-			    ;
+			f=Construct_ssize_fnc_obj;
 		} else{
 			f=Construct_old_fnc_obj[Construct_sold_fnc_obj];
-			Construct_sold_fnc_obj=Construct_sold_fnc_obj-1
-			    ;
-		};
+			Construct_sold_fnc_obj=Construct_sold_fnc_obj-1;
+		}
 		i = 1;
 		while( i<= Construct_ffnc_objP2 ){
 			Construct_RMV_FNC_OBJ(f,i);
-			i=i+1
-			    ;
-		};
+			i=i+1;
+		}
 		*ff = f;
 		*bb = 1;
 	} else{
 		*ff = 0;
 		*bb = 0;
-	};
+	}
 }
 
 
@@ -72,12 +69,11 @@ int *bb, pp;
 			} else {
 				i = 0 ;
 				*bb = 0;
-			};
-		};
+			}
+		}
 	}  else {
-		*bb = 0
-		    ;
-	};
+		*bb = 0;
+	}
 }
 
 #include <stdio.h>
@@ -159,7 +155,7 @@ Construct_RST_FNC_OBJ()
           while ( i <= Construct_ssize_fnc_obj*Construct_ffnc_objP2 ) {
 	    Construct_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= Construct_ssize_fnc_obj ) {
 	    read_fm(Construct_fnc_obj[1+(i-1)*Construct_ffnc_objP2], old_size);
@@ -189,7 +185,7 @@ Construct_RSTN_FNC_OBJ()
           while ( i <= Construct_ssize_fnc_obj*Construct_ffnc_objP2 ) {
 	    Construct_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= Construct_ssize_fnc_obj ) {
 	    read_fm(Construct_fnc_obj[1+(i-1)*Construct_ffnc_objP2], old_size);
@@ -221,13 +217,13 @@ int *cc, *ss;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			Construct_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 }
 
 
@@ -247,13 +243,13 @@ int *cc, *ss, oc, os;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			Construct_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 
 }
 
@@ -266,7 +262,7 @@ Construct_OVR_LIT_FFNC_OBJ( ff, ii, ll, aa )
 int ff, ii, ll, *aa;
 #endif
 {
-	int i;
+	size_t i;
 	int *s;
 	char *t;
 	t = (char *)aa;
@@ -274,14 +270,14 @@ int ff, ii, ll, *aa;
 	while (t[i]!='\0') {
 		Construct_buf_ffnc_obj[i]=t[i];
 		i=i+1;
-	};
+	}
 	Construct_buf_ffnc_obj[i] = '\0';
 	s = (int *)Construct_buf_ffnc_obj;
 	i=0;
 	while ( i < ll ){
 		Construct_STO_FNC_OBJ(ff,(ii+i),s[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -293,12 +289,12 @@ Construct_OVR_FFNC_OBJ( ff, ii, ll, aa )
 int ff, ii, ll, *aa;
 #endif
 {
-	int i;
+	size_t i;
 	i=0;
 	while ( i < ll ){
 		Construct_STO_FNC_OBJ(ff,(ii+i),aa[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -310,7 +306,8 @@ Construct_EQL_FFNC_OBJ( bb, ff, ii, ll, vv )
 int *bb, ff, ii, ll, *vv;
 #endif
 {
-	int i,b;
+	size_t i;
+	int b;
 	char *s,*t,*e;
 	s = (char *)vv;
 	t = (char *)&(Construct_fnc_obj[(ff-1)*Construct_ffnc_objP2+ii]);
@@ -320,14 +317,12 @@ int *bb, ff, ii, ll, *vv;
 	while ( s[i]!='\0' && b==1 ) {
 		if ( t[i] == s[i] && &(t[i])!=e )
 		{
-			i = i+1
-			    ;
+			i = i+1;
 		} else{
-			b = 0
-			    ;
-		};
-	};
-        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; };
+			b = 0;
+		}
+	}
+        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; } else{ *bb = b; }
 }
 
 
@@ -347,7 +342,7 @@ int ff, gg, ii, jj, ll;
                                   Construct_fnc_obj[(ff-1)*Construct_ffnc_objP2+ii+i]
                                   );
 		i=i+1;
-	};
+	}
 }
 
 
@@ -359,7 +354,7 @@ Construct_XTR_FFNC_OBJ( vv, ff, ii, ll )
 int ff, ii, ll, *vv;
 #endif
 {
-	int i;
+	size_t i;
 	char *s,*t,*e;
 	s = (char *)vv;
 	t = (char *)&(Construct_fnc_obj[(ff-1)*Construct_ffnc_objP2+ii]);
@@ -368,5 +363,5 @@ int ff, ii, ll, *vv;
 	while ( &(t[i])!=e) {
 		s[i] = t[i];
 		i = i + 1;
-	};
+	}
 }
