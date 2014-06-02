@@ -1128,7 +1128,7 @@ extern int pid;
 
 extern int cs_nn, cs_rr;
 extern char serv_addr [];
-FILE * Bfile;
+extern FILE * Bfile;
 extern int port;
 
 #ifdef COUNT_VERSION
@@ -1374,14 +1374,14 @@ extern int anm_thy_ps;
 
 extern XmStringCharSet charset;
 
-XtAppContext app;
+extern XtAppContext app;
 
 extern Widget top_level,          main_form,            top_bar;
 
 extern Widget main_form_pane;
 #define     top_frame_form_min        /* 245 */ 165
 #define  bottom_frame_form_min         75
-Dimension bottom_frame_form_height;
+extern Dimension bottom_frame_form_height;
 
 extern Widget top_frame_form,    bottom_frame_form,
               B_button,          B_label,
@@ -1531,9 +1531,9 @@ used in display
 extern int HtmlMasterFileChanged;
 extern int DisplayChanged;
 
-Display *display;
+extern Display *display;
 
-Screen * proof_screen;
+extern Screen * proof_screen;
 
 #endif /* #if ( defined  ( BTOOLKIT_FLAG ) || defined ( BTOOLM_FLAG ) ) */
 
@@ -1970,7 +1970,7 @@ extern void DoesntWorkYet ();
 
 extern void RemoveTopCurrText ();
 extern void DisplayCurrWinText ();
-XmTextPosition main_text_posn, ipr_text_posn, anm_text_posn, curr_text_posn;
+extern XmTextPosition main_text_posn, ipr_text_posn, anm_text_posn, curr_text_posn;
 
 #define remake_all_constructs 0
 #define remake_construct      1
