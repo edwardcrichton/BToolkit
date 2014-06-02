@@ -31,20 +31,31 @@ This description of the Abstract Machine Notation is organised as follows:-
 </UL>
 Some constructs require the use of a&nbsp;<A NAME="Type_determining_predicate"></A>type-determining
 predicate to be well-formed. A type-determining predicate <TT>P</TT> must
-contain a constraining predicate of the form <TT>xx: S</TT>, <TT>xx &lt;
-S</TT>, <TT>xx &lt;: S</TT> or <TT>xx = E</TT>, where <TT>xx\S</TT>, <TT>xx\E</TT>.
+contain a constraining predicate of the form
+<TT>xx&nbsp;:&nbsp;S</TT>,
+<TT>xx&nbsp;&lt;&nbsp;S</TT>,
+<TT>xx&nbsp;&lt;:&nbsp;S</TT> or
+<TT>xx&nbsp;=&nbsp;E</TT>,
+where <TT>xx\S</TT>, <TT>xx\E</TT>.
 
 <HR WIDTH="60%">
 <H3>
 <A NAME="AMN!Substitutions"></A>AMN Substitutions</H3>
-The generic syntactic variables are as follows: P, Q, R for predicates;
-S, T, U, V for AMN substitutions, E,F for expressions; ff, xx, yy for variables;
-l, m, n for lists of expressions; vlx for variable lists; opn for AMN operation
-names; asub for AMN substitutions. z\E indicates that there are no free
-occurrences in E of the variables in z. The definitions below are given
-in terms of <A HREF="MathsNotation.html#Substitutions!Generalised">Generalised
-Substitutions</A>. The syntax is presented informally, and occurrences
-of `...' mean that any number of the surrounding construct can occur.
+The generic syntactic variables are as follows:
+<TT>P</TT>, <TT>Q</TT>, <TT>R</TT> for predicates;
+<TT>S</TT>, <TT>T</TT>, <TT>U</TT>, <TT>V</TT> for AMN substitutions;
+<TT>E</TT>, <TT>F</TT> for expressions;
+<TT>ff</TT>, <TT>xx</TT>, <TT>yy</TT> for variables;
+<TT>l</TT>, <TT>m</TT>, <TT>n</TT> for lists of expressions;
+<TT>vlx</TT> for variable lists;
+<TT>opn</TT> for AMN operation names;
+<TT>asub</TT> for AMN substitutions.
+<TT>z\E</TT> indicates that there are no free
+occurrences in <TT>E</TT> of the variables in <TT>z</TT>.
+The definitions below are given in terms of
+<A HREF="MathsNotation.html#Substitutions!Generalised">Generalised Substitutions</A>.
+The syntax is presented informally, and occurrences of `<TT>...</TT>' mean
+that any number of the surrounding construct can occur.
 <PRE>&nbsp;BEGIN S END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; S
 
 &nbsp;<A NAME="PRE_Clause"></A>PRE P THEN S END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; P | S
@@ -53,10 +64,9 @@ of `...' mean that any number of the surrounding construct can occur.
 
 &nbsp;IF P THEN S END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN S ELSE skip END
 
-
 &nbsp;IF P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN
-&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;
-&nbsp;ELSIF Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S
+&nbsp;ELSIF Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
 &nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IF Q THEN
 &nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
 &nbsp;ELSIF R THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
@@ -71,7 +81,7 @@ of `...' mean that any number of the surrounding construct can occur.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
 
 
-&nbsp;IF P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN&nbsp;
+&nbsp;IF P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN
 &nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S
 &nbsp;ELSIF Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSIF Q THEN
 &nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
@@ -87,10 +97,10 @@ of `...' mean that any number of the surrounding construct can occur.
 &nbsp;&nbsp; S
 &nbsp;OR
 &nbsp;&nbsp; T
-&nbsp;OR&nbsp;
+&nbsp;OR
 &nbsp; ...
 &nbsp;OR
-&nbsp;&nbsp; U&nbsp;
+&nbsp;&nbsp; U
 &nbsp;END
 
 
@@ -99,12 +109,12 @@ of `...' mean that any number of the surrounding construct can occur.
 &nbsp;WHEN Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ... []
 &nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R ==> U
 &nbsp;...
-&nbsp;WHEN R THEN&nbsp;
+&nbsp;WHEN R THEN
 &nbsp;&nbsp; U
 &nbsp;END
 
 
-&nbsp;SELECT P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; SELECT P THEN&nbsp;&nbsp;&nbsp;
+&nbsp;SELECT P THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; SELECT P THEN
 &nbsp;&nbsp; S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S
 &nbsp;WHEN Q THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WHEN Q THEN
 &nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
@@ -142,25 +152,23 @@ of `...' mean that any number of the surrounding construct can occur.
 &nbsp;END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
 
 &nbsp;VAR xx IN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx.S
-&nbsp;&nbsp; S&nbsp;
-&nbsp;END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; S
+&nbsp;END
 
-&nbsp;<A NAME="Non_Determinism"></A>ANY xx WHERE P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx.(P ==> S). P must contain a&nbsp;
-&nbsp;THEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#Type_determining_predicate">type determining predicate</A>.
+&nbsp;<A NAME="Non_Determinism"></A>ANY xx WHERE P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx.(P ==> S). P must contain a <A HREF="AMNotation.html#Type_determining_predicate">type determining predicate</A>.
+&nbsp;THEN
 &nbsp;&nbsp; S
 &nbsp;END
 
 &nbsp;LET xx BE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx.(xx = E ==> S), where xx\E.
 &nbsp;&nbsp; xx = E
-&nbsp;IN&nbsp;
-&nbsp;&nbsp; S&nbsp;
+&nbsp;IN
+&nbsp;&nbsp; S
 &nbsp;END
 
+&nbsp;S || T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp; Parallel substitution (S and T are substitutions on disjoint sets of variables.
 
-&nbsp;S || T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Parallel substitution (S and T are substitutions on&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; disjoint sets of variables.
-
-&nbsp;xx:= E || yy:= F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; xx,yy:= E,F
+&nbsp;xx:= E || yy:= F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = &nbsp;xx,yy:= E,F
 
 &nbsp;<A NAME="Substitutions!Parameterised"></A>opn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; An AMN substitution, with name opn.
 
@@ -168,34 +176,31 @@ of `...' mean that any number of the surrounding construct can occur.
 
 &nbsp;vl2 &lt;-- opn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A parameterised AMN substitution, with output vl2.
 
-&nbsp;vl2 &lt;-- opn(vl1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A parameterised AMN substitution, with input vl1 and
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output vl2.
+&nbsp;vl2 &lt;-- opn(vl1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A parameterised AMN substitution, with input vl1 and output vl2.
 
 
-&nbsp;xx:=&nbsp;<A NAME="bool"></A>bool(P)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN&nbsp;
+&nbsp;xx:=&nbsp;<A NAME="bool"></A>bool(P)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp; IF P THEN
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xx:= TRUE
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ELSE
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xx:= FALSE
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END
 
 
-&nbsp;<A NAME="skip"></A>skip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No-op
+&nbsp;<A NAME="skip"></A>skip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp; No-op
 
-&nbsp;<A NAME="Substitutions!Postconditioned"></A>xx:: E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx'(xx': E ==> xx:= xx')
+&nbsp;<A NAME="Substitutions!Postconditioned"></A>xx:: E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp; @xx'(xx': E ==> xx:= xx')
 
-&nbsp;xx: P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; @xx'.([xx:= xx']P ==> xx:= xx'). P must contain a&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="AMNotation.html#Type_determining_predicate">type determining predicate</A>.
-
-
-&nbsp;ff(xx):= E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; ff:= ff &lt;+ {xx|->E}
-
-&nbsp;S;T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identical to its Generalised Substitution
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; counterpart, S;T.
+&nbsp;xx: P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp; @xx'.([xx:= xx']P ==> xx:= xx'). P must contain a <A HREF="AMNotation.html#Type_determining_predicate">type determining predicate</A>.
 
 
-&nbsp;S;WHILE P DO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; S, followed by looping on T so long as the guard P&nbsp;
+&nbsp;ff(xx):= E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = &nbsp; ff:= ff &lt;+ {xx|->E}
+
+&nbsp;S;T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       Identical to its Generalised Substitution counterpart, S;T.
+
+
+&nbsp;S;WHILE P DO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp; S, followed by looping on T so long as the guard P
 &nbsp;&nbsp;&nbsp;&nbsp; T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; holds, with loop variant E and loop invariant Q.
-&nbsp;&nbsp; INVARIANT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; INVARIANT
 &nbsp;&nbsp;&nbsp;&nbsp; Q
 &nbsp;&nbsp; VARIANT
 &nbsp;&nbsp;&nbsp;&nbsp; E
@@ -267,11 +272,11 @@ Machines</H3>
 
 &nbsp; &lt;&nbsp;<A NAME="ASSERTIONS_Clause"></A>ASSERTIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
 
-&nbsp; &lt;&nbsp;<A NAME="DEFINITIONS_Clause"></A>DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >>
+&nbsp; &lt;&nbsp;<A NAME="DEFINITIONS_Clause"></A>DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >> >
 &nbsp;
 &nbsp; &lt;&nbsp;<A NAME="INITIALISATION_Clause"></A>INITIALISATION&nbsp;&nbsp;&nbsp; Formula >
 
-&nbsp; &lt;&nbsp;<A NAME="OPERATIONS_Clause"></A>OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt; ; operation >> >
+&nbsp; &lt;&nbsp;<A NAME="OPERATIONS_Clause"></A>OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt;&lt; ; operation >> >
 
 &nbsp; END
 
@@ -282,9 +287,9 @@ Machines</H3>
 &nbsp; enumerated_set&nbsp;&nbsp;&nbsp; ::=&nbsp; UpperCaseIdentifier = { set_contents }&nbsp;
 
 
-&nbsp; set_contents&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> > |
+&nbsp; set_contents&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> |
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bnumber &lt;&lt; , Bnumber >></PRE>
-<A NAME="Renaming!INCLUDES"></A>.
+<A NAME="Renaming!INCLUDES"></A>
 <PRE>&nbsp; rnm_machine_ref&nbsp;&nbsp; ::=&nbsp; &lt; rename_prefix . > Identifier&nbsp;
 
 
@@ -320,11 +325,11 @@ Refinements</H3>
 
 &nbsp; &lt; ASSERTIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
 
-&nbsp; &lt; DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >>
+&nbsp; &lt; DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >> >
 &nbsp;
 &nbsp; &lt; INITIALISATION&nbsp;&nbsp;&nbsp; Formula >
 
-&nbsp; &lt; OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt; ; operation >> >&nbsp;
+&nbsp; &lt; OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt;&lt; ; operation >> >&nbsp;
 
 &nbsp; END
 
@@ -332,10 +337,10 @@ Refinements</H3>
 &nbsp; param_list&nbsp;&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >>
 
 
-&nbsp; enumerated_set ::=&nbsp; UpperCaseIdentifier = { set_contents }&nbsp;
+&nbsp; enumerated_set ::=&nbsp; UpperCaseIdentifier = { set_contents }
 
 
-&nbsp; set_contents&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> > |
+&nbsp; set_contents&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> |
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bnumber &lt;&lt; , Bnumber >>
 
 
@@ -359,7 +364,7 @@ Implementations</H3>
 &nbsp; &lt; SEES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; machine_ref&nbsp; &lt;&lt; , machine_ref >> >&nbsp;
 
 &nbsp; &lt;&nbsp;<A NAME="IMPORTS_Clause!Syntax"></A>IMPORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; machine_ref &lt; ( act_param_list ) >&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;&lt; , machine_ref &lt; ( act_param_list ) >> > >
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;&lt; , machine_ref &lt; ( act_param_list ) >> >
 
 &nbsp; &lt; PROMOTES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation_ref &lt;&lt; , operation_ref >> >
 
@@ -374,11 +379,11 @@ Implementations</H3>
 
 &nbsp; &lt; ASSERTIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula &lt;&lt; &amp; Formula >> >
 
-&nbsp; &lt; DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >>
+&nbsp; &lt; DEFINITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Formula == Formula &lt;&lt; ; Formula == Formula >> >
 &nbsp;
 &nbsp; &lt; INITIALISATION&nbsp;&nbsp;&nbsp; Formula >
 
-&nbsp; &lt; OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt; ; operation >> >&nbsp;
+&nbsp; &lt; OPERATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; operation &lt;&lt; ; operation >> >&nbsp;
 
 &nbsp; END
 
@@ -396,14 +401,14 @@ Implementations</H3>
 &nbsp; enumerated_set ::=&nbsp; UpperCaseIdentifier = { set_contents }&nbsp;
 
 
-&nbsp; set_contents&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> > |
+&nbsp; set_contents&nbsp;&nbsp; ::=&nbsp; Identifier &lt;&lt; , Identifier >> |
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bnumber &lt;&lt; , Bnumber >>
 
 
 &nbsp; machine_ref&nbsp;&nbsp;&nbsp; ::=&nbsp; Identifier</PRE>
 
 <HR WIDTH="60%">
-<BR>&nbsp;
+
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 
