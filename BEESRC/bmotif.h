@@ -461,11 +461,11 @@ extern void Popup_Error ();
 extern void Popup_Info ();
 
 
-int loop_do_prf_r,loop_do_prf_p,loop_do_prf_i,loop_do_prf_g,loop_do_prf_j;
+extern int loop_do_prf_r,loop_do_prf_p,loop_do_prf_i,loop_do_prf_g,loop_do_prf_j;
 
-int do_prf_t,do_prf_n,do_prf_a,do_prf_p,do_prf_r,do_prf_i,do_prf_l,do_prf_b,do_prf_bbuf ;
+extern int do_prf_t,do_prf_n,do_prf_a,do_prf_p,do_prf_r,do_prf_i,do_prf_l,do_prf_b,do_prf_bbuf ;
 
-int run_man_prf_f,run_man_prf_r,run_man_prf_p,run_man_prf_success,run_man_prf_ff,run_man_prf_fff,run_man_prf_j,run_man_prf_i,run_man_prf_gl,run_man_prf_g,run_man_prf_menu,run_man_prf_run_man_prf_res;
+extern int run_man_prf_f,run_man_prf_r,run_man_prf_p,run_man_prf_success,run_man_prf_ff,run_man_prf_fff,run_man_prf_j,run_man_prf_i,run_man_prf_gl,run_man_prf_g,run_man_prf_menu,run_man_prf_run_man_prf_res;
 
 /**************************************************************************/
 
