@@ -18,6 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include "GENState_ffnc_obj.h"
 
+char GENState_buf_ffnc_obj[1000];
 
 void
 #ifdef _BT_ANSIC
@@ -32,25 +33,22 @@ int *bb, *ff;
 	if( b==0 ){
 		if( GENState_sold_fnc_obj==0 ){
 			GENState_ssize_fnc_obj = GENState_ssize_fnc_obj+1;
-			f=GENState_ssize_fnc_obj
-			    ;
+			f=GENState_ssize_fnc_obj;
 		} else{
 			f=GENState_old_fnc_obj[GENState_sold_fnc_obj];
-			GENState_sold_fnc_obj=GENState_sold_fnc_obj-1
-			    ;
-		};
+			GENState_sold_fnc_obj=GENState_sold_fnc_obj-1;
+		}
 		i = 1;
 		while( i<= GENState_ffnc_objP2 ){
 			GENState_RMV_FNC_OBJ(f,i);
-			i=i+1
-			    ;
-		};
+			i=i+1;
+		}
 		*ff = f;
 		*bb = 1;
 	} else{
 		*ff = 0;
 		*bb = 0;
-	};
+	}
 }
 
 
@@ -72,12 +70,11 @@ int *bb, pp;
 			} else {
 				i = 0 ;
 				*bb = 0;
-			};
-		};
+			}
+		}
 	}  else {
-		*bb = 0
-		    ;
-	};
+		*bb = 0;
+	}
 }
 
 #include <stdio.h>
@@ -221,13 +218,13 @@ int *cc, *ss;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			GENState_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 }
 
 
@@ -247,14 +244,13 @@ int *cc, *ss, oc, os;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			GENState_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
-
+	}
 }
 
 
@@ -274,14 +270,14 @@ int ff, ii, ll, *aa;
 	while (t[i]!='\0') {
 		GENState_buf_ffnc_obj[i]=t[i];
 		i=i+1;
-	};
+	}
 	GENState_buf_ffnc_obj[i] = '\0';
 	s = (int *)GENState_buf_ffnc_obj;
 	i=0;
 	while ( i < ll ){
 		GENState_STO_FNC_OBJ(ff,(ii+i),s[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -298,7 +294,7 @@ int ff, ii, ll, *aa;
 	while ( i < ll ){
 		GENState_STO_FNC_OBJ(ff,(ii+i),aa[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -320,13 +316,11 @@ int *bb, ff, ii, ll, *vv;
 	while ( s[i]!='\0' && b==1 ) {
 		if ( t[i] == s[i] && &(t[i])!=e )
 		{
-			i = i+1
-			    ;
+			i = i+1;
 		} else{
-			b = 0
-			    ;
-		};
-	};
+			b = 0;
+		}
+	}
         if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; };
 }
 
@@ -345,9 +339,9 @@ int ff, gg, ii, jj, ll;
 		GENState_STO_FNC_OBJ(gg,
                                   (jj+i),
                                   GENState_fnc_obj[(ff-1)*GENState_ffnc_objP2+ii+i]
-                                  );
+                                  )
 		i=i+1;
-	};
+	}
 }
 
 
@@ -359,7 +353,7 @@ GENState_XTR_FFNC_OBJ( vv, ff, ii, ll )
 int ff, ii, ll, *vv;
 #endif
 {
-	int i;
+	size_t i;
 	char *s,*t,*e;
 	s = (char *)vv;
 	t = (char *)&(GENState_fnc_obj[(ff-1)*GENState_ffnc_objP2+ii]);
@@ -368,5 +362,5 @@ int ff, ii, ll, *vv;
 	while ( &(t[i])!=e) {
 		s[i] = t[i];
 		i = i + 1;
-	};
+	}
 }

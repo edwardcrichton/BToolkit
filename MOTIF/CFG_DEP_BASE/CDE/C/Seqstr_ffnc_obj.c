@@ -18,6 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include "Seqstr_ffnc_obj.h"
 
+char Seqstr_buf_ffnc_obj[1000];
 
 void
 #ifdef _BT_ANSIC
@@ -32,25 +33,22 @@ int *bb, *ff;
 	if( b==0 ){
 		if( Seqstr_sold_fnc_obj==0 ){
 			Seqstr_ssize_fnc_obj = Seqstr_ssize_fnc_obj+1;
-			f=Seqstr_ssize_fnc_obj
-			    ;
+			f=Seqstr_ssize_fnc_obj;
 		} else{
 			f=Seqstr_old_fnc_obj[Seqstr_sold_fnc_obj];
-			Seqstr_sold_fnc_obj=Seqstr_sold_fnc_obj-1
-			    ;
-		};
+			Seqstr_sold_fnc_obj=Seqstr_sold_fnc_obj-1;
+		}
 		i = 1;
 		while( i<= Seqstr_ffnc_objP2 ){
 			Seqstr_RMV_FNC_OBJ(f,i);
-			i=i+1
-			    ;
-		};
+			i=i+1;
+		}
 		*ff = f;
 		*bb = 1;
 	} else{
 		*ff = 0;
 		*bb = 0;
-	};
+	}
 }
 
 
@@ -72,12 +70,12 @@ int *bb, pp;
 			} else {
 				i = 0 ;
 				*bb = 0;
-			};
-		};
+			}
+		}
 	}  else {
 		*bb = 0
 		    ;
-	};
+	}
 }
 
 #include <stdio.h>
@@ -159,7 +157,7 @@ Seqstr_RST_FNC_OBJ()
           while ( i <= Seqstr_ssize_fnc_obj*Seqstr_ffnc_objP2 ) {
 	    Seqstr_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= Seqstr_ssize_fnc_obj ) {
 	    read_fm(Seqstr_fnc_obj[1+(i-1)*Seqstr_ffnc_objP2], old_size);
@@ -189,7 +187,7 @@ Seqstr_RSTN_FNC_OBJ()
           while ( i <= Seqstr_ssize_fnc_obj*Seqstr_ffnc_objP2 ) {
 	    Seqstr_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= Seqstr_ssize_fnc_obj ) {
 	    read_fm(Seqstr_fnc_obj[1+(i-1)*Seqstr_ffnc_objP2], old_size);
@@ -221,13 +219,13 @@ int *cc, *ss;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			Seqstr_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 }
 
 
@@ -247,13 +245,13 @@ int *cc, *ss, oc, os;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			Seqstr_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 
 }
 
@@ -274,14 +272,14 @@ int ff, ii, ll, *aa;
 	while (t[i]!='\0') {
 		Seqstr_buf_ffnc_obj[i]=t[i];
 		i=i+1;
-	};
+	}
 	Seqstr_buf_ffnc_obj[i] = '\0';
 	s = (int *)Seqstr_buf_ffnc_obj;
 	i=0;
 	while ( i < ll ){
 		Seqstr_STO_FNC_OBJ(ff,(ii+i),s[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -298,7 +296,7 @@ int ff, ii, ll, *aa;
 	while ( i < ll ){
 		Seqstr_STO_FNC_OBJ(ff,(ii+i),aa[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -325,9 +323,9 @@ int *bb, ff, ii, ll, *vv;
 		} else{
 			b = 0
 			    ;
-		};
-	};
-        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; };
+		}
+	}
+        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; }
 }
 
 
@@ -347,7 +345,7 @@ int ff, gg, ii, jj, ll;
                                   Seqstr_fnc_obj[(ff-1)*Seqstr_ffnc_objP2+ii+i]
                                   );
 		i=i+1;
-	};
+	}
 }
 
 
@@ -368,5 +366,5 @@ int ff, ii, ll, *vv;
 	while ( &(t[i])!=e) {
 		s[i] = t[i];
 		i = i + 1;
-	};
+	}
 }

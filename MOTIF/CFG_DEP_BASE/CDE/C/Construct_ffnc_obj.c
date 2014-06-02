@@ -18,6 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include "Construct_ffnc_obj.h"
 
+char Construct_buf_ffnc_obj[1000];
 
 void
 #ifdef _BT_ANSIC

@@ -23,8 +23,6 @@ extern int Construct_ssize_fnc_obj;
 extern int Construct_old_fnc_obj[];
 extern int Construct_sold_fnc_obj;
 
-char Construct_buf_ffnc_obj[1000];
-
 #define INI_Construct_ffnc_obj() \
 {Construct_ssize_fnc_obj = 0; Construct_sold_fnc_obj=0;}
 

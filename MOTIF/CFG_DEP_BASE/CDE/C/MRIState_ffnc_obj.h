@@ -23,10 +23,6 @@ extern int MRIState_ssize_fnc_obj;
 extern int MRIState_old_fnc_obj[];
 extern int MRIState_sold_fnc_obj;
 
-char MRIState_buf_ffnc_obj[1000];
-
-#define MRIState_CHARperWORD 4
-
 #define INI_MRIState_ffnc_obj() \
 {MRIState_ssize_fnc_obj = 0; MRIState_sold_fnc_obj=0;}
 

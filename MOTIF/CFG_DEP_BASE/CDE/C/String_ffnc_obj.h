@@ -23,10 +23,6 @@ extern int String_ssize_fnc_obj;
 extern int String_old_fnc_obj[];
 extern int String_sold_fnc_obj;
 
-char String_buf_ffnc_obj[1000];
-
-#define String_CHARperWORD 4
-
 #define INI_String_ffnc_obj() \
 {String_ssize_fnc_obj = 0; String_sold_fnc_obj=0;}
 

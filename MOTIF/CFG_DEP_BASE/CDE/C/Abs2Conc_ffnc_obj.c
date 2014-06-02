@@ -18,6 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include "Abs2Conc_ffnc_obj.h"
 
+char Abs2Conc_buf_ffnc_obj[1000];
 
 void
 #ifdef _BT_ANSIC

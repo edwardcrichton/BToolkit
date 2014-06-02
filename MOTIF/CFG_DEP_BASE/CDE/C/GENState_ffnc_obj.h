@@ -23,10 +23,6 @@ extern int GENState_ssize_fnc_obj;
 extern int GENState_old_fnc_obj[];
 extern int GENState_sold_fnc_obj;
 
-char GENState_buf_ffnc_obj[1000];
-
-#define GENState_CHARperWORD 4
-
 #define INI_GENState_ffnc_obj() \
 {GENState_ssize_fnc_obj = 0; GENState_sold_fnc_obj=0;}
 

@@ -23,10 +23,6 @@ extern int Seqstr_ssize_fnc_obj;
 extern int Seqstr_old_fnc_obj[];
 extern int Seqstr_sold_fnc_obj;
 
-char Seqstr_buf_ffnc_obj[1000];
-
-#define Seqstr_CHARperWORD 4
-
 #define INI_Seqstr_ffnc_obj() \
 {Seqstr_ssize_fnc_obj = 0; Seqstr_sold_fnc_obj=0;}
 
