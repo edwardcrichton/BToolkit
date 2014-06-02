@@ -25,8 +25,6 @@ extern int Construct_sold_fnc_obj;
 
 char Construct_buf_ffnc_obj[1000];
 
-#define Construct_CHARperWORD 4
-
 #define INI_Construct_ffnc_obj() \
 {Construct_ssize_fnc_obj = 0; Construct_sold_fnc_obj=0;}
 
