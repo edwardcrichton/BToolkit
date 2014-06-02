@@ -5844,15 +5844,15 @@ ProcessAndDisplayCurrWinTextBcom ()
   ProcessAndDisplayCurrWinText ( fifo_write_buf );
 }
 
+#define text_trigger_tot   30000
+#define text_rem_tot        2500
+
 void
 RemoveTopCurrText ( add_length )
 int add_length;
 {
   XmTextPosition nl_pos;
   Boolean nl_found;
-
-#define text_trigger_tot   30000
-#define text_rem_tot        2500
 
 /***
 printf ( "curr_text_posn start: %d\n", ( int ) curr_text_posn );
