@@ -1328,8 +1328,6 @@ extern const char *lab_types[];
 
 extern const char *extens[];
 
-extern const char *num_strings[];
-
 extern const char *DIRS[];
 #define dir_len         11
 
