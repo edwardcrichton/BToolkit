@@ -1124,7 +1124,7 @@ extern int feql_val;
 
 extern char *btl_fwd_tac[];
 
-extern int pid;
+extern pid_t pid;
 
 extern int cs_nn, cs_rr;
 extern char serv_addr [];

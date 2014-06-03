@@ -305,7 +305,7 @@ char *btl_fwd_tac[] = {
   REASONING_DEPTH_1_FEQL_Tac,
   REASONING_DEPTH_2_FEQL_Tac  };
 
-int pid;
+pid_t pid;
 
 int cs_nn, cs_rr;
 char serv_addr [ 20 ];
