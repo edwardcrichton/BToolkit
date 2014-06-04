@@ -1,0 +1,484 @@
+!
+! Resource file for BMotif Interface to BToolkit/BTool (XBMotif)
+!
+
+!
+! default virtual bindings
+!
+!*XBMotif*defaultVirtualBindings: osfBackSpace: <Key>Delete
+
+!
+! mnemonics
+!
+*XBMotif*Help.mnemonic: H
+*XBMotif*Exit.mnemonic: x
+*XBMotif*Palette.mnemonic: P
+*XBMotif*Interrupt.mnemonic: t
+*XBMotif*Options.mnemonic: O
+*XBMotif*Browse.mnemonic: B
+*XBMotif*Remake.mnemonic: R
+*XBMotif*Utils.mnemonic: U
+*XBMotif*Introduce.mnemonic: I
+*XBMotif*Construct.mnemonic: C
+
+
+!
+! Initial position & width/height
+!
+*XBMotif.geometry: +1+1
+!*XBMotif.width: 690
+!*XBMotif.height: 1115
+*XBMotif.width: 470
+*XBMotif.height: 746
+
+
+!
+! enable tear-off menus (TEAR_OFF_DISABLED or TEAR_OFF_ENABLED)
+!
+*XBMotif*XmMenuShell*XmRowColumn*tearOffModel: TEAR_OFF_ENABLED
+
+
+!
+! globals
+!
+*XBMotif*XmSash*traversalOn: True
+*XBMotif*XmScrollBar*highlightThickness: 1
+*XBMotif*traversalOn: True
+*XBMotif*highlightThickness: 0
+*XBMotif*defaultButtonShadowThickness: 0
+*XBMotif*showAsDefault: False
+*XBMotif*borderWidth: 0
+*XBMotif*marginWidth: 1
+*XBMotif*marginHeight: 1
+*XBMotif*spacing: 0
+*XBMotif*foreground: black
+!
+! The following are to ensure Solaris/Unix look similar
+!
+*XBMotif*XmScrollBar*shadowThickness: 1
+*XBMotif*XmTextField*shadowThickness: 2
+*XBMotif*OptionButton*shadowThickness: 2
+*XBMotif*SelDialog*XmPushButtonGadget*shadowThickness: 2
+*XBMotif*SelDialog*XmPushButtonGadget*marginHeight: 3
+
+
+
+!
+! fonts 
+!
+
+*XBMotif.renderTable: variable
+*XBMotif.renderTable.variable.fontName: Courier
+*XBMotif.renderTable.variable.fontSize: 9
+*XBMotif.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmList.renderTable: variable
+*XBMotif*XmList.renderTable.variable.fontName: Courier
+*XBMotif*XmList.renderTable.variable.fontSize: 9
+*XBMotif*XmList.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmText.renderTable: variable
+*XBMotif*XmText.renderTable.variable.fontName: Courier
+*XBMotif*XmText.renderTable.variable.fontSize: 9
+*XBMotif*XmText.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmLabel.renderTable: variable
+*XBMotif*XmLabel.renderTable.variable.fontName: Courier
+*XBMotif*XmLabel.renderTable.variable.fontSize: 9
+*XBMotif*XmLabel.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmLabelGadget.renderTable: variable
+*XBMotif*XmLabelGadget.renderTable.variable.fontName: Courier
+*XBMotif*XmLabelGadget.renderTable.variable.fontSize: 9
+*XBMotif*XmLabelGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmCascadeButton.renderTable: variable
+*XBMotif*XmCascadeButton.renderTable.variable.fontName: Courier
+*XBMotif*XmCascadeButton.renderTable.variable.fontSize: 9
+*XBMotif*XmCascadeButton.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmCascadeButtonGadget.renderTable: variable
+*XBMotif*XmCascadeButtonGadget.renderTable.variable.fontName: Courier
+*XBMotif*XmCascadeButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*XmCascadeButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmPushButton.renderTable: variable
+*XBMotif*XmPushButton.renderTable.variable.fontName: Courier
+*XBMotif*XmPushButton.renderTable.variable.fontSize: 9
+*XBMotif*XmPushButton.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmPushButtonGadget.renderTable: variable
+*XBMotif*XmPushButtonGadget.renderTable.variable.fontName: Courier
+*XBMotif*XmPushButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*XmPushButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*Option*XmPushButtonGadget.renderTable: variable
+*XBMotif*Option*XmPushButtonGadget.renderTable.variable.fontName: Courier
+*XBMotif*Option*XmPushButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*Option*XmPushButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmToggleButton.renderTable: variable
+*XBMotif*XmToggleButton.renderTable.variable.fontName: Courier
+*XBMotif*XmToggleButton.renderTable.variable.fontSize: 9
+*XBMotif*XmToggleButton.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmToggleButtonGadget.renderTable: variable
+*XBMotif*XmToggleButtonGadget.renderTable.variable.fontName: Courier
+*XBMotif*XmToggleButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*XmToggleButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+!
+! Overview push button size
+!
+*XBMotif*Overview*Label*foreground: #40a0ff
+*XBMotif*Overview*ButtonLabel*foreground: #ca7f00
+*XBMotif*Overview*XmPushButton.renderTable: variable
+*XBMotif*Overview*XmPushButton.renderTable.variable.fontName: Times
+*XBMotif*Overview*XmPushButton.renderTable.variable.fontSize: 9
+*XBMotif*Overview*XmPushButton.renderTable.variable.fontType: FONT_IS_XFT
+
+
+!
+! MainWin & MainWin Frame
+!
+*XBMotif*MainWin*background: gray89
+*XBMotif*MainWin*topShadowColor: gray94
+*XBMotif*MainWin*bottomShadowColor: gray29
+*XBMotif*MainWin*Frame*topShadowColor: white
+
+!
+! MainWin TopBar
+!
+*XBMotif*MainWin*TopBar*background: LightSteelBlue1
+!*XBMotif*MainWin*TopBar*foreground: black
+*XBMotif*MainWin*TopBar*foreground: SteelBlue4
+*XBMotif*MainWin*TopBar*topShadowColor: white
+
+!
+! MainWin TopBar PullDown
+!
+*XBMotif*MainWin*TopBar*PullDown.spacing: 1
+*XBMotif*MainWin*TopBar*PullDown*background: LightCyan2
+*XBMotif*MainWin*TopBar.marginWidth: 20
+*XBMotif*MainWin*TopBar.spacing: 20
+
+
+!
+! MainWin TopBar Options
+!
+*XBMotif*MainWin*SelDialog*Options*background: LightCyan2
+*XBMotif*MainWin*SelDialog*Options*topShadowColor: white
+*XBMotif*MainWin*SelDialog*Options*Label.foreground: #40a0ff
+*XBMotif*MainWin*SelDialog*Options*ButtonLabel*foreground: #ca7f00
+
+*XBMotif*MainWin*SelDialog*Options*PullDown*XmPushButtonGadget.foreground: LightCyan2
+*XBMotif*MainWin*SelDialog*Options*PullDown*XmPushButtonGadget.background: black
+
+!
+! MainWin TopBar Palette/File Difference Help
+!
+*XBMotif*HelpDialog*PalDialog*background: azure
+*XBMotif*HelpDialog*PalDialog*dialogTitle: B-Toolkit Palette
+
+*XBMotif*HelpDialog*PalDialog.renderTable: variable
+*XBMotif*HelpDialog*PalDialog.renderTable.variable.fontName: Courier
+*XBMotif*HelpDialog*PalDialog.renderTable.variable.fontSize: 9
+*XBMotif*HelpDialog*PalDialog.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.renderTable: variable
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.renderTable.variable.fontName: Times
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+!
+! MainWin Environment Label
+!
+*XBMotif*MainWin*EnvLabelActive*foreground: firebrick3
+*XBMotif*MainWin*EnvLabelPassive*foreground: SteelBlue4
+
+!
+! MainWin CommandBar
+!
+*XBMotif*MainWin*CommandBar*foreground: #ca7f00
+
+!
+! User/Lib/Generated Construct colours
+!
+*XBMotif*UserLab*foreground: firebrick3
+*XBMotif*UserLab*highlightColor: firebrick3
+*XBMotif*LibraryLab*foreground: SteelBlue4
+*XBMotif*LibraryLab*highlightColor: SteelBlue4
+*XBMotif*GeneratedLab*foreground: SeaGreen
+*XBMotif*GeneratedLab*highlightColor: SeaGreen
+*XBMotif*UserVHDLLab*foreground: orange3
+*XBMotif*UserVHDLLab*highlightColor: orange3
+*XBMotif*GenVHDLLab*foreground: orange4
+*XBMotif*GenVHDLLab*highlightColor: orange4
+*XBMotif*LibVHDLLab*foreground: SteelBlue3
+*XBMotif*LibVHDLLab*highlightColor: SteelBlue3
+*XBMotif*InapplicableLab*foreground: gray85
+
+!
+! MainWin ConstructsArea
+!
+*XBMotif*MainWin*Frame*ConstructsArea*background: LightSteelBlue1
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*background: gray92
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*topShadowColor: white
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*bottomShadowColor: gray29
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Label.foreground: SteelBlue4
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Highlight.foreground: firebrick3
+
+!
+! MainWin DisplayArea
+!
+*XBMotif*MainWin*DisplayArea*background: LightSteelBlue1
+*XBMotif*MainWin*DisplayArea*Canvas*background:  Ivory1
+*XBMotif*MainWin*DisplayArea*Canvas*foreground: black
+*XBMotif*MainWin*DisplayArea*Canvas*topShadowColor: white
+*XBMotif*MainWin*DisplayArea*Canvas*bottomShadowColor: gray29
+*XBMotif*MainWin*DisplayArea*Canvas.renderTable: variable
+*XBMotif*MainWin*DisplayArea*Canvas.renderTable.variable.fontName: Courier
+*XBMotif*MainWin*DisplayArea*Canvas.renderTable.variable.fontSize: 9
+!*XBMotif*MainWin*DisplayArea*Canvas.renderTable.variable.fontStyle: Bold
+*XBMotif*MainWin*DisplayArea*Canvas.renderTable.variable.fontType: FONT_IS_XFT
+
+
+!
+! InterProver
+!
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Ipr*background: gray85
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Ipr*foreground: SteelBlue4
+
+!
+! Animator
+!
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Anm*background: gray85
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas*Anm*foreground: SteelBlue4
+*XBMotif*AnmState.title: Animator State Display
+*XBMotif*AnmState.geometry: +527+1
+*XBMotif*AnmState*AnmWin.height: 400
+*XBMotif*AnmState*AnmWin.width: 400
+*XBMotif*AnmState*background: Ivory1
+*XBMotif*AnmState*foreground: SteelBlue4
+*XBMotif*AnmState*topShadowColor: gray94
+*XBMotif*AnmState*bottomShadowColor: gray35
+*XBMotif*AnmState.renderTable: variable
+*XBMotif*AnmState.renderTable.variable.fontName: Courier
+*XBMotif*AnmState.renderTable.variable.fontSize: 9
+*XBMotif*AnmState.renderTable.variable.fontType: FONT_IS_XFT
+
+
+!
+! Overview
+!
+*XBMotif*Overview*background: gray89
+*XBMotif*Overview*topShadowColor: gray94
+*XBMotif*Overview*bottomShadowColor: gray29
+*XBMotif*Overview*Frame.background: LightSteelBlue1
+*XBMotif*Overview*Frame*Canvas*background: gray94
+*XBMotif*Overview*Frame*Canvas*topShadowColor: white
+*XBMotif*Overview*Frame*Canvas*bottomShadowColor: gray29
+*XBMotif*Overview*Frame*Canvas*Box*background: Ivory2
+*XBMotif*Overview*Frame*Canvas*MainBox*background: Ivory1
+
+!
+! Generated Interface
+!
+*XBMotif*Interface*background: gray89
+*XBMotif*Interface*Label.foreground: #40a0ff
+*XBMotif*Interface*ButtonLabel*foreground: #ca7f00
+*XBMotif*Interface*topShadowColor: gray94
+*XBMotif*Interface*bottomShadowColor: gray29
+*XBMotif*Interface*Frame.background: LightSteelBlue1
+*XBMotif*Interface*Frame*Canvas.background: Ivory1
+*XBMotif*Interface*Frame*Canvas.foreground: SteelBlue4
+*XBMotif*Interface*Canvas.renderTable: variable
+*XBMotif*Interface*Canvas.renderTable.variable.fontName: Courier
+*XBMotif*Interface*Canvas.renderTable.variable.fontSize: 9
+*XBMotif*Interface*Canvas.renderTable.variable.fontType: FONT_IS_XFT
+
+!
+! Generated Interface Popups
+!
+*XBMotif*ItfDialog*background: LightSkyBlue1
+*XBMotif*ItfDialog*topShadowColor: gray98
+*XBMotif*ItfDialog*bottomShadowColor: LightBlue4
+*XBMotif*ItfDialog*Label.foreground: #5082ff
+*XBMotif*ItfDialog*ButtonLabel*foreground: #ca7f00
+*XBMotif*ItfDialog*OpName.foreground: #5082ff
+*XBMotif*ItfDialog*InputText*background: Ivory1
+*XBMotif*ItfDialog*InputText*bottomShadowColor: DeepSkyBlue4
+*XBMotif*ItfDialog*InputText*topShadowColor: gray94
+
+
+!
+! RadioBox/Selection/Option Dialogs
+!
+*XBMotif*MainWin*SelDialog*background: LightSkyBlue1
+*XBMotif*MainWin*SelDialog*topShadowColor: gray98
+*XBMotif*MainWin*SelDialog*bottomShadowColor: LightBlue4
+*XBMotif*MainWin*SelDialog*Label.foreground: #5082ff
+*XBMotif*MainWin*SelDialog*ButtonLabel*foreground: #ca7f00
+*XBMotif*MainWin*SelDialog*PullDown*XmPushButtonGadget.background: Ivory1
+!*XBMotif*MainWin*SelDialog*Highlight.foreground: red
+*XBMotif*MainWin*SelDialog*Highlight.foreground: firebrick3
+*XBMotif*MainWin*SelDialog*XmNokLabelString*foreground: #ca7f00
+*XBMotif*MainWin*SelDialog*InputText*background: Ivory1
+*XBMotif*MainWin*SelDialog*InputText*bottomShadowColor: DeepSkyBlue4
+*XBMotif*MainWin*SelDialog*InputText*topShadowColor: gray94
+
+!
+! Current Level User Rule Dialog
+!
+*XBMotif*BrowseDialog*UserRule*XmLabelGadget.foreground: #5082ff
+*XBMotif*BrowseDialog*UserRule*foreground: #ca7f00
+
+!
+! B-Tool Browse Dialogs
+!
+*XBMotif*BrowseDialog*XmTextField*background: gray89
+*XBMotif*BrowseDialog*background: gray89
+*XBMotif*BrowseDialog*topShadowColor: white
+*XBMotif*BrowseDialog*bottomShadowColor: black
+*XBMotif*BrowseDialog*Label.foreground: #5082ff
+*XBMotif*BrowseDialog*Highlight.foreground: firebrick3
+*XBMotif*BrowseDialog*ButtonLabel*foreground: #ca7f00
+
+!
+! ApplyRule/FormattedGoal Dialogs
+!
+*XBMotif*ApplyRuleDialog*background: LightSkyBlue1
+*XBMotif*ApplyRuleDialog*topShadowColor: gray98
+*XBMotif*ApplyRuleDialog*bottomShadowColor: LightBlue4
+*XBMotif*ApplyRuleDialog*Label.foreground: #5082ff
+*XBMotif*ApplyRuleDialog*Rule.foreground: black
+*XBMotif*ApplyRuleDialog*InstantiatedRule.foreground: red
+*XBMotif*ApplyRuleDialog*Goal.foreground: #5082ff
+!*XBMotif*ApplyRuleDialog*Highlight.foreground: red
+*XBMotif*ApplyRuleDialog*Highlight.foreground: firebrick3
+*XBMotif*ApplyRuleDialog*ButtonLabel*foreground: #ca7f00
+
+*XBMotif*FormattedGoalDialog*background: LightSkyBlue1
+*XBMotif*FormattedGoalDialog*topShadowColor: gray98
+*XBMotif*FormattedGoalDialog*bottomShadowColor: LightBlue4
+*XBMotif*FormattedGoalDialog*Goal.foreground: #5082ff
+*XBMotif*FormattedGoalDialog*ButtonLabel*foreground: #ca7f00
+
+!
+! Information Dialogs
+!
+*XBMotif*MainWin*InfoDialog*background: Ivory1
+*XBMotif*MainWin*InfoDialog*topShadowColor: gray98
+*XBMotif*MainWin*InfoDialog*bottomShadowColor: Ivory4
+*XBMotif*MainWin*InfoDialog*foreground: #ca7f00
+
+!
+! Prompt (text input) Dialogs
+!
+*XBMotif*PromptDialog*XmTextField*background: Ivory1
+*XBMotif*PromptDialog*XmTextField*foreground: black
+*XBMotif*PromptDialog*background: LightSkyBlue1
+*XBMotif*PromptDialog*foreground: #ca7f00
+*XBMotif*PromptDialog*topShadowColor: gray98
+*XBMotif*PromptDialog*bottomShadowColor: LightBlue4
+
+!
+! Question Dialogs
+!
+*XBMotif*QuestionDialog*background: LightSkyBlue1
+*XBMotif*QuestionDialog*topShadowColor: gray98
+*XBMotif*QuestionDialog*bottomShadowColor: LightBlue4
+*XBMotif*QuestionDialog*foreground: #ca7f00
+
+!
+! Help Dialogs
+!
+*XBMotif*MainWin*HelpDialog*background: LightCyan1
+*XBMotif*MainWin*HelpDialog*topShadowColor: white
+*XBMotif*MainWin*HelpDialog*dialogTitle: B-Toolkit Help
+*XBMotif*MainWin*HelpDialog*ButtonLabel*foreground: #ca7f00
+
+*XBMotif*MainWin*HelpDialog.renderTable: variable
+*XBMotif*MainWin*HelpDialog.renderTable.variable.fontName: Times
+*XBMotif*MainWin*HelpDialog.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*HelpDialog.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.renderTable: variable
+*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.renderTable.variable.fontName: Times
+*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+!
+! Warning Dialogs
+!
+*XBMotif*WarningDialog*background: gray89
+*XBMotif*WarningDialog*foreground: red
+*XBMotif*WarningDialog*dialogTitle: B-Toolkit Warning
+
+!
+! Quit Dialog
+!
+*XBMotif*MainWin*QuitDialog*background: gray89
+*XBMotif*MainWin*QuitDialog*foreground: red
+*XBMotif*MainWin*QuitDialog*dialogTitle: B-Toolkit Quit?
+
+!
+! Proof Tree
+!
+*XBMotif*MainWin*DisplayArea*ProofTree*background: Ivory1
+*XBMotif*MainWin*DisplayArea*ProofTree*topShadowColor: gray29
+*XBMotif*MainWin*DisplayArea*ProofTree*bottomShadowColor: white
+*XBMotif*MainWin*DisplayArea*ProofTree*Label.foreground: #ca7f00
+!*XBMotif*MainWin*DisplayArea*ProofTree*Highlight.foreground: red
+*XBMotif*MainWin*DisplayArea*ProofTree*Highlight.foreground: firebrick3
+*XBMotif*MainWin*DisplayArea*ProofTree*CurrentGoal.background: Ivory2
+*XBMotif*MainWin*DisplayArea*ProofTree*CurrentGoal.foreground: firebrick3
+*XBMotif*MainWin*DisplayArea*ProofTree*UndischGoal.foreground: firebrick3
+*XBMotif*MainWin*DisplayArea*ProofTree*DischGoal.foreground: SeaGreen
+*XBMotif*MainWin*DisplayArea*ProofTree*Rule.foreground: gray29
+*XBMotif*MainWin*DisplayArea*ProofTree.renderTable: variable
+*XBMotif*MainWin*DisplayArea*ProofTree.renderTable.variable.fontName: Courier
+*XBMotif*MainWin*DisplayArea*ProofTree.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*DisplayArea*ProofTree.renderTable.variable.fontType: FONT_IS_XFT
+
+!
+! Hypothesis display
+!
+*XBMotif*Hyp*background: Ivory3
+*XBMotif*Hyp*topShadowColor: white
+*XBMotif*Hyp*bottomShadowColor: gray29
+*XBMotif*Hyp*Label*foreground: #ca7f00
+*XBMotif*Hyp.renderTable: variable
+*XBMotif*Hyp.renderTable.variable.fontName: Courier
+*XBMotif*Hyp.renderTable.variable.fontSize: 9
+*XBMotif*Hyp.renderTable.variable.fontType: FONT_IS_XFT
+
+!
+! FileSelectionBox for BTool
+!
+*XBMotif*XmFileSelectionBox.marginWidth: 15
+*XBMotif*XmFileSelectionBox.marginHeight: 10
+*XBMotif*XmFileSelectionBox*background: LightSkyBlue1
+*XBMotif*XmFileSelectionBox*XmLabelGadget*foreground: #5082ff
+*XBMotif*XmFileSelectionBox*XmLabelGadget*marginHeight: 5
+*XBMotif*XmFileSelectionBox*XmPushButtonGadget*foreground: #ca7f00
+*XBMotif*XmFileSelectionBox*XmTextField*background: Ivory1
+*XBMotif*XmFileSelectionBox*XmTextField*marginHeight: 3
+*XBMotif*XmFileSelectionBox*XmTextField*marginWidth: 5
+*XBMotif*XmFileSelectionBox*XmList*listMarginHeight: 10
+*XBMotif*XmFileSelectionBox*XmList*listMarginWidth: 10
+*XBMotif*XmFileSelectionBox*XmList*listSpacing: 5
+
+
+!
+!  unwise to change these ...
+!
+*XBMotif*MainWin*CommandBar.renderTable: variable
+*XBMotif*MainWin*CommandBar.renderTable.variable.fontName: Courier
+*XBMotif*MainWin*CommandBar.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*CommandBar.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas.renderTable: variable
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas.renderTable.variable.fontName: Courier
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas.renderTable.variable.fontType: FONT_IS_XFT
