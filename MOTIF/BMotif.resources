@@ -53,7 +53,7 @@
 *XBMotif*spacing: 0
 *XBMotif*foreground: black
 !
-! The following are to enure Solaris/Unix look similar
+! The following are to ensure Solaris/Unix look similar
 !
 *XBMotif*XmScrollBar*shadowThickness: 1
 *XBMotif*XmTextField*shadowThickness: 2
