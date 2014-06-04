@@ -38,6 +38,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <sys/stat.h>
 #include <errno.h>
 #include <limits.h>
+#include <unistd.h>
 
 /*
 	Moves the null character to the end of the last slash.
@@ -66,6 +67,18 @@ char* path;
 		path[0]='\0';
 		strcat(path,buf);
 	}
+}
+
+/*
+	Obvious.
+*/
+
+int file_exists(char* filename)
+{
+	struct stat buf;
+	int i;
+	i=stat(filename,&buf);
+	return (i==0) ? 1 : 0;
 }
 
 /*
@@ -127,18 +140,6 @@ const char* argv0;
 	canonical(result);
 	dirname(result);
 	return result;
-}
-
-/*
-	Obvious.
-*/
-
-int file_exists(char* filename)
-{
-	struct stat buf;
-	int i;
-	i=stat(filename,&buf);
-	return (i==0) ? 1 : 0;
 }
 
 /*
