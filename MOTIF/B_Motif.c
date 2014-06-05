@@ -5906,16 +5906,6 @@ char *text;
 }
 
 void
-DisplayCurrWinTextAt ( text_pos, text )
-XmTextPosition text_pos;
-char *text;
-{
-  XmTextReplace ( curr_text, text_pos, text_pos + strlen ( text ), text );
-  XmTextShowPosition ( curr_text, text_pos );
-  XmUpdateDisplay ( curr_text );
-}
-
-void
 Remake_Proceed ()
 {
   DisplayCurrWinText ( "\n  Remaking\n" );

@@ -1806,7 +1806,6 @@ CheckUpdateChangedDisplay_NoLnk ()
   void DeAllocateDocuments ();
   void DisplayRemove ();
   void SetDisplay_1_for_obj ();
-  void DisplayCurrWinTextAt ();
 
   remove_reqd = 0;
   clear_gset1 ();
@@ -1873,7 +1872,6 @@ CheckUpdateChangedDisplay_Lnk ()
   void DisplayRemove ();
   void SetDisplay_1_for_obj ();
   void DisplayCurrentEnv_continue ();
-  void DisplayCurrWinTextAt ();
 
   remove_reqd = 0;
   clear_gset1 (); /* to be loaded in SetButtonState */
