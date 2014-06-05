@@ -1,10 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
 <TITLE>The System Library</TITLE>
 </HEAD>
-<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
-<A NAME="System_Library"><HR></A>
-<H1>The System Library (SLIB)</H1>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<HR>
+<H1><A NAME="System_Library">The System Library (SLIB)</A></H1>
 
 The B-Toolkit is supplied with a set of reusable machines
 which encapsulate basic state and data-structures,
@@ -14,7 +15,7 @@ and provide basic abstract types.
 machines is 
 <A HREF="HTX/ConstructsSummary.html#">presented separately</A>. 
 
-<P><BR><HR WIDTH="60%"><P>
+<P><BR><HR WIDTH="60%">
 
 <H2>The Role of the System Library</H2>
 
@@ -43,9 +44,9 @@ the Library.
 
 <P> Persistence of data can be achieved using the file i/o machines.
 
-<P><BR><HR WIDTH="60%"><P>
+<P><BR><HR WIDTH="60%">
 
-<A NAME=Renaming_Library_Machines><H2>Naming of Library Machines and their Operations</H2></A>
+<H2><A NAME="Renaming_Library_Machines">Naming of Library Machines and their Operations</A></H2>
 
 <P> The naming of library machines and their operations follows a uniform
 scheme.
@@ -64,24 +65,24 @@ required.
 <P> Operations in library machines are named according to 
 a uniform pattern described in the text below.
 
-<P><BR><HR WIDTH="60%"><P>
+<P><BR><HR WIDTH="60%">
 
-<A NAME=Library_Machines><H2>Library Machines</H2></A>
+<H2><A NAME="Library_Machines">Library Machines</A></H2>
 
 <P> Library Machines are organised into five groups as follows.
 
-<MENU>
+<UL>
 <LI> <A HREF="SystemLibrary.html#Library_Machines!Multiple_Objects_Machines">Multiple Objects Machines</A>
 <LI> <A HREF="SystemLibrary.html#Library_Machines!Programming_Concepts_Machines">Programming Concepts Machines</A>
 <LI> <A HREF="SystemLibrary.html#Library_Machines!Mathematical_Concepts_Machines">Mathematical Concepts Machines</A>
 <LI> <A HREF="SystemLibrary.html#Library_Machines!Input_Output_Machines">Input Output Machines</A>
 <LI> <A HREF="SystemLibrary.html#Library_Machines!Type_Machines">Type Machines</A>
-</MENU>
+</UL>
 
 
-<P><BR><HR WIDTH="60%"><P>
+<P><BR><HR WIDTH="60%">
 
-<A NAME=Library_Machines!Multiple_Objects_Machines><H2>Multiple Objects Machines</H2></A>
+<H2><A NAME="Library_Machines!Multiple_Objects_Machines">Multiple Objects Machines</A></H2>
 
 A Multiple Object Machine is a repository for 
 structured objects. In this sub-library we have:
@@ -164,14 +165,14 @@ restores <I>must</I> be performed in the same order as the saves were
 performed; different dump files can be used by using <B>file_io</B>
 operations.
 
-<P> <LI> Browsing facilities (FIRST, NEXT): 
+<LI> Browsing facilities (FIRST, NEXT):
 A browse through all stored objects is initiated by using the FIRST
 operation, which will return an object (if any) and a cursor for
 continuing the browse by using NEXT. When the cursor reaches `1' the
 last object has been retrieved.
 </UL>
 
-<H3><A NAME=Rename_set_obj>Machine</A> <A HREF="HTX/Rename_set_obj.mch.html">Rename_set_obj</A></H3>
+<H3><A NAME="Rename_set_obj">Machine</A> <A HREF="HTX/Rename_set_obj.mch.html">Rename_set_obj</A></H3>
 
 The general multiple object operations, which are
 described above, are provided:
@@ -219,7 +220,7 @@ of a set; INCL will indicate whether one set is included in another.
 </UL>
 
 
-<H3><A NAME=Rename_seq_obj>Machine</A> <A HREF="HTX/Rename_seq_obj.mch.html#">Rename_seq_obj</A></H3>
+<H3><A NAME="Rename_seq_obj">Machine</A> <A HREF="HTX/Rename_seq_obj.mch.html#">Rename_seq_obj</A></H3>
 
 
 The general multiple object operations, which are
@@ -266,7 +267,7 @@ EQL will indicate whether two sequences are identical.
 
 
 
-<H3><A NAME=Rename_str_obj>Machine</A> <A HREF="HTX/Rename_str_obj.mch.html">Rename_str_obj</A></H3>
+<H3><A NAME="Rename_str_obj>Machine"></A> <A HREF="HTX/Rename_str_obj.mch.html">Rename_str_obj</A></H3>
 
 The String Machine is a repository for sequences of bytes
 (seq(0..255)). It is often used for storing text strings.
@@ -332,7 +333,7 @@ another literal string (not stored in by this machine).
 
 
 
-<H3><A NAME=Rename_fnc_obj>Machine</A> <A HREF="HTX/Rename_fnc_obj.mch.html">Rename_fnc_obj</A></H3>
+<H3><A NAME="Rename_fnc_obj">Machine</A> <A HREF="HTX/Rename_fnc_obj.mch.html">Rename_fnc_obj</A></H3>
 
 This machine stores partial Functions over an
 initial interval of Natural Numbers.  The interval (its fields)  will be
@@ -368,7 +369,7 @@ will then be undefined for this field.
 
 
 
-<H3><A NAME=Rename_ffnc_obj>Machine</A> <A HREF="HTX/Rename_ffnc_obj.mch.html">Rename_ffnc_obj</A></H3>
+<H3><A NAME="Rename_ffnc_obj">Machine</A> <A HREF="HTX/Rename_ffnc_obj.mch.html">Rename_ffnc_obj</A></H3>
 
 This machine stores partial Functions over an
 initial interval of Natural Numbers. The interval (its fields)  will be
@@ -418,9 +419,9 @@ This tests whether the contents of sequence of bytes is equal
 to the sequence of bytes stored in multiple fields of a function.
 </UL>
 
-<P><BR><HR WIDTH="60%"><P>
+<P><BR><HR WIDTH="60%">
 
-<A NAME=Library_Machines!Programming_Concepts_Machines><H2>Programming Concepts Machines</H2></A>
+<H2><A NAME="Library_Machines!Programming_Concepts_Machines">Programming Concepts Machines</A></H2>
 
 These machine offer an extension of the basic data
 structures of <B>variable</B> and <B>array</B> which are
@@ -476,7 +477,7 @@ Programming Concepts Machines are `in-lined' (no procedure calls are
 involved).
 
 
-<H3><A NAME=Rename_Vvar>Machine</A> <A HREF="HTX/Rename_Vvar.mch.html">Rename_Vvar</A></H3>
+<H3><A NAME="Rename_Vvar">Machine</A> <A HREF="HTX/Rename_Vvar.mch.html">Rename_Vvar</A></H3>
 
 This Variable machine offers all the facilities described above,
 and can be instantiated to any type (<A
@@ -500,7 +501,7 @@ We have:
 </UL>
 
 
-<H3><A NAME=Rename_Nvar>Machine</A> 
+<H3><A NAME="Rename_Nvar">Machine</A> 
 <A HREF="HTX/Rename_Nvar.mch.html">Rename_Nvar</A></H3>
 
 This Variable machine, can hold only Numbers, and offers all the facilities available
@@ -548,7 +549,7 @@ will retrieve the larger of two values.
 
 
 
-<H3><A NAME=Rename_Varr>Machine</A> <A HREF="HTX/Rename_Varr.mch.html">Rename_Varr</A></H3>
+<H3><A NAME="Rename_Varr">Machine</A> <A HREF="HTX/Rename_Varr.mch.html">Rename_Varr</A></H3>
 
 This Array machine can be used to store several values of any type.
 The type is determined by instantiation.
@@ -581,7 +582,7 @@ indices); SWP will swap two values in an array.
 
 
 
-<H3><A NAME=Rename_Narr>Machine</A> <A HREF="HTX/Rename_Narr.mch.html">Rename_Narr</A></H3>
+<H3><A NAME="Rename_Narr">Machine</A> <A HREF="HTX/Rename_Narr.mch.html">Rename_Narr</A></H3>
 
 This Array machine can be used to store several Numbers.
 
@@ -650,11 +651,11 @@ Sort the array to contain either ascending values or
 descending values.
 </UL>
 
-<P><BR><HR WIDTH="30%"><P>
+<P><BR><HR WIDTH="30%">
 
-<A NAME=Library_Machines!Socket_Machines><H2>Client-Server Machines</H2></A>
+<H2><A NAME="Library_Machines!Socket_Machines">Client-Server Machines</A></H2>
 
-<A NAME=Rename_Server><H3><A NAME=Rename_Client>Machine</A></A> <A HREF="HTX/Rename_Client.mch.html">Rename_Client</A> / <A HREF="HTX/Rename_Server.mch.html">Rename_Server</A></H3>
+<H3><A NAME="Rename_Server"></A><A NAME="Rename_Client">Machine</A> <A HREF="HTX/Rename_Client.mch.html">Rename_Client</A> / <A HREF="HTX/Rename_Server.mch.html">Rename_Server</A></H3>
 
 These two machines are used as a pair to establish a Socket (TCP/IP) Client-Server
 Connection.
@@ -679,12 +680,12 @@ Connection.
 <LI> Operations to write from the output buffer: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_PUT_TOK">Rename_PUT_TOK</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_PUT_STR">Rename_PUT_STR</A>
 <LI> Operations to get and set the buffer input pointer: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SET_IN_PTR">Rename_SET_IN_PTR</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_GET_IN_PTR">Rename_GET_IN_PTR</A>
 <LI> Operations to get and set the buffer output pointer: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SET_OUT_PTR">Rename_SET_OUT_PTR</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_GET_OUT_PTR">Rename_GET_OUT_PTR</A>
-<LI> Operations for buffer saving & restoring: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SAV_BUF">Rename_SAV_BUF</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_RST_BUF">Rename_RST_BUF</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_NXT_BUF">Rename_NXT_BUF</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SAV_RMV">Rename_SAV_RMV</A>
+<LI> Operations for buffer saving &amp; restoring: <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SAV_BUF">Rename_SAV_BUF</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_RST_BUF">Rename_RST_BUF</A>, <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_NXT_BUF">Rename_NXT_BUF</A> and <A HREF="HTX/Rename_Server.mch.html#OPNAME!Rename_SAV_RMV">Rename_SAV_RMV</A>
 </UL>
 
-<P><BR><HR WIDTH="60%"><P>
+<P><BR><HR WIDTH="60%">
 
-<A NAME=Library_Machines!Mathematical_Concepts_Machines><H2>Mathematical Concepts Machines</H2></A>
+<H2><A NAME="Library_Machines!Mathematical_Concepts_Machines">Mathematical Concepts Machines</A></H2>
 
 The Mathematical Concepts Machines allow the programmer to
 design using higher level concepts, which are likely to
@@ -729,7 +730,7 @@ file_io</B> operations.
 
 
 
-<H3><A NAME=Rename_set>Machine</A> <A HREF="HTX/Rename_set.mch.html">Rename_set</A></H3>
+<H3><A NAME="Rename_set">Machine</A> <A HREF="HTX/Rename_set.mch.html">Rename_set</A></H3>
 
 A set machine provides access to a single set structure.
 
@@ -755,7 +756,7 @@ a particular number is a valid ordinal.
 
 
 
-<H3><A NAME=Rename_Vseq>Machine</A> <A HREF="HTX/Rename_Vseq.mch.html">Rename_Vseq</A></H3>
+<H3><A NAME="Rename_Vseq">Machine</A> <A HREF="HTX/Rename_Vseq.mch.html">Rename_Vseq</A></H3>
 
 
 This sequence machine provides access to a single sequence. The
@@ -819,7 +820,7 @@ to the left (down).
 
 
 
-<H3><A NAME=Rename_Nseq>Machine</A> <A HREF="HTX/Rename_Nseq.mch.html">Rename_Nseq</A></H3>
+<H3><A NAME="Rename_Nseq">Machine</A> <A HREF="HTX/Rename_Nseq.mch.html">Rename_Nseq</A></H3>
 
 
 This sequence machine provides access to a single sequence of numbers.
@@ -827,7 +828,7 @@ This sequence machine provides access to a single sequence of numbers.
 It offers the common operations for  Mathematical Concepts Machine:
 <UL>
 <LI>  Getting a value 
-(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_VAL_SEQ">VAL</A>)(VAL) with a particular ordinal number.
+(<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_VAL_SEQ">VAL</A>) with a particular ordinal number.
 <LI> Persistent Storage facilities 
 (<A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_SAV_NSEQ">SAV</A>,
 <A HREF="HTX/Rename_Nseq.mch.html#OPNAME!Rename_RST_NSEQ">RST</A>) 
@@ -923,7 +924,7 @@ values.
 </UL>
 
 
-<H3><A NAME=Rename_Vfnc>Machine</A> <A HREF="HTX/Rename_Vfnc.mch.html">Rename_Vfnc</A></H3>
+<H3><A NAME="Rename_Vfnc">Machine</A> <A HREF="HTX/Rename_Vfnc.mch.html">Rename_Vfnc</A></H3>
 
 
 This function machine provides access to a single partial function over
@@ -963,7 +964,7 @@ number for which no value has yet been given.
 
 
 
-<H3><A NAME=Rename_Nfnc>Machine</A> <A HREF="HTX/Rename_Nfnc.mch.html">Rename_Nfnc</A></H3>
+<H3><A NAME="Rename_Nfnc">Machine</A> <A HREF="HTX/Rename_Nfnc.mch.html">Rename_Nfnc</A></H3>
 
 
 
@@ -1015,7 +1016,7 @@ number for which no value has yet been given.
 
 
 
-<H3><A NAME=Rename_Vffnc>Machine</A> <A HREF="HTX/Rename_Vffnc.mch.html">Rename_Vffnc</A></H3>
+<H3><A NAME="Rename_Vffnc">Machine</A> <A HREF="HTX/Rename_Vffnc.mch.html">Rename_Vffnc</A></H3>
 
 This function machine provides access to a single partial function over
 numbers (mapping). The type of
@@ -1071,9 +1072,9 @@ in a number of fields.
 </UL>
 
 
-<P><BR><HR WIDTH="60%"><P>
+<P><BR><HR WIDTH="60%">
 
-<A NAME=Library_Machines!Input_Output_Machines><H2>Input Output Machines</H2></A>
+<H2><A NAME="Library_Machines!Input_Output_Machines">Input Output Machines</A></H2>
 
 The Input Output Machines offers an application some simple
 input and output facilities:
@@ -1085,7 +1086,7 @@ input and output facilities:
 </UL>
 
 
-<H3><A NAME=basic_io>Machine</A> <A HREF="HTX/basic_io.mch.html">basic_io</A></H3>
+<H3><A NAME="basic_io">Machine</A> <A HREF="HTX/basic_io.mch.html">basic_io</A></H3>
 
 This machine provides operations for writing to the terminal
 display and reading from the keyboard:
@@ -1120,7 +1121,7 @@ An interval to which the numbers must  belong is specified.
 </UL>
 
 
-<H3><A NAME=Rename_token_io>Machine</A> <A HREF="HTX/Rename_token_io.mch.html">Rename_token_io</A></H3>
+<H3><A NAME="Rename_token_io">Machine</A> <A HREF="HTX/Rename_token_io.mch.html">Rename_token_io</A></H3>
 
 This IO facility allows for a value of any elementary type
 to be read from the keyboard and written to the screen.
@@ -1133,11 +1134,11 @@ We have:
 <A HREF="HTX/Rename_token_io.mch.html#OPNAME!Rename_PUT_TOK">Rename_PUT_TOK</A>) 
 
 
-<P><BR><HR WIDTH="30%"><P>
+<P><BR><HR WIDTH="30%">
 
-<A NAME=Library_Machines!File_Machines><H2>File Machines</H2></A>
+<H2><A NAME="Library_Machines!File_Machines">File Machines</A></H2>
 
-<H3><A NAME=Rename_File_io>Machine</A> <A HREF="HTX/Rename_File_io.mch.html">Rename_File_io</A></H3>
+<H3><A NAME="Rename_File_io">Machine</A> <A HREF="HTX/Rename_File_io.mch.html">Rename_File_io</A></H3>
 
 A new file can be introduced by importing an instance of
 the file_io machine. 
@@ -1154,7 +1155,7 @@ All subsequent `restores' will now be read from that file.
 A file should always be closed to ensure that all written
 information is properly recorded.
 
-<H3><A NAME=file_dump>Machine</A> <A HREF="HTX/file_dump.mch.html">file_dump</A></H3>
+<H3><A NAME="file_dump">Machine</A> <A HREF="HTX/file_dump.mch.html">file_dump</A></H3>
 
 This machine provides the default dump file (TMP.file), which is
 known by all object machines. Unless otherwise specified this
@@ -1167,7 +1168,7 @@ file can be used for `saving' and `restoring'.
 A file should always be closed to ensure that all written
 information is properly recorded.
 
-<H3><A NAME=Rename_file_dump>Machine</A> <A HREF="HTX/Rename_file_dump.mch.html">Rename_file_dump</A></H3>
+<H3><A NAME="Rename_file_dump">Machine</A> <A HREF="HTX/Rename_file_dump.mch.html">Rename_file_dump</A></H3>
 
 This machine provides the renamble dump file (Rename.dump).
 
@@ -1178,9 +1179,9 @@ This machine provides the renamble dump file (Rename.dump).
 A file should always be closed to ensure that all written
 information is properly recorded.
 
-<P><BR><HR WIDTH="60%"><P>
+<P><BR><HR WIDTH="60%">
 
-<A NAME=Library_Machines!Type_Machines><H2>Type Machines</H2></A>
+<H2><A NAME="Library_Machines!Type_Machines">Type Machines</A></H2>
 
 The following machines allow for the manipulation
 of local variables introduced in an algorithm within
@@ -1193,7 +1194,7 @@ Type Operation Machines before stored into an object
 machine.
 
 
-<H3><A NAME=Bool_TYPE>Machine</A> <A HREF="HTX/Bool_TYPE.mch.html">Bool_TYPE</A> / <A HREF="HTX/Bool_TYPE_Ops.mch.html">Bool_TYPE_Ops</A></H3>
+<H3><A NAME="Bool_TYPE">Machine</A> <A HREF="HTX/Bool_TYPE.mch.html">Bool_TYPE</A> / <A HREF="HTX/Bool_TYPE_Ops.mch.html">Bool_TYPE_Ops</A></H3>
 
 Introduce the type BOOL which consists only of
 the values TRUE and FALSE.
@@ -1209,7 +1210,7 @@ This operation returns 1 for input <A HREF="HTX/Bool_TYPE.mch.html#TRUE">TRUE</A
 </UL>
 
 
-<H3><A NAME=String_TYPE>Machine</A> <A HREF="HTX/String_TYPE.mch.html">String_TYPE</A> / <A HREF="HTX/String_TYPE_Ops.mch.html">String_TYP_Ops</A></H3>
+<H3><A NAME="String_TYPE">Machine</A> <A HREF="HTX/String_TYPE.mch.html">String_TYPE</A> / <A HREF="HTX/String_TYPE_Ops.mch.html">String_TYP_Ops</A></H3>
 
 These machines introduce the types CHAR and STRING.
 
@@ -1220,7 +1221,7 @@ The operation <A HREF="HTX/String_TYPE_Ops.mch.html#OPNAME!CPY_STR">CPY_STR</A> 
 <A HREF="HTX/String_TYPE_Ops.mch.html">HAR_TO_NAT</A> are also provided.
 
 
-<H3><A NAME=Scalar_TYPE>Machine</A> <A HREF="HTX/Scalar_TYPE.mch.html">Scalar_TYPE</A> / <A HREF="HTX/Scalar_TYPE_Ops.mch.html">Scalar_TYPE_Ops</A></H3>
+<H3><A NAME="Scalar_TYPE">Machine</A> <A HREF="HTX/Scalar_TYPE.mch.html">Scalar_TYPE</A> / <A HREF="HTX/Scalar_TYPE_Ops.mch.html">Scalar_TYPE_Ops</A></H3>
 
 This machines introduce the type of SCALAR (= 0..2147483646).
 
@@ -1255,7 +1256,7 @@ no checks will be made by the B-Toolkit for
 over-flow.
 
 
-<H3><A NAME=Int_TYPE>Machine</A> <A HREF="HTX/Int_TYPE.mch.html">Int_TYPE</A> / <A HREF="HTX/Int_TYPE_Ops.mch.html">Int_TYPE_Ops</A></H3>
+<H3><A NAME="Int_TYPE">Machine</A> <A HREF="HTX/Int_TYPE.mch.html">Int_TYPE</A> / <A HREF="HTX/Int_TYPE_Ops.mch.html">Int_TYPE_Ops</A></H3>
 
 This machines introduce the type of INT (=- 2147483647 to +2147483646).
 
@@ -1289,7 +1290,7 @@ no checks will be made by the B-Toolkit for
 over-flow.
 
 
-<H3><A NAME=Bit_TYPE>Machine</A> <A HREF="HTX/Bit_TYPE.mch.html">Bit_TYPE</A> / <A HREF="HTX/Bit_TYPE_Ops.mch.html">Bit_TYPE_Ops</A></H3>
+<H3><A NAME="Bit_TYPE">Machine</A> <A HREF="HTX/Bit_TYPE.mch.html">Bit_TYPE</A> / <A HREF="HTX/Bit_TYPE_Ops.mch.html">Bit_TYPE_Ops</A></H3>
 
 This machine introduces the type of BITS as a set
 of sequences of length 32. The most significant
@@ -1321,18 +1322,17 @@ the resulting value; MMS merges a pattern with another pattern using
 a mask. 
 </UL>
 
-<P>
 <HR WIDTH="60%">
-<P>
-<P><CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 
 <CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
-(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<I><FONT COLOR="#33CCFF"><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</FONT></I></FONT></B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
 </BODY>
