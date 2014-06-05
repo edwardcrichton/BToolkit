@@ -6672,8 +6672,8 @@ int set;
         XmNforeground,          option_not_set_col,        
         NULL );
   }
-  XmUpdateDisplay ( label );  
   XmStringFree ( xstr );
+  XmUpdateDisplay ( label );
 }
 
 void

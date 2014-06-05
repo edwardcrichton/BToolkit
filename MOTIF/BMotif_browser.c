@@ -985,8 +985,8 @@ int cc;
                                                        toolkit_ver, GetName ( cc ) );
   xstr = XmStringCreateLtoR ( buf, charset );
   XtVaSetValues ( htx_label, XmNlabelString, xstr, NULL );
-  XmUpdateDisplay ( htx_label );
   XmStringFree ( xstr );
+  XmUpdateDisplay ( htx_label );
 }
 
 void
@@ -1172,6 +1172,7 @@ int cc;
               XmNmarginWidth,                  5,
               XmNmarginHeight,                 5,
               NULL );
+      XmStringFree ( xstr );
       if ( cc == cc1 ) {
 
 	/*
@@ -1192,7 +1193,6 @@ int cc;
             NULL );
 
       }
-      XmStringFree ( xstr );
       XtAddCallback ( curr_htx_a2c [ curr_htx_a2c_tot ],
             XmNactivateCallback, ( XtCallbackProc ) curr_htx_a2c_CB,
                                              ( XtPointer ) & c_arr [ cc1 ] );
@@ -2142,8 +2142,8 @@ printf ( "Managing box %s\n", ( char * ) name );
                         toolkit_ver, GetName ( D_node [ 0 ] [ 0 ] ) );
   xstr = XmStringCreateLtoR ( buf, charset );
   XtVaSetValues ( htx_label, XmNlabelString, xstr, NULL );
-  XmUpdateDisplay ( htx_label );
   XmStringFree ( xstr );
+  XmUpdateDisplay ( htx_label );
 }
 
 /***

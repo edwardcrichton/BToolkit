@@ -360,6 +360,7 @@ int tot;
   XtSetArg ( args [ n ], XmNsubMenuId, menu [ field_num ] ); n++;
   XtSetArg ( args [ n ], XmNlabelString, xstr ); n++;
   pull_down = XmCreateOptionMenu ( parent, "", args, n );
+  XmStringFree ( xstr );
   XtVaSetValues ( pull_down,
       XmNtraversalOn,                 True,
       XmNrightAttachment,             XmATTACH_FORM,
@@ -367,7 +368,6 @@ int tot;
       XmNleftPosition,                1,
       XmNalignment,                   XmALIGNMENT_END,
       NULL );
-  XmStringFree ( xstr );
   for ( i = 0 ; i < tot ; i++ ) {
     widget =
        XtVaCreateManagedWidget ( Enum_Elem [ field_num ] [ i ], 
