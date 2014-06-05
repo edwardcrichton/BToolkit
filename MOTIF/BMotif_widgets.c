@@ -786,7 +786,7 @@ XtCallbackProc lab_CB;
 int decorate;
 int leftOffset;
 {
- Widget lab;
+  Widget lab;
   XmString xstr = XmStringCreateLtoR ( lab_str, charset );
   if ( left_widget == ( Widget ) NULL )
   {
