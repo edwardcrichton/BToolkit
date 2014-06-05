@@ -2009,6 +2009,7 @@ char * str;
   XtVaSetValues ( ( Widget ) Main_1->anm, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Main_1->sts, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Main_1->rst, XmNlabelString, xstr, NULL );
+  XmStringFree ( xstr );
   XmUpdateDisplay ( ( Widget ) Main_1->row );
 /*  if ( Display_1->ps ) { */
     if ( str [ 0 ] == applicable_edited_chr ) {
@@ -2016,7 +2017,7 @@ char * str;
       fg = lab_col_b [ Display_1->type ];
       bg = lab_col_f [ Display_1->type ];
       */
-      set_cmt_col_applicable ( Main_offset, Main_1, Main_0 );
+      set_cmt_col_applicable (Main_offset, Main_1, Main_0 );
     }
     else {
       fg = inapplicable_lab_col;
@@ -2025,7 +2026,6 @@ char * str;
     }
     /* set_cmt_col ( Main_offset, Main_1, Main_0 );*/
 /*  } */
-  XmStringFree ( xstr );
 }
 
 void
@@ -2039,6 +2039,7 @@ char * str;
   XtVaSetValues ( ( Widget ) Provers_1->pmd, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Provers_1->ppf, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Provers_1->rsl, XmNlabelString, xstr, NULL );
+  XmStringFree ( xstr );
   XmUpdateDisplay ( ( Widget ) Provers_1->row );
 /*  if ( Display_1->ps ) { */
     if ( str [ 0 ] == applicable_edited_chr ) {
@@ -2059,7 +2060,6 @@ char * str;
 /*  } */
 
   /**  gdb records a double free here? why? **/
-  XmStringFree ( xstr );
 }
 
 void
@@ -2074,6 +2074,7 @@ char * str;
   XtVaSetValues ( ( Widget ) Generators_1->Enm, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Generators_1->Itf, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Generators_1->rst, XmNlabelString, xstr, NULL );
+  XmStringFree ( xstr );
   XmUpdateDisplay ( ( Widget ) Generators_1->row );
 /*  if ( Display_1->ps ) { */
     if ( str [ 0 ] == applicable_edited_chr ) {
@@ -2094,7 +2095,6 @@ char * str;
     set_cmt_col ( Generators_offset, Generators_1, Generators_0 );
     */
 /*  } */
-  XmStringFree ( xstr );
 }
 
 void
@@ -2108,6 +2108,7 @@ char * str;
   XtVaSetValues ( ( Widget ) Translators_1->lnk, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Translators_1->exe, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Translators_1->rst, XmNlabelString, xstr, NULL );
+  XmStringFree ( xstr );
   XmUpdateDisplay ( ( Widget ) Translators_1->row );
 /*  if ( Display_1->ps ) { */
     if ( str [ 0 ] == applicable_edited_chr ) {
@@ -2128,7 +2129,6 @@ char * str;
     set_cmt_col ( Translators_offset, Translators_1, Translators_0 );
     */
 /*  } */
-  XmStringFree ( xstr );
 }
 
 void
@@ -2142,6 +2142,7 @@ char * str;
   XtVaSetValues ( ( Widget ) Documents_1->shw, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Documents_1->prt, XmNlabelString, xstr, NULL );
   XtVaSetValues ( ( Widget ) Documents_1->rst, XmNlabelString, xstr, NULL );
+  XmStringFree ( xstr );
   XmUpdateDisplay ( ( Widget ) Documents_1->row );
 /*  if ( Display_1->ps ) { */
     if ( str [ 0 ] == applicable_edited_chr ) {
@@ -2160,7 +2161,6 @@ char * str;
     }
     /*set_cmt_col ( Documents_offset, Documents_1, Documents_0 );*/
 /*  } */
-  XmStringFree ( xstr );
 }
 
 /***************** ChangeAllButDecorationAndCmtApplicablity ******************/
