@@ -7599,11 +7599,9 @@ XtPointer client_data;
 XtIntervalId * id;
 {
   XmString xstr;
-  char info_buf [ 1 ];
+  char info_buf[] = "";
   Widget *label = ( Widget * ) client_data;
   
-  info_buf[0]='\0';
-
   xstr = XmStringCreateLtoR ( info_buf, charset );
   XtVaSetValues( * label,
                  XmNlabelString,            xstr,
@@ -7714,13 +7712,13 @@ char * text;
   
   XmStringFree ( xstr );
   
+  free(info_buf);
+
   XmUpdateDisplay ( information_label );
 
-    XtAppAddTimeOut ( app, timeout,
-        ( XtTimerCallbackProc ) Popup_Info_Label_CB,
-        ( XtPointer ) information_label );
-	
-  free(info_buf);
+  XtAppAddTimeOut ( app, timeout,
+      ( XtTimerCallbackProc ) Popup_Info_Label_CB,
+      ( XtPointer ) information_label );
 }
 
 void
