@@ -6893,7 +6893,9 @@ Widget panel_shell;
   int leftrightOffset=1;
   int scrollOffset=10; /* 15 */
   int commandOffset=10+scrollOffset+leftrightOffset;/* 26 */
+#ifdef MAC_VERSION
   char notice[255];
+#endif
 
 
   /***
