@@ -45,12 +45,11 @@ Position nx, ny;
 int dd [ max_num_fld ];
 int is_error_box;
 int is_num [ max_num_fld ], is_str [ max_num_fld ], is_chr [ max_num_fld ], is_bts [ max_num_fld ], is_enm [ max_num_fld ];
-Pixmap B_framed_pixmap_gray94, B_topbar_pixmap, applicable_edited_pixmap, applicable_unedited_pixmap, inapplicable_pixmap;
+Pixmap B_framed_pixmap_gray94;
 Widget        top_level, dialog, dialog_form, sep,
-              ok_form, ok, label, scroll,
-              row_col, form, left_rc, right_rc;
+              ok_form, ok, label,
+              form, left_rc, right_rc;
 Widget        text [ max_num_fld ];
-int           height;
 XmString      xstr;
 XmStringCharSet charset = (XmStringCharSet) XmSTRING_DEFAULT_CHARSET;
 char          cur_buf [ 500 ];

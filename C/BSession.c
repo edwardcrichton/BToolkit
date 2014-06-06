@@ -37,7 +37,7 @@ char fifo_file_2m [ 50 ];
 char fifo_file_2b [ 50 ];
 char BSes_num [ 50 ];
 char tty_id [ 50 ];
-int n, done, i, j, c;
+int done, i, c;
 
 void read_Bini_load_strings ();
 void re_initialise ();
