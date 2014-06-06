@@ -2170,7 +2170,7 @@ printf ( "%s\n", bbb );
 void
 CheckAllDIRSExist ()
 {
-  int i;
+  size_t i;
   struct stat stat_buf;
   DIR * dp;
 
