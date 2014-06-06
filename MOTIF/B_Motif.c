@@ -127,13 +127,6 @@ CfgDepBase
 #include "CLIENT_SERVER/CDE/C/Licence_Daemon_Client.c"
 */
 
-void
-DisplayCurrWinText_Delay ( client_data )
-XtPointer client_data;
-{
-  DisplayCurrWinText ( ( char * ) client_data );
-}
-
 int
 FormulaParses ( ss ) /* No Popup_Minor_Err if error ... */
 char * ss;
