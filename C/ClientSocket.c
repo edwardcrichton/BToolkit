@@ -350,7 +350,7 @@ printf ( "    not my own pid\n" );
         if ( getpgid ( p ) == -1 ) {
 #endif /* ( defined ( AIX_VERSION ) || defined ( LINUX_VERSION ) || defined ( SOLARIS_VERSION ) ) */
           lstat ( buf, &stat_buf );
-          my_proc = ( ( ( int ) stat_buf.st_uid == my_id ) != 0 );
+          my_proc = ( ( stat_buf.st_uid == my_id ) != 0 );
           if ( my_proc ) {
 
 /***
