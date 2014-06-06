@@ -104,13 +104,8 @@ foreach file ( $c_files )
       echo ""
       exit ( 1 )
     else
-      if ($file == "Proof") then
-        echo "  strip $BKIT/BLIB/CheckAnnot >>SUPPRESSED<<"
-        #strip $BKIT/BLIB/CheckAnnot 
-      else
-        echo "  strip $BKIT/BLIB/$file >>SUPPRESSED<<"
-        #strip $BKIT/BLIB/$file
-      endif 
+      echo "  strip $BKIT/BLIB/CheckAnnot >>SUPPRESSED<<"
+      #strip $BKIT/BLIB/CheckAnnot
     endif
     echo ""
 
@@ -138,13 +133,8 @@ foreach file ( $c_files )
       echo ""
       exit ( 1 )
     else
-      if ($file == "Proof") then
-        echo "  strip $BKIT/BLIB/CheckAnnot >>SUPPRESSED<<"
-        #strip $BKIT/BLIB/CheckAnnot 
-      else
-        echo "  strip $BKIT/BLIB/$file >>SUPPRESSED<<"
-        #strip $BKIT/BLIB/$file
-      endif 
+      echo "  strip $BKIT/BLIB/$file >>SUPPRESSED<<"
+      #strip $BKIT/BLIB/$file
     endif
     echo ""
 
