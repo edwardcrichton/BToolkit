@@ -965,7 +965,7 @@ printf ( "\n  pre_init_request: buf = `%s'\n", buf );
 	  }
           if ( buf [ i ] == ' ' ) i++;
 
-          remove_all_zombie_pid ( p, my_id );
+          remove_all_zombie_pid ( p );
           
 	}
       }

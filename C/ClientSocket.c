@@ -389,9 +389,8 @@ printf ( "    not my process and not active - killing\n" );
 }
 
 void
-remove_all_zombie_pid ( p, my_id )
+remove_all_zombie_pid ( p )
 int p;
-uid_t my_id;
 {
   int ClientSocketNUM ();
   char buf [ 250 ];
@@ -424,21 +423,6 @@ uid_t my_id;
   ( ( unsigned char ) s [ n ] * 256 ) + ( unsigned char ) s [ n + 1 ]
 
 /*all the Kill_bplatform_and_exit to be switched off */
-
-int
-ClientSocketNUM (nn, rr, req, pid, hi_l, hi_m, hi_h )
-int * nn;
-int * rr;
-int req;
-pid_t pid;
-int hi_l;
-int hi_m;
-int hi_h;
-{
-	/* call this function with the kill bplatform flag on (last parameter) */
-	return DoClientSocketNUM(nn,rr,req,pid,hi_l,hi_m,hi_h,1);
-}
-
 
 int
 DoClientSocketNUM ( nn, rr, req, pid, hi_l, hi_m, hi_h , killPlatform)
@@ -822,6 +806,20 @@ fprintf ( bstdout, "\n  raw return: [ %d %d %d ]\n  ", cs_nn, cs_pp, cs_qq );
   } /* else */
 
   return 1;
+}
+
+int
+ClientSocketNUM (nn, rr, req, pid, hi_l, hi_m, hi_h )
+int * nn;
+int * rr;
+int req;
+pid_t pid;
+int hi_l;
+int hi_m;
+int hi_h;
+{
+        /* call this function with the kill bplatform flag on (last parameter) */
+        return DoClientSocketNUM(nn,rr,req,pid,hi_l,hi_m,hi_h,1);
 }
 
 void
