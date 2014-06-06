@@ -190,7 +190,7 @@ char script_file [ 100 ];
       while ( c >= '0' && c <= '9' ) {
         n = ( ( 10 * n ) + c - '0' );
         c = getc ( scriptfile_in );
-      };
+      }
       /***
       subtract one and print
       ***/
