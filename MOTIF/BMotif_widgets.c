@@ -16234,23 +16234,23 @@ Cre_NewOption_Process_Documents ()
 
   text = XmTextFieldGetString ( latex_declaration_str );
   Store_String ( &rr, latex_declaration_str_num, text );
-  chk_rep ( rr, 341 );
   XtFree ( text );
+  chk_rep ( rr, 341 );
 
   text = XmTextFieldGetString ( latex_exec_name_str );
   Store_String ( &rr, latex_exec_name_str_num, text );
-  chk_rep ( rr, 242 );
   XtFree ( text );
+  chk_rep ( rr, 242 );
 
   text = XmTextFieldGetString ( dvi_screen_str );
   Store_String ( &rr, dvi_screen_str_num, text );
-  chk_rep ( rr, 181 );
   XtFree ( text );
+  chk_rep ( rr, 181 );
 
   text = XmTextFieldGetString ( dvi_print_str );
   Store_String ( &rr, dvi_print_str_num, text );
-  chk_rep ( rr, 182 );
   XtFree ( text );
+  chk_rep ( rr, 182 );
 
   WriteBdmf ();  /* dmu option       */
 
