@@ -75,7 +75,7 @@ mak_thefunc()
               count++;
               if ( count == 5 ) exit___( 1 );
 	    }
-  };
+  }
   ttdi=ttdi+1;
   tdir[ttdi]=t;
   num_the(t)=ttdi
@@ -118,7 +118,7 @@ mod_fwd_tac_the(t,ta)
 {
   if( has_fwd_tac_the(t)==TRUE ){
     kil(fwd_tac_the(t));
-  };
+  }
   fwd_tac_the(t)=ta;
 }
 
@@ -183,7 +183,7 @@ rem_rul_the(t,n)
   r=val(d,n);
   if( def_lsb_rul(r)==TRUE ){
     itr(lsb_rul(r),j,rr,rem_rul_the(the_rul(rr),num_rul(rr)));
-  };
+  }
   kil_rul(r);
   rem(d,n);
   itr(d,i,rrr,mod_num_rul(rrr,i));
@@ -196,7 +196,7 @@ rem_sub_rul_the(t,n)
   if( def_lsb_rul(r)==TRUE ){
     itr(lsb_rul(r),i,l,rem_rul_the(the_rul(l),num_rul(l)));
     rem_lsb_rul(r);
-  };
+  }
 }
 
 rem_prv_rul_the(t,n)
@@ -220,7 +220,7 @@ mod_rul_the(th,n,t)
   } else {
     ant_rul(r)=cre(0);
     cns_rul(r)=cre_cop_tree(t,root_tree(t));
-};
+}
   kil(t);
 }
 
@@ -234,7 +234,7 @@ r ;
   mod_rul_the(t,n,f);
   if( pvd_rul(r)==now_rul ){
     rem_prv_rul_the(t,n);
-  };
+  }
 /*
   DisplayCurrWinText ( "\n" );
   write_ver_rul(val_rul_the(t,n));
@@ -434,8 +434,8 @@ read_thefunc()
     } else if( fst_str(st)==ord('n') ){
       b=FALSE;
       n=(-2);
-    };
-  };
+    }
+  }
 */
   if( b==TRUE ){
     if( is_num_str(st)==FALSE ){
@@ -444,14 +444,14 @@ read_thefunc()
         read_the_res=read_the;
       } else {
         read_the_res=cre_the(s);
-      };
+      }
     }
     else {
       xst_the(tt,num_the(tt)==trans_str(st),read_the_res=tt,read_the_res=read_the);
-    };
+    }
   } else {
     read_the_res=n;
-  };
+  }
   kil(st)
 ; return read_the_res;
 }
@@ -524,15 +524,15 @@ write_the(t)
     strcpy ( str_buf, " " );
   } else {
     strcpy ( str_buf, "" );
-  };
+  }
   xst(rul_the(t),i,r,is_inverted_rul(r)==TRUE,b=TRUE,b=FALSE);
   if( b==TRUE ){
     write_srv_res;
-  };
+  }
   write_nat(num_the(t));
   if( b==TRUE ){
     write_erv_res;
-  };
+  }
   strcat ( str_buf, ": " );
   write_nam_the(t);
   strcat ( str_buf, " (" );
@@ -550,7 +550,7 @@ lst_all_thefunc()
   } else {
     util_str_i = 1;
     itr_the(t,write_the(t));
-  };
+  }
 }
 
 is_vis_the(t)
@@ -568,10 +568,10 @@ is_vis_the(t)
     if( is_vis_the_res==TRUE ){
       if( nbr_rul_the(t)==0 ){
         is_vis_the_res=upper_sym(nam_the(t));
-      };
-    };
+      }
+    }
   }
-; return is_vis_the_res;
+  return is_vis_the_res;
 }
 
 nbr_vis_thefunc()
@@ -590,7 +590,7 @@ short_lst_all_thefunc()
   } else {
    util_str_i = 1;
    itr_the(t,if( is_vis_the(t)==TRUE ){ write_the(t);});
-  };
+  }
 }
 
 mve_the(t)
@@ -603,7 +603,7 @@ mve_the(t)
     mod_num_the(t,nbr_the);
   } else {
     DisplayCurrWinText ( "      Sorry Wrong Position (Should be Positive\n)" );
-  };
+  }
 }
 
 sta_thefunc()

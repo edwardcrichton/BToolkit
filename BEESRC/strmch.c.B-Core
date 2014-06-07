@@ -35,7 +35,7 @@ write_str(s)
   while( !(i>len(s)) ){ 
     write_chr(val(s,i));
     i=i+1;
-  };
+  }
 }
 
 write_err_chr(n)
@@ -56,7 +56,7 @@ write_err_str(s)
   while( !(i>len(s)) ){ 
     write_err_chr(val(s,i));
     i=i+1;
-  };
+  }
 }
 
 crd_strfunc()
@@ -86,7 +86,7 @@ srd_strfunc()
     k=k*128;
     if( i!=4 ){ 
       c=crd_str ;
-    };
+    }
   }
 ; return a;
 }
@@ -98,8 +98,8 @@ read_str(b)
   if( a!=0 ){ psh(b,a) ;};
   while( a>=128*128*128 ){ 
     a=srd_str;
-    if( a!=0 ){ psh(b,a) ;} ;
-  } ;
+    if( a!=0 ){ psh(b,a) ;}
+  }
 }
 
 len_str(b)

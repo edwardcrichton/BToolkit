@@ -44,7 +44,6 @@ fprintf ( bstdout, "write_str (str_buf): |%s|\n", str_buf );
 */
 }
 
-
 write_err_chr(n)
 {register int i,r,v ;
   v=n;
@@ -105,7 +104,7 @@ srd_strfunc()
     k=k*128;
     if( i!=4 ){ 
       c=crd_str ;
-    };
+    }
   }
 ; return a;
 }
@@ -135,8 +134,8 @@ read_str(b)
   if( a!=0 ){ psh(b,a) ;};
   while( a>=128*128*128 ){ 
     a=srd_str;
-    if( a!=0 ){ psh(b,a) ;} ;
-  } ;
+    if( a!=0 ){ psh(b,a) ;}
+  }
 }
 
 read_str_M(b)
@@ -147,8 +146,8 @@ read_str_M(b)
   if( a!=0 ){ psh(b,a) ;};
   while( a>=128*128*128 ){ 
     a=srd_str_M;
-    if( a!=0 ){ psh(b,a) ;} ;
-  } ;
+    if( a!=0 ){ psh(b,a) ;}
+  }
 }
 
 len_str(b)
