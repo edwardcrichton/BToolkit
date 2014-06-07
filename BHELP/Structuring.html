@@ -1,11 +1,12 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
 <TITLE>Structuring Developments</TITLE>
-<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
-<A NAME="Structuring_Developments"><HR></A>
-<H1>Structuring Developments</H1>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<HR>
+<H1><A NAME="Structuring_Developments">Structuring Developments</A></H1>
 
-<A NAME=Refinement><H2>Refinement</H2></A>
+<H2><A NAME=Refinement>Refinement</A></H2>
 
 The fundamental relationship between entities in the <A
 HREF="BMethod.html#B-Method">B-Method</A> is refinement.
@@ -24,7 +25,7 @@ implementable subset of <A HREF="AMNotation.html#AMN">AMN</A> is used.
 <P> Proof obligations are associated with refinement to establish 
 that the refining entity meets the constraints of the refined entity.
 
-<P> It is a matter of <A NAME=Information_Hiding>principle</A> that
+<P> It is a matter of <A NAME="Information_Hiding">principle</A> that
 REFINEMENTs and IMPLEMENTATIONs are only visible through the MACHINE
 that specifies them. MACHINEs are external interfaces, and it is only
 MACHINEs that can be cited in the structuring clauses: <A
@@ -60,7 +61,7 @@ implementations (see below). It is rather to achieve separation of
 proof concerns.
 
 
-<A NAME=INCLUDES_Clause!Using><H3>Including Machines</H3></A>
+<H3><A NAME="INCLUDES_Clause!Using">Including Machines</A></H3>
 
 The <A HREF="AMNotation.html#INCLUDES_Clause!Syntax">INCLUDES
 clause</A> is the main mechanism for structuring large machines.
@@ -106,7 +107,7 @@ operation on the included machine provided for this purpose.
 included machines. The operations which change the state are built by
 combining operations of the included machines.
 
-<P> <A NAME=Operations!Query>Query operations</A> are those that do
+<P> <A NAME="Operations!Query">Query operations</A> are those that do
 not change the state of a machine. In an including machine, these can
 be written by referring directly to any of the included variables.
 There is therefore no point in writing query operations in machines
@@ -121,13 +122,13 @@ the including machine, none of these operations are part of the
 interface of the including machine --- unless this is explicitly
 specified using the PROMOTES clause.
 
-<P> <A NAME=PROMOTES_Clause!Using>The</A> 
+<P> <A NAME="PROMOTES_Clause!Using">The</A> 
 <A HREF="AMNotation.html#PROMOTES_Clause!Syntax">PROMOTES clause</A> 
 allows us to specify that an included operation
 is part of the interface of the including machine.
 It is simply a list of operations which we want to promote.
 
-<A NAME=EXTENDS_Clause!Using>The</A>
+<A NAME="EXTENDS_Clause!Using">The</A>
 <A HREF="AMNotation.html#EXTENDS_Clause!Syntax">EXTENDS clause</A> 
 is used instead of INCLUDES if we want to PROMOTE
 all included operations.
@@ -142,7 +143,7 @@ operations rather than included operations.
 is the focus of refinement and implementation.
 
 
-<A NAME=USES_Clause!Using><H3>Using Machines</H3></A>
+<H3><A NAME="USES_Clause!Using">Using Machines</A></H3>
 
 The INCLUDES clause allows one machine to have exclusive knowledge of another.
 During specification construction using INCLUDES (or EXTENDS), it is
@@ -228,7 +229,7 @@ design;
 </UL>
 
 
-<A NAME=IMPORTS_Clause!Using><H3>Importing Machines</H3></A>
+<H3><A NAME="IMPORTS_Clause!Using">Importing Machines</A></H3>
 
 The <A HREF="AMNotation.html#IMPORTS_Clause!Syntax">IMPORTS clause</A>
 is the main mechanism for structuring designs. An <A
@@ -252,12 +253,12 @@ renamed so that the name is unique across the whole development.
 Thus no sharing of code can be achieved through importing alone.
 
 
-<A NAME=SEES_Clause!Using><H3>Seeing Machines</H3></A>
+<H3><A NAME="SEES_Clause!Using">Seeing Machines</A></H3>
 
 The <A HREF="AMNotation.html#SEES_Clause!Syntax">SEES clause</A> is
 used in <A HREF="AMNotation.html#REFINEMENT">REFINEMENT</A>s and <A
 HREF="AMNotation.html#IMPLEMENTATION">IMPLEMENTATION</A>s for the
-purpose of <A NAME=Code_Sharing>sharing code</A>, and giving access to
+purpose of <A NAME="Code_Sharing">sharing code</A>, and giving access to
 shared data.
 
 <P> Machines that are imported once somewhere in a development can be
@@ -271,14 +272,14 @@ in the importing machine to effect state changes in the seen machine,
 corresponding to `write' access. Where the machine is seen, only query
 operations can be invoked, corresponding to `read-only' access.
 
-<P> A <A NAME=Stateless_Machine>stateless machine</A> is one which has
+<P> A <A NAME="Stateless_Machine">stateless machine</A> is one which has
 no abstract state variables. Since they are stateless, all their
 operations are queries, and citing them in a SEES clause gives access
 to them all.
 
 <P> Stateless machines are typically used for sharing separately
 implemented system-wide types. Examples of these can be found
-in the <A HREF="SystemLibrary.html#SLIB'>System Library</A>, such as
+in the <A HREF="SystemLibrary.html#SLIB">System Library</A>, such as
 SCALAR, BOOL, STRING. These machines contain mathematics and
 operations, and have an implementation.
 
@@ -302,7 +303,7 @@ See figure<LATEX="\ \ref{sees.fig}">.</A>
 <P> By importing a stateless machine once and seeing it many times,
 only one copy of the code is present in the final system.  If a
 machine is imported twice in a development, <A
-NAME=Linker!Name_Clashes>name clashes</A> will arise during <A
+NAME="Linker!Name_Clashes">name clashes</A> will arise during <A
 HREF="Linker.html#Linker">linking</A>.
 
 <P> Operation-less machines may not need refining. Since it is just
@@ -322,7 +323,7 @@ dummy implementation can take the following form:-
 
 If such an implementation has not been provided, the user will be
 notified if he attempts <A
-HREF="Translator.html"Translator">translation</A>.
+HREF="Translator.html#Translator">translation</A>.
 
 <P> As with the <A HREF="Structuring.html#USES_Clause!Using">USES</A>
 clause above, you can name a parameterised machine in a SEES clause,
@@ -334,7 +335,7 @@ machine does <I>not</I> transfer from the seeing machine to any other
 using, including, seeing or importing machine.
 
 
-<A NAME=Layered_Approach><H3>Hierarchical Design</H3></A>
+<H3><A NAME="Layered_Approach">Hierarchical Design</A></H3>
 
 The <A HREF="Structuring.html#IMPORTS_Clause">IMPORTS</A> clause
 allows a development to be structured into layers of
@@ -405,9 +406,8 @@ maximum of reuse of specifications, designs and code.
 <P> A top layer can simply be a `main' program (an operation
 called <TT>main</TT>), which must exist before code can be executed.
 
-<P>One way of constructing such a top layer is by using the <A
-HREF="Interface.html#Interface_Generator">Interface Generator</A>
-<LATEX="\ (see page \pageref{Interface!Generator})">,
+<P>One way of constructing such a top layer is by using the
+<A HREF="Interface.html#Interface_Generator">Interface Generator</A><LATEX="\ (see page \pageref{Interface!Generator})">,
 which constructs a default main program with an interface that allows
 the operations of the middle layers to be invoked.
 
@@ -448,8 +448,8 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
-(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<I><FONT COLOR="#33CCFF"><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</FONT></I></FONT></B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
 </BODY>
