@@ -30,7 +30,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
   {register int k ;
     if( rev_vid_out==TRUE ){
       write_erv_fic;
-    };
+    }
     print_newl_fic;
     itrn( k , 1 , val_pre_fic , {
       print_fic(BLK_sym)
@@ -41,7 +41,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     mod_col_ctr_fic(val_pre_fic+l+1);
     if( rev_vid_out==TRUE ){
       write_srv_fic;
-    };
+    }
 }
 
   
@@ -65,7 +65,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
         print_fic(v);
       } else {
         write_chr_stri_out_res=TRUE;
-      };
+      }
     } else if( b==TRUE ){
       if( v==ord('n') ){
         
@@ -86,7 +86,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
         mod_col_ctr_fic(val_col_ctr_fic+2);
         print_fic(ANTI_SLASH_sym);
         print_fic(v);
-      };
+      }
 } else {
       mod_col_ctr_fic(val_col_ctr_fic+1);
       print_fic(v);
@@ -118,7 +118,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
         mod_col_ctr_fic(val_col_ctr_fic+1);
         print_fic(ANTI_SLASH_sym);
       } */;
-    };
+    }
   }
 
   write_out(s)
@@ -140,12 +140,12 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
           write_blk_out(1);
         } else {
           newl_out(level_out-2);
-        };
+        }
       } else if( c==opn ){
         if( level_out==0 ){
           mod_pre_fic(val_col_ctr_fic-1);
-        };
-      };
+        }
+      }
     } else if( (k==blkb) || ((k==blba) && (s!=BL2_sym)) || (k==blbt) || (k==bbat) ){
       write_blk_out(1);
     }
@@ -167,27 +167,26 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     if( k==keyw ){
       if( c==opn ){
         level_out=level_out+2;
-      };
+      }
       key_out=TRUE;
       write_blk_out(1);
     } else if( k==keyl ){
       if( c==opn ){
         level_out=level_out+2;
-      };
+      }
       key_out=FALSE;
       newl_out(level_out);
     } else if( (k==term) || (k==blbt) || (k==blat) || (k==bbat) ){
       if( (level_out==0) || (key_out==TRUE) ){
         if( ((k==blat) || (k==bbat)) ){
           write_blk_out(1);
-        };
+        }
       } else {
         newl_out(level_out);
-      };
+      }
     } else if( ((k==blba) && (s!=BL2_sym)) || (k==blka) ){
       write_blk_out(1);
     }
-  ;
 }
 
    
@@ -202,8 +201,8 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
       if( prio_sym(v) > prio_sym(w) ){
         write_out(ord('('));
-      };
-    };
+      }
+    }
   }
 
   unp2_out(v,t,i)
@@ -212,8 +211,8 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
       if( prio_sym(v) > prio_sym(w) ){
         write_out(ord(')'));
-      };
-    };
+      }
+    }
     write_out(v);
     w=val_tree(t,right_node_tree(t,i));
     if( (v==EVL_sym) && (w==ord('[')) ){
@@ -223,8 +222,8 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     } else if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
       if( prio_sym(v)>=prio_sym(w)+righ_sym(w) ){
         write_out(ord('('));
-      };
-    };
+      }
+    }
   }
 
 unp3_out(v,t,i)
@@ -240,9 +239,9 @@ unp3_out(v,t,i)
     } else if( ari_sym(w)==2 ){
       if( prio_sym(v)>=prio_sym(w)+righ_sym(w) ){
         write_out(ord(')'));
-      };
-    };
-  };
+      }
+    }
+  }
 }
 
   unparse_out(t,n)
@@ -281,15 +280,15 @@ unp3_out(v,t,i)
           ctr_format_out=2;
         } else {
           ctr_format_out=ctr_format_out+1;
-        };
-      };
+        }
+      }
     } else if( v==ANTI_SLASH_sym ){
       if( b==TRUE ){
         mod_col_ctr_fic(val_col_ctr_fic+1);
         print_fic(v);
       } else {
         write_chr_stri_out_res=TRUE;
-      };
+      }
     } else if( b==TRUE ){
       if( v==ord('n') ){
         
@@ -310,7 +309,7 @@ unp3_out(v,t,i)
         mod_col_ctr_fic(val_col_ctr_fic+2);
         print_fic(ANTI_SLASH_sym);
         print_fic(v);
-      };
+      }
 } else {
       mod_col_ctr_fic(val_col_ctr_fic+1);
       print_fic(v);
@@ -341,34 +340,33 @@ unp3_out(v,t,i)
             j=j+1;
           } else {
             j=l;
-          };
-        };
+          }
+        }
         if( ctr_format_out<=len(ff) ){
           ss=val_root_frm(val(ff,ctr_format_out));
           if( is_nbr_sym(ss)==TRUE ){
             m=len_nat(arith_val_sym(ss));
             if( n>m ){
               write_blk_out(n-m);
-            };
+            }
           } else if( is_atm_sym(ss) == TRUE ){
             m=len_sym(ss);
             if( n>m ){
               write_blk_out(n-m);
-            };
-          };
-        };
+            }
+          }
+        }
         b=write_chr_stri_format_out(i,l,v,b,ff);
         i=i+1+t;
       } else {
         b=write_chr_stri_format_out(i,l,v,b,ff);
         i=i+1;
-      };
+      }
     }
 
 /*  itr_str(stri_sym(s),i,v,b=write_chr_stri_format_out(i,l,v,b,ff));  */
     if( b==TRUE ){
       mod_col_ctr_fic(val_col_ctr_fic+1);
       print_fic(ANTI_SLASH_sym);
-    };
+    }
   }
-
