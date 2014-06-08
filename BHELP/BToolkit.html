@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -6,9 +6,8 @@
    <TITLE>The B-Toolkit</TITLE>
 </HEAD>
 <BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
-<A NAME="B-Toolkit"></A>
-<H1>
-The B-Toolkit</H1>
+
+<H1><A NAME="B-Toolkit">The B-Toolkit</A></H1>
 The B-Toolkit comprises a suite of fully integrated software tools designed
 to support a rigorous or formal development of software systems using the
 <A HREF="BMethod.html#B-Method">B-Method</A>. The tools are accessed through
@@ -114,7 +113,6 @@ residing in the <A HREF="BEnvironment.html#Environment">$BKIT</A> directory)
 from a suitable development directory - any directory in which you have
 read-write permission.
 
-<P>
 <HR WIDTH="60%">
 <H2>
 <A NAME="Development_Environment"></A>Development Environment</H2>
@@ -162,7 +160,7 @@ already exist:
 <HR WIDTH="60%">
 <H3>
 <A NAME="Interface!Motif"></A>The Motif Interface</H3>
-<A HREF="interface.gif#"><IMG SRC="interface_icon.gif" ALT="Motif Interface"  ALIGN=CENTER></A><A HREF="interface.gif#">
+<A HREF="interface.gif#"><IMG SRC="interface_icon.gif" ALT="Motif Interface" ALIGN=MIDDLE></A><A HREF="interface.gif#">
 See figure<LATEX="\\ \ref{mainpanel}">.</A>
 
 <P>The Motif Interface to the B-Toolkit comprises a <A HREF="BToolkit.html#Top_Bar">Top
@@ -204,10 +202,8 @@ if you wish to do this).
 <P>Each of the tools mentioned below in outline is described in more detail
 elsewhere.
 
-<P>
 <HR WIDTH="60%">
-<H3>
-<A NAME="Top_Bar"></A>The Top Bar</H3>
+<H3><A NAME="Top_Bar"></A>The Top Bar</H3>
 The Top Bar provides the following facilities:
 <UL>
 <LI>
@@ -672,9 +668,9 @@ a currently-open construct)</LI>
 opening an edit/quitting an edit)</LI>
 </UL>
 
-<H4>
+<HR WIDTH="40%">
 
-<HR WIDTH="40%"><A NAME="Environments!Main"></A>The Main Environment</H4>
+<H4><A NAME="Environments!Main"></A>The Main Environment</H4>
 All <A HREF="BToolkit.html#Constructs!Area">constructs</A> (except proofs,
 documents and ops) are displayed in this environment. Display may be filtered
 by changing the `<A HREF="Options.html#Options!Construct_Display">Construct
@@ -698,9 +694,9 @@ button.
 <TT><A HREF="Reset.html#Reset">rst</A></TT> (reset construct)</LI>
 </UL>
 
-<H4>
+<HR WIDTH="40%">
 
-<HR WIDTH="40%"><A NAME="Environments!Provers"></A>The Provers Environment</H4>
+<H4><A NAME="Environments!Provers"></A>The Provers Environment</H4>
 Constructs which have been <A HREF="POGenerator.html#Proof_Obligation!Generator">POGenerated</A>,
 together with proof files, are displayed in this environment.
 <UL>
@@ -740,9 +736,9 @@ a proof level)</LI>
 <TT>pob</TT> (number of currently undischarged proof obligations)</LI>
 </UL>
 
-<H4>
+<HR WIDTH="40%">
 
-<HR WIDTH="40%"><A NAME="Environments!Generators"></A>The Generators Environment</H4>
+<H4><A NAME="Environments!Generators"></A>The Generators Environment</H4>
 <A HREF="BaseGen.html#BASE">Base Object Machine</A>, <A HREF="Enumerator.html#Enumerator">Enumeration</A>,
 <A HREF="BaseGen.html#Base_Generators">Base Object Operation</A> and <A HREF="Interface.html#Interface!Generator">Interface</A>
 constructs are displayed in this environment.
@@ -793,9 +789,9 @@ tool)</LI>
 </LI>
 </UL>
 
-<H4>
+<HR WIDTH="40%">
 
-<HR WIDTH="40%"><A NAME="Environments!Documents"></A>The Documents Environment</H4>
+<H4><A NAME="Environments!Documents"></A>The Documents Environment</H4>
 All <A HREF="BToolkit.html#Constructs!Area">constructs</A> that are already
 <A HREF="DocumentMarkUp.html#Document_Mark_Up">marked up</A>, or are ready
 for marking up (machines, refinements or implementations currently analysed;
@@ -805,7 +801,7 @@ been constructed) are displayed in this environment.
 <P>Display may be filtered by changing the `<A HREF="Options.html#Options!Construct_Display">Construct
 Display</A>' settings through the <A HREF="BToolkit.html#Top_Bar">Top Bar</A>
 <A HREF="Options.html#Options">Options button</A>.
-<BR>&nbsp;
+
 <UL>
 <LI>
 <A HREF="DocumentMarkUp.html#Document_Mark_Up">dmu</A> (mark-up document)</LI>
@@ -897,19 +893,18 @@ and <A HREF="Interface.html#Interface!Generator">Interface Generator</A>.</LI>
 </UL>
 <A NAME="Constructs!Decoration"></A><U>Command Button Decoration</U>
 
-<P>Each button is decorated, usually as:<IMG SRC="button_unedited.gif" ALT="Construct unedited decoration" HSPACE=5 HEIGHT=20 WIDTH=16 ALIGN=CENTER>
+<P>Each button is decorated, usually as:<IMG SRC="button_unedited.gif" ALT="Construct unedited decoration" HSPACE=5 HEIGHT=20 WIDTH=16 ALIGN=MIDDLE>
 However if a construct has been edited (ie. if its <A HREF="#Development_Environment">SRC</A>
 file differs from that currently configured) the decoration of the button
-changes to:&nbsp;<IMG SRC="button_edited.gif" ALT="Construct edited decoration" HSPACE=5 HEIGHT=20 WIDTH=16 ALIGN=CENTER>
+changes to:&nbsp;<IMG SRC="button_edited.gif" ALT="Construct edited decoration" HSPACE=5 HEIGHT=20 WIDTH=16 ALIGN=MIDDLE>
 Note that this decoration is the same whether or not the construct is currently
 open for editing. However if the construct <I>is </I>open and the SRC file
 differs, the<TT> <A HREF="CommitEdits.html#CommitEdits">cmt</A> </TT>button
 will be activated.
 
-<P>
 <HR WIDTH="60%">
-<H3>
-<A NAME="Display_Area"></A>The Display Area</H3>
+
+<H3><A NAME="Display_Area"></A>The Display Area</H3>
 The Display Area is used to display messages and general output from the
 various tools.
 
@@ -918,11 +913,9 @@ and <A HREF="POGenerator.html#Proof_Obligation!Generator">Proof Obligation
 Generator</A>, popup a subsidiary window to receive their output, and this
 output is copied into the Display Area when the job is complete and the
 window is popped down.
-<BR>&nbsp;
 
-<P>
 <HR WIDTH="60%">
-<BR>&nbsp;
+
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 
@@ -934,13 +927,5 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
-
-<P>&nbsp;
-<BR>&nbsp;
-<BR>&nbsp;
-<BR>&nbsp;
-<BR>&nbsp;
-<BR>&nbsp;
-<BR>&nbsp;
 </BODY>
 </HTML>

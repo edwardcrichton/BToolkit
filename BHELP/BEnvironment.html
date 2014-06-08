@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -5,9 +6,8 @@
    <TITLE>The B-Toolkit Environment Variable</TITLE>
 </HEAD>
 <BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
-<A NAME="Environment"></A>
-<H1>
-The B-Toolkit Environment</H1>
+
+<H1><A NAME="Environment">The B-Toolkit Environment</A></H1>
 The B-Toolkit requires that the BKIT Environment Variable be correctly
 set before it can function. This variable should point to the BKIT directory
 where the toolkit has been installed; for example (using C-Shell, <TT>csh</TT>):
@@ -22,14 +22,12 @@ All other settings may be made through the <A HREF="Options.html#Options">Option
 settings of the <A HREF="BToolkit.html#Interface!Motif">B-Toolkit's Motif
 Interface</A>
 
-<P>
 <HR WIDTH="60%">
-<H2>
-Other Environmental Considerations</H2>
+<H2>Other Environmental Considerations</H2>
 One other environment variable affects the operation of the B-Toolkit:-
 <UL>
 <LI>
-<A NAME="Environment!Variables!PATH"></A><TT>PATH</TT></LI>
+<A NAME="Environment!Variables!PATH"></A><TT>PATH</TT>
 
 <BR>If operating under Solaris, the <TT>PATH</TT> variable may have to
 be modified to allow the B-Toolkit to access compatible versions of various
@@ -40,12 +38,12 @@ be placed <I>before</I> <TT>/usr/bin</TT> in the <TT>PATH</TT> variable.
 
 <P>For example:-
 <PRE>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; setenv PATH $BKIT:/usr/ucb:${PATH}</PRE>
-
+</LI>
 <LI>
-Other variables local to LaTeX or DVI, such as&nbsp;<A NAME="Environment!Variables!XDVIFONTS"></A>XDVIFONTS</LI>
+Other variables local to LaTeX or DVI, such as&nbsp;<A NAME="Environment!Variables!XDVIFONTS"></A>XDVIFONTS
 
 <BR>may also have to be set correctly, and for this you such consult&nbsp;
-your System Administrator.</UL>
+your System Administrator.</LI></UL>
 Another consideration are the Motif defaults for the B-Toolkit, which the
 user can configure by editing the&nbsp;<A NAME="Environment!XBMotif"></A>XBMotif
 file, which&nbsp; may reside in an apps-defaults directory , for example:
@@ -58,11 +56,7 @@ or in the user's home directory; the location is dependent on the X file
 search path of local setup and you should consult&nbsp; your System Administrator
 if you experience difficulties.
 
-<P>
 <HR WIDTH="60%">
-<CENTER>&nbsp;</CENTER>
-
-<CENTER></CENTER>
 
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
@@ -71,7 +65,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
