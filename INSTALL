@@ -15,6 +15,10 @@ $ export PATH=`pwd`:${PATH}
 $ ./BUILD
 (answer 'N' and then 'A')
 
+Note: recent versions of openmotif support font anti-aliasing,
+which can be enabled by:
+$ cp MOTIF/BMotif.resources.xft ~/XBMotif
+
 Run:
 $ cd BKIT
 $ export BKIT=`pwd`
