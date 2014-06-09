@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -5,9 +6,8 @@
    <TITLE>The B-Platform</TITLE>
 </HEAD>
 <BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
-<A NAME="B-Platform"></A>
-<H1>
-The B-Platform</H1>
+
+<H1><A NAME="B-Platform">The B-Platform</A></H1>
 The B-Platform is the proof engine that underpins the <A HREF="BToolkit.html#B-Toolkit">B-Toolkit</A>,
 many parts of which are implemented in the&nbsp;<A NAME="B-Theory_Language"></A>B-Theory
 Language (B-TL) which the B-Platform supports.
@@ -50,7 +50,6 @@ of the B-Platform, or a complete syntax for B-TL, but rather a summary
 of those aspects that are essential to a working knowledge for the B-Toolkit
 user.
 
-<P>
 <HR WIDTH="60%">
 <H2>
 Inference Rules</H2>
@@ -79,11 +78,10 @@ very different ways. Simple rules and rewrite rules are both used in backwards
 inference, and so are grouped as ``<A HREF="BPlatform.html#Inference_Rules!Backward">backward
 rules</A>''.
 
-<P>
 <HR WIDTH="40%">
 <H3>
 Simple Rules</H3>
-A&nbsp;<A NAME="Inference_Rules!Simple"></A>Simple Rule has the following
+A <A NAME="Inference_Rules!Simple"></A>Simple Rule has the following
 syntax:-
 <PRE>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Simple_Rule"></A>Simple_Rule&nbsp;&nbsp;&nbsp; ::= Antecedents => Consequent&nbsp; |
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Consequent
@@ -93,25 +91,25 @@ syntax:-
 
 &nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Consequent"></A>Consequent&nbsp;&nbsp;&nbsp;&nbsp; ::= Formula</PRE>
 An example of a simple rule is:-
-<PRE>&nbsp;&nbsp;&nbsp; a <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c &amp;
-&nbsp;&nbsp;&nbsp; b <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c
-&nbsp;&nbsp; =>
-&nbsp;&nbsp;&nbsp; a <A HREF="MathsNotation.html#Sets!Union">\/</A> b <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c</PRE>
+<PRE>    a <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c &amp;
+    b <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c
+   =>
+    a <A HREF="MathsNotation.html#Sets!Union">\/</A> b <A HREF="MathsNotation.html#Sets!Inclusion">&lt;:</A> c</PRE>
 This rule states, in effect, that a goal of the form
-<PRE>&nbsp;&nbsp;&nbsp; a \/ b &lt;: c</PRE>
+<PRE>    a \/ b &lt;: c</PRE>
 can be proved if the two goals
-<PRE>&nbsp;&nbsp;&nbsp; a &lt;: b &amp;
-&nbsp;&nbsp;&nbsp; a &lt;: c</PRE>
+<PRE>    a &lt;: b &amp;
+    a &lt;: c</PRE>
 can both be proved.
 
 <P>In this example, <TT>a</TT>, <TT>b</TT> and <TT>c</TT> are Jokers which
 stand for any formula. So applying this rule to the goal
-<PRE>&nbsp;&nbsp;&nbsp; STAFF \/ CUSTOMER &lt;: PERSON</PRE>
+<PRE>    STAFF \/ CUSTOMER &lt;: PERSON</PRE>
 has the effect of applying the rule
-<PRE>&nbsp;&nbsp;&nbsp; STAFF &lt;: PERSON &amp;
-&nbsp;&nbsp;&nbsp; CUSTOMER &lt;: PERSON
-&nbsp;&nbsp; =>
-&nbsp;&nbsp;&nbsp; STAFF \/ CUSTOMER &lt;: PERSON</PRE>
+<PRE>    STAFF &lt;: PERSON &amp;
+    CUSTOMER &lt;: PERSON
+   =>
+   STAFF \/ CUSTOMER &lt;: PERSON</PRE>
 Simple rules are used for&nbsp;<A NAME="Inference!Backwards"></A>Backwards
 Inference. They are applied as follows:-
 <OL>
@@ -133,12 +131,11 @@ The current goal is replaced by a set of new goals which are the new Antecedents
 Note that Simple Rules need not have <A HREF="BPlatform.html#Antecedents">Antecedents</A>,
 in which case their application is said to ``discharge'' a goal: the goal
 is replaced by an empty set of goals. For example:-
-<PRE>&nbsp;&nbsp;&nbsp; a : {a}</PRE>
+<PRE>    a : {a}</PRE>
 could match and discharge the goal
-<PRE>&nbsp;&nbsp;&nbsp; percy : {percy}</PRE>
+<PRE>    percy : {percy}</PRE>
 
-<PRE>
-<HR WIDTH="40%"></PRE>
+<HR WIDTH="40%">
 
 <H3>
 Rewrite Rules</H3>
@@ -179,7 +176,7 @@ is applied to the right-hand side of the Rewrite, and to <A HREF="BPlatform.html
 (if any).</LI>
 
 <LI>
-The current goal is replaced by a set of goals which comprises:-</LI>
+The current goal is replaced by a set of goals which comprises:-
 
 <UL>
 <LI>
@@ -189,10 +186,10 @@ of the current goal; and</LI>
 <LI>
 the new Antecedents (if any).</LI>
 </UL>
+</LI>
 </OL>
 Note that a Rewrite Rule need not have <A HREF="BPlatform.html#Antecedents">Antecedents</A>.
 
-<P>
 <HR WIDTH="40%">
 <H3>
 Forward Rules</H3>
@@ -238,14 +235,12 @@ The new consequent is added to the current set of <A HREF="BPlatform.html#Hypoth
 </OL>
 Note that a Forwards Rule must always have <A HREF="BPlatform.html#Antecedents">Antecedents</A>.
 
-<P>
 <HR WIDTH="40%">
 <H3>
 Backward Rules</H3>
 <A NAME="Inference_Rules!Backward"></A>Backwards Rules are <A HREF="BPlatform.html#Inference_Rules!Simple">Simple
 Rules</A> or <A HREF="BPlatform.html#Inference_Rules!Rewrite">Rewrite Rules</A>.&nbsp;<A NAME="Pattern_Match"></A>
 
-<P>
 <HR WIDTH="60%">
 <H2>
 Pattern Matching</H2>
@@ -255,21 +250,20 @@ pattern matching to take place. A formula <TT>f</TT> matches a formula
 can be found such that <TT>[S]f</TT> is identical to <TT>g</TT>.
 
 <P>For example, matching the formula
-<PRE>&nbsp;&nbsp;&nbsp; age(p):T</PRE>
+<PRE>    age(p) : T</PRE>
 to the formula
-<PRE>&nbsp;&nbsp;&nbsp; age(percy) : 0..120</PRE>
+<PRE>    age(percy) : 0..120</PRE>
 is achieved using the substitution
-<PRE>&nbsp;&nbsp;&nbsp; p , T <A HREF="MathsNotation.html#Substitutions!Simultaneous">:=</A> percy , (0..120)</PRE>
+<PRE>    p , T <A HREF="MathsNotation.html#Substitutions!Simultaneous">:=</A> percy , (0..120)</PRE>
 Special care must be taken with the matching to comma-separated lists.
 The comma operator is treated just like other left-associative infix operators.
 So the formula <TT>{p}</TT> can match the formula <TT>{1,2,3}</TT> with
 substitution
-<PRE>&nbsp;&nbsp;&nbsp; p := 1,2,3</PRE>
+<PRE>    p := 1,2,3</PRE>
 whereas <TT>{P,p}</TT> would match as
-<PRE>&nbsp;&nbsp;&nbsp; P , p := (1,2) , 3</PRE>
+<PRE>    P , p := (1,2) , 3</PRE>
 
-<PRE>
-<HR WIDTH="60%"></PRE>
+<HR WIDTH="60%">
 <A NAME="Guards"></A>
 <H2>
 Guards</H2>
@@ -298,13 +292,12 @@ A <TT>Formula_List</TT> is comma (or in some cases ``<TT>&amp;</TT>'',
 
 <P>A brief explanation of these guards is as follows:-
 <DL>
-<DL>
 <DT>
 <A NAME="Guards!binhyp"></A><TT>binhyp(x)</TT></DT>
 
 <DD>
 &nbsp;succeeds if there is a hypothesis which matches <TT>x</TT>. For example,
-application of the following the simple rule</DD>
+application of the following simple rule
 
 <PRE>&nbsp;&nbsp;&nbsp; binhyp(f:S<A HREF="MathsNotation.html#Functions!Total">--></A>T) &amp;
 &nbsp;&nbsp;&nbsp; x:S
@@ -319,27 +312,26 @@ behaves as if the following rule is applied:-
 &nbsp;&nbsp;&nbsp; pers:PERSON
 &nbsp;&nbsp; =>
 &nbsp;&nbsp;&nbsp; age(pers) : 0..120</PRE>
-
+</DD>
 <DT>
 <A NAME="Guards!btest"></A><TT>btest( x > y )</TT></DT>
 
 <DD>
-&nbsp;succeeds if <TT>x</TT> and <TT>y</TT> are valid <A HREF="BPlatform.html#Number">numbers</A>,
+succeeds if <TT>x</TT> and <TT>y</TT> are valid <A HREF="BPlatform.html#Number">numbers</A>,
 and <TT>x</TT> is greater than <TT>y</TT> (and similarly for the other
-comparison operators). For example:-</DD>
+comparison operators). For example:-
 
 <PRE>&nbsp;&nbsp;&nbsp; btest(a/=b)
 &nbsp;&nbsp; =>
 &nbsp;&nbsp;&nbsp; not(a:{b})</PRE>
-
+</DD>
 <DT>
 <A NAME="Guards!bsearch"></A><TT>bsearch(x,(l),r)</TT></DT>
 
 <DD>
-&nbsp;succeeds if the formula <TT>x</TT> matches a formula in the list
+succeeds if the formula <TT>x</TT> matches a formula in the list
 <TT>l</TT>, and <TT>r</TT> is the list <TT>l</TT> with the matched formula
-removed. The list can be separated by commas, ``<TT>&amp;</TT>'' or ``<TT>or</TT>''.</DD>
-
+removed. The list can be separated by commas, ``<TT>&amp;</TT>'' or ``<TT>or</TT>''.
 
 <P>For example, a typical use of this guard is as follows:-
 <PRE>&nbsp;&nbsp;&nbsp; bsearch((x &lt; y),P,Q) &amp;
@@ -362,14 +354,14 @@ has the same effect as applying the rule
 Careful attention is, of course, given to the renaming of variables to
 ensure that clashes with <A HREF="MathsNotation.html#Freeness">free variables</A>
 are avoided.
+</DD>
 <DT>
 <A NAME="Guards!breade"></A><TT>breade(f,l,x)</TT></DT>
 
 <DD>
 &nbsp;displays the list of formulae <TT>l</TT> on the screen according
 to the format given in the quoted string <TT>f</TT>, and succeeds if <TT>x</TT>
-matches the response typed by the user.</DD>
-
+matches the response typed by the user.
 
 <P>The format string <TT>f</TT> works on the same kind of principle as
 <TT>printf</TT> function in C. The <TT>%</TT> character is used to mark
@@ -423,12 +415,12 @@ by including antecedents of the following form:-
 &nbsp;&nbsp;&nbsp; [x,y := 1,2]Q
 &nbsp;&nbsp; =>
 &nbsp;&nbsp;&nbsp; #(x,y).P</PRE>
-
+</DD>
 <DT>
 <A NAME="Guards!bident"></A><TT>bident(x)</TT></DT>
 
 <DD>
-&nbsp;succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Identifier"></A>identifier
+succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Identifier"></A>identifier
 (a string of length greater than 1 comprising upper or lower-case letters,
 digits and the underscore character, and containing at least one letter).</DD>
 
@@ -436,22 +428,22 @@ digits and the underscore character, and containing at least one letter).</DD>
 <TT>bnum(x)</TT></DT>
 
 <DD>
-&nbsp;succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Number"></A>number
+succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Number"></A>number
 (a Natural number less than 2^32).</DD>
 
 <DT>
 <TT>bstring(x)</TT></DT>
 
 <DD>
-&nbsp;succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Quoted_String"></A>quoted
-string (any character string enclosed in double quotes).</DD>
+succeeds if <TT>x</TT> is a valid&nbsp;<A NAME="Quoted_String"></A>quoted
+string (any character string enclosed in double quotes).
 
 
 <P>An example is:-
-<PRE>&nbsp;&nbsp;&nbsp; bident(b)&nbsp;
-&nbsp;&nbsp; =>&nbsp;
-&nbsp;&nbsp;&nbsp; {a} \/ {b} == {a,b}</PRE>
-</DL>
+<PRE>    bident(b)
+   =>
+    {a} \/ {b} == {a,b}</PRE>
+</DD>
 </DL>
 Note the subtle difference in the syntax for <TT>bsearch</TT> and <TT>breade</TT>.
 The second argument of <TT>bsearch</TT> must be a list enclosed in brackets,
@@ -459,9 +451,8 @@ whereas the list in <TT>breade</TT> does not, giving rise, in effect, to
 a variable number of arguments (rather like the <TT>printf</TT> function
 in C). The <TT>x</TT> thus refers, in fact, to the last argument.
 
-<P>
 <HR WIDTH="60%">
-<BR><A NAME="Theory"></A>
+<A NAME="Theory"></A>
 <H2>
 Theories</H2>
 A Theory is a container for inference rules. A forward theory contains
@@ -483,7 +474,6 @@ are also amended.
 <P>The order of rules in a theory is significant. (See <A HREF="BPlatform.html#Inference_Rules!Ordering">Ordering
 Rules in Theories</A> below for a discussion of this.)
 
-<P>
 <HR WIDTH="60%">
 <H2>
 Tactics</H2>
@@ -496,7 +486,7 @@ tactics. The syntax is as follows:-
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tactic~
 
 &nbsp;&nbsp;&nbsp;&nbsp;<A NAME="Tactic!Atomic"></A>Atomic_Tactic ::= DED&nbsp; |&nbsp; GEN&nbsp; |&nbsp; SUB&nbsp; |&nbsp; HYP&nbsp; |&nbsp; FEQL&nbsp; |&nbsp; <A HREF="BPlatform.html#Theory_Name">Theory_Name</A></PRE>
-The semicolon indicated sequencing of actions, and the tilda indicates
+The semicolon indicates sequencing of actions, and the tilda indicates
 repetition. The following is an example of a tactic:-
 <PRE>&nbsp;&nbsp;&nbsp; ( Theory1 ; DED ) ~ ; Theory2~</PRE>
 which says, in effect:-
@@ -543,62 +533,67 @@ as follows:-
 <A NAME="Tactic!DED"></A><TT>DED</TT></DT>
 
 <DD>
-&nbsp;The deduction tactic, <TT>DED</TT>, acts on goals of the form</DD>
+The deduction tactic, <TT>DED</TT>, acts on goals of the form
 
 <PRE>&nbsp;&nbsp;&nbsp; H1 &amp; H2 &amp; ... Hn&nbsp; =>&nbsp; G</PRE>
 by placing the formulae <TT>H1</TT>, <TT>H2</TT> ... <TT>Hn</TT> into the
 current set of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>,
 and making <TT>G</TT> the current goal.
+</DD>
 <DT>
 <A NAME="Tactic!GEN"></A><TT>GEN</TT></DT>
 
 <DD>
-&nbsp;The generalisation tactic, <TT>GEN</TT>, acts on goals of the form</DD>
+The generalisation tactic, <TT>GEN</TT>, acts on goals of the form
 
 <PRE>&nbsp;&nbsp;&nbsp; !v.G</PRE>
 by renaming all the variable <TT>v</TT> in <TT>G</TT> to avoid <A HREF="MathsNotation.html#Freeness">free
 occurrences</A> in the current set of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A>,
 and making the renamed <TT>G</TT> the new goal.
+</DD>
 <DT>
 <A NAME="Tactic!SUB"></A><TT>SUB</TT></DT>
 
 <DD>
-&nbsp;The substitution tactic, <TT>SUB</TT>, acts on goals with contain
-sub-formulae of the form</DD>
+The substitution tactic, <TT>SUB</TT>, acts on goals with contain
+sub-formulae of the form
 
 <PRE>&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Substitutions!Application">[v:=F]</A>G</PRE>
 by performing the <A HREF="MathsNotation.html#Substitutions!Generalised">substitution</A>
 on <TT>G</TT>, and making the rewritten goal the new goal.
+</DD>
 <DT>
 <A NAME="Tactic!HYP"></A><TT>HYP</TT></DT>
 
 <DD>
-&nbsp;The ``hypothesis'' tactic, <TT>HYP</TT>, can act in a number of ways.
-Suppose the current goal is <TT>Q</TT>:-</DD>
+The ``hypothesis'' tactic, <TT>HYP</TT>, can act in a number of ways.
+Suppose the current goal is <TT>Q</TT>:-
 
 <UL>
 <LI>
 When there is a <A HREF="BPlatform.html#Hypotheses!Current_set">hypothesis</A>
-in the current set of the form</LI>
+in the current set of the form
 
 <PRE>&nbsp;&nbsp;&nbsp; P1 &amp; P2 ... Pn => Q</PRE>
 the current goal <TT>Q</TT> is replaced by <TT>P1</TT>, <TT>P2</TT> ...
 and <TT>Pn</TT>.
+</LI>
 <LI>
-When there is a hypothesis of the form</LI>
+When there is a hypothesis of the form
 
 <PRE>&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Quantification!Universal">!</A>v.G</PRE>
 where <TT>G</TT> is identical to <TT>Q</TT> for some value of <TT>v</TT>,
-then the current goal <TT>Q</TT> is discharged.</UL>
-
+then the current goal <TT>Q</TT> is discharged.
+</LI>
+</UL>
+</DD>
 <DT>
 <A NAME="Tactic!FEQL"></A><TT>FEQL</TT></DT>
 
 <DD>
-&nbsp;The ``forward equality'' tactic, <TT>FEQL</TT> is a <A HREF="BPlatform.html#Tactic!Forward">forward
+The ``forward equality'' tactic, <TT>FEQL</TT> is a <A HREF="BPlatform.html#Tactic!Forward">forward
 tactic</A> which generates new hypotheses from the <A HREF="BPlatform.html#Hypotheses!Current_set">set
-of current hypotheses</A> by calculating the transitive closure of equality.</DD>
-
+of current hypotheses</A> by calculating the transitive closure of equality.
 
 <P>For example, if the <A HREF="BPlatform.html#Hypotheses!Current_set">set
 of current hypotheses</A> contains
@@ -610,11 +605,10 @@ then the FEQL tactic would have the effect of expanding the set to
 &nbsp;&nbsp;&nbsp; newage = 23
 &nbsp;&nbsp;&nbsp; age +> {newperson |-> newage} &lt;: PERSON --> AGE
 &nbsp;&nbsp;&nbsp; age +> {percy |-> 23} &lt;: PERSON --> AGE</PRE>
-
-<PRE>
-<HR WIDTH="60%"></PRE>
+</DD>
 </DL>
 </DL>
+<HR WIDTH="60%">
 <A NAME="Proof!Construction"></A>
 <H2>
 Proof Construction</H2>
@@ -658,7 +652,7 @@ are manipulated as follows:-
 <OL>
 <LI>
 An attempt is made to find a rule from the theory named at the current
-current <A HREF="BPlatform.html#Tactic!Normal">normal tactic</A> position
+<A HREF="BPlatform.html#Tactic!Normal">normal tactic</A> position
 which matches the current goal.</LI>
 
 <LI>
@@ -714,7 +708,7 @@ is reached, forwards inference terminates.</LI>
 </OL>
 
 <HR WIDTH="60%">
-<BR><A NAME="Proof!Guidelines"></A>
+<A NAME="Proof!Guidelines"></A>
 <H2>
 Guidelines for Proof</H2>
 The following notes are intended to guide the B-Toolkit in constructing
@@ -763,11 +757,10 @@ two elements in the set in the first argument of <TT>maxel</TT>.
 side. The formula <TT>{p}</TT> can match any set, including those of the
 form <TT>{P,p}</TT> (see <A HREF="BPlatform.html#Pattern_Match">Pattern
 Matching</A>). But we know that, since the previous rules did not match,
-the only pattern that remains to be matched is the single set, in which&nbsp;<TTp</TT>matches
+the only pattern that remains to be matched is the single set, in which&nbsp;<TT>p</TT> matches
 a single element, and not a comma-separated list. A similar argument applies
 to the top rule.
 
-<P>
 <HR WIDTH="40%">
 <H3>
 Using Guards in Rewrite Rules</H3>
@@ -796,9 +789,8 @@ rule</A> example given above is thus:-
 &nbsp;&nbsp;&nbsp; max({max(s),x}) == max(s\/{x})</PRE>
 since this only allows rewriting when it is known from the current set
 of <A HREF="BPlatform.html#Hypotheses!Current_set">hypotheses</A> that
-<BR><TT>not(s = {})</TT>.
+<TT>not(s = {})</TT>.
 
-<P>
 <HR WIDTH="40%">
 <H3>
 Backwards versus Forwards Inference</H3>
@@ -813,7 +805,6 @@ rules</A> and <A HREF="BPlatform.html#Inference_Rules!Rewrite">rewrite
 rules</A> are used in preference to <A HREF="BPlatform.html#Inference_Rules!Forward">forwards
 rules</A> where ever possible.
 
-<P>
 <HR WIDTH="40%">
 <H3>
 Supplying Rules for Animation</H3>
@@ -824,7 +815,6 @@ of rules would interfere with the animation mechanism. (See section on
 the Animator entitled <A HREF="Animator.html#Users_Theory!in_Animator">Providing
 More Rewrite Rules</A>.)
 
-<P>
 <HR WIDTH="60%">
 
 <P><A NAME="B-Platform!Memory"></A>
@@ -838,10 +828,7 @@ the<I> malloc </I> utility; more memory may be freed by shutting down
 other processes, or increasing the swap space of the machine on which
 it is running - see your System Administrator.
 
-<P>
 <HR WIDTH="60%">
-<BR>&nbsp;
-<CENTER></CENTER>
 
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
@@ -850,7 +837,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 

@@ -18,6 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include "String_ffnc_obj.h"
 
+char String_buf_ffnc_obj[1000];
 
 void
 #ifdef _BT_ANSIC
@@ -32,25 +33,22 @@ int *bb, *ff;
 	if( b==0 ){
 		if( String_sold_fnc_obj==0 ){
 			String_ssize_fnc_obj = String_ssize_fnc_obj+1;
-			f=String_ssize_fnc_obj
-			    ;
+			f=String_ssize_fnc_obj;
 		} else{
 			f=String_old_fnc_obj[String_sold_fnc_obj];
-			String_sold_fnc_obj=String_sold_fnc_obj-1
-			    ;
-		};
+			String_sold_fnc_obj=String_sold_fnc_obj-1;
+		}
 		i = 1;
 		while( i<= String_ffnc_objP2 ){
 			String_RMV_FNC_OBJ(f,i);
-			i=i+1
-			    ;
-		};
+			i=i+1;
+		}
 		*ff = f;
 		*bb = 1;
 	} else{
 		*ff = 0;
 		*bb = 0;
-	};
+	}
 }
 
 
@@ -72,12 +70,11 @@ int *bb, pp;
 			} else {
 				i = 0 ;
 				*bb = 0;
-			};
-		};
+			}
+		}
 	}  else {
-		*bb = 0
-		    ;
-	};
+		*bb = 0;
+	}
 }
 
 #include <stdio.h>
@@ -159,7 +156,7 @@ String_RST_FNC_OBJ()
           while ( i <= String_ssize_fnc_obj*String_ffnc_objP2 ) {
 	    String_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= String_ssize_fnc_obj ) {
 	    read_fm(String_fnc_obj[1+(i-1)*String_ffnc_objP2], old_size);
@@ -189,7 +186,7 @@ String_RSTN_FNC_OBJ()
           while ( i <= String_ssize_fnc_obj*String_ffnc_objP2 ) {
 	    String_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= String_ssize_fnc_obj ) {
 	    read_fm(String_fnc_obj[1+(i-1)*String_ffnc_objP2], old_size);
@@ -221,13 +218,13 @@ int *cc, *ss;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			String_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 }
 
 
@@ -247,13 +244,13 @@ int *cc, *ss, oc, os;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			String_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 
 }
 
@@ -274,14 +271,14 @@ int ff, ii, ll, *aa;
 	while (t[i]!='\0') {
 		String_buf_ffnc_obj[i]=t[i];
 		i=i+1;
-	};
+	}
 	String_buf_ffnc_obj[i] = '\0';
 	s = (int *)String_buf_ffnc_obj;
 	i=0;
 	while ( i < ll ){
 		String_STO_FNC_OBJ(ff,(ii+i),s[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -298,7 +295,7 @@ int ff, ii, ll, *aa;
 	while ( i < ll ){
 		String_STO_FNC_OBJ(ff,(ii+i),aa[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -325,9 +322,9 @@ int *bb, ff, ii, ll, *vv;
 		} else{
 			b = 0
 			    ;
-		};
-	};
-        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; };
+		}
+	}
+        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; }
 }
 
 
@@ -347,7 +344,7 @@ int ff, gg, ii, jj, ll;
                                   String_fnc_obj[(ff-1)*String_ffnc_objP2+ii+i]
                                   );
 		i=i+1;
-	};
+	}
 }
 
 
@@ -359,7 +356,7 @@ String_XTR_FFNC_OBJ( vv, ff, ii, ll )
 int ff, ii, ll, *vv;
 #endif
 {
-	int i;
+	size_t i;
 	char *s,*t,*e;
 	s = (char *)vv;
 	t = (char *)&(String_fnc_obj[(ff-1)*String_ffnc_objP2+ii]);
@@ -368,5 +365,5 @@ int ff, ii, ll, *vv;
 	while ( &(t[i])!=e) {
 		s[i] = t[i];
 		i = i + 1;
-	};
+	}
 }

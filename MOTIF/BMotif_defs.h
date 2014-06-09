@@ -17,9 +17,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 #ifndef ___BMOTIF_DEFS
-
 #define ___BMOTIF_DEFS
-
 
 #if ( defined ( BTOOLKIT_FLAG ) || defined ( BTOOLM_FLAG ) )
 

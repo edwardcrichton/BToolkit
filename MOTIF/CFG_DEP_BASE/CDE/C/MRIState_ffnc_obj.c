@@ -18,6 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include "MRIState_ffnc_obj.h"
 
+char MRIState_buf_ffnc_obj[1000];
 
 void
 #ifdef _BT_ANSIC
@@ -32,25 +33,22 @@ int *bb, *ff;
 	if( b==0 ){
 		if( MRIState_sold_fnc_obj==0 ){
 			MRIState_ssize_fnc_obj = MRIState_ssize_fnc_obj+1;
-			f=MRIState_ssize_fnc_obj
-			    ;
+			f=MRIState_ssize_fnc_obj;
 		} else{
 			f=MRIState_old_fnc_obj[MRIState_sold_fnc_obj];
-			MRIState_sold_fnc_obj=MRIState_sold_fnc_obj-1
-			    ;
-		};
+			MRIState_sold_fnc_obj=MRIState_sold_fnc_obj-1;
+		}
 		i = 1;
 		while( i<= MRIState_ffnc_objP2 ){
 			MRIState_RMV_FNC_OBJ(f,i);
-			i=i+1
-			    ;
-		};
+			i=i+1;
+		}
 		*ff = f;
 		*bb = 1;
 	} else{
 		*ff = 0;
 		*bb = 0;
-	};
+	}
 }
 
 
@@ -72,12 +70,11 @@ int *bb, pp;
 			} else {
 				i = 0 ;
 				*bb = 0;
-			};
-		};
+			}
+		}
 	}  else {
-		*bb = 0
-		    ;
-	};
+		*bb = 0;
+	}
 }
 
 #include <stdio.h>
@@ -159,7 +156,7 @@ MRIState_RST_FNC_OBJ()
           while ( i <= MRIState_ssize_fnc_obj*MRIState_ffnc_objP2 ) {
 	    MRIState_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= MRIState_ssize_fnc_obj ) {
 	    read_fm(MRIState_fnc_obj[1+(i-1)*MRIState_ffnc_objP2], old_size);
@@ -189,7 +186,7 @@ MRIState_RSTN_FNC_OBJ()
           while ( i <= MRIState_ssize_fnc_obj*MRIState_ffnc_objP2 ) {
 	    MRIState_fnc_obj[i] = 2147483647;
             i = i+1;
-	  };
+	  }
           i = 1;
           while ( i <= MRIState_ssize_fnc_obj ) {
 	    read_fm(MRIState_fnc_obj[1+(i-1)*MRIState_ffnc_objP2], old_size);
@@ -221,13 +218,13 @@ int *cc, *ss;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			MRIState_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 }
 
 
@@ -247,13 +244,13 @@ int *cc, *ss, oc, os;
 		while ( b != 1 && i != 0 ) {
 			i = i - 1;
 			MRIState_XST_FNC_OBJ(&b,i);
-		};
+		}
 		*ss = i;
 		*cc = c;
 	} else {
 		*ss = 0;
 		*cc = 0;
-	};
+	}
 
 }
 
@@ -274,14 +271,14 @@ int ff, ii, ll, *aa;
 	while (t[i]!='\0') {
 		MRIState_buf_ffnc_obj[i]=t[i];
 		i=i+1;
-	};
+	}
 	MRIState_buf_ffnc_obj[i] = '\0';
 	s = (int *)MRIState_buf_ffnc_obj;
 	i=0;
 	while ( i < ll ){
 		MRIState_STO_FNC_OBJ(ff,(ii+i),s[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -298,7 +295,7 @@ int ff, ii, ll, *aa;
 	while ( i < ll ){
 		MRIState_STO_FNC_OBJ(ff,(ii+i),aa[i]);
 		i=i+1;
-	};
+	}
 }
 
 
@@ -325,9 +322,9 @@ int *bb, ff, ii, ll, *vv;
 		} else{
 			b = 0
 			    ;
-		};
-	};
-        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; };
+		}
+	}
+        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; }
 }
 
 
@@ -347,7 +344,7 @@ int ff, gg, ii, jj, ll;
                                   MRIState_fnc_obj[(ff-1)*MRIState_ffnc_objP2+ii+i]
                                   );
 		i=i+1;
-	};
+	}
 }
 
 
@@ -368,5 +365,5 @@ int ff, ii, ll, *vv;
 	while ( &(t[i])!=e) {
 		s[i] = t[i];
 		i = i + 1;
-	};
+	}
 }

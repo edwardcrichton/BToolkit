@@ -34,9 +34,5 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
     if ( fclose ( bstdout ) != 0 ) { \
       fprintf ( stderr, "\n\n             Can't close menu window\n\n" ); \
       exit___ ( 1 ); \
-    }; \
+    } \
     bstdout = stdout;
-
-/*
-#endif
-*/

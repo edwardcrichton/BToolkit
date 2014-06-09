@@ -127,13 +127,6 @@ CfgDepBase
 #include "CLIENT_SERVER/CDE/C/Licence_Daemon_Client.c"
 */
 
-void
-DisplayCurrWinText_Delay ( client_data )
-XtPointer client_data;
-{
-  DisplayCurrWinText ( ( char * ) client_data );
-}
-
 int
 FormulaParses ( ss ) /* No Popup_Minor_Err if error ... */
 char * ss;
@@ -260,7 +253,6 @@ printf ( "Get_Code_Dep ( %d )\n", cc );
       }
     }
 
-
     nn--;
   }  
   bb = Is_LibOrEnm ( cc );
@@ -286,7 +278,6 @@ printf ( "Get_Code_Dep ( %d )\n", cc );
 	}
       }
     }
-
     else {
       cc1 = HasImp ( cc );
       if ( cc1 ) {  
@@ -298,7 +289,6 @@ printf ( "Get_Code_Dep ( %d )\n", cc );
       }
     }
   }
-
 
   card_gset4 ( &nn );
   while ( nn ) {
@@ -851,7 +841,7 @@ int
 CheckSourceControlFromBsc ( init_flag )
 int init_flag;
 {
-  char *getenv(), *name;
+  char *name;
   FILE * Bsc;
   FILE * Bcom;
   int i, c;
@@ -977,7 +967,6 @@ printf ( "-----------\n" );
   }
 
   return ( no_entries / 3 );
-
 }
 
 int
@@ -1185,15 +1174,13 @@ void
 OPN_CLO ( obj, ps )
 int obj, ps;
 {
-  if   ( ps )
-  {
-  	printf("Check_QuitEditor_Popup( %d ) ps = %d\n",obj,ps);
-  	Check_QuitEditor_Popup ( obj );
+  if ( ps ) {
+    printf("Check_QuitEditor_Popup( %d ) ps = %d\n",obj,ps);
+    Check_QuitEditor_Popup ( obj );
   }
-  else
-  {
-  	printf("PreOpenConstruct( %d )\n",obj);
-          PreOpenConstruct ( obj );
+  else {
+     printf("PreOpenConstruct( %d )\n",obj);
+     PreOpenConstruct ( obj );
   }
 }
 
@@ -1585,7 +1572,6 @@ RSL ( obj )
   curr_obj = obj;
   Popup_SelOne_Dialog ( top_level, "Revert to Previous Proof Level" );
 }
-
 
 void
 LVL ( obj )
@@ -2007,8 +1993,6 @@ void
 EXE ( obj, ps )
 int obj, ps;
 {
-  char buf [ 100 ];
-  int nm [ 50 ];
   int ext, cc1;
   int Prog_Language_Option;
 
@@ -2043,7 +2027,6 @@ int obj, ps;
       sprintf ( primary_string, "$BKIT/BLIB/ExeFile \"%s\" %s&", fifo_write_buf, GetShortName ( cc1 ) );
       execute ( primary_string );
     }
-  
 }
 
 void
@@ -2176,7 +2159,7 @@ int obj, ps;
       Load_SRC_CFG_Names ( obj );
       DeCommentFile ( SRCName, ".Bcom", &no_comment_src );
       DeCommentFile ( CFGName, ".BBcom", &no_comment_cfg );
-      maths_change = FileDifference (  ".Bcom", ".BBcom" );
+      maths_change = FileDifference ( ".Bcom", ".BBcom" );
       if ( ! maths_change ) {
         DisplayCurrWinText ( "\n  Annotation change in edited file " );
         top_level_dep_cstr = obj;
@@ -3679,8 +3662,6 @@ system("cat .Bed");
 ***/
 }
 
-
-
 void
 Pre_ChangeToNewDirectory ()
 {
@@ -3698,7 +3679,6 @@ Pre_ChangeToNewDirectory ()
   Popup_Selection_Sel_flag = cd_Selection_sel;
   Popup_Selection_Sel_Dialog ( top_level, sel_str_arr [ sel_arr_MAX ] );
 }
-
 
 KillConstruct ( obj )
 int obj;
@@ -3721,9 +3701,7 @@ if ( ! obj ) {
   val_ext ( &ext, obj );
   val_type ( &tt, obj );
 
-
   unlink( CFGName );
-
 
   if ( tt == bse_gen || tt == enm_gen  || tt == gen_vhdl ||
        tt == itf_gen || tt == prf_gen                       ) {
@@ -3844,16 +3822,17 @@ printf("`%s'\n",buf);
     if ( ext != itf ) {
       sprintf ( buf, "CDE/C/%s.ldf", ( char * ) name );
       unlink ( buf );
+
 /***
 printf("`%s'\n",buf);
 ***/
       sprintf ( buf, "CDE/C/%s.o", ( char * ) name );
       unlink ( buf );
+
 /***
 printf("`%s'\n",buf);
 ***/
       sprintf ( buf, "CDE/C/%s.g", ( char * ) name );
-
       unlink ( buf );
 
 /***
@@ -3865,7 +3844,6 @@ printf("`%s' ",buf);
 printf("`%s'\n",buf);
 ***/
       sprintf ( buf, "CDE/C/%s.h", ( char * ) name );
-
       unlink ( buf );
 
 /***
@@ -3877,7 +3855,6 @@ printf("`%s' ",buf);
 printf("`%s'\n",buf);
 ***/
       sprintf ( buf, "CDE/C/%s.c", ( char * ) name );
-
       unlink ( buf );
 
 /***
@@ -3888,8 +3865,6 @@ printf("`%s' ",buf);
 /***
 printf("`%s'\n",buf);
 ***/
-
-
     }
     SetDisplayField_obj_Changed ( obj );
   }
@@ -3897,7 +3872,6 @@ printf("`%s'\n",buf);
 /***
 else {printf("RemoveCodeFiles: %d NOT VALID\n",cc); }
 ***/
-
 }
 
 void
@@ -4094,7 +4068,6 @@ printf( "unanalyse ( %s %d )\n", name, nn );
   }
 }
 
-
 void
 CheckUndoc ( obj )
 int obj;
@@ -4197,7 +4170,6 @@ printf ( "val_gen2 %d\n", bb );
   SetDisplayField_obj_Changed ( obj );
 }
 
-
 void
 RemoveConstruct ( obj, rm_flag )
 int obj, rm_flag;
@@ -4253,7 +4225,6 @@ else { printf("%s not usr type - not copied to SRC\n", GetName ( obj ) ); }
     RemoveNext ();
   }
 }
-
 
 void
 RemoveNext ()
@@ -4358,7 +4329,6 @@ printf ( ">>> %s\n", GetName ( cc ) );
     DisplayCurrentEnv ();
   }
 }
-
 
 void
 RemoveLevel ( obj ) /* Revert to previous proof level */
@@ -5844,15 +5814,15 @@ ProcessAndDisplayCurrWinTextBcom ()
   ProcessAndDisplayCurrWinText ( fifo_write_buf );
 }
 
+#define text_trigger_tot   30000
+#define text_rem_tot        2500
+
 void
 RemoveTopCurrText ( add_length )
 int add_length;
 {
   XmTextPosition nl_pos;
   Boolean nl_found;
-
-#define text_trigger_tot   30000
-#define text_rem_tot        2500
 
 /***
 printf ( "curr_text_posn start: %d\n", ( int ) curr_text_posn );
@@ -5902,16 +5872,6 @@ char *text;
   XmTextInsert ( curr_text, curr_text_posn, text );
   curr_text_posn = curr_text_posn + text_length;
   XmTextShowPosition ( curr_text, curr_text_posn );
-  XmUpdateDisplay ( curr_text );
-}
-
-void
-DisplayCurrWinTextAt ( text_pos, text )
-XmTextPosition text_pos;
-char *text;
-{
-  XmTextReplace ( curr_text, text_pos, text_pos + strlen ( text ), text );
-  XmTextShowPosition ( curr_text, text_pos );
   XmUpdateDisplay ( curr_text );
 }
 
@@ -6672,8 +6632,8 @@ int set;
         XmNforeground,          option_not_set_col,        
         NULL );
   }
-  XmUpdateDisplay ( label );  
   XmStringFree ( xstr );
+  XmUpdateDisplay ( label );
 }
 
 void
@@ -10446,7 +10406,7 @@ printf("Popup_RadioBox_Dialog_CB case mini_remake_radiobox: curr_env: %d\n",curr
           Popup_Info ( "Already editing $HOME/.Bsc" );
         }
         else {
-          char *getenv(), *name;
+          char *name;
           name = getenv ( "HOME" );
           if ( name == NULL ) {
             Popup_Info ( " Environment variable HOME not set " );
@@ -10537,7 +10497,7 @@ printf("Popup_RadioBox_Dialog_CB case mini_remake_radiobox: curr_env: %d\n",curr
     if ( ok_pressed ) {
 
       FILE * Bsc;
-      char *getenv(), *name;
+      char *name;
       name = getenv ( "HOME" );
       if ( name == NULL ) {
         Popup_Info ( " Environment variable HOME not set " );

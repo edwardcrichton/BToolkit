@@ -24,6 +24,8 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 extern FILE *dump_file;
 
+char CfgDepBase_ffnc_buf[1000];
+
 #define convert_arr_htonl(a,i,n) \
   j = i; \
   k = 0; \
@@ -84,7 +86,7 @@ INI_CfgDepBase_Vffnc()
 	while( i<= CfgDepBase_VffncP2 ){
 		CfgDepBase_Vfnc[i] = 2147483647;
 		i = i+1;
-	};
+	}
 }
 
 
@@ -105,9 +107,9 @@ int *bb, *vv;
 			*bb = 1;
 			*vv = i;
 			i = 0;
-		};
+		}
 		i = i-1;
-	};
+	}
 }
 
 
@@ -124,7 +126,7 @@ int ii, jj, ll;
 	while ( i < ll ){
 		CfgDepBase_Vfnc[jj+i] = CfgDepBase_Vfnc[ii+i];
 		i=i+1;
-	};
+	}
 }
 
 
@@ -144,14 +146,14 @@ int ii, ll, *aa;
 	while (t[i]!='\0') {
 		CfgDepBase_ffnc_buf[i]=t[i];
 		i=i+1;
-	};
+	}
 	CfgDepBase_ffnc_buf[i] = '\0';
 	s = (int *)CfgDepBase_ffnc_buf;
 	i=0;
 	while ( i < ll ){ 
 		CfgDepBase_Vfnc[ii+i] = s[i]; 
 		i=i+1; 
-	};
+	}
 }
 
 
@@ -168,7 +170,7 @@ int ii, ll, *aa;
 	while ( i < ll ){ 
 		CfgDepBase_Vfnc[ii+i] = aa[i]; 
 		i=i+1; 
-	};
+	}
 }
 
 
@@ -195,10 +197,10 @@ int *bb, ii, ll, *vv;
 		} else{
 			b = 0
 			    ;
-		};
+		}
 		
-	};
-        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; };
+	}
+        if ( s[i]=='\0' && t[i]!='\0') { *bb = 0; }else{ *bb = b; }
 }
 
 
@@ -219,5 +221,5 @@ int ii ,ll, *vv;
 	while ( &(t[i])!=e ) {
 		s[i] = t[i];
 		i = i+1;
-	};
+	}
 }

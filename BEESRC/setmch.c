@@ -55,4 +55,3 @@ diff_set(s,t)
 {register int i,v ;
   itr(t,i,v,del_set(s,v));
 }
-

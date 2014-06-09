@@ -23,10 +23,6 @@ extern int Abs2Conc_ssize_fnc_obj;
 extern int Abs2Conc_old_fnc_obj[];
 extern int Abs2Conc_sold_fnc_obj;
 
-char Abs2Conc_buf_ffnc_obj[1000];
-
-#define Abs2Conc_CHARperWORD 4
-
 #define INI_Abs2Conc_ffnc_obj() \
 {Abs2Conc_ssize_fnc_obj = 0; Abs2Conc_sold_fnc_obj=0;}
 
@@ -38,8 +34,6 @@ char Abs2Conc_buf_ffnc_obj[1000];
 
 #define Abs2Conc_TST_FLD_FNC_OBJ(bb,pp) \
 { *(bb) = ( ( (pp>0) && (pp<=Abs2Conc_ffnc_objP2) )!=0) ;}
-
-
 
 #define Abs2Conc_FUL_FNC_OBJ(bb) \
 {*(bb) = (((Abs2Conc_ssize_fnc_obj - Abs2Conc_sold_fnc_obj) == Abs2Conc_ffnc_objP3)!=0);}

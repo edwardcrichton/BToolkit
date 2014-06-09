@@ -12,4 +12,3 @@ DEFINITIONS
  MaxScalar == 2147483646  /* 2 to the 31 - 2 */ 
 
 END
-

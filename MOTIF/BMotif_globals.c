@@ -305,7 +305,7 @@ char *btl_fwd_tac[] = {
   REASONING_DEPTH_1_FEQL_Tac,
   REASONING_DEPTH_2_FEQL_Tac  };
 
-int pid;
+pid_t pid;
 
 int cs_nn, cs_rr;
 char serv_addr [ 20 ];
@@ -439,18 +439,6 @@ const char *extens[] = { "",
                           "imp",
                           "map"
 			};
-
-const char *num_strings[] = { "0",
-                        "1",
-                        "2",
-                        "3",
-                        "4",
-                        "5",
-                        "6",
-                        "7",
-                        "8",
-                        "9"
-		      };
 
 const char *DIRS[] = { "ANL",
                  "CFG",

@@ -315,7 +315,7 @@ ini_Blm_off ()
       Popup_Sel_flag = 4; /* DesensitizeLSTButtons ( 4 ); */  /* 45 */
     }
     else {
-      int my_id;
+      uid_t my_id;
       my_id = getuid ();
       put_num( &hi_l , &hi_m, &hi_h );
       /***

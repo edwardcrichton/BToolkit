@@ -1211,8 +1211,9 @@ SRC_watch ()
   struct stat SRC_stat_buf, CFG_stat_buf;
   struct dirent * dirent_ptr;
   DIR * dp;
-  int i, obj;
+  int obj;
   static time_t last_time = ( time_t ) 0;
+
   void Decorate_SRC_file_newer ();
   void UnDecorate_SRC_file_newer ();
   void CheckForUserClosedEdits ();
@@ -1239,9 +1240,9 @@ printf ( "  >>> >>> >>> NO SRC_watch <<< <<< <<< accessed < 2 secs ago & no edit
   case ipr_pob_env:
   case ipr_lem_env:
   case btl_env:
-/***
-printf ( "  >>> >>> >>> NO SRC_watch <<< <<< <<< inappropriate environment %d\n", curr_env );
-***/
+    /***
+     printf ( "  >>> >>> >>> NO SRC_watch <<< <<< <<< inappropriate environment %d\n", curr_env );
+     ***/
     return;
     break;
   }
@@ -1257,9 +1258,9 @@ printf ( "  >>> >>> >>> NO SRC_watch <<< <<< <<< inappropriate environment %d\n"
   while ( ( dirent_ptr = readdir ( dp ) ) != NULL ) {
     if ( IsConfigured ( dirent_ptr -> d_name ) ) {
       GetObjFromFullName ( &obj, dirent_ptr -> d_name );
-/***
-printf ( "   configured: %s\n",  dirent_ptr -> d_name );
-***/
+      /***
+       printf ( "   configured: %s\n",  dirent_ptr -> d_name );
+       ***/
       sprintf ( buf, "%s/SRC/%s", cur_dir, dirent_ptr -> d_name );
       if ( stat ( buf, &SRC_stat_buf ) != -1 ) {
         if ( IsPrfObj ( obj ) ) {
@@ -1273,31 +1274,31 @@ printf ( "   configured: %s\n",  dirent_ptr -> d_name );
         }
         if ( stat ( buf, &CFG_stat_buf ) != -1 ) {
           if ( SRC_stat_buf . st_size != CFG_stat_buf . st_size ) {
-/***
-printf ( "     SRC/CFG length unequal -> Decorate_SRC_file_newer\n" );
-***/
+            /***
+             printf ( "     SRC/CFG length unequal -> Decorate_SRC_file_newer\n" );
+             ***/
             Decorate_SRC_file_newer ( obj );
           }
           else {
-/***
-printf ( "     SRC/CFG length equal - " );
-***/
+            /***
+             printf ( "     SRC/CFG length equal - " );
+             ***/
             sprintf ( str_buf, "%s/SRC/%s", cur_dir, dirent_ptr -> d_name );
             if ( ( FileDifference ( buf, str_buf ) ) ) {
-/***
-printf ( "file diff -> Decorate_SRC_file_newer\n" );
-***/
+              /***
+               printf ( "file diff -> Decorate_SRC_file_newer\n" );
+               ***/
               Decorate_SRC_file_newer ( obj );
 	    }
             else {
-/***
-printf ( "no file diff -> UnDecorate_SRC_file_newer\n" );
-***/
+              /***
+               printf ( "no file diff -> UnDecorate_SRC_file_newer\n" );
+               ***/
               UnDecorate_SRC_file_newer ( obj );
               if ( ! ( IsOpen ( obj ) ) )  {
-/***
-printf ( "  %s not open for edit ... unlinking\n", str_buf );
-***/
+                /***
+                 printf ( "  %s not open for edit ... unlinking\n", str_buf );
+                 ***/
                 unlink ( str_buf );
 	      }
 	    }

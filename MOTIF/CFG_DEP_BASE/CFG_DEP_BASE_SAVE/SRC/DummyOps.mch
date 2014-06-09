@@ -2,8 +2,6 @@ MACHINE           DummyOps
 
 OPERATIONS
 
-
-
   print_Globals_CfgDepBase = skip;
 
   print_BaseObj_Construct = skip;
@@ -17,7 +15,6 @@ OPERATIONS
   print_BaseObj_Seqstr = skip;
 
   print_BaseObj_String = skip;
-
   
 
   save_CfgDepBase = skip;
@@ -351,6 +348,5 @@ OPERATIONS
   first_Seqstr = skip;
 
   next_Seqstr = skip
-
 
 END

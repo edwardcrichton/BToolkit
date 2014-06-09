@@ -18,27 +18,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include "BMotif_globals.h"
 
-
-/*
-String fallbacks[] = {
-  "BMotifInit*fontList: -*-new century schoolbook-bold-r-*--12-*=TAG1",
-  "BMotifInit*Dismiss.mnemonic: D",
-  "BMotifInit*dialogTitle: B-Toolkit",
-  "BMotifInit*traversalOn: true",
-  "BMotifInit*highlightThickness: 0",
-  "BMotifInit*borderWidth: 0",
-  "BMotifInit*foreground: #a07040",
-  "BMotifInit*background:  LightSkyBlue1",
-  "BMotifInit*topShadowColor: gray98",
-  "BMotifInit*bottomShadowColor: LightBlue4",
-  "BMotifInit*Label*foreground: black",
-  "BMotifInit*HelpDialog*dialogTitle: B-Toolkit Help",
-  "BMotifInit*HelpDialog*background: LightCyan1",
-  "BMotifInit*HelpDialog*topShadowColor: white",
-  NULL
-};
-*/
-
 void Init_OK_CANCEL_CB ( button, client_data )
 Widget button;
 XtPointer client_data;
@@ -48,8 +27,6 @@ XtPointer client_data;
   XtPopdown ( dialog );
   XmUpdateDisplay ( dialog );
   XtDestroyWidget ( dialog );
-
-
 
  if ( ( * ( int * ) client_data ) == OK_BUTTON ) {
 

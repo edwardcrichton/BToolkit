@@ -22,19 +22,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <stdlib.h>
 #include <string.h>
 
-String fallbacks[] = {
-  "ErrorBox*fontList: -*-new century schoolbook-bold-r-*--12-*=TAG1",
-  "ErrorBox*Dismiss.mnemonic: D",
-  "ErrorBox*dialogTitle: B-Toolkit",
-  "ErrorBox*traversalOn: true",
-  "ErrorBox*highlightThickness: 0",
-  "ErrorBox*borderWidth: 0",
-  "ErrorBox*foreground: red",
-  "ErrorBox*background: gray75",
-  "ErrorBox*geometry: +400+150",
-  NULL
-};
-
 static XmStringCharSet charset = ( XmStringCharSet ) XmSTRING_DEFAULT_CHARSET ;
 
 /***

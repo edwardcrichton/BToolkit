@@ -275,10 +275,10 @@ char *argv[];
         XmNbottomShadowColor,              LightSkyBlue4,
         XmNbackground,                     LightSkyBlue1,
         NULL);
+    XmStringFree ( xstr );
     XtAddCallback ( but, XmNactivateCallback,
                            ( XtCallbackProc ) pushed,
                            ( XtPointer ) & c_arr [ i ] );
-    XmStringFree ( xstr );
   }
 
   XtManageChild ( row_col );

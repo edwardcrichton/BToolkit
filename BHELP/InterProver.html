@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -9,13 +10,15 @@
 <H1>
 The InterProver</H1>
 The InterProver is invoked from the <A HREF="BToolkit.html#Environments!Provers">Provers
-Environment</A> :
+Environment</A>:
 
-<P><A HREF="three_provers.gif"><IMG SRC="three_provers_icon.gif" ALT="Three Provers" BORDER=2 HEIGHT=126 WIDTH=142 ALIGN=CENTER></A>
+<P><A HREF="three_provers.gif"><IMG SRC="three_provers_icon.gif" ALT="Three Provers" BORDER=2 HEIGHT=126 WIDTH=142 ALIGN=MIDDLE></A>
 <A HREF="three_provers.gif">See figure</A>
 
-<P>It is applicable to all <A HREF="AMNotation.html#MACHINE">machines,</A>
-<A HREF="AMNotation.html#REFINEMENT">refinements</A> and <A HREF="AMNotation.html#IMPLEMENTATION">implementations</A>
+<P>It is applicable to all
+<A HREF="AMNotation.html#MACHINE">machines</A>,
+<A HREF="AMNotation.html#REFINEMENT">refinements</A> and
+<A HREF="AMNotation.html#IMPLEMENTATION">implementations</A>
 which are <A HREF="POGenerator.html#Proof_Obligation!Generator">pogenerated</A>
 and currently have undischarged proof obligations.
 
@@ -53,7 +56,7 @@ the AutoProver.</LI>
 
 <LI>
 Providing the necessary mathematics in order to COMPLETE the proof. This
-is achieved by <A HREF="InterProver.html#Lemma_proof">discharging the lemmas</A>
+is achieved by <A HREF="InterProver.html#Lemma_proof">discharging the lemmas</A>.
 This phase uses the in-built tactics and theory of the AutoProver supplemented
 by user-provided theory and tactics.</LI>
 </OL>
@@ -68,7 +71,7 @@ file, which you have already demonstrated is adequate.
 <P>The InterProver is invoked from the <A HREF="BToolkit.html#Environments!Provers">Provers
 Environment</A> by first selecting a construct and then activating the
 InterProver. You are then presented with a selection-list of item
-names (e.g operation names). For each item the number of (unproved) proof
+names (e.g. operation names). For each item the number of (unproved) proof
 obligations associated with this item is given.
 
 <P>An editor window is also presented which contains the appropriate <A HREF="InterProver.html#PROOFMETHOD_File">PROOFMETHOD
@@ -78,14 +81,13 @@ mathematics and proof tactics, as described below. (Each prover cycle (InterProv
 - AutoProver) creates a new ``proof level'' with its own <A HREF="InterProver.html#PROOFMETHOD_File">PROOFMETHOD
 file</A> stored in the environment subdirectory <A HREF="BToolkit.html#Development_Environment">PMD</A>).
 
-<P>On selection of one of the items (e.g operation), another selection
+<P>On selection of one of the items (e.g. operation), another selection
 list of the proof obligations outstanding for that item is presented. Once
 one of these proof obligations has been selected, that proof obligation
 is displayed as the <A HREF="BPlatform.html#Goals!Current">Current Goal</A>
 for the InterProver and you are presented with a menu of options for driving
 the InterProver in producing an INCOMPLETE proof.
 
-<P>
 <HR><A NAME="Lemma_creation"></A>
 <H2>
 The First Phase - Creation of Lemmas</H2>
@@ -139,7 +141,7 @@ from which you are backtracking, were produced.
 
 <P>The intermediate goals presented may be altered by setting the `InterProver
 Reasoning Depth' to the appropriate level of forward reasoning:
-<MENU>
+<UL>
 <LI>
 InterProver Depth 0</LI>
 
@@ -148,7 +150,7 @@ InterProver Depth 1</LI>
 
 <LI>
 InterProver Depth 2</LI>
-</MENU>
+</UL>
 (The effects of these settings are the same as those described for the
 <A HREF="InterProver.html#Reasoning_Depth">REASONING_DEPTH</A> clause of
 the PROOFMETHOD)
@@ -170,16 +172,16 @@ through the the setting of the `InterProver Reasoning Depth'.
 <P>The display shows the Original Proof Obligation and the Current Goal
 (on which the AutoProver can currently make no progress):
 
-<P><A HREF="lemma_creation.gif#"><IMG SRC="lemma_creation_icon.gif" ALT="Lemma Creation"  ALIGN=CENTER></A><A HREF="lemma_creation.gif#">
+<P><A HREF="lemma_creation.gif#"><IMG SRC="lemma_creation_icon.gif" ALT="Lemma Creation" ALIGN=MIDDLE></A><A HREF="lemma_creation.gif#">
 See figure<LATEX="\ \ref{lemma_creation.fig}">.</A>
 
 <P>A combination of the Current Hypotheses and the Current Goal provides
 the information necessary to enable the user to decide whether or not to
 create a lemma, and assist in providing the mathematics to be used in the
 discharge of that lemma in the second phase (all rules are written in the
-<A HREF="BPlatform.html#B-Theory_Language>B-Theory Language</A> of the<A HREF=" BPlatform.html#>BPlatform</A>):
+<A HREF="BPlatform.html#B-Theory_Language">B-Theory Language</A> of the<A HREF="BPlatform.html#">BPlatform</A>):
 
-<P><A HREF="proofmethod_rule.gif#"><IMG SRC="proofmethod_rule_icon.gif" ALT="PROOFMETHOD Rule"  ALIGN=CENTER></A><A HREF="proofmethod_rule.gif#">
+<P><A HREF="proofmethod_rule.gif#"><IMG SRC="proofmethod_rule_icon.gif" ALT="PROOFMETHOD Rule" ALIGN=MIDDLE></A><A HREF="proofmethod_rule.gif#">
 See figure<LATEX="\ \ref{proofmethod_rule.fig}">.</A>
 
 <P>Having created one or more lemmas (which are stored in a selectable
@@ -188,7 +190,6 @@ to the `Select Theory' option - through `Cancel' - and selecting the Lemmas
 item. Note that when a proof obligation is discharged by the creation of
 lemmas, you are automatically returned to the `Select Theory' option.
 
-<P>
 <HR><A NAME="Lemma_proof"></A>
 <H2>
 The Second Phase - Proof of Lemmas</H2>
@@ -216,7 +217,7 @@ file</A> is used by the system to attempt a COMPLETE proof. A tracing mechanism
 indicates which of your rules are applied, and to which goals they are
 applied, in order to assist in understanding the proof process.
 
-<P><A HREF="lemma_proof.gif#"><IMG SRC="lemma_proof_icon.gif" ALT="Lemma Proof"  ALIGN=CENTER></A><A HREF="lemma_proof.gif#">
+<P><A HREF="lemma_proof.gif#"><IMG SRC="lemma_proof_icon.gif" ALT="Lemma Proof"  ALIGN=MIDDLE></A><A HREF="lemma_proof.gif#">
 See figure<LATEX="\ \ref{lemma_proof.fig}">.</A>
 
 <P>If the attempt is unsuccessful, the tracing information provided should
@@ -233,7 +234,6 @@ be provable once the proof method has been edited!).
 <P>You can follow this cycle as many times as you want until either the
 lemma is proved, or you wish to abort the attempt - through `Cancel'.
 
-<P>
 <HR><A NAME="Users_Theory!in_InterProver"></A>
 <H2>
 <A NAME="PROOFMETHOD_File"></A>The PROOFMETHOD file</H2>
@@ -275,7 +275,7 @@ allows macro definitions in the form of <A HREF="BPlatform.html#Inference_Rules!
 rules</A> to be applied to the user-supplied Theories before use. A DEFINITIONS
 clause comprising `?' is equivalent to an empty clause.
 
-<P>The optional&nbsp;<A NAME="PMD_INCLUSIONS_Clause&quot;"></A>INCLUSIONS
+<P>The optional&nbsp;<A NAME="PMD_INCLUSIONS_Clause"></A>INCLUSIONS
 clause allows other PROOFMETHOD files to be loaded (and, of course, the
 process is recursive). For such included files, however, the USETAC, REASONING_DEPTH
 and ON clauses are ignored; those settings are taken from the main PROOFMETHOD
@@ -291,21 +291,25 @@ an empty clause.
 enables the provers to work with different sets of `forward' rules:-
 <UL>
 <LI>
-when <TT>n1</TT> = 0</LI>
+when <TT>n1</TT> = 0
 
-<BR>only a simple set of rules for recognising mathematical contradictions
+<P>only a simple set of rules for recognising mathematical contradictions
 are used, and furthermore the antecedent of the proof-obligations is not
-inspected during proofs;
+inspected during proofs;</P>
+</LI>
 <LI>
-when <TT>n1</TT> = 1</LI>
+when <TT>n1</TT> = 1
 
-<BR>the antecedent of the proof-obligations is used and a simple set of
+<P>the antecedent of the proof-obligations is used and a simple set of
 rules for producing further consequences from the specific antecedent are
-used;
+used;</P>
+</LI>
 <LI>
-when <TT>n1</TT> = 2</LI>
+when <TT>n1</TT> = 2
 
-<BR>an extended set of rules for producing consequences are used.</UL>
+<P>an extended set of rules for producing consequences are used.</P>
+</LI>
+</UL>
 NOTE: the performance of the provers is affected by this setting.
 
 <P>The optional&nbsp;<A NAME="ON_Clause"></A>ON clause enables the AutoProver
@@ -313,18 +317,22 @@ to subsequently attempt to prove a subset of undischarged proof obligations;
 `lemma_list' is a comma-separated list containing either:
 <UL>
 <LI>
-name</LI>
+name
 
-<BR>(e.g an operation name) indicating that all outstanding obligations
+<P>(e.g. an operation name) indicating that all outstanding obligations
 of that name should be attempted
+</P></LI>
 <LI>
-name.n</LI>
+name.n
 
-<BR>indicating that only the nth obligation of name should be attempted
+<P>indicating that only the n-th obligation of name should be attempted
+</P></LI>
 <LI>
-name.(n,m,..)</LI>
+name.(n,m,..)
 
-<BR>indicating that name.n, name.m, name... should be attempted.</UL>
+<P>indicating that name.n, name.m, name... should be attempted.
+</P></LI>
+</UL>
 If the ON clause is omitted, the AutoProver will use the supplied tactics
 to attempt all unproved proof obligations.
 
@@ -368,23 +376,20 @@ and invoking the AutoProver; it uses the proof method file just edited
 to discharge more proof obligations and, if proof obligations remain, a
 new level is generated, enabling the cycle to be repeated.
 
-<P>
 <HR WIDTH="60%">
 <H3>
 <A NAME="GlobalPMD"></A>The Global PROOFMETHOD File</H3>
 A Global PROOFMETHOD may be specified in the <A HREF="Options.html#Options!Provers">Provers
-Options</A>;if set it is automatically inserted into the <A HREF="#PMD_INCLUSIONS_Clause&quot;">INCLUSIONS</A>
-clause of all newly-created PROOFMETHODs; it may also , of course, be manually
+Options</A>; if set it is automatically inserted into the <A HREF="#PMD_INCLUSIONS_Clause">INCLUSIONS</A>
+clause of all newly-created PROOFMETHODs; it may also, of course, be manually
 inserted or removed when editing a PROOFMETHOD.
 
-<P>
 <HR WIDTH="60%">
 
 <P>See also <A HREF="BToolProver.html#BToolProver">BToolProver</A>.
 
-<P>
 <HR WIDTH="60%">
-<BR>&nbsp;
+
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 
@@ -392,7 +397,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 

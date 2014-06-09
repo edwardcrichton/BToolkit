@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -56,13 +57,16 @@ which binds to the right.</LI>
 
 <LI>
 Each symbol (e.g. <TT>&amp;</TT>) is given a priority, and the highest
-priorities bind strongest,</LI>
+priorities bind strongest,
 
-<BR>e.g. <TT>A => B &amp; C</TT> is equivalent to <TT>A => (B &amp; C)</TT>.
+<P>e.g. <TT>A => B &amp; C</TT> is equivalent to <TT>A => (B &amp; C)</TT>.</P>
+</LI>
 <LI>
-In case of equal priority the leftmost operator binds the strongest,</LI>
+In case of equal priority the leftmost operator binds the strongest,
 
-<BR>e.g. <TT>A &amp; B &amp; C &lt;=> (A &amp; B) &amp; C</TT>.</OL>
+<P>e.g. <TT>A &amp; B &amp; C &lt;=> (A &amp; B) &amp; C</TT>.</P>
+</LI>
+</OL>
 The priorities of infix operators are listed in the table below.
 <H2>
 <A NAME="Operator_Priorities"></A>Infix Operator Priorities</H2>
@@ -89,7 +93,6 @@ The priorities of infix operators are listed in the table below.
 </A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="MathsNotation.html#Substitutions!Preconditioned">|</A></PRE>
 A full list of priorities is found in the B Toolkit Symbol Table, $BKIT/BLIB/AMNSYMBOL.
 
-<P>
 <HR WIDTH="60%">
 <H2>
 <A NAME="Predicates"></A>Predicates</H2>
@@ -253,9 +256,10 @@ or <TT>x = E</TT>, where <TT>z\S</TT>, <TT>z\E</TT>.</DD>
 <TT>{z | z: S &amp; P}</TT></DT>
 
 <DD>
-Set comprehension: the subset of <TT>S</TT> such that <TT>P</TT>.</DD>
-
-<BR>e.g. <TT>{x,y | x,y: S*T &amp; P}</TT>.
+Set comprehension: the subset of <TT>S</TT> such that <TT>P</TT>.<BR>
+<BR>
+e.g. <TT>{x,y | x,y: S*T &amp; P}</TT>.
+</DD>
 <DT>
 <A NAME="Cartesian_Product"></A><TT>S * T</TT></DT>
 
@@ -267,9 +271,10 @@ Cartesian product: the set of Ordered Pairs whose first component is from
 <A NAME="Sets!Power"></A><TT>POW(S)</TT></DT>
 
 <DD>
-Power set: set of all subsets of <TT>S</TT>.</DD>
-
-<BR><TT>x: POW(S) &lt;=> x &lt;: S</TT>.
+Power set: set of all subsets of <TT>S</TT>.<BR>
+<BR>
+<TT>x: POW(S) &lt;=> x &lt;: S</TT>.
+</DD>
 <DT>
 <A NAME="Sets!Union"></A><TT>S \/ T</TT></DT>
 
@@ -300,9 +305,10 @@ Empty set: the set with no elements.</DD>
 <A NAME="Sets!Subsets!Non_empty"></A><TT>POW1(S)</TT></DT>
 
 <DD>
-Non-empty subset: Set of all non-empty subsets of <TT>S</TT>.</DD>
-
-<BR><TT>POW1(S) = POW(S) - {}</TT>.
+Non-empty subset: Set of all non-empty subsets of <TT>S</TT>.<BR>
+<BR>
+<TT>POW1(S) = POW(S) - {}</TT>.
+</DD>
 <DT>
 <A NAME="Sets!Subsets!Finite"></A><TT>FIN(S)</TT></DT>
 
@@ -313,9 +319,10 @@ Finite subsets: Set of all finite subsets of <TT>S</TT>.</DD>
 <A NAME="Sets!Subsets!Finite_Non_Empty"></A><TT>FIN1(S)</TT></DT>
 
 <DD>
-Non-empty finite subsets: Set of all non-empty finite subsets of <TT>S</TT>.</DD>
-
-<BR><TT>FIN1(S) = FIN(S) - {}</TT>.
+Non-empty finite subsets: Set of all non-empty finite subsets of <TT>S</TT>.<BR>
+<BR>
+<TT>FIN1(S) = FIN(S) - {}</TT>.
+</DD>
 <DT>
 <A NAME="Sets!Singleton"></A><TT>{E}</TT></DT>
 
@@ -330,10 +337,11 @@ E}</TT>.</DD>
 <DD>
 Set enumeration: Provided that <TT>F</TT> is not an Expression List, this
 is the set with elements from <TT>{E}</TT> together with element <TT>F</TT>.
-<TT>{E,F} = {E} \/ {F}</TT>.</DD>
-
+<TT>{E,F} = {E} \/ {F}</TT>.
+<BR>
 <BR>Note that <TT>F</TT> is an element of <TT>{(E,F)}</TT>, while <TT>E
 |-> F</TT> is the single element of <TT>{E |-> F}</TT>.
+</DD>
 <DT>
 <A NAME="Sets!Union!Generalised"></A><TT>union(U)</TT></DT>
 
@@ -357,10 +365,11 @@ x: S &amp; !s.(s: U => x: s)}</TT>.</DD>
 Generalised union of the sets <TT>E</TT> where <TT>z</TT> satisfies <TT>P</TT>.
 For each variable <TT>x</TT> in the list <TT>z</TT>, <TT>P</TT> must contain
 a constraining predicate of the form <TT>x: S</TT>, <TT>x &lt;: S</TT>,
-<TT>x &lt;&lt;: S or x = F</TT> with <TT>z\s</TT>, <TT>z\F</TT>.</DD>
-
+<TT>x &lt;&lt;: S or x = F</TT> with <TT>z\s</TT>, <TT>z\F</TT>.
+<BR>
 <BR><TT>!z.(P => E &lt;: T) => UNION(z).(P | E) = {x | x: T &amp; !z.(P
 => x: E)}</TT>.
+</DD>
 <DT>
 <A NAME="Sets!Intersection!UGeneralised"></A><TT>INTER(z).(P | E)</TT></DT>
 
@@ -368,10 +377,12 @@ a constraining predicate of the form <TT>x: S</TT>, <TT>x &lt;: S</TT>,
 Generalised intersection of the sets <TT>E</TT> where <TT>z</TT> satisfies
 <TT>P</TT>. For each variable <TT>x</TT> in the list <TT>z</TT>, <TT>P</TT>
 must contain a constraining predicate of the form <TT>x: S</TT>, <TT>x
-&lt;: S</TT>, <TT>x &lt;&lt;: S or x = F</TT> with <TT>z\s</TT>, <TT>z\F</TT>.</DD>
-
+&lt;: S</TT>, <TT>x &lt;&lt;: S or x = F</TT> with <TT>z\s</TT>, <TT>z\F</TT>.
+<BR>
 <BR><TT>!z.(P => E &lt;: T) => INTER(z).(P | E) = {x | x: T &amp; #z.(P
-&amp; x: E)}</TT>.</DL>
+&amp; x: E)}</TT>.
+</DD>
+</DL>
 
 <HR WIDTH="60%">
 <H2>
@@ -529,25 +540,28 @@ Relation: Set of relations from <TT>S</TT> to <TT>T</TT>. Equivalent to
 <A NAME="Relations!Domain"></A><TT>dom(r)</TT></DT>
 
 <DD>
-Domain of <TT>r</TT>:</DD>
-
+Domain of <TT>r</TT>:
+<BR>
 <BR>The set <TT>{x | x: S &amp; #y.(x,y: r)}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Codomain"></A><TT>ran(r)</TT></DT>
 
 <DD>
-Range of <TT>r</TT>:</DD>
-
+Range of <TT>r</TT>:
+<BR>
 <BR>The set <TT>{y | y: T &amp; #x.(x,y: r)}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Composition"></A><TT>p;q</TT></DT>
 
 <DD>
 Relational composition: Composition of relations <TT>p</TT> and <TT>q</TT>,
-where <TT>p: S &lt;-> T</TT> and <TT>q: T &lt;-> U</TT>.</DD>
-
+where <TT>p: S &lt;-> T</TT> and <TT>q: T &lt;-> U</TT>.
+<BR>
 <BR>The set <TT>{x,z | x,z: S * U &amp; #y.(y: T &amp; x,y: p &amp; y,z:
 q)}</TT>. Also denoted by <TT>q circ p</TT>.
+</DD>
 <DT>
 <TT>q circ p</TT></DT>
 
@@ -558,111 +572,124 @@ Composition of relations <TT>q</TT> and <TT>p</TT>. The same as <TT>p;q</TT>.</D
 <A NAME="Relations!Identity"></A><TT>id(S)</TT></DT>
 
 <DD>
-Identity on <TT>S</TT>.</DD>
-
+Identity on <TT>S</TT>.
+<BR>
 <BR>The set <TT>{x,y | x,y: S * S &amp; x = y}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Domain_Restriction"></A><TT>s &lt;| r</TT></DT>
 
 <DD>
 Restriction of <TT>r</TT> by <TT>s</TT>. Also known as domain restriction.
 The relation formed from <TT>r</TT> by keeping only the pairs where the
-first element is in <TT>s</TT>.</DD>
-
+first element is in <TT>s</TT>.
+<BR>
 <BR>The set <TT>{x,y | x,y: r &amp; x: s}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Range_Restriction"></A><TT>r |> t</TT></DT>
 
 <DD>
 Co-restriction of <TT>r</TT> by <TT>t</TT>. Also known as range restriction.
 The relation formed from <TT>r</TT> by keeping only those pairs where the
-last element is in <TT>t</TT>.</DD>
-
+last element is in <TT>t</TT>.
+<BR>
 <BR>The set <TT>{x,y |x,y: r &amp; y: t}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Anti_Domain_Restriction"></A><TT>s &lt;&lt;| r</TT></DT>
 
 <DD>
 Anti-restriction of <TT>r</TT> by <TT>s</TT>. Also known as domain subtraction.
 The relation formed from <TT>r</TT> by keeping only those pairs where the
-first element is in the complement of <TT>s</TT>.</DD>
-
+first element is in the complement of <TT>s</TT>.
+<BR>
 <BR>The set <TT>{x,y | x,y: r &amp; x: S-s}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Anti_Range_Restriction"></A><TT>r |>> t</TT></DT>
 
 <DD>
 Anti-co-restriction of <TT>r</TT> by <TT>t</TT>. Also known as range subtraction.
 The relation formed from <TT>r</TT> by keeping only those pairs where the
-last element is in the complement of <TT>t</TT>.</DD>
-
+last element is in the complement of <TT>t</TT>.
+<BR>
 <BR>The set <TT>{x,y | x,y: r &amp; y: T-t}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Inverse"></A><TT>r~</TT></DT>
 
 <DD>
 Inverse of <TT>r</TT>. The relation formed from <TT>r</TT> by interchanging
-the elements of each pair.</DD>
-
+the elements of each pair.
+<BR>
 <BR>The set <TT>{y,x | y,x: T * S &amp; x,y: r}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Image"></A><TT>r[s]</TT></DT>
 
 <DD>
-Image of set <TT>s</TT> under relation <TT>r</TT>.</DD>
-
+Image of set <TT>s</TT> under relation <TT>r</TT>.
+<BR>
 <BR>The set consisting of all those elements related to some element in
 the set <TT>s</TT> through relation <TT>r</TT>.
 <BR>The set <TT>{y | y: T &amp; #x.(x: s &amp; x,y: r)}</TT>
+</DD>
 <DT>
 <A NAME="Relations!Overriding"></A><TT>r1 &lt;+ r2</TT></DT>
 
 <DD>
-Overriding of <TT>r1</TT> by <TT>r2</TT>.</DD>
-
+Overriding of <TT>r1</TT> by <TT>r2</TT>.
+<BR>
 <BR>The set <TT>(dom(r2) &lt;&lt;| r1) \/ r2</TT>.
+</DD>
 <DT>
 <TT>r1 +> r2</TT></DT>
 
 <DD>
-Overriding of <TT>r2</TT> by <TT>r1</TT>.</DD>
-
+Overriding of <TT>r2</TT> by <TT>r1</TT>.
+<BR>
 <BR>The set <TT>r2 &lt;+ r1</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Product,_Direct"></A><TT>p >&lt; q</TT></DT>
 
 <DD>
 Direct product of <TT>p</TT> and <TT>q</TT>, where <TT>p</TT>: <TT>S &lt;->
-U</TT> and <TT>q: S &lt;-> V</TT>.</DD>
-
+U</TT> and <TT>q: S &lt;-> V</TT>.
+<BR>
 <BR>The set <TT>{x,(y,z) | x,(y,z): S * (U * V) &amp; x,y: p &amp; x,z:
 q}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Product,_Parallel"></A><TT>p || q</TT></DT>
 
 <DD>
 Parallel product of <TT>p</TT> and <TT>q</TT>. where <TT>p: S &lt;-> T</TT>
-and <TT>q: V &lt;-> U</TT>.</DD>
-
+and <TT>q: V &lt;-> U</TT>.
+<BR>
 <BR>The set <TT>{(x,y),(m,n) | (x,y),(m,n): (S*T) * (V*U) &amp; (x,m: p
 &amp; y,n: q)}</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Iteration"></A><TT>iterate(r,n)</TT></DT>
 
 <DD>
 The <TT>n</TT>th iterate of <TT>r</TT> (where <TT>n: NAT</TT>), i.e. <TT>r</TT>
 composed with itself <TT>n</TT> times (defined only for <TT>r: S &lt;->
-S</TT>).</DD>
-
+S</TT>).
+<BR>
 <BR><TT>iterate(r,0) = id(S)</TT> and <TT>iterate(r,n+1) = r;iterate(r,n)</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Closure"></A><TT>closure(r)</TT></DT>
 
 <DD>
 The reflexive transitive closure of <TT>r</TT> (defined only for <TT>r:
-S &lt;-> S</TT>).</DD>
-
+S &lt;-> S</TT>).
+<BR>
 <BR><TT>closure(r) = UNION(n).(n: NAT | iterate(r,n))</TT>.
+</DD>
 <DT>
 <A NAME="Relations!Projection"></A><TT>prj1(S,T)</TT></DT>
 
@@ -690,52 +717,59 @@ and <TT>P</TT> be a predicate.
 
 <DD>
 Set of partial functions from <TT>S</TT> to <TT>T</TT> (also known as `many-to-one
-relations').</DD>
-
+relations').
+<BR>
 <BR>The set <TT>{r | r : S &lt;-> T &amp; (r~;r) &lt;: id(T)}</TT>.
+</DD>
 <DT>
 <A NAME="Functions!Total"></A><TT>S --> T</TT></DT>
 
 <DD>
-Set of total functions from <TT>S</TT> to <TT>T</TT>.</DD>
-
+Set of total functions from <TT>S</TT> to <TT>T</TT>.
+<BR>
 <BR>The set <TT>{f | f : S +-> T &amp; dom(f) = S}</TT>.
+</DD>
 <DT>
 <A NAME="Injection!Partial"></A><TT>S >+> T</TT></DT>
 
 <DD>
 Set of partial injections from <TT>S</TT> to <TT>T</TT> (also known as
-`one-to-one relations').</DD>
-
+`one-to-one relations').
+<BR>
 <BR>The set <TT>{f | f : S +-> T &amp; f~ : T +-> S}</TT>.
+</DD>
 <DT>
 <A NAME="Injection!Total"></A><TT>S >-> T</TT></DT>
 
 <DD>
-Set of total injections from <TT>S</TT> to <TT>T</TT>.</DD>
-
+Set of total injections from <TT>S</TT> to <TT>T</TT>.
+<BR>
 <BR>The set <TT>S >+> T /\ S --> T</TT>.
+</DD>
 <DT>
 <A NAME="Surjection!Partial"></A><TT>S +->> T</TT></DT>
 
 <DD>
-Set of partial surjections from <TT>S</TT> to <TT>T</TT>.</DD>
-
+Set of partial surjections from <TT>S</TT> to <TT>T</TT>.
+<BR>
 <BR>The set <TT>{f | f: S +-> T &amp; ran(f)=T}</TT>.
+</DD>
 <DT>
 <A NAME="Surjection!Total"></A><TT>S -->> T</TT></DT>
 
 <DD>
-Set of total surjections from <TT>S</TT> to <TT>T</TT>.</DD>
-
+Set of total surjections from <TT>S</TT> to <TT>T</TT>.
+<BR>
 <BR>The set <TT>S +->> T /\ S --> T</TT>.
+</DD>
 <DT>
 <A NAME="Functions!Bijection"></A><TT>S >->> T</TT></DT>
 
 <DD>
-Set of bijections from <TT>S</TT> to <TT>T</TT>.</DD>
-
+Set of bijections from <TT>S</TT> to <TT>T</TT>.
+<BR>
 <BR>The set <TT>S -->> T /\ S >-> T</TT>.
+</DD>
 <DT>
 <A NAME="Quantification!Lambda_Abstraction"></A><TT>%z.(z: S &amp; P |
 E)</TT></DT>
@@ -1006,9 +1040,6 @@ No-op.</DD>
 </DL>
 
 <HR WIDTH="60%">
-<CENTER>&nbsp;</CENTER>
-
-<CENTER></CENTER>
 
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
@@ -1017,7 +1048,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>
 <HR WIDTH="60%"></CENTER>
 

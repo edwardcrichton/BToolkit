@@ -30,8 +30,6 @@ int t=0;
 int y,z;
 int u=0;
 
-int m;
-
 char n;
 
 char s[1001];
@@ -368,16 +366,11 @@ spc()
    fclose(fileone);
 }
 
-
-
-/*void*/
-/* should be int*/
 int
- main(argc,argv)
+main(argc,argv)
   int argc;
   char *argv[];
- {
-
+{
  char bses[1000];
  char* bkit;
 
@@ -507,5 +500,5 @@ system ( "cat .Bprf" );
 /***
 system ( "ls -alrt" );
 ***/
-
- }
+    return 0;
+}

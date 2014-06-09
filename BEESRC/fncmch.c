@@ -23,7 +23,6 @@ int fval3[151];
 int tfun;
                     
 /*  PARTIAL FUNCTION MACHINE  */
-    
 
 #define clr_fnc           tfun=0
   
@@ -36,9 +35,9 @@ idx_fnc(v)
       r=i;
     } else {
       i=i-1;
-    };
+    }
   }
-; return r;
+  return r;
 }
 
 #define in_dom_fnc(v)    ((idx_fnc(v)!=0)!=0)
@@ -48,7 +47,6 @@ idx_fnc(v)
 #define val2_fnc(i)      fval2[i]
 
 #define val3_fnc(i)      fval3[i]
-  
 
 #define add_fnc(i,v,w,t) tfun=tfun+1; fdom[tfun]=i; fval1[tfun]=v; fval2[tfun]=w; fval3[tfun]=t
 
@@ -62,4 +60,3 @@ anti_restr_fnc(lv,le,lq,newlv,newle)
                psh(newle,val(le,i));
             });
 }
-

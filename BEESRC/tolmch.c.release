@@ -28,7 +28,7 @@ max_toolfunc()
   sta_nod;
   sta_tac;
   sta_hyp; 
-  sta_seq  ;
+  sta_seq;
 }
 
 max0_toolfunc()

@@ -1,9 +1,10 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
 <TITLE>The Translator</TITLE>
-<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK=#6FFFF VLINK="#FF6666" ALINK="#FF0000">
-<A NAME="Translator"><HR></A>
-<H1>The Translator (trl)</H1>
+<BODY TEXT="#E9FFCC" BGCOLOR="#2C4D4D" LINK="#6FFFF0" VLINK="#FF6666" ALINK="#FF0000">
+<HR>
+<H1><A NAME="Translator">The Translator (trl)</A></H1>
 
 The Translator (trl) is invoked from the 
 <A HREF="BToolkit.html#Environments!Translators">Translators Environment</A> 
@@ -73,9 +74,9 @@ The pre-defined machines are held in the
 <A HREF="SystemLibrary.html#System_Library">System Library</A> 
 and can be
 introduced into a development by using the 
-<A HREF="Introduce.html#Introduce">`Introduce construct from SLIB</A>' 
+<A HREF="Introduce.html#Introduce">`Introduce construct from SLIB'</A>
 facility.
-<P>
+
 <H2>The `main' Implementation:</H2>
 
     The machine/implementation which contains the single operation
@@ -85,66 +86,66 @@ facility.
     and the main operation will be the entry when the linked
     code is invoked.
 
-<P>
 <H2>The Translation Process</H2>
 
 The Translator translates the following clauses of an IMPLEMENTATION:
 <UL>
-<LI> The MACHINE header clause:<BR>
+<LI> The MACHINE header clause:
 
-    The Translator provides for an implementation of the formal
+    <P>The Translator provides for an implementation of the formal
     machine parameters. 
     Linking information is generated from this clause.
 
-<LI> The <A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTS</A> clause:<BR>
+<LI> The <A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTS</A> clause:
 
-    The Translator provides for an implementation which makes 
+    <P>The Translator provides for an implementation which makes 
     instances of the imported MACHINEs known to this implementation;
-    an imported MACHINE must be a library (<A HREF="SystemLibrary.html#System_Library">SLIB</A> machine,
+    an imported MACHINE must be a library (<A HREF="SystemLibrary.html#System_Library">SLIB</A> machine),
     a generated machine (with code module, for example generated
     through the Enumerator) or a MACHINE which already has been
     provided with an IMPLEMENTATION within the development.
     Linking information is generated from this clause.
 
-<LI> The <A HREF="Structuring.html#SEES_Clause!Using">SEES</A> clause:<BR>
+<LI> The <A HREF="Structuring.html#SEES_Clause!Using">SEES</A> clause:
 
-    The Translator provides for an implementation which makes seen
+    <P>The Translator provides for an implementation which makes seen
     MACHINEs known to the implementation. A seen MACHINE must be a
     committed construct which is imported elsewhere, in which
     case its state is shared between the machine which imports it
     and the machine which sees it.
 
-<LI> The  <A HREF="AMNotation.html#CONSTANTS_Clause">CONSTANTS</A> and <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clauses:<BR>
+<LI> The  <A HREF="AMNotation.html#CONSTANTS_Clause">CONSTANTS</A> and <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clauses:
 
-    All constants must be given an exact value in the <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clause.
+    <P>All constants must be given an exact value in the <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clause.
     The constants and its values are known to all implementation which
     <A HREF="Structuring.html#SEES_Clause!Using">SEES</A> or <A HREF="Structuring.html#IMPORTS_Clause!Using">IMPORTS</A> the MACHINE for which we are providing an
     implementation.
     Header information is generated from this clause.
 
-<LI> The <A HREF="AMNotation.html#SETS_Clause">SETS</A> and <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clauses:<BR>
+<LI> The <A HREF="AMNotation.html#SETS_Clause">SETS</A> and <A HREF="AMNotation.html#PROPERTIES_Clause">PROPERTIES</A> clauses:
 
-    The Translator provides for an implementation of enumerated sets and
+    <P>The Translator provides for an implementation of enumerated sets and
     deferred sets.  The deferred sets must be given an exact value within
-    the latter clause; however the value is normally a deferred set from
+    the latter clause; however, the value is normally a deferred set from
     an imported machine.
     Header information is generated from this clause.
 
-<LI> The <A HREF="AMNotation.html#INITIALISATION_Clause">INITIALISATION</A> clause:<BR>
+<LI> The <A HREF="AMNotation.html#INITIALISATION_Clause">INITIALISATION</A> clause:
 
-    The Translator provides for a C implementation of the initialisation
+    <P>The Translator provides for a C implementation of the initialisation
     which is executed at run-time on invocation. Note that the INITIALISATION
     clauses of all imported MACHINES are automatically invoked before any
     statements present in this clause.
 
-<LI> The <A HREF="AMNotation.html#OPERATIONS_Clause">OPERATIONS</A> clause:<BR>
+<LI> The <A HREF="AMNotation.html#OPERATIONS_Clause">OPERATIONS</A> clause:
 
-    Each of the operations is translated into code. Note that for imported
+    <P>Each of the operations is translated into code. Note that for imported
     <A HREF="SystemLibrary.html#System_Library">SLIB</A> MACHINES,
     operations are translated into parameterised macros and others
     into C functions or procedures.
+
 </UL>
-<P>
+
 <H2>Note:</H2>
 <UL><LI>
   The `file_dump' machine must always be imported into the development
@@ -153,18 +154,17 @@ The Translator translates the following clauses of an IMPLEMENTATION:
   are not actually used.
 </UL>
 
-<P>
 <HR WIDTH="60%">
-<P>
-<P><CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
+
+<CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 
 <CENTER><I><FONT COLOR="#33CCFF">Also available in the form of a complete
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
-<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT COLOR="#33CCFF"><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
-(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT></B>&nbsp;
+<CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B>
+<I><FONT COLOR="#33CCFF"><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+(UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</FONT></I></B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 
 </BODY>

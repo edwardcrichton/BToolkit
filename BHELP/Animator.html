@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -41,7 +42,6 @@ may be animated (a good way to familiarize oneself with their functionality!).
 <BR>In this description, <TT>fifi </TT>is assumed to be the name of the
 machine being animated.
 
-<P>
 <HR WIDTH="60%">
 <H2>
 <A NAME="AnimatorMenu"></A>The Animator Menu</H2>
@@ -65,7 +65,7 @@ The animator menu offers six options:
 <LI>
 <TT>Clean Animator Files</TT></LI>
 </UL>
-<A HREF="anim_menu.gif"><IMG SRC="anim_menu_icon.gif" ALT="The Animator Menu" HEIGHT=215 WIDTH=221 ALIGN=ABSCENTER></A>
+<A HREF="anim_menu.gif"><IMG SRC="anim_menu_icon.gif" ALT="The Animator Menu" HEIGHT=215 WIDTH=221 ALIGN=MIDDLE></A>
 
 <P><TT><A HREF="#AnimatorInteractive">Interactive</A></TT>, <TT><A HREF="#ExecutableAnimationStep">Execute
 Step</A></TT> and <TT><A HREF="#AnimationExecutionAuto">Execute Auto</A></TT>
@@ -85,7 +85,6 @@ and State Output files (<TT> .out </TT>) which may be removed when no longer
 needed. This option is also avaiable from the <A HREF="#AnimatorUtilitiesMenu">Utilities
 Menu</A>.
 
-<P>
 <HR WIDTH="60%"><A NAME="AnimatorInteractive"></A>
 <H2>
 Interactive Preliminaries</H2>
@@ -105,11 +104,9 @@ provided the theory files parses, and
 <PRE>&nbsp; "<TT>SRC/fifi.mch.thy</TT>" does not parse - not loaded</PRE>
 otherwise, together with information showing the cause of the error.
 
-<P>
 <HR WIDTH="30%">
-<BR><A NAME="AnimatorInitialise"></A>
-<H3>
-Animator Initialisation Files</H3>
+
+<H3><A NAME="AnimatorInitialise">Animator Initialisation Files</A></H3>
 On using the Animator interactively, if one or more previously <A HREF="#Script">ANIMATE
 Script</A> files is found, the following prompt is displayed:
 <PRE>&nbsp; Initialize state from ANIMATE Script?</PRE>
@@ -182,7 +179,6 @@ See figure</A>.
 
 <P>The `Quit' option allows you to leave the animation.
 
-<P>
 <HR WIDTH="30%">
 <H2>
 <A NAME="AnimatorUtilitiesMenu"></A>The Animator Utilities Menu</H2>
@@ -213,7 +209,7 @@ Operation Menu</A> and offers:
 <LI>
 <TT>Clean animator files</TT></LI>
 </UL>
-<A HREF="anim_utils.gif"><IMG SRC="anim_utils_icon.gif" ALT="Animator Utilities Menu" BORDER=2 HEIGHT=210 WIDTH=193 ALIGN=ABSCENTER></A>
+<A HREF="anim_utils.gif"><IMG SRC="anim_utils_icon.gif" ALT="Animator Utilities Menu" BORDER=2 HEIGHT=210 WIDTH=193 ALIGN=MIDDLE></A>
 <A HREF="anim_utils.gif">See figure</A>
 
 <P><TT><A HREF="#Users_Theory!in_Animator">Edit theory file</A></TT> provides
@@ -252,7 +248,6 @@ used in <A HREF="#AnimatorInteractive">Interactive</A> mode - see <A HREF="#Scri
 when no longer needed. This option is also avaiable from the main <A HREF="#AnimatorMenu">Animator
 Menu</A>.
 
-<P>
 <HR WIDTH="60%">
 <H2>
 <A NAME="Script"></A>The&nbsp; ANIMATE Script</H2>
@@ -261,7 +256,6 @@ is given in a BNF-like syntax as follows: the syntax <TT>exp1 | exp2 </TT>indica
 <TT>exp1</TT> or <TT>exp2</TT> (choice), and&nbsp; <TT>[| exp |] </TT>indicates
 optionality.
 
-<P>
 <HR WIDTH="10%">
 <PRE>&nbsp;&nbsp;&nbsp;&nbsp; ANIMATE
 
@@ -329,7 +323,6 @@ The<TT> INI_ </TT>operation may not appear other than as the first operation.</L
 </OL>
 See also <A HREF="#ExampleScript">Animate Script example</A>.
 
-<P>
 <HR WIDTH="30%">
 <H3>
 <A NAME="AnimatorCreatingExe"></A>Creating an ANIMATION Script</H3>
@@ -346,18 +339,19 @@ of a new one.
 <P>A template for a new Script may be achieved in one of two ways:
 <UL>
 <LI>
-As an empty Script</LI>
+As an empty Script
 
-<BR>All<TT> _VALUES </TT>clause will be created with either<TT> ? </TT>entries,
-or entries of the form<TT> value = ? d</TT>epending on the machine (all
+<BR>All <TT>_VALUES</TT> clause will be created with either<TT> ? </TT>entries,
+or entries of the form <TT>value = ?</TT> depending on the machine (all
 machine parameters and sets and constants of the machine (or its subordinates)
 will be automatically included in the script.
-<BR>The first operation of the<TT> EXECUTE </TT>clause will be INI_fifi
+<BR>The first operation of the <TT>EXECUTE</TT> clause will be INI_fifi.
+</LI>
 <LI>
-As a Script copied from an existing ANIMATION Script</LI>
+As a Script copied from an existing ANIMATION Script.
 
 <BR>Which may then be edited from the <A HREF="#AnimatorMenu">Animator
-Menu</A></UL>
+Menu</A></LI></UL>
 &nbsp;
 <HR WIDTH="30%">
 <H3>
@@ -443,7 +437,7 @@ is first initialised (paremeters &amp; context set, and initialised either
 through a<TT> STATE_VALUES </TT>clause or its<TT> INI_ </TT>operation)
 and then each operation is presented as a dialog:
 <BR>&nbsp;
-<BR><A HREF="anim_auto_step.gif"><IMG SRC="anim_auto_step_icon.gif" ALT="EXECUTE - Step" HEIGHT=72 WIDTH=417 ALIGN=ABSCENTER></A>
+<BR><A HREF="anim_auto_step.gif"><IMG SRC="anim_auto_step_icon.gif" ALT="EXECUTE - Step" HEIGHT=72 WIDTH=417 ALIGN=MIDDLE></A>
 
 <P>At the end of animation, the user is invited to optionally save the
 output (as a<TT> .out </TT>file).
@@ -510,7 +504,7 @@ rules</A> (see section on the <A HREF="BPlatform.html#B-Platform">B_Platform</A>
 <P>For example:
 <OL>
 <LI>
-the rule</LI>
+the rule
 
 <PRE>&nbsp;&nbsp;&nbsp; <A HREF="BPlatform.html#Guards!bident">bident</A>(x)&nbsp;
 &nbsp;&nbsp; =>&nbsp;
@@ -519,9 +513,9 @@ will re-write the expression
 <PRE>&nbsp;&nbsp;&nbsp; [aa,bb,cc]^[dd]</PRE>
 to
 <PRE>&nbsp;&nbsp;&nbsp; [aa,bb,cc,dd]</PRE>
-
+</LI>
 <LI>
-the rule</LI>
+the rule
 
 <PRE>&nbsp;&nbsp;&nbsp; <A HREF="BPlatform.html#Guards!btest">btest</A>(n>1)&nbsp;
 &nbsp;&nbsp; =>&nbsp;
@@ -530,10 +524,11 @@ will re-write the expression
 <PRE>&nbsp;&nbsp;&nbsp; fac(7)</PRE>
 to
 <PRE>&nbsp;&nbsp;&nbsp; fac(7-1)*7</PRE>
+</LI>
 </OL>
 
 <HR WIDTH="60%">
-<BR>&nbsp;
+
 <CENTER><I><FONT COLOR="#33CCFF">A full on-line help listing is available
 in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 
@@ -541,7 +536,7 @@ in the <A HREF="Contents.html#CONTENTS">Contents Page</A></FONT></I></CENTER>
 <A HREF="Index.html">Index</A>.</FONT></I></CENTER>
 
 <CENTER><IMG SRC="B.gif" ALT="Blogo" HSPACE=10 VSPACE=25 ALIGN=MIDDLE><B><FONT COLOR="#33CCFF">
-<I><FONT SIZE=+1>&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
+<I><FONT SIZE="+1">&copy;</FONT> <A HREF="mailto:info@b-core.com">B-Core
 (UK) Limited</A>, Last updated: 22 Feb 2002&nbsp;</I></FONT>&nbsp;</B>&nbsp;
 <HR WIDTH="60%"></CENTER>
 

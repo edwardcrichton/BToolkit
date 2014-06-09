@@ -19,10 +19,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 extern int CfgDepBase_VffncP2;
 extern int CfgDepBase_Vfnc[];
 
-char CfgDepBase_ffnc_buf[1000];
-
-#define CfgDepBase_CHARperWORD 4
-
 #define CfgDepBase_TST_FLD_FNC(bb,ii) {*(bb) = \
                          (((ii>=1) && (ii<=CfgDepBase_VffncP2))!=0);}
 #define CfgDepBase_VAL_ARR(vv,ii) {*(vv) = CfgDepBase_array[ii];}

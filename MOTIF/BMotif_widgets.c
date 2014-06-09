@@ -16,6 +16,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+#include <limits.h>
+
 #include "BMotif_globals.h"
 
 void
@@ -29,7 +31,6 @@ B_info_CB ( widget )
 Widget widget;
 {
   struct help_struct help_data;
-  int i, j, k;
 
 /***
 PrintBase;
@@ -392,8 +393,6 @@ See Top Bar Help -> ToolBar -> Close Edit Windows/Commit Edits'";
 
   Popup_Help_CB ( top_level, ( XtPointer ) & help_data );
 }
-
-
 
 /*
 void
@@ -784,7 +783,7 @@ XtCallbackProc lab_CB;
 int decorate;
 int leftOffset;
 {
- Widget lab;
+  Widget lab;
   XmString xstr = XmStringCreateLtoR ( lab_str, charset );
   if ( left_widget == ( Widget ) NULL )
   {
@@ -1283,7 +1282,9 @@ TopBar_Construct_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
 {
+#ifndef WWW_VERSION
   char buf [ 150 ];  /* don't want the global buf */
+#endif
 
   if ( IsDeSensitized () ) {
     Popup_Info ( " Constructs not available whilst processing ... " );    
@@ -1999,7 +2000,6 @@ TopBar_Browse_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
 {
-  char buf [ 150 ];  /* don't want the global buf */
   char* browserCommand;
 
   switch ( * ( int * ) client_data ) {
@@ -2007,6 +2007,7 @@ XtPointer client_data;
   case 10:
     {
       int Hypertext_Text_Option;
+      char buf [ 150 ];  /* don't want the global buf */
 
       valIth_flags ( &Hypertext_Text_Option, Hypertext_text_num );
       Retrieve_String ( htx_viewer_str_num, buf );
@@ -2150,9 +2151,7 @@ int nn;
   /***
   create filename
   ***/
-  strcpy ( pal_file, BKIT_path );
-  strcat ( pal_file, "/BPALETTE/" );
-  strcat ( pal_file, PaletteN_pal [ nn ] );
+  sprintf( pal_file, "%s/BPALETTE/%s", BKIT_path, PaletteN_pal [ nn ] );
 
   /***
   get contents
@@ -2182,7 +2181,7 @@ int nn;
   set help data and call Popup_Help_CB 
   ***/
   help_data.type = PALETTE_HELP;
-  help_data.text = ( char * ) text;
+  help_data.text = text;
   help_data.width  = 250;
   help_data.height = 400;
 
@@ -2923,32 +2922,29 @@ Anm_Multi_Input_unknwn_ok ( idx )
 int idx;
 {
   char * text;
-  int ll;
+  size_t ll;
 
   text = XmTextFieldGetString ( Anm_Multi_Input_text [ idx ] );
 /***
 printf ( "idx %d - str checking |%s|\n", idx, text );
 ***/
   ll = strlen ( text );
+  XtFree ( text );
   if ( ! ll ) {
-    XtFree ( text );
     sprintf ( buf, "Text for %s is empty", Anm_Multi_Input_label [ idx ] );
     Popup_Minor_Err ( top_level, buf );
     return 0;
   }
   if ( ll > Anm_Multi_Input_label_MAX - 2 ) {
-    XtFree ( text );
     sprintf ( buf, "String for %s too long (max &d)", Anm_Multi_Input_label [ idx ], Anm_Multi_Input_label_MAX - 2 );
     Popup_Minor_Err ( top_level, buf );
     return 0;
   }
   if ( ! FormulaParses ( text ) ) {
-    XtFree ( text );
     sprintf ( buf, "%s: parse error", Anm_Multi_Input_label [ idx ] );
     Popup_Minor_Err ( top_level, buf );
     return 0;
   }
-  XtFree ( text );
   return 1;
 }
 
@@ -2957,7 +2953,7 @@ Anm_Multi_Input_str_ok ( idx )
 int idx;
 {
   char * text;
-  int ll;
+  size_t ll;
 
   text = XmTextFieldGetString ( Anm_Multi_Input_text [ idx ] );
 /***
@@ -2983,7 +2979,6 @@ Anm_Multi_Input_chr_ok ( idx )
 int idx;
 {
   char * text;
-  int ll;
 
   text = XmTextFieldGetString ( Anm_Multi_Input_text [ idx ] );
 /***
@@ -3079,7 +3074,8 @@ Anm_Multi_Input_bts_ok ( idx )
 int idx;
 {
   char * text;
-  int i, ll, is_bts_error;
+  size_t i, ll;
+  int is_bts_error;
   unsigned n;
 
   text = XmTextFieldGetString ( Anm_Multi_Input_text [ idx ] );
@@ -3134,7 +3130,8 @@ Anm_Multi_Input_num_ok ( idx )
 int idx;
 {
   char * text;
-  int i, is_num_error, ll;
+  size_t i, ll;
+  int is_num_error;
   unsigned n;
 
   text = XmTextFieldGetString ( Anm_Multi_Input_text [ idx ] );
@@ -3202,9 +3199,8 @@ Anm_Multi_Input_Dialog_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
 {
-  int i, ok;
-  char * text;
-  FILE * Bcom;
+  int ok;
+  size_t i;
 
   i = 0;
   ok = 1;
@@ -3238,6 +3234,8 @@ printf ( "checking idx %d - %d\n", i, Anm_Multi_Input_fld_ident [ i ] );
     strcpy ( str_buf, "(?" );
     i = 0;
     while ( i < Anm_Multi_Input_tot ) {
+      char * text;
+
       switch ( Anm_Multi_Input_fld_ident [ i ] ) {
       case Anm_Multi_Input_fld_is_num :
         text = XmTextFieldGetString ( Anm_Multi_Input_text [ i ] );
@@ -3410,7 +3408,6 @@ o BITSTRINGS should be entered with quotes, for example \"0101\""
 /***
 printf ( "Cre_Anm_Multi_Input_Form ( %d )\n", anm_Anm_Multi_Input_flag );
 ***/
-
 
   XtDestroyWidget ( constructs_rc );  /* 11.98 */
   constructs_rc = XtVaCreateManagedWidget ( "Canvas", 
@@ -5033,9 +5030,7 @@ XtPointer client_data;
         XmNtraversalOn,            False,
         NULL );
   XmStringFree ( xstr );
-  strcpy ( buf, "Hypotheses containing \"" );
-  strcat ( buf, hyp_search_string );
-  strcat ( buf, "\"" );
+  sprintf ( buf, "Hypotheses containing \"%s\"", hyp_search_string );
   xstr = XmStringCreateLtoR ( buf, charset );
   search_label = XtVaCreateManagedWidget ( "Label",
       xmLabelWidgetClass,             dialog_main_form,
@@ -6051,10 +6046,9 @@ Popup_SetMaxGenHyp ()
     static dialog exists - prompt
     ***/
   {
-    char str [ 100 ];
+    char str[] = "Set Max Generated Hypotheses:";
     XmString xstr;
 
-    strcpy ( str, "Set Max Generated Hypotheses:" );
     xstr = XmStringCreateLocalized ( str );
     XtVaSetValues ( dialog,
         XmNselectionLabelString,     xstr,
@@ -6613,9 +6607,7 @@ int option;
     char lab [ 100 ];
     XmString xstr;
 
-    strcpy ( lab, secondary_string );
-    strcat ( lab, ": " );
-    strcat ( lab, primary_string );
+    sprintf ( lab, "%s: %s", secondary_string, primary_string );
     xstr = XmStringCreateLtoR ( lab, charset );
     ipr_label = XtVaCreateManagedWidget ( lab_types [ usr ], 
       xmLabelWidgetClass,          constructs_rc,
@@ -6891,7 +6883,9 @@ Widget panel_shell;
   int leftrightOffset=1;
   int scrollOffset=10; /* 15 */
   int commandOffset=10+scrollOffset+leftrightOffset;/* 26 */
+#ifdef MAC_VERSION
   char notice[255];
+#endif
 
 
   /***
@@ -7597,11 +7591,9 @@ XtPointer client_data;
 XtIntervalId * id;
 {
   XmString xstr;
-  char info_buf [ 1 ];
+  char info_buf[] = "";
   Widget *label = ( Widget * ) client_data;
   
-  info_buf[0]='\0';
-
   xstr = XmStringCreateLtoR ( info_buf, charset );
   XtVaSetValues( * label,
                  XmNlabelString,            xstr,
@@ -7712,13 +7704,13 @@ char * text;
   
   XmStringFree ( xstr );
   
+  free(info_buf);
+
   XmUpdateDisplay ( information_label );
 
-    XtAppAddTimeOut ( app, timeout,
-        ( XtTimerCallbackProc ) Popup_Info_Label_CB,
-        ( XtPointer ) information_label );
-	
-  free(info_buf);
+  XtAppAddTimeOut ( app, timeout,
+      ( XtTimerCallbackProc ) Popup_Info_Label_CB,
+      ( XtPointer ) information_label );
 }
 
 void
@@ -8145,7 +8137,6 @@ QuitEditor_Popup_CB ( q_d, client_data )
 Widget q_d;
 XtPointer client_data;
 {
-
   XtPopdown ( XtParent ( q_d ) );
   XmUpdateDisplay ( XtParent ( q_d ) );
   if ( * ( int * ) client_data == OK_BUTTON ) {
@@ -10740,7 +10731,6 @@ printf ( "ok_pressed    = %d\n", ok_pressed );
   }
 
   else {           /*** CANCEL_BUTTON ***/
-
     strcpy ( fifo_write_buf, "0:" );
   }
 
@@ -10773,7 +10763,6 @@ XtPointer call_data;
     XmUpdateDisplay ( prompt_dialog );
   }
 */
-  ;
 }
 
 void
@@ -10888,7 +10877,6 @@ Widget prompt_dialog;
 XtPointer client_data;
 XmSelectionBoxCallbackStruct *cbs;
 {
-
   XtUnmanageChild ( prompt_dialog );
   XmUpdateDisplay ( prompt_dialog );
 
@@ -10941,9 +10929,7 @@ Widget prompt_dialog;
 XtPointer client_data;
 XmSelectionBoxCallbackStruct *cbs;
 {
-   char * text;
    int ok_pressed;
-
 
   /***
   get parent dialog/OK or CANCEL/file_diff_but/rad_but
@@ -10968,6 +10954,8 @@ printf ( "ok_pressed    = %d\n", ok_pressed );
 ***/
 
   if ( * ( int * ) client_data == OK_BUTTON ) {
+    char * text;
+
     XmStringGetLtoR ( cbs->value, XmSTRING_DEFAULT_CHARSET, &text );
     strcpy ( fifo_write_buf, text );
     XtFree ( text );
@@ -11078,7 +11066,8 @@ XtPointer client_data;
 XmSelectionBoxCallbackStruct *cbs;
 {
   char str [ 250 ];
-  int i, j, ps_len;
+  int i, j;
+  size_t ps_len;
   char sub_str [ 250 ];
   char * text;
 
@@ -11105,8 +11094,8 @@ XmSelectionBoxCallbackStruct *cbs;
       return;
     }
 
-    if ( ( primary_string [ 0 ] < 'a' || primary_string [ 0 ] > 'z' ) &&
-         ( primary_string [ 0 ] < 'A' || primary_string [ 0 ] > 'Z' )   ) {
+    if ( ! ( islower( primary_string [ 0 ] ) ||
+             isupper( primary_string [ 0 ] ) ) ) {
       XtManageChild ( prompt_dialog );
       XmUpdateDisplay ( prompt_dialog );
       Popup_Minor_Err ( top_level, "The rename prefix must begin with a letter" );
@@ -11330,7 +11319,6 @@ SaveAnimOutput ( file, dont_allow_overwrite_flag )
 int dont_allow_overwrite_flag;
 char * file;
 {
-  int i, j, ps_len;
   FILE * fileptr;
   FILE * fileptr1;
   void Popup_SaveAnimOutput ();
@@ -11383,12 +11371,11 @@ Widget prompt_dialog;
 XtPointer client_data;
 XmSelectionBoxCallbackStruct *cbs;
 {
-  char * text;
-
   XtUnmanageChild ( prompt_dialog );
   XmUpdateDisplay ( prompt_dialog );
 
   if ( * ( int * ) client_data == OK_BUTTON ) {
+    char * text;
 
     XmStringGetLtoR ( cbs->value, XmSTRING_DEFAULT_CHARSET, &text );
     strcpy ( buf, text );
@@ -11430,7 +11417,7 @@ SaveAnimateFile ( file, dont_allow_overwrite_flag )
 char * file;
 int dont_allow_overwrite_flag;
 {
-  int i;
+  size_t i;
   FILE * fileptr;
   FILE * fileptr1;
   void Popup_SaveAnimateFile ();
@@ -11487,12 +11474,11 @@ Widget prompt_dialog;
 XtPointer client_data;
 XmSelectionBoxCallbackStruct *cbs;
 {
-  char * text;
-
   XtUnmanageChild ( prompt_dialog );
   XmUpdateDisplay ( prompt_dialog );
 
   if ( * ( int * ) client_data == OK_BUTTON ) {
+    char * text;
 
     XmStringGetLtoR ( cbs->value, XmSTRING_DEFAULT_CHARSET, &text );
     strcpy ( buf, text );
@@ -11533,92 +11519,91 @@ void
 Popup_PromptDialogHelp_CB ()
 {
   struct help_struct help_data;
-  char text[500];
+  char * text;
 
   /***
   set help data and call Popup_Help_CB 
   ***/
   switch ( secondary_string [ 0 ] ) {
     case '0' : /*** Non-zero actual value parameter ***/
-      strcpy ( text, "The parameter should be non-zero." );
+      text = "The parameter should be non-zero.";
       help_data.width  = 270;
       help_data.height = 100;
       break;
     case '1' : /*** Rename construct ***/
-      strcpy ( text, "The name must be an identifier,\nwith a maximum length of 50." );
+      text = "The name must be an identifier,\nwith a maximum length of 50.";
       help_data.width  = 250;
       help_data.height = 120;
       break;
     case '2' : /*** LIB Rename ***/
-      strcpy ( text, "The Rename must be an identifier\nand be such that the length of the renamed\nconstruct does not exceed 35." );
+      text = "The Rename must be an identifier\nand be such that the length of the renamed\nconstruct does not exceed 35.";
       help_data.width  = 350;
       help_data.height = 120;
       break;
     case '3' : /*** Find ***/
-      strcpy ( text, "Enter one or more identifiers (no repetitions\nand separated by commas); they will be sought\nin constructs which are currently analysed." );
+      text = "Enter one or more identifiers (no repetitions\nand separated by commas); they will be sought\nin constructs which are currently analysed.";
       help_data.width  = 310;
       help_data.height = 130;
       break;
     case '4' : /*** ntroduce New Contruct ***/
-      strcpy ( text, "The name must be an identifier,\nwith a maximum length of 30, and\nshould not contain the underscore character." );
+      text = "The name must be an identifier,\nwith a maximum length of 30, and\nshould not contain the underscore character.";
       help_data.width  = 300;
       help_data.height = 130;
       break;
     case '5' : /*** Save ***/
-      strcpy ( text, "The directory may be given as absolute,\nor as relative to the current directory;\nthe directory must not already exist\n(and it must conform to a B-formula)." );
+      text = "The directory may be given as absolute,\nor as relative to the current directory;\nthe directory must not already exist\n(and it must conform to a B-formula).";
       help_data.width  = 310;
       help_data.height = 140;
       break;
     case '7' : /*** SaveBrowse ***/
-      strcpy ( text, "The filname must be an identifier; the browse will be saved as the\nImage file TEX/filename.xwd (using `xwd') and processed\nas the PostScript file TEX/filename.eps (using `xpr')." );
+      text = "The filname must be an identifier; the browse will be saved as the\nImage file TEX/filename.xwd (using `xwd') and processed\nas the PostScript file TEX/filename.eps (using `xpr').";
       help_data.width  = 400;
       help_data.height = 150;
       break;
-
     case 'd' : /*** VHDL sub-module ***/
-      strcpy ( text, "The name must be an identifier,\nwith a maximum length of 20\nand ending in `_CM'" );
+      text = "The name must be an identifier,\nwith a maximum length of 20\nand ending in `_CM'";
       help_data.width  = 310;
       help_data.height = 140;
       break;
     case 'e' : /*** Popup_SaveAnimOutput_NewFile ***/
-      strcpy ( text, "Click OK to save output from this Animator session.\n\nThe input must be an identifier\n\nThe output filename will be constructed as:\n    \"SRC/machinename.identifier.out\"\n\n This filename must not already exist." );
+      text = "Click OK to save output from this Animator session.\n\nThe input must be an identifier\n\nThe output filename will be constructed as:\n    \"SRC/machinename.identifier.out\"\n\n This filename must not already exist.";
       help_data.width  = 350;
       help_data.height = 200;
       break;
     case 'f' : /*** Popup_SaveAnimateFile_NewFile ***/
-      strcpy ( text, "Click OK to save ANIMATE Script from this Animator session.\n\nThe input must be an identifier\n\nThe output filename will be constructed as:\n    \"SRC/machinename.identifier.anm\"\n\n This filename must not already exist." );
+      text = "Click OK to save ANIMATE Script from this Animator session.\n\nThe input must be an identifier\n\nThe output filename will be constructed as:\n    \"SRC/machinename.identifier.anm\"\n\n This filename must not already exist.";
       help_data.width  = 350;
       help_data.height = 200;
       break;
     case 'g' : /*** Popup_EditAnimateFile_NewFile ***/
-      strcpy ( text, "Click OK create & edit new ANIMATE Script.\n\nThe input must be an identifier\n\nThe filename will be constructed as:\n    \"SRC/machinename.identifier.anm\"\n\n This filename must not already exist." );
+      text = "Click OK create & edit new ANIMATE Script.\n\nThe input must be an identifier\n\nThe filename will be constructed as:\n    \"SRC/machinename.identifier.anm\"\n\n This filename must not already exist.";
       help_data.width  = 350;
       help_data.height = 200;
       break;
     case 'h' : /*** Popup_SetMaxGenHyp ***/
-      strcpy ( text, "The number input will automatically be saved to\nOptions Provers->Max Generated Hypotheses." );
+      text = "The number input will automatically be saved to\nOptions Provers->Max Generated Hypotheses.";
       help_data.width  = 350;
       help_data.height = 150;
       break;
     case 'i' : /*** Animator.thy ***/
-      strcpy ( text, "Cannot quantify over carrier set\nLimit the set to continue :{e1,.,en}." );
+      text = "Cannot quantify over carrier set\nLimit the set to continue :{e1,.,en}.";
       help_data.width  = 275;
       help_data.height = 110;
       break;
     case 'j' : /*** Animator.thy ***/
-      strcpy ( text, "Cannot quantify over infinite sets\nLimit the set to continue :{0,1,2}." );
+      text = "Cannot quantify over infinite sets\nLimit the set to continue :{0,1,2}.";
       help_data.width  = 275;
       help_data.height = 110;
       break;
     default : /*** text ***/
-      strcpy ( text, secondary_string );
+      text = secondary_string;
       help_data.width  = 250;
       help_data.height = 110;
       break;
   }
 
   help_data.type   = DIALOG_HELP;
-  help_data.text = ( char * ) text;
+  help_data.text = text;
 
   Popup_Help_CB ( top_level, ( XtPointer ) & help_data );
 }
@@ -13870,7 +13855,6 @@ Re_Cre_Selection_Sel_Dialog ( dialog, dialog_form, label,
                               Widget *  sel_text;
                               char * title;
 {
-  Widget but;
   XmString xstr;
   int height, i;
 
@@ -13954,6 +13938,8 @@ printf ( "calculated height %d\n" , height );
   recreate buttons in RadioBox/RowCol
   ***/
   for ( i = 0; i < sel_arr_tot; i++ ) {
+    Widget but;
+
     xstr = XmStringCreateLtoR ( sel_str_arr [ i ], charset );
     but = XtVaCreateManagedWidget ( "SelDialog",
         xmToggleButtonGadgetClass,     * radio_box,
@@ -14002,6 +13988,7 @@ Popup_SelPMDRules_Dialog ( parent, title )
 Widget parent;
 char * title;
 {
+#undef Sel_Dialog_help_text
 #define Sel_Dialog_help_text "\
 Select one or more items from the list:\n(selection may be invoked by \"double-clicking\"\non the last item required)"
 
@@ -14072,11 +14059,6 @@ All items may be deselected through \"None\"\n\n\
 #define Sel_Dialog_help_height 225
 
   Make_Sel_Dialog_Declarations;
-
-  Widget but;
-  XmString xstr;
-  int height, i;
-  char text [ 250 ];
 
   if ( ! dialog ) {
  
@@ -14262,7 +14244,6 @@ Select one item from the list:\n(selection may be invoked by \"double-clicking\"
 
   XtSetSensitive ( och_c, True );
 
-
   /***
   Dialog ready
   ***/
@@ -14375,7 +14356,6 @@ CHOICE encountered in specification;\nselect branch from the list"
   Manage_Sel_Dialog;
   XtPopup ( dialog, XtGrabNone );
   XmUpdateDisplay ( dialog );
-
 }
 
 void
@@ -14531,7 +14511,7 @@ Note that directories without write permission are not displayed"
 void
 SaveCurrentOptions_Proceed ()
 {
-  char *getenv(), *name;
+  char *name;
   FILE * optfile;
   int i, n;
   char buf [ PATH_MAX ];  /* don't want the global buf */
@@ -14581,7 +14561,7 @@ printf ( "saved string %2d: |%s|\n", i, buf );
 void
 SaveCurrentOptions ()
 {
-  char *getenv(), *name;
+  char *name;
   FILE * optfile;
 
   name = getenv ( "HOME" );
@@ -14622,7 +14602,7 @@ int message_flag;
   char buf4 [ 150 ];
   char buf5 [ 150 ];
 
-  char *getenv(), *name;
+  char *name;
   FILE * optfile;
   int i, j, c, rr, old_val;
 
@@ -14825,7 +14805,7 @@ printf ( "restored string %2d: `%s'\n", i, buf );
 void
 RestoreDefaultOptions ()
 {
-  char *getenv(), *name;
+  char *name;
   FILE * optfile;
 
   name = getenv ( "HOME" );
@@ -15731,7 +15711,6 @@ printf ( "storing editor_str as `%s' in `%d'\n", text, editor_str_num );
   Store_String ( &rr, shell_str_num, text );
   chk_rep ( rr, 185 );
   XtFree ( text );
-
 }
 
 void
@@ -16255,23 +16234,23 @@ Cre_NewOption_Process_Documents ()
 
   text = XmTextFieldGetString ( latex_declaration_str );
   Store_String ( &rr, latex_declaration_str_num, text );
-  chk_rep ( rr, 341 );
   XtFree ( text );
+  chk_rep ( rr, 341 );
 
   text = XmTextFieldGetString ( latex_exec_name_str );
   Store_String ( &rr, latex_exec_name_str_num, text );
-  chk_rep ( rr, 242 );
   XtFree ( text );
+  chk_rep ( rr, 242 );
 
   text = XmTextFieldGetString ( dvi_screen_str );
   Store_String ( &rr, dvi_screen_str_num, text );
-  chk_rep ( rr, 181 );
   XtFree ( text );
+  chk_rep ( rr, 181 );
 
   text = XmTextFieldGetString ( dvi_print_str );
   Store_String ( &rr, dvi_print_str_num, text );
-  chk_rep ( rr, 182 );
   XtFree ( text );
+  chk_rep ( rr, 182 );
 
   WriteBdmf ();  /* dmu option       */
 
@@ -16643,10 +16622,6 @@ TopBar->Set Tool Attributes      Options.";
 
   XtPopup ( dialog, XtGrabNone );
   XmUpdateDisplay ( dialog );
-
-
-
-
 }
 
 /********************   Translators/Compilers Options   *************************/
@@ -17713,7 +17688,7 @@ UseBuiltInOptions ()
 void
 DefaultSettings ()
 {
-  char *getenv(), *name;
+  char *name;
   FILE * optfile;
 
   name = getenv ( "HOME" );
@@ -17889,10 +17864,6 @@ Popup_WWW_init_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
 {
-  FILE * ReadMe;
-  struct stat statReadMe;
-  void Popup_WWW_init ();
-  char * text;
   int i = * ( int * ) client_data;
 
   XtPopdown ( XtParent ( XtParent ( XtParent ( widget ) ) ) );
@@ -17900,12 +17871,16 @@ XtPointer client_data;
   XtDestroyWidget ( XtParent ( XtParent ( XtParent ( widget ) ) ) );
 
   if ( i == 0 ) { /* WWW_intro_flag */
+    void Popup_WWW_init ();
 
     Popup_WWW_init ( WWW_prelim_flag, B_WWW_prelim_text );
 
   }
 
   else { /* WWW_prelim_flag */
+    FILE * ReadMe;
+    struct stat statReadMe;
+    char * text;
 
     if ( stat ( "READ_ME", &statReadMe ) != 0 ) {
       DisplayCurrWinText ( "\n  BMotif: can't open READ_ME\n" );
@@ -17927,7 +17902,6 @@ XtPointer client_data;
     fclose ( ReadMe );
   
     Popup_WWW_init ( WWW_READ_ME_flag, text );
-
   }
 }
 
@@ -18493,8 +18467,6 @@ XtPointer call_data;
     fclose ( Bpib );
   }
 
-  
-
   kill ( pib, SIGKILL );  /* must be last */
   exit ( 1 );
 }
@@ -18504,7 +18476,6 @@ main ( argc, argv )
 int argc;
 char *argv[];
 {
-  int i;
   Arg args [ 5 ];
 
   Atom WM_SAVE_YOURSELF;
@@ -18713,7 +18684,7 @@ print_debug(23);
   get BKIT_path & cur_dir
   ***/
   {
-    char *getenv(), *name;
+    char *name;
     int ll;
     /* */
     int BLIB_in_path;
@@ -19345,7 +19316,7 @@ print_debug(623);
           else {                            /* .Bpdan, .Bpda & .Bpda_0 not exist */
 
             void SRC_watch_timer ();
-            char *getenv(), *home_dir;
+            char *home_dir;
             char buf [ 250 ];  /* don't want the global buf */
 
 
@@ -19822,7 +19793,7 @@ AutoRemakeFini ()
         char * string_ptr;
         string_ptr = XmTextGetString ( main_text );
         fprintf ( logfile, "  %s\n  ========================================================\n", string_ptr );
-       XtFree ( string_ptr );
+        XtFree ( string_ptr );
 /***/
 /***
         system ( "date '+on %d/%m/%y at %H:%M:%S' > .Bdat" );
@@ -19853,7 +19824,6 @@ AutoRemakeFini ()
 
       system ( "cat _TimerLog" );
       printf ( "\n  (Above is contained in _TimerLog)\n" );
-
     }
 
     else {
@@ -19903,7 +19873,6 @@ AutoRemakeFini ()
         system ( "cat _AutoRemakeLog_diff" );
       }
       printf ( "\n*****************************************************************\n" );
-
     }
 
 /***

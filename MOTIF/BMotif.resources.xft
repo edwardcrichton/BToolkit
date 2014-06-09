@@ -66,38 +66,77 @@
 !
 ! fonts 
 !
-*XBMotif*fontList: \
-  -*-courier-bold-r-*--12-*
-*XBMotif*XmList.fontList: \
-  -*-courier-medium-r-*--12-*
-*XBMotif*XmText.fontList: \
-  -*-courier-medium-r-*--12-*
-*XBMotif*XmLabel.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
-*XBMotif*XmLabelGadget.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
-*XBMotif*XmCascadeButton.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
-*XBMotif*XmCascadeButtonGadget.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
-*XBMotif*XmPushButton.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
-*XBMotif*Option*XmPushButtonGadget.fontList: \
-  -*-new century schoolbook-medium-r-*--12-*
-*XBMotif*XmPushButtonGadget.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
-*XBMotif*XmToggleButton.fontList: \
-  -*-new century schoolbook-medium-r-*--12-*
-*XBMotif*XmToggleButtonGadget.fontList: \
-  -*-new century schoolbook-medium-r-*--12-*
+
+*XBMotif.renderTable: variable
+*XBMotif.renderTable.variable.fontName: Courier
+*XBMotif.renderTable.variable.fontSize: 9
+*XBMotif.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmList.renderTable: variable
+*XBMotif*XmList.renderTable.variable.fontName: Courier
+*XBMotif*XmList.renderTable.variable.fontSize: 9
+*XBMotif*XmList.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmText.renderTable: variable
+*XBMotif*XmText.renderTable.variable.fontName: Courier
+*XBMotif*XmText.renderTable.variable.fontSize: 9
+*XBMotif*XmText.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmLabel.renderTable: variable
+*XBMotif*XmLabel.renderTable.variable.fontName: Courier
+*XBMotif*XmLabel.renderTable.variable.fontSize: 9
+*XBMotif*XmLabel.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmLabelGadget.renderTable: variable
+*XBMotif*XmLabelGadget.renderTable.variable.fontName: Courier
+*XBMotif*XmLabelGadget.renderTable.variable.fontSize: 9
+*XBMotif*XmLabelGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmCascadeButton.renderTable: variable
+*XBMotif*XmCascadeButton.renderTable.variable.fontName: Courier
+*XBMotif*XmCascadeButton.renderTable.variable.fontSize: 9
+*XBMotif*XmCascadeButton.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmCascadeButtonGadget.renderTable: variable
+*XBMotif*XmCascadeButtonGadget.renderTable.variable.fontName: Courier
+*XBMotif*XmCascadeButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*XmCascadeButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmPushButton.renderTable: variable
+*XBMotif*XmPushButton.renderTable.variable.fontName: Courier
+*XBMotif*XmPushButton.renderTable.variable.fontSize: 9
+*XBMotif*XmPushButton.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmPushButtonGadget.renderTable: variable
+*XBMotif*XmPushButtonGadget.renderTable.variable.fontName: Courier
+*XBMotif*XmPushButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*XmPushButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*Option*XmPushButtonGadget.renderTable: variable
+*XBMotif*Option*XmPushButtonGadget.renderTable.variable.fontName: Courier
+*XBMotif*Option*XmPushButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*Option*XmPushButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmToggleButton.renderTable: variable
+*XBMotif*XmToggleButton.renderTable.variable.fontName: Courier
+*XBMotif*XmToggleButton.renderTable.variable.fontSize: 9
+*XBMotif*XmToggleButton.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*XmToggleButtonGadget.renderTable: variable
+*XBMotif*XmToggleButtonGadget.renderTable.variable.fontName: Courier
+*XBMotif*XmToggleButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*XmToggleButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
 
 !
 ! Overview push button size
 !
 *XBMotif*Overview*Label*foreground: #40a0ff
 *XBMotif*Overview*ButtonLabel*foreground: #ca7f00
-*XBMotif*Overview*XmPushButton.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
+*XBMotif*Overview*XmPushButton.renderTable: variable
+*XBMotif*Overview*XmPushButton.renderTable.variable.fontName: Times
+*XBMotif*Overview*XmPushButton.renderTable.variable.fontSize: 9
+*XBMotif*Overview*XmPushButton.renderTable.variable.fontType: FONT_IS_XFT
+
 
 !
 ! MainWin & MainWin Frame
@@ -140,10 +179,16 @@
 !
 *XBMotif*HelpDialog*PalDialog*background: azure
 *XBMotif*HelpDialog*PalDialog*dialogTitle: B-Toolkit Palette
-*XBMotif*HelpDialog*PalDialog*fontList: \
-  -*-courier-medium-r-*--12-*
-*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
+
+*XBMotif*HelpDialog*PalDialog.renderTable: variable
+*XBMotif*HelpDialog*PalDialog.renderTable.variable.fontName: Courier
+*XBMotif*HelpDialog*PalDialog.renderTable.variable.fontSize: 9
+*XBMotif*HelpDialog*PalDialog.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.renderTable: variable
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.renderTable.variable.fontName: Times
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*HelpDialog*PalDialog*XmPushButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
 
 !
 ! MainWin Environment Label
@@ -191,7 +236,12 @@
 *XBMotif*MainWin*DisplayArea*Canvas*foreground: black
 *XBMotif*MainWin*DisplayArea*Canvas*topShadowColor: white
 *XBMotif*MainWin*DisplayArea*Canvas*bottomShadowColor: gray29
-*XBMotif*MainWin*DisplayArea*Canvas*fontList: -*-courier-bold-r-*--12-*
+*XBMotif*MainWin*DisplayArea*Canvas.renderTable: variable
+*XBMotif*MainWin*DisplayArea*Canvas.renderTable.variable.fontName: Courier
+*XBMotif*MainWin*DisplayArea*Canvas.renderTable.variable.fontSize: 9
+!*XBMotif*MainWin*DisplayArea*Canvas.renderTable.variable.fontStyle: Bold
+*XBMotif*MainWin*DisplayArea*Canvas.renderTable.variable.fontType: FONT_IS_XFT
+
 
 !
 ! InterProver
@@ -212,7 +262,11 @@
 *XBMotif*AnmState*foreground: SteelBlue4
 *XBMotif*AnmState*topShadowColor: gray94
 *XBMotif*AnmState*bottomShadowColor: gray35
-*XBMotif*AnmState*fontList: -*-courier-bold-r-*--12-*
+*XBMotif*AnmState.renderTable: variable
+*XBMotif*AnmState.renderTable.variable.fontName: Courier
+*XBMotif*AnmState.renderTable.variable.fontSize: 9
+*XBMotif*AnmState.renderTable.variable.fontType: FONT_IS_XFT
+
 
 !
 ! Overview
@@ -238,7 +292,10 @@
 *XBMotif*Interface*Frame.background: LightSteelBlue1
 *XBMotif*Interface*Frame*Canvas.background: Ivory1
 *XBMotif*Interface*Frame*Canvas.foreground: SteelBlue4
-*XBMotif*Interface*Canvas*fontList: -*-courier-bold-r-*--12-*
+*XBMotif*Interface*Canvas.renderTable: variable
+*XBMotif*Interface*Canvas.renderTable.variable.fontName: Courier
+*XBMotif*Interface*Canvas.renderTable.variable.fontSize: 9
+*XBMotif*Interface*Canvas.renderTable.variable.fontType: FONT_IS_XFT
 
 !
 ! Generated Interface Popups
@@ -340,10 +397,16 @@
 *XBMotif*MainWin*HelpDialog*topShadowColor: white
 *XBMotif*MainWin*HelpDialog*dialogTitle: B-Toolkit Help
 *XBMotif*MainWin*HelpDialog*ButtonLabel*foreground: #ca7f00
-*XBMotif*MainWin*HelpDialog*fontList: \
-  -*-new century schoolbook-medium-r-*--12-*
-*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.fontList: \
-  -*-new century schoolbook-bold-r-*--12-*
+
+*XBMotif*MainWin*HelpDialog.renderTable: variable
+*XBMotif*MainWin*HelpDialog.renderTable.variable.fontName: Times
+*XBMotif*MainWin*HelpDialog.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*HelpDialog.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.renderTable: variable
+*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.renderTable.variable.fontName: Times
+*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*HelpDialog*XmPushButtonGadget.renderTable.variable.fontType: FONT_IS_XFT
 
 !
 ! Warning Dialogs
@@ -373,7 +436,10 @@
 *XBMotif*MainWin*DisplayArea*ProofTree*UndischGoal.foreground: firebrick3
 *XBMotif*MainWin*DisplayArea*ProofTree*DischGoal.foreground: SeaGreen
 *XBMotif*MainWin*DisplayArea*ProofTree*Rule.foreground: gray29
-*XBMotif*MainWin*DisplayArea*ProofTree*fontList: -*-courier-bold-r-*--12-*
+*XBMotif*MainWin*DisplayArea*ProofTree.renderTable: variable
+*XBMotif*MainWin*DisplayArea*ProofTree.renderTable.variable.fontName: Courier
+*XBMotif*MainWin*DisplayArea*ProofTree.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*DisplayArea*ProofTree.renderTable.variable.fontType: FONT_IS_XFT
 
 !
 ! Hypothesis display
@@ -382,7 +448,10 @@
 *XBMotif*Hyp*topShadowColor: white
 *XBMotif*Hyp*bottomShadowColor: gray29
 *XBMotif*Hyp*Label*foreground: #ca7f00
-*XBMotif*Hyp*fontList: -*-courier-bold-r-*--12-*
+*XBMotif*Hyp.renderTable: variable
+*XBMotif*Hyp.renderTable.variable.fontName: Courier
+*XBMotif*Hyp.renderTable.variable.fontSize: 9
+*XBMotif*Hyp.renderTable.variable.fontType: FONT_IS_XFT
 
 !
 ! FileSelectionBox for BTool
@@ -404,7 +473,12 @@
 !
 !  unwise to change these ...
 !
-*XBMotif*MainWin*CommandBar*fontList: \
-        -*-courier-bold-r-*--12-*
-*XBMotif*MainWin*Frame*ConstructsArea*Canvas*fontList: \
-        -*-courier-bold-r-*--12-*
+*XBMotif*MainWin*CommandBar.renderTable: variable
+*XBMotif*MainWin*CommandBar.renderTable.variable.fontName: Courier
+*XBMotif*MainWin*CommandBar.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*CommandBar.renderTable.variable.fontType: FONT_IS_XFT
+
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas.renderTable: variable
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas.renderTable.variable.fontName: Courier
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas.renderTable.variable.fontSize: 9
+*XBMotif*MainWin*Frame*ConstructsArea*Canvas.renderTable.variable.fontType: FONT_IS_XFT

@@ -167,10 +167,10 @@ extern time_t * user_time_arr;
 
 #define LIC_FILE_SIZE_REL_5 1858
 
-extern btd_major_version_num, btd_minor_version_num, btd_minor_minor_version_num,
+extern int btd_major_version_num, btd_minor_version_num, btd_minor_minor_version_num,
        btd_minor_minor_minor_version_num;
 
-extern lic_major_version_num, lic_minor_version_num, lic_minor_minor_version_num,
+extern int lic_major_version_num, lic_minor_version_num, lic_minor_minor_version_num,
        lic_minor_minor_minor_version_num;
 
 extern char argv1 [];

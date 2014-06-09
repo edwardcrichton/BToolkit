@@ -37,7 +37,7 @@ char fifo_file_2m [ 50 ];
 char fifo_file_2b [ 50 ];
 char BSes_num [ 50 ];
 char tty_id [ 50 ];
-int n, done, i, j, c;
+int done, i, c;
 
 void read_Bini_load_strings ();
 void re_initialise ();
@@ -544,7 +544,7 @@ kill_BMotif ()
   struct stat stat_Bpim;
   int count = 0;
   int Bpim_not_present = stat ( ".Bpim", &stat_Bpim );
-  while ( (Bpim_not_present == -1) && count < 10 ) {
+  while ( (Bpim_not_present != -1) && count < 10 ) {
     sleep ( 1 );
     Bpim_not_present = stat ( ".Bpim", &stat_Bpim );
     count++;

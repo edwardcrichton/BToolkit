@@ -3678,7 +3678,7 @@ int app_tot;
 /* app_tot = no of applicable rules */
 /* stored in app_tot as max_rul+rr */
 
-/* theory 0 => builtin */
+/* theory 0 => built-in */
 #define app_and            1
 #define app_cal            2
 #define app_eql            3
@@ -3754,7 +3754,7 @@ char *Builtin_TAC[] = {
 
 app_info ()
 {
-  char info_buf [ 1000 ];
+  char info_buf [ 256 ];
   sprintf ( info_buf, "gol %d(%d) nod %d(%d) seq %d(%d)\n", gol-gttm, gttm, nod-nttm, nttm, vnbs-ttms, ttms );
   DisplayCurrWinText ( info_buf );
 }
