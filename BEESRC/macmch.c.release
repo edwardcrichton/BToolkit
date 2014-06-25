@@ -319,7 +319,7 @@ fprintf ( bstdout, "                                  bplatform: about to open f
 		fprintf ( stdout, "                                  bplatform: read open EINTR\n"); fflush ( stdout );
 		#endif /* FIFO_TRACE_FLAG */
 	
-		sleep(1);
+		usleep(1);
 	}
   }
   while( fifo_read_ptr == -1 && errno == EINTR );
@@ -362,7 +362,7 @@ while ( sock_buf_len > 0 ) {
 	fprintf ( stdout, "                                  bplatform: read ignored EINTR\n"); fflush ( stdout );
 	#endif /* FIFO_TRACE_FLAG */
 	
-	sleep(1);
+	usleep(1);
     	continue;
     }
     if( n == 0 && sock_buf_len == 250000)
@@ -372,7 +372,7 @@ while ( sock_buf_len > 0 ) {
 	fprintf ( stdout, "                                  bplatform: read n==0 and nothing read\n"); fflush ( stdout );
 	#endif /* FIFO_TRACE_FLAG */
 	
-	sleep(1);
+	usleep(1);
     	continue;
     }
     if ( n <= 0 ) break;
@@ -515,9 +515,9 @@ fprintf ( bstdout, "                                  bplatform: about to read n
     fclose ( fileptr );
     if (  ss [ i - 1 ] == ( char ) 27 ) whole_file_read = 1;
 #ifdef FIFO_TRACE_FLAG
-    else                            { printf ( "                                  bplatform: sleeping (i=%d %c %d)\n", i - 1, ss [ i - 1 ], ss [ i - 1 ] ); sleep ( 1 ); }
+    else                            { printf ( "                                  bplatform: sleeping (i=%d %c %d)\n", i - 1, ss [ i - 1 ], ss [ i - 1 ] ); usleep ( 1 ); }
 #else
-    else          sleep ( 1 );
+    else          usleep ( 1 );
 #endif
   }
   unlink ( "TMP/.Bfif" );

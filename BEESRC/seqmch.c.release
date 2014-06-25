@@ -898,7 +898,7 @@ char * sss;
 		#ifdef FIFO_TRACE_FLAG
 		fprintf ( stdout, "                                  bfifowrite_direct: open EINTR\n" ); fflush ( stdout );
 		#endif /* FIFO_TRACE_FLAG */
-		sleep(1);
+		usleep(1);
 	}
   }
   while(fifo_write_ptr < 0 && errno == EINTR);

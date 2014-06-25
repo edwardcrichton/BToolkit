@@ -307,7 +307,7 @@ fprintf ( bstdout, "                                  bplatform: about to fifo_r
 		fprintf ( bstdout, "                                  bplatform M: read open EINTR\n"); fflush ( bstdout );
 		#endif /* FIFO_TRACE_FLAG */
 	
-		sleep(1);
+		usleep(1);
 	}
   }
   while( sock_num < 0 && errno == EINTR );
@@ -358,7 +358,7 @@ while ( sock_buf_len > 0 ) {
 	fprintf ( bstdout, "                                  bplatform M: read ignored EINTR\n"); fflush ( bstdout );
 	#endif /* FIFO_TRACE_FLAG */
 	
-	sleep(1);
+	usleep(1);
     	continue;
     }
     if( n==0 && sock_buf_len == 250000)
@@ -368,7 +368,7 @@ while ( sock_buf_len > 0 ) {
 	fprintf ( bstdout, "                                  bplatform M: read n==0 and nothing read\n"); fflush ( bstdout );
 	#endif /* FIFO_TRACE_FLAG */
 	
-	sleep(1);
+	usleep(1);
     	continue;
     }
     if ( n <= 0 ) break;

@@ -112,7 +112,7 @@ printf ( "(%s)\n", fifo_write_buf ); fflush(stdout );
 		fprintf ( stdout, " BMotif: write open EINTR\n"); fflush ( stdout );
 		#endif /* FIFO_TRACE_FLAG */
 		
-		sleep(1);
+		usleep(1);
 	}
   }
   while( fifo_write_ptr< 0 && errno == EINTR);
@@ -202,7 +202,7 @@ printf ( "BMotif: about to open for read\n" );
 		fprintf ( stdout, " BMotif: read open EINTR\n"); fflush ( stdout );
 		#endif /* FIFO_TRACE_FLAG */
 		
-		sleep(1);
+		usleep(1);
 	}
   }
   while( fifo_read_ptr < 0 && errno == EINTR);
@@ -257,7 +257,7 @@ fifo_info ( "<< BMotif fifo_read_ptr", fifo_read_ptr );
   	fprintf ( stdout, " BMotif: read ignored EINTR\n"); fflush ( stdout );
 	#endif /* FIFO_TRACE_FLAG */
 	
-	sleep(1);
+	usleep(1);
     	continue;
     }
     if(n==0 && buf_len == MAX_buf)
@@ -266,7 +266,7 @@ fifo_info ( "<< BMotif fifo_read_ptr", fifo_read_ptr );
       	fprintf ( stdout, " BMotif: read n==0 and nothing read\n"); fflush ( stdout );
 	#endif /* FIFO_TRACE_FLAG */
 	
-	sleep(1);
+	usleep(1);
     	continue;    
     }
     if ( n <= 0 ) break;

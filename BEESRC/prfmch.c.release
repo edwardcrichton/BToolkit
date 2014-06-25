@@ -1902,7 +1902,7 @@ printf ( "                                  (%s)\n", fstr_prf ); fflush ( stdout
 		fprintf ( stdout, "                                  bplatform: write open EINTR\n"); fflush ( stdout );
 		#endif  /* FIFO_TRACE_FLAG */
 		
-		sleep(1);
+		usleep(1);
 	}
      }
      while(fifo_write_ptr < 0 && errno == EINTR);
@@ -7055,7 +7055,7 @@ write_frm_res( frm_gol(info_nod(i)), 6 )
               fprintf ( Bfile, "999" );
               fclose ( Bfile );
             }
-            sleep ( 1 );
+            usleep ( 1 );
             kill ( Bpim_ps_no, SIGUSR2 );
             exit ( 1 );
           }
