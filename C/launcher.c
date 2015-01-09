@@ -17,7 +17,13 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 #ifdef MAC_VERSION
-#include <Carbon/Carbon.h>
+
+/*NSResponder
+#include <CoreFoundation/CoreFoundation.h>
+#include <objc/objc.h>
+#include <objc/objc-runtime.h>
+*/
+
 #endif
 
 /*
@@ -39,6 +45,10 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <errno.h>
 #include <limits.h>
 #include <unistd.h>
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
 
 /*
 	Moves the null character to the end of the last slash.
@@ -211,7 +221,7 @@ int main(int argc, char* argv[])
 
 	putenv(env1);
 	
-	/*printf("%s\n",env1);*/
+	printf("%s\n",env1);
 	
 	/* allow the user to call the btoolkit as BToolkit or btoolkit */
 	
@@ -304,7 +314,6 @@ int main(int argc, char* argv[])
 		strcat(env3,PATH);
 	}
 	putenv(env3);
-	/*printf("%s\n",env3);*/
 	
 	if(
 	strcmp(myname,"BToolkit")==0 ||
@@ -317,7 +326,6 @@ int main(int argc, char* argv[])
 		{
 			strcpy(display,"DISPLAY=:0.0");
 			putenv(display);
-			printf("%s\n",display);
 		}
 		/* need to start X11?*/
 		
@@ -346,27 +354,9 @@ int main(int argc, char* argv[])
 		/* invoke the toolkit */
 		/* MAC OS */
 		#ifdef MAC_VERSION
-		/*
-		RunApplicationEventLoop();
-		*/
-		EventRef theEvent;
-		EventTargetRef theTarget;
- 
-		theTarget = GetEventDispatcherTarget();
- 		/*
-    		while  (ReceiveNextEvent(0, NULL,kEventDurationForever,true, &theEvent)== noErr)
-        	{
-           	 SendEventToEventTarget (theEvent, theTarget);
-           	 ReleaseEvent(theEvent);
-		 
-        	}
-		*/
-		system("$BKIT/BToolkit &");
-		/* clean up
-		system("kill -9 `lsof -a -tc BMotif -u $USER`");
-		system("kill -9 `lsof -a -tc BSession -u $USER`");
-		system("kill -9 `lsof -a -tc bplatform -u $USER`");
-		*/
+		
+		system("$BKIT/BToolkit");
+		
 		#else
 		system("$BKIT/BToolkit");
 		#endif

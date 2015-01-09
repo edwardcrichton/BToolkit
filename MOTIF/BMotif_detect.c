@@ -48,7 +48,7 @@ char* detectApplications(char* known[], size_t total)
 	char* applicationList;
 	char canonicalList[PATH_MAX*30];
 	
-	printf("detectApplications\n");
+	/*printf("detectApplications\n");*/
 	
 	applicationList= (char *) malloc(PATH_MAX*total);
 	applicationList[0]='\0';
@@ -61,8 +61,9 @@ char* detectApplications(char* known[], size_t total)
 			which[0]='\0';
 			which_output[0]='\0';
 			which_output_canonical[0]='\0';
-			strcat(which,"which ");
+			strcat(which,"which \'");
 			strcat(which,known[i]);
+			strcat(which,"\'");
 			pfile=popen(which,"r");
 			fgets(which_output,PATH_MAX,pfile);
 			pclose(pfile);
@@ -111,7 +112,7 @@ char* detectApplications(char* known[], size_t total)
 		}
 	}
 	
-	printf("/detectApplications\n");
+	/*printf("/detectApplications\n");*/
 	
 	return applicationList;
 }
@@ -133,6 +134,8 @@ char* detectEditors()
 		"textedit",
 		"/Applications/TextWrangler.app/Contents/MacOS/TextWrangler",
 		"/Applications/TextEdit.app/Contents/MacOS/TextEdit",
+		"/Applications/Eclipse.app/Contents/MacOS/eclipse",
+		"/Applications/eclipse/Eclipse.app/Contents/MacOS/eclipse",
 		"xemacs",
 		"emacs",
 		"/Applications/Emacs.app/Contents/MacOS/Emacs",
@@ -142,6 +145,8 @@ char* detectEditors()
 		"pico",
 		"vi"
 	};
+	
+	
         size_t total=sizeof(known)/sizeof(known[0]);
         known[0]=getenv("VISUAL");
         known[1]=getenv("XEDITOR");
@@ -152,11 +157,13 @@ char* detectBrowsers()
 {
 	char* known[]=
 	{
+		
 		"firefox",
 		"google-chrome",
 		"/Applications/Firefox.app/Contents/MacOS/firefox",
-		"/Applications/Safari.app/Contents/MacOS/Safari",
 		"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+		"/Applications/Safari.app/Contents/MacOS/Safari",
+		"/Applications/Opera.app/Contents/MacOS/Opera",
 		"netscape",
 		"w3m",
 		"konqueror",
@@ -166,8 +173,9 @@ char* detectBrowsers()
 		"lynx",
 		"yelp"
 	};
+	
 	size_t total=sizeof(known)/sizeof(known[0]);
-	return detectApplications(known,total);	
+	return detectApplications(known,total);
 }
 
 char* getCommandExecutableName(char* commandline)
@@ -247,40 +255,60 @@ char* escapeQuotesAndBackslashes(char* arguments)
 	return result;
 }
 
-char* getApplicationCommandLineTemplate(char* cmd, char* known[], char* xterm[], size_t total)
+char* getApplicationCommandLineTemplate(char* cmd, char* known[], char* xterm[], char* opencmd[], size_t total)
 {
 	size_t i;
 	int match;
 	char* name;
 	char localResult[PATH_MAX*4];
 	int isXterm;
+	int isOpencmd;
 	char* result;
 	char* escaped;
 	
 	match=-1;
 	
-	name=getCommandExecutableName(cmd);
-	
 	for(i=0;i<total;i++)
 	{
-		if(strcmp(name,known[i])==0)
+		if(strcmp(cmd,known[i])==0)
 		{
 			match=i;
 			break;
 		}
 	}
 	
-	free(name);
+	if(match==-1)
+	{
+		name=getCommandExecutableName(cmd);
+		for(i=0;i<total;i++)
+		{
+			if(strcmp(name,known[i])==0)
+			{
+				match=i;
+				break;
+			}
+		}
+	
+	
+		free(name);
+	}
 	
 	localResult[0]='\0';
 	
 	if(match!=-1)
 	{
 		isXterm=0;
+		isOpencmd=0;
+		
 		if(strcmp(xterm[match],"y")==0)
 		{
 			isXterm=1;
 		}
+		if(strlen(opencmd[match])>0)
+		{
+			isOpencmd=1;
+		}
+		
 		if(isXterm)
 		{
 			strcat(localResult,"xterm -e \"");
@@ -294,7 +322,24 @@ char* getApplicationCommandLineTemplate(char* cmd, char* known[], char* xterm[],
 		}
 		else
 		{
-			strcat(localResult,cmd);
+			if(isOpencmd)
+			{
+				if(strcmp(opencmd[match],"Finder")==0)
+				{
+					strcat(localResult,"open -R ");
+				}
+				else
+				{
+					strcat(localResult,"open -a ");
+					strcat(localResult,"\"");
+					strcat(localResult,opencmd[match]);
+					strcat(localResult,"\"");
+				}
+			}
+			else
+			{
+				strcat(localResult,cmd);
+			}
 		}
 		
 		if(strcmp(known[match],"netscape")==0)
@@ -344,13 +389,13 @@ char* getApplicationCommandLineTemplate(char* cmd, char* known[], char* xterm[],
    text only browsers in an xterm and escaping any \ or " in parameters given.
 */
 
-char* getApplicationCommandLine(char* application, char* filename, char* known[], char* xterm[], size_t total)
+char* getApplicationCommandLine(char* application, char* filename, char* known[], char* xterm[], char* opencmd[], size_t total)
 {
 	char* template;
 	char* result;
 	size_t totalSize;
 	
-	template=getApplicationCommandLineTemplate(application, known, xterm, total);
+	template=getApplicationCommandLineTemplate(application, known, xterm, opencmd, total);
 	
 	totalSize=strlen(template)+strlen(filename);
 	result=(char *)malloc((size_t) (totalSize+1));
@@ -370,7 +415,9 @@ char* getBrowserCommandLine(char* application,char* filename)
 		"netscape",
 		"firefox",
 		"/Applications/Firefox.app/Contents/MacOS/firefox",
+		"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
 		"/Applications/Safari.app/Contents/MacOS/Safari",
+		"/Applications/Opera.app/Contents/MacOS/Opera",
 		"elinks",
 		"links",
 		"opera",
@@ -380,12 +427,19 @@ char* getBrowserCommandLine(char* application,char* filename)
 	};
 	char* xterm[]=
 	{
-		"n", "n", "n", "n",
-		"n", "y", "y", "n",
+		"n", "n", "n",
+		"n","n","n","n",
+		"y", "y", "n",
 		"n", "y", "y"
 	};
+	char* opencmd[]=
+	{
+		"","","",
+		"Firefox","Google Chrome","Safari","Opera",
+		"","","","","",""
+	};
 	size_t total=sizeof(known)/sizeof(known[0]);
-	return getApplicationCommandLine(application, filename, known, xterm, total);
+	return getApplicationCommandLine(application, filename, known, xterm, opencmd, total);
 }
 
 char* getEditorCommandLine(char* editor,char* filename)
@@ -393,9 +447,13 @@ char* getEditorCommandLine(char* editor,char* filename)
 	const char* known[]=
 	{
 		"nedit",
+		"gedit",
 		"xedit",
 		"textedit",
 		"/Applications/TextEdit.app/Contents/MacOS/TextEdit",
+		"/Applications/TextWrangler.app/Contents/MacOS/TextWrangler",
+		"/Applications/Eclipse.app/Contents/MacOS/eclipse",
+		"/Applications/eclipse/Eclipse.app/Contents/MacOS/eclipse",
 		"xemacs",
 		"emacs",
 		"/Applications/Emacs.app/Contents/MacOS/Emacs",
@@ -407,12 +465,23 @@ char* getEditorCommandLine(char* editor,char* filename)
 	};
 	char* xterm[]=
 	{
-		"n", "n", "n", "n",
-		"n", "n", "n", "n",
-		"n", "y", "y", "y"
+		"n","n", "n", "n",
+		"n","n","n","n",
+		"n","n",
+		"n",
+		"n", "n",
+		"y", "y", "y"
+	};
+	char* opencmd[]=
+	{
+		"","","","",
+		"TextEdit","TextWrangler","Eclipse","Eclipse",
+		"","",
+		"Emacs",
+		"","","","",""
 	};
 	size_t total=sizeof(known)/sizeof(known[0]);
-	return getApplicationCommandLine(editor, filename, known, xterm, total);
+	return getApplicationCommandLine(editor, filename, known, xterm, opencmd, total);
 }
 
 void getEditorOptions()

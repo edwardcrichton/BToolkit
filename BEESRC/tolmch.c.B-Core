@@ -18,7 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include "save_restore_bplatform_bin.c"
 
-max_toolfunc()
+void max_toolfunc()
 #define max_tool max_toolfunc()
 {
   sta_sym;
@@ -31,7 +31,7 @@ max_toolfunc()
   sta_seq;
 }
 
-max0_toolfunc()
+void max0_toolfunc()
 #define max0_tool max0_toolfunc()
 {
   fprintf ( bstdout, "\n");
@@ -45,7 +45,7 @@ max0_toolfunc()
   sta0_seq  ;
 }
 
-restore_alloc ( nnn )
+int restore_alloc ( nnn )
 {
   while ( max_mem < nnn ) {
     max_mem += alloc_topup;
@@ -55,9 +55,10 @@ restore_alloc ( nnn )
      printf ( "\n  malloc failure\n" );
      exit ( 1 );
   }
+  return 0;
 }
 
-save_bplatform_toolfunc()                   /* oprion -c */
+void save_bplatform_toolfunc()                   /* oprion -c */
 #define save_tool      save_bplatform_toolfunc()
 {
   register int i;
@@ -71,7 +72,7 @@ printf ( "tolmch - save_tool: vad(%d+1)=%d max_mem=%d\n",
   }
 }
 
-save_comp_bplatform_toolfunc()             /* interactive save binary */
+void save_comp_bplatform_toolfunc()             /* interactive save binary */
 #define save_comp_tool save_comp_bplatform_toolfunc()
 {
   register int i ;
@@ -85,7 +86,7 @@ printf ( "tolmch - save_comp_tool: vad(%d+1)=%d max_mem=%d\n",
   }
 }
 
-restore_bplatform_toolfunc()
+void restore_bplatform_toolfunc()
 #define restore_tool restore_bplatform_toolfunc()
 {
   register int b,i;

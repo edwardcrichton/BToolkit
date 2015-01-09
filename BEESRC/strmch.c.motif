@@ -20,7 +20,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
                                
 /*  PROGRAMS FOR STRING MACHINE  */
 
-write_chr(j,n)
+void write_chr(j,n)
 {register int i,r,v ;
   v=n;
   itrn( i , 1 , 4 , {
@@ -30,7 +30,7 @@ write_chr(j,n)
  ;});
 }
 
-write_str(s)
+void write_str(s)
 {register int i ;
   str_buf_i = strlen ( str_buf );
   i=1; 
@@ -44,7 +44,7 @@ fprintf ( bstdout, "write_str (str_buf): |%s|\n", str_buf );
 */
 }
 
-write_err_chr(n)
+void write_err_chr(n)
 {register int i,r,v ;
   v=n;
   itrn( i , 1 , 4 , {
@@ -54,7 +54,7 @@ write_err_chr(n)
  ;});
 }
 
-write_err_str(s)
+void write_err_str(s)
 {register int i ;
   str_buf_i = strlen ( str_buf );
   i=1; 
@@ -65,7 +65,7 @@ write_err_str(s)
   str_buf [ str_buf_i ] = '\0';
 }
 
-crd_strfunc()
+int crd_strfunc()
 #define crd_str crd_strfunc()
 {register int inp,c ;
   inp=getchar();
@@ -80,7 +80,7 @@ crd_strfunc()
 ; return c;
 }
 
-crd_strfunc_M ( j )
+int crd_strfunc_M ( j )
 int j;
 {
 /*
@@ -91,7 +91,7 @@ fflush ( stdout );
   else                         return str_buf [ j ];
 }
 
-srd_strfunc()
+int srd_strfunc()
 #define srd_str srd_strfunc()
 {register int c,i,a,k ;
   i=0;
@@ -109,7 +109,7 @@ srd_strfunc()
 ; return a;
 }
 
-srd_strfunc_M()
+int srd_strfunc_M()
 #define srd_str_M srd_strfunc_M()
 {register int c,i,a,k ;
   i=0;
@@ -127,7 +127,7 @@ srd_strfunc_M()
 ; return a;
 }
 
-read_str(b)
+void read_str(b)
 {register int a ;
   clr(b);
   a=srd_str;
@@ -138,7 +138,7 @@ read_str(b)
   }
 }
 
-read_str_M(b)
+void read_str_M(b)
 {register int a ;
   clr(b);
   str_buf_i = 0;
@@ -150,7 +150,7 @@ read_str_M(b)
   }
 }
 
-len_str(b)
+int len_str(b)
 {register int l,v,i ;
   l=len(b);
   if( l!=0 ){
@@ -166,7 +166,7 @@ len_str(b)
 ; return l;
 }
 
-val_str(b,i)
+int val_str(b,i)
 {register int v,j,k ;
   j=(i-1) / 4 + 1;
   v=val(b,j);
@@ -178,7 +178,7 @@ val_str(b,i)
 ; return v % 128;
 }
 
-mod_str(b,i,w)
+void mod_str(b,i,w)
 {register int j,v,k,v1,v2,v3,v4 ;
   j=(i-1) / 4 + 1;
   v=val(b,j);
@@ -208,7 +208,7 @@ mod_str(b,i,w)
   str(b,j,v);
 }
 
-psh_str(b,w)
+void psh_str(b,w)
 {register int l ;
   l=len_str(b);
   if( l % 4 == 0 ){
@@ -219,7 +219,7 @@ psh_str(b,w)
 }
 
 #define clr_str(b) clr(b)
-pop_str(b)
+void pop_str(b)
 {register int l ;
   l=len_str(b);
   if( l % 4 == 1 ){
@@ -234,7 +234,7 @@ pop_str(b)
 #define xst_str(b,i,v,p,s1,s2)  i=len_str(b);  while( i>0 ){  v=val_str(b,i);  if( p ){  s1;  i=(-i)  ;} else {  i=i-1  ;};};  if( i==0 ){ s2 ;}
 
 #define eql_str(s,t) eql(s,t)
-trans_str(bbuf)
+int trans_str(bbuf)
 {register int r,k ;
   r=0;
   k=0;
@@ -248,7 +248,7 @@ trans_str(bbuf)
 #define fst_str(s)  val_str(s,1)
 
 #define lst_str(s)  val_str(s,len_str(s))
-is_num_str(s)
+int is_num_str(s)
 {register int i,v,is_num_str_res ;
   xst_str(s,i,v,digit_str(v)==FALSE,is_num_str_res=FALSE,is_num_str_res=TRUE)
 ; return is_num_str_res;

@@ -33,7 +33,7 @@ rev_vid_ext_res;
 #define restore_MAX_COL_RES     MAX_COL_RES=old_MAX_COL_RES
 
 #define ini_res                 MAX_COL_RES=60
-  reset_res(l)
+  void reset_res(l)
   {register int k ;
     skip_res=FALSE;
     short_res=FALSE;
@@ -44,7 +44,7 @@ rev_vid_ext_res;
     col_ctr_res=pre_res+1;
   }
 
-  newl_res(l)
+  void newl_res(l)
   {register int k ;
     if( rev_vid_res==TRUE ){
       write_erv_res;
@@ -67,13 +67,13 @@ rev_vid_ext_res;
     };
   }
 
-  writeln_resfunc()
+  void writeln_resfunc()
 #define writeln_res writeln_resfunc()
   {
     newl_res(0);
   }
 
-  write_blk_res(l)
+  void write_blk_res(l)
   {register int i ;
     if( skip_res==FALSE ){
       itrn( i , 1 , l , {
@@ -83,13 +83,13 @@ rev_vid_ext_res;
     };
   }
 
-  write_tab_resfunc()
+  void write_tab_resfunc()
 #define write_tab_res write_tab_resfunc()
   {
     write_blk_res(MAX_COL_RES-col_ctr_res+1);
 }
 
-  len_stri_res(s)
+  int len_stri_res(s)
   {register int len_stri_res_res ;
     if( s<0 ){
       len_stri_res_res=len_nat(0-s);
@@ -101,7 +101,7 @@ rev_vid_ext_res;
   ; return len_stri_res_res;
   }
 
-  write_num_res(n)
+  void write_num_res(n)
   {register int l ;
     if( skip_res==FALSE ){
       l=len_nat(n);
@@ -115,7 +115,7 @@ rev_vid_ext_res;
     };
   }
 
-  write_chr_res(s)
+  void write_chr_res(s)
   {
     if( skip_res==FALSE ){
       if( 1+col_ctr_res>MAX_COL_RES ){
@@ -128,7 +128,7 @@ rev_vid_ext_res;
     };
   }
 
-  write_stri_res(s)
+  void write_stri_res(s)
   {register int l ;
     if( skip_res==FALSE ){
       l=len_stri_res(s);
@@ -148,7 +148,7 @@ rev_vid_ext_res;
     };
   }
 
-  write_res(s)
+  void write_res(s)
   {register int c,k ;
     c=lexi_sym(s);
     k=edit_sym(s);
@@ -211,12 +211,12 @@ rev_vid_ext_res;
 }
 
    
-  unp0_res(v)
+  void unp0_res(v)
   {
     write_res(v);
   }
 
-  unp1_res(v,t,i)
+  void unp1_res(v,t,i)
   {register int w ;
     w=val_tree(t,left_node_tree(t,i));
     if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
@@ -226,7 +226,7 @@ rev_vid_ext_res;
     };
   }
 
-  unp2_res(v,t,i)
+  void unp2_res(v,t,i)
   {register int w ;
     w=val_tree(t,left_node_tree(t,i));
     if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
@@ -247,7 +247,7 @@ rev_vid_ext_res;
     };
   }
 
-unp3_res(v,t,i)
+void unp3_res(v,t,i)
 {register int w ;
   if( lexi_sym(v)==opn ){
     write_res(clos_sym(v));
@@ -265,7 +265,7 @@ unp3_res(v,t,i)
   };
 }
 
-  unparse_res(t,n)
+  void unparse_res(t,n)
   {register int i,v ;
     itr_tree(t,n,i,v,if( skip_res==FALSE ){ unp0_res(v) ;},
                      if( skip_res==FALSE ){ unp1_res(v,t,i) ;},
@@ -273,7 +273,7 @@ unp3_res(v,t,i)
                      if( skip_res==FALSE ){ unp3_res(v,t,i);});
   }
 
-  write_tree_res(t,n,v,r)
+  void write_tree_res(t,n,v,r)
   {
     rev_vid_res=r;
     skip_res=FALSE;
@@ -284,7 +284,7 @@ unp3_res(v,t,i)
     unparse_res(t,n);
   }
 
-  write_short_tree_res(t,n,v,r)
+  void write_short_tree_res(t,n,v,r)
   {
     rev_vid_res=r;
     skip_res=FALSE;

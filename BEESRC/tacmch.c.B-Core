@@ -80,7 +80,7 @@ int tattm;
 #define res_tac(t)  tares[t]
 
 #define frm_tac(t)  tafrm[t]
-mak_tacfunc()
+int mak_tacfunc()
 #define mak_tac mak_tacfunc()
 {register int t ;
   if( tattm!=0 ){
@@ -102,13 +102,13 @@ mak_tacfunc()
 ; return t;
 }
 
-sup_tac(t)
+void sup_tac(t)
 {
   tattm=tattm+1;
   tatmb[tattm]=t;
 }
 
-cre_tac(f)
+int cre_tac(f)
 {register int t ;
   t=mak_tac;
   the_tac(t)=0;
@@ -119,28 +119,29 @@ cre_tac(f)
 ; return t;
 }
 
-kil_tac(t)
+int kil_tac(t)
 {
   sup_tac(t);
   kil_tree(frm_tac(t));
+  return 0;
 }
 
-mod_the_tac(t,th)
+void mod_the_tac(t,th)
 {
   the_tac(t)=th;
 }
 
-mod_rul_tac(t,r)
+void mod_rul_tac(t,r)
 {
   rul_tac(t)=r;
 }
 
-mod_spe_tac(t,s)
+void mod_spe_tac(t,s)
 {
   spe_tac(t)=s;
 }
 
-mod_res_tac(t,b)
+void mod_res_tac(t,b)
 {
   res_tac(t)=b;
 }
@@ -150,7 +151,7 @@ mod_res_tac(t,b)
 #define def_rul_tac(t) ((rul_tac(t)!=0)!=0)
 
 #define def_spe_tac(t) ((spe_tac(t)!=0)!=0)
-sta_tacfunc()
+void sta_tacfunc()
 #define sta_tac sta_tacfunc()
 {
   fprintf ( bstdout,"      Max Number of Tactics:         ");

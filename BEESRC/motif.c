@@ -802,7 +802,7 @@ printf ( "global_menu_x %d  global_menu_y %d   global_menu_w %d  widget_w %d   (
 ***/
 }
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 RepositionMenu_CB ( widget, client_data, call_data )
 Widget widget;
 XtPointer client_data;
@@ -4845,7 +4845,7 @@ print_XmNtraversalOn_value ( "no", no );
 
 #ifndef BTOOLKIT_FLAG
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 FileSel_CB ( widget, client_data, call_data )
 Widget widget;
 XtPointer client_data;
@@ -9386,7 +9386,7 @@ XtPointer client_data;
       NULL);
 }
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 Hyp_Search_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
@@ -10923,7 +10923,7 @@ ChangeBToolUserRule ()
   LargeStringBox ( " New Rule:                                                                                                      ", str_buf );
 }
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 BrowseUserRule_CB_CB ( widget, client_data, call_data )
 Widget widget;
 XtPointer client_data;

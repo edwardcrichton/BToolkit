@@ -1734,7 +1734,7 @@ extern void   NEW_Dialog_RadioBox_EditedFileExists_CB ();
 extern void   GetColours ();
 extern int    FormulaParses ();
 extern int    FileParses ();
-XtCallbackProc Popup_Help_CB ();
+/*XtCallbackProc*/ void Popup_Help_CB ();
 extern void   Cre_Anm_Multi_Input_Form ();
 extern int    RestoreRecordedProofs ();
 extern Widget CreHighlightedButton ();
@@ -1999,11 +1999,11 @@ extern void DesLSTBut();
         TopBar call backs
 **********************************************/
 
-XtCallbackProc TopBar_Introduce_CB ();
-XtCallbackProc TopBar_Browse_CB ();
+/*XtCallbackProc*/ void TopBar_Introduce_CB ();
+/*XtCallbackProc*/ void TopBar_Browse_CB ();
 extern void TopBar_Palette_CB ();
-XtCallbackProc TopBar_Options_CB ();
-XtCallbackProc TopBar_Help_CB ();
+/*XtCallbackProc*/ void TopBar_Options_CB ();
+/*XtCallbackProc*/ void TopBar_Help_CB ();
 extern Widget Cre_Help_Pulldown ();
 XtCallbackProc Top_Bar_Interrupt_CB ();
 

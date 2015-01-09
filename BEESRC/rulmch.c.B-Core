@@ -74,7 +74,7 @@ int rul;
 #define def_lsb_rul(r)  ((lsb_rul(r)!=0)!=0)
 
 #define rem_lsb_rul(r)  lsb_rul(r)=0
-add_lsb_rul(rr,r)
+void add_lsb_rul(rr,r)
 {
   if( def_lsb_rul(rr)==FALSE ){
     lsb_rul(rr)=cre(5);
@@ -82,7 +82,7 @@ add_lsb_rul(rr,r)
   psh(lsb_rul(rr),r);
 }
 
-test_lsb_rul(rr,r)
+int test_lsb_rul(rr,r)
 {register int test_lsb_rul_res,i ;
   test_lsb_rul_res=FALSE;
   if( def_lsb_rul(rr)==TRUE ){
@@ -94,13 +94,13 @@ test_lsb_rul(rr,r)
 ; return test_lsb_rul_res;
 }
 
-rmv_lsb_rul(rr,r)
+void rmv_lsb_rul(rr,r)
 {register int i ;
   i=idx(lsb_rul(rr),r);
   rem(lsb_rul(rr),i);
 }
 
-mak_rulfunc()
+int mak_rulfunc()
 #define mak_rul mak_rulfunc()
 {register int r ;
   if( rttm!=0 ){
@@ -121,13 +121,13 @@ mak_rulfunc()
 ; return r;
 }
 
-sup_rul(r)
+void sup_rul(r)
 {
   rttm=rttm+1;
   rtmb[rttm]=r;
 }
 
-cre_rul(tr,t,n,tp)
+int cre_rul(tr,t,n,tp)
 {register int r ;
   r=mak_rul;
   the_rul(r)=t;
@@ -146,12 +146,12 @@ cre_rul(tr,t,n,tp)
 ; return r;
 }
 
-mod_pvd_rul(r,v)
+void mod_pvd_rul(r,v)
 {
   pvd_rul(r)=v;
 }
 
-is_inverted_rul(r)
+int is_inverted_rul(r)
 {register int is_inverted_rul_res ;
   if( typ_rul(r)==lem_rul ){
     is_inverted_rul_res=((pvd_rul(r)!=now_rul)!=0);
@@ -161,7 +161,7 @@ is_inverted_rul(r)
 ; return is_inverted_rul_res;
 }
 
-kil_rul(r)
+void kil_rul(r)
 {register int a,i,v ;
   if( def_lsb_rul(r)==TRUE ){
     kil(lsb_rul(r));
@@ -173,12 +173,12 @@ kil_rul(r)
   sup_rul(r);
 }
 
-mod_num_rul(r,n)
+void mod_num_rul(r,n)
 {
   num_rul(r)=n;
 }
 
-cre_rec_rul(r)
+int cre_rec_rul(r)
 {register int f,a,c,g ;
   a=ant_rul(r);
   c=cns_rul(r);
@@ -196,7 +196,7 @@ cre_rec_rul(r)
     
                      
 /*  RULE I/O  */
-write_old_ver_rul(r)
+void write_old_ver_rul(r)
 {register int a,c,i,v,n ;
   a=ant_rul(r);
   c=cns_rul(r);
@@ -231,7 +231,7 @@ write_old_ver_rul(r)
   };
 }
 
-write_ver_rul(r)
+void write_ver_rul(r)
 {register int a,c,i,v,n ;
   a=ant_rul(r);
   c=cns_rul(r);
@@ -278,7 +278,7 @@ write_ver_rul(r)
   };
 }
 
-write_ver_cns_rul(f)
+void write_ver_cns_rul(f)
 {register int a,c,i,v ;
   if( val_root_frm(f)==IMP_sym ){
     a=dec_tree(f,left_node_tree(f,root_tree(f)),AND_sym);
@@ -301,7 +301,7 @@ write_ver_cns_rul(f)
 };
 }
 
-write_spe_ver_rul(r)
+void write_spe_ver_rul(r)
 {register int a,c,i,v,n ;
   a=ant_rul(r);
   c=cns_rul(r);
@@ -335,7 +335,7 @@ write_spe_ver_rul(r)
   write_ver_cns_rul(c);
 }
 
-write_old_hor_rul(r)
+void write_old_hor_rul(r)
 {register int n,f ;
   n=num_rul(r);
   reset_res(0);
@@ -366,7 +366,7 @@ write_old_hor_rul(r)
   kil(f);
 }
 
-write_hor_rul(r)
+void write_hor_rul(r)
 {register int n,f ;
   n=num_rul(r);
   reset_res(0);
@@ -403,7 +403,7 @@ write_hor_rul(r)
   kil(f);
 }
 
-write_hor_short_rul(r)
+void write_hor_short_rul(r)
 {register int n,f ;
   n=num_rul(r);
   reset_res(0);
@@ -440,7 +440,7 @@ write_hor_short_rul(r)
   kil(f);
 }
 
-sta_rulfunc()
+void sta_rulfunc()
 #define sta_rul sta_rulfunc()
 {
   fprintf(bstdout,"      Max Number of Rules:           ");

@@ -23,7 +23,7 @@ int ttnm [ 25 ];
 
 #ifdef BTOOL_FLAG
 
-DesensitizeLSTButtons ( nn )
+void DesensitizeLSTButtons ( nn )
 int nn;
 {
   if ( nn >= 41 ) {
@@ -54,7 +54,7 @@ int  index_name_cod;
 #define mix 4
 
 #define opss 5
-entersymb_coding(bbuf,i,s,t,k,neg)
+int entersymb_coding(bbuf,i,s,t,k,neg)
 {register int n,ss,entersymb_coding_res ;
   entersymb_coding_res=0;
   if( s==1 ){
@@ -145,7 +145,7 @@ entersymb_coding(bbuf,i,s,t,k,neg)
   return entersymb_coding_res;
 }
 
-nature(o)
+int nature(o)
 {register int natureres ;
   if( digit_sym(o)==TRUE ){
     natureres=dig;
@@ -159,7 +159,7 @@ nature(o)
   return natureres;
 }
 
-lexical_coding(bbuf,c)
+void lexical_coding(bbuf,c)
 {register int p,u,t,k,n,neg ;
   u=0;
   k=0;
@@ -219,7 +219,7 @@ printf ( "%c\n", p );
 }
 
   
-ini_codfunc()
+void ini_codfunc()
 #define ini_cod ini_codfunc()
 {register int bbuf,c ;
   
@@ -230,7 +230,7 @@ printf ( " ***************************************************** ini_codfunc\n" 
 ***/
   bbuf=cre(10);
   bkit= (char *) getenv("BKIT");
-  if( (bkit == NULL) ){
+  if( bkit == NULL ){
      fprintf ( bstdout, "\n  ++++++++++++++++++++++++++++++++++++++");
      fprintf ( bstdout, "\n     Environment variable BKIT not set");
      fprintf ( bstdout, "\n  ++++++++++++++++++++++++++++++++++++++\n\n");
@@ -253,7 +253,7 @@ printf ( " ***************************************************** ini_codfunc\n" 
 #endif /* SSTL_FLAG */
 
   coding=fopen(symfilname_cod,"r");
-  if( (coding == NULL) ){
+  if( coding == NULL ){
      fputs ( "\n       Can't open:\n\n         ", bstdout );
      fputs ( symfilname_cod, bstdout );
      fputs ( "\n\n       for reading\n\n", bstdout );
@@ -291,7 +291,7 @@ printf ( " ***************************************************** ini_codfunc\n" 
   kil(bbuf);
 }
 
-ini_spe_codfunc()
+void ini_spe_codfunc()
 #define ini_spe_cod ini_spe_codfunc()
 {register int bbuf,c ;
   bbuf=cre(10);
@@ -317,14 +317,14 @@ printf ( "ini_spe_codfunc: name_cod=`%s'\n", name_cod );
   kil(bbuf);
 }
 
-ini_name_codfunc()
+void ini_name_codfunc()
 #define ini_name_cod ini_name_codfunc()
     
 {
   index_name_cod = 0;
 }
 
-enter_name_cod(v)
+void enter_name_cod(v)
 {
   if( index_name_cod < 100 ){
     name_cod[index_name_cod] = v ;
@@ -332,7 +332,7 @@ enter_name_cod(v)
   }
 }
 
-term_name_codfunc()
+void term_name_codfunc()
 #define term_name_cod term_name_codfunc()
 {
   name_cod[index_name_cod] = '\0' ;

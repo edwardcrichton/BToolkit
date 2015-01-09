@@ -22,8 +22,9 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <utmp.h>
 
-char *cuserid(s) char *s;
+char * cuserid(s) char *s;
 {
 	register struct passwd *pwd;
 	if((pwd=getpwuid(geteuid()))==NULL)
@@ -33,7 +34,7 @@ char *cuserid(s) char *s;
 	}
 	if(s)
 	{
-		(void)strncpy(s,pwd->pw_name,L_cuserid);
+		(void)strncpy(s,pwd->pw_name,UT_NAMESIZE);
 		return (s);
 	}
 	return (pwd->pw_name);

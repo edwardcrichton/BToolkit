@@ -328,7 +328,7 @@ char * item_name;
   strcpy ( arr_B [ arr_tot ], "<A NAME=\"" );
   strcat ( arr_B [ arr_tot ], "OPNAME!" );
   strcat ( arr_B [ arr_tot ], item_name );
-  strcat ( arr_B [ arr_tot ], "\">" );
+  strcat ( arr_B [ arr_tot ], "\"></A>" );
   if ( ! is_mch ) {
     strcat ( arr_B [ arr_tot ], "<A HREF=\"" );
     strcat ( arr_B [ arr_tot ], abstraction );
@@ -337,7 +337,9 @@ char * item_name;
     strcat ( arr_B [ arr_tot ], "\">" );
   }
   strcat ( arr_B [ arr_tot ], item_name );
+  if ( ! is_mch ) {
   strcat ( arr_B [ arr_tot ], "</A>" );
+  }
   arr_tot++;
 }
 
@@ -374,7 +376,7 @@ int
 main ()
 {
   int i, j;
-  char * getenv(), * name, bkit [ 250 ];
+  char * getenv(), * name, bkit [ 2048 ];
 
   in_link = 0;
 
@@ -625,17 +627,17 @@ printf ( " no. of definitions=%d\n", item_tot );
   else {
     fprintf ( Bhtx, "refinement" );
   }
-  fprintf ( Bhtx, "</TITLE>\n</HEAD>\n<BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFE0\" LINK=\"#2A9BFF\" VLINK=\"#FF6565\" ALINK=\"#FF0000\">\n\n<PRE>" );
+  fprintf ( Bhtx, "</TITLE>\n</HEAD>\n<BODY TEXT=\"#333333\" LINK=\"#2A6BF9\" VLINK=\"#EE4444\" ALINK=\"#EE0000\">\n\n<PRE>" );
 
   while ( c != EOF ) {
     GetNextWord ();
   }
 
-  fprintf ( Bhtx, "</PRE>\n<P><HR WIDTH=80%%>\n<P>\n<H3><FONT COLOR=\"#004EFF\">Analysed Constructs</FONT></H3>\n\n<MENU>\n<DD><A HREF=\"ConstructsSummary.html\">Hypertext Constructs Page</A></DD>\n</MENU>\n\n<H3><FONT COLOR=\"#004EFF\">On-line Help</FONT></H3>\n" );
+  fprintf ( Bhtx, "</PRE>\n<P></P><HR WIDTH=80%%></HR>\n<P></P>\n<H3><FONT COLOR=\"#004EFF\">Analysed Constructs</FONT></H3>\n\n<MENU>\n<DD><A HREF=\"ConstructsSummary.html\">Hypertext Constructs Page</A></DD>\n</MENU>\n\n<H3><FONT COLOR=\"#004EFF\">On-line Help</FONT></H3>\n" );
 
   time_now = time ( NULL );
 
-  fprintf ( Bhtx, "<MENU>\n<DD><A HREF=\"%s/BHELP/Contents.html\">Help Contents Page</A>\n<DD><A HREF=\"%s/BHELP/Index.html\">Index</A></DD>\n</MENU>\n<CENTER>\n<HR  WIDTH=33%% SIZE=2 COLOR=\"#CF6500\" NOSHADE>\n<FONT FACE=\"sans-serif, Arial, Helvetica\"><FONT COLOR=\"#CF6500\"><FONT SIZE=-2>Document Last Updat %s<BR>\n<IMG SRC=\"%s/BHELP/B.gif\" VSPACE=5><BR>%s</FONT></FONT></FONT>\n<CENTER>\n<HR  WIDTH=33%% SIZE=2 COLOR=\"#CF6500\" NOSHADE>\n</CENTER>\n</BODY>\n</HTML>\n", bkit, bkit, ctime ( & time_now ), bkit, toolkit_ver );
+  fprintf ( Bhtx, "<MENU>\n<DD><A HREF=\"%s/BHELP/Contents.html\">Help Contents Page</A>\n<DD><A HREF=\"%s/BHELP/Index.html\">Index</A></DD>\n</MENU>\n<CENTER>\n<HR  WIDTH=33%% SIZE=2 COLOR=\"#CF6500\" NOSHADE>\n<FONT FACE=\"sans-serif, Arial, Helvetica\"><FONT COLOR=\"#CF6500\"><FONT SIZE=-2>Document Last Updated %s<BR>\n<IMG SRC=\"%s/BHELP/B.gif\" VSPACE=5><BR>%s</FONT></FONT></FONT>\n<CENTER>\n<HR  WIDTH=33%% SIZE=2 COLOR=\"#CF6500\" NOSHADE>\n</CENTER>\n</BODY>\n</HTML>\n", bkit, bkit, ctime ( & time_now ), bkit, toolkit_ver );
 
   fclose ( in_fileid );
   fclose ( Bhtx );

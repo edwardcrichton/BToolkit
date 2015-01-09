@@ -18,6 +18,10 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #include <limits.h>
 
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 #include "BMotif_globals.h"
 
 void
@@ -1208,7 +1212,7 @@ printf("%d\n",cascade);fflush(stdout);
         Top Bar Remake Callback
 **********************************************/
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 TopBar_Remake_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
@@ -1277,7 +1281,7 @@ o `Construct(s)' produces a menu of constructs from which\n\
         Top Bar Construct Callback
 **********************************************/
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 TopBar_Construct_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
@@ -1575,7 +1579,7 @@ o *`Delete Library Construct from SLIB' facilitates the removal of an\n\
         Top Bar Introduce Callback
 **********************************************/
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 TopBar_Introduce_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
@@ -1791,6 +1795,7 @@ o `Document of configured constructs'\n\n\
   break;
 
   }
+  
 }
 
 
@@ -1807,7 +1812,7 @@ XtPointer client_data;
 
   if ( IsDeSensitized () ) {
     Popup_Info ( " Utils not available whilst processing ... " );    
-    return;
+    return NULL;
   }
 
   switch ( * ( int * ) client_data ) {
@@ -1989,13 +1994,14 @@ o `Exit' quits the B-Toolkit; any open files will be closed\n\
   break;
 
   }
+  return NULL;
 }
 
 /**********************************************
         Top Bar Browse Callback
 **********************************************/
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 TopBar_Browse_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
@@ -2223,7 +2229,7 @@ should agree with char * options [] in BMotif_globals.c
 /*********
  Callback
 **********/
-XtCallbackProc
+/*XtCallbackProc*/ void
 TopBar_Options_CB ( parent, client_data )
 Widget parent;
 XtPointer client_data;
@@ -2451,7 +2457,7 @@ TopBar_Interrupt_CB ()
 /***********
  Callback
 **********/
-XtCallbackProc
+/*XtCallbackProc*/ void
 TopBar_Help_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
@@ -2542,11 +2548,16 @@ printf("|%s|\n",cmd);
     
     browserCommand=getBrowserCommandLine(buf,p_string);
     strcpy ( p_string, browserCommand );
+    
+    /*printf("command %s\n",browserCommand);*/
+    
+    
     free(browserCommand);
     strcat ( p_string, " & \n echo $! > .Bed" );
     
     system ( p_string );
   }
+  
 }
 
 /***********
@@ -4934,7 +4945,7 @@ XtPointer client_data;
   ipr_hyp_sch_dialog_up [ search_i ] = 0;
 }
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 DisplayIprHyp_Search_CB ( widget, client_data )
 Widget widget;
 XtPointer client_data;
@@ -5530,7 +5541,7 @@ int WM_flag;
 
 }
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 Ipr_Sel_Rule_CB ( widget, client_data, call_data )
 Widget widget;
 XtPointer client_data;
@@ -6884,9 +6895,10 @@ Widget panel_shell;
   int scrollOffset=10; /* 15 */
   int commandOffset=10+scrollOffset+leftrightOffset;/* 26 */
 #ifdef MAC_VERSION
-  char notice[255];
+  char notice[2048];
 #endif
 
+print_debug(331);
 
   /***
   main form with User Data
@@ -6895,6 +6907,9 @@ Widget panel_shell;
       xmFormWidgetClass,          panel_shell,
       XmNuserData,                ( XtPointer ) & c_arr [ 0 ],
       NULL );
+      
+      
+print_debug(332);
 
   /***
   top bar in main form
@@ -6912,13 +6927,19 @@ Widget panel_shell;
       XmNbackgroundPixmap,       B_topbar_pixmap,
       NULL );
 
+print_debug(333);
+
   /***
   create TopBar PullDowns
   ***/
   Cre_Top_Bar_Utils_Pulldown ();
 
+print_debug(334);
+
   IntroducePullDown = Cre_Top_Bar_Pulldown ( top_bar, "Introduce",
                         Introduce_menu, TopBar_Introduce_CB );
+                        
+print_debug(335);
 /***
 printf("IntroducePullDown 1 - %d\n", IntroducePullDown );fflush(stdout);
 ***/
@@ -6926,6 +6947,7 @@ printf("IntroducePullDown 1 - %d\n", IntroducePullDown );fflush(stdout);
   ConstructPullDown = Cre_Top_Bar_Pulldown ( top_bar, "Construct",
                         Construct_menu, TopBar_Construct_CB );
 
+print_debug(336);
 /***
 printf("ConstructPullDown 1 - %d\n", ConstructPullDown );fflush(stdout);
 ***/
@@ -6944,7 +6966,9 @@ printf("RemakePullDown 1 - %d\n", RemakePullDown );fflush(stdout);
 printf("BrowsePullDown 1 - %d\n", BrowsePullDown );fflush(stdout);
 ***/
 
+print_debug(337);
   Cre_Options_Pulldown ( top_bar );
+print_debug(338);
 
   xstr = XmStringCreateLtoR ( "Interrupt", charset );
   InterruptPullDown = XtVaCreateManagedWidget ( "Interrupt",
@@ -6985,6 +7009,8 @@ printf("InterruptPullDown 1 - %d\n", InterruptPullDown );fflush(stdout);
       XmNsashWidth,                   64,
       XmNsashShadowThickness,         1,
       NULL );
+
+print_debug(339);
 
   /***
   top_frame_form in toolkit pane
@@ -7031,7 +7057,7 @@ printf("InterruptPullDown 1 - %d\n", InterruptPullDown );fflush(stdout);
   XtAddCallback ( B_button, XmNactivateCallback,
                                     ( XtCallbackProc ) B_info_CB, NULL );
 
-
+print_debug(3310);
   /***
   Environment Labels
   ***/
@@ -7089,6 +7115,8 @@ printf("InterruptPullDown 1 - %d\n", InterruptPullDown );fflush(stdout);
 
 
   } /* for ... */
+
+print_debug(3311);
 
   /***
   create unmanaged Animator/InterProver labels
@@ -7452,12 +7480,18 @@ printf("InterruptPullDown 1 - %d\n", InterruptPullDown );fflush(stdout);
   XtManageChild ( top_frame_form );
   XtManageChild ( bottom_frame_form );
   
+  
+  print_debug(3312);
 
   /***
   display version, copyright etc
   ***/
   #ifdef MAC_VERSION
+  
+  print_debug(3313);
+  
   notice[0]='\0';
+  /*
   strcat(notice,"/usr/bin/osascript -e \'tell app \"System Events\"\ndisplay dialog \"");
   strcat(notice,toolkit_name);
   strcat(notice, "\n" );
@@ -7471,7 +7505,11 @@ printf("InterruptPullDown 1 - %d\n", InterruptPullDown );fflush(stdout);
   strcat(notice,toolkit_name);
   strcat(notice,"\" with icon note buttons {\"Ok\"} giving up after 10\nend tell\' > /dev/null &");
   system(notice);
+   print_debug(3314);
+  */
+  
   #else
+  /*
   DisplayCurrWinText ( "\n" );
   DisplayCurrWinText ( toolkit_name );
   DisplayCurrWinText ( "\n\n" );
@@ -7479,7 +7517,10 @@ printf("InterruptPullDown 1 - %d\n", InterruptPullDown );fflush(stdout);
   DisplayCurrWinText ( "\n\n" );
   DisplayCurrWinText ( toolkit_copyright );
   DisplayCurrWinText ( "\n\n" );
+  */
   #endif
+  
+   print_debug(3315);
 }
 
 
@@ -8221,7 +8262,7 @@ int obj;
          Popup Help callbacks
 ************************************/
 
-XtCallbackProc
+/*XtCallbackProc*/ void
 Popup_Help_CB ( parent, help_data )
 Widget parent;
 XtPointer help_data;
@@ -18476,6 +18517,7 @@ main ( argc, argv )
 int argc;
 char *argv[];
 {
+	
   Arg args [ 5 ];
 
   Atom WM_SAVE_YOURSELF;
@@ -18486,6 +18528,7 @@ char *argv[];
 
   void SensitizeFrame ();
 
+
   brz = 0;
 
   started_from_cd = 0;
@@ -18493,6 +18536,8 @@ char *argv[];
   initial_reattachment = 0;
 
   BOOSTER_link = 0;
+
+
 
   /***
   check whether an auto remake etc
@@ -18689,9 +18734,11 @@ print_debug(23);
     /* */
     int BLIB_in_path;
     char* PATH;
-    char BLIB[250];
-    char env[250];
+    char BLIB[PATH_MAX];
+    char env[PATH_MAX];
     /* /*/
+
+print_debug(231);
 
     name = getenv ( "BKIT" );
     if ( name == NULL ) {
@@ -18699,6 +18746,9 @@ print_debug(23);
       AbortedMsg ();
       Kill_bplatform_and_exit ( 0, 0 );
     }
+    
+    print_debug(232);
+    
     ll=strlen(name);
     if (ll > 150) {
       printf ( "\n  Path \"%s\" too long\n\n  Max 150 characters\n\n",name);
@@ -18709,6 +18759,7 @@ print_debug(23);
       strcpy ( BKIT_path, name ); 
     }
     
+    print_debug(233);
     /* detect whether BLIB is in the PATH */
     
     BLIB[0]='\0';
@@ -18720,8 +18771,10 @@ print_debug(23);
     strcat(BLIB,"BLIB");
 
     PATH=getenv("PATH");
+    
     BLIB_in_path=0;
     
+    print_debug(234);
     if(PATH != NULL)
     {
 	    if(strstr(PATH,BLIB) != NULL)
@@ -18730,19 +18783,22 @@ print_debug(23);
 	    }
     }
     
+    print_debug(235);
     if(BLIB_in_path==0)
     {
     	/* add $BKIT/BLIB to path */
 	
-	env[0]='\0';
-	strcat(env,"PATH=");
-	strcat(env,BLIB);
-	if(PATH!=NULL)
-	{
-		strcat(env,":");
-		strcat(env,PATH);
-	}
-	putenv(env);
+		env[0]='\0';
+		strcat(env,"PATH=");
+		strcat(env,BLIB);
+		if(PATH!=NULL)
+		{
+			strcat(env,":");
+			strcat(env,PATH);
+		}
+		
+		print_debug(236);
+		putenv(env);
     }
     
     /* /*/
@@ -19086,7 +19142,7 @@ print_debug(43);
     if ( Bpim == NULL ) {
       printf ( "\n  BMotif: can't open .Bpim for writing\n" );
       BT_err_exit ( 0 );
-      return;
+      return 0;
     }
     pid = getpid ();
     PrintNum ( Bpim, pid );
@@ -19116,7 +19172,7 @@ print_debug(45);
     if ( Bcjm == NULL ) {
       printf( "\n  BMotif: can't open .Bcjm for writing\n" );
       BT_err_exit ( 0 );
-      return;
+      return 0;
     }
     fclose ( Bcjm );
   }
@@ -19130,7 +19186,7 @@ print_debug(45);
     if ( Bmvr == NULL ) {
       printf( "\n  BMotif: can't open .Bmvr for writing\n" );
       BT_err_exit ( 0 );
-      return;
+      return 0;
     }
     fprintf ( Bmvr, "%s\n", toolkit_ver ); 
     fclose ( Bmvr );

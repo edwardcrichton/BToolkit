@@ -446,7 +446,7 @@ arith_val_sym_or_int(s,w)
 }
 */
 
-trans_to_low_sym(s)
+int trans_to_low_sym(s)
 {register int res ;
   if( upper_sym(s) ){
     res=s+32;
@@ -456,7 +456,7 @@ trans_to_low_sym(s)
 ; return res;
 }
 
-is_vrb_idx_sym(s)
+int is_vrb_idx_sym(s)
 {register int is_vrb_idx_sym_res ;
   if( is_nbr_sym(s)==TRUE ){
     is_vrb_idx_sym_res=((arith_val_sym(s)<10000)!=0);
@@ -473,7 +473,7 @@ is_vrb_idx_sym(s)
 #define index_of_vrb_sym(s) (0-(s % 10000))
 
 #define  code_vrb_idx_sym(a,b) (10000*a+arith_val_sym(b))
-inc_vrb_sym(s)
+int inc_vrb_sym(s)
 {register int inc_vrb_sym_res  ;
   if( is_indexed_vrb_sym(s)==TRUE ){
     if( (s % 10000)==9999 ){
@@ -500,7 +500,7 @@ inc_vrb_sym(s)
 #define stri_sym(s)  stri[s]
 
 #define righ_sym(s)  righ[s]
-are_opn_clo_sym(s,t)
+int are_opn_clo_sym(s,t)
 {register int are_opn_clo_sym_res ;
   if( s==OPNBRK_sym ){
     are_opn_clo_sym_res=((t==CLOBRK_sym)!=0);
@@ -514,7 +514,7 @@ are_opn_clo_sym(s,t)
 ; return are_opn_clo_sym_res;
 }
 
-clos_sym(s)
+int clos_sym(s)
 {register int clos_sym_res ;
   if( s==OPNBRK_sym ){
     clos_sym_res=CLOBRK_sym;
@@ -524,7 +524,7 @@ clos_sym(s)
 ; return clos_sym_res;
 }
 
-lexi_sym(s)
+int lexi_sym(s)
 {register int lexi_sym_res ;
   if( (s<=0) || (s>sym) ){
     lexi_sym_res=atm;
@@ -534,7 +534,7 @@ lexi_sym(s)
 ; return lexi_sym_res;
 }
 
-is_bspec_sym(s)
+int is_bspec_sym(s)
 {register int is_bspec_sym_res ;
   is_bspec_sym_res=FALSE;
   if( lexi_sym(s)==unr ){
@@ -544,7 +544,7 @@ is_bspec_sym(s)
 }
 
 #define is_atm_sym(s)  ((lexi_sym(s)==atm)!=0)
-ari_sym(v)
+int ari_sym(v)
 {register int ari_sym_res ;
   if( (v>=1) && (v<=sym) ){
     ari_sym_res=arity[v];
@@ -554,7 +554,7 @@ ari_sym(v)
 ; return ari_sym_res;
 }
 
-edit_sym(s)
+int edit_sym(s)
 {register int edit_sym_res ;
   if( s<=0 ){
     edit_sym_res=nrml;
@@ -564,7 +564,7 @@ edit_sym(s)
 ; return edit_sym_res;
 }
 
-prio_sym(s)
+int prio_sym(s)
 {register int prio_sym_res ;
   if( s<=0 ){
     prio_sym_res=0;
@@ -574,13 +574,13 @@ prio_sym(s)
 ; return prio_sym_res;
 }
 
-is_large_num_sym(s)
+int is_large_num_sym(s)
 {register int res,i,v ;
   xst_str(stri_sym(s),i,v,(digit_sym(v)==FALSE),res=FALSE,res=TRUE) 
 ; return res;
 }
 
-is_ident_sym(s)
+int is_ident_sym(s)
 {register int res,i,v ;
   if( is_nbr_sym(s)==TRUE ){
     res=FALSE;
@@ -606,7 +606,7 @@ is_ident_sym(s)
   return res;
 }
 
-is_literal_sym(s)
+int is_literal_sym(s)
 {
 /***
 {
@@ -665,7 +665,7 @@ if ( ok ) {
   return TRUE;
 }
 
-is_empty_set_sym ( s ) {
+int is_empty_set_sym ( s ) {
 
   if      ( len ( stri_sym ( s ) ) != 1 )                   { return FALSE; }      /* 1 == 4 chars */
 
@@ -677,7 +677,7 @@ is_empty_set_sym ( s ) {
   else                                                      { return TRUE; }
 }
 
-is_empty_seq_sym ( s ) {
+int is_empty_seq_sym ( s ) {
 
   if      ( len ( stri_sym ( s ) ) != 1 )                   { return FALSE; }      /* 1 == 4 chars */
 
@@ -689,7 +689,7 @@ is_empty_seq_sym ( s ) {
   else                                                      { return TRUE; }
 }
 
-is_upper_ident_sym(s)
+int is_upper_ident_sym(s)
 {register int i,v,res ;
   if( is_ident_sym(s)==TRUE ){
     xst_str(stri_sym(s),i,v,(upper_sym(v)==FALSE) && (v!=REAL_UNDERSCORE_sym),res=FALSE,res=TRUE);
@@ -699,7 +699,7 @@ is_upper_ident_sym(s)
 ; return res;
 }
 
-is_bitstring_sym(s)
+int is_bitstring_sym(s)
 {register int i,j,r,v,found_bit,res ;
   found_bit = 0;
   if( is_nbr_sym(s)==TRUE ){
@@ -742,7 +742,7 @@ is_bitstring_sym(s)
   return res;
 }
 
-is_string_sym(s)
+int is_string_sym(s)
 {register int res ;
   if( is_nbr_sym(s)==TRUE ){
     res=FALSE;
@@ -756,7 +756,7 @@ is_string_sym(s)
 ; return res;
 }
 
-len_sym(s)
+int len_sym(s)
 {register int res ;
   if( s<=127 ){
     res=1;
@@ -766,7 +766,7 @@ len_sym(s)
 ; return res;
 }
 
-is_vrb_sym(s)
+int is_vrb_sym(s)
 {register int is_vrb_sym_res,i,v ;
   if( is_indexed_vrb_sym(s)==TRUE ){
     is_vrb_sym_res=TRUE;
@@ -795,7 +795,7 @@ is_vrb_sym(s)
 ; return is_vrb_sym_res;
 }
 
-is_vrb_spe_sym(s)
+int is_vrb_spe_sym(s)
 {register int is_vrb_spe_sym_res,i,v ;
   if( is_indexed_vrb_sym(s)==TRUE ){
     is_vrb_spe_sym_res=TRUE;
@@ -836,7 +836,7 @@ is_vrb_spe_sym(s)
 #define mod_clos_sym(s,c) clos[s]=c
 
 #define mod_arit_sym(s,a) arity[s]=a
-ini_symfunc()
+void ini_symfunc()
 #define ini_sym ini_symfunc()
 {register int s ;
   sym=127;
@@ -867,7 +867,7 @@ ini_symfunc()
 
 #define xst_sym(s,P,S1,S2)     s=128; stp=stp+1; stack[stp-1]=sym+1; while( s!=stack[stp-1] ){ if( P ){ S1; stack[stp-1]=s ;} else { s=s+1 ;} ;}; if( s==sym+1 ){ S2 ;}; stp=stp-1
                                
-mak_symfunc()
+int mak_symfunc()
 #define mak_sym mak_symfunc()
 {
   if( sym<max_sym ){
@@ -885,7 +885,7 @@ mak_symfunc()
 }
 
 #define nbr_sym  sym
-rmv_old_sym(n)
+void rmv_old_sym(n)
 {register int s ;
   itrn( s , n+1 , nbr_sym , {
     kil(stri_sym(s))
@@ -894,7 +894,7 @@ rmv_old_sym(n)
 }
 
        
-cre_old_sym(st,l,e,p)
+int cre_old_sym(st,l,e,p)
 {register int s,cre_sym_res ;
   if( len_str(st)==1 ){
     cre_sym_res=val_str(st,1);
@@ -918,7 +918,7 @@ cre_old_sym(st,l,e,p)
 ; return cre_sym_res;
 }
 
-hcod_sym(st)
+int hcod_sym(st)
 {register int mm,ll,l,v,hi,hm,hf ;
   mm=max_sym-128;
   ll=len(st);
@@ -935,7 +935,7 @@ hcod_sym(st)
 ; return hm;
 }
 
-cre_sym(st,l,e,p)
+int cre_sym(st,l,e,p)
 {register int s,h,ok,pp,i,v,cre_sym_res ;
   if( len_str(st)==1 ){
     cre_sym_res=val_str(st,1);
@@ -987,7 +987,7 @@ cre_sym(st,l,e,p)
 ; return cre_sym_res;
 }
 
-kil_sym(s)
+void kil_sym(s)
 {register int st,h,v ;
   st=stri_sym(s);
   h=hcod_sym(st);
@@ -1004,7 +1004,7 @@ kil_sym(s)
   kil(st);
 }
 
-rmv_sym(n)
+void rmv_sym(n)
 {register int s ;
   nitrn( s , nbr_sym , n+1 , {
     kil_sym(s)
@@ -1016,7 +1016,7 @@ rmv_sym(n)
 /*  SYMBOL MACHINE INPUT-OUTPUT  */
  
       
-write_stri_sym(s)
+void write_stri_sym(s)
 {
   if( s<=0 ){
     write_nat(-s);
@@ -1027,7 +1027,7 @@ write_stri_sym(s)
   };
 }
 
-write_err_stri_sym(s)
+void write_err_stri_sym(s)
 {
   if( s<=0 ){
     fprintf(stderr,"%d",0-s);
@@ -1043,7 +1043,7 @@ write_err_stri_sym(s)
 #define is_single_sym(s) (((s>0) && (s<=127))!=0)
   
      
-write_lexi_sym(s)
+void write_lexi_sym(s)
 {
   switch( lexi_sym(s) ){
     case blk :{ 
@@ -1064,7 +1064,7 @@ write_lexi_sym(s)
   };
 }
 
-write_edit_sym(s)
+void write_edit_sym(s)
 {
   switch( edit_sym(s) ){
     case keyw :{
@@ -1098,7 +1098,7 @@ write_edit_sym(s)
 }
 
 #define write_prio_sym(s) write_nat(prio[s])
-lst_all_symfunc()
+void lst_all_symfunc()
 #define lst_all_sym lst_all_symfunc()
 {register int s ;
   itr_sym(s,if( (s>32) && (s!=127) ){ 
@@ -1118,7 +1118,7 @@ lst_all_symfunc()
            ;});
 }
 
-cnc_stri_sym(st,s)
+void cnc_stri_sym(st,s)
 {register int m,k,sn,i,v,ss,l ;
   if( is_single_sym(s)==TRUE ){
     psh_str(st,s);
@@ -1145,7 +1145,7 @@ cnc_stri_sym(st,s)
   };
 }
 
-sta_hcod_symfunc()
+void sta_hcod_symfunc()
 #define sta_hcod_sym sta_hcod_symfunc()
 {register int s,v,tot,tot1,tot2,tot3,tot4,totw ;
   tot=0;
@@ -1176,7 +1176,7 @@ sta_hcod_symfunc()
   tot,tot1,tot2,tot3,tot4,totw);
 }
 
-sta_symfunc()
+void sta_symfunc()
 #define sta_sym sta_symfunc()
 {
   fprintf ( bstdout,"      Max Number of Symbols:         ");

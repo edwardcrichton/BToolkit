@@ -17,7 +17,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 int level_out,key_out,ctr_format_out,rev_vid_out;
-  reset_out(l)
+  void reset_out(l)
   {register int k ;
     itrn( k , 1 , l , {
       print_fic(BLK_sym)
@@ -26,7 +26,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     mod_col_ctr_fic(val_pre_fic+1);
   }
 
-  newl_out(l)
+  void newl_out(l)
   {register int k ;
     if( rev_vid_out==TRUE ){
       write_erv_fic;
@@ -45,7 +45,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
 }
 
   
-  write_blk_out(l)
+  void write_blk_out(l)
   {register int i ;
     itrn( i , 1 , l , {
       print_fic(BLK_sym)
@@ -54,7 +54,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
   }
 
    
-  write_chr_stri_out(i,l,v,b)
+  int write_chr_stri_out(i,l,v,b)
   {register int write_chr_stri_out_res ;
     write_chr_stri_out_res=FALSE;
     if( ((i==1) || (i==l)) && (v==SMPQUO_sym) ){
@@ -94,7 +94,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
   ; return write_chr_stri_out_res;
   }
 
-  write_stri_out(s)
+  void write_stri_out(s)
   {register int i,v
 /* ,b,l */
  ;
@@ -121,7 +121,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     }
   }
 
-  write_out(s)
+  void write_out(s)
   {register int c,k ;
     c=lexi_sym(s);
     k=edit_sym(s);
@@ -190,12 +190,12 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
 }
 
    
-  unp0_out(v)
+  void unp0_out(v)
   {
     write_out(v);
   }
 
-  unp1_out(v,t,i)
+  void unp1_out(v,t,i)
   {register int w ;
     w=val_tree(t,left_node_tree(t,i));
     if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
@@ -205,7 +205,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     }
   }
 
-  unp2_out(v,t,i)
+  void unp2_out(v,t,i)
   {register int w ;
     w=val_tree(t,left_node_tree(t,i));
     if( (ari_sym(w)==2) && (lexi_sym(v)!=opn) ){
@@ -226,7 +226,7 @@ int level_out,key_out,ctr_format_out,rev_vid_out;
     }
   }
 
-unp3_out(v,t,i)
+void unp3_out(v,t,i)
 {register int w ;
   if( lexi_sym(v)==opn ){
     write_out(clos_sym(v));
@@ -244,7 +244,7 @@ unp3_out(v,t,i)
   }
 }
 
-  unparse_out(t,n)
+  void unparse_out(t,n)
   {register int i,v ;
     itr_tree(t,n,i,v,unp0_out(v),
                      unp1_out(v,t,i),
@@ -252,7 +252,7 @@ unp3_out(v,t,i)
                      unp3_out(v,t,i));
   }
 
-  write_tree_out(t,n,v)
+  void write_tree_out(t,n,v)
   {
     rev_vid_out=FALSE;
     mod_pre_fic(v);
@@ -265,7 +265,7 @@ unp3_out(v,t,i)
 
 #define write_frm_out(f,n) write_tree_out(f,root_tree(f),n)
 
-  write_chr_stri_format_out(i,l,v,b,ff)
+  int write_chr_stri_format_out(i,l,v,b,ff)
   {register int write_chr_stri_out_res ;
     write_chr_stri_out_res=FALSE;
     if( ((i==1) || (i==l)) && (v==SMPQUO_sym) ){
@@ -317,7 +317,7 @@ unp3_out(v,t,i)
   ; return write_chr_stri_out_res;
   }
 
-  write_format_out(s,ff)
+  void write_format_out(s,ff)
   {register int l,b,i,v,j,n,t,w,ss,m ;
     mod_pre_fic(0);
     level_out=0;

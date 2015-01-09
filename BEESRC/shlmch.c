@@ -17,7 +17,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 */
 char cstr_shl[1001];
-sys_shlfunc()
+void sys_shlfunc()
 #define sys_shl sys_shlfunc()
 {register int st,i,v ;
   st=cre(1);

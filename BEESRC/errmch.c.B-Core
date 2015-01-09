@@ -84,7 +84,7 @@ int fic_nbr_err;
 #define val_too_many_err too_many_err
 
 #define set_too_many_err too_many_err=TRUE
-ini_errfunc()
+void ini_errfunc()
 #define ini_err ini_errfunc()
 {
   errs=0; 
@@ -92,7 +92,7 @@ ini_errfunc()
   too_many_err=FALSE;
 }
 
-reset_errfunc()
+void reset_errfunc()
 #define reset_err reset_errfunc()
 {
   register int f ;
@@ -108,14 +108,14 @@ reset_errfunc()
 
 #define xst_err(e,p,s1,s2)     stp=stp+1; e=1; stack[stp-1]=errs+1; while( e!=stack[stp-1] ){ if( p ){ s1; stack[stp-1]=e ;} else { e=e+1 ;} ;}; if( e==errs+1 ){ s2 ;}; stp=stp-1
                                  
-mak_errfunc()
+int mak_errfunc()
 #define mak_err mak_errfunc()
 {
   errs=errs+1
 ; return errs;
 }
 
-mak_fic_errfunc()
+int mak_fic_errfunc()
 #define mak_fic_err mak_fic_errfunc()
 {
   if( fic_nbr_err==max_fic_err ){
@@ -132,7 +132,7 @@ mak_fic_errfunc()
 ; return fic_nbr_err;
 }
 
-cre_fic_errfunc()
+int cre_fic_errfunc()
 #define cre_fic_err cre_fic_errfunc()
 {register int f ;
   f=mak_fic_err;
@@ -140,12 +140,12 @@ cre_fic_errfunc()
 ; return f;
 }
 
-psh_fic_err(f,c)
+void psh_fic_err(f,c)
 {
   psh_str(fic_nam_err(f),c);
 }
 
-cre_err(f,l,d,n,s)
+void cre_err(f,l,d,n,s)
 {register int e ;
   if( too_many_err==TRUE ){
   } else if( nbr_err==max_err ){
@@ -162,7 +162,7 @@ cre_err(f,l,d,n,s)
   };
 }
 
-cre_symb_err(f,l,d,n,a,b)
+void cre_symb_err(f,l,d,n,a,b)
 {register int e ;
   if( too_many_err==TRUE ){
     {};
@@ -180,14 +180,14 @@ cre_symb_err(f,l,d,n,a,b)
   };
 }
 
-write_blk_err(n)
+void write_blk_err(n)
 {register int i ;
   itrn( i , 1 , n , {
     fprintf(stderr," ")
  ;});
 }
 
-write_err(e)
+void write_err(e)
 {register int l ;
   FILE * BBcom;
   l=lin_err(e);
@@ -263,7 +263,7 @@ write_err(e)
   fprintf(stderr,"\n");
 }
 
-write_lst_errfunc()
+void write_lst_errfunc()
 #define write_lst_err write_lst_errfunc()
 {register int e ;
   itr_err(e,write_err(e));

@@ -18,3 +18,9 @@
 # Unix hidden files
 .*
 !.gitignore
+
+# The BKIT directory
+BKIT/
+
+# The build trace
+UTIL/build_trace.txt

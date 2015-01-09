@@ -24,7 +24,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #define add_set(a,v) if( mbr(a,v)==FALSE ){ psh(a,v) ;}
 
 #define is_in_set(s,x) mbr(s,x)
-del_set(a,v)
+void del_set(a,v)
 {register int jj ;
   jj = idx(a,v); 
   if( !(jj==0) ){ 
@@ -33,12 +33,12 @@ del_set(a,v)
   }
 }
 
-union_set(s,t)
+void union_set(s,t)
 {register int i,v ;
   itr(t,i,v,add_set(s,v));
 }
 
-inter_set(s,t)
+void inter_set(s,t)
 {register int i ;
   i=1;
   while( i!=len(s)+1 ){
@@ -51,7 +51,7 @@ inter_set(s,t)
   }
 }
 
-diff_set(s,t)
+void diff_set(s,t)
 {register int i,v ;
   itr(t,i,v,del_set(s,v));
 }

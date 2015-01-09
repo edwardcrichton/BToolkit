@@ -53,7 +53,7 @@ int ttdi;
 
 #define xst_the(t,p,s1,s2)     stp=stp+2; stack[stp-1]=1; stack[stp-2]=ttdi+1; while( stack[stp-1]!=stack[stp-2] ){ t=tdir[stack[stp-1]]; if( p ){ s1; stack[stp-2]=stack[stp-1] ;} else { stack[stp-1]=stack[stp-1]+1 ;} ;}; if( stack[stp-1]==ttdi+1 ){ s2 ;}; stp=stp-2
                                  
-mak_thefunc()
+int mak_thefunc()
 #define mak_the mak_thefunc()
 {register int t ;
   if( tttm!=0 ){
@@ -77,7 +77,7 @@ mak_thefunc()
 ; return t;
 }
 
-sup_the(t)
+void sup_the(t)
 {register int k ;
   tttm=tttm+1;
   ttmb[tttm]=t;
@@ -88,7 +88,7 @@ sup_the(t)
   ttdi=ttdi-1;
 }
 
-mod_num_the(t,n)
+void mod_num_the(t,n)
 {register int k ;
   itrn( k , num_the(t)+1 , ttdi , {
     num_the(tdir[k])=num_the(tdir[k])-1;
@@ -102,14 +102,14 @@ mod_num_the(t,n)
   num_the(t)=n;
 }
 
-mod_tac_the(t,ta)
+void mod_tac_the(t,ta)
 {
   kil(tac_the(t));
   tac_the(t)=ta;
 }
 
 #define has_fwd_tac_the(t) ((fwd_tac_the(t)!=0)!=0)
-mod_fwd_tac_the(t,ta)
+void mod_fwd_tac_the(t,ta)
 {
   if( has_fwd_tac_the(t)==TRUE ){
     kil(fwd_tac_the(t));
@@ -117,7 +117,7 @@ mod_fwd_tac_the(t,ta)
   fwd_tac_the(t)=ta;
 }
 
-cre_the(n)
+int cre_the(n)
 {register int t,cre_the_res ;
   xst_the(t,nam_the(t)==n,cre_the_res=t,t=mak_the;
                                     nam_the(t)=n;                        
@@ -128,7 +128,7 @@ cre_the(n)
 ; return cre_the_res;
 }
 
-kil_the(t)
+void kil_the(t)
 {register int i,r ;
   itr(rul_the(t),i,r,kil_rul(r));
   kil(rul_the(t));
@@ -136,7 +136,7 @@ kil_the(t)
   sup_the(t);
 }
 
-test_rul_the(r,rr,frm)
+int test_rul_the(r,rr,frm)
 {register int test_rul_the_res ;
   if( r!=rr ){
     clr_chk_frm;
@@ -147,7 +147,7 @@ test_rul_the(r,rr,frm)
 ; return test_rul_the_res;
 }
 
-match_rul_the(r,t,frm)
+int match_rul_the(r,t,frm)
 {register int i,rr,match_rul_the_res ;
   xst(rul_the(t),i,rr,
       test_rul_the(r,rr,frm)==TRUE,
@@ -156,7 +156,7 @@ match_rul_the(r,t,frm)
 ; return match_rul_the_res;
 }
 
-add_rul_the(f,t,tp)
+int add_rul_the(f,t,tp)
 {register int d,r ;
   d=rul_the(t);
   r=cre_rul(f,t,len(d)+1,tp);
@@ -165,7 +165,7 @@ add_rul_the(f,t,tp)
 ; return r;
 }
 
-rem_rul_the(t,n)
+void rem_rul_the(t,n)
 {register int d,r,j,rr,i,rrr ;
   d=rul_the(t);
   r=val(d,n);
@@ -178,7 +178,7 @@ rem_rul_the(t,n)
 }
 
 #define val_rul_the(t,n)  val(rul_the(t),n)
-rem_sub_rul_the(t,n)
+void rem_sub_rul_the(t,n)
 {register int r,i,l ;
   r=val_rul_the(t,n);
   if( def_lsb_rul(r)==TRUE ){
@@ -187,13 +187,13 @@ rem_sub_rul_the(t,n)
   }
 }
 
-rem_prv_rul_the(t,n)
+void rem_prv_rul_the(t,n)
 {
   mod_pvd_rul(val_rul_the(t,n),bef_rul);
   rem_sub_rul_the(t,n);
 }
 
-mod_rul_the(th,n,t)
+void mod_rul_the(th,n,t)
 {register int r,a,i,v ;
   r=val_rul_the(th,n);
   a=ant_rul(r);
@@ -210,7 +210,7 @@ mod_rul_the(th,n,t)
   kil(t);
 }
 
-read_mod_rul_the(t,n,f)
+void read_mod_rul_the(t,n,f)
 {register int 
 /* f, */
 r ;
@@ -226,7 +226,7 @@ r ;
   fprintf ( bstdout, "\n");
 }
 
-mod_num_rul_the(t,n,m)
+void mod_num_rul_the(t,n,m)
 {register int d,k,i,r ;
   d=rul_the(t);
   r=val(d,n);
@@ -241,7 +241,7 @@ mod_num_rul_the(t,n,m)
 }
 
 #define rem_last_rul_the(t) rem_rul_the(t,len(rul_the(t)))
-boot_thefunc()
+void boot_thefunc()
 #define boot_the boot_thefunc()
 {register int th,w,p,n,o,g,t,f,l0,l1,l2,l3,l4,l5,l6,l7,l8,
     r1,r2,r21,r3,r31,r4,r41,r5,r51,r6,r61,r7,r71,r8,r81,
@@ -349,7 +349,7 @@ boot_thefunc()
   kil(r81);
 }
 
-ini_thefunc()
+void ini_thefunc()
 #define ini_the ini_thefunc()
 {
   basic_ini_the;
@@ -362,7 +362,7 @@ ini_thefunc()
 
 #define write_nam_the(t)  write_stri_sym(nam_the(t))                    
   
-lst_rul_the(t)
+void lst_rul_the(t)
 {register int i,r,l ;
   fprintf ( bstdout, "THEORY ");
   write_nam_the(t);
@@ -377,12 +377,12 @@ lst_rul_the(t)
   fprintf ( bstdout, "END");
 }
 
-lst_short_rul_the(t)
+void lst_short_rul_the(t)
 {register int i,r ;
   itr(rul_the(t),i,r,write_hor_short_rul(r); fprintf ( bstdout, "\n"));
 }
 
-read_rul_the(t,f)
+void read_rul_the(t,f)
 {register int 
 /* f, */
 r ;
@@ -398,7 +398,7 @@ r ;
   fprintf ( bstdout, "\n");
 }
 
-read_thefunc()
+int read_thefunc()
 #define read_the read_thefunc()
 {register int st,s,b,n,tt,read_the_res ;
   b=TRUE;
@@ -436,7 +436,7 @@ read_thefunc()
 }
 
 #define write_ext_nam_the(t)  write_ext_stri_sym(nam_the(t))
-write_the(t)
+void write_the(t)
 {register int r,i,b ;
   if( num_the(t)<10 ){
     fprintf ( bstdout, "   ");
@@ -460,7 +460,7 @@ write_the(t)
   fprintf ( bstdout, "\n");
 }
 
-lst_all_thefunc()
+void lst_all_thefunc()
 #define lst_all_the lst_all_thefunc()
 {register int t ;
   if( nbr_the==0 ){
@@ -470,7 +470,7 @@ lst_all_thefunc()
   }
 }
 
-is_vis_the(t)
+int is_vis_the(t)
 {register int is_vis_the_res,i,v ;
   if( nrml_stri_sym(nam_the(t))==TRUE ){
     is_vis_the_res=((lst_str(stri_sym(nam_the(t)))!=ord('X'))!=0);
@@ -491,7 +491,7 @@ is_vis_the(t)
   return is_vis_the_res;
 }
 
-nbr_vis_thefunc()
+int nbr_vis_thefunc()
 #define nbr_vis_the nbr_vis_thefunc()
 {register int t,n ;
   n=0;
@@ -499,7 +499,7 @@ nbr_vis_thefunc()
 ; return n;
 }
 
-short_lst_all_thefunc()
+void short_lst_all_thefunc()
 #define short_lst_all_the short_lst_all_thefunc()
 {register int t ;
   if( nbr_vis_the==0 ){
@@ -509,7 +509,7 @@ short_lst_all_thefunc()
   }
 }
 
-mve_the(t)
+void mve_the(t)
 {register int m ;
   fprintf ( bstdout, "      New Position: ");
   m=read_nat;
@@ -522,7 +522,7 @@ mve_the(t)
   }
 }
 
-sta_thefunc()
+void sta_thefunc()
 #define sta_the sta_thefunc()
 {
   fprintf ( bstdout,"      Max Number of Theories:        ");

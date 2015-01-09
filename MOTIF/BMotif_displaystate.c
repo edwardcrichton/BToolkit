@@ -557,18 +557,20 @@ XtPointer call_data;
     if ( user_data_option != nme_num ) { XBell ( display, -75 ); return; }
   }
 
+/*
   printf("user_data_option = %d\n", user_data_option);
   
   printf("nme_num: %d\n", nme_num);
   printf("cmt_num: %d\n", cmt_num);
   printf("anl_num: %d\n", anl_num);
   printf("pog_num: %d\n", pog_num);
+*/
 
   /*switch ( * ( int * ) user_data ) {*/
   switch ( user_data_option ) {
 
   case nme_num:
-  printf("call OPN_CLO ( %d, %d ) Display_1 = %p\n",obj,Display_1->ps, Display_1);
+  /*printf("call OPN_CLO ( %d, %d ) Display_1 = %p\n",obj,Display_1->ps, Display_1);*/
     OPN_CLO ( obj, Display_1->ps );
     break;
 
@@ -3716,7 +3718,7 @@ int obj;
   name[ sizeof(name) - 1 ]='\0';
   buf[0]='\0';
 
-printf("DisplayInsert ( %d )\n",obj);
+/*printf("DisplayInsert ( %d )\n",obj);*/
 
   /***
   see if we need a realloc - if so initialise the new structures
@@ -3730,13 +3732,13 @@ printf("DisplayInsert ( %d )\n",obj);
 /***
 printf ( "                   DisplayMallocTotal: %d->%d Display_0=%d\n", prev_DisplayMallocTotal, DisplayMallocTotal, Display_0 ); fflush ( stdout );
 ***/
-printf ( "                   DisplayMallocTotal: %d->%d Display_0=%p\n", prev_DisplayMallocTotal, DisplayMallocTotal, Display_0 ); fflush ( stdout );
+/*printf ( "                   DisplayMallocTotal: %d->%d Display_0=%p\n", prev_DisplayMallocTotal, DisplayMallocTotal, Display_0 ); fflush ( stdout );*/
 
     realloc_check ( Display_0, Display, DisplayMallocTotal );
 /***
 printf ( "                   DisplayMallocTotal: %d->%d\n", prev_DisplayMallocTotal, DisplayMallocTotal ); fflush ( stdout );
 ***/
-printf ( "                   DisplayMallocTotal: %d->%d\n", prev_DisplayMallocTotal, DisplayMallocTotal ); fflush ( stdout );
+/*printf ( "                   DisplayMallocTotal: %d->%d\n", prev_DisplayMallocTotal, DisplayMallocTotal ); fflush ( stdout );*/
 
     initialise_name_to_empty ( Display_0, Display_1,
                                    prev_DisplayMallocTotal, DisplayMallocTotal );
@@ -3745,12 +3747,12 @@ printf ( "                   DisplayMallocTotal: %d->%d\n", prev_DisplayMallocTo
 /***
 Popup_Info ( " malloc has changed Display_0 pointer\n\n       changing Display_visible        " );
 ***/
-printf ( "malloc has changed Display_0 pointer\nchanging Display_visible        \n" );
+/*printf ( "malloc has changed Display_0 pointer\nchanging Display_visible        \n" );*/
       Display_visible = Display_visible + ( Display_0 - Display_prev );
     }
   }
 
-printf("DisplayInsert ( %d ) before get values\n",obj, name);
+/*printf("DisplayInsert ( %d ) before get values\n",obj, name);*/
   /***
   create full name;
   get other values
@@ -3758,15 +3760,15 @@ printf("DisplayInsert ( %d ) before get values\n",obj, name);
   
   xtr_name ( name, obj );
   
- printf("DisplayInsert ( %d ) xtr_name ( %d ) = %s \n",obj, obj, name);
+ /*printf("DisplayInsert ( %d ) xtr_name ( %d ) = %s \n",obj, obj, name);*/
  
   val_ext ( &ext, obj );
   
-printf("DisplayInsert ( %d ) val_ext ( %d ) = %d \n",obj, obj, ext);   
+/*printf("DisplayInsert ( %d ) val_ext ( %d ) = %d \n",obj, obj, ext);   */
   
   val_type ( &type, obj );
   
-printf("DisplayInsert ( %d ) val_type ( %d ) = %d \n",obj, obj, type);
+/*printf("DisplayInsert ( %d ) val_type ( %d ) = %d \n",obj, obj, type);*/
 
   val_opt ( &is_generated, &is_gen_by, &is_prf, &prf_level, obj );
   
@@ -3776,21 +3778,21 @@ printf("DisplayInsert ( %d ) val_type ( %d ) = %d \n",obj, obj, type);
     {
       snprintf ( buf, sizeof(buf), "%s.%s.prf.%d", ( char * ) name, extens [ ext ], prf_level - 1 );
       
-      printf("1 buf=%s\n", buf);
+      /*printf("1 buf=%s\n", buf);*/
      } 
     else
      {
       snprintf ( buf,sizeof(buf), "%s.%s.prf", ( char * ) name, extens [ ext ] );
-      printf("2 buf=%s\n", buf);
+      /*printf("2 buf=%s\n", buf);*/
      }
   }
   else
   {
     snprintf ( buf,sizeof(buf), "%s.%s", ( char * ) name, extens [ ext ] );
-    printf("3 buf=%s\n", buf);
+    /*printf("3 buf=%s\n", buf);*/
   } 
     
-    printf("Display_0 is at %p\n sizeof(Display) is %llu",Display_0, (unsigned long long) sizeof(struct Display));
+    /*printf("Display_0 is at %p\n sizeof(Display) is %llu",Display_0, (unsigned long long) sizeof(struct Display));*/
     
     
     
@@ -3803,7 +3805,7 @@ printf("DisplayInsert ( %d ) val_type ( %d ) = %d \n",obj, obj, type);
 /***
 printf ( "   DisplayInsert:  %s > %s (%d)\n", buf, Display_1->name, Display_1 - Display_0 ); fflush ( stdout );
 ***/
-printf ( "   DisplayInsert:  %s > %s (%llu)\n", buf, Display_1->name, (unsigned long long) (Display_1 - Display_0) ); fflush ( stdout );
+/*printf ( "   DisplayInsert:  %s > %s (%llu)\n", buf, Display_1->name, (unsigned long long) (Display_1 - Display_0) ); fflush ( stdout );*/
 
     Display_1++;
   }
@@ -5399,11 +5401,11 @@ printf ( "creating HTX/ConstructsSummary.html\n" );
     return;
   }
 
-  fprintf (  html_file, "<HTML>\n<HEAD>\n <META NAME=\"Author\" CONTENT=\"%s\">\n  <META NAME=\"Description\" CONTENT=\"Summary of Hypertext Constructs for %s\">\n  <TITLE>Hypertext Constructs</TITLE>\n</HEAD>\n<BODY TEXT=\"#004EFF\" BGCOLOR=\"#CEDDCE\" LINK=\"#2A9BFF\" VLINK=\"#FF6565\" ALINK=\"#FF0000\">\n\n", toolkit_ver, cur_dir );
+  fprintf (  html_file, "<HTML>\n<HEAD>\n <META NAME=\"Author\" CONTENT=\"%s\">\n  <META NAME=\"Description\" CONTENT=\"Summary of Hypertext Constructs for %s\">\n  <TITLE>Hypertext Constructs</TITLE>\n</HEAD>\n<BODY TEXT=\"#333333\" LINK=\"#2A6BF9\" VLINK=\"#EE4444\" ALINK=\"#EE0000\">\n\n", toolkit_ver, cur_dir );
 
   fprintf (  html_file, "<CENTER>\n<IMG SRC=\"%s/BHELP/B.gif\" >\n<H2>Summary of Hypertext Constructs</H2>\n</CENTER>\n", BKIT_path );
 
-  fprintf (  html_file, "\n<P><HR WIDTH=80%%><P>\n<H3>Analysed Constructs</H3>\n<MENU>\n" );
+  fprintf (  html_file, "\n<P></P><HR WIDTH=80%%></HR><P></P>\n<H3>Analysed Constructs</H3>\n<MENU>\n" );
 
   for ( Display_2 = Display_0 ;
               Display_2 < Display_0 + DisplayTotal ; Display_2++ ) {
@@ -5419,7 +5421,7 @@ printf ( "creating HTX/ConstructsSummary.html\n" );
   }
 
 
-  fprintf (  html_file, "</MENU>\n\n<P><HR WIDTH=60%%><P>\n<H3>C Code Modules</H3>\n<MENU>\n" );
+  fprintf (  html_file, "</MENU>\n\n<P></P><HR WIDTH=60%%></HR><P></P>\n<H3>C Code Modules</H3>\n<MENU>\n" );
 
   for ( Display_2 = Display_0 ;
               Display_2 < Display_0 + DisplayTotal ; Display_2++ ) {
@@ -5443,7 +5445,7 @@ printf ( "creating HTX/ConstructsSummary.html\n" );
 
   time_now = time ( NULL );
 
-  fprintf (  html_file, "</MENU>\n<P><HR WIDTH=80%%><P>\n<H3>On-line Help</H3>\n<MENU>\n<DD><A HREF=\"%s/BHELP/Contents.html\">Help Contents Page</A>\n<DD><A HREF=\"%s/BHELP/Index.html\">Index</A></DD>\n</MENU>\n<CENTER>\n<HR  WIDTH=33%% SIZE=2 COLOR=\"#CF6500\" NOSHADE>\n<FONT FACE=\"sans-serif, Arial, Helvetica\"><FONT COLOR=\"#CF6500\"><FONT SIZE=-2>Document Last Updated: %s<BR>\n<IMG SRC=\"%s/BHELP/B.gif\" VSPACE=5><BR>%s</FONT></FONT></FONT>\n<CENTER>\n<HR  WIDTH=33%% SIZE=2 COLOR=\"#CF6500\" NOSHADE>\n</CENTER>\n</BODY>\n</HTML>\n", BKIT_path, BKIT_path, ctime ( & time_now ), BKIT_path, toolkit_ver );
+  fprintf (  html_file, "</MENU>\n<P></P><HR WIDTH=80%%></HR><P></P>\n<H3>On-line Help</H3>\n<MENU>\n<DD><A HREF=\"%s/BHELP/Contents.html\">Help Contents Page</A>\n<DD><A HREF=\"%s/BHELP/Index.html\">Index</A></DD>\n</MENU>\n<CENTER>\n<HR  WIDTH=33%% SIZE=2 COLOR=\"#CF6500\" NOSHADE>\n<FONT FACE=\"sans-serif, Arial, Helvetica\"><FONT COLOR=\"#CF6500\"><FONT SIZE=-2>Document Last Updated: %s<BR>\n<IMG SRC=\"%s/BHELP/B.gif\" VSPACE=5><BR>%s</FONT></FONT></FONT>\n<CENTER>\n<HR  WIDTH=33%% SIZE=2 COLOR=\"#CF6500\" NOSHADE>\n</CENTER>\n</BODY>\n</HTML>\n", BKIT_path, BKIT_path, ctime ( & time_now ), BKIT_path, toolkit_ver );
   fclose ( html_file );
   HtmlMasterFileChanged = 0;
 }

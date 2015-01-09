@@ -27,19 +27,19 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #define val_root_frm(f) val_tree(f,root_tree(f))
 
 #define in_inter(v,a,b) ((v>=a) && (v<=b))
-is_in_frm(f,v)
+int is_in_frm(f,v)
 {register int i,w,is_in_frm_res ;
   xst(f,i,w,w==v,is_in_frm_res=TRUE,is_in_frm_res=FALSE)
 ; return is_in_frm_res;
 }
 
-has_unr_frm(f)
+int has_unr_frm(f)
 {register int i,w,res ;
   xst(f,i,w,lexi_sym(w)==unr,res=TRUE,res=FALSE)
 ; return res;
 }
 
-may_have_qtf_or_sub_frm(f)
+int may_have_qtf_or_sub_frm(f)
 {register int res ;
   if( is_in_frm(f,CEQ_sym)==TRUE ){
     res=TRUE;
@@ -53,7 +53,7 @@ may_have_qtf_or_sub_frm(f)
 ; return res;
 }
 
-beg_tree(t,n)
+int beg_tree(t,n)
 {register int c,m,a,v,beg_tree_res ;
   m=n;
   a=vad(t);
@@ -74,7 +74,7 @@ beg_tree(t,n)
 ; return beg_tree_res;
 }
 
-end_tree(t,n)
+int end_tree(t,n)
 {register int m,c,b ;
   m=n;
   c=1;
@@ -95,7 +95,7 @@ end_tree(t,n)
 ; return m;
 }
 
-cre_asc_nod_frm(t,n,c)
+int cre_asc_nod_frm(t,n,c)
 {register int m,r ;
   m=n;
   r=root_tree(t);
@@ -109,7 +109,7 @@ cre_asc_nod_frm(t,n,c)
 ; return c;
 }
 
-father_is_idx_vrb_frm(t,n)
+int father_is_idx_vrb_frm(t,n)
 {register int father_is_idx_vrb_frm_res,m ;
   if( n==root_tree(t) ){
     father_is_idx_vrb_frm_res=FALSE;
@@ -123,7 +123,7 @@ father_is_idx_vrb_frm(t,n)
 ; return father_is_idx_vrb_frm_res;
 }
 
-get_asc_nod_vrb_frm(lv,t,n)
+void get_asc_nod_vrb_frm(lv,t,n)
 {register int c,i,v,w,b ;
   c=cre(5);
   cre_asc_nod_frm(t,n,c);
@@ -154,14 +154,14 @@ get_asc_nod_vrb_frm(lv,t,n)
 #define right_node_frm(f)     right_node_tree(f,root_tree(f))
 
 #define left_node_frm(f)      left_node_tree(f,root_tree(f))
-cre_cop_tree(t,n)
+int cre_cop_tree(t,n)
 {register int u ;
   u=cre(5);
   pcop(t,beg_tree(t,n),n,u)
 ; return u;
 }
 
-cnc_tree(g,t,n)
+void cnc_tree(g,t,n)
 {
   pcnc(g,t,beg_tree(t,n),n);
 }
@@ -177,7 +177,7 @@ cnc_tree(g,t,n)
 #define left_frm(f)     left_tree(f,root_tree(f))
 
 #define right_frm(f)    right_tree(f,root_tree(f))
-cons_frm(l,o,r)
+int cons_frm(l,o,r)
 {
   register int f ;
   f=cre(len(l)+len(r)+1);
@@ -187,7 +187,7 @@ cons_frm(l,o,r)
   return f;
 }
 
-cre_frm(v)
+int cre_frm(v)
 {
   register int f;
   f=cre(1);
@@ -195,7 +195,7 @@ cre_frm(v)
   return f;
 }
 
-cre_int_frm(v)
+int cre_int_frm(v)
 {
   register int f;
   f=cre(3);
@@ -205,7 +205,7 @@ cre_int_frm(v)
   return f;
 }
 
-cre_mod_tree(t,n,u)
+int cre_mod_tree(t,n,u)
 {register int s ;
   s=cre(len(t));
   pcop(t,1,beg_tree(t,n)-1,s);
@@ -214,7 +214,7 @@ cre_mod_tree(t,n,u)
 ; return s;
 }
 
-cre_high_frm(f,i)
+int cre_high_frm(f,i)
 {
   register int g,h,j,k ;
   g=cre_frm(GHO_sym);
@@ -232,7 +232,7 @@ cre_high_frm(f,i)
 #define xst_sub_frm(t,n,op,P,S1,S2)  xst(t,n,op,P,S1,S2)
 
 #define nxst_sub_frm(t,n,op,P,S1,S2)  nxst(t,n,op,P,S1,S2)
-eql_tree(f,m,g,n)
+int eql_tree(f,m,g,n)
 {register int a,b,i,j,eql_tree_res ;
   a=beg_tree(f,m);
   b=beg_tree(g,n);
@@ -256,7 +256,7 @@ eql_tree(f,m,g,n)
 }
 
 #define eql_frm(f,g)  eql_tree(f,root_tree(f),g,root_tree(g))
-is_ff_eql_ff_frm(f)
+int is_ff_eql_ff_frm(f)
 {register int is_ff_eql_ff_frm_res ;
   if( val_root_frm(f)==EQL_sym ){
     is_ff_eql_ff_frm_res=eql_tree(f,left_node_frm(f),f,right_node_frm(f));
@@ -266,7 +266,7 @@ is_ff_eql_ff_frm(f)
 ; return is_ff_eql_ff_frm_res;
 }
 
-dec_tree(t,n,v)
+int dec_tree(t,n,v)
 {register int m,s,u ;
   s=cre(20);
   m=n;
@@ -281,7 +281,7 @@ dec_tree(t,n,v)
 ; return s;
 }
 
-rec_frm(s,o)
+int rec_frm(s,o)
 {register int f,i,v ;
   f=cre(4);
   itr(s,i,v,cnc(f,v);
@@ -299,7 +299,7 @@ rec_frm(s,o)
 #define from_left_tree  2
 
 #define from_right_tree 3
-pos_tree(t,n,i)
+int pos_tree(t,n,i)
 {register int pos_tree_res ;
   if( n==i ){
     pos_tree_res=from_right_tree;
@@ -311,7 +311,7 @@ pos_tree(t,n,i)
 ; return pos_tree_res;
 }
 
-itr_up_tree(t,n,i)
+int itr_up_tree(t,n,i)
 {register int itr_up_tree_res ;
   stack[stp-2]=pos_tree(t,n,i);
   itr_up_tree_res=lst(stack[stp-1]);
@@ -321,7 +321,7 @@ itr_up_tree(t,n,i)
 ; return itr_up_tree_res;
 }
 
-itr_ini_treefunc()
+void itr_ini_treefunc()
 #define itr_ini_tree itr_ini_treefunc()
 {
   stp=stp+2;
@@ -331,7 +331,7 @@ itr_ini_treefunc()
 }
 
 #define itr_tree(t,n,i,v,s0,s1,s2,s3)  itr_ini_tree; i=n; while( i!=0 ){ v=val(t,i); if( ari_sym(v)==0 ){ s0; i=itr_up_tree(t,n,i) ;} else if( stack[stp-2]==from_up_tree ){ s1; psh(stack[stp-1],i); i=left_node_tree(t,i) ;} else if( stack[stp-2]==from_left_tree ){ s2; i=right_node_tree(t,i); stack[stp-2]=from_up_tree ;} else if( stack[stp-2]==from_right_tree ){ s3; i=itr_up_tree(t,n,i) ;}  ;}; kil(stack[stp-1]); stp=stp-2
-npos_tree(t,n,i)
+int npos_tree(t,n,i)
 {register int npos_tree_res ;
   if( n==i ){
     npos_tree_res=from_left_tree;
@@ -343,7 +343,7 @@ npos_tree(t,n,i)
 ; return npos_tree_res;
 }
 
-nitr_up_tree(t,n,i)
+int nitr_up_tree(t,n,i)
 {register int nitr_up_tree_res ;
   stack[stp-2]=npos_tree(t,n,i);
   nitr_up_tree_res=lst(stack[stp-1]);
@@ -353,7 +353,7 @@ nitr_up_tree(t,n,i)
 ; return nitr_up_tree_res;
 }
 
-nitr_ini_treefunc()
+void nitr_ini_treefunc()
 #define nitr_ini_tree nitr_ini_treefunc()
 {
   stp=stp+2;
@@ -363,7 +363,7 @@ nitr_ini_treefunc()
 }
 
 #define nitr_tree(t,n,i,v,s0,s1,s2,s3)  nitr_ini_tree; i=n; while( i!=0 ){ v=val(t,i); if( ari_sym(v)==0 ){ s0; i=nitr_up_tree(t,n,i) ;} else if( stack[stp-2]==from_up_tree ){ s1; psh(stack[stp-1],i); i=right_node_tree(t,i) ;} else if( stack[stp-2]==from_right_tree ){ s2; i=left_node_tree(t,i); stack[stp-2]=from_up_tree ;} else if( stack[stp-2]==from_left_tree ){ s3; i=nitr_up_tree(t,n,i) ;}  ;}; kil(stack[stp-1]); stp=stp-2
-dump_tree(t)
+void dump_tree(t)
 {register int i,v ;
   itr_tree(t,root_tree(t),i,v,write_stri_sym(v); fprintf ( bstdout, " "),
                          write_stri_sym(v); fprintf ( bstdout, " "),
@@ -371,7 +371,7 @@ dump_tree(t)
                          {});
 }
 
-ndump_tree(t)
+void ndump_tree(t)
 {register int i,v ;
   nitr_tree(t,root_tree(t),i,v,write_stri_sym(v); fprintf ( bstdout, " "),
                           write_stri_sym(v); fprintf ( bstdout, " "),
@@ -380,7 +380,7 @@ ndump_tree(t)
 }
 
 #define clr_chk_frm   clr_fnc
-eql_spe_tree(f,m,a,g,n,b)
+int eql_spe_tree(f,m,a,g,n,b)
 {register int i,j,eql_spe_tree_res ;
   if( m-a!=n-b ){
     eql_spe_tree_res=FALSE;
@@ -402,7 +402,7 @@ eql_spe_tree(f,m,a,g,n,b)
 }
 
 #define eql_spe_frm(f,g)  eql_spe_tree(f,len(f),1,g,len(g),1)
-chk_tree(s,m,n,t,i,j)
+int chk_tree(s,m,n,t,i,j)
 {register int x,y,z,v,w,k,l,chk_tree_res ;
   if( (i-j)<(m-n) ){
     chk_tree_res=FALSE;
@@ -494,7 +494,7 @@ chk_tree(s,m,n,t,i,j)
 }
 
 #define chk_frm(f,g) chk_tree(f,root_tree(f),1,g,root_tree(g),1)
-chk_set_tree(s,m,n,t,i,j,ss)
+int chk_set_tree(s,m,n,t,i,j,ss)
 {register int x,y,z,v,w,k,l,chk_set_tree_res ;
   l=len_fnc;
   if( (i-j)<(m-n) ){
@@ -538,7 +538,7 @@ chk_set_tree(s,m,n,t,i,j,ss)
 }
 
 #define chk_set_frm(f,g,s) chk_set_tree(f,root_tree(f),1,g,root_tree(g),1,s)
-prd_tree(t)
+int prd_tree(t)
 {register int w,n,v,i,a,b ;
   w=cre(len(t));
   itr(t,n,v,if( in_dom_fnc(v)==TRUE ){
@@ -556,7 +556,7 @@ prd_tree(t)
 ; return w;
 }
 
-chk_lst_frm(la,lf)
+void chk_lst_frm(la,lf)
 {register int x,idx,l,m,i,v,sta ;
   idx=cre(len(la));
   sta=cre(len(la));
@@ -590,7 +590,7 @@ chk_lst_frm(la,lf)
   };
 }
 
-is_idx_vrb_frm(f,i)
+int is_idx_vrb_frm(f,i)
 {register int v,is_idx_vrb_frm_res ;
   is_idx_vrb_frm_res=FALSE;
   if( val_tree(f,i)==UNDERSCORE_sym ){
@@ -607,7 +607,7 @@ is_idx_vrb_frm(f,i)
 
 #define code_idx_vrb_frm(f,i)  code_vrb_idx_sym(val_tree(f,left_node_tree(f,i)),  val_tree(f,right_node_tree(f,i)))
     
-code_vrb_tree(f,i)
+int code_vrb_tree(f,i)
 {register int code_vrb_tree_res ;
   if( is_idx_vrb_frm(f,i)==TRUE ){
     code_vrb_tree_res=code_idx_vrb_frm(f,i);
@@ -617,7 +617,7 @@ code_vrb_tree(f,i)
 ; return code_vrb_tree_res;
 }
 
-is_vrb_tree(f,i)
+int is_vrb_tree(f,i)
 {register int is_vrb_tree_res ;
   if( is_idx_vrb_frm(f,i)==TRUE ){
     is_vrb_tree_res=TRUE;
@@ -630,7 +630,7 @@ is_vrb_tree(f,i)
 #define code_vrb_frm(f) code_vrb_tree(f,root_tree(f))
 
 #define is_vrb_frm(f)   is_vrb_tree(f,root_tree(f))
-is_vrb_spe_tree(f,i)
+int is_vrb_spe_tree(f,i)
 {register int is_vrb_spe_tree_res ;
   if( is_idx_vrb_frm(f,i)==TRUE ){
     is_vrb_spe_tree_res=TRUE;
@@ -641,7 +641,7 @@ is_vrb_spe_tree(f,i)
 }
 
 #define is_vrb_spe_frm(f)   is_vrb_spe_tree(f,root_tree(f))
-is_lst_vrb_frm(lv,f,i)
+int is_lst_vrb_frm(lv,f,i)
 {register int s,j,v,b ;
   
 /* clr(lv); */
@@ -659,7 +659,7 @@ is_lst_vrb_frm(lv,f,i)
 ; return b;
 }
 
-is_qtf_frm(lv,f,i)
+int is_qtf_frm(lv,f,i)
 {register int l,op,is_qtf_frm_res ;
   is_qtf_frm_res=FALSE;
   op=val_tree(f,i);
@@ -676,7 +676,7 @@ is_qtf_frm(lv,f,i)
 ; return is_qtf_frm_res;
 }
 
-is_unv_frm(lv,f,i)
+int is_unv_frm(lv,f,i)
 {register int l,op,is_unv_frm_res ;
   is_unv_frm_res=FALSE;
   op=val_tree(f,i);
@@ -693,7 +693,7 @@ is_unv_frm(lv,f,i)
 ; return is_unv_frm_res;
 }
 
-is_set_frm(lv,f,i)                 
+int is_set_frm(lv,f,i)                 
 /* x | P */
 {register int l,op,is_set_frm_prf_res ;
   is_set_frm_prf_res=FALSE;
@@ -709,7 +709,7 @@ is_set_frm(lv,f,i)
 ; return is_set_frm_prf_res;
 }
 
-is_sub_frm(lv
+int is_sub_frm(lv
 /* ,le */
 ,f,i)
 {register int l,r,op,s,is_sub_frm_res ;
@@ -740,7 +740,7 @@ is_sub_frm(lv
 ; return is_sub_frm_res;
 }
 
-is_rel_arith_frm(w)
+int is_rel_arith_frm(w)
 {register int is_rel_arith_frm_res ;
   is_rel_arith_frm_res=FALSE;
 
@@ -795,7 +795,7 @@ printf ( "is_rel_arith_frm 5\n" );
   return is_rel_arith_frm_res;
 }
 
-is_int_frm(f)
+int is_int_frm(f)
 {
   int is_int_frm_res = 0;
 /***
@@ -818,7 +818,7 @@ printf ( "    returning %d\n", is_int_frm_res );
   return ( is_int_frm_res );  
 }
   
-  is_arith_frm(f,n)
+  int is_arith_frm(f,n)
   {register int l,r,s,is_arith_frm_res,op, r_int, l_int, is_int, L, R ;
 
 /***
@@ -985,7 +985,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
     return is_arith_frm_res;
   }
 
-  is_quote_frm(f,n)
+  int is_quote_frm(f,n)
   {register int s,i,v,is_quote_frm_res ;
     is_quote_frm_res=FALSE;
     if( val_tree(f,n)==BQU_sym ){
@@ -998,7 +998,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
   ; return is_quote_frm_res;
   }
 
-  is_bcatl_frm(f,n)
+  int is_bcatl_frm(f,n)
   {register int s,i,v,is_quote_frm_res ;
     is_quote_frm_res=FALSE;
     if( val_tree(f,n)==BCATL_sym ){
@@ -1011,7 +1011,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
   ; return is_quote_frm_res;
   }
 
-  is_low_frm(f,n)
+  int is_low_frm(f,n)
   {register int s,i,v,r,is_low_frm_res ;
     is_low_frm_res=FALSE;
     if( val_tree(f,n)==LOW_sym ){
@@ -1021,7 +1021,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
   ; return is_low_frm_res;
   }
 
-  not_new_vrb_frm(c)
+  int not_new_vrb_frm(c)
   {register int not_new_vrb_frm_res ;
     if( ari_sym(c)==2 ){
       not_new_vrb_frm_res=TRUE;
@@ -1034,7 +1034,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
   }
 
     
-  is_new_vrb_frm(f,n)    
+  int is_new_vrb_frm(f,n)    
 /*  TO BE MADE MORE PRECISE HERE  */
   {register int s, i,v,is_new_vrb_frm_res ;
     is_new_vrb_frm_res=FALSE;
@@ -1049,7 +1049,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
   ; return is_new_vrb_frm_res;
   }
 
-  is_bnew_vrb_frm(f,n)    
+  int is_bnew_vrb_frm(f,n)    
 /*  TO BE MADE MORE PRECISE HERE  */
   {register int s, i,v,is_new_vrb_frm_res ;
     is_new_vrb_frm_res=FALSE;
@@ -1064,7 +1064,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
   ; return is_new_vrb_frm_res;
   }
 
-  rec_vrb_frm(g,lv)
+  void rec_vrb_frm(g,lv)
   {register int i,v ;
     itr(lv,i,v,if( is_indexed_vrb_sym(v)==TRUE ){
                  psh(g,ident_of_vrb_sym(v));
@@ -1078,7 +1078,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
               });
   }
 
-  inc_lst_vrb_frm(lv,lvp)
+  void inc_lst_vrb_frm(lv,lvp)
   {register int i,v ;
     itr(lv,i,v,psh(lvp,inc_vrb_sym(v)));
   }
@@ -1087,7 +1087,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
   
 /*  construct a formula where indexed variables x$1 are encoded  */
   
-  cre_encode_tree(t,n)
+  int cre_encode_tree(t,n)
   {register int g,b,m,op,i,u,h ; 
     g=cre_cop_tree(t,n);
     b=TRUE;
@@ -1110,7 +1110,7 @@ printf ( "      L=%d R=%d   is_int=%d    l_int=%d r_int=%d\n", L, R, is_int, l_i
   
 /*  inverse of previous one  */
   
-  cre_decode_tree(t,n)
+  int cre_decode_tree(t,n)
   {register int g,b,m,op,i,u,h,aa,bb ;
     g=cre_cop_tree(t,n);
     b=TRUE;

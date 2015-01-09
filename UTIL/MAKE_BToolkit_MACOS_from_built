@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#!/bin/csh -f
 
 #  MAKE_BToolkit_MACOS_from_built
 
@@ -34,14 +34,15 @@ endsw
 
 set binding=""
 
-set arch=`arch`
+set arch=`gcc -dumpmachine`
+
 
 set pkg="btoolkit"
 set app="Btoolkit"
 set pkgvernodash="${BT_MAJOR_VERSION}.${BT_MINOR_VERSION}"
 set pkgver="${pkgvernodash}-${BT_PATCH_VERSION}"
 
-set filename="${pkg}$binding_${pkgvernodash}_${arch}"
+set filename="${pkg}${binding}_${pkgver}_${arch}"
 
 ### echo $filename
 ### exit
@@ -122,7 +123,7 @@ echo "Copying files to application bundle"
 # copy the binaries
 # 'public' Launcher program
   cp -f BKIT/Blauncher $destBKIT/../.
-# 'private' parts oo-er
+# 'private'
   cp -f BKIT/BProcessInfo $destBKIT
   cp -f BKIT/BTool $destBKIT
   cp -f BKIT/BToolkit $destBKIT

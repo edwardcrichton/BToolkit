@@ -16,7 +16,7 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-screen_doc_rulfunc()
+void screen_doc_rulfunc()
 #define screen_doc_rul screen_doc_rulfunc()
 {
   fprintf ( bstdout, "   1: Menu                 10: Move Rule\n");
@@ -27,7 +27,7 @@ screen_doc_rulfunc()
   fprintf ( bstdout, "   8: Prove Rule           17: Statistics\n");
 }
 
-doc_rulfunc()
+void doc_rulfunc()
 #define doc_rul doc_rulfunc()
 {
   open_win;
@@ -35,7 +35,7 @@ doc_rulfunc()
   clos_win;
 }
 
-act_rul_the(t,n)
+void act_rul_the(t,n)
 {register int c,nn,r,m,f ;
   if( is_win==TRUE ){ 
     doc_rul;  ;
@@ -195,7 +195,7 @@ act_rul_the(t,n)
   };
 }
 
-screen_doc_thefunc()
+void screen_doc_thefunc()
 #define screen_doc_the screen_doc_thefunc()
 {
   fprintf ( bstdout, "   1: Menu                 11: Remove Last Rule\n");
@@ -209,7 +209,7 @@ screen_doc_thefunc()
   fprintf ( bstdout, "  10: *** While Proving    21: Change proof quota\n");
 }
 
-doc_thefunc()
+void doc_thefunc()
 #define doc_the doc_thefunc()
 {
   open_win;
@@ -217,11 +217,11 @@ doc_thefunc()
   clos_win;
 }
 
-sel_rul_the(t)
+void sel_rul_the(t)
 {register int n,k,k0,k1,s ;
   s=cre(4);
   fprintf ( bstdout, "\n");
-  if( (is_win==TRUE) ){
+  if( is_win==TRUE ){
     open_win;
     k=1;
     k0=1;
@@ -328,7 +328,7 @@ sel_rul_the(t)
   kil(s);
 }
 
-sys_the(t)
+void sys_the(t)
 {register int c,f,r,ff ;
   if( is_win==TRUE ){
     doc_the;
@@ -628,7 +628,7 @@ sys_the(t)
   };
 }
 
-screen_doc_all_thefunc()
+void screen_doc_all_thefunc()
 #define screen_doc_all_the screen_doc_all_thefunc()
 {
   fprintf ( bstdout, "   1: Menu                 7: Clear\n");
@@ -639,7 +639,7 @@ screen_doc_all_thefunc()
   fprintf ( bstdout, "   6: Load (Source)       13: Reload (Source)\n");
 }
 
-doc_all_thefunc()
+void doc_all_thefunc()
 #define doc_all_the doc_all_thefunc()
 {
   open_win;
@@ -647,7 +647,7 @@ doc_all_thefunc()
   clos_win;
 }
 
-sel_thefunc()
+void sel_thefunc()
 #define sel_the sel_thefunc()
 {register int t,k,k1,n ;
   fprintf ( bstdout, "\n");
@@ -741,7 +741,7 @@ sel_thefunc()
   }  ;
 }
 
-sys_all_thefunc()
+int sys_all_thefunc()
 #define sys_all_the sys_all_thefunc()
 {register int c,f,t ;
   f=NO;
@@ -964,11 +964,13 @@ sys_all_thefunc()
        */;
     };
   };
+  
+  return 0;
 }
 
     
  
-SignalMotif(n)
+void SignalMotif(n)
 {register int pid, c ;
   FILE * Bfile;
   pid = 0;
@@ -1052,6 +1054,7 @@ SignalMotif(n)
 /*  kill  */
     exit ( 1 );
   };
+  
 }
     
    

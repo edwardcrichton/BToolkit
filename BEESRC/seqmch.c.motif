@@ -89,7 +89,7 @@ spare_mem_percent_seq ()
 
 
 #define adp(s,v)   mmm(vad(s)+vtt(s)+1,v);mtt(s,vtt(s)+1)
-evm(i,t)
+void evm(i,t)
 {register int j,k,v ;
   v=vad(i);
   if( i<=vnbs ){
@@ -101,7 +101,7 @@ evm(i,t)
   mad(i,v-t);
 }
 
-mve(i,t)
+void mve(i,t)
 {register int j,k,v ;
   v=vad(i);
   nitrn( j , len(i) , 1 , {
@@ -111,7 +111,7 @@ mve(i,t)
   mad(i,v+t);
 }
 
-mov(s,r,t)
+void mov(s,r,t)
 {register int i ;
   if( s<r ){
     i=r;
@@ -128,7 +128,7 @@ mov(s,r,t)
   };
 }
 
-cmp_seq(n)   /* n is ignored (unless -999)! - replaced by cmp_seq_arg_val */
+void cmp_seq(n)   /* n is ignored (unless -999)! - replaced by cmp_seq_arg_val */
 {register int s ;
 
   static int previously_dismissed = 0;
@@ -211,7 +211,7 @@ fflush ( stdout );
 
 }
 
-computeG(a,b,p,r)
+int computeG(a,b,p,r)
 {register int k ;
   if( b>2*p-a ){
     if( r<=2*p-a ){
@@ -237,7 +237,7 @@ computeG(a,b,p,r)
 ; return k;
 }
 
-search(s,t)
+int search(s,t)
 {register int y,k,r,search_res ;
   r=2;
   y=vnbs+2;
@@ -254,7 +254,7 @@ search(s,t)
 ; return search_res;
 }
 
-sta0_seqfunc()
+void sta0_seqfunc()
 #define sta0_seq sta0_seqfunc()
 {register int z,s,t,h,x ;  
   int i;
@@ -427,7 +427,7 @@ sta0_seqfunc()
 }
 
 
-sta_seqfunc()
+void sta_seqfunc()
 #define sta_seq sta_seqfunc()
 {
   sta0_seq;
@@ -444,7 +444,7 @@ sta_seqfunc()
 */
 }
 
-sta_seq_hdr ()
+void sta_seq_hdr ()
 {  
   DisplayCurrWinText ( "\n      ----------------------------------------------------\n\n        Sequence statistics:" );
   sta_seq;
@@ -526,7 +526,7 @@ fflush ( stdout );
   }
 }
 
-aug(s,t)     
+void aug(s,t)     
 {
   /***
     determines whether or not cmp_seq/realloc_max_mem required.
@@ -581,7 +581,7 @@ aug(s,t)
   }
 }
 
-cre(n)
+int cre(n)
 {register int i ;
   if( ttms!=0 ){
     i=tmbs[ttms];
@@ -685,7 +685,7 @@ clr(n); ttms=ttms+1; tmbs[ttms]=n
 #define xst(t,i,v,p,s1,s2)  i=len(t);  while( i>0 ){  v=val(t,i);  if( p ){  s1;  i=(-i)  ;} else {  i=i-1  ;};};  if( i==0 ){ s2 ;}
 
 #define nxst(t,i,v,p,s1,s2)  i=1;  while( i<=len(t) ){  v=val(t,i);  if( p ){  s1;  i=len(t)+2  ;} else {  i=i+1  ;};};  if( i==len(t)+1 ){ s2 ;}
-eql(s,t)
+int eql(s,t)
 {register int i,eql_res ;
   if( len(s)!=len(t) ){
     eql_res=FALSE;
@@ -704,7 +704,7 @@ eql(s,t)
 ; return eql_res;
 }
 
-pcop(a,m,n,b)
+void pcop(a,m,n,b)
 {register int i,v,w ;
   if( a!=b ){
     clr(b);
@@ -718,7 +718,7 @@ pcop(a,m,n,b)
   };
 }
 
-cop(a,b)
+void cop(a,b)
 {register int i,v,w,n ;
   if( a!=b ){
     n=len(a);
@@ -733,7 +733,7 @@ cop(a,b)
   };
 }
 
-cnc(a,b)
+void cnc(a,b)
 {register int i,v,w,n ;
   if( a!=b ){
     n=len(b);
@@ -747,7 +747,7 @@ cnc(a,b)
   };
 }
 
-rcnc(a,b)
+void rcnc(a,b)
 {register int i,v,w,n ;
   if( a!=b ){
     n=len(b);
@@ -761,7 +761,7 @@ rcnc(a,b)
   };
 }
 
-pcnc(a,b,m,n)
+void pcnc(a,b,m,n)
 {register int i,v,w,l ;
   if( a!=b ){
     l=n-m+1;
@@ -775,14 +775,14 @@ pcnc(a,b,m,n)
   };
 }
 
-idx(s,v)
+int idx(s,v)
 {register int i,w,idx_res ;
   xst(s,i,w,w==v,idx_res=i,idx_res=0)
 ; return idx_res;
 }
 
 #define mbr(s,v)  ((idx(s,v)!=0)!=0)
-rev(s) 
+void rev(s) 
 {register int r,i,j ;
   i=0; 
   j=len(s);
@@ -795,7 +795,7 @@ rev(s)
   };
 }
 
-rem(s,i)
+void rem(s,i)
 {register int k ;
   itrn( k , i+1 , len(s) , {
     str(s,k-1,val(s,k));
@@ -803,7 +803,7 @@ rem(s,i)
   pop(s);
 }
 
-write_seq(s)
+void write_seq(s)
 {register int i ;
   itrn(i,1,len(s),write_nat(val(s,i)));
 }

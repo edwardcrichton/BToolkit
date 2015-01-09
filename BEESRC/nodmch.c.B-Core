@@ -41,7 +41,7 @@ int nttm;
 #define sons_nod(n)  sons[n]
 
 #define snbr_nod(n)  snbr[n]
-mak_nodfunc()
+int mak_nodfunc()
 #define mak_nod mak_nodfunc()
 {register int n ;
   if( nttm!=0 ){
@@ -62,13 +62,13 @@ mak_nodfunc()
 ; return n;
 }
 
-sup_nod(n)
+void sup_nod(n)
 {
   nttm=nttm+1;
   ntmb[nttm]=n;
 }
 
-cre_nod(i,f)
+void cre_nod(i,f)
 {register int n,s ;
   n=mak_nod;
   s=sons_nod(f);
@@ -80,7 +80,7 @@ cre_nod(i,f)
   snbr_nod(n)=len(s);
 }
 
-cre_root_nod(i)
+int cre_root_nod(i)
 {register int n ;
   n=mak_nod;
   info_nod(n)=i;
@@ -91,7 +91,7 @@ cre_root_nod(i)
 ; return n;
 }
 
-kil_nod(n)
+void kil_nod(n)
 {register int s,i,v ;
   s=sons_nod(n);
   itr(s,i,v,kil_nod(v));
@@ -100,7 +100,7 @@ kil_nod(n)
 }
 
 #define itr_nod(n,i,v,s1,s2,s3) i=n; while( i!=fath_nod(n) ){ v=info_nod(i); if( cptr_nod(i)==0 ){ s1 ;}; if( cptr_nod(i)==len(sons_nod(i)) ){ cptr_nod(i)=0; s3; i=fath_nod(i) ;} else if( cptr_nod(i)==0 ){ cptr_nod(i)=1; i=fst(sons_nod(i)) ;} else { cptr_nod(i)=cptr_nod(i)+1; s2; i=val(sons_nod(i),cptr_nod(i)) ;}  ;}
-up_nod(p,n)    
+int up_nod(p,n)    
 /*  remove recursion  */
 {register int f,s,m,up_nod_res ;
   f=fath_nod(n);
@@ -118,7 +118,7 @@ up_nod(p,n)
 ; return up_nod_res;
 }
 
-next_nod(p,n)
+int next_nod(p,n)
 {register int s,next_nod_res ;
   s=sons_nod(n);
   if( len(s)!=0 ){
@@ -129,7 +129,7 @@ next_nod(p,n)
 ; return next_nod_res;
 }
 
-upp_nod(p,n)    
+int upp_nod(p,n)    
 /*  remove recursion  */
 {register int f,s,m,upp_nod_res ;
   f=fath_nod(n);
@@ -147,7 +147,7 @@ upp_nod(p,n)
 ; return upp_nod_res;
 }
 
-nextp_nod(p,n)
+int nextp_nod(p,n)
 {register int s,nextp_nod_res ;
   s=sons_nod(n);
   if( len(s)!=0 ){
@@ -158,7 +158,7 @@ nextp_nod(p,n)
 ; return nextp_nod_res;
 }
 
-down_nod(n)
+int down_nod(n)
 {register int k,s ;
   k=n;
   s=sons_nod(k);
@@ -169,7 +169,7 @@ down_nod(n)
 ; return k;
 }
 
-prev_nod(p,n)
+int prev_nod(p,n)
 {register int m,f,s,prev_nod_res ;
   if( n==p ){
     prev_nod_res=p;
@@ -191,7 +191,7 @@ prev_nod(p,n)
 #define xst_asc_nod(p,n,m,g,P,S1,S2) stp=stp+1; stack[stp-1]=FALSE; m=n; while( m!=fath_nod(p) ){ g=info_nod(m); if( P ){ S1; stack[stp-1]=TRUE; m=fath_nod(p) ;} else { m=fath_nod(m) ;}  ;}; if( stack[stp-1]==FALSE ){ S2  ;}; stp=stp-1
 
 #define itr_next_nod(p,n,m,g,S) m=n; while( m!=0 ){ g=info_nod(m); S; m=next_nod(p,m) ;}
-sta_nodfunc()
+void sta_nodfunc()
 #define sta_nod sta_nodfunc()
 {
   fprintf(bstdout,"      Max Number of Nodes:           ");
@@ -204,14 +204,14 @@ sta_nodfunc()
   fprintf(bstdout,"%8d\n\n",nod-nttm);
 }
 
-hello1(i,j)
+int hello1(i,j)
   unsigned int *i;
   int j;
 {
   return (*i%j);
 }
 
-hello2(i,j)
+int hello2(i,j)
   unsigned int *i;
   int j;
 {

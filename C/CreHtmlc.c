@@ -598,7 +598,7 @@ print_data ();
   printf ( "  %s opened for writing\n",  word );
 ***/
 
-  fprintf ( Outfile, "<HTML>\n<HEAD>\n  <META NAME=\"Author\" CONTENT=\"%s\">\n  <META NAME=\"Description\" CONTENT=\"Hypertext version of %s Code Module\">\n  <TITLE>%s Code Module</TITLE>\n</HEAD>\n<BODY TEXT=\"#000000\" BGCOLOR=\"#CCCCCC\" LINK=\"#2A9BFF\" VLINK=\"#FF6565\" ALINK=\"#FF0000\">\n<PRE>\n", toolkit_ver, filename, filename );
+  fprintf ( Outfile, "<HTML>\n<HEAD>\n  <META NAME=\"Author\" CONTENT=\"%s\">\n  <META NAME=\"Description\" CONTENT=\"Hypertext version of %s Code Module\">\n  <TITLE>%s Code Module</TITLE>\n</HEAD>\n<BODY TEXT=\"#333333\" LINK=\"#2A6BF9\" VLINK=\"#EE4444\" ALINK=\"#EE0000\">\n<PRE>\n", toolkit_ver, filename, filename );
 
   printf ( "." ); fflush ( stdout );
 
@@ -607,7 +607,7 @@ print_data ();
     GetNextWord ();
   }
 
-  fprintf ( Outfile, "</PRE>\n<P><HR>\n<P>\n<H3><FONT COLOR=\"#004EFF\">Analysed Constructs</FONT></H3>\n\n<MENU>\n<DD><A HREF=\"ConstructsSummary.html\">Hypertext Constructs Page</A></DD>\n</MENU>\n\n<H3><FONT COLOR=\"#004EFF\">On-line Help</FONT></H3>\n\n" );
+  fprintf ( Outfile, "</PRE>\n<P></P><HR></HR>\n<P></P>\n<H3><FONT COLOR=\"#004EFF\">Analysed Constructs</FONT></H3>\n\n<MENU>\n<DD><A HREF=\"ConstructsSummary.html\">Hypertext Constructs Page</A></DD>\n</MENU>\n\n<H3><FONT COLOR=\"#004EFF\">On-line Help</FONT></H3>\n\n" );
 
   time_now = time ( NULL );
 

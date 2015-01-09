@@ -73,7 +73,7 @@ cd ../SRC
 
 cd ../UTIL
 
-  echo  "$BT_num" | _CRE_toolkit_binary_raw 1
+  echo  "$BT_num" | ./_CRE_toolkit_binary_raw 1
 #  if ( $status != 0 ) then
 #    rm -f $BSC/UTIL/.lock
 #    exit ( 1 )

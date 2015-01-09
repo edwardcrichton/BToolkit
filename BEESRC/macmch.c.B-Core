@@ -16,7 +16,7 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-get_line_nbr_macfunc()
+int get_line_nbr_macfunc()
 #define get_line_nbr_mac get_line_nbr_macfunc()
 {register int n,c ;
   c=get_input_fil;
@@ -29,7 +29,7 @@ get_line_nbr_macfunc()
   return n;
 }
 
-get_file_macfunc()
+int get_file_macfunc()
 #define get_file_mac get_file_macfunc()
 {register int fic,c ;
   c=get_input_fil;
@@ -42,7 +42,7 @@ get_file_macfunc()
   return fic;
 }
 
-macTRUE_read_tcp ( ss )
+void macTRUE_read_tcp ( ss )
 char * ss;
 {
   register int line, fic, state, ii;
@@ -63,7 +63,7 @@ char * ss;
   }
 }
 
-macTRUEfunc()
+void macTRUEfunc()
 #define macTRUE macTRUEfunc()
 {register int line,c,fic,state ;
   state=1;
@@ -120,7 +120,7 @@ macTRUEfunc()
   }
 }
 
-macTRUEspefunc()
+void macTRUEspefunc()
 #define macTRUEspe macTRUEspefunc()
 {register int line,c,fic,state ;
   state=1;
@@ -150,7 +150,7 @@ macTRUEspefunc()
   }
 }
 
-read_frmfunc()
+int read_frmfunc()
 #define read_frm read_frmfunc()
 {register int b,n,c ;
   dst=cre(100);
@@ -177,7 +177,7 @@ read_frmfunc()
   return dst;
 }
 
-read_eol_frmfunc()
+int read_eol_frmfunc()
 #define read_eol_frm read_eol_frmfunc()
 {register int b,n,c ;
   dst=cre(100);
@@ -206,7 +206,7 @@ read_eol_frmfunc()
 
 #ifdef bplatform
 
-read_tcpfunc ()
+int read_tcpfunc ()
 #define read_tcp read_tcpfunc()
 {
   int n, read_tcp_res;
@@ -269,7 +269,7 @@ system ( "$BKIT/BLIB/BPrompt \"  bplatform - Error in tcp read\"  " );
 
 #endif /* bplatform */
 
-read_file_frmfunc()
+int read_file_frmfunc()
 #define read_file_frm read_file_frmfunc()
 {register int b,n,read_file_frm_res ;
   dst=cre(10000);
@@ -316,7 +316,7 @@ read_file_frmfunc()
   return read_file_frm_res;
 }
 
-read_load_file_frmfunc()
+int read_load_file_frmfunc()
 #define read_load_file_frm read_load_file_frmfunc()
 {register int b,n,read_file_frm_res ;
   dst=cre(10000);

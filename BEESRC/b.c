@@ -178,7 +178,7 @@ long n;
 #include "itfmch.c"
 
 
-bannerfunc()
+void bannerfunc()
 #define banner bannerfunc()
 {
   fputs ( "\n\n", bstdout );
@@ -371,7 +371,7 @@ int y;
 
 
 
-main ( argc, argv )
+int main ( argc, argv )
 int argc;
 char *argv[];
 {register int n ;
@@ -551,4 +551,5 @@ printf ( "\n    ---------------------------------------------------\n     initia
   }
   fprintf ( bstdout, "\n" );
   exit___ ( 0 );
+  return 0;
 }

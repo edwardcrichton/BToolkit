@@ -27,6 +27,9 @@ if ( -d BKIT ) then
 
     find . -type f -name '*.o' -delete
     echo "  Cleaned .o files"
+    
+    rm -f BEESRC/b
+    rm -Rf BEESRC/b.dSYM
 
   else
     echo "  `pwd`/BKIT not removed"
@@ -178,7 +181,7 @@ endif
 touch ./build_trace.txt
 
 if ( $level <= 2 ) then
-  CRE_c |& tee build_trace.txt
+  ./CRE_c |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -188,7 +191,7 @@ if ( $level <= 2 ) then
 endif
 
 if ( $level <= 3 ) then
-  CRE_b |& tee build_trace.txt
+  ./CRE_b |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -198,7 +201,7 @@ if ( $level <= 3 ) then
 endif
 
 if ( $level <= 4 ) then
-  CRE_BTool |& tee build_trace.txt
+  ./CRE_BTool |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -208,7 +211,7 @@ if ( $level <= 4 ) then
 endif
 
 if ( $level <= 5 ) then
-  CRE_bplatform |& tee build_trace.txt
+  ./CRE_bplatform |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -218,7 +221,7 @@ if ( $level <= 5 ) then
 endif
 
 if ( $level <= 6 ) then
-  CRE_lex |& tee build_trace.txt
+  ./CRE_lex |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -228,7 +231,7 @@ if ( $level <= 6 ) then
 endif
 
 if ( $level <= 7 ) then
-  CRE_motif |& tee build_trace.txt
+  ./CRE_motif |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -238,7 +241,7 @@ if ( $level <= 7 ) then
 endif
 
 if ( $level <= 8 ) then
-  _link_BMotif |& tee build_trace.txt
+  ./_link_BMotif |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -248,7 +251,7 @@ if ( $level <= 8 ) then
 endif
 
 if ( $level <= 9 ) then
-  CPY_scripts |& tee build_trace.txt
+  ./CPY_scripts |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -258,7 +261,7 @@ if ( $level <= 9 ) then
 endif
 
 if ( $level <= 10 ) then
-  CPY_lib |& tee build_trace.txt
+  ./CPY_lib |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -268,7 +271,7 @@ if ( $level <= 10 ) then
 endif
 
 if ( $level <= 11 ) then
-  CPY_help |& tee build_trace.txt
+  ./CPY_help |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -278,7 +281,7 @@ if ( $level <= 11 ) then
 endif
 
 if ( $level <= 12 ) then
-  CPY_palette |& tee build_trace.txt
+  ./CPY_palette |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -288,7 +291,7 @@ if ( $level <= 12 ) then
 endif
 
 if ( $level <= 13 ) then
-  CPY_b2doors |& tee build_trace.txt
+  ./CPY_b2doors |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -298,7 +301,7 @@ if ( $level <= 13 ) then
 endif
 
 if ( $level <= 14 ) then
-  CPY_demo |& tee build_trace.txt
+  ./CPY_demo |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -308,7 +311,7 @@ if ( $level <= 14 ) then
 endif
 
 if ( $level <= 15 ) then
-  CPY_BTool_Tutorial |& tee build_trace.txt
+  ./CPY_BTool_Tutorial |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -318,7 +321,7 @@ if ( $level <= 15 ) then
 endif
 
 if ( $level <= 16 ) then
-  CPY_ErrorCodes |& tee build_trace.txt
+  ./CPY_ErrorCodes |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -328,7 +331,7 @@ if ( $level <= 16 ) then
 endif
 
 if ( $level <= 17 ) then
-  CRE_toolkit_binaries_all |& tee build_trace.txt
+  ./CRE_toolkit_binaries_all |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"
@@ -338,7 +341,7 @@ if ( $level <= 17 ) then
 endif
 
 if ( $level <= 18 ) then
-  CRE_launcher |& tee build_trace.txt
+  ./CRE_launcher |& tee -a build_trace.txt
   if ( $status != 0 ) then
     echo ""
     echo "  Build aborted"

@@ -4486,11 +4486,11 @@ int obj;
   void Modify_ps ();
   char* editorCommand;
 
-  printf("OpenConstruct ( %d ) \n", obj);
+  /*printf("OpenConstruct ( %d ) \n", obj);*/
 
   Retrieve_String ( editor_str_num, buf );
-  
-  printf("editor_str = %s SRCNAME = %s\n", buf,SRCName);
+   
+  /*printf("editor_str = %s SRCNAME = %s\n", buf,SRCName);*/
   
   /* - use more intelligent command line caller for editors: */
   /*
@@ -4506,11 +4506,11 @@ int obj;
   
   free(editorCommand);
   
-  printf("freed editorCommand at %p",editorCommand);
+  /*printf("freed editorCommand at %p",editorCommand);*/
   
   execute ( primary_string );
  
-  printf("ran editor command\n");
+  /*printf("ran editor command\n");*/
 
   Bed = fopen ( ".Bed", "r" );
   if ( Bed == NULL ) {

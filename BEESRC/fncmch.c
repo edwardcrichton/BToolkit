@@ -26,7 +26,7 @@ int tfun;
 
 #define clr_fnc           tfun=0
   
-idx_fnc(v)
+int idx_fnc(v)
 {register int i,r ;
   i=tfun;
   r=0;
@@ -53,7 +53,7 @@ idx_fnc(v)
 #define len_fnc          tfun
 
 #define reset_fnc(i)     tfun=i
-anti_restr_fnc(lv,le,lq,newlv,newle)
+void anti_restr_fnc(lv,le,lq,newlv,newle)
 {register int i,v ;
   itr(lv,i,v,if( mbr(lq,v)==FALSE ){
                psh(newlv,v);

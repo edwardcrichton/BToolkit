@@ -44,7 +44,7 @@ int httm;
 #define hso_hyp(h)  hhso[h]
 
 #define spe_hyp(g)  hspe[h]
-mak_hypfunc()
+int mak_hypfunc()
 #define mak_hyp mak_hypfunc()
 {register int h ;
   if( httm!=0 ){
@@ -65,7 +65,7 @@ mak_hypfunc()
 ; return h;
 }
 
-sup_hyp(h)
+void sup_hyp(h)
 {
   httm=httm+1;
   htmb[httm]=h;
@@ -78,7 +78,7 @@ sup_hyp(h)
 #define def_spe_hyp(h) ((spe_hyp(h)!=0)!=0)
 
 #define isa_der_hyp(h) (((def_rul_hyp(h)==TRUE) || (def_spe_hyp(h)==TRUE))!=0)
-cre_hyp(f)
+int cre_hyp(f)
 {register int h ;
   h=mak_hyp;
   frm_hyp(h)=f;
@@ -90,7 +90,7 @@ cre_hyp(f)
 ; return h;
 }
 
-kil_hyp(h)
+void kil_hyp(h)
 {
   sup_hyp(h);
   kil_tree(frm_hyp(h));
@@ -99,27 +99,27 @@ kil_hyp(h)
   };
 }
 
-mod_rul_hyp(h,r)
+void mod_rul_hyp(h,r)
 {
   rul_hyp(h)=r;
 }
 
-mod_spe_hyp(h,v)
+void mod_spe_hyp(h,v)
 {
   spe_hyp(h)=v;
 }
 
-mod_hso_hyp(h,s)
-{
+void mod_hso_hyp(h,s)
+ {
   hso_hyp(h)=s;
 }
 
-mod_niv_hyp(h,n)
+void mod_niv_hyp(h,n)
 {
   niv_hyp(h)=n;
 }
 
-mod_uti_hyp(h)
+void mod_uti_hyp(h)
 {register int i,hh ;
   if( uti_hyp(h)==FALSE ){
     uti_hyp(h)=TRUE;
@@ -132,7 +132,7 @@ mod_uti_hyp(h)
                         
 /*  HYPO I/O  */
                         
-write_hyp(h,d)
+void write_hyp(h,d)
 {register int m,r,dd,i,hh ;
   reset_res(0);
   m=niv_hyp(h);
@@ -161,7 +161,7 @@ write_hyp(h,d)
     };
   } else if( 
 /* (val_root_frm(frm_hyp(h))==VRB_sym) || */
-(val_root_frm(frm_hyp(h))==BVRB_sym) ){
+val_root_frm(frm_hyp(h))==BVRB_sym ){
     fprintf ( bstdout, "SIDE_CND");
   } else if( val_root_frm(frm_hyp(h))==ANTI_SLASH_sym ){
     fprintf ( bstdout, "SIDE_CND");
@@ -170,7 +170,7 @@ write_hyp(h,d)
   };
 }
 
-write_ext_hyp(h,d)
+void write_ext_hyp(h,d)
 {register int m,r,dd,i,hh ;
   reset_res(0);
   write_res('(');
@@ -180,7 +180,7 @@ write_ext_hyp(h,d)
   write_frm_res(frm_hyp(h),0);
   write_res(')');
   write_res('|');
-  if( (val_root_frm(frm_hyp(h))==BVRB_sym) ){
+  if( val_root_frm(frm_hyp(h))==BVRB_sym ){
     fprintf ( bstdout, "SIDE_CND");
   } else if( val_root_frm(frm_hyp(h))==ANTI_SLASH_sym ){
     fprintf ( bstdout, "SIDE_CND");
@@ -190,7 +190,7 @@ write_ext_hyp(h,d)
   write_res(')');
 }
 
-sta_hypfunc()
+void sta_hypfunc()
 #define sta_hyp sta_hypfunc()
 {
   fprintf(bstdout,"      Max Number of Hypos:           ");

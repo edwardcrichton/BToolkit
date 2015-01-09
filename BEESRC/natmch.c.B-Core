@@ -19,7 +19,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #define message   while( c!='\n' ){  c = getchar()  ;};  fprintf ( bstdout, "\n");  fprintf ( bstdout, "      THIS IS NOT A NATURAL NUMBER. TRY AGAIN: ")
 
 #define init      n = 0;  while( (c<'0') || (c>'9') ){  message;  c = getchar()  ;}
-read_natfunc()
+int read_natfunc()
 #define read_nat read_natfunc()
 {register int c,n,m,k,l ;
   k = 214748364;
@@ -54,7 +54,7 @@ read_natfunc()
 
 #define write_nat(n) fprintf ( bstdout, "%d",n)
                              
-len_nat(n)
+int len_nat(n)
  {register int m,r ;
   m = n  / 10;
   r = 1;

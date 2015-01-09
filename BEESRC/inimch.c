@@ -18,7 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 int ini_Blm_done = 0;
 
-inifunc()
+void inifunc()
 #define ini inifunc()
 {
  ini_sys;
@@ -86,7 +86,7 @@ inifunc()
 
 }
 
-re_inifunc()
+void re_inifunc()
 #define re_ini re_inifunc()
 {
  re_ini_sys;

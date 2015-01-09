@@ -16,6 +16,13 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#include <limits.h>
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 char name_fil[1001];
 char name_load_fil[1001];
 char name_prf_fil[1001];
@@ -40,7 +47,7 @@ FILE *pinput_fil;
 ***/
 
  
-mod_str_read_name_fil(s)
+int mod_str_read_name_fil(s)
 {register int l,j,i,v,mod_str_read_name_fil_res ;
   l=len_str(s);
   j=(-1);
@@ -58,7 +65,7 @@ mod_str_read_name_fil(s)
 ; return mod_str_read_name_fil_res;
 }
 
-mod_read_name_fil(t) 
+int mod_read_name_fil(t) 
 /*  called by exec_file_prf  */
 {register int i,still,mod_read_name_fil_res,c ;
   still=TRUE;
@@ -150,7 +157,7 @@ FILE *restore_fil;
 #define write_save_fil(v)  putw(v,save_fil)
 
 #define close_save_fil     fclose(save_fil)
-prepare_name_dir_save_filfunc()
+int prepare_name_dir_save_filfunc()
 #define prepare_name_dir_save_fil prepare_name_dir_save_filfunc()
 {register int res,u,l ;
   res=FALSE;
@@ -169,7 +176,7 @@ prepare_name_dir_save_filfunc()
 ; return res;
 }
 
-open_save_filfunc()
+int open_save_filfunc()
 #define open_save_fil open_save_filfunc()
 {register int i,still,open_save_fil_res,c ;
   still=TRUE;
@@ -223,7 +230,7 @@ open_save_filfunc()
 ; return open_save_fil_res;
 }
 
-open_save_comp_filfunc()
+int open_save_comp_filfunc()
 #define open_save_comp_fil open_save_comp_filfunc()
 {register int open_save_comp_fil_res ;
   open_save_comp_fil_res=FALSE;
@@ -252,7 +259,7 @@ open_save_comp_filfunc()
 #define read_restore_fil   getw(restore_fil)
 
 #define close_restore_fil  fclose(restore_fil)
-open_restore_filfunc()
+int open_restore_filfunc()
 #define open_restore_fil open_restore_filfunc()
 {register int i,still,open_restore_fil_res,c ;
   still=TRUE;
@@ -321,7 +328,7 @@ open_restore_filfunc()
 ; return open_restore_fil_res;
 }
 
-open_restore_batch_filfunc()
+int open_restore_batch_filfunc()
 #define open_restore_batch_fil open_restore_batch_filfunc()
 {register int i,open_restore_fil_res,c ;
   i=strlen(name_restore_fil);
@@ -346,7 +353,7 @@ open_restore_batch_filfunc()
 ; return open_restore_fil_res;
 }
 
-mod_lod_read_name_filfunc()
+int mod_lod_read_name_filfunc()
 #define mod_lod_read_name_fil mod_lod_read_name_filfunc()
 {register int i,still,bad,mod_lod_read_name_fil_res,c ;
   still=TRUE;
@@ -433,7 +440,7 @@ mod_lod_read_name_filfunc()
 ; return mod_lod_read_name_fil_res;
 }
 
-mod_prf_write_name_filfunc()
+int mod_prf_write_name_filfunc()
 #define mod_prf_write_name_fil mod_prf_write_name_filfunc()
 {register int i,still,mod_prf_write_name_fil_res,c ;
   still=TRUE;
@@ -470,7 +477,7 @@ mod_prf_write_name_filfunc()
 ; return mod_prf_write_name_fil_res;
 }
 
-write_prf_name_filfunc()
+void write_prf_name_filfunc()
 #define write_prf_name_fil write_prf_name_filfunc()
 {register int i,j ;
   i=0;
@@ -485,7 +492,7 @@ write_prf_name_filfunc()
   };
 }
 
-cre_sym_filfunc()
+int cre_sym_filfunc()
 #define cre_sym_fil cre_sym_filfunc()
  
 /*  called by exec_file_prf  */
@@ -504,7 +511,7 @@ cre_sym_filfunc()
 }
 
 /* 
-trans_name_filfunc()
+int trans_name_filfunc()
 #define trans_name_fil trans_name_filfunc()
 {register int fic,i ;
   fic=cre_fic_err;
@@ -520,23 +527,71 @@ trans_name_filfunc()
 ; return fic;
 };
  */
-close_input_filfunc()
+void close_input_filfunc()
 #define close_input_fil close_input_filfunc()
 {
   fclose(input_fil);
 }
 
+void whichcommand(char* findcommand, char* foundlocation)
+{
+	size_t i;
+	char which[PATH_MAX];
+	char which_output[PATH_MAX];
+	FILE* pfile;
+	
+	foundlocation[0]='\0';
+
+	which[0]='\0';
+	which_output[0]='\0';
+	strcat(which,"which ");
+	strcat(which,"\'");
+	strcat(which,findcommand);
+	strcat(which,"\'");
+	
+	pfile=popen(which,"r");
+	fgets(which_output,PATH_MAX,pfile);
+	pclose(pfile);
+			
+	if(which_output[0]!='/')
+	{
+		/* dont want any other rubbish - just paths */
+		return;
+	}
+	
+	while( strlen(which_output) > 0 && which_output[strlen(which_output)-1]=='\n')
+	{
+		which_output[strlen(which_output)-1]='\0';
+	}
+
+	(void)strncpy(foundlocation,which_output,PATH_MAX);
+}
+
 #define get_input_fil getc(input_fil)
-reset_input_fil(b)
+int reset_input_fil(b)
 {register int i,c,reset_input_fil_res,first ;
+
+  char cppPath[PATH_MAX];
+  cppPath[0]='\0';
+
   reset_input_fil_res=TRUE;
   if( b==1 ){
 
+   whichcommand("cpp", cppPath);
+
+   if(strlen(cppPath) > 0)
+   {
+		strcpy(sys_fil,cppPath);
+		strcat(sys_fil," ");
+   }
+   else
+   {
 #ifdef SOLARIS_VERSION
     strcpy(sys_fil,"/usr/ccs/lib/cpp ");
 #else
     strcpy(sys_fil,"/lib/cpp ");
 #endif /* SOLARIS_VERSION */
+	}
 
 
 /* fprintf ( bstdout,  "1: cpp for %s\n", name_fil ); */
@@ -596,16 +651,32 @@ reset_input_fil(b)
 ; return reset_input_fil_res;
 }
 
-reset_load_input_fil(b)
+int reset_load_input_fil(b)
 {register int i,c,reset_input_fil_res ;
+
+	char cppPath[PATH_MAX];
+	cppPath[0]='\0';
+
   reset_input_fil_res=TRUE;
 /* fprintf ( bstdout,  "2: cpp for %s\n", name_load_fil ); */
+
+
+whichcommand("cpp", cppPath);
+
+   if(strlen(cppPath) > 0)
+   {
+		strcpy(sys_fil,cppPath);
+		strcat(sys_fil," ");
+   }
+   else
+   {
 
 #ifdef SOLARIS_VERSION
     strcpy(sys_fil,"/usr/ccs/lib/cpp ");
 #else
     strcpy(sys_fil,"/lib/cpp ");
 #endif /* SOLARIS_VERSION */
+	}
 
   strcat(sys_fil,name_load_fil);
   strcat(sys_fil," > tmpb");

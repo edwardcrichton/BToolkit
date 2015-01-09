@@ -84,7 +84,7 @@ int qbbuf,bbuf,sta,sta_bra,dst,linput,ficput;
 #define prs_lex 7
 
 #define upd_lin_fic_lex(i) lin_lex(i)=linput; fic_lex(i)=ficput
-ini_lexfunc()
+void ini_lexfunc()
 #define ini_lex ini_lexfunc()
 {register int i ;
   itrn( i , 1 , max_lex , {
@@ -98,7 +98,7 @@ ini_lexfunc()
   sta_bra=cre(150);
 }
 
-reset_lexfunc()
+void reset_lexfunc()
 #define reset_lex reset_lexfunc()
 {register int i ;
   itrn( i , 1 , max_lex , {
@@ -117,13 +117,13 @@ reset_lexfunc()
   psh(sta,OPNBRK_sym);
 }
 
-mod_lin_lex(f,l)
+void mod_lin_lex(f,l)
 {
   linput=l;
   ficput=f;
 }
 
-trans_lexfunc()
+int trans_lexfunc()
 #define trans_lex trans_lexfunc()
 {register int r,k,kk,ll,lb,m ;
   r=0;
@@ -144,7 +144,7 @@ trans_lexfunc()
 ; return r;
 }
 
-nature_lex(o)
+int nature_lex(o)
 {register int nature_lex_res ;
   if( digit_sym(o)==TRUE ){
     nature_lex_res=dig;
@@ -158,7 +158,7 @@ nature_lex(o)
 ; return nature_lex_res;
 }
 
-analyse_lexfunc()
+int analyse_lexfunc()
 #define analyse_lex analyse_lexfunc()
 {register int i,n,v ;
   i=1;
@@ -172,7 +172,7 @@ analyse_lexfunc()
 ; return n;
 }
 
-enter_lexfunc()
+int enter_lexfunc()
 #define enter_lex enter_lexfunc()
 {register int r,enter_lex_res ;
   dave_is_upper_case = FALSE;
@@ -219,7 +219,7 @@ if( (k>32) && (k!=127) ){
   return enter_lex_res;
 }
 
-ousta_lex(i)
+void ousta_lex(i)
 {register int x,n,k,l,c,y,lexn,b,v ;
   x=val_lex(i);
   n=sta_lex(i);
@@ -808,7 +808,7 @@ printf ( "               ------------- GHO_sym for - or + ----------------\n" );
   }
 }
 
-ana_lex(p)
+void ana_lex(p)
 {register int i ;
   
 /* if( val_too_many_err==FALSE ){  */

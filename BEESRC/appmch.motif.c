@@ -1103,7 +1103,7 @@ fflush ( stdout );
 
 
 
-RedrawProofTree ( top_node, curr_node )
+int RedrawProofTree ( top_node, curr_node )
 int top_node, curr_node;
 /* itr_nod_proof_tree () */
 {
@@ -1118,7 +1118,7 @@ printf ( "\n\n\n** RedrawProofTree(top_node=%d,curr_node=%d) last_node=%d\n",
   /***
   curr_node == 0 => proof complete!
   ***/
-  if ( NextProofStepWillBeAutoDischarged () && ( curr_node ) ) return;
+  if ( NextProofStepWillBeAutoDischarged () && ( curr_node ) ) return 0;
 
 
 #ifdef BTOOLKIT_FLAG
@@ -1145,7 +1145,7 @@ printf ( "curr_goal: %s\n", str_buf );
       another_backtrack_required = 1;
 printf ( "another_backtrack_required = %d\n", another_backtrack_required );
 printf ( "====================================================================\n" );
-      return; /* from run_man_prf, to run_man_prf_A */
+      return 0; /* from run_man_prf, to run_man_prf_A */
     }
 printf ( "another_backtrack_required = %d\n", another_backtrack_required );
 printf ( "====================================================================\n" );
@@ -1295,6 +1295,8 @@ print_hyp_len ( "RedrawProofTree 2", curr_node );
   XmUpdateDisplay ( proof_tree_scroll );
   XmUpdateDisplay ( proof_tree_scroll_form );
 */
+
+return 0;
 }
 
 #ifdef BTOOLKIT_FLAG
@@ -2233,7 +2235,7 @@ print_live_seq ( "RemoveRecordedProof fini" );
 ***/
 }
 
-RecordProof ()
+int RecordProof ()
 {
   int i = 1;
   int prf_seq, prf_seq_sub, prf_seq_hyp, prf_seq_breade, goal;
@@ -2250,7 +2252,7 @@ print_live_seq ( "RecordProof ini" );
 printf ( "Proof memory full\n" );
 ***/
     Popup_Error ( "  Proof memory full - create another Proof Level!  " );
-    return;
+    return 0;
   }
 
 
@@ -2491,6 +2493,8 @@ printf ( "RecordProof complete\n" );
 /***
 print_live_seq ( "RecordProof fini" );
 ***/
+
+return 0;
 }
 
 
@@ -2544,7 +2548,7 @@ str_buf [ 0 ] = '\0';
 /*
     Popup_Info ( "  No proof recorded  " );
 */
-    return;
+    return 0;
   }
 
   exec_prf = FALSE;

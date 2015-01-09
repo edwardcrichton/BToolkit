@@ -772,7 +772,7 @@ DAVE_print_seq(ff);
 /*  FORWARD PROOF INTERPRETER  */
                          
   
-  itp_fwd_tac_prf(p,n,r,gl,h,lh
+void itp_fwd_tac_prf(p,n,r,gl,h,lh
 /* ,siz */ , max_no_hyp
 )
   {register int t,st;

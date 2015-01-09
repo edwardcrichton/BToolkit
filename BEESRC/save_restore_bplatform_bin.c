@@ -18,7 +18,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 */
 #define read_fm(a,b)    fread(&a,sizeof(int),b,restore_fil)
 
-restore_bplatform_bin_file ()
+void restore_bplatform_bin_file ()
 {
   int rr;
 /* 0 */
@@ -80,7 +80,7 @@ restore_bplatform_bin_file ()
 
 #define write_fm(a,b)    fwrite(&a,sizeof(int),b,save_fil)
 
-save_bplatform_bin_file ()
+void save_bplatform_bin_file ()
 {
   int rr;
   srand ( ( int ) ( ( time ( NULL ) % 65536 ) ) );

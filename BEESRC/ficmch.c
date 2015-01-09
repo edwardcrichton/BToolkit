@@ -37,7 +37,7 @@ FILE *ficxxtmp;
 #define col_fic(f)       fcol[f]
 
 #define pre_fic(f)       fpre[f]
-trans_fic(s)
+void trans_fic(s)
 {register int l,x,i,v ;
   l=len_str(stri_sym(s));
   x=0;
@@ -49,7 +49,7 @@ trans_fic(s)
   fstr[x]='\0';
 }
 
-rewrite_ficxxfunc()
+int rewrite_ficxxfunc()
 #define rewrite_ficxx rewrite_ficxxfunc()
 {register int rewrite_ficxx_res ;
   ficxxtmp=fopen(fstr,"w");
@@ -62,7 +62,7 @@ rewrite_ficxxfunc()
 ; return rewrite_ficxx_res;
 }
 
-append_ficxxfunc()
+int append_ficxxfunc()
 #define append_ficxx append_ficxxfunc()
 {register int p,append_ficxx_res ;
   ficxxtmp=fopen(fstr,"a");
@@ -75,7 +75,7 @@ append_ficxxfunc()
 ; return append_ficxx_res;
 }
 
-print_fic(s)
+void print_fic(s)
 {
   if( file_fic==1 ){
     putc(s,stderr);
@@ -94,7 +94,7 @@ print_fic(s)
   };
 }
 
-write_srv_ficfunc()
+void write_srv_ficfunc()
 #define write_srv_fic write_srv_ficfunc()
 {
   if( file_fic==1 ){
@@ -104,7 +104,7 @@ write_srv_ficfunc()
   };
 }
 
-write_erv_ficfunc()
+void write_erv_ficfunc()
 #define write_erv_fic write_erv_ficfunc()
 {
   if( file_fic==1 ){
@@ -114,7 +114,7 @@ write_erv_ficfunc()
   };
 }
 
-write_nat_fic(n)
+void write_nat_fic(n)
 {
   if( file_fic==1 ){
     fprintf(stderr,"%d",n);
@@ -133,7 +133,7 @@ write_nat_fic(n)
   };
 }
 
-flush_the_fic(f)
+void flush_the_fic(f)
 {
   if( f==1 ){
     fflush(stderr);
@@ -153,7 +153,7 @@ flush_the_fic(f)
 #define con_stdwin_fic file_fic=3
 
 #define flush_fic           flush_the_fic(file_fic)
-close_ficxx_ficfunc()
+void close_ficxx_ficfunc()
 #define close_ficxx_fic close_ficxx_ficfunc()
 {
   if( file_exists_fic == TRUE ){
@@ -161,7 +161,7 @@ close_ficxx_ficfunc()
   };
 }
 
-con_fic(s)
+int con_fic(s)
 {register int i,v,con_fic_res ;
   close_ficxx_fic;
   trans_fic(s);
@@ -203,7 +203,7 @@ con_fic(s)
 ; return con_fic_res;
 }
 
-close_ficfunc()
+void close_ficfunc()
 #define close_fic close_ficfunc()
 {
   close_ficxx_fic;
@@ -215,7 +215,7 @@ close_ficfunc()
 #endif
 }
 
-app_fic(s)
+int app_fic(s)
 {register int i,v,con_fic_res ;
   close_ficxx_fic;
   trans_fic(s);
@@ -257,7 +257,7 @@ app_fic(s)
 ; return con_fic_res;
 }
 
-flush_all_ficfunc()
+void flush_all_ficfunc()
 #define flush_all_fic flush_all_ficfunc()
 {register int f ;
   flush_the_fic(1);
@@ -266,7 +266,7 @@ flush_all_ficfunc()
   flush_the_fic(4);
 }
 
-close_all_ficfunc()
+void close_all_ficfunc()
 #define close_all_fic close_all_ficfunc()
 {
   close_ficxx_fic;
@@ -280,7 +280,7 @@ close_all_ficfunc()
 #define val_pre_fic         pre_fic(file_fic)
 
 #define mod_pre_fic(n)      pre_fic(file_fic)=n
-reset_ficfunc()
+void reset_ficfunc()
 #define reset_fic reset_ficfunc()
 {
   file_exists_fic=FALSE;

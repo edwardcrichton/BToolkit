@@ -35,6 +35,12 @@ set variables_set = 0
         	setenv  CC_lex			"flex -n"
         	setenv  CC_lex_lib		"-lfl"
 	endif
+	
+	if ( $VERSION == "MAC_VERSION" ) then
+	
+		setenv  CC_lex_lib		"-ll"
+	
+	endif
 
 	##############################################################
 	#
@@ -139,13 +145,13 @@ set variables_set = 0
 	
 	switch ( $SUB_VERSION )
 	   case POWERPC_SUB_VERSION:
-	     setenv FLAGS "-g -ggdb -dead_strip" #-arch ppc
+	     setenv FLAGS "-g -ggdb" #-arch ppc
 	     setenv OPT "-arch ppc"
 	   breaksw
 	   case INTEL_SUB_VERSION:
 	     # -arch i386 -m64 -malign-double -Wcast-align
-   	     setenv FLAGS "-g -ggdb -dead_strip"
-     	     setenv OPT "-arch i386"
+   	     setenv FLAGS "-g -ggdb"
+     	 setenv OPT "-arch x86_64"
 	   breaksw
 	   default:
 	     setenv FLAGS ""
@@ -158,11 +164,11 @@ set variables_set = 0
 	setenv  CC			"$CC_prog -trigraphs $FLAGS"
  	setenv  CC_opt_non_Motif	"$OPT" #-arch i386 -arch ppc
 	setenv  CC_opt_Motif		"$OPT"
-	setenv  CC_X_incl_dir   	"-I/usr/X11R6/include -I/sw/include"
-	setenv  CC_X_link_dir		"$sdk -framework Carbon -L/usr/X11R6/lib -L/sw/lib"
- 	setenv  CC_X_link_lib		"/sw/lib/libXm.a -lXt -lX11"  #-lXm
+	setenv  CC_X_incl_dir   	"-I/usr/X11R6/include"
+	setenv  CC_X_link_dir		"$sdk -L/usr/X11R6/lib"
+ 	setenv  CC_X_link_lib		"-lXm -lXt -lX11"  #-lXm /sw/lib/libXm.a
 	setenv  CC_non_X_incl_dir  	""
-	setenv  CC_non_X_link_dir	"$sdk -framework Carbon"
+	setenv  CC_non_X_link_dir	"$sdk"
 	setenv  CC_non_X_link_lib	""
 
     breaksw
@@ -628,8 +634,9 @@ if ( "$1" != "cre_Motif_help" ) then
   endif
 
 
-
-
+  if ( $VERSION == "MAC_VERSION" ) then
+  	setenv ALL_FLAGS "$ALL_FLAGS -D_XOPEN_SOURCE -D_GNU_SOURCE"
+  endif
 
   if ( "xxx" == "xxx$1") then
 

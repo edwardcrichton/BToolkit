@@ -19,7 +19,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 int is_win;
 char name_win[101];
 FILE *ff_win;
-open_winfunc()
+void open_winfunc()
 #define open_win open_winfunc()
 {
   if( is_win==TRUE ){
@@ -29,7 +29,7 @@ open_winfunc()
   } 
 }
 
-open_men_winfunc()
+void open_men_winfunc()
 #define open_men_win open_men_winfunc()
 {
   if( is_win==TRUE ){
@@ -38,7 +38,7 @@ open_men_winfunc()
   } 
 }
 
-clos_winfunc()
+void clos_winfunc()
 #define clos_win clos_winfunc()
 {
   if( is_win==TRUE ){
@@ -47,7 +47,7 @@ clos_winfunc()
   } 
 }
 
-sho_winfunc()
+void sho_winfunc()
 #define sho_win sho_winfunc()
 {register int i ;
   fprintf ( bstdout, "                  Menu Window: ");   
@@ -63,7 +63,7 @@ sho_winfunc()
   } 
 }
 
-ass_winfunc()
+void ass_winfunc()
 #define ass_win ass_winfunc()
 {register int i,c ;  
   i=0;
@@ -97,7 +97,7 @@ ass_winfunc()
   } 
 }
 
-ini_winfunc()
+void ini_winfunc()
 #define ini_win ini_winfunc()
 {
   is_win=FALSE;

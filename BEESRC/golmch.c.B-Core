@@ -139,7 +139,7 @@ int gttm;
 #define def_hso_gol(g) ((hso_gol(g)!=0)!=0)
 
 #define def_spe_gol(g) ((spe_gol(g)!=0)!=0)
-def_hyp_gol(g)
+int def_hyp_gol(g)
 {register int def_hyp_gol_res ;
   if( hyp_gol(g)!=0 ){
     if( def_spe_gol(g)==TRUE ){
@@ -157,7 +157,7 @@ def_hyp_gol(g)
 ; return def_hyp_gol_res;
 }
 
-mak_golfunc()
+int mak_golfunc()
 #define mak_gol mak_golfunc()
 {register int g ;
   if( gttm!=0 ){
@@ -178,13 +178,13 @@ mak_golfunc()
 ; return g;
 }
 
-sup_gol(g)
+void sup_gol(g)
 {
   gttm=gttm+1;
   gtmb[gttm]=g;
 }
 
-cre_gol(f)
+int cre_gol(f)
 {register int g ;
   g=mak_gol;
   frm_gol(g)=f;
@@ -204,25 +204,25 @@ cre_gol(f)
 }
 
 #define val_alt_gol(g)   alt_gol(g)
-inc_alt_gol(g)
+void inc_alt_gol(g)
 {
   alt_gol(g)=alt_gol(g)+1;
 }
 
-dec_alt_gol(g)
+void dec_alt_gol(g)
 {
   if( val_alt_gol(g)!=0 ){
     alt_gol(g)=alt_gol(g)-1;
   };
 }
 
-ini_alt_gol(g)
+void ini_alt_gol(g)
 {
   alt_gol(g)=1;
 }
 
 #define def_tac_gol(g) ((tac_gol(g)!=0)!=0)
-mod_tac_gol(g,t,tp,ft,ftp)
+void mod_tac_gol(g,t,tp,ft,ftp)
 {
   tac_gol(g)=t;
   tpt_gol(g)=tp;
@@ -230,14 +230,14 @@ mod_tac_gol(g,t,tp,ft,ftp)
   ftpt_gol(g)=ftp;
 }
 
-clean_gol(g)
+void clean_gol(g)
 {
   rul_gol(g)=0;
   hyp_gol(g)=0;            
 /*  TO BE DONE: decr. counter in hyp  */;
 }
 
-is_cal_gol(g)
+int is_cal_gol(g)
 {register int is_cal_gol_res ;
   if( def_spe_gol(g)==TRUE ){
     is_cal_gol_res=((spe_gol(g)==CAL_gol)!=0);
@@ -247,7 +247,7 @@ is_cal_gol(g)
 ; return is_cal_gol_res;
 }
 
-clean_spe_gol(g)
+void clean_spe_gol(g)
 {
   if( is_cal_gol(g)==TRUE ){
     dec_alt_gol(g);
@@ -255,7 +255,7 @@ clean_spe_gol(g)
   spe_gol(g)=0;
 }
 
-kil_tac_gol(g)
+void kil_tac_gol(g)
 {register int ta,i,t ;
   if( def_tcl_gol(g) ){
     ta=tcl_gol(g);
@@ -271,7 +271,7 @@ kil_tac_gol(g)
   };
 }
 
-kil_gol(g)
+void kil_gol(g)
 {register int i,h ;
   kil_tac_gol(g);
   sup_gol(g);
@@ -282,32 +282,32 @@ kil_gol(g)
   };
 }
 
-mod_rul_gol(g,r)
+void mod_rul_gol(g,r)
 {
   rul_gol(g)=r;
 }
 
-mod_niv_gol(g,n)
+void mod_niv_gol(g,n)
 {
   niv_gol(g)=n;
 }
 
-mod_hso_gol(g,n)
+void mod_hso_gol(g,n)
 {
   hso_gol(g)=n;
 }
 
-mod_hyp_gol(g,n)
+void mod_hyp_gol(g,n)
 {
   hyp_gol(g)=n;
 }
 
-mod_spe_gol(g,n)
+void mod_spe_gol(g,n)
 {
   spe_gol(g)=n;
 }
 
-is_not_printed_gol(g)
+int is_not_printed_gol(g)
 {register int op,sg,is_not_printed_gol_res ;
   op=val_root_frm(frm_gol(g));
   if( def_rul_gol(g)==TRUE ){
@@ -325,7 +325,7 @@ is_not_printed_gol(g)
 ; return is_not_printed_gol_res;
 }
 
-write_spe_gol(s)
+void write_spe_gol(s)
 {
   switch( s ){ 
     case AND_gol :{
@@ -368,7 +368,7 @@ write_spe_gol(s)
   };
 }
 
-write_gol(s,g,d)
+void write_gol(s,g,d)
 {register int r,i,n,m,sg ;
   reset_res(0);
   m=niv_gol(g);
@@ -401,7 +401,7 @@ write_gol(s,g,d)
   };
 }
 
-write_ext_gol(s,g,d)
+void write_ext_gol(s,g,d)
 {register int r,i,n,sg ;
   reset_res(0);
   write_res('(');
@@ -433,7 +433,7 @@ write_ext_gol(s,g,d)
   write_res(')');
 }
 
-sta_golfunc()
+void sta_golfunc()
 #define sta_gol sta_golfunc()
 {
   fprintf(bstdout,"      Max Number of Goals:           ");

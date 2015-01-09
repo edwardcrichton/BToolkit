@@ -16,6 +16,13 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#include <limits.h>
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 char name_fil[1001];
 char name_load_fil[1001];
 char name_prf_fil[1001];
@@ -846,19 +853,70 @@ printf ( "\n\n\nBTOOLKIT_FLAG is NOT defined ( 2 )\n\n\n" );
 
 /************** below used for B-Core making Toolkit15 - use cpp ********************/
 
+void whichcommand(char* findcommand, char* foundlocation)
+{
+	size_t i;
+	char which[PATH_MAX];
+	char which_output[PATH_MAX];
+	FILE* pfile;
+	
+	foundlocation[0]='\0';
+
+	which[0]='\0';
+	which_output[0]='\0';
+	strcat(which,"which ");
+	strcat(which,"\'");
+	strcat(which,findcommand);
+	strcat(which,"\'");
+	
+	pfile=popen(which,"r");
+	fgets(which_output,PATH_MAX,pfile);
+	pclose(pfile);
+			
+	if(which_output[0]!='/')
+	{
+		/* dont want any other rubbish - just paths */
+		return;
+	}
+	
+	while( strlen(which_output) > 0 && which_output[strlen(which_output)-1]=='\n')
+	{
+		which_output[strlen(which_output)-1]='\0';
+	}
+
+	(void)strncpy(foundlocation,which_output,PATH_MAX);
+}
+
+
 reset_load_input_fil_Toolkit15(b)
 {register int i,c,reset_input_fil_res ;
+
+	char cppPath[PATH_MAX];
+	cppPath[0]='\0';
+
+
   reset_input_fil_res=TRUE;
 
 /***
 fprintf ( bstdout,  "reset_load_input_fil_Toolkit15: cpp for %s\n", name_load_fil );
 ***/
 
+	whichcommand("cpp", cppPath);
+
+   if(strlen(cppPath) > 0)
+   {
+		strcpy(sys_fil,cppPath);
+		strcat(sys_fil," ");
+   }
+   else
+   {
+
 #ifdef SOLARIS_VERSION
     strcpy(sys_fil,"/usr/ccs/lib/cpp ");
 #else
     strcpy(sys_fil,"/lib/cpp ");
 #endif /* SOLARIS_VERSION */
+	}
 
   strcat(sys_fil,name_load_fil);
   strcat(sys_fil," > tmpb");

@@ -30,7 +30,7 @@ first_prf,
 sho_big_gol_prf,sho_gol_prf,sho_der_hyp_prf,exec_prf;
 char fstr_prf[1001];
 FILE *ff_prf;
-ini_prffunc()
+void ini_prffunc()
 #define ini_prf ini_prffunc()
 {
   print_ext_prf=FALSE;
@@ -57,14 +57,14 @@ ini_prffunc()
 /*  LIST ){ HYPOTHESES ; s  */
                      
                   
-  lst_hyp_prf(p,n,s)
+  void lst_hyp_prf(p,n,s)
   {register int m,g ;
     itr_asc_nod(p,n,m,g,if( def_hso_gol(g)==TRUE ){
                           rcnc(s,hso_gol(g))
                        ;});
   }
 
-  lst_genuine_hyp_frm_prf(p,n,s)
+  void lst_genuine_hyp_frm_prf(p,n,s)
   {register int ss,i,h ;
     ss=cre(20);
     lst_hyp_prf(p,n,ss);
@@ -75,7 +75,7 @@ ini_prffunc()
     rev(s);
   }
 
-  lst_all_hyp_frm_prf(p,n,s)
+  void lst_all_hyp_frm_prf(p,n,s)
   {register int ss,i,h ;
     ss=cre(20);
     lst_hyp_prf(p,n,ss);
@@ -92,7 +92,7 @@ ini_prffunc()
 /*  ggg is supposed to be a single letter
                    TRUE if h is of the form  bvrb(...,ggg,...)   */
                          
-  is_vrb_in_hyp_prf(h,ggg)   
+  int is_vrb_in_hyp_prf(h,ggg)   
   {register int op,ff,i,w,b,is_vrb_in_hyp_prf_res ;    
     op=val_root_frm(h);
     if( 
@@ -117,7 +117,7 @@ op==BVRB_sym
                        of the form  vrb(...,ggg,...)   */
                        
                        
-  is_in_hyp_vrb_prf(p,n,ggg)   
+  int is_in_hyp_vrb_prf(p,n,ggg)   
   {register int s,i,h,b ;                     
     s=cre(20);
     lst_hyp_prf(p,n,s);
@@ -134,7 +134,7 @@ op==BVRB_sym
                         . || ggg does not appear in initial goal
                    */
                       
-  is_letter_vrb_prf(p,n,ggg)
+  int is_letter_vrb_prf(p,n,ggg)
   {register int is_letter_vrb_prf_res ;
     if( is_in_hyp_vrb_prf(p,n,ggg)==FALSE ){
       if( exec_prf==FALSE ){
@@ -161,7 +161,7 @@ op==BVRB_sym
                           which can be taken as a variable
                    */
   
-  chk_vrb_prf(p,n,fff)        
+  int chk_vrb_prf(p,n,fff)        
   {register int ggg,chk_vrb_prf_res ;
     if( is_vrb_spe_frm(fff)==FALSE ){
       ggg=val_root_frm(fff);
@@ -176,7 +176,7 @@ op==BVRB_sym
   ; return chk_vrb_prf_res;
   }
 
-is_lst_vrb_frm_prf(p,n,lv,f,i)
+int is_lst_vrb_frm_prf(p,n,lv,f,i)
 {register int s,j,v,b ;
   clr(lv);
   s=dec_tree(f,i,COM_sym);
@@ -195,7 +195,7 @@ is_lst_vrb_frm_prf(p,n,lv,f,i)
   return b;
 }
 
-is_qtf_frm_prf(p,n,lv,f,i)
+int is_qtf_frm_prf(p,n,lv,f,i)
 {register int l,op,is_qtf_frm_prf_res ;
   is_qtf_frm_prf_res=FALSE;
   op=val_tree(f,i);
@@ -212,7 +212,7 @@ is_qtf_frm_prf(p,n,lv,f,i)
 ; return is_qtf_frm_prf_res;
 }
 
-is_set_frm_prf(p,n,lv,f,i)                 
+int is_set_frm_prf(p,n,lv,f,i)                 
 /* x | P */
 {register int l,op,is_set_frm_prf_res ;
   is_set_frm_prf_res=FALSE;
@@ -228,7 +228,7 @@ is_set_frm_prf(p,n,lv,f,i)
 ; return is_set_frm_prf_res;
 }
 
-is_unv_frm_prf(p,n,lv,f,i)
+int is_unv_frm_prf(p,n,lv,f,i)
 {register int l,op,is_unv_frm_prf_res ;
   is_unv_frm_prf_res=FALSE;
   op=val_tree(f,i);
@@ -245,7 +245,7 @@ is_unv_frm_prf(p,n,lv,f,i)
 ; return is_unv_frm_prf_res;
 }
 
-is_sub_frm_prf(p,n,lv,le,f,i)
+int is_sub_frm_prf(p,n,lv,le,f,i)
 {register int l,r,op,s,is_sub_frm_prf_res ;
   clr(lv);
   clr(le);
@@ -275,7 +275,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
 /*           OR ){ A "FALSE" HYPOTHESIS           */
            
                      
-  hyp_prf(p,n,g,f)
+  int hyp_prf(p,n,g,f)
   {register int s,i,h,hyp_prf_res ;
     if ( pog_flag && ! binhyp_count ) {
       return FALSE;
@@ -308,7 +308,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
 /*  FORWARD PROOF  */
      
      
-  chk_hyp_prf(i,f,s,h,lh)
+  int chk_hyp_prf(i,f,s,h,lh)
   {register int j,hh,chk_hyp_prf_res ;
     if( i==1 ){
       psh(s,h);
@@ -321,7 +321,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return chk_hyp_prf_res;
   }
 
-  cre_drv_hyp(frm3,s,gl,r,lh)
+  int cre_drv_hyp(frm3,s,gl,r,lh)
   {register int j,hh,dh,cre_drv_hyp_res ;
     if( is_ff_eql_ff_frm(frm3)==FALSE ){
       xst(lh,j,hh,(eql_frm(frm3,frm_hyp(hh))==TRUE) || (val_root_frm(frm_hyp(hh))==FAL_sym),
@@ -347,7 +347,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return cre_drv_hyp_res;
   }
 
-  dec_hyp_prf(rr,s,gl,lh)
+  int dec_hyp_prf(rr,s,gl,lh)
   {register int frm3,op,ss,j,frm4,t,b ;
     frm3=prd_tree(cns_rul(rr));
     b=FALSE;
@@ -368,7 +368,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return b;
   }
 
-  chk_lst_hyp_prf(h,gl,rr,la,lh)
+  int chk_lst_hyp_prf(h,gl,rr,la,lh)
   {register int x,idx,l,m,i,v,sta,b,s ;
     b=FALSE;
     idx=cre(len(la));
@@ -408,7 +408,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return b;
   }
 
-  dir_mon_prf(gl,h,rr,lh,r)
+  int dir_mon_prf(gl,h,rr,lh,r)
   {register int la,frm1,frm2,s,dir_mon_prf_res ;
     dir_mon_prf_res=FALSE;
     if( (r!=rr) && (val_sts_rul(rr)==on_rul) ){
@@ -431,14 +431,14 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return dir_mon_prf_res;
   }
 
-  dir_prf(r,gl,h,lh,th,t)
+  void dir_prf(r,gl,h,lh,th,t)
   {register int i,rr ;
     xst(rul_the(th),i,rr,dir_mon_prf(gl,h,rr,lh,r)==TRUE,
                          mod_res_tac(t,TRUE),mod_res_tac(t,FALSE));
   }
 
   
-  down_fwd_tac_prf(n)
+  int down_fwd_tac_prf(n)
   {register int m,s ;
     m=n;
     s=sons_nod(m);
@@ -450,7 +450,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   }
 
 #define  fst_fwd_tac_prf(p) down_fwd_tac_prf(p)  
-  up_fwd_tac_prf(p,n)
+  int up_fwd_tac_prf(p,n)
   {register int f,t,s,i,v,m,b,up_fwd_tac_prf_res ;
     f=fath_nod(n);
     if( f==fath_nod(p) ){
@@ -479,7 +479,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   }
 
   
-  nxt_fwd_tac_prf(p,n)
+  int nxt_fwd_tac_prf(p,n)
   {register int s,nxt_fwd_tac_prf_res ;
     s=sons_nod(n);
     if( len(s)!=0 ){
@@ -493,7 +493,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
                            
 /*  FEQL SPECIAL TACTIC  */
 /* 
-  vrb_eql_frm_prf(h)
+  int vrb_eql_frm_prf(h)
   {register int vrb_eql_frm_prf_res ;
     if( val_root_frm(h)==EQL_sym ){
       if( is_vrb_spe_tree(h,left_node_frm(h))==TRUE ){
@@ -507,7 +507,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return vrb_eql_frm_prf_res;
   };
  */
-  vrb_eql_frm_prf(p,n,h)
+  int vrb_eql_frm_prf(p,n,h)
   {register int vrb_eql_frm_prf_res,fff ;
     if( val_root_frm(h)==EQL_sym ){
       fff=left_frm(h);
@@ -524,7 +524,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return vrb_eql_frm_prf_res;
   }
 
-  sub_feql_prf(p,i,f)
+  int sub_feql_prf(p,i,f)
   {register int n,v,lv,le,fff,ff,gl,j,sub_feql_prf_res ;
     lv=cre(4);
     le=cre(4);
@@ -546,7 +546,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return sub_feql_prf_res;
   }
 
-  cre_finish_up_sub_feql_prf(p,i,g)
+  int cre_finish_up_sub_feql_prf(p,i,g)
   {register int gg,hh ;
     hh=cre(len(g));
     cop(g,hh);
@@ -559,7 +559,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return hh;
   }
 
-  cre_subst_frm_prf(p,n,h,lh,st)
+  int cre_subst_frm_prf(p,n,h,lh,st)
   {register int i,hh,ff,lff,w,lv,le,e,z,g,gg,cre_subst_frm_prf_res ;
     lv=cre(5);
     le=cre(5);
@@ -612,7 +612,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   }
 
   
-  fwd_eql_prf(p,n,gl,h,lh,st)
+  int fwd_eql_prf(p,n,gl,h,lh,st)
   {register int s,ff,f,lff,w,lv,le,e,b,c,i,hh,llh,gg,g,fwd_eql_prf_res ;
     ff=frm_hyp(h);
     if( vrb_eql_frm_prf(p,n,ff)==FALSE ){
@@ -674,7 +674,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
 /*  FORWARD PROOF INTERPRETER  */
                          
   
-  itp_fwd_tac_prf(p,n,r,gl,h,lh
+void itp_fwd_tac_prf(p,n,r,gl,h,lh
 /* ,siz */ , max_no_hyp
 )
   {register int t,st;
@@ -706,7 +706,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
     fwd_tac_ptr_prf=fst_fwd_tac_prf(fwd_tac_prf);
   }
 
-  print_lh(lh)
+  void print_lh(lh)
   {register int i,h ;
     fprintf ( bstdout, "\n");
     fprintf ( bstdout, "Content of lh");
@@ -718,7 +718,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
    ;});
   }
 
-  fwd_prf(p,n,r,gl)
+  void fwd_prf(p,n,r,gl)
   {register int i,s,j,lh
 /* ,siz */
  ;
@@ -782,7 +782,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
 
                      
 /*   'DED' BUILT_IN RULE   */
-  ask_ded_prffunc()
+  int ask_ded_prffunc()
 #define ask_ded_prf ask_ded_prffunc()
   {register int ask_ded_prf_res ;
     ask_ded_prf_res=TRUE;
@@ -796,7 +796,7 @@ is_sub_frm_prf(p,n,lv,le,f,i)
   ; return ask_ded_prf_res;
   }
 
-  ded_prf(r,p,n,g,f)
+  int ded_prf(r,p,n,g,f)
   {register int w,s,t,i,v,gl,h,
 /* ss, */
 ii,hh,ded_prf_res ;
@@ -845,7 +845,7 @@ ii,hh,ded_prf_res ;
                    
 /*  'ARITHMETIC' BUILT_IN RULES  */
     
-  log2e_prf(y)
+  int log2e_prf(y)
   {register int l,k ;
     l=0;
     k=1;
@@ -860,7 +860,7 @@ ii,hh,ded_prf_res ;
   ; return l;
   }
 
-  nrm2e_prf(y)
+  int nrm2e_prf(y)
   {register int k ;
     k=1;
     while( k<y ){
@@ -869,7 +869,7 @@ ii,hh,ded_prf_res ;
   ; return k;
   }
 
-  comp_arith_prf(f,n,arith_prf_is_int)
+  int comp_arith_prf(f,n,arith_prf_is_int)
   int f;
   int n;
   int * arith_prf_is_int;
@@ -985,7 +985,7 @@ ii,hh,ded_prf_res ;
   ; return comp_arith_prf_res;
   }
 
-  ask_ari_prffunc()
+  int ask_ari_prffunc()
 #define ask_ari_prf ask_ari_prffunc()
   {register int ask_ari_prf_res ;
     ask_ari_prf_res=TRUE;
@@ -999,7 +999,7 @@ ii,hh,ded_prf_res ;
   ; return ask_ari_prf_res;
   }
 
-  test_ari_prf(f,n)
+  int test_ari_prf(f,n)
   {register int test_ari_prf_res ;
     if( is_arith_frm(f,n)==TRUE ){
       test_ari_prf_res=ask_ari_prf;
@@ -1009,7 +1009,7 @@ ii,hh,ded_prf_res ;
   ; return test_ari_prf_res;
   }
 
-  ari_prf(i,g,f)
+  int ari_prf(i,g,f)
   {register int n,v,s,ff,gl,w,ari_prf_res ;
     int arith_prf_is_int;
     xst_sub_frm(f,n,v,test_ari_prf(f,n)==TRUE,w=comp_arith_prf(f,n,&arith_prf_is_int);
@@ -1031,7 +1031,7 @@ ii,hh,ded_prf_res ;
     
     
   
-  comp_quo_prf(f,n)
+  int comp_quo_prf(f,n)
   {register int s,st,i,v,t ;
     s=dec_tree(f,right_node_tree(f,n),COM_sym);
     st=cre(5);
@@ -1045,7 +1045,7 @@ ii,hh,ded_prf_res ;
   ; return t;
   }
 
-  quo_prf(i,g,f)
+  int quo_prf(i,g,f)
   {register int n,v,s,ff,gl,w,quo_prf_res ;
     xst_sub_frm(f,n,v,is_quote_frm(f,n)==TRUE,w=comp_quo_prf(f,n);
                                              s=cre_frm(w);
@@ -1059,7 +1059,7 @@ ii,hh,ded_prf_res ;
   ; return quo_prf_res;
   }
 
-  bcatl_prf(i,g,f)
+  int bcatl_prf(i,g,f)
   {register int n,v,s,ff,gl,w,quo_prf_res ;
     xst_sub_frm(f,n,v,is_bcatl_frm(f,n)==TRUE,w=comp_quo_prf(f,n);
                                              s=cre_frm(w);
@@ -1081,7 +1081,7 @@ ii,hh,ded_prf_res ;
     
     
   
-  comp_new_vrb_prf(f,n)
+  int comp_new_vrb_prf(f,n)
   {register int s,st,i,v,t ;
     s=dec_tree(f,right_node_tree(f,n),COM_sym);
     st=cre(5);
@@ -1093,7 +1093,7 @@ ii,hh,ded_prf_res ;
   ; return t;
   }
 
-  new_vrb_prf(i,g,f)
+  int new_vrb_prf(i,g,f)
   {register int n,v,s,ff,gl,w,new_vrb_prf_res ;
     xst_sub_frm(f,n,v,is_new_vrb_frm(f,n)==TRUE,w=comp_new_vrb_prf(f,n);
                                              s=cre_frm(w);
@@ -1107,7 +1107,7 @@ ii,hh,ded_prf_res ;
   ; return new_vrb_prf_res;
   }
 
-  bnewv_vrb_prf(i,g,f)
+  int bnewv_vrb_prf(i,g,f)
   {register int n,v,s,ff,gl,w,new_vrb_prf_res ;
     xst_sub_frm(f,n,v,is_bnew_vrb_frm(f,n)==TRUE,w=comp_new_vrb_prf(f,n);
                                              s=cre_frm(w);
@@ -1124,7 +1124,7 @@ ii,hh,ded_prf_res ;
                    
 /*   'LOWERING' BUILT_IN RULE   */
     
-  comp_low_prf(f,n)
+  int comp_low_prf(f,n)
   {register int s,st,ss,i,v,t ;
     s=val_tree(f,right_node_tree(f,n));
     st=cre(5);
@@ -1139,7 +1139,7 @@ ii,hh,ded_prf_res ;
   ; return t;
   }
 
-  low_prf(i,g,f)
+  int low_prf(i,g,f)
   {register int n,v,s,ff,gl,w,low_prf_res ;
     xst_sub_frm(f,n,v,is_low_frm(f,n)==TRUE,w=comp_low_prf(f,n);
                                            s=cre_frm(w);
@@ -1157,7 +1157,7 @@ ii,hh,ded_prf_res ;
                      
 /*   'WRITE' BUILT_IN RULES   */
   
-  bwrite_prf(f)
+  int bwrite_prf(f)
   {register int op,ff,i,fff,b,bwrite_prf_res ;
     op=val_root_frm(f);
     if( op==WRI_sym ){
@@ -1183,7 +1183,7 @@ ii,hh,ded_prf_res ;
 /*   'WRITEF' BUILT_IN RULES   */
                      
   
-  bwritef_prf(f)
+  int bwritef_prf(f)
   {register int op,ff,i,fff,b,bwrite_prf_res,ss,vv ;
     op=val_root_frm(f);
     if( (op==WRIF_sym) || (op==PRIF_sym) || (op==WRIM_sym) ){
@@ -1222,7 +1222,7 @@ ii,hh,ded_prf_res ;
   }
 
 /*   'SHELL' BUILT_IN RULE   */
-  bshell_prf(f)
+  int bshell_prf(f)
   {register int v,s,i,w,l,x,bshell_prf_res ;
     bshell_prf_res=FALSE;
     if( val_root_frm(f)==SHL_sym ){
@@ -1252,7 +1252,7 @@ ii,hh,ded_prf_res ;
                      
 /*   'MODIFYING RULE' BUILT_IN RULE   */
                      
-  bmodr_prf(f)
+  int bmodr_prf(f)
   {register int bmodr_res,r,lr,llrn,thn,t,b,rlrn,rc,n,rr ;
     bmodr_res=FALSE;
     if( val_root_frm(f)==MODR_sym ){
@@ -1287,7 +1287,7 @@ ii,hh,ded_prf_res ;
   ; return bmodr_res;
   }
 
-  bmark_proved_prf(f)
+  int bmark_proved_prf(f)
   {register int bmark_proved_res,lr,llrn,thn,t,b,rlrn,rc,n,rr ;
     bmark_proved_res=FALSE;
     if( val_root_frm(f)==MARK_sym ){
@@ -1322,7 +1322,7 @@ ii,hh,ded_prf_res ;
                        
 /*   'POP THEORY' BUILT_IN RULE   */
                      
-  bpopt_prf(rr,f)
+  int bpopt_prf(rr,f)
   {register int bpopt_res,thn,t,r ;
     bpopt_res=FALSE;
     if( val_root_frm(f)==BPOP_sym ){
@@ -1343,7 +1343,7 @@ ii,hh,ded_prf_res ;
   ; return bpopt_res;
   }
 
-  bcleant_prf(rr,f)
+  int bcleant_prf(rr,f)
   {register int bcleant_res,thn,t,r,l,b ;
     bcleant_res=FALSE;
     if( val_root_frm(f)==BCLEAN_sym ){
@@ -1373,7 +1373,7 @@ ii,hh,ded_prf_res ;
 /*  'EQUALITY' BUILT_IN RULE   */
        
        
-  eql_prf(g,f)
+  int eql_prf(g,f)
   {register int eql_prf_res ;
     if ( pog_flag ) {
       return FALSE;
@@ -1397,7 +1397,7 @@ ii,hh,ded_prf_res ;
 /*  'CLOSE' BUILT_IN RULE   */
        
        
-  clo_prf(f)
+  int clo_prf(f)
   {register int clo_prf_res ;
     if( val_root_frm(f)==CLO_sym ){
       clo_prf_res=TRUE;
@@ -1411,7 +1411,7 @@ ii,hh,ded_prf_res ;
                       
 /*  'HALT' AND 'REDO' BUILT_IN RULE  */
                       
-  hlt_prf(r,g,f)
+  int hlt_prf(r,g,f)
   {register int hlt_prf_res ;
     if( (val_root_frm(f)==HALT_sym) || (val_root_frm(f)==REDO_sym) ){
       halt_prf=TRUE;
@@ -1431,7 +1431,7 @@ ii,hh,ded_prf_res ;
 
                    
 /*  'STATISTICS' BUILT ; RULES  */
-  stat_prf(f)
+  int stat_prf(f)
   {register int stat_prf_res ;
     if( val_root_frm(f)==BSTATISTICS_sym ){
       max0_tool;
@@ -1444,7 +1444,7 @@ ii,hh,ded_prf_res ;
 
                    
 /*  'SUSPEND' BUILT ; RULES  */
-  susp_prf(f)
+  int susp_prf(f)
   {register int susp_prf_res ;
     if( val_root_frm(f)==BSUSPEND_sym ){
       sigpause ( SIGCONT );
@@ -1457,7 +1457,7 @@ ii,hh,ded_prf_res ;
 
                    
 /*  'RECOMPACT' BUILT ; RULES  */
-  recompact_prf(f)
+  int recompact_prf(f)
   {register int recompact_prf_res ;
     if( val_root_frm(f)==BRECOMPACT_sym ){
       cmp_seq(20);
@@ -1473,7 +1473,7 @@ ii,hh,ded_prf_res ;
 /*   'ADDING RULE TO A THEORY' BUILT_IN RULES   */
               
  
-  old_lod_rul_prf(f)
+  int old_lod_rul_prf(f)
   {register int v,t,ff,r,i,gg,fff,lod_rul_prf_res ;
     lod_rul_prf_res=FALSE;
     if( val_root_frm(f)==PLS_sym ){
@@ -1497,7 +1497,7 @@ ii,hh,ded_prf_res ;
   ; return lod_rul_prf_res;
   }
 
-  lod_rul_prf(f)
+  int lod_rul_prf(f)
   {register int v,t,ff,r,i,gg,fff,newfff,lod_rul_prf_res ;
     lod_rul_prf_res=FALSE;
     if( val_root_frm(f)==PLS_sym ){
@@ -1543,7 +1543,7 @@ ii,hh,ded_prf_res ;
   ; return lod_rul_prf_res;
   }
 
-  add_rul_prf(p,n,rr,f)
+  int add_rul_prf(p,n,rr,f)
   {register int v,t,ff,r,s,fff,w,add_rul_prf_res ;
     add_rul_prf_res=FALSE;
     w=val_root_frm(f);
@@ -1574,7 +1574,7 @@ ii,hh,ded_prf_res ;
   ; return add_rul_prf_res;
   }
 
-  badd_lirul_prf(rr,f)
+  int badd_lirul_prf(rr,f)
   {register int w,rp,v,t,ff,r,i,gg,fff,newfff,badd_lirul_prf_res ;
     badd_lirul_prf_res=FALSE;
     w=val_root_frm(f);
@@ -1637,7 +1637,7 @@ ii,hh,ded_prf_res ;
   }
 
  
-  badd_rul_prf(p,n,rr,f)
+  int badd_rul_prf(p,n,rr,f)
   {register int v,t,ff,r,s,fff,w,rp,add_rul_prf_res ;
     add_rul_prf_res=FALSE;
     w=val_root_frm(f);
@@ -1678,7 +1678,7 @@ ii,hh,ded_prf_res ;
 /*   'AND' BUILT_IN RULE   */
                   
                   
-  and_prf(n,g,f)
+  int and_prf(n,g,f)
   {register int s,i,v,gl,and_prf_res ;
     if( val_root_frm(f)==AND_sym ){
       s=dec_frm(f,AND_sym);
@@ -1697,7 +1697,7 @@ ii,hh,ded_prf_res ;
                  
 /*   'MAP' BUILT_IN RULE   */
                  
-   map_prf(n,g,f)
+   int map_prf(n,g,f)
    {register int op,s,rf,lf,i,v,w,gl,map_prf_res ;
      if( val_root_frm(f)==MAP_sym ){
        op=val_tree(f,right_node_frm(f));
@@ -1727,7 +1727,7 @@ ii,hh,ded_prf_res ;
                  
 /*   'LMAP' BUILT_IN RULE   */
                  
-   lmap_cmp_prf(n,g,f,i)
+   void lmap_cmp_prf(n,g,f,i)
    {register int ff,op,s,rf,lf,t,ii,v,w,u,fff,gl,  fnc,prm,lprm   ;
      ff=cre_cop_tree(f,i);
      op=val_tree(ff,right_node_frm(ff));
@@ -1768,7 +1768,7 @@ ii,hh,ded_prf_res ;
      kil(ff)
    ;}
 
-   lmap_prf(n,g,f)
+   int lmap_prf(n,g,f)
    {register int v,i,lmap_prf_res ;
      xst_sub_frm(f,i,v,v==LMAP_sym,lmap_cmp_prf(n,g,f,i);
                                   lmap_prf_res=TRUE,
@@ -1779,7 +1779,7 @@ ii,hh,ded_prf_res ;
                  
 /*   'SMAP' BUILT_IN RULE   */
                  
-   smap_prf(n,g,f)
+   int smap_prf(n,g,f)
    {register int op,s,rf,lf,i,v,w,gl,fnc,prm,lprm,smap_prf_res ;
      if( val_root_frm(f)==SMAP_sym ){
        op=val_tree(f,right_node_frm(f));
@@ -1822,7 +1822,7 @@ ii,hh,ded_prf_res ;
                  
 /*   'NMAP' BUILT_IN RULE   */
                  
-   nmap_prf(n,g,f)
+   int nmap_prf(n,g,f)
    {register int op,s,rf,lf,i,v,w,gl,fnc,prm,lprm,smap_prf_res,siz,lprm1,lprm2,lprm11 ;
      if( val_root_frm(f)==NMAP_sym ){
        op=val_tree(f,right_node_frm(f));
@@ -1881,7 +1881,7 @@ ii,hh,ded_prf_res ;
                  
 /*   'SLMAP' BUILT_IN RULE   */
                  
-   slmap_cmp_prf(n,g,f,i)
+   void slmap_cmp_prf(n,g,f,i)
    {register int ff,op,s,rf,lf,t,ii,v,w,u,fff,gl,fnc,prm,lprm ;
      ff=cre_cop_tree(f,i);
      op=val_tree(ff,right_node_frm(ff));
@@ -1922,7 +1922,7 @@ ii,hh,ded_prf_res ;
      kil(ff)
    ;}
 
-   slmap_prf(n,g,f)
+   int slmap_prf(n,g,f)
    {register int v,i,slmap_prf_res ;
      xst_sub_frm(f,i,v,v==SLMAP_sym,slmap_cmp_prf(n,g,f,i);
                                   slmap_prf_res=TRUE,
@@ -1934,7 +1934,7 @@ ii,hh,ded_prf_res ;
                  
 /*   'NLMAP' BUILT_IN RULE   */
                  
-   nlmap_cmp_prf(n,g,f,i)
+   void nlmap_cmp_prf(n,g,f,i)
    {register int ff,op,s,rf,lf,t,ii,v,w,u,fff,gl,fnc,prm,lprm,
        siz,lprm1,lprm2,lprm11 ;
      ff=cre_cop_tree(f,i);
@@ -1998,7 +1998,7 @@ ii,hh,ded_prf_res ;
      kil(ff)
    ;}
 
-   nlmap_prf(n,g,f)
+   int nlmap_prf(n,g,f)
    {register int v,i,slmap_prf_res ;
      xst_sub_frm(f,i,v,v==NLMAP_sym,nlmap_cmp_prf(n,g,f,i);
                                   slmap_prf_res=TRUE,
@@ -2009,7 +2009,7 @@ ii,hh,ded_prf_res ;
                      
 /*  'REV' BUILT-; RULE  */
                      
-   rev_cmp_prf(n,g,f,i)
+   void rev_cmp_prf(n,g,f,i)
    {register int ff,op,s,rf,u,fff,gl,j,ggg ;
      ff=cre_cop_tree(f,i);
      op=val_tree(ff,right_node_frm(ff));
@@ -2033,7 +2033,7 @@ ii,hh,ded_prf_res ;
    ;}
 
    
-   rev_prf(n,g,f)
+   int rev_prf(n,g,f)
    {register int v,i,rev_prf_res ;
      nxst_sub_frm(f,i,v,v==REV_sym,rev_cmp_prf(n,g,f,i);
                                   rev_prf_res=TRUE,
@@ -2046,7 +2046,7 @@ ii,hh,ded_prf_res ;
 /*  'FLAT' BUILT-; RULE  */
                      
    
-   flat_cmp_prf(n,g,f,i)
+   void flat_cmp_prf(n,g,f,i)
    {register int ff,op,s,u,t,ii,v,w,fff,gl ;
      ff=cre_cop_tree(f,i);
      op=val_tree(ff,right_node_frm(ff));
@@ -2083,7 +2083,7 @@ ii,hh,ded_prf_res ;
    ;}
 
    
-   flat_prf(n,g,f)
+   int flat_prf(n,g,f)
    {register int v,i,flat_prf_res ;
      nxst_sub_frm(f,i,v,v==FLAT_sym,flat_cmp_prf(n,g,f,i);
                                  flat_prf_res=TRUE,
@@ -2096,7 +2096,7 @@ ii,hh,ded_prf_res ;
 /*   TACTIC CONSTRUCTION   */
                 
   
-  cre_tac_prf(f,i)
+  int cre_tac_prf(f,i)
   {register int z,tt,th,ff ;
     z=val_root_frm(f);
     if( z==TIL_sym ){
@@ -2212,7 +2212,7 @@ ii,hh,ded_prf_res ;
   ; return tt;
   }
 
-  cre_ini_tac_prf(f)
+  int cre_ini_tac_prf(f)
   {register int t,ff ;
     if( val_root_frm(f)==TIL_sym ){
       t=cre_tac(left_frm(f));
@@ -2226,7 +2226,7 @@ ii,hh,ded_prf_res ;
   ; return cre_root_nod(t);
   }
 
-  step_tac_prf(i,t)
+  void step_tac_prf(i,t)
   {register int f,j,s,p,tt ;
     if( def_spe_tac(t)==TRUE ){
       p=spe_tac(t);
@@ -2251,7 +2251,7 @@ ii,hh,ded_prf_res ;
 /*   TACTIC  NAVIGATION   */
   
   
-  down_tac_prf(n)
+  int down_tac_prf(n)
   {register int m,s ;
     m=n;
     s=sons_nod(m);
@@ -2262,7 +2262,7 @@ ii,hh,ded_prf_res ;
   ; return m;
   }
 
-  build_tac_prf(f)
+  void build_tac_prf(f)
   {register int i,t ;
     tac_prf=cre_ini_tac_prf(f);
     add_set(lst_tac_prf,tac_prf);
@@ -2270,7 +2270,7 @@ ii,hh,ded_prf_res ;
     tac_ptr_prf=down_tac_prf(tac_prf);
   }
 
-  func_build_tac_prf(f)
+  int func_build_tac_prf(f)
   {register int i,t ;
     tac_prf=cre_ini_tac_prf(f);
     itr_next_nod(tac_prf,tac_prf,i,t,step_tac_prf(i,t));
@@ -2278,7 +2278,7 @@ ii,hh,ded_prf_res ;
   ; return tac_prf;
   }
 
-  build_fwd_tac_prf2(f)
+  void build_fwd_tac_prf2(f)
   {register int i,t ;
     fwd_tac_prf=cre_ini_tac_prf(f);
     add_set(lst_fwd_tac_prf,fwd_tac_prf);
@@ -2286,7 +2286,7 @@ ii,hh,ded_prf_res ;
     fwd_tac_ptr_prf=down_tac_prf(fwd_tac_prf);
   }
 
-  func_build_fwd_tac_prf2(f)
+  int func_build_fwd_tac_prf2(f)
   {register int i,t ;
     fwd_tac_prf=cre_ini_tac_prf(f);
     itr_next_nod(fwd_tac_prf,fwd_tac_prf,i,t,step_tac_prf(i,t));
@@ -2294,7 +2294,7 @@ ii,hh,ded_prf_res ;
   ; return fwd_tac_prf;
   }
 
-  kil_tac_prffunc()
+  void kil_tac_prffunc()
 #define kil_tac_prf kil_tac_prffunc()
   {register int ta,j,i,t ;
     itr(lst_tac_prf,j,ta,itr_nod(ta,i,t,kil_tac(t),{},{});
@@ -2302,14 +2302,14 @@ ii,hh,ded_prf_res ;
     kil(lst_tac_prf);
   }
 
-  kil_fwd_tac_prffunc()
+  void kil_fwd_tac_prffunc()
 #define kil_fwd_tac_prf kil_fwd_tac_prffunc()
   {register int i,t ;
     itr_nod(fwd_tac_prf,i,t,kil_tac(t),{},{});
     kil_nod(fwd_tac_prf);
   }
 
-  kil_fwd_tac_prf2func()
+  void kil_fwd_tac_prf2func()
 #define kil_fwd_tac_prf2 kil_fwd_tac_prf2func()
   {register int ta,j,i,t ;
     itr(lst_fwd_tac_prf,j,ta,itr_nod(ta,i,t,kil_tac(t),{},{});
@@ -2318,14 +2318,14 @@ ii,hh,ded_prf_res ;
   }
 
   
-  kil_input_prffunc()
+  void kil_input_prffunc()
 #define kil_input_prf kil_input_prffunc()
   {register int i,s ;
     itr(lst_input_prf,i,s,kil(s));
     kil(lst_input_prf);
   }
 
-  kil_content_input_prffunc()
+  void kil_content_input_prffunc()
 #define kil_content_input_prf kil_content_input_prffunc()
   {register int i,s ;
     itr(lst_input_prf,i,s,kil(s));
@@ -2333,7 +2333,7 @@ ii,hh,ded_prf_res ;
   }
 
 #define fst_tac_prf(p) down_tac_prf(p)  
-  up_tac_prf(p,n)
+  int up_tac_prf(p,n)
   {register int f,t,s,i,v,m,b,up_tac_prf_res ;
     f=fath_nod(n);
     if( f==fath_nod(p) ){
@@ -2363,7 +2363,7 @@ ii,hh,ded_prf_res ;
   }
 
   
-  nxt_tac_prf(p,n)
+  int nxt_tac_prf(p,n)
   {register int s,nxt_tac_prf_res ;
     s=sons_nod(n);
     if( len(s)!=0 ){
@@ -2374,7 +2374,7 @@ ii,hh,ded_prf_res ;
   ; return nxt_tac_prf_res;
   }
 
-  clean_tac_prffunc()
+  void clean_tac_prffunc()
 #define clean_tac_prf clean_tac_prffunc()
   {register int i,t ;
     itr_nod(tac_prf,i,t,mod_res_tac(t,TRUE),{},{});
@@ -2385,7 +2385,7 @@ ii,hh,ded_prf_res ;
 /*   'MODIFYING TACTICS' BUILT_IN RULE   */
                
   
-  lod_add_tac_prf(f)
+  int lod_add_tac_prf(f)
   {register int v,t,ff,op,lod_add_tac_prf_res ;
     op=val_root_frm(f);
     lod_add_tac_prf_res=FALSE;
@@ -2407,7 +2407,7 @@ ii,hh,ded_prf_res ;
   ; return lod_add_tac_prf_res;
   }
 
-  add_tac_prf(f)
+  int add_tac_prf(f)
   {register int v,t,ff,op,add_tac_prf_res ;
     op=val_root_frm(f);
     add_tac_prf_res=FALSE;
@@ -2427,7 +2427,7 @@ ii,hh,ded_prf_res ;
   ; return add_tac_prf_res;
   }
 
-  badd_tac_prf(f)
+  int badd_tac_prf(f)
   {register int v,t,ff,op,rp,add_tac_prf_res ;
     
 /* fprintf ( bstdout, "coucou1"); */
@@ -2467,7 +2467,7 @@ ii,hh,ded_prf_res ;
                    
                           
 /*  ARITHMETIC GUARD  */
-  test_arith_prf(v)
+  int test_arith_prf(v)
   {register int w,l,o,r,test_arith_prf_res ;
 /***
 printf ( "test_arith_prf\n" );
@@ -2542,7 +2542,7 @@ printf ( "  l=%d r=%d\n", l, r );
                 */
                       
                     
-fre_jok_prf(p,n,lv,s)
+int fre_jok_prf(p,n,lv,s)
 {register int lh,lvv,j,h,fh,lw,ff,v,gg,fre_jok_prf_res ;                     
   lh=cre(50);
   lvv=cre(len(lv));
@@ -2660,7 +2660,7 @@ fre_jok_prf(p,n,lv,s)
              call recursively both left && right sub-trees
            end  */
            
-rec_fre_prf(p,n,lv,f,i)   
+int rec_fre_prf(p,n,lv,f,i)   
 /* lv is free in (f,i) */
 {register int s,lq,le,lvv,v,j,b,ff,gg,rec_fre_prf_res ;
   s=val_tree(f,i);
@@ -2765,7 +2765,7 @@ rec_fre_prf(p,n,lv,f,i)
 ; return rec_fre_prf_res;
 }
 
-  is_dis_lst_vrb_frm_prf(p,n,l,f,i)
+  int is_dis_lst_vrb_frm_prf(p,n,l,f,i)
   {register int m,j,v,is_dis_lst_vrb_frm_prf_res ;
     m=cre(4);
     if( is_lst_vrb_frm_prf(p,n,l,f,i)==TRUE ){
@@ -2779,7 +2779,7 @@ rec_fre_prf(p,n,lv,f,i)
   ; return is_dis_lst_vrb_frm_prf_res;
   }
 
-  test_non_freeness_prf(p,n,w)
+  int test_non_freeness_prf(p,n,w)
   {register int l,test_non_freeness_prf_res ;
     l=cre(4);
     if( is_dis_lst_vrb_frm_prf(p,n,l,w,left_node_frm(w))==TRUE ){
@@ -2795,7 +2795,7 @@ rec_fre_prf(p,n,lv,f,i)
 /*  VARIABLE GUARD  */
                         
                         
-  test_ident_vrb_prf(p,n,l,m,i,v)
+  int test_ident_vrb_prf(p,n,l,m,i,v)
   {register int w,test_ident_vrb_prf_res ;
     cop(l,m);
     rem(m,i);
@@ -2806,7 +2806,7 @@ rec_fre_prf(p,n,lv,f,i)
   }
 
                           
-  test_vrb_prf(p,n,w)
+  int test_vrb_prf(p,n,w)
   {register int l,test_vrb_prf_res ;
     l=cre(4);
     test_vrb_prf_res=is_dis_lst_vrb_frm_prf(p,n,l,w,right_node_frm(w));
@@ -2814,7 +2814,7 @@ rec_fre_prf(p,n,lv,f,i)
   ; return test_vrb_prf_res;
   }
 
-  is_dis_sub_frm_prf(p,n,lv,le,f,i)
+  int is_dis_sub_frm_prf(p,n,lv,le,f,i)
   {register int l,r,op,s,is_dis_sub_frm_prf_res ;
   clr(lv);
   clr(le);
@@ -2842,7 +2842,7 @@ rec_fre_prf(p,n,lv,f,i)
 /*  INTEGER GUARD  */
                        
    
-val_int(w)
+int val_int(w)
 {
   int pos_neg;
   if   ( val_root_frm ( w ) == PLS_sym ) pos_neg = (-1);
@@ -2851,7 +2851,7 @@ val_int(w)
 }
 
 
-test_int_prf(w)
+int test_int_prf(w)
 {
 /***
 {
@@ -2876,7 +2876,7 @@ printf ( "+++++++++++++++++++++++++++++++++++++\n" );
 }
 
 /*
-   test_int_prf(w)
+   int test_int_prf(w)
      register int v, s, t, u, res;
 
 /???/
@@ -2957,7 +2957,7 @@ printf ( "::::::::::::::::::::::::::::::::::::::\n" );
 /*  NUMERIC GUARD  */
                        
    
-   test_num_prf(w)
+   int test_num_prf(w)
    {register int v ;
      v=val_tree(w,right_node_frm(w))
    ; return is_nbr_sym(v)
@@ -2967,7 +2967,7 @@ printf ( "::::::::::::::::::::::::::::::::::::::\n" );
 /*  STRING GUARD  */
                     
                        
-  test_string_prf(w)
+  int test_string_prf(w)
   {register int v ;
     v=val_tree(w,right_node_frm(w));
   ; return is_string_sym(v);
@@ -2977,7 +2977,7 @@ printf ( "::::::::::::::::::::::::::::::::::::::\n" );
 /*  BITSTRING GUARD  */
                     
                        
-  test_bitstring_prf(w)
+  int test_bitstring_prf(w)
   {register int v ;
     v=val_tree(w,right_node_frm(w));
   ; return is_bitstring_sym(v);
@@ -2987,7 +2987,7 @@ printf ( "::::::::::::::::::::::::::::::::::::::\n" );
 /*  LITERAL GUARD  */
                     
                        
-  test_literal_prf(w)
+  int test_literal_prf(w)
   {register int v ;
     v=val_tree(w,right_node_frm(w));
   ; return is_literal_sym(v);
@@ -2997,7 +2997,7 @@ printf ( "::::::::::::::::::::::::::::::::::::::\n" );
 /*  SINGLETON GUARD  */
                     
                        
-  test_singleton_prf(w)
+  int test_singleton_prf(w)
   {
     return((val_tree(w,right_node_frm(w)) == COM_sym) == 0 );
   }
@@ -3005,7 +3005,7 @@ printf ( "::::::::::::::::::::::::::::::::::::::\n" );
                        
 /*  CONSTANT GUARD  */
                                            
-  test_constant_prf ( v )
+  int test_constant_prf ( v )
   {
     if      ( is_nbr_sym ( v ) )       { /*** printf ( " num\n") ;        ***/ return ( 1 ); }
     else if ( is_string_sym ( v ) )    { /*** printf ( " string\n") ;     ***/ return ( 1 ); }
@@ -3019,7 +3019,7 @@ printf ( "::::::::::::::::::::::::::::::::::::::\n" );
                        
 /*  LCONSTANT GUARD  */
                                            
-  test_lconstant_prf(w)
+  int test_lconstant_prf(w)
   {
     int f, l, i, ok;
     ok = 1;
@@ -3040,7 +3040,7 @@ printf ( "::::::::::::::::::::::::::::::::::::::\n" );
 /*  INFO GUARD  */
                     
                        
-  test_info_prf(w)
+  int test_info_prf(w)
 {
 /***
 int s,t;
@@ -3084,19 +3084,19 @@ return ( 1 );
 
                        
 /*  IDENTIFIER GUARDS  */
-test_ident_prf(w)
+int test_ident_prf(w)
 {register int v ;
   v=val_tree(w,right_node_frm(w));
 ; return is_ident_sym(v);
 }
 
-test_upper_ident_prf(w)
+int test_upper_ident_prf(w)
 {register int v ;
   v=val_tree(w,right_node_frm(w));
 ; return is_upper_ident_sym(v);
 }
 
-is_lst_ident_frm_prf(lv,f,i)
+int is_lst_ident_frm_prf(lv,f,i)
 {register int s,j,v,b ;
   clr(lv);
   s=dec_tree(f,i,COM_sym);
@@ -3110,7 +3110,7 @@ is_lst_ident_frm_prf(lv,f,i)
   return b;
 }
 
-  test_ident_ident_prf(p,n,l,m,i,v)
+  int test_ident_ident_prf(p,n,l,m,i,v)
   {register int w,test_ident_vrb_prf_res ;
     cop(l,m);
     rem(m,i);
@@ -3120,7 +3120,7 @@ is_lst_ident_frm_prf(lv,f,i)
   ; return test_ident_vrb_prf_res;
   }
 
-  is_dis_lst_ident_frm_prf(p,n,l,f,i)
+  int is_dis_lst_ident_frm_prf(p,n,l,f,i)
   {register int m,j,v,is_dis_lst_ident_frm_prf_res ;
     m=cre(4);
     if( is_lst_ident_frm_prf(l,f,i)==TRUE ){
@@ -3134,7 +3134,7 @@ is_lst_ident_frm_prf(lv,f,i)
   ; return is_dis_lst_ident_frm_prf_res;
   }
 
-  test_lident_prf(p,n,w)
+  int test_lident_prf(p,n,w)
   {register int l,test_lident_prf_res ;
     l=cre(4);
     test_lident_prf_res=is_dis_lst_ident_frm_prf(p,n,l,w,right_node_frm(w));
@@ -3146,14 +3146,14 @@ is_lst_ident_frm_prf(lv,f,i)
 /*  INHYP GUARD  */
   
                    
-  tst_hyp_prf(a,h)
+  int tst_hyp_prf(a,h)
   {register int rn,fh ;
     rn=right_node_frm(a);
     fh=frm_hyp(h)
   ; return chk_tree(a,rn,beg_tree(a,rn),fh,root_tree(fh),1);
   }
 
-  test_inhyp_prf(p,n,a,li,w)
+  int test_inhyp_prf(p,n,a,li,w)
   {register int s,i,h,ww,test_inhyp_prf_res,wc ;
     s=cre(4);
     lst_hyp_prf(p,n,s);
@@ -3171,7 +3171,7 @@ is_lst_ident_frm_prf(lv,f,i)
 
                     
 /*  SPARE MEMORY GUARD  */
-  spare_mem_test_prf(f)
+  int spare_mem_test_prf(f)
   {register int j,s,spare_mem_test_prf_res ;
     j=right_frm(f);
     s=cre_frm(arith_val_sym(spare_mem_percent_seq));
@@ -3181,7 +3181,7 @@ is_lst_ident_frm_prf(lv,f,i)
   }
                       
 /*  RULE NUMBER GUARD  */
-  test_len_theo_prf(w,a)
+  int test_len_theo_prf(w,a)
   {register int r,lr,thn,ra,rra,t,b,n,s,test_len_theo_prf_res ;
     test_len_theo_prf_res=FALSE;
     r=right_frm(w);
@@ -3209,7 +3209,7 @@ is_lst_ident_frm_prf(lv,f,i)
                         
 /*  RULE GUARD  */
                         
-  test_rule_prf(rul,i,rra,rlra)
+  int test_rule_prf(rul,i,rra,rlra)
   {register int s,nn,result ;
     result=FALSE;
     s=cre_rec_rul(rul);
@@ -3230,7 +3230,7 @@ is_lst_ident_frm_prf(lv,f,i)
   }
 
   
-  test_rul_grd_prf(w,a)
+  int test_rul_grd_prf(w,a)
   {register int r,lr,llrn,thn,t,b,rlrn,rc,n,rul,s,ra,rra,
   lra,lra2,rlra,c,i,lr2,nb,nbv,nbval,test_rul_grd_prf_res ;
     test_rul_grd_prf_res=FALSE;
@@ -3307,7 +3307,7 @@ is_lst_ident_frm_prf(lv,f,i)
   ; return test_rul_grd_prf_res;
   }
 
-  test_unproved_lem_grd_prf(w,a)
+  int test_unproved_lem_grd_prf(w,a)
   {register int r,lr,llrn,thn,t,b,rlrn,rc,n,rul,s,ra,rra,
   lra,lra2,rlra,c,i,lr2,nb,nbv,nbval,test_rul_grd_prf_res ;
     test_rul_grd_prf_res=FALSE;
@@ -3393,7 +3393,7 @@ is_lst_ident_frm_prf(lv,f,i)
                              
 /*  READF GUARD  */
     
-  ridf_test_prf(w,a)
+  int ridf_test_prf(w,a)
   {register int ff,i,fff,s,gg,ggg,b,rid_test_prf_res,ss,vv ;
     ff=dec_tree(w,right_node_frm(w),COM_sym);
     gg=dec_tree(a,right_node_frm(a),COM_sym);
@@ -3422,7 +3422,7 @@ read_frm;
   ; return rid_test_prf_res;
   }
 
-  rideol_test_prf(w,a)
+  int rideol_test_prf(w,a)
   {register int ff,i,fff,s,gg,ggg,b,rid_test_prf_res,ss,vv ;
     ff=dec_tree(w,right_node_frm(w),COM_sym);
     gg=dec_tree(a,right_node_frm(a),COM_sym);
@@ -3451,7 +3451,7 @@ read_frm;
 
                              
 /*  GET FILE GUARD  */
-  get_test_prf(f)
+  int get_test_prf(f)
   {register int ff,v,s,ss,p,get_test_prf_res ;
     get_test_prf_res=FALSE;
     ff=right_frm(f);
@@ -3481,7 +3481,7 @@ read_frm;
   
                                
 /*  GET HYP GUARD  */
-  gethyp_test_prf(p,n,f)
+  int gethyp_test_prf(p,n,f)
   {register int ff,s,fff,gethyp_test_prf_res ;
     gethyp_test_prf_res=FALSE;
     ff=right_frm(f);
@@ -3497,7 +3497,7 @@ read_frm;
   ; return gethyp_test_prf_res;
   }
 
-  getallhyp_test_prf(p,n,f)
+  int getallhyp_test_prf(p,n,f)
   {register int ff,s,fff,getallhyp_test_prf_res ;
     getallhyp_test_prf_res=FALSE;
     ff=right_frm(f);
@@ -3517,7 +3517,7 @@ read_frm;
                            
 /*  FILE CONNECT GUARD  */
   
-  test_con_prf(f)
+  int test_con_prf(f)
   {register int v,s,test_con_prf_res ;
     test_con_prf_res=FALSE;
     v=val_tree(f,right_node_frm(f));
@@ -3538,7 +3538,7 @@ read_frm;
                            
 /*  FILE APPEND GUARD  */
   
-  test_app_prf(f)
+  int test_app_prf(f)
   {register int v,s,test_app_prf_res ;
     test_app_prf_res=FALSE;
     v=val_tree(f,right_node_frm(f));
@@ -3560,7 +3560,7 @@ read_frm;
                             
 /*  SET_FWD_PRF GUARD  */
   
-  test_set_fwd_prf(f)
+  int test_set_fwd_prf(f)
   {register int v,s,test_set_fwd_prf_res ;
     test_set_fwd_prf_res=FALSE;
     v=val_tree(f,right_node_frm(f));
@@ -3574,7 +3574,7 @@ read_frm;
                             
 /*  SEARCH GUARD  */
                             
-  search_test_prf(w)
+  int search_test_prf(w)
   {register int rw,v,s,i,ss,pat,res,list,op,u,j,frm,b,newlist,search_test_prf_res ;
     search_test_prf_res=FALSE;
     rw=right_frm(w);
@@ -3622,7 +3622,7 @@ read_frm;
                            
 /*  GUARD MONITOR  */
  
-  guard_prf(p,n,a,li,app_rule_flag,prf_seq_breade)
+  int guard_prf(p,n,a,li,app_rule_flag,prf_seq_breade)
   {register int w,op,guard_prf_res ;
     w=prd_tree(a);
     op=val_root_frm(w);
@@ -3758,7 +3758,7 @@ read_frm;
               
 /*  TENTATIVE GOAL FORMULA ALREADY ; PARENT GOALS  */
   
-  already_frm_prf(p,n,f)
+  int already_frm_prf(p,n,f)
   {register int m,g,already_frm_prf_res ;
     xst_asc_nod(p,n,m,g,eql_spe_frm(f,frm_gol(g))==TRUE,
                                   already_frm_prf_res=TRUE,
@@ -3770,7 +3770,7 @@ read_frm;
 /*  EXTERNAL 'NORMAL' RULE HANDLING   */
                 
                 
-  cre_lst_gol_prf(p,li,n)
+  int cre_lst_gol_prf(p,li,n)
   {register int j,a,g,cre_lst_gol_prf_res ;
     xst(li,j,a,already_frm_prf(p,n,a)==TRUE,
                cre_lst_gol_prf_res=FALSE,
@@ -3779,7 +3779,7 @@ read_frm;
   ; return cre_lst_gol_prf_res;
   }
 
-  ask_rul_prf(rr)
+  int ask_rul_prf(rr)
   {register int ask_rul_prf_res ;
     ask_rul_prf_res=TRUE;
     if( auto_prf==FALSE ){
@@ -3801,7 +3801,7 @@ read_frm;
   ; return ask_rul_prf_res;
   }
 
-  ask_eql_rul_prf(f,i,rr)
+  int ask_eql_rul_prf(f,i,rr)
   {register int k,ask_eql_rul_prf_res ;
     ask_eql_rul_prf_res=TRUE;
     if( auto_prf==FALSE ){
@@ -3833,7 +3833,7 @@ read_frm;
   ; return ask_eql_rul_prf_res;
   }
 
-  test_nrm_rul_prf(p,n,rr)
+  int test_nrm_rul_prf(p,n,rr)
   {register int la,li,j,a,b,i,pa ;
     la=ant_rul(rr);
     li=cre(len(la));
@@ -3872,13 +3872,13 @@ read_frm;
 /*  sub_formula in goal, etc ...  */
   
   
-  clean_prf(li)
+  void clean_prf(li)
   {register int ii,pa ;
     itr(li,ii,pa,kil(pa));
     clr(li);
   }
 
-  test3_eql_rul_prf(f,i,rr,li,p,n)
+  int test3_eql_rul_prf(f,i,rr,li,p,n)
   {register int test3_eql_rul_prf_res ;
     if( ask_eql_rul_prf(f,i,rr)==FALSE ){
       clean_prf(li);
@@ -3892,7 +3892,7 @@ read_frm;
   ; return test3_eql_rul_prf_res;
   }
 
-  is_fre_in_ant_prf(p,n,lv,a)
+  int is_fre_in_ant_prf(p,n,lv,a)
   {register int is_fre_in_ant_res ;
     if( is_bspec_sym(val_root_frm(a))==TRUE ){
       is_fre_in_ant_res=FALSE;
@@ -3908,7 +3908,7 @@ read_frm;
      variables that are visible from the place of replacement are free 
      in some antecedent; if it is the case, the rule is not applied  */
      
-  test2_eql_rul_prf(rr,p,n,la,f,i,c,lnod,li)
+  int test2_eql_rul_prf(rr,p,n,la,f,i,c,lnod,li)
   {register int rp,s,ff,j,a,test2_eql_rul_prf_res   ,b,lv   ;
     if( chk_tree(c,lnod,beg_tree(c,lnod),f,i,beg_tree(f,i))==TRUE ){
       if( ari_sym(val_tree(f,i))==0 ){
@@ -3976,7 +3976,7 @@ read_frm;
   ; return test2_eql_rul_prf_res;
   }
 
-  test_eql_rul_prf(p,n,r,f)
+  int test_eql_rul_prf(p,n,r,f)
   {register int c,lnod,op,li,la,i,v,test_eql_rul_prf_res ;
     c=cns_rul(r);
     lnod=left_node_frm(c);
@@ -3999,7 +3999,7 @@ read_frm;
 /*   EXTERNAL RULE HANDLING   */
             
             
-  test_rul_prf(p,n,r,rr,frm)
+  int test_rul_prf(p,n,r,rr,frm)
   {register int c,op,test_rul_prf_res ;
     if( (r!=rr) && (val_sts_rul(rr)==on_rul) ){
       c=cns_rul(rr);
@@ -4022,7 +4022,7 @@ read_frm;
                         
 /*  HYP PROOF HANDLING  */
          
-  ask_hyp_prf(hf) 
+  int ask_hyp_prf(hf) 
   {register int ask_hyp_prf_res ;
     ask_hyp_prf_res=TRUE;
     if( auto_prf==FALSE ){
@@ -4041,7 +4041,7 @@ read_frm;
   ; return ask_hyp_prf_res;
   }
 
-  ask_eql_hyp_prf(f,i,hf) 
+  int ask_eql_hyp_prf(f,i,hf) 
   {register int k,ask_eql_hyp_prf_res ;
     ask_eql_hyp_prf_res=TRUE;
     if( auto_prf==FALSE ){
@@ -4070,7 +4070,7 @@ read_frm;
   ; return ask_eql_hyp_prf_res;
   }
 
-  test3_eql_hyp_prf(p,n,hf,lnod,rnod,f,i)
+  int test3_eql_hyp_prf(p,n,hf,lnod,rnod,f,i)
   {register int rp,ff,gl,gg,s,j,v,b,test3_eql_hyp_prf_res,lv ;
     if( eql_tree(hf,lnod,f,i)==TRUE ){
       if( ari_sym(val_tree(f,i))==0 ){
@@ -4141,7 +4141,7 @@ read_frm;
   ; return test3_eql_hyp_prf_res;
   }
 
-  test2_eql_hyp_prf(p,n,hf,lnod,f,i)
+  int test2_eql_hyp_prf(p,n,hf,lnod,f,i)
   {register int rp,ff,gl,test2_eql_hyp_prf_res,lv,b ;
     if( eql_tree(hf,lnod,f,i)==TRUE ){
       if( ari_sym(val_tree(f,i))==0 ){
@@ -4182,7 +4182,7 @@ read_frm;
   ; return test2_eql_hyp_prf_res;
   }
 
-  test_eql_hyp_prf(p,n,hf,f)
+  int test_eql_hyp_prf(p,n,hf,f)
   {register int i,v,op,lnod,test_eql_hyp_prf_res ;
     lnod=left_node_frm(hf);
     op=val_tree(hf,lnod);
@@ -4201,7 +4201,7 @@ if( is_in_frm(f,op)==TRUE ){
   }
 
   
-  test_imp_hyp_prf(p,n,hf,f)
+  int test_imp_hyp_prf(p,n,hf,f)
   {register int ff,gl,s,i,v,b,rn,op,lrn,rrn,op2,test_imp_hyp_prf_res ;
     if( eql_tree(hf,right_node_frm(hf),f,root_tree(f))==TRUE ){
       ff=left_frm(hf);
@@ -4258,7 +4258,7 @@ if( is_in_frm(f,op2)==TRUE ){
   ; return test_imp_hyp_prf_res;
   }
 
-  test2_unv_eql_hyp_prf(p,n,hhf,hf,f,i,lv)
+  int test2_unv_eql_hyp_prf(p,n,hhf,hf,f,i,lv)
   {register int rf,rp,ff,gl,gf,rq,ln,ef,test2_unv_eql_hyp_prf_res,lvv,b ;
     gf=cre_encode_tree(hf,root_tree(hf));
     ln=left_node_frm(gf);
@@ -4310,7 +4310,7 @@ if( is_in_frm(f,op2)==TRUE ){
   ; return test2_unv_eql_hyp_prf_res;
   }
 
-  test3_unv_eql_hyp_prf(p,n,hf,sgf,f,i,lv)
+  int test3_unv_eql_hyp_prf(p,n,hf,sgf,f,i,lv)
   {register int gf,ln,rf,rq,rp,ff,sf,sq,gg,gl,ef,test3_unv_eql_hyp_prf_res,lvv,b ;
     gf=right_frm(sgf);
     ln=left_node_frm(gf);
@@ -4379,7 +4379,7 @@ if( is_in_frm(f,op2)==TRUE ){
   ; return test3_unv_eql_hyp_prf_res;
   }
 
-  test_hyp_prf(p,n,hf,frm)
+  int test_hyp_prf(p,n,hf,frm)
   {register int op,lv,rhf,lhf,ff,gl,s,i,v,lnod,gf,fq,rn,lrn,op2,ef,test_hyp_prf_res ;
     op=val_root_frm(hf);
     if( (op==EQL_sym) || (op==EQV_sym) ){
@@ -4481,7 +4481,7 @@ if( is_in_frm(f,op2)==TRUE ){
   ; return test_hyp_prf_res;
   }
 
-  mon_hyp_prf(p,n,g,f)
+  int mon_hyp_prf(p,n,g,f)
   {register int s,i,h,mon_hyp_prf_res ;
     s=cre(50);
     lst_hyp_prf(p,n,s);
@@ -4495,7 +4495,7 @@ if( is_in_frm(f,op2)==TRUE ){
     return mon_hyp_prf_res;
   }
 
-  mon2_hyp_prf(p,n,g,f)
+  int mon2_hyp_prf(p,n,g,f)
   {register int s,i,h,mon2_hyp_prf_res ;
     s=cre(50);
     lst_hyp_prf(p,n,s);
@@ -4511,7 +4511,7 @@ if( is_in_frm(f,op2)==TRUE ){
 
                        
 /*  GEN BUILT-; RULE  */
-  ask_gen_prffunc()
+  int ask_gen_prffunc()
 #define ask_gen_prf ask_gen_prffunc()
   {register int ask_gen_prf_res ;
     ask_gen_prf_res=TRUE;
@@ -4525,7 +4525,7 @@ if( is_in_frm(f,op2)==TRUE ){
   ; return ask_gen_prf_res;
   }
 
-  gen_prf(p,n,g,f)
+  int gen_prf(p,n,g,f)
   {register int lv,w,gl,s,b,newlv,newlvp,nbr,i,h,gen_prf_res ;
     lv=cre(4);
     if( is_unv_frm_prf(p,n,lv,f,root_tree(f))==TRUE ){
@@ -4584,7 +4584,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  SUBSTITUTION BUILT-; RULE  */
                          
                        
-  free_in_lst_prf(p,n,lv,lf)
+  int free_in_lst_prf(p,n,lv,lf)
   {register int g,free_in_lst_prf_res ; 
     g=rec_frm(lf,COM_sym);
     free_in_lst_prf_res=rec_fre_prf(p,n,lv,g,root_tree(g));
@@ -4592,7 +4592,7 @@ if( is_in_frm(f,op2)==TRUE ){
   ; return free_in_lst_prf_res;
   }
 
-  sub_jok_prf(p,n,lv,le,f,i,g,s)
+  void sub_jok_prf(p,n,lv,le,f,i,g,s)
   {register int lq,nlq,j,v,lef,newlv,newle ;
     lq=cre(1);
     nlq=cre(len(lv));
@@ -4659,7 +4659,7 @@ if( is_in_frm(f,op2)==TRUE ){
 
   
 /* procedure rec_sub_prf(p,n,lv,le,f,i,g,v); */
-  rec_sub_prf(p,n,lv,le,f,i,g,v)
+rec_sub_prf(p,n,lv,le,f,i,g,v)
   {register int s,k,newlv,newlvp,newle,lq,lef,lee,rs,b ;
     s=val_tree(f,i);
     if( ari_sym(s)==0 ){
@@ -4841,7 +4841,7 @@ if( is_in_frm(f,op2)==TRUE ){
     };
   }
 
-  tell_sub_prf(f,i)
+  void tell_sub_prf(f,i)
   {register int k ;
     if( auto_prf==FALSE ){
       if( (len(f)<200) || (sho_big_gol_prf==TRUE) ){
@@ -4855,7 +4855,7 @@ if( is_in_frm(f,op2)==TRUE ){
     };
   }
 
-  ask_sub_prf(f,i)
+  int ask_sub_prf(f,i)
   {register int k,ask_sub_prf_res ;
     ask_sub_prf_res=TRUE;
     if( auto_prf==FALSE ){
@@ -4876,7 +4876,7 @@ if( is_in_frm(f,op2)==TRUE ){
   ; return ask_sub_prf_res;
   }
 
-  sub_prf(p,i,g,f)
+  int sub_prf(p,i,g,f)
   {register int n,v,lv,le,fff,ff,gl,j,sub_prf_res ;
     lv=cre(4);
     le=cre(4);
@@ -4910,7 +4910,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  "bcall" built-in rule  */
                    
  
-  cal_prf(p,n,g,f)
+  int cal_prf(p,n,g,f)
   {register int ss,ff,b,tac,gol,i,gg,gl,j,v,tt,ftac,cal_prf_res,ta,taf ;
     if( val_root_frm(f)==CAL_sym ){
       ss=dec_tree(f,right_node_frm(f),BAR_sym);
@@ -4967,7 +4967,7 @@ if( is_in_frm(f,op2)==TRUE ){
   ; return cal_prf_res;
   }
 
-  recal_prf(n,g)
+  int recal_prf(n,g)
   {register int ss,c,tac,gol,gl,j,v,f,ff,tt,ftac,recal_prf_res,ta,taf ;
     f=frm_gol(g);
     ss=dec_tree(f,right_node_frm(f),BAR_sym);
@@ -5014,7 +5014,7 @@ if( is_in_frm(f,op2)==TRUE ){
              
 /*  TACTIC INTERPRETER FOR NORMAL PROOF  */
              
-  itp_tac_prf(r,p,i,gl,f)
+  int itp_tac_prf(r,p,i,gl,f)
   {register int t,j,rr,th,st,itp_tac_prf_res ;
     t=info_nod(tac_ptr_prf);
     itp_tac_prf_res=FALSE;
@@ -5223,7 +5223,7 @@ if( is_in_frm(f,op2)==TRUE ){
              
 /*  TACTIC INTERPRETER FOR LOAD PROOF  */
                       
-  itp_tac_lod_prf(r,i,gl,f)
+  int itp_tac_lod_prf(r,i,gl,f)
   {register int t,j,a,w,rr,la,g,th,itp_tac_lod_prf_res ;
     t=info_nod(tac_ptr_prf);
     itp_tac_lod_prf_res=FALSE;
@@ -5253,7 +5253,7 @@ if( is_in_frm(f,op2)==TRUE ){
         
                 
               
-  kil_prf(p)
+  void kil_prf(p)
   {register int i,g ;
     itr_nod(p,i,g,kil_gol(g),{},{});
     kil_nod(p);
@@ -5263,7 +5263,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*   CREATING PROOF   */
                
     
-  cre_prf(r)
+  int cre_prf(r)
   {register int f,g ;
     f=cre_rec_rul(r);
     g=cre_gol(f);
@@ -5273,7 +5273,7 @@ if( is_in_frm(f,op2)==TRUE ){
                     
 /*  PROOF STEP FOR EXEC PROOF  */
   
-  step_exec_prf(r,p,i,g)
+  int step_exec_prf(r,p,i,g)
   {register int f,step_exec_prf_res ;    
     f=frm_gol(g);
     if( and_prf(i,g,f)==TRUE ){                /* AND */
@@ -5310,7 +5310,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  PROOF STEP FOR NORMAL PROOF  */
                    
   
-  step_prf(r,p,i,g)
+  int step_prf(r,p,i,g)
   {register int f,success,op ;    
     f=frm_gol(g);
     mod_tac_gol(g,tac_prf,tac_ptr_prf,fwd_tac_prf,fwd_tac_ptr_prf);
@@ -5367,12 +5367,12 @@ if( is_in_frm(f,op2)==TRUE ){
         };
       } else {
         op=val_root_frm(frm_gol(g));
-        if( (op==BCRER_sym) ){
+        if( op==BCRER_sym ){
           fprintf ( bstdout, "\n");
           fprintf ( bstdout, "      Generating a Rule");
           fprintf ( bstdout, " ");
           {register int c ; c=0; while( c!='\n' ){ c = getchar() ;} ;};
-        } else if( (op==BCREL_sym) ){
+        } else if( op==BCREL_sym ){
           fprintf ( bstdout, "\n");
           fprintf ( bstdout, "      Generating a Lemma");
           fprintf ( bstdout, " ");
@@ -5462,7 +5462,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  PROOF STEP FOR 'LOAD' PROOF  */
   
   
-  step_lod_prf(r,i,g)
+  void step_lod_prf(r,i,g)
   {register int f ;
     f=frm_gol(g);
     if( and_prf(i,g,f)==TRUE ){
@@ -5484,7 +5484,7 @@ if( is_in_frm(f,op2)==TRUE ){
                        
 /*  GOAL PARAGRAPH  */
    
-  write_gol_prf(g)
+  void write_gol_prf(g)
   {
     if( (len(frm_gol(g))<200) || (sho_big_gol_prf==TRUE) ){
       reset_res(6);
@@ -5497,7 +5497,7 @@ if( is_in_frm(f,op2)==TRUE ){
     };
   }
 
-  write_spe_gol_prf(g)
+  void write_spe_gol_prf(g)
   {register int f,a,c,i,v ;
     if( (len(frm_gol(g))<200) || (sho_big_gol_prf==TRUE) ){
       f=frm_gol(g);
@@ -5530,7 +5530,7 @@ if( is_in_frm(f,op2)==TRUE ){
     };
   }
 
-  writeln_lst_gol_prf(p,n)
+  void writeln_lst_gol_prf(p,n)
   {register int g,m,c ;
     fprintf ( bstdout, "GOALS\n");
     fprintf ( bstdout, "\n");
@@ -5551,7 +5551,7 @@ if( is_in_frm(f,op2)==TRUE ){
   }
 
   
-  writeln_lst_gol_prf_ABORTED(p,n)
+  void writeln_lst_gol_prf_ABORTED(p,n)
   {register int g,m,c ;
    static int already_printed = 0;
     if ( ! already_printed ) {
@@ -5570,7 +5570,7 @@ if( is_in_frm(f,op2)==TRUE ){
                         
 /*  PROOF PARAGRAPH  */
   
-  write_ext_prf4(n,g,i,dec,t,nn)
+  void write_ext_prf4(n,g,i,dec,t,nn)
   {register int s,j,m,gl ;
     s=cre(len(sons_nod(i)));
     itr(sons_nod(i),j,m,gl=info_nod(m);
@@ -5594,7 +5594,7 @@ if( is_in_frm(f,op2)==TRUE ){
     kil(s);
   }
 
-  write_prf4(g,i,dec)
+  void write_prf4(g,i,dec)
   {register int s,j,m,gl ;
     s=cre(len(sons_nod(i)));
     itr(sons_nod(i),j,m,gl=info_nod(m);
@@ -5606,7 +5606,7 @@ if( is_in_frm(f,op2)==TRUE ){
     kil(s);
   }
 
-  write_ext_prf(p,t,nn)
+  void write_ext_prf(p,t,nn)
   {register int i,ii,g,h,n,dec ;
     n=0;
     itr_nod(p,i,g,if( def_hso_gol(g)==TRUE ){
@@ -5652,7 +5652,7 @@ if( is_in_frm(f,op2)==TRUE ){
    ;});
   }
 
-  write_prf(p)
+  void write_prf(p)
   {register int i,ii,g,h,n,dec ;
     n=0;
     save_MAX_COL_RES;
@@ -5698,7 +5698,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  BACKWARD TACTIC PARAGRAPH  */
  
  
-  write_tac_prf1(p,i,t)
+  void write_tac_prf1(p,i,t)
   {register int l,f ;
     l=len(sons_nod(i));
     if( l>1 ){
@@ -5724,7 +5724,7 @@ if( is_in_frm(f,op2)==TRUE ){
 
                 
   
-  writeln_tac_prf(p)
+  void writeln_tac_prf(p)
   {register int i,t ;
     fprintf ( bstdout, "NORMAL TACTIC\n");
     fprintf ( bstdout, "\n");
@@ -5744,7 +5744,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  FORWARD TACTIC PARAGRAPH  */
                  
   
-  writeln_fwd_tac_prf(p)
+  void writeln_fwd_tac_prf(p)
   {register int i,t ;
     fprintf ( bstdout, "FORWARD TACTIC\n");
     fprintf ( bstdout, "\n");
@@ -5764,7 +5764,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  HYPOTHESES PARAGRAPH  */
   
   
-  writeln_lst_hyp_prf(p,n)
+  void writeln_lst_hyp_prf(p,n)
   {register int s,i,h,dec,b,v,nsc ;
     s=cre(50);
     lst_hyp_prf(p,n,s);
@@ -5823,7 +5823,7 @@ if( is_in_frm(f,op2)==TRUE ){
     kil(s);
   }
 
-  writeln_head_prf(p,i)
+  void writeln_head_prf(p,i)
   {
     write_top_clear_res;
     if( fwd_tac_prf!=0 ){
@@ -5838,7 +5838,7 @@ if( is_in_frm(f,op2)==TRUE ){
                         
 /*  PROOF INTERFACE  */
   
-  screen_doc_prffunc()
+  void screen_doc_prffunc()
 #define screen_doc_prf screen_doc_prffunc()
   {
     fprintf ( bstdout, "  CR: Loop Until Quota      1: Menu\n");
@@ -5853,7 +5853,7 @@ if( is_in_frm(f,op2)==TRUE ){
     fprintf ( bstdout, "   d: SUB                  13: Reload (Source)\n")  ;
   }
 
-  doc_prffunc()
+  void doc_prffunc()
 #define doc_prf doc_prffunc()
   {
     open_win;
@@ -5867,7 +5867,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  BACKTRACKING  - this is really `undo'*/
                       
                       
-   backtrack_prf(p,i,r)
+   int backtrack_prf(p,i,r)
    {register int j,ii,k,g,op,rr ;
      
 /* j=prev_nod(p,i); */
@@ -5896,7 +5896,7 @@ if( is_in_frm(f,op2)==TRUE ){
                      
 /*  EXEC PROOF  */
                       
-  run_exec_prf(r,p,i,g)
+  int run_exec_prf(r,p,i,g)
   {register int success,ii,gg,b,j,run_exec_prf_res ;
     success=FALSE;
     end_of_tac_prf=FALSE;
@@ -5939,7 +5939,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  PROOF  */
                        
   
-  one_step_of_prf(r,p,i,g)
+  int one_step_of_prf(r,p,i,g)
   {register int success,ii,gg,b,j,nn,one_step_of_prf_res ;
     end_of_tac_prf=FALSE;
     success=FALSE;
@@ -6002,7 +6002,7 @@ if( is_in_frm(f,op2)==TRUE ){
   }
 
   
-  quota_prffunc()
+  void quota_prffunc()
 #define quota_prf quota_prffunc()
   {
     fprintf ( bstdout, "      Normal Quota: ");
@@ -6024,7 +6024,7 @@ if( is_in_frm(f,op2)==TRUE ){
     };
   }
 
-  switch_aster_prffunc()
+  void switch_aster_prffunc()
 #define switch_aster_prf switch_aster_prffunc()
   {
     aster_prf=((aster_prf==FALSE)!=0);
@@ -6034,7 +6034,7 @@ if( is_in_frm(f,op2)==TRUE ){
 
 #define sys_all_the sys_all_thefunc()
 
-  run_man_prf(r,p,iii,gg)
+  int run_man_prf(r,p,iii,gg)
   {register int l,success,bbuf,s,ff,fff,j,i,gl,g,menu,run_man_prf_res ;
     i=iii;
     g=gg;
@@ -6218,7 +6218,7 @@ if( is_in_frm(f,op2)==TRUE ){
 /*  NORMAL PROOF MONITOR  */
                         
   
-  loop_do_prf(t,n)
+  int loop_do_prf(t,n)
   {register int r,p,i,g,j ;
     r=val_rul_the(t,n);
     mod_rul_sys(num_rul(r));
@@ -6272,7 +6272,7 @@ printf ( ">>>>>>>>>>>>>>>>> loop_do_prf(%d,%d) j %d\n", t,n,j );
     return p;
   }
 
-  prelude_prf(t,a)
+  void prelude_prf(t,a)
   {
     sho_big_gol_prf=FALSE;
     sho_gol_prf=FALSE;
@@ -6298,13 +6298,13 @@ printf ( ">>>>>>>>>>>>>>>>> loop_do_prf(%d,%d) j %d\n", t,n,j );
 };
 }
 
-  write_res_prffunc()
+  void write_res_prffunc()
 #define write_res_prf write_res_prffunc()
   {
     flush_all_fic;
   }
 
-  postlude_prf(p
+  void postlude_prf(p
 /* ,t */
 )
   {
@@ -6326,7 +6326,7 @@ printf ( ">>>>>>>>>>>>>>>>> loop_do_prf(%d,%d) j %d\n", t,n,j );
   procedure do_prf(t,n,a:integer);forward;
    */
   
-  mon_lem_prf(l,bbuf)
+  int mon_lem_prf(l,bbuf)
   {register int k,mon_lem_prf_res ;
     mon_lem_prf_res=TRUE;
     if( (typ_rul(l)==lem_rul) && (pvd_rul(l)!=now_rul) ){
@@ -6356,7 +6356,7 @@ printf ( ">>>>>>>>>>>>>>>>> loop_do_prf(%d,%d) j %d\n", t,n,j );
   ; return mon_lem_prf_res;
   }
 
-  do_prf(t,n,a)
+ int do_prf(t,n,a)
   {register int p,r,i,l,
 /* k, */
 b,bbuf ;
@@ -6423,9 +6423,10 @@ b,bbuf ;
         rem_sub_rul_the(t,n);
       }
     }
+    return 0;
   }
 
-  itr_lem_prf(r)
+  void itr_lem_prf(r)
   {register int i,l,b,bbuf ;
     b=TRUE;
     bbuf=cre(1);
@@ -6435,7 +6436,7 @@ b,bbuf ;
     kil(bbuf);
   }
 
-  itr_lem_the_prf(t)
+  void itr_lem_the_prf(t)
   {register int i,l,b,bbuf ;
     b=TRUE;
     bbuf=cre(1);
@@ -6449,7 +6450,7 @@ b,bbuf ;
                      
 /*  EXEC 'PROOF' MONITOR  */
                      
-  loop_exec_prf(r,f)
+  int loop_exec_prf(r,f)
   {register int p,i,g,j,ii,k,aborted_i;
     g=cre_gol(f);
     p=cre_root_nod(g);
@@ -6499,7 +6500,7 @@ b,bbuf ;
 /*  FILE EXEC 'PROOF'  */
                           
                           
-  exec_file_prf(t)
+  void exec_file_prf(t)
   {register int f,g,p,s,ff,r,i,b,l,bb ;
     
 /* if( val_batch_sys==TRUE ){
@@ -6579,7 +6580,7 @@ b,bbuf ;
 /*  DIRECT EXEC 'PROOF'  */
                       
                       
-  exec_dir_prf(t)
+  void exec_dir_prf(t)
   {register int f,g,p,r,ff,i,b,l ;
     f=read_frm;
     ff=cre_frm(TTY_sym);
@@ -6628,7 +6629,7 @@ b,bbuf ;
                             
 /*  LOAD 'PROOF' MONITOR  */
   
-  lod_prffunc()
+  void lod_prffunc()
 #define lod_prf lod_prffunc()
   {register int p,i,g,f,t ;
     reset_fic;
@@ -6659,7 +6660,7 @@ b,bbuf ;
     close_all_fic;
   }
 
-  relod_prffunc()
+  void relod_prffunc()
 #define relod_prf relod_prffunc()
   {register int p,i,g,f,t ;
     reset_fic;
