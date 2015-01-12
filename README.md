@@ -36,7 +36,7 @@ of correctness using an integrated theorem prover (the B-ToolProvers).
 License
 =======
 
-BSD 2-clause license.
+The tool itself if licensed under the BSD 2-clause license. The source code that is used as the implementation for library machines and may form part of the source code that is the output from the tool is licensed under the Boost Software License.
 
 Please feel free to get in touch if you have any questions or even to say what you might use the BToolkit source for.
 
