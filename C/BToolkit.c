@@ -29,14 +29,19 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 #include "../MOTIF/BMotif_version.c"
 
+#include <limits.h>
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 FILE *fileid;
 
 char* name;
 char* bkit;
 
-char bpwd [ 1000 ];
-char bses [ 1000 ];
-char btkt [ 1000 ];
+char bpwd [ PATH_MAX ];
+char bses [ PATH_MAX ];
+char btkt [ PATH_MAX ];
 char benv [ 101 ];
 
 int i, c, n, is_solaris, is_linux, is_darwin, is_osf1, is_aix,
@@ -181,6 +186,8 @@ char *argv[];
   void rm_files ();
 
   struct stat stat_buf;
+  
+  char* HOME;
 
   is_debug = 0;
   is_auto_remake = 0;
@@ -210,7 +217,7 @@ char *argv[];
 #endif /* WWW_VERSION */
 
   unlink ( ".Bxterm" );
-  system ( "#! /bin/sh\nwhich xterm > .Bxterm" );
+  system ( "#!/bin/sh\nwhich xterm > .Bxterm" );
   fileid = fopen ( ".Bxterm", "r" );
   if ( fileid == NULL ) err_rep ( 41 );
   c = getc ( fileid );
@@ -218,8 +225,16 @@ char *argv[];
   unlink ( ".Bxterm" );
   if ( c != '/' ) err_rep ( 42 );
 
+/*
+fileid=popen("which xterm","r");
+if ( fileid == NULL ) err_rep ( 41 );
+c = getc ( fileid );
+pclose(fileid);
+if ( c != '/' ) err_rep ( 42 );
+*/
 
   /* FIXME: use getcwd() */
+  
   if ( system ( "pwd > .Bcom" ) != 0 ) {
     puts ( "\n\n             Error executing \"pwd > .Bcom\"\n\n" );
     exit ( 1 );
@@ -238,15 +253,10 @@ char *argv[];
   }
   fclose ( fileid );
   unlink ( ".Bcom" );
-
-  fileid = fopen ( ".BToolkitLock", "r" );
-  if ( fileid !=  NULL ) {
-    char buf [ 250 ];
-    fclose ( fileid );
-    sprintf ( buf, "%s/BUnlock %s 1", bkit, bpwd );
-    system ( buf );
-  }
-
+  
+  
+  /*getcwd(bpwd, (size_t)PATH_MAX);*/
+  
   fileid = fopen ( ".BToolkitLock", "r" );
   if ( fileid !=  NULL ) err_rep ( 1 );                 /* still locked */
 
@@ -275,9 +285,9 @@ char *argv[];
   unlink ( ".Bses" );
 
   strcpy ( benv, "" );
-  system ( "#! /bin/sh\nif [ -x /usr/bin/uname ]\nthen\n/usr/bin/uname > .Bpla\nfi" );
-  system ( "#! /bin/sh\nif [ -x /usr/uname ]\nthen\n/usr/uname > .Bpla\nfi" );
-  system ( "#! /bin/sh\nif [ -x /bin/uname ]\nthen\n/bin/uname > .Bpla\nfi" );
+  system ( "#!/bin/sh\nif [ -x /usr/bin/uname ]\nthen\n/usr/bin/uname > .Bpla\nfi" );
+  system ( "#!/bin/sh\nif [ -x /usr/uname ]\nthen\n/usr/uname > .Bpla\nfi" );
+  system ( "#!/bin/sh\nif [ -x /bin/uname ]\nthen\n/bin/uname > .Bpla\nfi" );
 
   fileid = fopen ( ".Bpla", "r" );
   if ( fileid  ==  NULL ) err_rep ( 6 );     /* uname problem */
@@ -399,6 +409,8 @@ char *argv[];
   fputs (" 3.0\n", fileid );
   fclose ( fileid );
 
+
+  /*printf("BSession 2 %s %s\n\n", bses, bpwd);*/
   strcpy ( bses, bkit );
   strcat ( bses, "/BLIB/BSession" );
   execl ( bses, bses, bpwd, ( char * ) 0 ); /* Benv (0$toolkit$0$0) Bses (1) */
@@ -408,7 +420,7 @@ char *argv[];
   ***/
    sleep ( 1 );
    err_rep ( 33 );
-
+   
    return ( 0 );
 }
 

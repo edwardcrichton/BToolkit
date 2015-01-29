@@ -16,6 +16,14 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#if !defined (PATH_MAX)
+#include <limits.h>
+#endif
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 int ttnm [ 25 ];
 
 /*  ; return DONE  */
@@ -36,7 +44,7 @@ int nn;
 #endif /* BTOOL_FLAG */
 
 FILE *coding;
-char name_cod[1001];
+char name_cod[PATH_MAX];
 int  index_name_cod;
 
 #define is_symbol3(a,b,c)   ( (val_str(bbuf,1)==ord(a)) && (val_str(bbuf,2)==ord(b)) && (val_str(bbuf,3)==ord(c)) )
@@ -224,7 +232,7 @@ void ini_codfunc()
 {register int bbuf,c ;
   
   char* bkit;
-  char symfilname_cod[1001];
+  char symfilname_cod[PATH_MAX];
 /***
 printf ( " ***************************************************** ini_codfunc\n" );
 ***/

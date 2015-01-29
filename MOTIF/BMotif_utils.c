@@ -21,6 +21,12 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include "BMotif_globals.h"
 
 
+#include <limits.h>
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 /***
 temp
 ***/
@@ -398,7 +404,7 @@ Print_extern_dot_h ()
 {
   int i, j, k, c;
   FILE * hfile;
-  char filename [ 250 ];
+  char filename [ PATH_MAX ];
 
   sprintf ( filename, "CDE/C/%s.h", primary_string );
 
@@ -484,7 +490,7 @@ Print_inlined_op_dot_h ()
 {
   int i, j, c, done;
   FILE * hfile;
-  char filename [ 250 ];
+  char filename [ PATH_MAX ];
 
   strcpy ( str_buf, primary_string );
   i = 0;

@@ -28,6 +28,14 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 #include "golmch.h"
 
+#if !defined (PATH_MAX)
+#include <limits.h>
+#endif
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 int applicable_rules_up=0;
 
 #ifdef BTOOLKIT_FLAG
@@ -3801,7 +3809,7 @@ int highlight_flag;
   int Goal2_formed = 0;
 
 #ifndef BTOOLKIT_FLAG
-#define primary_string_len    2500
+#define primary_string_len    PATH_MAX
 char primary_string [ primary_string_len ];
 #endif
 
@@ -4352,7 +4360,7 @@ XtPointer call_data;
   char * tmp_str;
   int malloced;
 #ifndef BTOOLKIT_FLAG
-#define primary_string_len    2500
+#define primary_string_len    PATH_MAX
 char primary_string    [ primary_string_len ];
 #endif
 
@@ -4535,7 +4543,7 @@ XtPointer call_data;
   char * tmp_str;
 
 #ifndef BTOOLKIT_FLAG
-#define primary_string_len    2500
+#define primary_string_len    PATH_MAX
 char primary_string    [ primary_string_len ];
 #endif
 

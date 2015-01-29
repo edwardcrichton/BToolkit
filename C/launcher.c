@@ -221,8 +221,6 @@ int main(int argc, char* argv[])
 
 	putenv(env1);
 	
-	printf("%s\n",env1);
-	
 	/* allow the user to call the btoolkit as BToolkit or btoolkit */
 	
 	if(strlen(myname)>2)

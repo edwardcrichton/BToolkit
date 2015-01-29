@@ -16,6 +16,15 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#if !defined (PATH_MAX)
+#include <limits.h>
+#endif
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
+
 char file_fic_buf [ 1000 ];
 
 /*  ; return DONE  */
@@ -27,7 +36,7 @@ char file_fic_buf [ 1000 ];
 int fcol[5];
 int fpre[5];
 int file_fic,old_file_fic,file_exists_fic;
-char fstr[1001];
+char fstr[PATH_MAX];
 FILE *ficxx;
 FILE *ficxxtmp;
                     

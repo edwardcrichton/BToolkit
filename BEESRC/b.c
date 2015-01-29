@@ -27,6 +27,12 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <sys/utsname.h>
 #include <time.h>
 
+#if !defined (PATH_MAX)
+#include <limits.h>
+#endif
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
 FILE * bstdout;
 
 #define alloc_init                 500000
@@ -81,8 +87,8 @@ int max_fwd_ctr_auto_prf = 250;
 
 #ifdef BTOOL_FLAG
 
-char buf [ 250 ];
-char BKIT_path [ 101 ];
+char buf [ PATH_MAX ];
+char BKIT_path [ PATH_MAX ];
 int cs_nn, cs_rr;
 char serv_addr [ 20 ];
 int port;

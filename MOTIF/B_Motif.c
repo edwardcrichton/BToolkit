@@ -76,6 +76,11 @@ DesLSTBut
 #include <unistd.h>
 #include <dirent.h>
 
+#include <limits.h>
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
 
 /***
 recursive contents of CfgDep_C.g
@@ -2619,8 +2624,8 @@ Rename ( name )
 char * name;
 {
   int rr, cur_name [ 50 ];
-  char cmd [ 250 ];
-  char curr_cfg_file [ 75 ];
+  char cmd [ PATH_MAX * 2 ];
+  char curr_cfg_file [ 80 ];
   int i, clash;
   void RenameDisplayName ();
   int NameAlreadyUsed ();
@@ -3275,93 +3280,9 @@ int obj;
      strcpy ( xterm_title, "B-Linker" );
   }
   
-#ifdef BOOSTER_VERSION
-  Check_SSTL_Compile_Generic ( obj );
-  BOOSTER_link = obj;
-#endif /* BOOSTER_VERSION */
+
   InvokeB ( with_XTerm, 1 );
 }
-
-#ifdef BOOSTER_VERSION
-Check_SSTL_Compile_Generic ( int obj )
-{
-  struct stat stat_buf;
-  char sstl_buf [ 250 ];
-
-  strcpy ( sstl_buf, "CDE/C/" );
-  strcat ( sstl_buf, GetShortName ( obj ) );
-  sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-  strcat ( sstl_buf, "DcrModify_Generic1.c" );
-/***
-printf ( "Check_SSTL_Compile_Generic - checking for %s\n", sstl_buf );
-***/
-  if ( stat ( sstl_buf, &stat_buf ) != -1 ) {
-    strcpy ( sstl_buf, "\n  Compiling " );
-    strcat ( sstl_buf, GetShortName ( obj ) );
-    sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-    strcat ( sstl_buf, "DcrModify_Generic1 ... " );
-    DisplayCurrWinText ( sstl_buf );
-    strcpy ( sstl_buf, "cd CDE/C ; gcc -c -D_BT_ANSIC " );
-    strcat ( sstl_buf, GetShortName ( obj ) );
-    sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-    strcat ( sstl_buf, "DcrModify_Generic1.c" );
-/***
-printf ( "executing `%s'\n\n", sstl_buf );
-***/
-    execute ( sstl_buf );
-    DisplayCurrWinText ( "done\n");
-  }
-
-  strcpy ( sstl_buf, "CDE/C/" );
-  strcat ( sstl_buf, GetShortName ( obj ) );
-  sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-  strcat ( sstl_buf, "OpcodesIo_Generic.c" );
-/***
-printf ( "Check_SSTL_Compile_Generic - checking for %s\n", sstl_buf );
-***/
-  if ( stat ( sstl_buf, &stat_buf ) != -1 ) {
-    strcpy ( sstl_buf, "\n  Compiling " );
-    strcat ( sstl_buf, GetShortName ( obj ) );
-    sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-    strcat ( sstl_buf, "OpcodesIo_Generic ... " );
-    DisplayCurrWinText ( sstl_buf );
-    strcpy ( sstl_buf, "cd CDE/C ; gcc -c -D_BT_ANSIC " );
-    strcat ( sstl_buf, GetShortName ( obj ) );
-    sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-    strcat ( sstl_buf, "OpcodesIo_Generic.c" );
-/***
-printf ( "executing `%s'\n\n", sstl_buf );
-***/
-    execute ( sstl_buf );
-    DisplayCurrWinText ( "done\n");
-  }
-
-  strcpy ( sstl_buf, "CDE/C/" );
-  strcat ( sstl_buf, GetShortName ( obj ) );
-  sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-  strcat ( sstl_buf, "_IntegrityCheck.c" );
-/***
-printf ( "Check_SSTL_Compile_Generic - checking for %s\n", sstl_buf );
-***/
-  if ( stat ( sstl_buf, &stat_buf ) != -1 ) {
-    strcpy ( sstl_buf, "\n  Compiling " );
-    strcat ( sstl_buf, GetShortName ( obj ) );
-    sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-    strcat ( sstl_buf, "_IntegrityCheck.c ... " );
-    DisplayCurrWinText ( sstl_buf );
-    strcpy ( sstl_buf, "cd CDE/C ; gcc -c -D_BT_ANSIC " );
-    strcat ( sstl_buf, GetShortName ( obj ) );
-    sstl_buf [ strlen ( sstl_buf ) - 7 ] = '\0';
-    strcat ( sstl_buf, "_IntegrityCheck.c" );
-/***
-printf ( "executing `%s'\n\n", sstl_buf );
-***/
-    execute ( sstl_buf );
-    DisplayCurrWinText ( "done\n");
-  }
-
-}
-#endif /* BOOSTER_VERSION */
 
 
 /*

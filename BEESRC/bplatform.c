@@ -32,6 +32,12 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #include <unistd.h>
 #include <time.h>
 
+#if !defined (PATH_MAX)
+#include <limits.h>
+#endif
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
 
 FILE * bstdout;
 
@@ -71,9 +77,9 @@ int Bpim_ps_no = 0;
 
 #define FILE_MODE ( S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH )
 int fifo_write_ptr, fifo_read_ptr;
-char fifo_file_2m [ 300 ];
-char fifo_file_2b [ 300 ];
-char err_buf [ 250 ];
+char fifo_file_2m [ PATH_MAX ];
+char fifo_file_2b [ PATH_MAX ];
+char err_buf [ PATH_MAX ];
 
 /*
 #define bstdout stdout
@@ -205,7 +211,7 @@ DisplayErrorBox ( ss, tt )
 char * ss;
 char * tt;
 {
-  char buf [ 500 ];
+  char buf [ PATH_MAX ];
 
   strcpy ( buf, "$BKIT/BLIB/BPrompt \"bplatform: " );
   strcat ( buf, ss );
@@ -298,7 +304,7 @@ ReportSystemError ( ss )
 char * ss;
 {
   FILE * Bsys;
-  char cmd [ 250 ];
+  char cmd [ PATH_MAX ];
 
   strcpy ( cmd, "$BKIT/BLIB/BPrompt 'Error executing \"" );
   strcat ( cmd, ss );
@@ -580,6 +586,7 @@ AutoProver   => exec_prf==TRUE   val_batch_sys==TRUE
 ProofPrinter => exec_prf==FALSE  val_batch_sys==FALSE
 ***/
 
+
   if ( ( argc != 2 ) && ( argc != 8 ) ) exit ( argc + 1 );
 
   /***
@@ -617,7 +624,6 @@ ProofPrinter => exec_prf==FALSE  val_batch_sys==FALSE
   ***/
   check_system_calls_ok();
 
-
   /***
   write getpid to .Bpib
   ***/
@@ -646,8 +652,6 @@ printf ( "max_fwd_ctr_auto_prf = %d\n", max_fwd_ctr_auto_prf );
 ***/
     fclose ( Bpib );
   }
-
-
 
   bstdout = stdout;
 
@@ -718,7 +722,6 @@ printf ( "max_fwd_ctr_auto_prf = %d\n", max_fwd_ctr_auto_prf );
                                                       alloc_init, alloc_topup );
     }
   }
-
 
   /***
   perform malloc
@@ -795,12 +798,19 @@ printf ( "bplatform: pog_flag %d\n", pog_flag );
 ***/
 
       }
+      
       mod_men_sys ( FALSE );
+      
       mod_batch_sys ( TRUE );
-      ini_win;     
+      
+      ini_win;
+      
       ini;
+      
       strcpy ( name_restore_fil, argv [ 1 ] );
+      
       restore_tool;
+     
       strcpy ( name_fil, ".Benv" );
 /***
 max0_toolfunc();
@@ -810,6 +820,7 @@ max0_toolfunc();
       {register int t;
         xst_the ( t, num_the ( t ) == 2, exec_file_prf ( t ), {} );
       }
+      
       return 0;
 
     }

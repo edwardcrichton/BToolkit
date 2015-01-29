@@ -18537,8 +18537,6 @@ char *argv[];
 
   BOOSTER_link = 0;
 
-
-
   /***
   check whether an auto remake etc
   ***/
@@ -18580,13 +18578,13 @@ print_debug(2);
   /***
   perform malloc for primary_string etc.
   ***/
-  primary_string_len = 2500;
+  primary_string_len = PATH_MAX;
 print_debug(3);
-  primary_string    = ( char * ) malloc ( 2502 * sizeof ( char ) );
+  primary_string    = ( char * ) malloc ( (PATH_MAX+2) * sizeof ( char ) );
 print_debug(4);
-  secondary_string  = ( char * ) malloc ( 2502 * sizeof ( char ) );
+  secondary_string  = ( char * ) malloc ( (PATH_MAX+2) * sizeof ( char ) );
 print_debug(5);
-  additional_string = ( char * ) malloc ( 2502 * sizeof ( char ) );
+  additional_string = ( char * ) malloc ( (PATH_MAX+2) * sizeof ( char ) );
 print_debug(6);
 
   /***
@@ -18829,7 +18827,9 @@ print_debug(24);
       fclose ( Bcom );
       cur_dir [ i ] = '\0';
     }
-    cur_dir [ 240 ] = '\0';
+    
+    /* WHAT IS THIS FOR? */
+    cur_dir [ /*240*/ PATH_MAX - 10  ] = '\0';
   
   }
 
@@ -18900,7 +18900,7 @@ print_debug(31);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( B_framed_pixmap_gray94 == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create B1.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create B1.xpm pixmap" );
     printf ( "\n  Can't create B1.xpm pixmap\n" );
   }
 
@@ -18912,7 +18912,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( B_framed_pixmap_inverse == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create B2.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create B2.xpm pixmap" );
     printf ( "\n  Can't create B2.xpm pixmap\n" );
   }
  
@@ -18923,7 +18923,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( B_topbar_pixmap == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create topbar.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create topbar.xpm pixmap" );
     printf ( "\n  Can't create topbar.xpm pixmap\n" );
   }
 
@@ -18933,7 +18933,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( red_pixmap == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create red.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create red.xpm pixmap" );
     printf ( "\n  Can't create red.xpm pixmap\n" );
   }
 
@@ -18943,7 +18943,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( green_pixmap == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create green.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create green.xpm pixmap" );
     printf ( "\n  Can't create green.xpm pixmap\n" );
   }
 
@@ -18953,7 +18953,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( blue_pixmap == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create blue.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create blue.xpm pixmap" );
     printf ( "\n  Can't create blue.xpm pixmap\n" );
   }
 
@@ -18963,7 +18963,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( inapplicable_pixmap == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create inapplicable.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create inapplicable.xpm pixmap" );
     printf ( "\n  Can't create inapplicable.xpm pixmap\n" );
   }
 
@@ -18973,7 +18973,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( tab_pixmap == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create tab.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create tab.xpm pixmap" );
     printf ( "\n  Can't create tab.xpm pixmap\n" );
   }
   
@@ -18983,7 +18983,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( tabgrey_pixmap == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create tabgrey.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create tabgrey.xpm pixmap" );
     printf ( "\n  Can't create tabgrey.xpm pixmap\n" );
   }
 
@@ -18993,7 +18993,7 @@ print_debug(32);
       BlackPixelOfScreen ( XtScreen ( top_level ) ),
       WhitePixelOfScreen ( XtScreen ( top_level ) ) );
   if ( B_downarrow_pixmap == XmUNSPECIFIED_PIXMAP ) {
-    Popup_Minor_Err ( top_level, "Can't create downarrow.xpm pixmap" );
+    Popup_Minor_Err ( top_level, "Can not create downarrow.xpm pixmap" );
     printf ( "\n  Can't create downarrow.xpm pixmap\n" );
   }
 
@@ -19096,7 +19096,7 @@ print_debug(41);
 print_debug(42);
 
   /***
-  silently wait <= 2 mins for
+  silently wait <= 1 min for
   TMP/.BBcom (written by BToolkit)
   ***/
   {
@@ -19104,7 +19104,7 @@ print_debug(42);
     int noBBcom = 1;
     int count = 0;
     int loop_count = 8;
-    while ( noBBcom && ( count < 180 ) ) {
+    while ( noBBcom && ( count < 60 ) ) {
       fileptr = fopen ( "TMP/.BBcom", "r" );
       if ( fileptr != NULL ) {
         fclose ( fileptr );
@@ -19373,7 +19373,7 @@ print_debug(623);
 
             void SRC_watch_timer ();
             char *home_dir;
-            char buf [ 250 ];  /* don't want the global buf */
+            char buf [ PATH_MAX ];  /* don't want the global buf */
 
 
 /***

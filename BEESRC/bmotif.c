@@ -16,6 +16,14 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+#if !defined (PATH_MAX)
+#include <limits.h>
+#endif
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 #include "../MOTIF/BMotif_globals.h"
 
 FILE * bstdout;
@@ -114,7 +122,7 @@ Position global_menu_y = -999;
 Position last_browse_x = -999;
 Position last_browse_y = -999;
 
-char cur_dir [ 250 ];
+char cur_dir [ PATH_MAX ];
 
 Widget curr_dialog_menu,
 /* proof_tree_dialog, */

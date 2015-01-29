@@ -23,10 +23,10 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 #    define PATH_MAX 2048
 #endif
 
-char name_fil[1001];
-char name_load_fil[1001];
-char name_prf_fil[1001];
-char sys_fil[1001];
+char name_fil[PATH_MAX];
+char name_load_fil[PATH_MAX];
+char name_prf_fil[PATH_MAX];
+char sys_fil[PATH_MAX];
 FILE *input_fil;
 FILE *pinput_fil;
 
@@ -148,10 +148,10 @@ int mod_read_name_fil(t)
                    
 /*  SAVE AND RESTORE FILE HANDLER  */
                    
-char name_save_fil[1001];
-char name_dir_save_fil[1001];
+char name_save_fil[PATH_MAX];
+char name_dir_save_fil[PATH_MAX];
 FILE *save_fil;
-char name_restore_fil[1001];
+char name_restore_fil[PATH_MAX];
 FILE *restore_fil;
 
 #define write_save_fil(v)  putw(v,save_fil)

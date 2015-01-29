@@ -26,13 +26,17 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 #define MAX_loop_count 15
 
+#include <limits.h>
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
 
 FILE * fileptr;
 
 char *banim;
 char *bkit;
 
-char cur_dir [ 250 ];
+char cur_dir [ PATH_MAX ];
 char fifo_file_2m [ 50 ];
 char fifo_file_2b [ 50 ];
 char BSes_num [ 50 ];
@@ -60,7 +64,7 @@ read_Bini_load_strings ()
 {
   int noBini = 1;
   int i, c;
-  int loop_count = MAX_loop_count + 2;
+  int loop_count = (MAX_loop_count*10) + 2;
   FILE * fileid;
   useconds_t sleep_time = 100000;
 
@@ -69,13 +73,13 @@ read_Bini_load_strings ()
   BMotif waits silently for MAX_loop_count*10 secs
   for TMP/.BBcom, and removes both
   ***/
-  fileid = fopen ( "TMP/.BBcom", "w" );
+  
+   fileid = fopen ( "TMP/.BBcom", "w" );
   if ( fileid == NULL ) {
     puts ( "\n\n             Can't open \"TMP/.BBcom\" for writing\n" );
     exit ( 1 );
   }
   fclose ( fileid );
-
   /***
   first wait for MAX_loop_count*seconds secs for .Bini from BMotif
   ***/
@@ -84,24 +88,30 @@ read_Bini_load_strings ()
     if ( fileptr != NULL ) {
       i = 0;
       c = getc ( fileptr );
+      
       while ( ( c != EOF ) && ( c != '|' ) ) {
 	cur_dir [ i ] = ( char ) c;
 	i++;
 	c = getc ( fileptr );
       }
       cur_dir [ i ] = '\0';
-      if ( c != '|' ) err_exit ( 4 );      
+      
+      if ( c != '|' ) err_exit ( 4 );
+      
       i = 0;
       c = getc ( fileptr );
+      
       while ( c != EOF && c != '\n' ) {
         Bpim_num [ i ] = ( char ) c;
         i++;
         c = getc ( fileptr );
       }
+      
       fclose ( fileptr );
       unlink ( ".Bini" );
       Bpim_num [ i++ ] = '\0';
       noBini = 0;
+      
     }
     else {
       if ( loop_count ) {
@@ -113,10 +123,12 @@ read_Bini_load_strings ()
         usleep ( sleep_time );
         loop_count--;
       }
+
     }
   }
 
   if ( noBini ) {
+  
     puts ( "\n\n\n              $BKIT/BLIB/BMotif didn't start\n\n\n" );
     err_exit ( 11 );
   }
@@ -233,18 +245,18 @@ main ( argc, argv )
 {
    struct sigaction act1;
    int cant_open_bses = 0;
-   char bkit_tool [ 500 ];
-   char cmd [ 600 ];
+   char bkit_tool [ PATH_MAX ];
+   char cmd [ PATH_MAX * 2 ];
 /***
 system ( "echo \"BSession originally running in:\n  `pwd`\"" );
 ***/
 
-/***
+/*
 printf ( "BSession argc: %d\n", argc );
 for ( i = 0 ; i < argc ; i++ ) {
   printf ( "  %d: %s\n", i, argv [ i ] );
 }
-***/
+*/
 
 /*
   0: /apps/btoolkit/TOOLKIT/MASTER_RELEASE/4.0/BKIT/BLIB/BSession
@@ -262,6 +274,7 @@ for ( i = 0 ; i < argc ; i++ ) {
 
   banim = getenv ( "BANIMATOR" );
   if ( banim == NULL ) banim = bkit;
+
 
   strcpy ( cur_dir, argv [ 1 ] );
 
@@ -307,7 +320,6 @@ printf (  "                              BSession - .Bses : %s\n", BSes_num  );
 ***/
 
     unlink ( ".Berr" );
-
     if ( strcmp ( BSes_num, "1" ) == 0 ) {
       sprintf ( cmd, "%s%s.bin %s %s 040 0 %s %s 2> .Berr", bkit_tool, BSes_num, Bpim_num, cur_dir, fifo_file_2m, fifo_file_2b );
       system ( cmd );
@@ -389,7 +401,6 @@ system ( "echo \"BSession now running in:\n  `pwd`\"" );
       sprintf ( cmd, "%s%s.bin %s %s 040 0 %s %s | tee -a .Blog > %s 2> .Berr", bkit_tool, BSes_num, Bpim_num, cur_dir, fifo_file_2m, fifo_file_2b, tty_id );
       system ( cmd );
     } /* end toolkit in xterm */
-
 
     fileptr = fopen ( ".Bses", "r" );
     if ( fileptr == NULL ) {

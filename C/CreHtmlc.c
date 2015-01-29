@@ -23,6 +23,13 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 #include "../MOTIF/BMotif_version.c"
 
+#if !defined (PATH_MAX)
+#include <limits.h>
+#endif
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
 
 
 #define max_name  55
@@ -35,7 +42,7 @@ FILE * Infile;
 char word [ 5002 ];
 
 
-char _dirname_  [ 400 ];
+char _dirname_  [ PATH_MAX ];
 char filename [ max_name ];
 char mchname  [ max_name ];
 char impname  [ max_name ];
@@ -395,7 +402,7 @@ int argc;
 char *argv[];
 {
   time_t time_now;
-  char * name, bkit [ 250 ];
+  char * name, bkit [ PATH_MAX ];
 
   printf ( "." ); fflush ( stdout );
 

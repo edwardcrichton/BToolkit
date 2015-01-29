@@ -24,6 +24,12 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 #include "../C/BToolkitlm_globals.h"
 
+#include <limits.h>
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 extern char * no_toolkit_short_ver;
 
 /*#include "../C/BToolkitd_common.c"*/
@@ -3238,7 +3244,7 @@ int obj;
 
   FILE * Berr;
   char s [ 10000 ];
-  char dir [ 50 ];
+  char dir [ PATH_MAX ];
   struct stat statBerr;
   struct help_struct help_data;
   char *text;

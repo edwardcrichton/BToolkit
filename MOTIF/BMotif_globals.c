@@ -33,6 +33,14 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED O
 
 #include "BMotif_detect.c"
 
+#if !defined (PATH_MAX)
+#include <limits.h>
+#endif
+
+#if !defined (PATH_MAX)
+#    define PATH_MAX 2048
+#endif
+
 #ifdef BTOOLKIT_FLAG
 
 int brz = 0;
@@ -160,7 +168,7 @@ textWidgetXbrowser* htmlBrowsers[10];
 
 char radio_labels [ MAX_RADIO_BUT ] [ MAX_RADIO_BUT_STR ];
 
-int primary_string_len    = 2500;
+int primary_string_len    = PATH_MAX;
 
 /**************************************************
           global data
@@ -790,8 +798,8 @@ const char *options[] = { "Remake",
                     "Optional Utilities"
                     };
 
-char BKIT_path [ 101 ];
-char cur_dir [ 250 ];
+char BKIT_path [ PATH_MAX ];
+char cur_dir [ PATH_MAX ];
 
 Pixel gray94, gray64, gray39, red, blue, black,
       user_lab_col_f,      user_lab_col_b,
