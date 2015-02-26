@@ -777,7 +777,7 @@ void
 unanalyse (cc, mm)
      int cc, mm;
 {
-  int rr, st, bb, ac, ex, cc1, nn;
+  int rr, st, bb, ac, ex, cc1;
   val_abs2conc (&ac, cc);
   rem_abs2conc (cc);
   if (mm == 1) {
@@ -789,12 +789,12 @@ unanalyse (cc, mm)
       vld_Abs2Conc (&bb, ac);
       if (bb == TRUE) {
 	bb = FALSE;
-	nn = 20;
+	
 	while (bb == FALSE) {
 	  last_a2c (&cc1,
 		    ac);
 	  pop_a2c (ac);
-	  nn = nn - 1;
+	  
 	  if (cc1 == cc) {
 	    bb = TRUE;
 	  }
@@ -899,13 +899,13 @@ printf ( "cptMRIState=%d length BFR=%d\n", st, ll2 );
    ... and check that entries in ppf & ppf_dmu for cpt do not exceed ll1
 "*/
     card_ppf (&tot, st);
-    while ( tot ) {
+    while ( tot > 0 ) {
       valOrd_ppf ( &mm, st, tot );
       if ( mm >= ll1 ) del_ppf ( st, mm );
       tot--;
     }
     card_ppf_dmu (&tot, st);
-    while ( tot ) {
+    while ( tot > 0) {
       valOrd_ppf_dmu ( &mm, st, tot );
       if ( mm >= ll1 ) del_ppf_dmu ( st, mm );
       tot--;
@@ -1063,7 +1063,7 @@ print_Globals_CfgDepBase();
 
   rr = TRUE;
   first_Construct (&loc, &cc2);
-  while (loc != 0 && rr == TRUE) {
+  while (loc > 0 && rr == TRUE) {
 /*"
 Check {\em cc2\/} not already in {\em gset1\/} or {\em gset2\/},
 and is not {\em cc1 \/}:
@@ -1286,6 +1286,8 @@ add_a2cdep (rep, cc)
     length_a2c (&ll, ac);
     bb = FALSE;
     rr = TRUE;
+    if(ll > 0)
+    {
     while (bb == FALSE && rr == TRUE) {
       valIth_a2c (&cc1, ac, ll);
       if (cc != cc1) {
@@ -1298,6 +1300,7 @@ add_a2cdep (rep, cc)
       else {
 	bb = TRUE;
       }
+    }
     }
   }
   *rep = rr;
@@ -1567,7 +1570,7 @@ get_unused_lib (rep)
   clear_gset2 ();
   rr = TRUE;
   first_Construct (&loc, &cc1);
-  while (loc != 0 && rr == TRUE) {
+  while (loc > 0 && rr == TRUE) {
     def_sees_uses (&bb, cc1);
     if (bb == TRUE) {
       val_sees_uses (&ss, cc1);
@@ -1589,7 +1592,7 @@ get_unused_lib (rep)
   if (rr == TRUE) {
     clear_gset1 ();
     first_Construct (&loc, &cc1);
-    while (loc != 0 && rr == TRUE) {
+    while (loc > 0 && rr == TRUE) {
       val_type (&tt, cc1);
       if ( tt == lib || tt == lib_vhdl ) {
 	member_gset2 (&bb, cc1);
@@ -1806,6 +1809,8 @@ printf ( "\n        top_level_dep_cstr %s(%d)\n\n",GetName(top_level_dep_cstr),t
       val_abs2conc (&ac, cc);
       length_a2c (&ll, ac);
       bb = FALSE;
+      if(ll>0)
+      {
       while (bb == FALSE && rr == TRUE) {
 	valIth_a2c (&cc1, ac, ll);
 	if (cc != cc1) {
@@ -1818,6 +1823,7 @@ printf ( "\n        top_level_dep_cstr %s(%d)\n\n",GetName(top_level_dep_cstr),t
 	else {
 	  bb = TRUE;
 	}
+      }
       }
     }
     if (rr == TRUE) {
@@ -1833,7 +1839,7 @@ printf ( "\n        top_level_dep_cstr %s(%d)\n\n",GetName(top_level_dep_cstr),t
    finally, deal with {\em abs2conc\/} of {\em gset3\/}:
 "*/
   card_gset3 (&ll);
-  while (ll != 0 && rr == TRUE) {
+  while (ll /*!=*/ > 0 && rr == TRUE) {
     valOrd_gset3 (&cc1, ll);
     add_a2cdep (&rr, cc1);
     ll = ll - 1;
@@ -1977,7 +1983,7 @@ get_higher_imp_node (cc1, cc)
   int found = 0;
 
   first_Construct (&loc, &cc2);
-  while (loc && !found) {
+  while (loc > 0 && !found) {
     val_ext (&ext, cc2);
     if (ext == imp) {
       val_curMRIState (&st, cc2);
@@ -2006,7 +2012,7 @@ get_higher_spec_node (cc1, cc)
   int found = 0;
 
   first_Construct (&loc, &cc2);
-  while (loc && !found) {
+  while (loc > 0 && !found) {
     val_ext (&ext, cc2);
     if (ext == mch) {
       val_curMRIState (&st, cc2);
@@ -2037,7 +2043,7 @@ load_gset1_top_imp_nodes ()
   process all anl imps
   ***/
   first_Construct (&loc, &cc);
-  while (loc) {
+  while (loc > 0) {
     val_ext (&ext, cc);
     if (ext == imp) {
       val_type (&tt, cc);
@@ -2080,7 +2086,7 @@ load_gset1_top_spec_nodes ()
   process all anl mch
   ***/
   first_Construct (&loc, &cc);
-  while (loc) {
+  while (loc > 0) {
     val_ext (&ext, cc);
     if (ext == mch) {
       val_type (&tt, cc);
