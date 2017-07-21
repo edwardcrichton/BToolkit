@@ -5,7 +5,8 @@ B-Toolkit has been tried on Ubuntu 12.04 and 14.04. Both x86 and x86_64 work.
 
 To install this on a debian based system, download the source code and compile it.
 
-Download the latest release of the BToolkit (the source code zip file or the tar.gz) from https://github.com/edwardcrichton/BToolkit/releases
+Download the latest release of the BToolkit (the source code zip file or the tar.gz) from
+https://github.com/edwardcrichton/BToolkit/releases
 
 Unpack it:
 
@@ -14,7 +15,8 @@ or
 $ gunzip V6.0.4.tar.gz
 $ tar xvf V6.0.4.tar
 
-Note: There is a choice of using the lesstif or openmotif libraries. However, there are no lesstif packages for Ubuntu 14.04 onwards, so it's best to choose openmotif instead.
+Note: There is a choice of using the lesstif or openmotif libraries.
+However, there are no lesstif packages for Ubuntu 14.04 onwards, so it's best to choose openmotif instead.
 
 Build requirements (to be installed with apt-get):
 - flex
@@ -43,11 +45,12 @@ $ ../BToolkit
 Mac OS X Yosemite
 =================
 
-Download the latest release of the BToolkit for Mac OS (the .dmg file) from https://github.com/edwardcrichton/BToolkit/releases
+Download the latest release of the BToolkit for Mac OS (the .dmg file) from
+https://github.com/edwardcrichton/BToolkit/releases
 
 For this to run on a Mac, you'll also need:
 
- * the X11 app installed (found in the App Store or for older versions download from http://xquartz.macosforge.org/landing/)
+ * the X11 app installed found in the App Store (or for older versions download from http://xquartz.macosforge.org/landing/)
  * X-Motif
  
  To install X-Motif, first install xcode and then install macports:
@@ -86,4 +89,5 @@ port self update
 port upgrade outdated
 port install openmotif +universal
 
-You should now be able to run the BToolkit by opening the disk image (.dmg) (see releases https://github.com/edwardcrichton/BToolkit/releases), copying the application to your applications folder and then clicking on application icon. 
+You should now be able to run the BToolkit by opening the disk image (.dmg)
+(see releases https://github.com/edwardcrichton/BToolkit/releases), copying the application to your applications folder and then clicking on application icon. 
