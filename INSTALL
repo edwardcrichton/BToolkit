@@ -1,16 +1,27 @@
 Ubuntu
 ======
 
-B-Toolkit has been tried on Ubuntu 12.04 and 14.04. Both x86 and
-x86_64 should work.
+B-Toolkit has been tried on Ubuntu 12.04 and 14.04. Both x86 and x86_64 work.
 
-Note: There are no lesstif packages for Ubuntu 14.04; use openmotif
-instead.
+To install this on a debian based system, download the source code and compile it.
+
+Download the latest release of the BToolkit (the source code zip file or the tar.gz) from https://github.com/edwardcrichton/BToolkit/releases
+
+Unpack it:
+
+$ unzip V6.0.4.zip
+or
+$ gunzip V6.0.4.tar.gz
+$ tar xvf V6.0.4.tar
+
+Note: There is a choice of using the lesstif or openmotif libraries. However, there are no lesstif packages for Ubuntu 14.04 onwards, so it's best to choose openmotif instead.
 
 Build requirements (to be installed with apt-get):
 - flex
 - motif (e.g. lesstif2-dev or libmotif-dev)
 - tcsh
+e.g.
+$ sudo apt-get install flex libmotif-dev csh build-essential
 
 Build procedure:
 $ cd BToolkit/UTIL/
@@ -19,31 +30,38 @@ $ ./BUILD
 (answer 'N' and then 'A')
 
 Note: recent versions of openmotif support font anti-aliasing,
-which can be enabled by:
+which can be enabled by putting a configuation file in your home directory:
 $ cp MOTIF/BMotif.resources.xft ~/XBMotif
 
-Run:
+To run:
 $ cd BKIT
 $ export BKIT=`pwd`
 $ cd BDEMO
 $ ../BToolkit
 
+
 Mac OS X Yosemite
 =================
 
-For this to run on a Mac, you'll need:
+Download the latest release of the BToolkit for Mac OS (the .dmg file) from https://github.com/edwardcrichton/BToolkit/releases
 
- * the X11 app installed (download from http://xquartz.macosforge.org/landing/)
+For this to run on a Mac, you'll also need:
+
+ * the X11 app installed (found in the App Store or for older versions download from http://xquartz.macosforge.org/landing/)
  * X-Motif
  
- To install X-Motif first install xcode and then install macports:
+ To install X-Motif, first install xcode and then install macports:
  
- Download xcode from http://itunes.apple.com/us/app/xcode/id497799835
+ xcode:
  
- Open a terminal and type in:
+ Download xcode from the App Store (or for older versions http://itunes.apple.com/us/app/xcode/id497799835)
+ 
+ Then open a terminal and type in:
  
  sudo xcodebuild -license
  xcode-select --install
+ 
+ macports:
  
  Install macports from http://www.macports.org/install.php
  
@@ -68,4 +86,4 @@ port self update
 port upgrade outdated
 port install openmotif +universal
 
-You should now be able to run the BToolkit by opening the disk image (see releases), copying the application to your applications folder and then clicking on application icon. 
+You should now be able to run the BToolkit by opening the disk image (.dmg) (see releases https://github.com/edwardcrichton/BToolkit/releases), copying the application to your applications folder and then clicking on application icon. 
