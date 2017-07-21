@@ -49,4 +49,11 @@ Help documents
 
 The Toolkit's help documents can be found [here](https://edwardcrichton.github.io/BToolkit/BHELP/Index.html).
 
+Installing
+==========
 
+Installation instructions can be found in [INSTALL](https://github.com/edwardcrichton/BToolkit/blob/master/INSTALL)
+
+If it doesn't make sense, please feel free to get in touch.
+
+See my [homepage](http://www.cs.ox.ac.uk/people/edward.crichton/) for details.
