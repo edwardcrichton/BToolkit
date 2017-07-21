@@ -43,3 +43,10 @@ The source code that is used as the implementation for library machines and may 
 Please feel free to get in touch if you have any questions or even to say what you might use the BToolkit source for.
 
 See my [homepage](http://www.cs.ox.ac.uk/people/edward.crichton/) for details.
+
+Help documents
+==============
+
+The Toolkit's help documents can be found [here][https://edwardcrichton.github.io/BToolkit/BHELP/Index.html].
+
+
