@@ -49,6 +49,17 @@ Help documents
 
 The Toolkit's help documents can be found [here](https://edwardcrichton.github.io/BToolkit/BHELP/Index.html).
 
+Books
+=====
+
+ - Software Engineering with B ISBN 978-0201403565
+ - The B-Method: An Introduction ISBN 978-0333792841
+ - Specification in B: An Introduction Using the B Toolkit ISBN 1-86094-018-8
+ - Introduction to the B Abstract Machine Notation ISBN 9780077090142
+ - Spécification formelle avec B ISBN 2-7462-0302-2
+ - The B Language and Method: A Guide to Practical Formal Development ISBN 978-3-540-76033-7
+ - The B Book ISBN 978-0521021753
+
 Installing
 ==========
 
