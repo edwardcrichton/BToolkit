@@ -47,6 +47,6 @@ See my [homepage](http://www.cs.ox.ac.uk/people/edward.crichton/) for details.
 Help documents
 ==============
 
-The Toolkit's help documents can be found [here][https://edwardcrichton.github.io/BToolkit/BHELP/Index.html].
+The Toolkit's help documents can be found [here](https://edwardcrichton.github.io/BToolkit/BHELP/Index.html).
 
 
