@@ -90,4 +90,5 @@ port upgrade outdated
 port install openmotif +universal
 
 You should now be able to run the BToolkit by opening the disk image (.dmg)
-(see releases https://github.com/edwardcrichton/BToolkit/releases), copying the application to your applications folder and then clicking on application icon. 
+(see releases https://github.com/edwardcrichton/BToolkit/releases),
+copying the application to your applications folder and then clicking on application icon. 
