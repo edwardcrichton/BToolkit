@@ -85,7 +85,7 @@ sudo -s
 Use macports to install openmotif:
 
 /opt/local/bin/port
-port self update
+port selfupdate
 port upgrade outdated
 port install openmotif +universal
 
